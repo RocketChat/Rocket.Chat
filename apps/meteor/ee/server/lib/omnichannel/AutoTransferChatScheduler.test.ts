@@ -4,8 +4,9 @@ import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 chai.use(chaiDateTime);
 
@@ -69,7 +70,7 @@ const mocks = {
 	'./logger': { schedulerLogger: mockLogger },
 };
 
-const { AutoTransferChatSchedulerClass } = proxyquire.noCallThru().load('./AutoTransferChatScheduler', mocks);
+const { AutoTransferChatSchedulerClass } = loadWithMocks('./AutoTransferChatScheduler', mocks);
 
 describe('AutoTransferChats', () => {
 	before(() => {

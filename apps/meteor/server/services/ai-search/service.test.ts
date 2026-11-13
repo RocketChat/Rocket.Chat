@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const License = {
@@ -33,26 +32,40 @@ const Users = {
 
 const serverFetch = sinon.stub();
 
-const { AISearchService } = proxyquire.noCallThru().load('./service', {
-	'@rocket.chat/core-services': {
-		License,
-		ServiceClass: class {
-			protected name = '';
-		},
-	},
-	'../../settings': {
-		settings: cachedSettings,
-	},
-	'@rocket.chat/logger': {
-		Logger: class {
-			debug = sinon.stub();
+let AISearchService: typeof import('./service').AISearchService;
 
-			warn = sinon.stub();
-		},
-	},
-	'@rocket.chat/server-fetch': {
-		serverFetch,
-	},
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				License,
+				ServiceClass: class {
+					protected name = '';
+				},
+			},
+		}),
+		mock.module('../../settings', {
+			exports: {
+				settings: cachedSettings,
+			},
+		}),
+		mock.module('@rocket.chat/logger', {
+			exports: {
+				Logger: class {
+					debug = sinon.stub();
+
+					warn = sinon.stub();
+				},
+			},
+		}),
+		mock.module('@rocket.chat/server-fetch', {
+			exports: {
+				serverFetch,
+			},
+		}),
+	];
+	({ AISearchService } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 type CursorResult<T> = {

@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const models = {
@@ -11,19 +10,29 @@ const models = {
 
 const mockedFetchWorkspaceSyncPayload = sinon.stub();
 
-const { syncCloudData } = proxyquire.noCallThru().load('./syncCloudData.ts', {
-	'@rocket.chat/license': { DuplicatedLicenseError: sinon.stub() },
-	'../../callbacks': { callbacks: { run: sinon.stub() } },
-	'../../../../lib/errors/CloudWorkspaceAccessError': { CloudWorkspaceAccessError: sinon.stub() },
-	'../../../../lib/errors/CloudWorkspaceRegistrationError': { CloudWorkspaceRegistrationError: sinon.stub() },
-	'../../logger/system': { SystemLogger: { info: sinon.stub(), error: sinon.stub() } },
-	'../buildRegistrationData': { buildWorkspaceRegistrationData: sinon.stub().resolves({}) },
-	'../getWorkspaceAccessToken': {
-		getWorkspaceAccessToken: sinon.stub().resolves('token'),
-		CloudWorkspaceAccessTokenEmptyError: sinon.stub(),
-	},
-	'../retrieveRegistrationStatus': { retrieveRegistrationStatus: sinon.stub().resolves({ workspaceRegistered: true }) },
-	'./fetchWorkspaceSyncPayload': { fetchWorkspaceSyncPayload: mockedFetchWorkspaceSyncPayload },
+let syncCloudData: typeof import('./syncCloudData').syncCloudData;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', { exports: { DuplicatedLicenseError: sinon.stub() } }),
+		mock.module('../../callbacks', { exports: { callbacks: { run: sinon.stub() } } }),
+		mock.module('../../../../lib/errors/CloudWorkspaceAccessError', { exports: { CloudWorkspaceAccessError: sinon.stub() } }),
+		mock.module('../../../../lib/errors/CloudWorkspaceRegistrationError', { exports: { CloudWorkspaceRegistrationError: sinon.stub() } }),
+		mock.module('../../logger/system', { exports: { SystemLogger: { info: sinon.stub(), error: sinon.stub() } } }),
+		mock.module('../buildRegistrationData', { exports: { buildWorkspaceRegistrationData: sinon.stub().resolves({}) } }),
+		mock.module('../getWorkspaceAccessToken', {
+			exports: {
+				getWorkspaceAccessToken: sinon.stub().resolves('token'),
+				CloudWorkspaceAccessTokenEmptyError: sinon.stub(),
+			},
+		}),
+		mock.module('../retrieveRegistrationStatus', {
+			exports: { retrieveRegistrationStatus: sinon.stub().resolves({ workspaceRegistered: true }) },
+		}),
+		mock.module('./fetchWorkspaceSyncPayload', { exports: { fetchWorkspaceSyncPayload: mockedFetchWorkspaceSyncPayload } }),
+	];
+	({ syncCloudData } = await import('./syncCloudData'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('SyncCloudData', () => {

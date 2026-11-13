@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const removeNotExpiredById = sinon.stub().resolves(null);
 const findExistingCASUser = sinon.stub().resolves(null);
@@ -12,7 +13,7 @@ const updateUser = sinon.stub().resolves();
 const createNewUser = sinon.stub().resolves({ _id: 'newUserId' });
 const setRealName = sinon.stub().resolves();
 
-const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandler', {
+const { loginHandlerCAS: handler } = loadWithMocks('./loginHandler', {
 	'meteor/accounts-base': {
 		Accounts: {
 			LoginCancelledError: { numericError: 403 },

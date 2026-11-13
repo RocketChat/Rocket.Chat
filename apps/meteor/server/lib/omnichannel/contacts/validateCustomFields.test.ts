@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { validateCustomFields } = proxyquire.noCallThru().load('./validateCustomFields', {});
+import { validateCustomFields } from './validateCustomFields';
 
 describe('validateCustomFields', () => {
 	const mockCustomFields = [{ _id: 'cf1', label: 'Custom Field 1', regexp: '^[0-9]+$', required: true }];

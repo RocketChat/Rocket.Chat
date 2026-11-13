@@ -1,8 +1,9 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const hasAllPermissionAsyncMock = sinon.stub();
 const getCachedSupportedVersionsTokenMock = sinon.stub();
@@ -12,7 +13,7 @@ describe.skip('#getServerInfo()', () => {
 	let getServerInfo: any;
 
 	before(() => {
-		const { getServerInfo: importedGetServerInfo } = proxyquire.noCallThru().load('./getServerInfo', {
+		const { getServerInfo: importedGetServerInfo } = loadWithMocks('./getServerInfo', {
 			'../../../rocketchat.info': {
 				Info: {
 					version: '3.0.1',

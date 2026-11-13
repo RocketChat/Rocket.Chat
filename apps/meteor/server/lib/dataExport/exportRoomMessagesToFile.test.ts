@@ -1,9 +1,8 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { faker } from '@faker-js/faker';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import type { MessageData } from './exportRoomMessagesToFile';
@@ -20,19 +19,33 @@ const stubs = {
 	settings: sinon.stub(),
 };
 
-const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
-	'fs/promises': {
-		mkdir: stubs.mkdir,
-		writeFile: stubs.writeFile,
-	},
-	'../i18n': {
-		i18n: {
-			t: stubs.translateKey,
-		},
-	},
-	'../../settings': {
-		settings: stubs.settings,
-	},
+let getMessageData: any;
+let exportRoomMessages: any;
+let exportMessageObject: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('fs/promises', {
+			exports: {
+				mkdir: stubs.mkdir,
+				writeFile: stubs.writeFile,
+			},
+		}),
+		mock.module('../i18n', {
+			exports: {
+				i18n: {
+					t: stubs.translateKey,
+				},
+			},
+		}),
+		mock.module('../../settings', {
+			exports: {
+				settings: stubs.settings,
+			},
+		}),
+	];
+	({ getMessageData, exportRoomMessages, exportMessageObject } = await import('./exportRoomMessagesToFile'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Export - exportMessageObject', () => {

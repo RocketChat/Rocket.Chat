@@ -3,8 +3,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 type RoomType = 'c' | 'p' | 'd' | 'l';
 
@@ -61,7 +62,7 @@ const {
 	getRoomByNameOrIdWithOptionToJoin,
 }: {
 	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
-} = proxyquire.noCallThru().load('./getRoomByNameOrIdWithOptionToJoin.ts', {
+} = loadWithMocks('./getRoomByNameOrIdWithOptionToJoin.ts', {
 	'@rocket.chat/core-services': {
 		Room: RoomServiceStub,
 		ClientSafeError,

@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -13,15 +12,25 @@ const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const notifyOnLoginServiceConfigurationChangedByService = sandbox.stub();
 const LoginServiceConfiguration = { createOrUpdateService: sandbox.stub(), removeByService: sandbox.stub() };
 
-const { updateOAuthServices } = p.noCallThru().load('./updateOAuthServices.ts', {
-	'../../settings/cached': {
-		settings: {
-			get: (key: string) => settingValues.get(key),
-			getByRegexp: (regex: RegExp) => [...settingValues].filter(([key]) => regex.test(key)),
-		},
-	},
-	'./addPassportCustomOAuth': { addPassportCustomOAuth },
-	'../notifyListener': { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
+let updateOAuthServices: typeof import('./updateOAuthServices').updateOAuthServices;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../settings/cached', {
+			exports: {
+				settings: {
+					get: (key: string) => settingValues.get(key),
+					getByRegexp: (regex: RegExp) => [...settingValues].filter(([key]) => regex.test(key)),
+				},
+			},
+		}),
+		mock.module('./addPassportCustomOAuth', { exports: { addPassportCustomOAuth } }),
+		mock.module('../notifyListener', {
+			exports: { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
+		}),
+	];
+	({ updateOAuthServices } = await import('./updateOAuthServices'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('updateOAuthServices', () => {

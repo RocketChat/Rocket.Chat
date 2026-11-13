@@ -1,17 +1,20 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { SHA256 } from '@rocket.chat/sha256';
 import bcrypt from 'bcrypt';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
 const settingsValues: Record<string, unknown> = {
 	Accounts_Password_History_Enabled: true,
 	Accounts_Password_History_Amount: 2,
 };
 
-const { compareUserPasswordHistory } = proxyquire.noCallThru().load('./compareUserPasswordHistory.ts', {
-	'../settings': { settings: { get: (id: string) => settingsValues[id] } },
+let compareUserPasswordHistory: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../settings', { exports: { settings: { get: (id: string) => settingsValues[id] } } })];
+	({ compareUserPasswordHistory } = await import('./compareUserPasswordHistory'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const hash = (password: string) => bcrypt.hashSync(SHA256(password), 4);

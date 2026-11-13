@@ -2,14 +2,15 @@ import { describe, it, before, beforeEach } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const findOneByEmailAddress = sinon.stub();
 const sendResetPasswordEmail = sinon.stub();
 const settingsGet = sinon.stub();
 
-const { sendForgotPasswordEmail } = proxyquire.noCallThru().load('./sendForgotPasswordEmail', {
+const { sendForgotPasswordEmail } = loadWithMocks('./sendForgotPasswordEmail', {
 	'meteor/accounts-base': { Accounts: { sendResetPasswordEmail } },
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../../settings': { settings: { get: settingsGet } },

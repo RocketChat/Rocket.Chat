@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const cursor = (docs: unknown[]) => ({ toArray: async () => docs });
 
@@ -37,7 +38,7 @@ const registerBusinessHourTypeStub = sinon.stub();
 // Only the DB layer and the meteor-heavy imports are stubbed; Custom.ts,
 // AbstractBusinessHour (real convertWorkHours/baseSaveBusinessHour) and
 // Helper run for real.
-proxyquire.noCallThru().load('./Custom', {
+loadWithMocks('./Custom', {
 	'../../../../../server/lib/omnichannel/business-hour': {
 		businessHourManager: { registerBusinessHourType: registerBusinessHourTypeStub },
 	},

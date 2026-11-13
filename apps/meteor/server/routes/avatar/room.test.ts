@@ -1,8 +1,7 @@
-import { afterEach, before, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const mocks = {
@@ -18,13 +17,21 @@ const mocks = {
 	getRoomName: sinon.stub(),
 };
 
-const { roomAvatar } = proxyquire.noCallThru().load('./room', {
-	'./utils': mocks.utils,
-	'../../lib/rooms/roomCoordinator': {
-		roomCoordinator: {
-			getRoomName: mocks.getRoomName,
-		},
-	},
+let roomAvatar: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./utils', { exports: { default: mocks.utils } }),
+		mock.module('../../lib/rooms/roomCoordinator', {
+			exports: {
+				roomCoordinator: {
+					getRoomName: mocks.getRoomName,
+				},
+			},
+		}),
+	];
+	({ roomAvatar } = await import('./room'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#roomAvatar()', () => {

@@ -1,7 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const jsrsasignStub = {
@@ -19,8 +18,13 @@ const jsrsasignStub = {
 	},
 };
 
-const { generateJWT, validateAndDecodeJWT } = proxyquire.noCallThru().load('./JWTHelper', {
-	jsrsasign: jsrsasignStub,
+let generateJWT: typeof import('./JWTHelper').generateJWT;
+let validateAndDecodeJWT: typeof import('./JWTHelper').validateAndDecodeJWT;
+
+before(async () => {
+	const moduleMocks = [mock.module('jsrsasign', { exports: { default: jsrsasignStub } })];
+	({ generateJWT, validateAndDecodeJWT } = await import('./JWTHelper'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('JWTHelper', () => {

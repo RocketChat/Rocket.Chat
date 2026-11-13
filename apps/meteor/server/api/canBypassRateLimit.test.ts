@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import mock from 'proxyquire';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const userPermissions: Record<string, string[]> = {
 	bot: ['api-bypass-rate-limit', 'send-many-messages'],
@@ -19,7 +20,7 @@ const mocks = {
 	},
 };
 
-const { canBypassRateLimit } = mock.noCallThru().load('./api.helpers', mocks);
+const { canBypassRateLimit } = loadWithMocks('./api.helpers', mocks);
 
 describe('canBypassRateLimit', () => {
 	it('should let a user holding api-bypass-rate-limit through on any route', async () => {

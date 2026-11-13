@@ -1,11 +1,10 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { AI_SEARCH_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, MAX_SEARCH_FILTER_VALUES } from '@rocket.chat/ai-search';
 import { ClientSafeError, LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAISearchService, IAuthorization } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -60,18 +59,24 @@ const registerRoute = (path: string, options: (typeof routeOptions)[string], act
 	routeOptions[path] = options;
 };
 
-proxyquire.noCallThru().load('./ai-search', {
-	'../../lib/utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: normalizeMessages },
-	'../api': {
-		API: {
-			v1: {
-				get: registerRoute,
-				post: registerRoute,
-				success: (body: unknown) => ({ statusCode: 200, body }),
-				forbidden: () => ({ statusCode: 403 }),
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../lib/utils/lib/normalizeMessagesForUser', { exports: { normalizeMessagesForUser: normalizeMessages } }),
+		mock.module('../api', {
+			exports: {
+				API: {
+					v1: {
+						get: registerRoute,
+						post: registerRoute,
+						success: (body: unknown) => ({ statusCode: 200, body }),
+						forbidden: () => ({ statusCode: 403 }),
+					},
+				},
 			},
-		},
-	},
+		}),
+	];
+	await import('./ai-search');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const userId = 'user-id';

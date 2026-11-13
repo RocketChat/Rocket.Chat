@@ -1,8 +1,7 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -24,11 +23,17 @@ const contactMergerStub = {
 	mergeFieldsIntoContact: sinon.stub(),
 };
 
-const { runMergeContacts } = proxyquire.noCallThru().load('./mergeContacts', {
-	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: { patch: sinon.stub() } },
-	'../../../server/lib/omnichannel/contacts/ContactMerger': { ContactMerger: contactMergerStub },
-	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
-	'../../../server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
+let runMergeContacts: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: { patch: sinon.stub() } } }),
+		mock.module('../../../server/lib/omnichannel/contacts/ContactMerger', { exports: { ContactMerger: contactMergerStub } }),
+		mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } }),
+		mock.module('../../../server/lib/notifyListener', { exports: { notifyOnSettingChanged: sinon.stub() } }),
+	];
+	({ runMergeContacts } = await import('./mergeContacts'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('mergeContacts', () => {

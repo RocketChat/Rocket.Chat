@@ -1,15 +1,18 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
 const findUsersByUsernames = sinon.stub();
 
-const { normalizeMessagesForUser } = proxyquire.noCallThru().load('./normalizeMessagesForUser', {
-	'../../../settings': { settings: { get: settingsGet } },
+let normalizeMessagesForUser: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../../settings', { exports: { settings: { get: settingsGet } } })];
+	({ normalizeMessagesForUser } = await import('./normalizeMessagesForUser'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('normalizeMessagesForUser', () => {

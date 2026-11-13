@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
@@ -25,17 +24,29 @@ const businessHourManagerMock = {
 	getBusinessHour: sinon.stub(),
 };
 
-const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = p
-	.noCallThru()
-	.load('./processRoomAbandonment.ts', {
-		'../../lib/callbacks': {
-			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
-		},
-		'../../settings': {
-			settings: { get: settingsStub },
-		},
-		'../../lib/omnichannel/business-hour': { businessHourManager: businessHourManagerMock },
-	});
+let getSecondsWhenOfficeHoursIsDisabled: any;
+let parseDays: any;
+let getSecondsSinceLastAgentResponse: any;
+let onCloseRoom: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../lib/callbacks', {
+			exports: {
+				callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
+			},
+		}),
+		mock.module('../../settings', {
+			exports: {
+				settings: { get: settingsStub },
+			},
+		}),
+		mock.module('../../lib/omnichannel/business-hour', { exports: { businessHourManager: businessHourManagerMock } }),
+	];
+	({ getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } =
+		await import('./processRoomAbandonment'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('processRoomAbandonment', () => {
 	before(() => {

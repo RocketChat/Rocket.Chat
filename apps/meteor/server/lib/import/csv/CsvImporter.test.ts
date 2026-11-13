@@ -7,10 +7,10 @@ import { mockModel } from '@rocket.chat/models/testing';
 import AdmZip from 'adm-zip';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const converter = {
 	clearImportData: sinon.stub(),
@@ -71,7 +71,7 @@ class MockImporter {
 	}
 }
 
-const { CsvImporter } = proxyquire.noCallThru().load('./CsvImporter', {
+const { CsvImporter } = loadWithMocks('./CsvImporter', {
 	'csv-parse/lib/sync': { parse },
 	'..': {
 		Importer: MockImporter,

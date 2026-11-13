@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const mockUsers = {
@@ -16,9 +15,15 @@ const mockSettings = {
 
 const mockHasRoleAsync = sinon.stub();
 
-const { conditionalLockAgent } = proxyquire.noCallThru().load('./conditionalLockAgent', {
-	'../authorization/hasRole': { hasRoleAsync: mockHasRoleAsync },
-	'../../settings': { settings: mockSettings },
+let conditionalLockAgent: typeof import('./conditionalLockAgent').conditionalLockAgent;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../authorization/hasRole', { exports: { hasRoleAsync: mockHasRoleAsync } }),
+		mock.module('../../settings', { exports: { settings: mockSettings } }),
+	];
+	({ conditionalLockAgent } = await import('./conditionalLockAgent'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('conditionalLockAgent', () => {

@@ -1,8 +1,7 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const notificationQueueModelStub = {
@@ -14,11 +13,17 @@ const notificationQueueModelStub = {
 };
 const pushNotificationStub = { send: sinon.stub() };
 
-const { Notification } = proxyquire.noCallThru().load('./NotificationQueue', {
-	'@rocket.chat/tracing': { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() },
-	'../../logger/system': { SystemLogger: { error: sinon.stub() } },
-	'../message/email': { sendEmailFromData: sinon.stub() },
-	'../push-config': { PushNotification: pushNotificationStub },
+let Notification: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/tracing', { exports: { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() } }),
+		mock.module('../../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
+		mock.module('../message/email', { exports: { sendEmailFromData: sinon.stub() } }),
+		mock.module('../push-config', { exports: { PushNotification: pushNotificationStub } }),
+	];
+	({ Notification } = await import('./NotificationQueue'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const queueItem = (id: string) => ({ _id: id, uid: 'user1', rid: 'room1', mid: 'msg1', items: [{ type: 'push', data: {} }] });
@@ -56,7 +61,7 @@ describe('NotificationQueue worker', () => {
 	});
 
 	it('starts the next batch right away when the batch limit was reached, and waits when the queue is empty', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		const executeWorkerLaterSpy = sinon.spy(Notification, 'executeWorkerLater');
 		try {
 			notificationQueueModelStub.findNextInQueueOrExpired.resolves(null);

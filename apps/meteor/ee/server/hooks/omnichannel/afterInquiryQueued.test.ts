@@ -1,8 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingStub = {
@@ -14,16 +13,28 @@ const queueMonitorStub = {
 	scheduleInquiry: sinon.stub(),
 };
 
-const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire.noCallThru().load('./afterInquiryQueued.ts', {
-	'../../../../server/settings': {
-		settings: settingStub,
-	},
-	'../../lib/omnichannel/QueueInactivityMonitor': {
-		OmnichannelQueueInactivityMonitor: queueMonitorStub,
-	},
-	'../../../../server/lib/omnichannel/hooks': {
-		afterInquiryQueued: { patch: sinon.stub() },
-	},
+let afterInquiryQueued: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../../server/settings', {
+			exports: {
+				settings: settingStub,
+			},
+		}),
+		mock.module('../../lib/omnichannel/QueueInactivityMonitor', {
+			exports: {
+				OmnichannelQueueInactivityMonitor: queueMonitorStub,
+			},
+		}),
+		mock.module('../../../../server/lib/omnichannel/hooks', {
+			exports: {
+				afterInquiryQueued: { patch: sinon.stub() },
+			},
+		}),
+	];
+	({ afterInquiryQueuedFunc: afterInquiryQueued } = await import('./afterInquiryQueued'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('hooks/afterInquiryQueued', () => {

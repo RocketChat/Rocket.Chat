@@ -1,11 +1,10 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
 import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
 import { mockModel } from '@rocket.chat/models/testing';
 import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
@@ -14,14 +13,20 @@ const sendAPNStub = sinon.stub();
 const sendFCMStub = sinon.stub();
 const pushTokenModelStub = { findAllTokensByUserId: sinon.stub() };
 
-const { Push } = proxyquire.noCallThru().load('./push', {
-	'@rocket.chat/license': { License: { hasOfflineLicense: () => false } },
-	'./logger': { logger: loggerStub },
-	'../../../settings': { settings: settingsStub },
-	'./apn': { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() },
-	'./fcm': { sendFCM: sendFCMStub },
-	'@rocket.chat/tools': { isRecord, pick, truncateString },
-	'../../utils/getURL': { getWorkspaceURL: sinon.stub().returns('http://localhost') },
+let Push: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: () => false } } }),
+		mock.module('./logger', { exports: { logger: loggerStub } }),
+		mock.module('../../../settings', { exports: { settings: settingsStub } }),
+		mock.module('./apn', { exports: { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() } }),
+		mock.module('./fcm', { exports: { sendFCM: sendFCMStub } }),
+		mock.module('@rocket.chat/tools', { exports: { isRecord, pick, truncateString } }),
+		mock.module('../../utils/getURL', { exports: { getWorkspaceURL: sinon.stub().returns('http://localhost') } }),
+	];
+	({ Push } = await import('./push'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Push Notifications [PushClass]', () => {

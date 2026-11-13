@@ -1,8 +1,7 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -13,8 +12,12 @@ const findWithLoginTokensOlderThan = sinon.stub().returns({ toArray });
 const removeLoginTokensOlderThan = sinon.stub().resolves();
 const broadcast = sinon.stub();
 
-const { expireLoginTokens } = proxyquire.noCallThru().load('./expireLoginTokens.ts', {
-	'@rocket.chat/core-services': { api: { broadcast } },
+let expireLoginTokens: typeof import('./expireLoginTokens').expireLoginTokens;
+
+before(async () => {
+	const moduleMocks = [mock.module('@rocket.chat/core-services', { exports: { api: { broadcast } } })];
+	({ expireLoginTokens } = await import('./expireLoginTokens'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('expireLoginTokens', () => {

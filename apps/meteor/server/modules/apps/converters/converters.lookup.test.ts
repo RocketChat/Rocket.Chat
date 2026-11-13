@@ -3,7 +3,6 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { AppContactsConverter } from './contacts';
@@ -14,6 +13,7 @@ import { AppRoomsConverter } from './rooms';
 import { AppSettingsConverter } from './settings';
 import { AppUsersConverter } from './users';
 import { AppVisitorsConverter } from './visitors';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -31,9 +31,9 @@ const findVisitorById = sandbox.stub();
 const findVisitorByToken = sandbox.stub();
 const getVideoConf = sandbox.stub();
 
-const load = (module: string, stubs: Record<string, unknown>) => proxyquire.noCallThru().load(`./${module}`, stubs);
+const load = (module: string, stubs: Record<string, unknown>) => loadWithMocks(`./${module}`, stubs);
 
-const uploadsCodec = proxyquire.noCallThru().load('./codecs/uploads', {
+const uploadsCodec = loadWithMocks('./codecs/uploads', {
 	'../../../../lib/utils/getURL': { getURL: (path: string) => path },
 });
 const { AppUploadsConverter } = load('uploads', {

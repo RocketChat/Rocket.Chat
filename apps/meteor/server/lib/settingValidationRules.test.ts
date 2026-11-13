@@ -1,9 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 import { registerSettingSchema } from '../settings/functions/settingSchemas';
 import {
 	positiveOrDisabled,
@@ -16,7 +16,7 @@ const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
 const loggerErrorMock = sinon.stub();
 
-const { validateSettingRules, SettingValidationError } = p.noCallThru().load('./settingValidationRules.ts', {
+const { validateSettingRules, SettingValidationError } = loadWithMocks('./settingValidationRules.ts', {
 	'@rocket.chat/logger': {
 		Logger: class {
 			error = loggerErrorMock;
