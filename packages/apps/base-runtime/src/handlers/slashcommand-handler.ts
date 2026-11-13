@@ -42,6 +42,7 @@ export default async function slashCommandHandler(request: RequestContext): Prom
 		return new JsonRpcError(error.message, SERVER_ERROR);
 	}
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- result of the app's slashcommand method, untyped because handleExecutor/handlePreviewItem invoke it via call/apply
 	return result;
 }
 
@@ -77,6 +78,7 @@ export function handleExecutor(deps: Deps, command: ISlashCommand, method: 'exec
 		triggerId as SlashCommandContext['triggerId'],
 	);
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- Function.prototype.apply returns any because strictBindCallApply is off in this package; the value is the app's executor/previewer result
 	return executor.apply(wrapComposedApp(command, deps.request), [
 		context,
 		deps.AppAccessorsInstance.getReader(),
@@ -110,6 +112,7 @@ export function handlePreviewItem(deps: Deps, command: ISlashCommand, params: un
 		triggerId as SlashCommandContext['triggerId'],
 	);
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- Function.prototype.call returns any because strictBindCallApply is off in this package; the value is the app's executePreviewItem result
 	return command.executePreviewItem.call(
 		wrapComposedApp(command, deps.request),
 		previewItem,

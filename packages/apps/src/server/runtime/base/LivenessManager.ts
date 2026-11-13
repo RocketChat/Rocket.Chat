@@ -159,24 +159,24 @@ export class LivenessManager {
 				this.debug('Ping failed in %d ms (consecutive failure #%d)', Date.now() - start, this.pingTimeoutConsecutiveCount);
 				this.controller.off('pong', onceCallback);
 				this.pingTimeoutConsecutiveCount++;
-				reject('timeout');
+				reject(new Error('timeout'));
 			};
 
 			this.pingAbortController.once('abort', () => {
 				this.debug('Ping aborted');
-				reject('abort');
+				reject(new Error('abort'));
 			});
 
 			const timeoutId = setTimeout(timeoutCallback, this.options.pingTimeoutInMS);
 
 			this.controller.once('pong', onceCallback);
 		})
-			.catch((reason) => {
-				if (reason === 'abort') {
+			.catch((reason: Error) => {
+				if (reason.message === 'abort') {
 					return false;
 				}
 
-				if (reason === 'timeout' && this.pingTimeoutConsecutiveCount >= this.options.consecutiveTimeoutLimit) {
+				if (reason.message === 'timeout' && this.pingTimeoutConsecutiveCount >= this.options.consecutiveTimeoutLimit) {
 					this.debug(
 						'Subprocess failed to respond to pings %d consecutive times. Attempting restart...',
 						this.options.consecutiveTimeoutLimit,

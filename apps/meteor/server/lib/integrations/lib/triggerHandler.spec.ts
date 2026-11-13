@@ -1,6 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOutgoingIntegration, IUser } from '@rocket.chat/core-typings';
-import { Integrations, Messages, Rooms, Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import { Response } from 'node-fetch';
 
@@ -12,12 +12,18 @@ import { processWebhookMessage } from '../../messages/processWebhookMessage';
 import { notifyOnIntegrationChangedById } from '../../notifyListener';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../rooms/getRoomByNameOrIdWithOptionToJoin';
 
-jest.mock('@rocket.chat/models', () => ({
-	Integrations: { updateOne: jest.fn() },
-	Users: { findOneByUsernameIgnoringCase: jest.fn(), findOneById: jest.fn() },
-	Rooms: { findOneById: jest.fn() },
-	Messages: { findOneById: jest.fn() },
-}));
+const integrationsModel = { updateOne: jest.fn() };
+const usersModel = { findOneByUsernameIgnoringCase: jest.fn(), findOneById: jest.fn() };
+const roomsModel = { findOneById: jest.fn() };
+const messagesModel = { findOneById: jest.fn() };
+
+const registerModels = () => {
+	mockModel('Integrations', integrationsModel);
+	mockModel('Users', usersModel);
+	mockModel('Rooms', roomsModel);
+	mockModel('Messages', messagesModel);
+};
+
 jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: jest.fn() }));
 jest.mock('./isolated-vm/isolated-vm', () => ({
 	IsolatedVMScriptEngine: class {
@@ -53,7 +59,7 @@ beforeEach(() => {
 	engine = jest.mocked(triggerHandler.getEngine(undefined), { shallow: false });
 
 	jest.mocked(settings.get).mockImplementation((key: string) => (key === 'Site_Url' ? SITE_URL : undefined));
-	jest.mocked(Users.findOneByUsernameIgnoringCase).mockResolvedValue(makeUser({ _id: 'bot-user', username: 'rocket.cat' }));
+	usersModel.findOneByUsernameIgnoringCase.mockResolvedValue(makeUser({ _id: 'bot-user', username: 'rocket.cat' }));
 	jest.mocked(processWebhookMessage).mockResolvedValue([{ channel: '#room-1', message: { _id: 'sent-1' } }] as any);
 	engine.prepareOutgoingRequest.mockImplementation(async ({ url, data }) => ({
 		params: {},
@@ -107,6 +113,8 @@ const mapped = (args: Parameters<typeof sharedTriggerHandler.mapEventArgsToData>
 };
 
 describe('addIntegration', () => {
+	beforeAll(registerModels);
+
 	// Private groups and DMs belong to no channel bucket, so only __any can explain these runs.
 	it('runs an integration whose event does not use channels in any room', async () => {
 		triggerHandler.addIntegration(makeIntegration({ event: 'roomArchived', channel: ['#somewhere-else'] }));
@@ -142,6 +150,8 @@ describe('addIntegration', () => {
 });
 
 describe('removeIntegration', () => {
+	beforeAll(registerModels);
+
 	it('removes an integration from every channel it was registered on, leaving the others', async () => {
 		const removed = integrationOn('removed', '#alpha', { channel: ['#alpha', '#beta'] });
 		triggerHandler.addIntegration(integrationOn('kept', '#alpha'));
@@ -158,6 +168,8 @@ describe('removeIntegration', () => {
 });
 
 describe('trigger selection', () => {
+	beforeAll(registerModels);
+
 	it('selects direct-message integrations by global bucket, participant id and recipient username, excluding the sender', async () => {
 		triggerHandler.addIntegration(integrationOn('global', 'all_direct_messages'));
 		triggerHandler.addIntegration(integrationOn('uid', '@user-2'));
@@ -207,6 +219,8 @@ describe('trigger selection', () => {
 });
 
 describe('executeTriggers', () => {
+	beforeAll(registerModels);
+
 	it('executes only enabled integrations whose event matches, once per configured url', async () => {
 		triggerHandler.addIntegration(makeIntegration({ _id: 'match', urls: ['https://hooks.example/a', 'https://hooks.example/b'] }));
 		triggerHandler.addIntegration(integrationOn('disabled', 'all_public_channels', { enabled: false }));
@@ -416,11 +430,13 @@ describe('mapEventArgsToData', () => {
 });
 
 describe('sendMessage', () => {
+	beforeAll(registerModels);
+
 	const outgoing = (channel = '') => ({ channel, message: { msg: 'response' } }) as any;
 
 	it('sends as the impersonated user', async () => {
 		const impersonated = makeUser({ username: 'sender' });
-		jest.mocked(Users.findOneByUsernameIgnoringCase).mockResolvedValue(impersonated);
+		usersModel.findOneByUsernameIgnoringCase.mockResolvedValue(impersonated);
 
 		await triggerHandler.sendMessage({
 			trigger: makeIntegration({ impersonateUser: true }),
@@ -429,12 +445,12 @@ describe('sendMessage', () => {
 			data: { bot: false, user_name: 'sender' },
 		});
 
-		expect(jest.mocked(Users.findOneByUsernameIgnoringCase).mock.calls).toEqual([['sender']]);
+		expect(usersModel.findOneByUsernameIgnoringCase.mock.calls).toEqual([['sender']]);
 		expect(processWebhookMessage).toHaveBeenCalledWith(expect.anything(), impersonated, expect.anything());
 	});
 
 	it('falls back to the integration user when the impersonated user does not exist', async () => {
-		jest.mocked(Users.findOneByUsernameIgnoringCase).mockResolvedValueOnce(null);
+		usersModel.findOneByUsernameIgnoringCase.mockResolvedValueOnce(null);
 
 		const result = await triggerHandler.sendMessage({
 			trigger: makeIntegration({ impersonateUser: true, username: 'rocket.cat' }),
@@ -443,12 +459,12 @@ describe('sendMessage', () => {
 			data: { bot: false, user_name: 'ghost' },
 		});
 
-		expect(jest.mocked(Users.findOneByUsernameIgnoringCase).mock.calls).toEqual([['ghost'], ['rocket.cat']]);
+		expect(usersModel.findOneByUsernameIgnoringCase.mock.calls).toEqual([['ghost'], ['rocket.cat']]);
 		expect(result).toEqual([{ channel: '#room-1', message: { _id: 'sent-1' } }]);
 	});
 
 	it('sends nothing when the integration user does not exist', async () => {
-		jest.mocked(Users.findOneByUsernameIgnoringCase).mockResolvedValue(null);
+		usersModel.findOneByUsernameIgnoringCase.mockResolvedValue(null);
 
 		const result = await triggerHandler.sendMessage({
 			trigger: makeIntegration(),
@@ -528,6 +544,8 @@ describe('sendMessage', () => {
 });
 
 describe('executeTriggerUrl', () => {
+	beforeAll(registerModels);
+
 	it('does nothing when the integration is not enabled', async () => {
 		await runUrl(register({ enabled: false }));
 
@@ -684,6 +702,8 @@ describe('executeTriggerUrl', () => {
 });
 
 describe('response processing', () => {
+	beforeAll(registerModels);
+
 	it('parses json and javascript bodies only', async () => {
 		const integration = register();
 		const parseable = [
@@ -801,7 +821,7 @@ describe('response processing', () => {
 
 		await runUrl(register({ _id: 'gone-1' }));
 
-		expect(Integrations.updateOne).toHaveBeenCalledWith({ _id: 'gone-1' }, { $set: { enabled: false } });
+		expect(integrationsModel.updateOne).toHaveBeenCalledWith({ _id: 'gone-1' }, { $set: { enabled: false } });
 		expect(notifyOnIntegrationChangedById).toHaveBeenCalledWith('gone-1');
 		expect(historyCall('after-process-http-status-410')).toMatchObject({ error: true });
 	});
@@ -812,7 +832,7 @@ describe('response processing', () => {
 		await runUrl(register());
 
 		expect(historyCall('after-process-http-status-500')).toMatchObject({ error: true });
-		expect(Integrations.updateOne).not.toHaveBeenCalled();
+		expect(integrationsModel.updateOne).not.toHaveBeenCalled();
 	});
 
 	it('records a failure that is not configured to retry', async () => {
@@ -835,6 +855,8 @@ describe('response processing', () => {
 });
 
 describe('retries', () => {
+	beforeAll(registerModels);
+
 	beforeEach(() => {
 		jest.mocked(serverFetch).mockImplementation(async () => new Response('bad request', { status: 400 }));
 	});
@@ -887,6 +909,8 @@ describe('retries', () => {
 });
 
 describe('replay', () => {
+	beforeAll(registerModels);
+
 	it('refuses to replay a non-outgoing integration or a history record without data', async () => {
 		await expect(triggerHandler.replay(makeIntegration({ type: 'webhook-incoming' as any }), makeHistory())).rejects.toThrow(
 			'integration-type-must-be-outgoing',
@@ -909,16 +933,16 @@ describe('replay', () => {
 
 	it('resolves the referenced records and replays against the stored url and event', async () => {
 		const integration = register();
-		jest.mocked(Users.findOneById).mockImplementation(async (id: string) => makeUser({ _id: id }));
-		jest.mocked(Messages.findOneById).mockResolvedValue(makeMessage({ msg: 'replayed message' }));
-		jest.mocked(Rooms.findOneById).mockResolvedValue(makeRoom());
+		usersModel.findOneById.mockImplementation(async (id: string) => makeUser({ _id: id }));
+		messagesModel.findOneById.mockResolvedValue(makeMessage({ msg: 'replayed message' }));
+		roomsModel.findOneById.mockResolvedValue(makeRoom());
 
 		await triggerHandler.replay(integration, makeHistory());
 		await settle();
 
-		expect(jest.mocked(Users.findOneById).mock.calls).toEqual([['owner-9'], ['user-1']]);
-		expect(Messages.findOneById).toHaveBeenCalledWith('message-1');
-		expect(Rooms.findOneById).toHaveBeenCalledWith('room-1');
+		expect(usersModel.findOneById.mock.calls).toEqual([['owner-9'], ['user-1']]);
+		expect(messagesModel.findOneById).toHaveBeenCalledWith('message-1');
+		expect(roomsModel.findOneById).toHaveBeenCalledWith('room-1');
 		expect(historyCall('start-execute-trigger-url')).toMatchObject({ event: 'sendMessage', integration });
 		expect(fetchedUrls()).toEqual(['https://hooks.example/replayed']);
 		expect(fetchOptions().body).toMatchObject({ channel_id: 'room-1', channel_name: 'general', text: 'replayed message' });
@@ -926,6 +950,8 @@ describe('replay', () => {
 });
 
 describe('payloads for message-less events (current behavior)', () => {
+	beforeAll(registerModels);
+
 	it('sends an empty payload for every event dispatched without a message', async () => {
 		const events: [string, ...unknown[]][] = [
 			['roomCreated', makeUser({ _id: 'owner-9' }), makeRoom({ t: 'p' })],

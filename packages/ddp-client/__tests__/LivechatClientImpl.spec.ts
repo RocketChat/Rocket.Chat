@@ -12,6 +12,32 @@ beforeEach(() => {
 afterEach(() => {
 	server.close();
 	WS.clean();
+	jest.useRealTimers();
+});
+
+it('should keep reconnecting past three failed attempts and connect once the server is back', async () => {
+	const livechat = LivechatClientImpl.create('ws://localhost:1234');
+	await handleConnection(server, livechat.connection.connect());
+
+	jest.useFakeTimers();
+
+	server.close();
+	WS.clean();
+
+	await jest.advanceTimersByTimeAsync(120_000);
+	expect(livechat.connection.retryCount).toBeGreaterThan(3);
+	expect(livechat.connection.status).toBe('disconnected');
+
+	server = new WS('ws://localhost:1234/websocket');
+
+	await handleConnection(
+		server,
+		jest.advanceTimersByTimeAsync(60_000),
+		new Promise((resolve) => livechat.connection.once('connected', resolve)),
+	);
+
+	expect(livechat.connection.status).toBe('connected');
+	livechat.connection.close();
 });
 
 it('should use the token set through credentials', () => {

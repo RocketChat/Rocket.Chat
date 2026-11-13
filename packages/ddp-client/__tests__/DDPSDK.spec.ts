@@ -343,11 +343,11 @@ it('should encode and decode frames with the given codec', async () => {
 	sdk.connection.close();
 });
 
-it('should build instances of the subclass it is called on, with the subclass defaults', () => {
+it('should build instances of the subclass it is called on, reconnecting without a retry limit', () => {
 	const livechat = LivechatClientImpl.create('ws://localhost:1234');
 
 	expect(livechat).toBeInstanceOf(LivechatClientImpl);
-	expect((livechat.connection as ConnectionImpl).retryOptions).toMatchObject({ retryCount: 3, retryTime: 10000 });
+	expect((livechat.connection as ConnectionImpl).retryOptions).toMatchObject({ retryCount: Infinity, retryTime: 1000 });
 });
 
 it('should publish an event on a stream', async () => {

@@ -1,7 +1,8 @@
 import fs from 'node:fs';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IExportOperation } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
@@ -107,7 +108,6 @@ const modelsMock = {
 };
 
 const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
-	'@rocket.chat/models': modelsMock,
 	'../../settings': {
 		settings: {
 			get: (_key: string) => {
@@ -123,7 +123,6 @@ const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomM
 });
 
 const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-methods/platform/requestDataDownload.ts', {
-	'@rocket.chat/models': modelsMock,
 	'../../settings': {
 		settings: {
 			get: (_key: string) => {
@@ -149,7 +148,6 @@ const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-metho
 };
 
 const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDownloads.ts', {
-	'@rocket.chat/models': modelsMock,
 	'../media/file-upload': {
 		FileUpload: {
 			copy: async (fileId: string, _options: any) => {
@@ -203,7 +201,17 @@ const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDown
 
 const userData = { _id: 'user1', username: 'userone' };
 
+const registerModels = () => {
+	mockModel('ExportOperations', modelsMock.ExportOperations);
+	mockModel('UserDataFiles', modelsMock.UserDataFiles);
+	mockModel('Avatars', modelsMock.Avatars);
+	mockModel('Subscriptions', modelsMock.Subscriptions);
+	mockModel('Messages', modelsMock.Messages);
+};
+
 describe('requestDataDownload', () => {
+	before(registerModels);
+
 	beforeEach(() => {
 		exportOperation = null;
 	});
@@ -222,6 +230,8 @@ describe('requestDataDownload', () => {
 });
 
 describe('export user data', async () => {
+	before(registerModels);
+
 	beforeEach(() => {
 		exportOperation = null;
 	});

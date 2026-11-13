@@ -1,7 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import type { ICredentialTokensModel, IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -27,8 +26,8 @@ const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandle
 
 describe('loginHandlerCAS', () => {
 	before(() => {
-		registerModel('ICredentialTokensModel', { removeNotExpiredById } as unknown as ICredentialTokensModel);
-		registerModel('IUsersModel', { updateOne: updateUser } as unknown as IUsersModel);
+		mockModel('CredentialTokens', { removeNotExpiredById });
+		mockModel('Users', { updateOne: updateUser });
 	});
 
 	beforeEach(() => {

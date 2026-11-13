@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { ILivechatContact } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -17,17 +18,9 @@ const modelsMock = {
 
 const validateContactManagerMock = sinon.stub();
 
-const { patchContact } = proxyquire.noCallThru().load('./patchContact.ts', {
-	'@rocket.chat/models': modelsMock,
-});
-
 const { resolveContactConflicts } = proxyquire.noCallThru().load('./resolveContactConflicts', {
-	'@rocket.chat/models': modelsMock,
 	'./validateContactManager': {
 		validateContactManager: validateContactManagerMock,
-	},
-	'./patchContact': {
-		patchContact,
 	},
 	'../../notifyListener': {
 		notifyOnSettingChanged: sinon.stub(),
@@ -35,6 +28,11 @@ const { resolveContactConflicts } = proxyquire.noCallThru().load('./resolveConta
 });
 
 describe('resolveContactConflicts', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('Settings', modelsMock.Settings);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		modelsMock.Settings.incrementValueById.reset();

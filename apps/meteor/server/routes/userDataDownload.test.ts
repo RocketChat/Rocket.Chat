@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -15,7 +16,6 @@ const Users = { findOneByIdAndLoginToken: sandbox.stub() };
 
 proxyquire.noCallThru().load('./userDataDownload', {
 	'@rocket.chat/account-utils': { hashLoginToken: (token: string) => `hashed:${token}` },
-	'@rocket.chat/models': { UserDataFiles, Users },
 	'meteor/webapp': { WebApp: { connectHandlers: { use: connectHandlersUse } } },
 	'../lib/media/file-upload': { FileUpload: { getStore } },
 	'../settings': { settings: { get: settingsGet } },
@@ -69,6 +69,11 @@ const expectDelivered = (req: IncomingMessage, res: ReturnType<typeof createResp
 };
 
 describe('userDataDownload route', () => {
+	before(() => {
+		mockModel('UserDataFiles', UserDataFiles);
+		mockModel('Users', Users);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 
