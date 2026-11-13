@@ -68,7 +68,7 @@ const ContainerBlock = ({ className, block, surfaceRenderer }: ContainerBlockPro
 				)}
 			</Box>
 			{block.has_header_divider && !collapsible && <Divider flush />}
-			<Box id={contentId} hidden={collapsed}>
+			<Box id={contentId} hidden={collapsible && collapsed}>
 				<Box display='flex' flexDirection='column' gap='x8' padding='x12'>
 					{children}
 				</Box>

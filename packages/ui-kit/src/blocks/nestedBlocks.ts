@@ -35,7 +35,8 @@ export const flattenBlocks = <Block extends object = Node>(
 	blocks.filter(isNode).flatMap((block) => {
 		const isConditional = block.type === 'conditional';
 		const blockId = typeof block.blockId === 'string' && !isConditional ? block.blockId : inheritedBlockId;
-		const children = isConditional && !conditionsMatch({ engine: 'rocket.chat' }, block.when as never) ? [] : nestedBlocks(block);
+		const matches = block.when === undefined || (isNode(block.when) && conditionsMatch({ engine: 'rocket.chat' }, block.when));
+		const children = isConditional && !matches ? [] : nestedBlocks(block);
 
 		// The payload is only known to be an object here; callers narrow what they read from it.
 		return [{ block: block as Block, blockId }, ...flattenBlocks<Block>(children, blockId)];

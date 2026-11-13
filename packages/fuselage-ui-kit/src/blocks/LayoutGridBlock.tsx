@@ -20,10 +20,13 @@ const LayoutGridBlock = ({ className, block, surfaceRenderer }: LayoutGridBlockP
 	const rows = useMemo(
 		() =>
 			(Array.isArray(block.rows) ? block.rows : []).filter(isRow).map((row) =>
-				row.items.filter(isObject).map((item) => ({
-					item,
-					content: renderNestedBlocks(surfaceRenderer, [item.block], UiKit.layoutItemBlockTypes, block),
-				})),
+				row.items
+					.filter(isObject)
+					.map((item) => ({
+						item,
+						content: renderNestedBlocks(surfaceRenderer, [item.block], UiKit.layoutItemBlockTypes, block),
+					}))
+					.filter(({ content }) => content.length > 0),
 			),
 		[surfaceRenderer, block],
 	);
