@@ -93,14 +93,18 @@ describe('scrubText', () => {
 });
 
 describe('scrubForLog', () => {
-	it('reduces an error to name, message, code and detail', () => {
-		const err = Object.assign(new Error('Bearer abc123def456 was rejected'), { code: 'authentication-failed', detail: 'password=hunter2' });
+	it('reduces an error to name, message, code, detail and a scrubbed stack', () => {
+		const err = Object.assign(new Error('Bearer abc123def456 was rejected for user@corp.example'), {
+			code: 'authentication-failed',
+			detail: 'password=hunter2',
+		});
 
 		expect(scrubForLog(err)).toEqual({
 			name: 'Error',
-			message: `Bearer ${REDACTED} was rejected`,
+			message: `Bearer ${REDACTED} was rejected for ${REDACTED}`,
 			code: 'authentication-failed',
 			detail: `password=${REDACTED}`,
+			stack: expect.stringContaining(`Error: Bearer ${REDACTED} was rejected for ${REDACTED}\n    at `),
 		});
 	});
 
@@ -136,6 +140,16 @@ describe('scrubForLog', () => {
 			emails: [REDACTED],
 			mailboxes: 3,
 		});
+	});
+
+	it('scrubs the message of an error at the deepest level it still walks', () => {
+		const result = scrubForLog({ a: { b: { c: { err: new Error('Bearer abc123def456 was rejected') } } } });
+
+		expect(JSON.stringify(result)).toContain(`"message":"Bearer ${REDACTED} was rejected"`);
+	});
+
+	it('redacts an address on a single-label domain, which on-premises Exchange may use', () => {
+		expect(scrubForLog('mailbox svc@exchange not found')).toBe(`mailbox ${REDACTED} not found`);
 	});
 
 	it('leaves the mailbox in `scrubText`, which only strips credentials', () => {
