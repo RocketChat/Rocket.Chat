@@ -119,7 +119,9 @@ Each step is one commit and builds and passes on its own.
   with the rest of the read-only look, not in the commit that switches the variants.
 - The threads list mounts the provider with its room and subscription, which its follow button needs once
   it reads the package part.
-- Step 7 is two commits, the switch and the deletion.
+- Step 7 is two commits, the switch and the deletion. The deletion also takes the fields of the old list
+  context that only the deleted parts read (`showColors`, `katex`, `username`, `useUserHasReacted`,
+  `useOpenEmojiPicker`) and the old `useNormalizedMessage`.
 
 ## Risks
 
