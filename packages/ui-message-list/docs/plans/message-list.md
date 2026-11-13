@@ -4,7 +4,7 @@ Status: approved.
 
 The list is copied from the frozen reference (`message-list-ref`), commits `9b408f0a57d` (row model), `83e7cfd5af3` (reducer and
 scroller), `1007b6e5fa2` (components, stories, keyboard), `a32cdc39835` (conversation stories), `2da05ca0415` and `66abbe1eea7`
-(enabling commits) and `36bc5e0db92` (docs and ADR 0010), then adapted to the base. `develop` wins where it differs. The spec's
+(enabling commits) and `36bc5e0db92` (docs and the ADR, which was 0010 at the reference and is 0001 in the package's own sequence), then adapted to the base. `develop` wins where it differs. The spec's
 questions are answered: the three defects of Q1 are fixed in their own commits, `bottomThreshold` exists (Q2), the held row stays mounted
 and `REVIEW.md` and `AGENTS.md` say so (Q3), the keyboard hook is the package's own copy of `develop`'s (Q4), and `useFormatDate` is in
 `@rocket.chat/ui-client` (Q5). Nothing in `apps/meteor` uses the list in this branch, so no meteor file changes except through the
@@ -48,7 +48,7 @@ Package `packages/ui-message-list`:
 - `src/MessageList/MessageList.stories.tsx`, `MessageListConversation.stories.tsx`, `stories/*` (the playground, the fake source, the
   play helpers, the conversation rows): new (R13 to R76).
 - `src/index.ts`, `src/index.spec.ts`: exports (R77).
-- `docs/adr/0010-message-list-virtua-and-scroll-reducer.md`: moves in, paths updated; `REVIEW.md`, `AGENTS.md`: the held row (Q3).
+- `docs/adr/0001-message-list-virtua-and-scroll-reducer.md`: moves in from the reference's `docs/adr/0010-...` (that number is taken in the repository's `docs/adr/`), paths updated; `REVIEW.md`, `AGENTS.md`: the held row (Q3).
 - This plan and the spec (Design, `code`, `tests`, defects, status): in every commit that adds to them, and last.
 
 Repository `docs/`: `features/message-list/{README,message-components}.md`, `frontend/message-list.md`,
@@ -89,7 +89,7 @@ test-storybook and `sdlc:check`, and, where `ui-client` or `mock-providers` chan
 14. Fix, the paging check after a load settles (R34), only if step 5 showed it: its pinned row is un-skipped and the `D` entry removed.
 15. Refactor, bounded rendering (R71 to R73, intent Q4): rows are compared by their data and the highlight is read by id; a
     render-counting spec that fails first.
-16. Docs, the repository docs and ADR 0010 (the references of the spec to them): the feature docs, the frontend guide, the note in
+16. Docs, the repository docs and ADR 0001 (the references of the spec to them): the feature docs, the frontend guide, the note in
     `list-keyboard-navigation.md`, the `CLAUDE.md` entries, the ADR moved into `docs/adr/`.
 17. Docs, `REVIEW.md` and `AGENTS.md` (Q3): the held row.
 18. Docs, the spec's Design, `code`, `tests`, defects and `implemented`; this plan `done`.

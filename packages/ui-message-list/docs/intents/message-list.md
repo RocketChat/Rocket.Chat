@@ -42,7 +42,7 @@ and the app specs mock the virtualizer.
 Nobody sees a change yet; the viewers of rooms, threads, the tabs and search are affected once branches 08 and 09 switch to
 the list. QA gets the list's stories as the manual check. New spec: `specs/message-list.md`. `message-variants` is touched in
 R8 (the conversation stories its Q5 sent here) and in its bridges for "Select all" and the highlight store, which the list
-replaces in 08 and 09. ADR 0010 (`virtua` and the scroll reducer), written at the reference, moves into `docs/adr/` in this
+replaces in 08 and 09. ADR 0001 (`virtua` and the scroll reducer; it was 0010 at the reference), written at the reference, moves into `docs/adr/` in this
 branch. `ui-client` gains the viewport mode of its scrollbars and a date formatter; `mock-providers` gains deterministic
 fixtures. Later capabilities depend on it: `room-message-list` (08) and the thread list (09).
 
@@ -51,7 +51,7 @@ fixtures. Later capabilities depend on it: `room-message-list` (08) and the thre
 - The package imports nothing from `apps/meteor`; every capability of the app arrives through a prop or an intent-named
   context. `useMergedRefsV2` comes from `@rocket.chat/ui-client`.
 - Scrolling goes through the virtualizer's `scrollToIndex`, never `scrollTop`; no row index is computed outside the row model;
-  only the viewer's input releases what the list holds in view (ADR 0010, `AGENTS.md`).
+  only the viewer's input releases what the list holds in view (ADR 0001, `AGENTS.md`).
 - Where `develop` and the reference disagree because `develop` changed, `develop` wins. Known cases: the item-list keyboard
   hook gained the video and audio Tab model (#43544, #43573) and the move-row shortcut (#42995); the room's read-state
   decisions (#42756); `useTranslation` from `react-i18next` (#43627).

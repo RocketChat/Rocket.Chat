@@ -1,6 +1,6 @@
 ---
 status: planned
-adrs: []
+adrs: [0001]
 code:
   [
     packages/ui-client/src/hooks/useFormatDate.ts,
@@ -15,6 +15,9 @@ code:
     src/Message/hooks/useIsMessageEmphasized.ts,
     src/index.ts,
     src/MessageList/stories,
+    docs/features/message-list,
+    docs/frontend/message-list.md,
+    docs/adr/0001-message-list-virtua-and-scroll-reducer.md,
   ]
 tests:
   [
@@ -145,7 +148,7 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 - **R25** The list MUST hold one thing in view: the bottom, a message, or nothing. Only the viewer's input MUST release it:
   a wheel or touch gesture on the list; PageUp, PageDown, Home, End, ArrowUp, ArrowDown or Space while focus is not in a
   text field, a select or editable content; dragging the scrollbar; and moving between messages with the keyboard. A scroll the
-  list or the browser makes (an arrival, a resize, a measurement) MUST NOT release it (B2; ADR 0010).
+  list or the browser makes (an arrival, a resize, a measurement) MUST NOT release it (B2; ADR 0001).
 - **R26** A scroll that lands at the bottom MUST take the list back to the bottom, and MUST NOT take it away from it, whoever
   made it (B2).
 - **R27** Everything the viewer does from the first gesture until scrolling stops MUST count as one window, in which the
@@ -430,7 +433,7 @@ R73 follow intent Q4; R76 is intent Q3.
 ## References
 
 - [Intent](../intents/message-list.md)
-- ADR 0010 (virtua, typed rows and a scroll reducer), at the reference `docs/adr/0010-message-list-virtua-and-scroll-reducer.md`;
+- ADR 0001 (virtua, typed rows and a scroll reducer), at the reference `docs/adr/0010-message-list-virtua-and-scroll-reducer.md`;
   it moves into `docs/adr/` with the implementation.
 - Reference tag `message-list-ref`: `docs/features/message-list/README.md`, `message-components.md`, `docs/frontend/message-list.md`; commits
   `66abbe1eea7`, `2da05ca0415`, `9b408f0a57d`, `83e7cfd5af3`, `1007b6e5fa2`, `a32cdc39835`, `36bc5e0db92`.
