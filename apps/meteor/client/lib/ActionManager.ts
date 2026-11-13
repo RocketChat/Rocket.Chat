@@ -17,6 +17,8 @@ import { exhaustiveCheck } from '../../lib/utils/exhaustiveCheck';
 
 const UiKitModal = lazy(() => import('../views/modal/uikit/UiKitModal'));
 
+export const homeUpdateEventName = (appId: string) => `home:${appId}`;
+
 export class ActionManager implements IActionManager {
 	protected static TRIGGER_TIMEOUT = 5000;
 
@@ -160,6 +162,14 @@ export class ActionManager implements IActionManager {
 	}
 
 	public handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined {
+		// A home is pushed by the app on its own, not as the answer to an interaction, so it carries no trigger id.
+		if (interaction.type === 'home.update') {
+			const { type, appId, view } = interaction;
+			this.events.emit(homeUpdateEventName(appId), { type, appId, view });
+			this.events.emit(view.id, { type, viewId: view.id, appId, view });
+			return type;
+		}
+
 		const { triggerId } = interaction;
 
 		const appId = this.invalidateTriggerId(triggerId);

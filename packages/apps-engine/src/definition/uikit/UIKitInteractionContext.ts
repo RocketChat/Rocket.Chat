@@ -1,6 +1,7 @@
 import type {
 	IUIKitActionButtonIncomingInteraction,
 	IUIKitActionButtonMessageBoxIncomingInteraction,
+	IUIKitAppHomeOpenedIncomingInteraction,
 	IUIKitBaseIncomingInteraction,
 	IUIKitBlockIncomingInteraction,
 	IUIKitBlockSuggestionIncomingInteraction,
@@ -65,6 +66,16 @@ export class UIKitViewCloseInteractionContext extends UIKitInteractionContext {
 	}
 
 	public getInteractionData(): IUIKitViewCloseIncomingInteraction {
+		return this.interactionData;
+	}
+}
+
+export class UIKitAppHomeOpenedInteractionContext extends UIKitInteractionContext {
+	constructor(private readonly interactionData: IUIKitAppHomeOpenedIncomingInteraction) {
+		super(interactionData);
+	}
+
+	public getInteractionData(): IUIKitAppHomeOpenedIncomingInteraction {
 		return this.interactionData;
 	}
 }

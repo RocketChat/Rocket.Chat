@@ -113,6 +113,7 @@ export * from './surfaces/View.js';
 export * from './surfaces/attachment/index.js';
 export * from './surfaces/banner/index.js';
 export * from './surfaces/contextualBar/index.js';
+export * from './surfaces/home/index.js';
 export * from './surfaces/message/index.js';
 export * from './surfaces/modal/index.js';
 

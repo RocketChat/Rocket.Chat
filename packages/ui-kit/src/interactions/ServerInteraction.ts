@@ -2,6 +2,7 @@ import typia from 'typia';
 
 import type { BannerView } from '../surfaces/banner/index.js';
 import type { ContextualBarView } from '../surfaces/contextualBar/index.js';
+import type { HomeView } from '../surfaces/home/index.js';
 import type { ModalView } from '../surfaces/modal/index.js';
 
 type OpenModalServerInteraction = {
@@ -80,12 +81,18 @@ type CloseContextualBarServerInteraction = {
 	view: ContextualBarView;
 };
 
+type UpdateHomeServerInteraction = {
+	type: 'home.update';
+	appId: string;
+	view: HomeView;
+};
+
 type ReportErrorsServerInteraction = {
 	type: 'errors';
 	triggerId: string;
 	appId: string;
 	// oxlint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
-	viewId: ModalView['id'] | BannerView['viewId'] | ContextualBarView['id'];
+	viewId: ModalView['id'] | BannerView['viewId'] | ContextualBarView['id'] | HomeView['id'];
 	errors: { [field: string]: string }[];
 };
 
@@ -101,6 +108,7 @@ export type ServerInteraction =
 	| OpenContextualBarServerInteraction
 	| UpdateContextualBarServerInteraction
 	| CloseContextualBarServerInteraction
+	| UpdateHomeServerInteraction
 	| ReportErrorsServerInteraction;
 
 export const isOpenModalServerInteraction = typia.createIs<OpenModalServerInteraction>();
@@ -114,6 +122,7 @@ export const isCloseBannerServerInteraction = typia.createIs<CloseBannerServerIn
 export const isOpenContextualBarServerInteraction = typia.createIs<OpenContextualBarServerInteraction>();
 export const isUpdateContextualBarServerInteraction = typia.createIs<UpdateContextualBarServerInteraction>();
 export const isCloseContextualBarServerInteraction = typia.createIs<CloseContextualBarServerInteraction>();
+export const isUpdateHomeServerInteraction = typia.createIs<UpdateHomeServerInteraction>();
 export const isReportErrorsServerInteraction = typia.createIs<ReportErrorsServerInteraction>();
 
 export const isServerInteraction = (input: unknown): input is ServerInteraction =>
@@ -128,4 +137,5 @@ export const isServerInteraction = (input: unknown): input is ServerInteraction 
 	isOpenContextualBarServerInteraction(input) ||
 	isUpdateContextualBarServerInteraction(input) ||
 	isCloseContextualBarServerInteraction(input) ||
+	isUpdateHomeServerInteraction(input) ||
 	isReportErrorsServerInteraction(input);

@@ -3,6 +3,7 @@ import type { AppMethod } from '../metadata';
 import type { IUIKitBlockSuggestionResponse, IUIKitResponse } from './IUIKitInteractionType';
 import type {
 	UIKitActionButtonInteractionContext,
+	UIKitAppHomeOpenedInteractionContext,
 	UIKitBlockInteractionContext,
 	UIKitBlockSuggestionInteractionContext,
 	UIKitViewCloseInteractionContext,
@@ -86,6 +87,23 @@ export interface IUIKitInteractionHandler {
 	 */
 	[AppMethod.UIKIT_ACTION_BUTTON]?(
 		context: UIKitActionButtonInteractionContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse>;
+
+	/**
+	 * Method called when a user opens the app's home; the app can publish the home for that user in response.
+	 *
+	 * @param context
+	 * @param read An accessor to the environment
+	 * @param http An accessor to the outside world
+	 * @param persistence An accessor to the App's persistence
+	 * @param modify An accessor to modify the environment, used to publish the home
+	 */
+	[AppMethod.UIKIT_APP_HOME_OPENED]?(
+		context: UIKitAppHomeOpenedInteractionContext,
 		read: IRead,
 		http: IHttp,
 		persistence: IPersistence,

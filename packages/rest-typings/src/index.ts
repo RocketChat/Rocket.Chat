@@ -244,6 +244,7 @@ export * from './v1/emojiCustom';
 export type * from './v1/instances';
 export * from './v1/ldap';
 export * from './v1/saml';
+export * from './v1/appsHome';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';

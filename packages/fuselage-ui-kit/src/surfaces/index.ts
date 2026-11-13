@@ -3,6 +3,8 @@ import { BannerSurfaceRenderer } from './BannerSurfaceRenderer';
 import ContextualBarSurface from './ContextualBarSurface';
 import { ContextualBarSurfaceRenderer } from './ContextualBarSurfaceRenderer';
 import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
+import HomeSurface from './HomeSurface';
+import { HomeSurfaceRenderer } from './HomeSurfaceRenderer';
 import ModalSurface from './ModalSurface';
 import { ModalSurfaceRenderer } from './ModalSurfaceRenderer';
 import { Surface } from './Surface';
@@ -12,9 +14,11 @@ import { createSurfaceRenderer } from './createSurfaceRenderer';
 export const bannerParser = new BannerSurfaceRenderer();
 export const modalParser = new ModalSurfaceRenderer();
 export const contextualBarParser = new ContextualBarSurfaceRenderer();
+export const homeParser = new HomeSurfaceRenderer();
 
 export const UiKitBanner = createSurfaceRenderer(BannerSurface, bannerParser);
 export const UiKitModal = createSurfaceRenderer(ModalSurface, modalParser);
 export const UiKitContextualBar = createSurfaceRenderer(ContextualBarSurface, contextualBarParser);
+export const UiKitHome = createSurfaceRenderer(HomeSurface, homeParser);
 
 export { UiKitMessage, messageParser, createSurfaceRenderer, Surface, FuselageSurfaceRenderer, renderTextObject };

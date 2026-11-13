@@ -11,6 +11,7 @@ export enum UIKitInteractionType {
 	CONTEXTUAL_BAR_OPEN = 'contextual_bar.open',
 	CONTEXTUAL_BAR_CLOSE = 'contextual_bar.close',
 	CONTEXTUAL_BAR_UPDATE = 'contextual_bar.update',
+	HOME_UPDATE = 'home.update',
 	ERRORS = 'errors',
 }
 
@@ -55,6 +56,11 @@ export interface IUIKitModalClearInteraction extends IUIKitInteraction {
 
 export interface IUIKitContextualBarInteraction extends IUIKitInteraction {
 	type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN | UIKitInteractionType.CONTEXTUAL_BAR_UPDATE | UIKitInteractionType.CONTEXTUAL_BAR_CLOSE;
+	view: IUIKitSurface;
+}
+
+export interface IUIKitHomeInteraction extends IUIKitInteraction {
+	type: UIKitInteractionType.HOME_UPDATE;
 	view: IUIKitSurface;
 }
 

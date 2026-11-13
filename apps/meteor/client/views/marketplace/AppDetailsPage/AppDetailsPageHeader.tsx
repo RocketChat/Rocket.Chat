@@ -1,12 +1,13 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { useTranslation } from 'react-i18next';
 
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
-import { appIncompatibleStatusProps } from '../helpers';
+import { appEnabledStatuses, appIncompatibleStatusProps } from '../helpers';
 import AppStatus from './tabs/AppStatus';
 
 const versioni18nKey = (app: App): string => {
@@ -19,6 +20,7 @@ export type AppDetailsPageHeaderProps = { app: App };
 
 const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const { t } = useTranslation();
+	const appHomeRoute = useRoute('app-home');
 	const {
 		iconFileData,
 		name,
@@ -30,6 +32,7 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 		versionIncompatible,
 		isSubscribed,
 		shortDescription,
+		status,
 	} = app;
 
 	const lastUpdated = modifiedAt && formatDistanceToNow(new Date(modifiedAt), { addSuffix: true });
@@ -56,6 +59,13 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 
 				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd='x16'>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
+					{installed && status && appEnabledStatuses.includes(status) && (
+						<Box marginInlineStart='x8'>
+							<Button size='small' onClick={() => appHomeRoute.push({ appId: app.id })}>
+								{t('Home')}
+							</Button>
+						</Box>
+					)}
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>

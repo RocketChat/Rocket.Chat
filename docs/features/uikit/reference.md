@@ -1118,3 +1118,15 @@ Checked by `validateLayoutBlocks` (see [interactions.md](interactions.md#validat
 | Input `label` and `hint` | 2000 characters |
 
 The limits live in `packages/ui-kit/src/blocks/blockLimits.ts`.
+
+### HomeView
+
+Source: [`packages/ui-kit/src/surfaces/home/HomeView.ts`](../../../packages/ui-kit/src/surfaces/home/HomeView.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `appId` | `string` | yes | The ID of the app that created this view. |
+| `id` | `string` | yes | Keep it stable across publishes so the open page updates in place. |
+| `blocks` | `HomeSurfaceLayout` | yes | The contextual bar's blocks except `tab_navigation`. |
+| `private_metadata` | `string` | no | Opaque data the app gets back with every interaction on the view. |
+| `external_id` | `string` | no | An identifier the app chooses to find the view again. |

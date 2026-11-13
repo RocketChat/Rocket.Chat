@@ -2,6 +2,7 @@ import type { IUiKitView } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { UiKitViews } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 const logger = new Logger('UiKit');
 
@@ -12,6 +13,9 @@ const surfaceByInteractionType: Record<string, IUiKitView['type'] | undefined> =
 	'contextual_bar.open': 'contextual_bar',
 	'contextual_bar.update': 'contextual_bar',
 };
+
+/** One home per user and app, so publishing again replaces it. */
+const homeViewId = (appId: string, userId: string): string => `home:${appId}:${userId}`;
 
 type ViewLike = { id?: unknown; state?: unknown };
 
@@ -30,8 +34,17 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 		return true;
 	}
 
+	if (interaction.type === 'home.update') {
+		try {
+			await UiKitViews.saveHomeView({ _id: homeViewId(appId, userId), appId, userId, view: interaction.view as UiKit.HomeView });
+		} catch (error) {
+			logger.error({ msg: 'Could not record a UiKit home view', appId, err: error });
+		}
+		return true;
+	}
+
 	const type = surfaceByInteractionType[interaction.type];
-	const view = interaction.view as IUiKitView['view'];
+	const view = interaction.view as UiKit.ModalView | UiKit.ContextualBarView;
 
 	if (!type) {
 		return true;
@@ -54,7 +67,8 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 			return true;
 		}
 
-		if (recorded?.view.hash && typeof view.hash === 'string' && view.hash !== recorded.view.hash) {
+		const recordedHash = recorded && 'hash' in recorded.view ? recorded.view.hash : undefined;
+		if (recordedHash && typeof view.hash === 'string' && view.hash !== recordedHash) {
 			logger.warn({ msg: 'Stale UiKit view update skipped: its hash does not match the saved view', viewId: view.id, appId });
 			return false;
 		}
