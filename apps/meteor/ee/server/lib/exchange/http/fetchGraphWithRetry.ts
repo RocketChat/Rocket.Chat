@@ -4,7 +4,6 @@ import { serverFetch } from '@rocket.chat/server-fetch';
 import { sleep } from '../../../../../lib/utils/sleep';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
-import { scrubForLog } from '../scrub';
 
 /**
  * Retry policy for Microsoft Graph
@@ -62,7 +61,7 @@ export async function fetchGraphWithRetry(
 			lastError = undefined;
 		} catch (err) {
 			if (err instanceof Error && err.message === SSRF_REJECTION) {
-				logger.warn({ msg: 'Exchange request refused by the allowlist', err: scrubForLog(err) });
+				logger.warn({ msg: 'Exchange request refused by the allowlist', err });
 
 				throw new ExchangeError('host-not-allowed', 'The request targeted a host outside the allowlist', { detail: err.message });
 			}
@@ -99,7 +98,7 @@ export async function fetchGraphWithRetry(
 	}
 
 	if (lastError) {
-		logger.warn({ msg: 'Exchange request failed', err: scrubForLog(lastError) });
+		logger.warn({ msg: 'Exchange request failed', err: lastError });
 
 		throw new ExchangeError('connection-failed', 'Could not reach the Exchange endpoint', {
 			detail: lastError instanceof Error ? lastError.message : undefined,

@@ -11,7 +11,6 @@ import { getExchangeProvider, isServerSyncEnabled } from '../lib/exchange/Exchan
 import type { ExchangeErrorCode } from '../lib/exchange/errors';
 import { isExchangeError } from '../lib/exchange/errors';
 import { logger } from '../lib/exchange/logger';
-import { scrubForLog } from '../lib/exchange/scrub';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'not-configured': 'Exchange_Test_Connection_not_configured',
@@ -61,7 +60,7 @@ API.v1.post(
 		try {
 			await provider.testConnection();
 		} catch (err) {
-			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err: scrubForLog(err) });
+			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err });
 
 			if (!isExchangeError(err)) {
 				return API.v1.internalError('Exchange_Test_Connection_failed');

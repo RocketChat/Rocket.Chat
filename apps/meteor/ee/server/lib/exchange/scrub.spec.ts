@@ -129,6 +129,19 @@ describe('scrubForLog', () => {
 		expect(scrubForLog({ passwordUrl: 'https://svc:hunter2@host/reset' })).toEqual({ passwordUrl: REDACTED });
 	});
 
+	it('redacts a mailbox by its value, so a count under a similar key survives', () => {
+		expect(scrubForLog({ uid: 'abc', mailbox: 'user@corp.example', emails: ['user@corp.example'], mailboxes: 3 })).toEqual({
+			uid: 'abc',
+			mailbox: REDACTED,
+			emails: [REDACTED],
+			mailboxes: 3,
+		});
+	});
+
+	it('leaves the mailbox in `scrubText`, which only strips credentials', () => {
+		expect(scrubText('mailbox user@corp.example not found')).toContain('user@corp.example');
+	});
+
 	it('passes non-string primitives through untouched', () => {
 		const obj = { status: 401, ok: false, missing: null };
 		expect(scrubForLog(obj)).toEqual(obj);
