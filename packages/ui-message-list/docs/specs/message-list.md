@@ -183,6 +183,11 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   `deferPagingUntilInput` the check waits for the viewer's first input (R82).
 - **R35** A loader that rejects MUST settle like one that resolves, and the list MUST NOT retry by itself; the next scroll or
   change of the messages checks again (B5).
+- **R81** While the viewport has no size, as when the list is hidden behind a panel, the list MUST NOT load a page, so a hidden room does
+  not load its whole history; when the viewport gets a size, the list MUST place itself again (R29) and check for a page once it has,
+  so a room that was hidden when its first page arrived loads what a short page leaves, never from the top it stood at while hidden,
+  and from then on as R34 says (`develop`'s room does not page while hidden behind the contextual bar; found while replacing it in
+  `room-message-list`; review round 1: the check ran the moment the viewport got its size, from the top, before the list had landed).
 
 **Data changes**
 

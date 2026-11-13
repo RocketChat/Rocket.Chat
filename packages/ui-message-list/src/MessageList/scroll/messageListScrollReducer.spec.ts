@@ -265,6 +265,49 @@ describe('new messages indicator', () => {
 	});
 });
 
+describe('a viewport with no size', () => {
+	const hidden: MessageListMeasurement = { geometry: { scrollTop: 0, scrollHeight: 0, clientHeight: 0 }, messagesStart: 0 };
+	const hiddenAtOpen = (rows: MessageListRowsSnapshot) =>
+		run(createInitialScrollState({ rows }), [committed(rows, hidden, 'replace'), { type: 'positioningTimeout' }]);
+
+	it('should not load any page while the list is hidden (R81)', () => {
+		const rows = rowsOf('abcde', { hasOlderMessages: true, hasNewerMessages: true });
+
+		expect(hiddenAtOpen(rows).commands.filter((command) => ['loadOlder', 'loadNewer'].includes(command.type))).toEqual([]);
+		expect(
+			loads(hiddenAtOpen(rows).state, [committed(rowsOf('xabcde', { hasOlderMessages: true }), hidden, 'prepend'), resized(hidden)]),
+		).toEqual([]);
+	});
+
+	it('should check for a page once it has placed itself after the viewport gets a size, so a room hidden when its first page arrived loads what a short page leaves (R81)', () => {
+		const rows = rowsOf('abcde', { hasOlderMessages: true });
+
+		expect(loads(hiddenAtOpen(rows).state, [resized(at(0, 300)), { type: 'positioningTimeout' }])).toEqual([{ type: 'loadOlder' }]);
+	});
+
+	it('should not check for a page from where it stood while hidden, before it has placed itself again (R81, R29)', () => {
+		const rows = rowsOf('abcde', { hasOlderMessages: true });
+		const shown = run(hiddenAtOpen(rows).state, [resized(TOP)]);
+
+		expect(shown.commands.filter((command) => command.type === 'loadOlder')).toEqual([]);
+		expect(shown.state.phase).toBe('positioning');
+		expect(loads(shown.state, [scrolled(BOTTOM), { type: 'positioningTimeout' }])).toEqual([]);
+	});
+
+	it('should not check again on a resize that only changes the size of a viewport that had one (R81, R34)', () => {
+		const rows = rowsOf('abcde', { hasOlderMessages: true });
+
+		expect(loads(idleAt(rows, MIDDLE), [resized(at(100))])).toEqual([]);
+	});
+
+	it('should load a page as soon as the viewer scrolls near the edge of a list that was hidden (R81)', () => {
+		const rows = rowsOf('abcde', { hasOlderMessages: true });
+		const { state } = run(hiddenAtOpen(rows).state, [resized(MIDDLE)]);
+
+		expect(loads(state, userScroll(at(100)))).toEqual([{ type: 'loadOlder' }]);
+	});
+});
+
 describe('older messages', () => {
 	const rows = rowsOf('abcde', { hasOlderMessages: true });
 
