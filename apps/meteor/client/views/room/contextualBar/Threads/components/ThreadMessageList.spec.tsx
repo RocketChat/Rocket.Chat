@@ -97,6 +97,7 @@ jest.mock('../../../hooks/useDateScroll', () => ({
 
 jest.mock('../../../contexts/RoomContext', () => ({
 	useRoom: () => room,
+	useRoomSubscription: () => undefined,
 }));
 
 jest.mock('../../../MessageList/hooks/useKeepAtBottom', () => ({
@@ -111,11 +112,13 @@ jest.mock('../../../hooks/useMessageListNavigation', () => ({
 	useMessageListNavigation: () => ({ messageListRef: { current: null } }),
 }));
 
-const mockListProvider = jest.fn();
-jest.mock('../../../MessageList/providers/MessageListProvider', () => (props: { children: ReactNode }) => {
-	mockListProvider(props);
-	return <>{props.children}</>;
-});
+const mockMessagesProvider = jest.fn();
+jest.mock('../../../../../providers/MessagesProvider', () => ({
+	MessagesProvider: (props: { children: ReactNode }) => {
+		mockMessagesProvider(props);
+		return <>{props.children}</>;
+	},
+}));
 
 jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => ({
 	setMessageJumpQueryStringParameter: jest.fn(),
@@ -339,13 +342,13 @@ it("gives the messages of the thread no selection, so they never join the room's
 		loadMessageAround: jest.fn(),
 	});
 	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
-	mockListProvider.mockClear();
+	mockMessagesProvider.mockClear();
 
 	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
 		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
 	});
 
-	expect(mockListProvider).toHaveBeenCalled();
-	expect(mockListProvider).not.toHaveBeenCalledWith(expect.objectContaining({ selection: expect.anything() }));
+	expect(mockMessagesProvider).toHaveBeenCalledWith(expect.objectContaining({ room }));
+	expect(mockMessagesProvider).not.toHaveBeenCalledWith(expect.objectContaining({ selection: expect.anything() }));
 	expect(selectedMessageStore.availableMessagesCount()).toBe(0);
 });

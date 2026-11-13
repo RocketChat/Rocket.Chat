@@ -16,10 +16,10 @@ import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider'
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
 import { useMessages } from './hooks/useMessages';
 import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
-import MessageListProvider from './providers/MessageListProvider';
 import { RoomManager } from '../../../lib/RoomManager';
 import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
 import { isMessageSequential } from '../../../lib/utils/isMessageSequential';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
 import { roomMessageSelection } from '../../../providers/MessagesProvider/messageSelectionFromStore';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
@@ -292,7 +292,7 @@ export const MessageList = function MessageList({
 	unreadMarkIndex.current = null;
 
 	return (
-		<MessageListProvider selection={roomMessageSelection}>
+		<MessagesProvider room={room} subscription={subscription} selection={roomMessageSelection}>
 			<SelectedMessagesProvider>
 				<VList
 					ref={virtualizerRef}
@@ -362,6 +362,6 @@ export const MessageList = function MessageList({
 					) : null}
 				</VList>
 			</SelectedMessagesProvider>
-		</MessageListProvider>
+		</MessagesProvider>
 	);
 };

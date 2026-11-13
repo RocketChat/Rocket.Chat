@@ -15,14 +15,14 @@ import { ThreadMessageItem } from './ThreadMessageItem';
 import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
 import { isMessageNewDay } from '../../../../../lib/utils/isMessageNewDay';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
+import { MessagesProvider } from '../../../../../providers/MessagesProvider';
 import { BubbleDate } from '../../../BubbleDate';
 import { BubbleDateScope } from '../../../BubbleDate/BubbleDateScope';
 import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
-import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
-import { useRoom } from '../../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
@@ -112,6 +112,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	);
 
 	const room = useRoom();
+	const subscription = useRoomSubscription();
 	const uid = useUserId();
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -380,7 +381,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		>
 			<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
-				<MessageListProvider>
+				<MessagesProvider room={room} subscription={subscription}>
 					<VList
 						ref={virtualizerRef}
 						shift={isPrependRef.current}
@@ -452,7 +453,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							</div>
 						) : null}
 					</VList>
-				</MessageListProvider>
+				</MessagesProvider>
 			</CustomVirtuaScrollbars>
 		</BubbleDateScope>
 	);

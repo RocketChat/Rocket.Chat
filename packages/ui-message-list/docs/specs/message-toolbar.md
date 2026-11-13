@@ -9,7 +9,6 @@ code:
     src/Message/contexts/MessageNavigationContext.ts,
     src/Message/index.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageNavigationValue.ts,
-    apps/meteor/client/components/message/variants,
     apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageInteractionsValue.tsx,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
@@ -26,7 +25,7 @@ tests:
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.spec.tsx,
     apps/meteor/client/providers/EmojiPickerProvider/EmojiPickerProvider.spec.tsx,
-    apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessageVariants.contexts.spec.tsx,
     apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
   ]
 ---
@@ -129,8 +128,10 @@ shows, and under which gate, could only be checked by running the client.
 **Where the toolbar shows in the app**
 
 - **R25** The room's message, in the room, in a thread, in the pinned, starred and mentions tabs and in search, and the
-  thread's message MUST render the package's toolbar for their place, not for a private message, an end-to-end encrypted
-  message that is still pending, or while messages are being selected.
+  thread's message MUST render the package's toolbar for their place, not for a private message, or, for the room's
+  message, an end-to-end encrypted message that is still pending or while messages are being selected. The thread's
+  message keeps the toolbar for an encrypted message that is still pending, as before (known defect D6 of
+  [message-variants](message-variants.md)), and is never selected.
 - **R26** Read-only places (audit, moderation, contact history, the modals and the composer's quote) MUST show no
   toolbar.
 
@@ -171,7 +172,7 @@ Notes for later branches:
 
 ## Out of scope
 
-- The message variants, the list, scrolling and virtualization: later capabilities.
+- ~~The message variants~~ (done by [message-variants](message-variants.md)), the list, scrolling and virtualization: later capabilities.
 - The hover and focus styling of the toolbar, which belongs to Fuselage.
 - Reading the `pin`, `star`, `unstar`, `unpin`, `markUnread`, `translate` and `showOriginal` capabilities of the
   interactions context: the menu entries use the app's own action hooks (see R24).

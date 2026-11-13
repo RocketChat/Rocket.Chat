@@ -5,27 +5,22 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
 import MessageSearchTab from './MessageSearchTab';
-import { createFakeMessage, createFakeRoom } from '../../../../../tests/mocks/data';
-import { MessagesProvider } from '../../../../providers/MessagesProvider';
+import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../../../tests/mocks/data';
 import { Rooms } from '../../../../stores';
 import { selectedMessageStore } from '../../providers/SelectedMessageStore';
 
 jest.mock('../../../../../rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../../lib/rooms/roomCoordinator', () => ({ roomCoordinator: { isLivechatRoom: () => false } }));
+const mockRoom = createFakeRoom({ _id: 'room', t: 'c' });
+const mockSubscription = createFakeSubscription({ rid: 'room', tunread: ['found'], tunreadUser: [], tunreadGroup: [] });
 jest.mock('react-virtuoso', () => ({
 	Virtuoso: ({ data, itemContent }: { data: unknown[]; itemContent: (index: number, item: unknown) => ReactNode }) => (
 		<>{data.map((item, index) => itemContent(index, item))}</>
 	),
 }));
-jest.mock('../../MessageList/providers/MessageListProvider', () => ({
-	__esModule: true,
-	default: ({ children, selection }: { children: ReactNode; selection?: never }) => (
-		<MessagesProvider selection={selection}>{children}</MessagesProvider>
-	),
-}));
 jest.mock('../../contexts/RoomContext', () => ({
-	useRoomSubscription: () => ({ tunread: ['found'], tunreadUser: [], tunreadGroup: [] }),
-	useRoom: () => ({ _id: 'room' }),
+	useRoomSubscription: () => mockSubscription,
+	useRoom: () => mockRoom,
 }));
 jest.mock('./hooks/useMessageSearchProviderQuery', () => ({
 	useMessageSearchProviderQuery: () => ({ isSuccess: true, isError: false, data: { key: 'provider' } }),

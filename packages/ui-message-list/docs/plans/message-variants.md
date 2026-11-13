@@ -61,7 +61,7 @@ App `apps/meteor`:
 
 - `client/components/message/variants/*`: the old thread variant's avatar click, `0`, broadcast and date format are fixed first (R14, R38, R15); then the tree is deleted.
 - `client/providers/MessagesProvider/{MessagesProvider.tsx,useMessageRelatedDataValue.ts,useMessageEditingValue.ts (new),useRolesByUser.ts (moved)}` (+ specs): R47, R49, R52.
-- `client/views/room/providers/SelectedMessagesContext.tsx`: unchanged (the rows keep registering through `useIsSelectedMessage`).
+- `client/views/room/providers/SelectedMessagesContext.tsx`: drops `useIsSelectedMessage` and `useToggleSelect`, which only the deleted variants used (step 16); the room's list registers its rows through `useRegisterRenderedMessage` (R26, R50).
 - `client/views/room/MessageList/{MessageListItem.tsx,MessageList.tsx}`, `contextualBar/MessageListTab.tsx`, `MessageSearchTab/MessageSearchTab.tsx`, `Threads/components/{ThreadMessageItem,ThreadMessageList}.tsx`, `views/audit/components/AuditMessageList.tsx`, `omnichannel/contactHistory/MessageList/ContactHistoryMessage.tsx`: draw the package's variants (R25, R26, R40 to R46, R48).
 - `client/views/room/MessageList/providers/MessageListProvider.tsx`, `components/message/list/MessageListContext.tsx`, `views/room/MessageList/hooks/{useMessageBody,useRolesByUser}.ts`, `contexts/MessageHighlightContext.tsx`, `providers/MessageHighlightProvider.tsx`, `views/room/Room.tsx`: deleted or unmounted (R50).
 - `client/lib/MessageAction.ts`: re-exports the package's types (R51).

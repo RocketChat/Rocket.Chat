@@ -1,17 +1,16 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { RoomMessage, ThreadMessage } from '@rocket.chat/ui-message-list';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import RoomMessage from './RoomMessage';
-import ThreadMessage from './ThreadMessage';
-import { createFakeRoom, createFakeSubscription } from '../../../../tests/mocks/data';
-import { MessagesProvider } from '../../../providers/MessagesProvider';
-import { Rooms, Subscriptions } from '../../../stores';
-import MessageListProvider from '../../../views/room/MessageList/providers/MessageListProvider';
-import { ChatContext } from '../../../views/room/contexts/ChatContext';
-import { selectedMessageStore } from '../../../views/room/providers/SelectedMessageStore';
+import MessagesProvider from './MessagesProvider';
+import { roomMessageSelection } from './messageSelectionFromStore';
+import { createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
+import { Rooms, Subscriptions } from '../../stores';
+import { ChatContext } from '../../views/room/contexts/ChatContext';
+import { selectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
 
 const room = createFakeRoom({ _id: 'roomId', t: 'c' });
 
@@ -26,41 +25,41 @@ const message: IMessage = {
 	urls: [],
 };
 
-jest.mock('../../../../rocketchat.info', () => ({ Info: {} }));
-jest.mock('../../../lib/rooms/roomCoordinator', () => ({ roomCoordinator: { isLivechatRoom: () => false } }));
-jest.mock('../../../lib/actionLinks', () => ({ actionLinks: { run: jest.fn() } }));
-jest.mock('../../../lib/utils/fireGlobalEvent', () => ({ fireGlobalEvent: () => undefined }));
-jest.mock('../../../views/room/contexts/RoomContext', () => ({
+jest.mock('../../../rocketchat.info', () => ({ Info: {} }));
+jest.mock('../../lib/rooms/roomCoordinator', () => ({ roomCoordinator: { isLivechatRoom: () => false } }));
+jest.mock('../../lib/actionLinks', () => ({ actionLinks: { run: jest.fn() } }));
+jest.mock('../../lib/utils/fireGlobalEvent', () => ({ fireGlobalEvent: () => undefined }));
+jest.mock('../../views/room/contexts/RoomContext', () => ({
 	RoomContext: jest.requireActual('react').createContext(undefined),
 	useRoom: () => room,
 	useRoomSubscription: () => undefined,
 }));
-jest.mock('../../../providers/MessagesProvider/useRolesByUser', () => ({ useRolesByUser: () => undefined }));
-jest.mock('../../../lib/RoomManager', () => ({
+jest.mock('./useRolesByUser', () => ({ useRolesByUser: () => undefined }));
+jest.mock('../../lib/RoomManager', () => ({
 	RoomManager: { getStore: jest.fn() },
 	useOpenedRoom: () => undefined,
 	getCollapsibleEventKey: (key: string) => `collapsibleToggled-${key}`,
 }));
-jest.mock('../../../views/room/hooks/useGoToRoom', () => ({ useGoToRoom: () => undefined }));
-jest.mock('../../../views/room/contextualBar/Threads/hooks/useGetMessageByID', () => ({ useGetMessageByID: () => jest.fn() }));
-jest.mock('../../../hooks/useAutoTranslate', () => ({
+jest.mock('../../views/room/hooks/useGoToRoom', () => ({ useGoToRoom: () => undefined }));
+jest.mock('../../views/room/contextualBar/Threads/hooks/useGetMessageByID', () => ({ useGetMessageByID: () => jest.fn() }));
+jest.mock('../../hooks/useAutoTranslate', () => ({
 	useAutoTranslate: () => ({ autoTranslateEnabled: false, autoTranslateLanguage: '', showAutoTranslate: () => false }),
 }));
-jest.mock('../../../hooks/useUserRolesByScope', () => ({
+jest.mock('../../hooks/useUserRolesByScope', () => ({
 	useUserRolesByScope: () => ({ workspaceRoles: [], roomRoles: [] }),
 }));
 
 const chat = {} as never;
 
-const messageProps = { sequential: false, all: false, mention: false, unread: false, ignoredUser: false, showUserAvatar: true } as const;
+const messageProps = { sequential: false, all: false, mention: false, unread: false, ignoredUser: false } as const;
 
-it('renders the markdown of a message through the app renderer under the list provider (R34)', () => {
+it('renders the markdown of a message through the app renderer under the messages provider (R34)', () => {
 	render(<RoomMessage message={message} {...messageProps} />, {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.wrap((children: ReactNode) => (
 				<ChatContext.Provider value={chat}>
-					<MessageListProvider>{children}</MessageListProvider>
+					<MessagesProvider>{children}</MessagesProvider>
 				</ChatContext.Provider>
 			))
 			.build(),
@@ -69,7 +68,7 @@ it('renders the markdown of a message through the app renderer under the list pr
 	expect(screen.getByText('bold').tagName).toBe('STRONG');
 });
 
-it('reacts through chat.react when a reaction is clicked under the list provider (R34)', async () => {
+it('reacts through chat.react when a reaction is clicked under the messages provider (R34)', async () => {
 	const react = jest.fn().mockResolvedValue({ success: true });
 
 	render(<RoomMessage message={{ ...message, reactions: { ':smile:': { usernames: ['alice'] } } }} {...messageProps} />, {
@@ -78,7 +77,7 @@ it('reacts through chat.react when a reaction is clicked under the list provider
 			.withEndpoint('POST', '/v1/chat.react', react)
 			.wrap((children: ReactNode) => (
 				<ChatContext.Provider value={chat}>
-					<MessageListProvider>{children}</MessageListProvider>
+					<MessagesProvider>{children}</MessagesProvider>
 				</ChatContext.Provider>
 			))
 			.build(),
@@ -118,12 +117,12 @@ const attachmentsWrapper = (chatValue: unknown) =>
 		.withUserPreference('autoImageLoad', true)
 		.wrap((children: ReactNode) => (
 			<ChatContext.Provider value={chatValue as never}>
-				<MessageListProvider>{children}</MessageListProvider>
+				<MessagesProvider>{children}</MessagesProvider>
 			</ChatContext.Provider>
 		))
 		.build();
 
-it('shows the attachments of a message with the package parts under the list provider (message-attachments R21)', () => {
+it('shows the attachments of a message with the package parts under the messages provider (message-attachments R21)', () => {
 	render(
 		<RoomMessage
 			message={{
@@ -225,7 +224,7 @@ describe('the toolbar', () => {
 	});
 
 	it("shows the package's toolbar for the message of a thread (message-toolbar R25)", async () => {
-		render(inPlace(<ThreadMessage message={{ ...message, tmid: 'threadId' }} sequential={false} unread={false} showUserAvatar />), {
+		render(inPlace(<ThreadMessage message={{ ...message, tmid: 'threadId' }} sequential={false} unread={false} />), {
 			wrapper: toolbarWrapper(),
 		});
 
@@ -234,14 +233,7 @@ describe('the toolbar', () => {
 
 	it('shows the toolbar of a call in a thread (message-toolbar R25)', async () => {
 		render(
-			inPlace(
-				<ThreadMessage
-					message={{ ...message, tmid: 'threadId', t: 'videoconf' } as never}
-					sequential={false}
-					unread={false}
-					showUserAvatar
-				/>,
-			),
+			inPlace(<ThreadMessage message={{ ...message, tmid: 'threadId', t: 'videoconf' } as never} sequential={false} unread={false} />),
 			{ wrapper: toolbarWrapper() },
 		);
 
@@ -261,7 +253,12 @@ describe('the toolbar', () => {
 	});
 
 	it('shows no toolbar while messages are being selected (message-toolbar R25)', async () => {
-		render(inPlace(<RoomMessage message={message} {...messageProps} />), { wrapper: toolbarWrapper() });
+		render(
+			<MessagesProvider room={room} subscription={subscription} selection={roomMessageSelection}>
+				<RoomMessage message={message} {...messageProps} />
+			</MessagesProvider>,
+			{ wrapper: toolbarWrapper() },
+		);
 		expect(await screen.findByRole('toolbar', { name: 'Message_actions' })).toBeInTheDocument();
 
 		act(() => selectedMessageStore.setIsSelecting(true));

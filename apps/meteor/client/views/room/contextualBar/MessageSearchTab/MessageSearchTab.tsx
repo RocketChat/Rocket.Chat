@@ -23,10 +23,10 @@ import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../../lib/utils/isMessageNewDay';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 import { roomMessageSelection } from '../../../../providers/MessagesProvider/messageSelectionFromStore';
-import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import MessageListErrorBoundary from '../../body/MessageListErrorBoundary';
-import { useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 // TODO: Refactor this component to isolate the data from the visual
 const MessageSearchTab = () => {
@@ -37,6 +37,7 @@ const MessageSearchTab = () => {
 	const pageSize = useSetting('PageSize', 10);
 
 	const [limit, setLimit] = useState(pageSize);
+	const room = useRoom();
 	const subscription = useRoomSubscription();
 
 	const providerQuery = useMessageSearchProviderQuery();
@@ -67,7 +68,7 @@ const MessageSearchTab = () => {
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 								{messageSearchData.length > 0 && (
 									<MessageListErrorBoundary>
-										<MessageListProvider selection={roomMessageSelection}>
+										<MessagesProvider room={room} subscription={subscription} selection={roomMessageSelection}>
 											<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 												<VirtualizedScrollbars>
 													<Virtuoso
@@ -111,7 +112,7 @@ const MessageSearchTab = () => {
 													/>
 												</VirtualizedScrollbars>
 											</Box>
-										</MessageListProvider>
+										</MessagesProvider>
 									</MessageListErrorBoundary>
 								)}
 							</Box>

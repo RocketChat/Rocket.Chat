@@ -1,5 +1,4 @@
-import type { SyntheticEvent } from 'react';
-import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
+import { createContext, useCallback, useContext, useSyncExternalStore } from 'react';
 
 import { selectedMessageStore } from './SelectedMessageStore';
 
@@ -10,31 +9,6 @@ type SelectMessageContextValue = {
 export const SelectedMessageContext = createContext({
 	selectedMessageStore,
 } as SelectMessageContextValue);
-
-export const useIsSelectedMessage = (mid: string, omit?: boolean): boolean => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
-
-	const subscribe = useCallback(
-		(callback: () => void): (() => void) => selectedMessageStore.on(mid, callback),
-		[selectedMessageStore, mid],
-	);
-
-	const getSnapshot = (): boolean => selectedMessageStore.isSelected(mid);
-
-	const isSelected = useSyncExternalStore(subscribe, getSnapshot);
-
-	useEffect(() => {
-		if (isSelected || omit) {
-			return;
-		}
-
-		selectedMessageStore.addAvailableMessage(mid);
-
-		return () => selectedMessageStore.removeAvailableMessage(mid);
-	}, [mid, selectedMessageStore, isSelected, omit]);
-
-	return isSelected;
-};
 
 export const useIsSelecting = (): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
@@ -47,18 +21,6 @@ export const useIsSelecting = (): boolean => {
 	const getSnapshot = (): boolean => selectedMessageStore.getIsSelecting();
 
 	return useSyncExternalStore(subscribe, getSnapshot);
-};
-
-export const useToggleSelect = (mid: string): ((event?: SyntheticEvent<HTMLElement>) => void) => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
-
-	return useCallback(
-		(event) => {
-			event?.stopPropagation();
-			selectedMessageStore.toggle(mid);
-		},
-		[mid, selectedMessageStore],
-	);
 };
 
 export const useToggleSelectAll = (): (() => void) => {

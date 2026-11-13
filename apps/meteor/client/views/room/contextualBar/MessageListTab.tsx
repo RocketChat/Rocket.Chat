@@ -23,10 +23,10 @@ import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useMessageRowListNavigation } from '../../../hooks/useMessageRowListNavigation';
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
 import { roomMessageSelection } from '../../../providers/MessagesProvider/messageSelectionFromStore';
-import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import MessageListErrorBoundary from '../body/MessageListErrorBoundary';
-import { useRoomSubscription } from '../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 
 export type MessageListTabProps = {
 	iconName: IconName;
@@ -45,6 +45,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 		closeTab();
 	}, [closeTab]);
 
+	const room = useRoom();
 	const subscription = useRoomSubscription();
 
 	return (
@@ -66,7 +67,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
-								<MessageListProvider selection={roomMessageSelection}>
+								<MessagesProvider room={room} subscription={subscription} selection={roomMessageSelection}>
 									<Box
 										is='section'
 										ref={messageListRef}
@@ -115,7 +116,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 											/>
 										</VirtualizedScrollbars>
 									</Box>
-								</MessageListProvider>
+								</MessagesProvider>
 							</MessageListErrorBoundary>
 						)}
 					</>

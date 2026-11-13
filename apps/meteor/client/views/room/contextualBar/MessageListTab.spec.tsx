@@ -5,26 +5,20 @@ import { act, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import MessageListTab from './MessageListTab';
-import { createFakeMessage, createFakeRoom } from '../../../../tests/mocks/data';
-import { MessagesProvider } from '../../../providers/MessagesProvider';
+import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../../tests/mocks/data';
 import { Rooms } from '../../../stores';
 import { selectedMessageStore } from '../providers/SelectedMessageStore';
 
 jest.mock('../../../../rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({ roomCoordinator: { isLivechatRoom: () => false } }));
+const mockRoom = createFakeRoom({ _id: 'room', t: 'c' });
 jest.mock('react-virtuoso', () => ({
 	Virtuoso: ({ data, itemContent }: { data: unknown[]; itemContent: (index: number, item: unknown) => ReactNode }) => (
 		<>{data.map((item, index) => itemContent(index, item))}</>
 	),
 }));
-jest.mock('../MessageList/providers/MessageListProvider', () => ({
-	__esModule: true,
-	default: ({ children, selection }: { children: ReactNode; selection?: never }) => (
-		<MessagesProvider selection={selection}>{children}</MessagesProvider>
-	),
-}));
-const mockSubscription = { tunread: ['pinned'], tunreadUser: ['pinned'], tunreadGroup: [] as string[] };
-jest.mock('../contexts/RoomContext', () => ({ useRoomSubscription: () => mockSubscription, useRoom: () => ({ _id: 'room' }) }));
+const mockSubscription = createFakeSubscription({ rid: 'room', tunread: ['pinned'], tunreadUser: ['pinned'], tunreadGroup: [] });
+jest.mock('../contexts/RoomContext', () => ({ useRoomSubscription: () => mockSubscription, useRoom: () => mockRoom }));
 
 const pinned = createFakeMessage({
 	_id: 'pinned',
