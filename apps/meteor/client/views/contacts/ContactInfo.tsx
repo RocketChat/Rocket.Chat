@@ -87,7 +87,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 
 						{!!phones.length && <Divider />}
 
-						{phones.map(({ raw, label }, index) => {
+						{phones.map(({ raw, e164, label }, index) => {
 							const resolved = labelOf(label);
 
 							return (
@@ -97,7 +97,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 										text={raw}
 										actionIcon='phone'
 										actionLabel={isCallInProgress ? t('Call_in_progress') : t('Call')}
-										onAction={canCall ? () => call(raw) : undefined}
+										onAction={canCall ? () => call({ raw, e164 }) : undefined}
 									/>
 								</InfoPanelField>
 							);
