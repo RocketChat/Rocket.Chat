@@ -1,6 +1,6 @@
 # Plan: Message toolbar (from specs/message-toolbar.md, 2026-11-12)
 
-Status: approved.
+Status: done.
 
 The package half is copied from the frozen reference (`message-list-ref`): the toolbar from `badbfb52108`. The app
 half follows `78155034d47` (`useMessageToolbarValue`) and the reference's consumer commits, adapted to the base.
@@ -87,6 +87,9 @@ Each step is one commit and builds and passes on its own.
 - A quick reaction is counted as frequent but no longer as recent (R21): the two lists are separate data in the picker
   provider, so the picker's own picks and the quick reactions' ranking are unchanged.
 - Hovering a quick reaction no longer previews it in an open emoji picker.
+- For QA: the package holds the toolbar open before it opens the emoji picker; the base held it after. It matters only
+  when a picker opened from the same toolbar is replaced by another by keyboard, without a mousedown: check that the
+  toolbar is let go once the last picker closes.
 
 ## Proof
 

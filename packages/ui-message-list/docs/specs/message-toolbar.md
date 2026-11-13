@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented
 adrs: []
 code:
   [
@@ -141,19 +141,44 @@ shows, and under which gate, could only be checked by running the client.
 
 ## Design
 
-Decided in the plan.
+The package owns the holder (`src/Message/MessageToolbarHolder.tsx`) and the toolbar (`src/Message/toolbar`). The
+holder reads `allowsInteraction` from the display context and the message's room and subscription from the related
+data context, and loads the toolbar only once both are needed. The toolbar picks the inline items of its place, and
+asks the toolbar context for the menu entries, the AI entries and the quick reactions; a popup it opens, the menus or
+the emoji picker, tells the holder through a small context, so the holder keeps the toolbar mounted. Everything else
+comes from the navigation and interactions contexts, so the toolbar renders in a story with no provider.
+
+The app owns the toolbar's value (`MessagesProvider/useMessageToolbarValue`). Its menu entries come from the same
+action hooks the app's toolbar called, in the same order, followed by the actions of apps; the layout's hidden
+entries and the place are applied by the menu, which leaves the actions of apps alone. The value depends on the read
+receipt settings, the quick reactions and whether a chat is open only, so a change of one message renders no other
+toolbar. Where no chat is open it offers no reactions at all, as the app's toolbar did. It reads the emoji picker
+without throwing, so a place without one offers no quick reactions and counts none. Using a quick
+reaction is reported to the toolbar context, which the app answers by raising the emoji's frequency in the picker; the
+recent list is the picker's own picks alone. The app's room and thread
+messages render the package's holder; the app keeps no copy of the toolbar.
+
+Notes for later branches:
+
+- The app's menu entries call the app's own hooks, not the interactions context, so `pin`, `star`, `unstar`, `unpin`,
+  `markUnread`, `translate` and `showOriginal` of the interactions context have no reader in the package. They are
+  carried out by the app and proven (message-capabilities R28). Branch 06 or 09 decides whether the menu entries move
+  onto the interactions context, so the package reads them, or the unused capabilities are removed.
+- The emoji picker's context changes on every preview, so `MessagesProvider` renders again while a picker is hovered;
+  its values keep their identity, so nothing below renders again.
+- A quick reaction no longer previews in an open emoji picker when hovered, as it did when it was drawn by the picker's
+  own element.
 
 ## Out of scope
 
 - The message variants, the list, scrolling and virtualization: later capabilities.
 - The hover and focus styling of the toolbar, which belongs to Fuselage.
-- The `pin`, `star`, `unstar`, `unpin`, `markUnread`, `translate` and `showOriginal` capabilities of the interactions
-  context are carried out by the app but the toolbar's menu entries use the app's own action hooks, so the package
-  calls none of them (see R24).
+- Reading the `pin`, `star`, `unstar`, `unpin`, `markUnread`, `translate` and `showOriginal` capabilities of the
+  interactions context: the menu entries use the app's own action hooks (see R24).
 
 ## Known defects
 
-None; not implemented.
+None.
 
 ## Open questions
 
