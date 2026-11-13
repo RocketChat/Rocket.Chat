@@ -63,7 +63,7 @@ export async function saveRoomName(
 	await Room.beforeNameChange(room);
 
 	if (isRoomNativeFederated(room)) {
-		displayName = `${displayName}:${room.federation.mrid.split(':').pop()}`;
+		displayName = `${displayName}:${room.federation.origin}`;
 	}
 
 	if (displayName === room.name) {
