@@ -433,6 +433,16 @@ describe('highlight', () => {
 
 		expect(emphasized()).toEqual(['third']);
 	});
+
+	it('does not let the end of a first highlight end a second one early (R49)', () => {
+		const { rerender } = render(<List targetMessageId='b' />, { wrapper });
+		act(() => jest.advanceTimersByTime(1500));
+
+		rerender(<List targetMessageId='c' />);
+		act(() => jest.advanceTimersByTime(1000));
+
+		expect(emphasized()).toEqual(['third']);
+	});
 });
 
 describe('reports', () => {
@@ -443,6 +453,20 @@ describe('reports', () => {
 
 		expect(onVisibleMessagesChange).not.toHaveBeenCalled();
 		expect(ref.current?.getVisibility()).toBeUndefined();
+
+		const onEmptyVisibleMessagesChange = jest.fn();
+		render(<List aria-label='Empty list' messages={[]} onVisibleMessagesChange={onEmptyVisibleMessagesChange} />, { wrapper });
+		expect(onEmptyVisibleMessagesChange).not.toHaveBeenCalled();
+	});
+
+	it('reports nothing once its messages are gone (R58)', () => {
+		const onVisibleMessagesChange = jest.fn();
+		const { rerender } = render(<List onVisibleMessagesChange={onVisibleMessagesChange} />, { wrapper });
+		onVisibleMessagesChange.mockClear();
+
+		rerender(<List messages={[]} onVisibleMessagesChange={onVisibleMessagesChange} />);
+
+		expect(onVisibleMessagesChange).not.toHaveBeenCalled();
 	});
 
 	it('answers getVisibility with what the last report said (R57)', () => {
@@ -527,7 +551,7 @@ describe('selection', () => {
 
 		render(
 			<MessageSelectionContext.Provider value={store}>
-				<List />
+				<List hasOlderMessages hasNewerMessages firstUnreadMessageId='b' header={<p>Start</p>} />
 			</MessageSelectionContext.Provider>,
 			{ wrapper },
 		);

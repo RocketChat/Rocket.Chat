@@ -67,6 +67,18 @@ describe('what a change renders', () => {
 		expect(rendered()).toEqual({ c: 1 });
 	});
 
+	it('renders the rows whose grouping changed with the grouping period (R72)', () => {
+		const minutes = ['a', 'b', 'c'].map((_id, index) =>
+			createFakeMessage({ _id, msg: _id, ts: new Date(2024, 0, 15, 10, index), u: author }),
+		);
+		const { rerender } = render(<List messages={minutes} />, { wrapper });
+		renders.clear();
+
+		rerender(<List messages={minutes} groupingPeriodSeconds={30} />);
+
+		expect(rendered()).toEqual({ b: 1, c: 1 });
+	});
+
 	it('renders the new row and the one whose neighbour changed when older messages are added before them (R72)', () => {
 		const older = createFakeMessage({ _id: 'z', msg: 'z', ts: day(15, 8), u: author });
 		const { rerender } = render(<List />, { wrapper });

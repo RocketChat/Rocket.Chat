@@ -53,6 +53,14 @@ describe('isSequentialMessage', () => {
 			expect(isSequentialMessage(reply, previous, options)).toBe(true);
 		});
 
+		it('should not group a reply with a message of another thread or with a message that is not its thread (R11)', () => {
+			const reply = createFakeMessage({ u: author, tmid: 'thread', ts: at('2024-01-15T10:01:00Z') });
+			const ofAnotherThread = createFakeMessage({ u: author, tmid: 'another', ts: at('2024-01-15T10:00:30Z') });
+
+			expect(isSequentialMessage(reply, previous, options)).toBe(false);
+			expect(isSequentialMessage(reply, ofAnotherThread, options)).toBe(false);
+		});
+
 		it('should group replies of the same thread (R11)', () => {
 			const first = createFakeMessage({ u: author, tmid: 'thread' });
 			const second = createFakeMessage({ u: other, tmid: 'thread' });

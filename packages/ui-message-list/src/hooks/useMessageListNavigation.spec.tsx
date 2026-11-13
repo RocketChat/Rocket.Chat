@@ -40,6 +40,7 @@ const Room = () => {
 		<>
 			<header className='rcx-room-header'>
 				<button>Favorite</button>
+				<button>Star</button>
 			</header>
 			<div ref={messageListRef} role='list' aria-label='Messages'>
 				<MessageSystem role='listitem' tabIndex={0} aria-label='System message'>
@@ -56,6 +57,7 @@ const Room = () => {
 					</Message>
 				))}
 			</div>
+			<button>Jump to recent messages</button>
 			<textarea aria-label='Message composer' />
 		</>
 	);
@@ -74,6 +76,8 @@ it('focuses the latest message when entering the list from the composer (R66)', 
 
 	await user.click(screen.getByRole('textbox', { name: 'Message composer' }));
 	await user.tab({ shift: true });
+	expect(screen.getByRole('button', { name: 'Jump to recent messages' })).toHaveFocus();
+	await user.tab({ shift: true });
 
 	expect(screen.getByRole('listitem', { name: 'msg2' })).toHaveFocus();
 });
@@ -82,6 +86,7 @@ it('navigates between user and system messages using arrow keys, skipping messag
 	const user = userEvent.setup();
 	renderRoom();
 
+	await user.tab();
 	await user.tab();
 	await user.tab();
 	expect(screen.getByRole('listitem', { name: 'msg2' })).toHaveFocus();
@@ -102,12 +107,14 @@ it('moves to the room header with Shift+Tab and restores the last message on re-
 
 	await user.tab();
 	await user.tab();
+	await user.tab();
 	await user.keyboard('{ArrowUp}');
 	expect(screen.getByRole('listitem', { name: 'msg1' })).toHaveFocus();
 
 	await user.tab({ shift: true });
 	expect(screen.getByRole('button', { name: 'Favorite' })).toHaveFocus();
 
+	await user.tab();
 	await user.tab();
 	expect(screen.getByRole('listitem', { name: 'msg1' })).toHaveFocus();
 });
@@ -116,6 +123,7 @@ it('tabs through the focused message only, then moves to the composer instead of
 	const user = userEvent.setup();
 	renderRoom();
 
+	await user.tab();
 	await user.tab();
 	await user.tab();
 	await user.keyboard('{ArrowUp}');
@@ -133,6 +141,7 @@ it('moves between the toolbar buttons with the arrow keys, and comes back to the
 	const user = userEvent.setup();
 	renderRoom();
 
+	await user.tab();
 	await user.tab();
 	await user.tab();
 	await user.tab();
@@ -157,6 +166,7 @@ it('walks back through the message with Shift+Tab, then moves to the room header
 	await user.tab();
 	await user.tab();
 	await user.tab();
+	await user.tab();
 	expect(screen.getByRole('button', { name: 'React to msg2' })).toHaveFocus();
 
 	await user.tab({ shift: true });
@@ -175,6 +185,7 @@ it('returns from a message control to its message with Escape (R68)', async () =
 	await user.tab();
 	await user.tab();
 	await user.tab();
+	await user.tab();
 	expect(screen.getByRole('button', { name: 'React to msg2' })).toHaveFocus();
 
 	await user.keyboard('{Escape}');
@@ -185,6 +196,7 @@ it('moves from a system message directly to the composer with Tab (R67)', async 
 	const user = userEvent.setup();
 	renderRoom();
 
+	await user.tab();
 	await user.tab();
 	await user.tab();
 	await user.keyboard('{ArrowUp}{ArrowUp}');
