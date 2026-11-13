@@ -139,3 +139,17 @@ describe('Shared Crypto Functions', () => {
 		});
 	});
 });
+
+describe('Loading on an insecure page', () => {
+	afterEach(() => {
+		Reflect.deleteProperty(crypto, 'randomUUID');
+		Reflect.deleteProperty(crypto, 'subtle');
+	});
+
+	it('should load on a page that is not served over HTTPS, where the browser hides the secure crypto API', () => {
+		Object.defineProperty(crypto, 'randomUUID', { value: undefined, configurable: true });
+		Object.defineProperty(crypto, 'subtle', { value: undefined, configurable: true });
+
+		expect(() => jest.isolateModules(() => jest.requireActual('./shared'))).not.toThrow();
+	});
+});
