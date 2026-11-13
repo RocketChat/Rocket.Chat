@@ -528,8 +528,7 @@ describe('paging after a page', () => {
 		expect(loads(state, [{ type: 'loadSettled' }, page])).toEqual([{ type: 'loadOlder' }]);
 	});
 
-	// Known defect: ../../../docs/specs/message-list.md#d4-a-page-committed-before-its-load-settles-is-not-followed-by-a-check
-	it.skip('checks again when a load settles after its page was committed (R34)', () => {
+	it('checks again when a load settles after its page was committed (R34)', () => {
 		const { state } = run(detachedAt(rows, MIDDLE), userScroll(at(100)));
 		const page = committed(rowsOf('xyabcde', { hasOlderMessages: true }), at(100, 400), 'prepend');
 

@@ -367,13 +367,6 @@ A rejected `onJumpToLatest` leaves the list waiting for the latest page: it hold
 viewer asking, when the messages next stop having a newer page (R20). Pinned by the skipped test "does not go to the bottom by itself
 after a failed jump to the latest page (R20)" in `MessageList.spec.tsx`.
 
-### D4 A page committed before its load settles is not followed by a check
-
-When a page is committed while its load has not settled yet, the check for a page that is due finds the load in flight and starts
-none, and settling the load does not check again, so a viewport taller than the page stays unfilled until the next scroll or change of
-the messages (R34). A load that settles without new messages must still not be retried (R35). Pinned by the skipped test "checks again
-when a load settles after its page was committed (R34)" in `messageListScrollReducer.spec.ts`; fixed in step 14 of the plan.
-
 D2 was dropped before it was recorded: a page of newer messages ending in the viewer's own message cannot be taken for an own message,
 because a page added before the newer loader is classified as a change inside the rows, not as an append (R31 is proven by a test that
 passes).

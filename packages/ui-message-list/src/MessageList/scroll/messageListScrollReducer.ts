@@ -31,6 +31,8 @@ export type MessageListScrollState = {
 	rows: MessageListRowsSnapshot;
 	measurement: MessageListMeasurement | undefined;
 	loading: 'older' | 'newer' | undefined;
+	/** The messages changed while a page was loading, so whether another page is due is checked once it settles. */
+	pagingCheckPending: boolean;
 	/** Someone else's message arrived while the viewer was away from the bottom. */
 	hasNewMessages: boolean;
 	/** A message to jump to once the consumer has loaded it. */
@@ -106,6 +108,7 @@ export const createInitialScrollState = ({
 		rows,
 		measurement: undefined,
 		loading: undefined,
+		pagingCheckPending: false,
 		hasNewMessages: false,
 		pendingTargetId: targetMessageId,
 		isJumpingToLatest: false,
@@ -287,7 +290,11 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			};
 			const anchored = anchorAfterCommit(committed, event.change, event.tail);
 			const paged = checkPaging(anchored.state);
-			return { state: paged.state, commands: [...anchored.commands, ...paged.commands, { type: 'notifyVisibility' }] };
+			const waitsForLoad = !!paged.state.loading && paged.commands.length === 0;
+			return {
+				state: waitsForLoad ? { ...paged.state, pagingCheckPending: true } : paged.state,
+				commands: [...anchored.commands, ...paged.commands, { type: 'notifyVisibility' }],
+			};
 		}
 
 		case 'restoreResolved': {
@@ -318,7 +325,8 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 		}
 
 		case 'loadSettled': {
-			return { state: { ...state, loading: undefined }, commands: [] };
+			const settled = { ...state, loading: undefined, pagingCheckPending: false };
+			return state.pagingCheckPending ? checkPaging(settled) : { state: settled, commands: [] };
 		}
 
 		case 'positioningTimeout': {
