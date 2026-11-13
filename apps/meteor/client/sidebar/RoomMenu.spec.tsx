@@ -1,9 +1,10 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import RoomMenu from './RoomMenu';
 import { createFakeLicenseInfo, createFakeSubscription } from '../../tests/mocks/data';
@@ -37,6 +38,9 @@ const buildBase = () =>
 	mockAppRoot()
 		.withTranslations('en', 'core', {
 			Hide: 'Hide',
+			Notifications: 'Notifications',
+			Turn_OFF: 'Turn off',
+			Turn_ON: 'Turn on',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
 			Favorites: 'Favorites',
@@ -143,4 +147,69 @@ it('should display only mark unread and favorite for omnichannel rooms', async (
 	expect(await screen.findAllByRole('menuitem')).toHaveLength(2);
 	expect(screen.queryByRole('menuitem', { name: 'Hide' })).not.toBeInTheDocument();
 	expect(screen.queryByRole('menuitem', { name: 'Leave' })).not.toBeInTheDocument();
+});
+
+describe('the Notifications toggle', () => {
+	const saveNotification = jest.fn(async () => ({ success: true }));
+
+	beforeEach(() => {
+		saveNotification.mockClear();
+	});
+
+	const renderWith = (disableNotifications: boolean, enterprise = false) => {
+		const base = buildBase()
+			.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications }))
+			.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any);
+		render(<RoomMenu {...defaultProps} name='general' />, {
+			wrapper: enterprise ? base.withJohnDoe().withQueryClient(buildEnterpriseQueryClient()).build() : base.build(),
+		});
+	};
+
+	it('is on while the room sends notifications, and turns them off', async () => {
+		renderWith(false);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		const item = await screen.findByRole('menuitem', { name: 'Turn off' });
+		expect(screen.getByRole('group', { name: 'Notifications' })).toContainElement(item);
+		// The switch only pictures the state the label already tells: out of the accessibility tree and the tab order.
+		const toggle = within(item).getByRole('checkbox', { hidden: true });
+		expect(toggle).toBeChecked();
+		expect(toggle).toHaveAttribute('aria-hidden', 'true');
+		expect(toggle).toHaveAttribute('tabindex', '-1');
+		expect(
+			await axe(screen.getByRole('menu'), {
+				rules: {
+					// Fuselage renders every menu item as a `<label role="menuitem">`, which axe rejects; not this menu's doing.
+					'aria-allowed-role': { enabled: false },
+					// A menu portaled into a bare test document sits in no landmark.
+					'region': { enabled: false },
+				},
+			}),
+		).toHaveNoViolations();
+
+		await userEvent.click(item);
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
+	});
+
+	it('is off while they are off, and turns them on', async () => {
+		renderWith(true);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		const item = await screen.findByRole('menuitem', { name: 'Turn on' });
+		expect(within(item).getByRole('checkbox', { hidden: true })).not.toBeChecked();
+
+		await userEvent.click(item);
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '0' } });
+	});
+
+	it('is there on the licensed menu too', async () => {
+		renderWith(false, true);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn off' }));
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
+	});
 });
