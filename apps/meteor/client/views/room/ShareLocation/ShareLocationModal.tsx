@@ -1,12 +1,12 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { MessageMapView as MapView } from '@rocket.chat/ui-message-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
-import MapView from '../../../components/message/content/location/MapView';
 
 export type ShareLocationModalProps = {
 	rid: IRoom['_id'];
