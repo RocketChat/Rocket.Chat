@@ -9,6 +9,7 @@ import moment from 'moment';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { formatMentionList } from '../../lib/messaging/mentions/formatMentionList';
 
 const APP_ID = 'mention-core';
 const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: string | undefined) => {
@@ -102,7 +103,7 @@ callbacks.add(
 			? 'You_mentioned___mentions__but_theyre_not_in_this_room'
 			: 'You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them';
 
-		const mentionsText = mentionsUsersNotInChannel.map(({ username }) => `@${username}`).join(', ');
+		const mentionsText = formatMentionList(mentionsUsersNotInChannel.map(({ username }) => username).filter(isTruthy), language);
 
 		void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 			msg: '',
