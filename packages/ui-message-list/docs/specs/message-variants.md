@@ -21,6 +21,8 @@ code:
     apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageEditingValue.ts,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.ts,
+    apps/meteor/client/views/audit/components/AuditMessageList.tsx,
+    apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.tsx,
   ]
 tests:
   [
@@ -44,6 +46,9 @@ tests:
     src/Message/contexts/contexts.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.spec.ts,
+    apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
+    apps/meteor/client/views/audit/components/AuditMessageList.roles.spec.tsx,
+    apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.spec.tsx,
   ]
 ---
 
