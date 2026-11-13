@@ -4,14 +4,26 @@ import { useCallback } from 'react';
 
 import { toDialableNumber } from '../lib/toDialableNumber';
 
+type ContactCallPhone = Pick<IContactPhone, 'raw' | 'e164'>;
+
+const isDialable = (phone: ContactCallPhone) => toDialableNumber(phone) !== undefined;
+
 export const useContactCall = () => {
 	const state = usePeekMediaSessionState();
 	const { toggleWidget } = useWidgetExternalControls();
 
 	const call = useCallback(
-		(phone: Pick<IContactPhone, 'raw' | 'e164'>) => toggleWidget({ number: toDialableNumber(phone) }),
+		(phone: ContactCallPhone) => {
+			const number = toDialableNumber(phone);
+
+			if (number === undefined) {
+				return;
+			}
+
+			toggleWidget({ number });
+		},
 		[toggleWidget],
 	);
 
-	return { canCall: state === 'available', isCallInProgress: state !== 'available' && state !== 'unavailable', call };
+	return { canCall: state === 'available', isCallInProgress: state !== 'available' && state !== 'unavailable', isDialable, call };
 };

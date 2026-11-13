@@ -26,7 +26,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 	const deleteContact = useEndpoint('POST', '/v1/contacts.delete');
 	const labelOf = useContactLabel();
 
-	const { canCall, isCallInProgress, call } = useContactCall();
+	const { canCall, isCallInProgress, isDialable, call } = useContactCall();
 
 	const remove = useMutation({
 		mutationFn: () => deleteContact({ contactId: contact._id }),
@@ -73,7 +73,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 				icon: 'phone' as const,
 				content,
 				textValue: content,
-				disabled: !canCall,
+				disabled: !canCall || !isDialable({ raw, e164 }),
 				tooltip: isCallInProgress ? t('Call_in_progress') : undefined,
 				onClick: () => call({ raw, e164 }),
 			};
