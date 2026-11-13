@@ -72,3 +72,4 @@ export * from './ToastBar';
 export * from './ToggleSwitch';
 export * from './Tooltip';
 export * from './UrlInput';
+export * from './VideoPlayer';
