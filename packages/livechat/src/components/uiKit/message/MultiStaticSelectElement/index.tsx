@@ -11,7 +11,7 @@ export type MultiStaticSelectElementProps = uikit.MultiStaticSelectElement & {
 
 const textOf = (text: uikit.TextObject) => text.text;
 
-const MultiStaticSelectElement = ({ actionId, options, initialValue, initialOption }: MultiStaticSelectElementProps) => {
+const MultiStaticSelectElement = ({ actionId, options, initialValue, initialOption, placeholder }: MultiStaticSelectElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);
 	const initial = initialValue ?? initialOption?.map(({ value }) => value) ?? [];
 
@@ -25,7 +25,7 @@ const MultiStaticSelectElement = ({ actionId, options, initialValue, initialOpti
 	);
 
 	return (
-		<select multiple disabled={performingAction} onChange={handleChange}>
+		<select multiple aria-label={placeholder?.text} disabled={performingAction} onChange={handleChange}>
 			{options.map((option) => (
 				<option key={option.value} value={option.value} selected={initial.includes(option.value)}>
 					{textOf(option.text)}

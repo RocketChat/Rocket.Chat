@@ -16,10 +16,22 @@ const respond = (response: Record<string, unknown>) =>
 
 const trigger = () => triggerAction({ appId: 'app', type: 'blockAction', actionId: 'a' });
 
+const open = async (opened = view) => {
+	respond({ type: UIKitInteractionType.MODAL_OPEN, view: opened });
+	await trigger();
+};
+
 const lastModalProps = () => mockSetState.mock.calls.at(-1)?.[0].modal.props;
 
 beforeEach(() => {
 	jest.clearAllMocks();
+});
+
+afterEach(async () => {
+	for (const viewId of ['view-1', 'view-2']) {
+		respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId });
+		await trigger();
+	}
 });
 
 describe('app responses to a visitor interaction', () => {
@@ -31,6 +43,7 @@ describe('app responses to a visitor interaction', () => {
 	});
 
 	it('replaces the open modal when the app answers modal.update', async () => {
+		await open();
 		respond({ type: UIKitInteractionType.MODAL_UPDATE, view: { id: 'view-1', title: { type: 'plain_text', text: 'New' } } });
 
 		await expect(trigger()).resolves.toBe(UIKitInteractionType.MODAL_UPDATE);
@@ -38,6 +51,7 @@ describe('app responses to a visitor interaction', () => {
 	});
 
 	it('hands the errors to the open modal', async () => {
+		await open();
 		respond({ type: UIKitInteractionType.ERRORS, viewId: 'view-1', errors: { field: 'Required' } });
 
 		await expect(trigger()).resolves.toBe(UIKitInteractionType.ERRORS);
@@ -45,10 +59,22 @@ describe('app responses to a visitor interaction', () => {
 	});
 
 	it('closes the modal when the app answers modal.close', async () => {
+		await open();
 		respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-1' });
 
 		await expect(trigger()).resolves.toBe(UIKitInteractionType.MODAL_CLOSE);
 		expect(mockSetState).toHaveBeenLastCalledWith({ modal: null });
+	});
+
+	it('keeps the displayed modal when the app closes a view it covered', async () => {
+		await open();
+		await open({ ...view, id: 'view-2' });
+		mockSetState.mockClear();
+
+		respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-1' });
+		await trigger();
+
+		expect(mockSetState).not.toHaveBeenCalled();
 	});
 
 	it('ignores an answer whose trigger id it did not issue', async () => {
@@ -61,8 +87,7 @@ describe('app responses to a visitor interaction', () => {
 
 describe('the modal a visitor sees', () => {
 	beforeEach(async () => {
-		respond({ type: UIKitInteractionType.MODAL_OPEN, view });
-		await trigger();
+		await open();
 		mockSendUiInteraction.mockImplementationOnce(async ({ triggerId }) => ({ triggerId }));
 	});
 

@@ -33,7 +33,7 @@ export const PreviewBlock = (block: uikit.PreviewBlock & { parser: Parser }) => 
 					) : (
 						body
 					)}
-					{footer && parser.renderContextBlockElement(footer as never, 0)}
+					{footer && parser.render([footer])}
 				</div>
 			</div>
 		</Block>

@@ -19,6 +19,7 @@ export type UiKitModalView = {
 	title: { text: string };
 	submit?: { text: { text: string } };
 	close?: { text: { text: string } };
+	submit_disabled?: boolean;
 	blocks: ViewBlock[];
 	state?: ModalViewState;
 };
@@ -75,7 +76,7 @@ export const UiKitModal = ({ appId, view, errors = {}, dispatchBlockAction, onSu
 				<Button outline secondary disabled={busy} onClick={() => run(onClose)}>
 					{view.close?.text.text ?? t('cancel')}
 				</Button>
-				<Button disabled={busy} onClick={() => run(onSubmit)}>
+				<Button disabled={busy || view.submit_disabled} onClick={() => run(onSubmit)}>
 					{view.submit?.text.text ?? t('send')}
 				</Button>
 			</ButtonGroup>

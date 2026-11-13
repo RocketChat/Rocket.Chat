@@ -46,14 +46,18 @@ type OpenView = { appId: string; view: UiKitModalView; errors?: Record<string, s
 
 const openViews = new Map<string, OpenView>();
 
+let displayedViewId: string | undefined;
+
 const closeModal = (viewId: string) => {
-	if (openViews.delete(viewId)) {
+	if (openViews.delete(viewId) && displayedViewId === viewId) {
+		displayedViewId = undefined;
 		store.setState({ modal: null });
 	}
 };
 
 const showModal = (viewId: string, openView: OpenView) => {
 	openViews.set(viewId, openView);
+	displayedViewId = viewId;
 	const { appId, view, errors } = openView;
 
 	const finish = async (type: string, payload: Record<string, unknown>) => {
