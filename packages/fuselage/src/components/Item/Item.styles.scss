@@ -1,3 +1,4 @@
+@use 'sass:list';
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
@@ -15,6 +16,7 @@ $item-color-surface-selected: theme('item-color-surface-selected', colors.surfac
 $item-color-stroke-focus: theme('item-color-stroke-focus', colors.stroke(highlight));
 $item-color-stroke-divider: theme('item-color-stroke-divider', colors.stroke(extra-light));
 $item-group-header-color-surface: theme('item-group-header-color-surface', colors.surface(light));
+$item-color-stroke-guide: theme('item-color-stroke-guide', colors.stroke(medium));
 $item-drag-preview-color-surface: theme('item-drag-preview-color-surface', colors.surface(light));
 $item-group-color-surface-drop-target: theme('item-group-color-surface-drop-target', colors.status-background(info));
 $item-color-stroke-slot: theme('item-color-stroke-slot', colors.stroke(light));
@@ -22,6 +24,26 @@ $item-color-stroke-slot: theme('item-color-stroke-slot', colors.stroke(light));
 $item-padding: lengths.padding(4);
 $item-reveal-duration: 0.18s;
 $item-group-narrow-width: 320px;
+$item-disclosure-width: lengths.size(16);
+
+// Start indent of each depth, 0 to 4. Level 1 steps past the parent's disclosure (and, extended, aligns the
+// smaller child avatar's end with the parent's); deeper levels step less so titles keep their room.
+$item-indents: (
+	compact: (
+		0,
+		20,
+		32,
+		44,
+		56,
+	),
+	extended: (
+		0,
+		32,
+		48,
+		64,
+		80,
+	),
+);
 
 @mixin inset-scale {
 	&--inset-sm {
@@ -74,6 +96,7 @@ $item-group-narrow-width: 320px;
 	--rcx-item-gap: #{lengths.margin(4)};
 	// A unitless zero would make the padding calc() invalid.
 	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+	--rcx-item-start: #{$item-padding};
 
 	position: relative;
 
@@ -85,6 +108,7 @@ $item-group-narrow-width: 320px;
 	margin: 0;
 	padding-block: $item-padding;
 	padding-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
+	padding-inline-start: calc(var(--rcx-item-start) + var(--rcx-item-inset-inline));
 
 	list-style: none;
 
@@ -188,6 +212,54 @@ $item-group-narrow-width: 320px;
 
 		width: lengths.size(20);
 		height: lengths.size(20);
+	}
+
+	&__disclosure {
+		position: relative;
+		z-index: 1;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex: none;
+
+		width: $item-disclosure-width;
+		height: lengths.size(20);
+		margin: 0;
+		padding: 0;
+
+		cursor: pointer;
+
+		color: $item-color-font-secondary;
+		border: 0;
+		border-radius: lengths.border-radius(small);
+		outline: 0;
+		background: none;
+
+		> .rcx-icon {
+			transition: transform $item-reveal-duration ease-out;
+
+			@media (prefers-reduced-motion: reduce) {
+				transition: none;
+			}
+		}
+
+		&--collapsed > .rcx-icon {
+			transform: rotate(-90deg);
+		}
+
+		&--collapsed:dir(rtl) > .rcx-icon {
+			transform: rotate(90deg);
+		}
+
+		&:hover {
+			color: $item-color-font-default;
+			background-color: $item-color-surface-selected;
+		}
+
+		&:focus-visible {
+			@include focus-ring;
+		}
 	}
 
 	&__content {
@@ -469,6 +541,54 @@ $item-group-narrow-width: 320px;
 	&--inset-md,
 	&--inset-lg {
 		margin-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
+	}
+}
+
+@each $density, $indents in $item-indents {
+	$group: '.rcx-item-group';
+
+	@if $density == extended {
+		$group: '.rcx-item-group--extended.rcx-item-group';
+	}
+
+	@for $depth from 1 through 4 {
+		#{$group}--depth-#{$depth} {
+			.rcx-item {
+				--rcx-item-start: #{$item-padding + lengths.margin(list.nth($indents, $depth + 1))};
+			}
+
+			// The guide drops from the centre of the parent row's disclosure.
+			&.rcx-item-group--guide::after {
+				inset-inline-start: calc(#{$item-padding + lengths.margin(list.nth($indents, $depth))} + #{$item-disclosure-width} / 2);
+			}
+		}
+	}
+}
+
+.rcx-item-group--guide {
+	position: relative;
+
+	&::after {
+		position: absolute;
+		z-index: 1;
+		inset-block: 0;
+
+		width: lengths.border-width(default);
+
+		content: '';
+		pointer-events: none;
+
+		background-color: $item-color-stroke-guide;
+	}
+}
+
+// In a group where some rows have a disclosure, the others keep its column, so every media stays aligned.
+.rcx-item-group:has(> .rcx-item > .rcx-item__disclosure, > * > .rcx-item > .rcx-item__disclosure) {
+	> .rcx-item,
+	> * > .rcx-item {
+		&:not(:has(> .rcx-item__disclosure)) {
+			padding-inline-start: calc(var(--rcx-item-start) + var(--rcx-item-inset-inline) + #{$item-disclosure-width} + var(--rcx-item-gap));
+		}
 	}
 }
 
