@@ -12,7 +12,7 @@ code:
     apps/meteor/client/views/room/body/hooks/useElementHeight.ts,
     apps/meteor/client/views/room/body/RoomMessageList/RoomMessageList.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/RoomMessageRow.tsx,
-    apps/meteor/client/views/room/body/RoomMessageList/MessageMarkers.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessageMarkers.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/useRoomMessageListData.ts,
     apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.ts,
     apps/meteor/client/views/room/body/hooks/useRetryFirstPage.ts,
