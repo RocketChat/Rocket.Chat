@@ -75,23 +75,6 @@ const CardItem = (props: CardProps) => (
 	</Card>
 );
 
-const CardHorizontal = (props: CardProps) => (
-	<Card horizontal {...props}>
-		<CardRow>
-			<Icon name='document-eye' size='x24' />
-			<CardCol>
-				<CardTitle variant='h3'>Heading 3</CardTitle>
-				<CardBody>Lorem ipsum dolor sit amet.</CardBody>
-			</CardCol>
-		</CardRow>
-		<CardControls>
-			<Badge small variant='primary' />
-			<Tag>Card tag</Tag>
-			<IconButton icon='menu' size='small' aria-label='menu' />
-		</CardControls>
-	</Card>
-);
-
 export const Default: Story = {
 	render: (args) => (
 		<CardGroup {...args}>
@@ -129,7 +112,20 @@ export const VerticalWithHorizontalCard: Story = {
 	render: (args) => (
 		<CardGroup vertical stretch {...args}>
 			{Array.from(new Array(9)).map((_, index) => (
-				<CardHorizontal clickable key={index} width='full' />
+				<Card horizontal clickable key={index} width='full'>
+					<CardRow>
+						<Icon name='document-eye' size='x24' />
+						<CardCol>
+							<CardTitle variant='h3'>Heading 3</CardTitle>
+							<CardBody>Lorem ipsum dolor sit amet.</CardBody>
+						</CardCol>
+					</CardRow>
+					<CardControls>
+						<Badge small variant='primary' />
+						<Tag>Card tag</Tag>
+						<IconButton icon='menu' size='small' aria-label='menu' />
+					</CardControls>
+				</Card>
 			))}
 		</CardGroup>
 	),

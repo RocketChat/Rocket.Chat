@@ -8,7 +8,7 @@ const compareObjects = (a: Record<string | number | symbol, unknown>, b: Record<
 		return false;
 	}
 
-	return !keysA.some((key) => !b.hasOwnProperty(key) || a[key] !== b[key]);
+	return !keysA.some((key) => !Object.hasOwn(b, key) || a[key] !== b[key]);
 };
 
 export const shallowEqual = (a: unknown, b: unknown) => {

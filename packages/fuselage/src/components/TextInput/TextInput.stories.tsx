@@ -121,7 +121,7 @@ export const States: Story = {
 		<>
 			<PropsVariationSection
 				component={TextInput}
-				common={{ 'onChange': () => {}, 'aria-label': 'text' }}
+				common={{ 'onChange': () => undefined, 'aria-label': 'text' }}
 				xAxis={{
 					'default': {},
 					'with placeholder': { placeholder: 'Placeholder' },
@@ -145,7 +145,7 @@ export const States: Story = {
 			/>
 			<PropsVariationSection
 				component={TextInput}
-				common={{ 'onChange': () => {}, 'small': true, 'aria-label': 'text' }}
+				common={{ 'onChange': () => undefined, 'small': true, 'aria-label': 'text' }}
 				xAxis={{
 					'small': {},
 					'with placeholder': { placeholder: 'Placeholder' },

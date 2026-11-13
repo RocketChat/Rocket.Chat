@@ -181,14 +181,18 @@ describe('[Select Component]', () => {
 	});
 
 	it('should keep its own value when not controlled, and submit it under its name', async () => {
-		const { container } = render(<Select aria-label='Time unit' options={units} defaultSelectedKey='minutes' name='unit' />);
+		render(
+			<form aria-label='Schedule'>
+				<Select aria-label='Time unit' options={units} defaultSelectedKey='minutes' name='unit' />
+			</form>,
+		);
 		const combobox = screen.getByRole('combobox');
 
 		combobox.focus();
 		await userEvent.keyboard('{ArrowDown}{End}{Enter}');
 
 		expect(combobox).toHaveTextContent('Days');
-		expect(container.querySelector('input[type="hidden"][name="unit"]')).toHaveValue('days');
+		expect(screen.getByRole('form', { name: 'Schedule' })).toHaveFormValues({ unit: 'days' });
 	});
 
 	it('should have no a11y violations while open', async () => {

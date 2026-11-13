@@ -8,6 +8,7 @@ import { useStyle } from '../../hooks/useStyle';
 import { spacing } from '../../styleTokens';
 import type { BoxProps } from '../Box';
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type MarginsProps = PropsWithChildren<{
 	all?: BoxProps['margin'];
@@ -27,36 +28,36 @@ const Margins = (props: MarginsProps) => {
 	const { children, className, all, block, blockStart, blockEnd, inline, inlineStart, inlineEnd } = props;
 
 	const transformFn = useCallback(
-		(props: any) => {
-			if (all !== undefined && props.margin === undefined) {
-				props.margin = all;
+		(boxProps: BoxTransformProps) => {
+			if (all !== undefined && boxProps.margin === undefined) {
+				boxProps.margin = all;
 			}
 
-			if (block !== undefined && props.marginBlock === undefined) {
-				props.marginBlock = block;
+			if (block !== undefined && boxProps.marginBlock === undefined) {
+				boxProps.marginBlock = block;
 			}
 
-			if (blockStart !== undefined && props.marginBlockStart === undefined) {
-				props.marginBlockStart = blockStart;
+			if (blockStart !== undefined && boxProps.marginBlockStart === undefined) {
+				boxProps.marginBlockStart = blockStart;
 			}
 
-			if (blockEnd !== undefined && props.marginBlockEnd === undefined) {
-				props.marginBlockEnd = blockEnd;
+			if (blockEnd !== undefined && boxProps.marginBlockEnd === undefined) {
+				boxProps.marginBlockEnd = blockEnd;
 			}
 
-			if (inline !== undefined && props.marginInline === undefined) {
-				props.marginInline = inline;
+			if (inline !== undefined && boxProps.marginInline === undefined) {
+				boxProps.marginInline = inline;
 			}
 
-			if (inlineStart !== undefined && props.marginInlineStart === undefined) {
-				props.marginInlineStart = inlineStart;
+			if (inlineStart !== undefined && boxProps.marginInlineStart === undefined) {
+				boxProps.marginInlineStart = inlineStart;
 			}
 
-			if (inlineEnd !== undefined && props.marginInlineEnd === undefined) {
-				props.marginInlineEnd = inlineEnd;
+			if (inlineEnd !== undefined && boxProps.marginInlineEnd === undefined) {
+				boxProps.marginInlineEnd = inlineEnd;
 			}
 
-			return props;
+			return boxProps;
 		},
 		[all, block, blockEnd, blockStart, inline, inlineEnd, inlineStart],
 	);
