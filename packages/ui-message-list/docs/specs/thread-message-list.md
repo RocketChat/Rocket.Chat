@@ -4,6 +4,8 @@ adrs: [0001]
 code:
   [
     src/MessageList/scroll/useMessageListScroller.ts,
+    src/Message/contexts/MessageInteractionsContext.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageInteractionsValue.tsx,
     src/MessageList/stories/MessageListPlayground.tsx,
     src/MessageList/stories/conversation/ConversationPlayground.tsx,
     apps/meteor/client/providers/MessagesProvider/MessageMarkers.tsx,
@@ -24,6 +26,7 @@ tests:
     src/MessageList/MessageList.stories.tsx,
     src/MessageList/MessageListConversation.stories.tsx,
     src/hooks/useMessageListNavigation.spec.tsx,
+    src/Message/contexts/contexts.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadChat.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageList.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageRow.spec.tsx,

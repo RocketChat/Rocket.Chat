@@ -3,6 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { MarkdownTextContext, TooltipProvider } from '@rocket.chat/ui-client';
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import {
+	messageInteractionsDefaultValue,
 	MessageReactionList,
 	useMessageContent,
 	useMessageDisplay,
@@ -215,8 +216,7 @@ describe('interactions of the app', () => {
 	it('acts on the composer and the chat of the open conversation (R28)', async () => {
 		const chat = {
 			composer: { quoteMessage: jest.fn(), replyWith: jest.fn() },
-			flows: { sendMessage: jest.fn(), requestMessageDeletion: jest.fn(), replyBroadcast: jest.fn() },
-			messageEditing: { editMessage: jest.fn() },
+			flows: { sendMessage: jest.fn(), replyBroadcast: jest.fn() },
 			data: { getMessageByID: jest.fn().mockResolvedValue(createFakeMessage({ _id: 'quoted' })) },
 		};
 		const message = createFakeMessage({ _id: 'mid', msg: 'text' });
@@ -226,17 +226,12 @@ describe('interactions of the app', () => {
 		await result.current.quoteMessageById('quoted');
 		await result.current.replyWith('reply');
 		await result.current.sendMessage('hello');
-		result.current.edit(message);
-		result.current.requestDeletion(message);
 		result.current.replyBroadcast(message);
 
 		expect(chat.composer.quoteMessage).toHaveBeenCalledTimes(2);
 		expect(chat.composer.replyWith).toHaveBeenCalledWith('reply');
 		expect(chat.flows.sendMessage).toHaveBeenCalledWith({ text: 'hello' });
-		expect(chat.messageEditing.editMessage).toHaveBeenCalledWith(message);
-		expect(chat.flows.requestMessageDeletion).toHaveBeenCalledWith(message);
 		expect(chat.flows.replyBroadcast).toHaveBeenCalledWith(message);
-		expect(result.current.canDelete(message)).toBe(true);
 	});
 
 	it('quotes the message a quote action names, as the chat fetches it (R28)', async () => {
@@ -258,24 +253,20 @@ describe('interactions of the app', () => {
 		await expect(result.current.quoteMessageById('message-id')).resolves.toBeUndefined();
 	});
 
-	it('only offers deletion where a chat is open (R28)', () => {
+	it('provides the capabilities the package reads and no other (thread-message-list R53)', () => {
 		const { result } = setup(undefined);
 
-		expect(result.current.canDelete(createFakeMessage())).toBe(false);
+		expect(Object.keys(result.current).sort()).toEqual(Object.keys(messageInteractionsDefaultValue).sort());
 	});
 
-	it('opens the modals of the actions on a message (R28)', async () => {
+	it('opens the modal that forwards a message (R28)', async () => {
 		const setModal = jest.fn();
 		const { result } = setup(undefined, setModal);
-		const message = createFakeMessage({ _id: 'mid', reactions: { ':tada:': { usernames: ['john.doe'] } } });
+		const message = createFakeMessage({ _id: 'mid' });
 
-		result.current.openReport(message);
-		result.current.openReactionList(message);
-		result.current.openReadReceipts(message);
-		result.current.startDiscussion(message);
 		await result.current.openForward(message);
 
-		await waitFor(() => expect(setModal).toHaveBeenCalledTimes(5));
+		await waitFor(() => expect(setModal).toHaveBeenCalledTimes(1));
 	});
 });
 
@@ -323,70 +314,6 @@ describe('the reaction picker', () => {
 
 		expect(onClose).toHaveBeenCalledTimes(2);
 		expect(open).not.toHaveBeenCalled();
-	});
-});
-
-describe('interactions of the toolbar menu', () => {
-	const interactionsOf = (root: ReturnType<typeof appRoot>) =>
-		renderHook(() => useMessageInteractions(), {
-			wrapper: root.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>).build(),
-		}).result.current;
-
-	beforeEach(() => {
-		Messages.state.store(createFakeMessage({ _id: 'mid', rid: 'rid' }));
-	});
-
-	afterEach(() => {
-		Messages.state.replaceAll([]);
-	});
-
-	it('pins, unpins, stars and unstars through the REST API (R28)', async () => {
-		const calls = { pin: jest.fn(), unpin: jest.fn(), star: jest.fn(), unstar: jest.fn() };
-		const interactions = interactionsOf(
-			appRoot()
-				.withEndpoint('POST', '/v1/chat.pinMessage', calls.pin.mockResolvedValue({ success: true }))
-				.withEndpoint('POST', '/v1/chat.unPinMessage', calls.unpin.mockResolvedValue({ success: true }))
-				.withEndpoint('POST', '/v1/chat.starMessage', calls.star.mockResolvedValue({ success: true }))
-				.withEndpoint('POST', '/v1/chat.unStarMessage', calls.unstar.mockResolvedValue({ success: true })),
-		);
-		const message = createFakeMessage({ _id: 'mid', rid: 'rid' });
-
-		interactions.pin(message);
-		interactions.unpin(message);
-		interactions.star(message);
-		interactions.unstar(message);
-
-		await waitFor(() => {
-			for (const call of Object.values(calls)) {
-				expect(call).toHaveBeenCalledWith({ messageId: 'mid' });
-			}
-		});
-	});
-
-	it('marks a message unread for the subscription of its room (R28)', async () => {
-		const unread = jest.fn().mockResolvedValue({ success: true });
-		Subscriptions.state.store(createFakeSubscription({ rid: 'rid' }));
-		const interactions = interactionsOf(appRoot().withEndpoint('POST', '/v1/subscriptions.unread', unread));
-
-		interactions.markUnread(createFakeMessage({ _id: 'mid', rid: 'rid' }));
-
-		await waitFor(() => expect(unread).toHaveBeenCalledWith({ firstUnreadMessage: { _id: 'mid' } }));
-		Subscriptions.state.replaceAll([]);
-	});
-
-	it('translates a message and goes back to its original (R28)', async () => {
-		const translate = jest.fn().mockResolvedValue({ success: true });
-		const interactions = interactionsOf(appRoot().withEndpoint('POST', '/v1/autotranslate.translateMessage', translate));
-		const message = createFakeMessage({ _id: 'mid', rid: 'rid' });
-
-		interactions.translate(message);
-
-		await waitFor(() => expect(translate).toHaveBeenCalledWith({ messageId: 'mid', targetLanguage: 'pt' }));
-		expect(Messages.state.get('mid')).toMatchObject({ autoTranslateFetching: true, autoTranslateShowInverse: true });
-
-		interactions.showOriginal(message);
-
-		expect(Messages.state.get('mid')).not.toHaveProperty('autoTranslateShowInverse');
 	});
 });
 

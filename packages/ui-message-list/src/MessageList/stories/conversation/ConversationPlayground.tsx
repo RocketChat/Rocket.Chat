@@ -86,7 +86,6 @@ const ConversationPlayground = ({ layout, size = 120, isSelecting = false, hasLo
 			...messageInteractionsDefaultValue,
 			...Object.fromEntries(Object.keys(messageInteractionsDefaultValue).map((name) => [name, action(name)])),
 			hasReacted: (message, reaction) => !!message.reactions?.[reaction]?.usernames.includes(VIEWER.username),
-			canDelete: isOwnMessage,
 		}),
 		[],
 	);
