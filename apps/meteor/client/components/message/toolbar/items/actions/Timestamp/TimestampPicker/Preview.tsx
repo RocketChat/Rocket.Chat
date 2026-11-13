@@ -1,4 +1,4 @@
-import { Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import { useTranslation } from 'react-i18next';
@@ -20,16 +20,14 @@ const Preview = ({ date, format, timezone }: PreviewProps) => {
 	const tokens = parse(markup);
 
 	return (
-		<Box marginBlock='x16'>
-			<Field>
-				<FieldLabel>{t('Preview')}</FieldLabel>
-				<FieldRow>
-					<GazzodownText>
-						<Markup tokens={tokens} />
-					</GazzodownText>
-				</FieldRow>
-			</Field>
-		</Box>
+		<Field>
+			<FieldLabel>{t('Preview')}</FieldLabel>
+			<FieldRow>
+				<GazzodownText>
+					<Markup tokens={tokens} />
+				</GazzodownText>
+			</FieldRow>
+		</Field>
 	);
 };
 

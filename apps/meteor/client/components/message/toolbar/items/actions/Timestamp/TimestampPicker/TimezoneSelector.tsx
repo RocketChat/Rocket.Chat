@@ -1,4 +1,4 @@
-import { Box, Field, FieldHint, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { Key } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,16 +25,14 @@ const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 	];
 
 	return (
-		<Box marginBlock='x16'>
-			<Field>
-				<FieldLabel htmlFor={timezoneField}>{t('Timezone')}</FieldLabel>
-				<FieldDescription>{t('Timezone_picker_description')}</FieldDescription>
-				<FieldRow>
-					<Select id={timezoneField} value={value} onChange={handleTimezoneChange} options={options} />
-				</FieldRow>
-				<FieldHint>{t('Timezone_picker_hint')}</FieldHint>
-			</Field>
-		</Box>
+		<Field>
+			<FieldLabel htmlFor={timezoneField}>{t('Timezone')}</FieldLabel>
+			<FieldDescription>{t('Timezone_picker_description')}</FieldDescription>
+			<FieldRow>
+				<Select id={timezoneField} value={value} onChange={handleTimezoneChange} options={options} />
+			</FieldRow>
+			<FieldHint>{t('Timezone_picker_hint')}</FieldHint>
+		</Field>
 	);
 };
 
