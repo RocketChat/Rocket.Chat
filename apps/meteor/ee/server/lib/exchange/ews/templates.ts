@@ -67,6 +67,7 @@ export const getItemRequest = (mailbox: string, itemIds: string[]): string =>
 			'<t:FieldURI FieldURI="calendar:IsCancelled"/>',
 			'<t:FieldURI FieldURI="calendar:LegacyFreeBusyStatus"/>',
 			'<t:FieldURI FieldURI="calendar:CalendarItemType"/>',
+			'<t:FieldURI FieldURI="item:ReminderIsSet"/>',
 			'<t:FieldURI FieldURI="item:ReminderMinutesBeforeStart"/>',
 			'</t:AdditionalProperties>',
 			'</m:ItemShape>',
