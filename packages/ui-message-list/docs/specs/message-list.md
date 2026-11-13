@@ -79,8 +79,11 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 - **R2** The rows MUST appear in this order: the older loader while `hasOlderMessages` is true, else the header when the
   consumer gave one; then one row per message, oldest first; then the newer loader while `hasNewerMessages` is true. The header
   MUST NOT show while older messages remain and MUST show as soon as none do (B12).
-- **R3** The header MUST be a `listitem` of the list. A loader MUST be `presentation` and MUST show a spinner only while its own
-  page loads: the older loader for `isLoadingOlderMessages`, the newer one for `isLoadingNewerMessages` (B13).
+- **R3** The header MUST be a `listitem` of the list. A loader MUST be `presentation`, 32px high as `develop`'s `.load-more` (2rem)
+  in the room and the thread, and MUST show a spinner only while its own page loads: the older loader for `isLoadingOlderMessages`,
+  the newer one for `isLoadingNewerMessages`. That spinner, and the one of the first page (R4), MUST be `develop`'s
+  `LoadingMessagesIndicator`: a `Throbber` of the default size in the default text colour (B13; review round 1: the reference's
+  loader was 48px, and its spinner smaller and grey).
 - **R4** While `isLoadingInitialMessages` is true and there are no messages, the list MUST show a spinner and none of the
   header, the loaders and the message rows. The spinner MUST sit at the top of the list, where the older loader shows, as
   `develop`'s room and thread show it (review round 1: it sat at the bottom). Once a message exists the rows MUST show, whatever
@@ -191,7 +194,9 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   the viewer is reading, the topmost visible message MUST stay at its offset, within 1px.
 - **R40** When the messages are replaced by another window of the conversation (a jump to a message that was not loaded, back to
   the latest page), the position MUST come from what caused it: the jump target centered (R41), or the bottom. A window
-  replaced for no such reason, while the viewer is reading, MUST go to the bottom.
+  replaced for no such reason, while the viewer is reading, MUST go to the bottom. The first messages listed under a header shown
+  alone MUST count as arriving at the end (R15, R19, R21), and those listed under an older loader shown alone as a page of older
+  messages (R36): neither is another window (review round 1: both were taken for one).
 
 **Jumps**
 
@@ -341,7 +346,9 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 One pass builds typed rows from the messages (the older loader or the header, one row per message with its previous message, grouping,
 day and unread flags, the newer loader); it is the only place that maps a message id to a row index, and the keyboard asks it for
 the row next to another. Each change of the messages is classified by where it happened, which decides whether the virtualizer is
-told to keep the rows in place and whether a change at both ends is committed in two steps.
+told to keep the rows in place and whether a change at both ends is committed in two steps; the older loader or the header stays
+the first row while pages arrive under it, so a page is a change at the start, and the first messages under a header shown alone are a
+change at the end.
 
 What the list holds in view (the bottom, a message, nothing), whether it is positioning or idle, whether the viewer is scrolling,
 whether a page is loading and whether someone else wrote while the viewer was away are the state of a pure reducer: events in (the
@@ -381,7 +388,7 @@ skipped test "goes to the bottom for an own message followed by another one in t
 
 ### D3 A failed jump to the latest page leaves the list waiting for it
 
-A rejected `onJumpToLatest` leaves the list waiting for the latest page: it holds nothing, and goes to the bottom later without the
+A rejected `onJumpToLatest` leaves the list waiting for the latest page (a missing one no longer does: the list stops waiting at once): it holds nothing, and goes to the bottom later without the
 viewer asking, when the messages next stop having a newer page (R20). Pinned by the skipped test "does not go to the bottom by itself
 after a failed jump to the latest page (R20)" in `MessageList.spec.tsx`.
 
@@ -394,8 +401,9 @@ Not recorded as defects, because the list is changed instead of carrying them:
 - Fixed in this branch (Q1), each in its own commit with a test that failed first: the position was resolved when the list mounted, so a
   list that mounted before its messages lost its position (R61); `isAtBottom` reported what the list holds, so it was false for up to 3 s
   after a jump to the last message (R56); a resize did not refresh the report (R55). Also fixed: a check for a page that is due that was
-  not repeated when a load settled after its page was committed (R34), and an arrow that gave up after one frame on a row the
-  virtualizer had not rendered yet (R66).
+  not repeated when a load settled after its page was committed (R34), an arrow that gave up after one frame on a row the
+  virtualizer had not rendered yet, and an arrow that reached the nearest rendered row, which a kept-mounted row far from the
+  viewport is, instead of the row next to it (R66).
 - Changed instead (intent Q4): every message row object is rebuilt on every change, so the memo of the row never held; a row is now
   drawn again only when what it shows changed (R71, R72).
 
