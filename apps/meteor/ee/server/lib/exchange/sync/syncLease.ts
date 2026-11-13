@@ -5,7 +5,6 @@ import { MongoServerError } from 'mongodb';
 
 import { sleep } from '../../../../../lib/utils/sleep';
 import { logger } from '../logger';
-import { scrubForLog } from '../scrub';
 
 /** A lease left behind by an instance that died frees itself after it */
 const LEASE_MS = 15 * 60 * 1000;
@@ -40,7 +39,7 @@ export const acquireSyncLease = async (
 			return undefined;
 		}
 
-		logger.warn({ msg: 'Could not take the sync lease, so the mailbox is left for another run', scope, uid, err: scrubForLog(err) });
+		logger.warn({ msg: 'Could not take the sync lease, so the mailbox is left for another run', scope, uid, err });
 		return undefined;
 	}
 
@@ -48,7 +47,7 @@ export const acquireSyncLease = async (
 		try {
 			await ExchangeSyncLease.renewLease(scope, uid, token, new Date(Date.now() + LEASE_MS));
 		} catch (err) {
-			logger.warn({ msg: 'Could not renew the sync lease', scope, uid, err: scrubForLog(err) });
+			logger.warn({ msg: 'Could not renew the sync lease', scope, uid, err });
 		}
 	}, LEASE_RENEWAL_MS);
 
@@ -58,7 +57,7 @@ export const acquireSyncLease = async (
 		try {
 			await ExchangeSyncLease.releaseLease(scope, uid, token);
 		} catch (err) {
-			logger.warn({ msg: 'Could not release the sync lease; it expires on its own', scope, uid, err: scrubForLog(err) });
+			logger.warn({ msg: 'Could not release the sync lease; it expires on its own', scope, uid, err });
 		}
 	};
 };

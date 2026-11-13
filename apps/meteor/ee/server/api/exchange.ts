@@ -11,7 +11,6 @@ import { getExchangeProvider, isServerSyncEnabled } from '../lib/exchange/Exchan
 import type { ExchangeErrorCode } from '../lib/exchange/errors';
 import { isExchangeError } from '../lib/exchange/errors';
 import { logger } from '../lib/exchange/logger';
-import { scrubForLog } from '../lib/exchange/scrub';
 import { syncCalendarForUser } from '../lib/exchange/sync/calendar/syncCalendarForUser';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
@@ -130,7 +129,7 @@ API.v1.post(
 
 			return API.v1.success({ upserted, modified, deleted });
 		} catch (err) {
-			logger.error({ msg: 'On-demand Exchange calendar sync failed', uid: this.userId, err: scrubForLog(err) });
+			logger.error({ msg: 'On-demand Exchange calendar sync failed', uid: this.userId, err });
 
 			if (!isExchangeError(err)) {
 				return API.v1.internalError('Outlook_Sync_Failed');
