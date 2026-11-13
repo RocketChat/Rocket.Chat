@@ -33,6 +33,13 @@ export function addSettings(): Promise<void> {
 					enableQuery: { _id: 'Outlook_Calendar_Enabled', value: true },
 				});
 
+				await this.add('Calendar_BusyStatus_Enabled', true, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					enableQuery: enabled,
+				});
+
 				await this.section('Exchange_Desktop', async function () {
 					await this.add('Outlook_Calendar_Exchange_Url', '', {
 						type: 'string',
@@ -60,13 +67,6 @@ export function addSettings(): Promise<void> {
 							enableQuery: legacyOnly,
 						},
 					);
-
-					await this.add('Calendar_BusyStatus_Enabled', true, {
-						type: 'boolean',
-						public: true,
-						invalidValue: false,
-						enableQuery: legacyOnly,
-					});
 
 					/**
 					 * const defaultMapping = {
