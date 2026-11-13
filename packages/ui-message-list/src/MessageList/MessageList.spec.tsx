@@ -446,6 +446,8 @@ describe('highlight', () => {
 });
 
 describe('reports', () => {
+	afterEach(() => jest.useRealTimers());
+
 	it('reports nothing while the first page loads or without messages, and answers undefined (R58)', () => {
 		const onVisibleMessagesChange = jest.fn();
 		const ref = createRef<MessageListHandle>();
@@ -479,8 +481,10 @@ describe('reports', () => {
 	});
 
 	it('reports its position when it unmounts, and not without messages (R59)', () => {
+		jest.useFakeTimers();
 		const onPositionChange = jest.fn();
 		const { unmount } = render(<List onPositionChange={onPositionChange} />, { wrapper });
+		act(() => jest.advanceTimersByTime(100));
 		expect(onPositionChange).not.toHaveBeenCalled();
 		unmount();
 		expect(onPositionChange).toHaveBeenCalledTimes(1);
@@ -489,6 +493,16 @@ describe('reports', () => {
 		const onEmptyPositionChange = jest.fn();
 		render(<List messages={[]} onPositionChange={onEmptyPositionChange} />, { wrapper }).unmount();
 		expect(onEmptyPositionChange).not.toHaveBeenCalled();
+	});
+
+	it('reports no position before it has placed itself, so a list left before it landed is not stored where it never was (R59)', () => {
+		const onPositionChange = jest.fn();
+		const { unmount } = render(<List onPositionChange={onPositionChange} />, { wrapper });
+		expect(host()).toHaveAttribute('data-phase', 'positioning');
+
+		unmount();
+
+		expect(onPositionChange).not.toHaveBeenCalled();
 	});
 
 	it('opens at the bottom without a position, and at its message with one (R62)', () => {

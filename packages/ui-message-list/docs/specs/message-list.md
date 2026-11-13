@@ -260,7 +260,9 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 
 - **R59** The list MUST call `onPositionChange` with an opaque position 150 ms after a scroll or a change that moved the visible
   messages, at most once per window of that length, and once when it unmounts, so a consumer can store it. It MUST NOT call
-  it while no message is listed (B14).
+  it while no message is listed, nor with a position taken before the list has placed itself after it opened (R29): a list left
+  before it landed does not report where it never stood (B14; review round 1, where a room left before its bottom landed reopened
+  near the top).
 - **R60** A list mounted with `restoredPosition` MUST open at the bottom when it was left at the bottom; else with the message that
   was at the top at the same offset, within 1px, when that message is listed; else at the bottom. A jump target (R45) wins
   over it, and `firstUnreadMessageId` never does (B14; R9).

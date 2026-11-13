@@ -206,6 +206,11 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		if (topMessage) {
 			const offset = scrollOffset - handle.getItemOffset(topIndex);
 			topVisibleRef.current = { messageId: topMessage._id, offset };
+		}
+
+		// Where a list stands before it has landed is not where the viewer left it
+		if (topMessage && stateRef.current?.phase === 'idle') {
+			const offset = scrollOffset - handle.getItemOffset(topIndex);
 			positionRef.current = {
 				isAtBottom,
 				anchorMessageId: topMessage._id,
