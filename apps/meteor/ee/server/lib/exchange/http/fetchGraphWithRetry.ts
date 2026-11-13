@@ -11,8 +11,8 @@ import { logger } from '../logger';
  * - `Retry-After` is honoured wherever it appears, 429 or 5xx alike, which is Microsoft's documented rule:
  *   back off by the header, and fall back to exponential backoff only when there is none.
  * - 4xx other than 429 returns immediately. A bad credential does not improve with waiting.
- * - A transport failure is retried, because that is the transient this policy exists for. A refusal by the
- *   allowlist is the exception: it is the air-gap invariant and must never be looped on.
+ * - A transport failure is retried, because that is the transient this policy exists for. A refusal by SSRF
+ *   validation is the exception: it must never be looped on.
  * - A total budget bounds the call. Waiting less than the server asked only prolongs the throttling, so a
  *   wait that does not fit ends the attempt rather than being shortened.
  */

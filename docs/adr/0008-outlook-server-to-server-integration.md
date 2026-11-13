@@ -202,7 +202,7 @@ The integration stores users' calendar events and their personal contacts, with 
 | Protocol            | REST over HTTPS, JSON                                     | SOAP over HTTPS, XML                                       |
 | Authentication      | OAuth 2.0 client credentials                              | NTLMv2 with channel binding, or Basic                      |
 | HTTP client         | `@rocket.chat/server-fetch`                               | Bespoke `https.Agent`                                      |
-| Air-gap enforcement | `{ ignoreSsrfValidation: false, allowList: [...] }`       | `AllowlistedAgent.createConnection` refuses any other host |
+| Air-gap enforcement | None: Graph is Microsoft's cloud. SSRF validation stays on | `AllowlistedAgent.createConnection` refuses any other host |
 | Calendar delta      | `calendarView/delta`, opaque `deltaLink`                  | `SyncFolderItems` as a probe, then a `CalendarView` snapshot |
 | Cursor scope        | The requested window                                      | The calendar folder                                        |
 | Page `coverage`     | always `'delta'`                                          | `'full'`, or `'partial'` when the snapshot ran out of pages |
