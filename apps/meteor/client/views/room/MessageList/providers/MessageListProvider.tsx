@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useSearchParameter } from '@rocket.chat/ui-contexts';
+import type { MessageSelectionStore } from '@rocket.chat/ui-message-list';
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
@@ -17,13 +18,15 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 export type MessageListProviderProps = {
 	children: ReactNode;
+	/** The selection the messages of this list join, if it has one. */
+	selection?: MessageSelectionStore;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
 	};
 };
 
-const MessageListProvider = ({ children, attachmentDimension }: MessageListProviderProps) => {
+const MessageListProvider = ({ children, attachmentDimension, selection }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -126,7 +129,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	);
 
 	return (
-		<MessagesProvider room={room} subscription={subscription} attachmentDimension={attachmentDimension}>
+		<MessagesProvider room={room} subscription={subscription} attachmentDimension={attachmentDimension} selection={selection}>
 			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
 		</MessagesProvider>
 	);

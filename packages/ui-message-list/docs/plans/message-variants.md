@@ -29,8 +29,8 @@ Departures from the scope:
 
 - `useIsVisible` is the one of `@rocket.chat/ui-client` (branch 05); `normalizeUsername`, the threads list's parts and `useParentMessage` were done
   by earlier branches. `useCanReplyToBroadcast` is added (the variants read it).
-- "Select all" is fed by each rendered row registering itself in the room's store (`useIsSelectedMessage`, which already
-  registers a message only while it is rendered and not selected), not by a list-level `setAvailableMessages`: the old list
+- "Select all" is fed by each rendered row registering itself in the room's store (`useRegisterRenderedMessage`, which, like
+  the old `useIsSelectedMessage`, registers a message only while it is rendered and not selected), not by a list-level `setAvailableMessages`: the old list
   cannot know which rows virtua has mounted, so a list-level method would change the count (R26). The method is therefore not
   added; the registration is the bridge, and ends with branch 08.
 - `showUserAvatar` goes from every caller (R46).

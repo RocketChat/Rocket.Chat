@@ -23,14 +23,14 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
 import MessagesProvider from './MessagesProvider';
-import { messageSelectionFromStore } from './messageSelectionFromStore';
+import { messageSelectionFromStore, roomMessageSelection } from './messageSelectionFromStore';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
 import { Messages, Roles, Rooms, Subscriptions } from '../../stores';
 import { clearHighlightMessage, setHighlightMessage } from '../../views/room/MessageList/providers/messageHighlightSubscription';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
-import { SelectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
+import { SelectedMessageStore, selectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
 import type { MediaPlayerContextValue } from '../MediaPlayerProvider';
 import { MediaPlayerContext } from '../MediaPlayerProvider';
 
@@ -449,6 +449,40 @@ it('leaves a place without a selection out of the room selection (R31)', () => {
 	});
 
 	expect(result.current).toEqual({ isSelecting: false, isSelected: false });
+});
+
+describe('the selection of the room (message-variants R48)', () => {
+	afterEach(() => act(() => selectedMessageStore.reset()));
+
+	it("is one instance over the room's store, which the places that give it share (message-variants R48)", () => {
+		const { result } = renderHook(() => ({ isSelecting: useIsSelectingMessages(), isSelected: useIsMessageSelected('message-id') }), {
+			wrapper: appRoot()
+				.wrap((children: ReactNode) => <MessagesProvider selection={roomMessageSelection}>{children}</MessagesProvider>)
+				.build(),
+		});
+
+		act(() => {
+			selectedMessageStore.setIsSelecting(true);
+			selectedMessageStore.toggle('message-id');
+		});
+
+		expect(result.current).toEqual({ isSelecting: true, isSelected: true });
+	});
+
+	it("leaves a place that is given none out of the room's selection, whatever state it is in (message-variants R48)", () => {
+		const { result } = renderHook(() => ({ isSelecting: useIsSelectingMessages(), isSelected: useIsMessageSelected('message-id') }), {
+			wrapper: appRoot()
+				.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>)
+				.build(),
+		});
+
+		act(() => {
+			selectedMessageStore.setIsSelecting(true);
+			selectedMessageStore.toggle('message-id');
+		});
+
+		expect(result.current).toEqual({ isSelecting: false, isSelected: false });
+	});
 });
 
 describe('navigation', () => {

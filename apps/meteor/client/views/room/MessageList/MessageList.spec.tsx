@@ -8,6 +8,7 @@ import type { MessageListProps } from './MessageList';
 import { MessageList } from './MessageList';
 import { useMessages } from './hooks/useMessages';
 import { RoomManager } from '../../../lib/RoomManager';
+import { roomMessageSelection } from '../../../providers/MessagesProvider/messageSelectionFromStore';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 
@@ -107,7 +108,11 @@ jest.mock('./MessageListItem', () => ({
 	),
 }));
 
-jest.mock('./providers/MessageListProvider', () => ({ children }: { children: ReactNode }) => <>{children}</>);
+const mockListProvider = jest.fn();
+jest.mock('./providers/MessageListProvider', () => (props: { children: ReactNode }) => {
+	mockListProvider(props);
+	return <>{props.children}</>;
+});
 
 jest.mock('../providers/SelectedMessagesProvider', () => ({
 	SelectedMessagesProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
@@ -349,6 +354,17 @@ describe('MessageList scroll position', () => {
 
 		expect(lastVListCacheProp).toBeUndefined();
 	});
+});
+
+it("gives the messages of the list the room's selection (message-variants R48)", () => {
+	(useMessages as jest.Mock).mockReturnValue([createMessage('message-1')]);
+	(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+	(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: false, update: jest.fn() });
+	mockListProvider.mockClear();
+
+	render(<MessageList {...defaultProps} />, { wrapper: mockAppRoot().withSetting('Message_GroupingPeriod', 300).build() });
+
+	expect(mockListProvider).toHaveBeenCalledWith(expect.objectContaining({ selection: roomMessageSelection }));
 });
 
 describe('MessageList accessibility', () => {

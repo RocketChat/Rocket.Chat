@@ -2,7 +2,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,7 @@ import MessageListProvider from './providers/MessageListProvider';
 import { RoomManager } from '../../../lib/RoomManager';
 import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
 import { isMessageSequential } from '../../../lib/utils/isMessageSequential';
+import { roomMessageSelection } from '../../../providers/MessagesProvider/messageSelectionFromStore';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
@@ -231,7 +232,6 @@ export const MessageList = function MessageList({
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef, messagesLength: messages.length });
 
-	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const { t } = useTranslation();
 
@@ -292,7 +292,7 @@ export const MessageList = function MessageList({
 	unreadMarkIndex.current = null;
 
 	return (
-		<MessageListProvider>
+		<MessageListProvider selection={roomMessageSelection}>
 			<SelectedMessagesProvider>
 				<VList
 					ref={virtualizerRef}
@@ -344,7 +344,6 @@ export const MessageList = function MessageList({
 									message={message}
 									newDay={isMessageNewDay(message, previous)}
 									showUnreadDivider={showUnreadDivider}
-									showUserAvatar={showUserAvatar}
 									sequential={sequential}
 									visible={visible}
 									unread={!!subscription?.tunread?.includes(message._id)}
