@@ -4278,6 +4278,7 @@
   "Mark_as_unread": "Mark as unread",
   "Mark_email_as_verified": "Mark email as verified",
   "Mark_read": "Mark read",
+  "Mark_rooms_as_read": "Mark rooms as read",
   "Mark_unread": "Mark unread",
   "Markdown_Headers": "Allow markdown headers in messages",
   "Markdown_Marked_Breaks": "Enable marked breaks",
@@ -5915,6 +5916,14 @@
   "Room_uploaded_file_list_empty": "No files available.",
   "Rooms": "Rooms",
   "Rooms_added_successfully": "Rooms added successfully",
+  "Rooms_marked_read": {
+    "one": "{{count}} room marked read",
+    "other": "{{count}} rooms marked read"
+  },
+  "Rooms_not_marked_read": {
+    "one": "{{count}} room could not be marked read. Try again.",
+    "other": "{{count}} rooms could not be marked read. Try again."
+  },
   "Root": "Root",
   "Routing": "Routing",
   "Run_only_once_for_each_visitor": "Run only once for each visitor",
@@ -7100,6 +7109,10 @@
   "Unread_Requested_First": "Unread requested first",
   "Unread_Requested_Last": "Unread requested last",
   "Unread_Rooms": "Unread rooms",
+  "Unread_rooms_in_group_become_read": {
+    "one": "{{count}} unread room in “{{group}}” becomes read, threads included.",
+    "other": "{{count}} unread rooms in “{{group}}” become read, threads included."
+  },
   "Unread_Rooms_Mode": "Unread rooms mode",
   "Unread_Tray_Icon_Alert": "Unread tray icon alert",
   "Unreads": "Unreads",
