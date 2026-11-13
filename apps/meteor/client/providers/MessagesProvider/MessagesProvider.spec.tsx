@@ -236,6 +236,25 @@ describe('interactions of the app', () => {
 		expect(result.current.canDelete(message)).toBe(true);
 	});
 
+	it('quotes the message a quote action names, as the chat fetches it (R28)', async () => {
+		const quoted = createFakeMessage({ _id: 'message-id' });
+		const chat = { composer: { quoteMessage: jest.fn() }, data: { getMessageByID: jest.fn().mockResolvedValue(quoted) } };
+		const { result } = setup(chat as unknown as Partial<ChatAPI>);
+
+		await result.current.quoteMessageById('message-id');
+
+		expect(chat.data.getMessageByID).toHaveBeenCalledWith('message-id');
+		expect(chat.composer.quoteMessage).toHaveBeenCalledWith(quoted);
+	});
+
+	it('sends, replies and quotes nothing outside a room (R28)', async () => {
+		const { result } = setup(undefined);
+
+		await expect(result.current.sendMessage('hello')).resolves.toBeUndefined();
+		await expect(result.current.replyWith('hello')).resolves.toBeUndefined();
+		await expect(result.current.quoteMessageById('message-id')).resolves.toBeUndefined();
+	});
+
 	it('only offers deletion where a chat is open (R28)', () => {
 		const { result } = setup(undefined);
 
