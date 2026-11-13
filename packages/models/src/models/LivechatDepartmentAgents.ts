@@ -18,7 +18,7 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
-import { Users } from '../index';
+import { Users } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
