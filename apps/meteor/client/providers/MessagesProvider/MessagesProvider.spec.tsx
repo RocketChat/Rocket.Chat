@@ -6,6 +6,7 @@ import {
 	MessageReactionList,
 	useMessageContent,
 	useMessageDisplay,
+	useIsMessageBeingEdited,
 	useMessageInteractions,
 	useMessageNavigation,
 	useMessageRelatedData,
@@ -27,6 +28,7 @@ import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../..
 import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
 import { Messages, Roles, Subscriptions } from '../../stores';
+import { clearHighlightMessage, setHighlightMessage } from '../../views/room/MessageList/providers/messageHighlightSubscription';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { SelectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
 import type { MediaPlayerContextValue } from '../MediaPlayerProvider';
@@ -1226,5 +1228,53 @@ describe('the roles of the authors of a place (message-variants R49, R52)', () =
 		await new Promise((resolve) => setTimeout(resolve, 50));
 		expect(result.current).toBeUndefined();
 		expect(getRoomRoles).not.toHaveBeenCalled();
+	});
+});
+
+describe('the message with the editing look (message-variants R47)', () => {
+	afterEach(() => clearHighlightMessage());
+
+	const renderEditing = (allowsInteraction: boolean) =>
+		renderHook(() => useIsMessageBeingEdited('message-id'), {
+			wrapper: appRoot()
+				.wrap((children: ReactNode) => <MessagesProvider allowsInteraction={allowsInteraction}>{children}</MessagesProvider>)
+				.build(),
+		});
+
+	it('is the message the store of jumps and editing holds, and follows it where interaction is allowed (message-variants R47)', () => {
+		const { result } = renderEditing(true);
+		expect(result.current).toBe(false);
+
+		act(() => setHighlightMessage('message-id'));
+		expect(result.current).toBe(true);
+
+		act(() => setHighlightMessage('another-message'));
+		expect(result.current).toBe(false);
+
+		act(() => setHighlightMessage('message-id'));
+		act(() => clearHighlightMessage());
+		expect(result.current).toBe(false);
+	});
+
+	// Known defect: ../../../../../packages/ui-message-list/docs/specs/message-variants.md#d1-a-jump-replaces-the-editing-look-of-the-message-being-edited
+	it.skip('keeps the editing look on the message being edited while a jump highlights another', () => {
+		const { result } = renderHook(() => ({ edited: useIsMessageBeingEdited('edited'), target: useIsMessageBeingEdited('target') }), {
+			wrapper: appRoot()
+				.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>)
+				.build(),
+		});
+
+		act(() => setHighlightMessage('edited'));
+		act(() => setHighlightMessage('target'));
+
+		expect(result.current).toEqual({ edited: true, target: true });
+	});
+
+	it('is no message where interaction is not allowed (message-variants R47)', () => {
+		const { result } = renderEditing(false);
+
+		act(() => setHighlightMessage('message-id'));
+
+		expect(result.current).toBe(false);
 	});
 });

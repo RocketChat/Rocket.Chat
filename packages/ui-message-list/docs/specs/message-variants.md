@@ -6,6 +6,7 @@ code:
     src/Message/contexts/MessageRelatedDataContext.ts,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
     apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageEditingValue.ts,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.ts,
   ]
 tests:
@@ -278,7 +279,6 @@ Decided in the plan. What this spec fixes about shape:
 Behaviour on `develop` that the variants carry over. The checker rejects a `D` entry without a skipped test that pins it,
 so each becomes a `D<n>` entry in the commit that adds its test (the plan names the commits); until then it is listed here:
 
-- A jump to a message and editing share one highlighted id (R47), so jumping to another message while editing one moves the editing look away from it; until branch 09.
 - Activating the checkbox itself (assistive technology, a script) toggles twice, because the row and the checkbox both toggle, and leaves the message as it was (R23 covers the visible box; measured on `develop`'s structure with Fuselage's `CheckBox`: a click on the input toggles twice, a click on its visible box three times).
 - The reveal of an ignored message ends when the row unmounts, so scrolling it away hides it again.
 - The preview of a reply to a system message writes the text of the system type from the reply, not from the message the thread started with.
@@ -286,6 +286,12 @@ so each becomes a `D<n>` entry in the commit that adds its test (the plan names 
 - Space on a focused `ThreadMessagePreview` opens the thread without preventing the browser's default.
 - A pending end-to-end encrypted message in a thread keeps its toolbar (Q6, answered).
 - `ThreadMessage` and `SystemMessage` have no accessible name beyond their role description (Q3, answered).
+
+### D1 A jump replaces the editing look of the message being edited
+
+A jump to a message and editing write the same highlighted id (R47). Jumping to another message while editing one moves the
+editing look to the target, and the message being edited loses it, until the store is renamed in branch 09. Pinned by the skipped
+test "keeps the editing look on the message being edited while a jump highlights another" in `MessagesProvider.spec.tsx`.
 
 ## Open questions
 

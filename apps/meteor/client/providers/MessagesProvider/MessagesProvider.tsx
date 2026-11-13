@@ -3,6 +3,7 @@ import type { MessageRenderersContextValue, MessageSelectionStore } from '@rocke
 import {
 	MessageContentContext,
 	MessageDisplayContext,
+	MessageEditingContext,
 	MessageInteractionsContext,
 	MessageMediaContext,
 	MessageNavigationContext,
@@ -18,6 +19,7 @@ import MessagePreviewMarkup from './renderers/MessagePreviewMarkup';
 import UiKitMessageBlock from './renderers/UiKitMessageBlock';
 import { useMessageContentValue } from './useMessageContentValue';
 import { useMessageDisplayValue } from './useMessageDisplayValue';
+import { useMessageEditingValue } from './useMessageEditingValue';
 import { useMessageInteractionsValue } from './useMessageInteractionsValue';
 import { useMessageMediaValue } from './useMessageMediaValue';
 import { useMessageNavigationValue } from './useMessageNavigationValue';
@@ -67,6 +69,7 @@ const MessagesProvider = ({
 	const content = useMessageContentValue(display, subscription);
 	const media = useMessageMediaValue();
 	const toolbar = useMessageToolbarValue(display, chat);
+	const editing = useMessageEditingValue(allowsInteraction);
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
@@ -78,7 +81,9 @@ const MessagesProvider = ({
 								<MessageContentContext.Provider value={content}>
 									<MessageMediaContext.Provider value={media}>
 										<MessageToolbarContext.Provider value={toolbar}>
-											<MessageSelectionContext.Provider value={selection}>{children}</MessageSelectionContext.Provider>
+											<MessageSelectionContext.Provider value={selection}>
+												<MessageEditingContext.Provider value={editing}>{children}</MessageEditingContext.Provider>
+											</MessageSelectionContext.Provider>
 										</MessageToolbarContext.Provider>
 									</MessageMediaContext.Provider>
 								</MessageContentContext.Provider>
