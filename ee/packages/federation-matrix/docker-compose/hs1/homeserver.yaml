@@ -13,6 +13,9 @@ listeners:
 use_x_forwarded_for: true
 serve_server_wellknown: true
 
+# Rooms created without an explicit version; the room version specs create older ones on purpose.
+default_room_version: "12"
+
 database:
   name: sqlite3
   args:

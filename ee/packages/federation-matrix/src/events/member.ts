@@ -10,6 +10,7 @@ import mem from 'mem';
 import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
 import { getFederatedRoomName } from '../helpers/getFederatedRoomName';
 import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
+import { getRoomOrigin } from '../helpers/getRoomOrigin';
 import { getUsernameServername } from '../helpers/getUsernameServername';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -76,6 +77,7 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Prom
 
 async function getOrCreateFederatedRoom({
 	matrixRoomId,
+	origin,
 	roomName,
 	roomFName,
 	roomType,
@@ -84,6 +86,7 @@ async function getOrCreateFederatedRoom({
 	inviteeUsername,
 }: {
 	matrixRoomId: string;
+	origin: string;
 	roomName: string;
 	roomFName: string;
 	roomType: RoomType;
@@ -95,11 +98,6 @@ async function getOrCreateFederatedRoom({
 		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
 		if (room) {
 			return room;
-		}
-
-		const origin = matrixRoomId.split(':').pop();
-		if (!origin) {
-			throw new Error(`Room origin not found for Matrix ID: ${matrixRoomId}`);
 		}
 
 		// TODO room creator is not always the inviter
@@ -172,10 +170,7 @@ async function handleInvite({
 
 	const joinRuleType = getJoinRuleType(strippedState);
 
-	const roomOriginDomain = senderId.split(':')?.pop();
-	if (!roomOriginDomain) {
-		throw new Error(`Room origin domain not found: ${roomId}`);
-	}
+	const roomOriginDomain = getRoomOrigin(roomId, strippedState);
 
 	const roomNameState = strippedState?.find((state) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
@@ -197,6 +192,7 @@ async function handleInvite({
 
 	const room = await getOrCreateFederatedRoom({
 		matrixRoomId: roomId,
+		origin: roomOriginDomain,
 		roomName,
 		roomFName,
 		roomType,

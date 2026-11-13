@@ -27,18 +27,8 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 		return;
 	}
 
-	const federatedRoomId = room?.federation?.mrid;
-	if (!federatedRoomId) {
+	if (!room?.federation?.mrid) {
 		await FederationMatrix.createRoom(room, owner);
-	} else {
-		// TODO unify how to get server
-		// matrix room was already created and passed
-		const fromServer = federatedRoomId.split(':')[1];
-
-		await Rooms.setAsFederated(room._id, {
-			mrid: federatedRoomId,
-			origin: fromServer,
-		});
 	}
 
 	const federationRoom = await Rooms.findOneById(room._id);

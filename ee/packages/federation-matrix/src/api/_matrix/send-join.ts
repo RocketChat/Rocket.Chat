@@ -1,4 +1,4 @@
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { ROOM_ID_REGEX, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -12,8 +12,8 @@ const UsernameSchema = {
 
 const RoomIdSchema = {
 	type: 'string',
-	pattern: '^![A-Za-z0-9_=\\/.+-]+:(.+)$',
-	description: 'Matrix room ID in format !room:server.com',
+	pattern: ROOM_ID_REGEX.source,
+	description: 'Matrix room ID: !opaque:server.com, or !hash of the create event from room version 12',
 };
 
 const EventIdSchema = {
