@@ -1,0 +1,21 @@
+packages/models/src/testing/index.ts
+  s_f28b160fc98912::t_6dd864cfc6686e 2-3,31,33,25,30
+  s_f28b160fc98912::t_243fbc3ed97f26 21-24
+  s_f28b160fc98912::t_f9812dd3a4052c 14-20,26-29,32,34-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "15e2c9814cdbd2c172ab2af3e97f7e7d2b215753",
+  "prompts": {},
+  "sessions": {
+    "s_f28b160fc98912": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67e3d83b-e241-493e-8923-917b1de62196",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

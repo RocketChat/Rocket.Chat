@@ -1,0 +1,73 @@
+packages/streamer/src/notifications.module.spec.ts
+  s_f28b160fc98912::t_ec78be7d8abc42 124
+packages/models/src/testing/index.ts
+  s_f28b160fc98912::t_6dd864cfc6686e 2-3,18,20
+ee/packages/presence/src/Presence.spec.ts
+  s_f28b160fc98912::t_e0fbea4be00a82 334,352-354,409
+packages/authorization/src/Authorization.spec.ts
+  s_f28b160fc98912::t_740ad729db1ba1 42,49,56,65,84,91
+ee/packages/omni-core-ee/src/units/getUnitsFromUser.spec.ts
+  s_f28b160fc98912::t_8ba015dc5b9d43 122,145,163,177,191,207
+ee/packages/abac/src/store/LocalAttributeStore.spec.ts
+  s_f28b160fc98912::t_ae2ccd85491cd7 2,50,63
+apps/meteor/server/services/upload/service.spec.ts
+  s_f28b160fc98912::t_cf09c125e88151 43
+apps/meteor/server/slashcommands/inviteall/inviteall.test.ts
+  s_8232fe67fa9b24::t_f4dde4eac8e017 46-48,55-57
+ee/packages/abac/src/helper.spec.ts
+  s_ef962851677545::t_d019db6339ccce 86
+ee/packages/presence/src/lib/PresenceReaper.spec.ts
+  s_ef962851677545::t_a0251fe6d79484 3
+  s_f28b160fc98912::t_bf0dfe1302a5c5 58,69,87,116
+apps/meteor/server/services/team/service.test.ts
+  s_8232fe67fa9b24::t_0e2f71a7bc681e 159-160,170-171
+apps/meteor/server/services/ai-search/service.test.ts
+  s_f15b4a6b3cffae::t_c2c847a7c58acb 219-220
+ee/packages/abac/src/pdp/VirtruPDP.spec.ts
+  s_f28b160fc98912::t_3b0bd3504ee8c7 3,229,237,246,260,275,433,442,452,466,488,502,633,641,654,668,680,809,817,825,846,857
+  s_8232fe67fa9b24::t_b2146acdd8cf4b 533-534
+ee/packages/abac/src/service.spec.ts
+  s_f28b160fc98912::t_861d11dcd518db 3,825,976,1039,1122,1209,1230,1238,1247,1258,1267,1283,1298,2346,2358,2373,2455-2456,2775,2789,2815,2849,2866,3418,3434,3446
+  s_f28b160fc98912::t_4942008822b77e 834,843,853,878
+  s_8232fe67fa9b24::t_b2146acdd8cf4b 1451-1452,1455-1456,2583-2584,2587-2588
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "999f7b2f6cf800f2797196e3a9f432d0d5cbb8e0",
+  "prompts": {},
+  "sessions": {
+    "s_8232fe67fa9b24": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67584a8c-029e-4ca3-9a90-7290d449a77d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    },
+    "s_ef962851677545": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8ffa22ac-7c52-4448-b59c-318f9b82bbaa",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    },
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    },
+    "s_f28b160fc98912": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67e3d83b-e241-493e-8923-917b1de62196",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
