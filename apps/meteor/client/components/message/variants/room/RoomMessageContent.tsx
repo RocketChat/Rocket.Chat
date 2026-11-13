@@ -133,7 +133,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 			{normalizedMessage.location && <MessageLocation location={normalizedMessage.location} />}
 
-			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
+			{allowsInteraction && broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
 				<MessageBroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 

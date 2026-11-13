@@ -11,6 +11,7 @@ import {
 	MessageReactionList,
 	MessageUrlPreviews,
 	useMessageContent,
+	useMessageDisplay,
 	MessageAttachments,
 } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
@@ -32,6 +33,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 	const broadcast = useMessageBroadcast(message);
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
+	const { allowsInteraction } = useMessageDisplay();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 
 	const { t } = useTranslation();
@@ -101,7 +103,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 
 			{normalizedMessage.location && <MessageLocation location={normalizedMessage.location} />}
 
-			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
+			{allowsInteraction && broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
 				<MessageBroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
