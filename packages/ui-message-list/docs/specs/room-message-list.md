@@ -5,9 +5,14 @@ code:
   [
     apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
     apps/meteor/client/providers/MessagesProvider/placeConversationStore.ts,
+    apps/meteor/client/hooks/useAutoLinkDomains.ts,
   ]
 tests:
-  [apps/meteor/client/providers/MessagesProvider/MessagesProvider.stability.spec.tsx, apps/meteor/tests/mocks/client/RelatedDataReader.tsx]
+  [
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.stability.spec.tsx,
+    apps/meteor/tests/mocks/client/RelatedDataReader.tsx,
+    apps/meteor/client/hooks/useAutoLinkDomains.spec.tsx,
+  ]
 ---
 
 # Spec: The room's message list

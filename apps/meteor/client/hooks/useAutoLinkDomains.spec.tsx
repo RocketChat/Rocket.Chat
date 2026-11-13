@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 
 import { useAutoLinkDomains } from './useAutoLinkDomains';
 
-it('should return the domains of the Message_CustomDomain_AutoLink setting outside any message list', () => {
+it('should return the domains of the Message_CustomDomain_AutoLink setting outside any message list (R54)', () => {
 	const { result } = renderHook(() => useAutoLinkDomains(), {
 		wrapper: mockAppRoot().withSetting('Message_CustomDomain_AutoLink', 'example.com, rocket.chat').build(),
 	});
@@ -11,7 +11,7 @@ it('should return the domains of the Message_CustomDomain_AutoLink setting outsi
 	expect(result.current).toEqual(['example.com', 'rocket.chat']);
 });
 
-it('should return no domains when the setting is empty', () => {
+it('should return no domains when the setting is empty (R54)', () => {
 	const { result } = renderHook(() => useAutoLinkDomains(), {
 		wrapper: mockAppRoot().withSetting('Message_CustomDomain_AutoLink', '').build(),
 	});
