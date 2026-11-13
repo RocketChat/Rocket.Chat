@@ -4,61 +4,62 @@ import { act, render, screen } from '@testing-library/react';
 import MessageListDateBubble from './MessageListDateBubble';
 import type { MessageListScrollContextValue } from './MessageListScrollContext';
 import { MessageListScrollContext } from './MessageListScrollContext';
+import type { DateBubbleStore } from './scroll/dateBubbleStore';
+import { createDateBubbleStore } from './scroll/dateBubbleStore';
 
 const wrapper = mockAppRoot().withSetting('Message_DateFormat', 'YYYY/MM/DD').build();
 
-const scroll = (overrides: Partial<MessageListScrollContextValue> = {}): MessageListScrollContextValue => ({
-	hasNewMessages: false,
-	hasNewerMessages: false,
-	isUserScrolling: false,
-	dateBubble: { date: new Date(2024, 0, 15, 10), isCovered: false },
-	scrollToBottom: jest.fn(),
-	...overrides,
-});
+const monday = new Date(2024, 0, 15, 10);
 
-const Bubble = (overrides: Partial<MessageListScrollContextValue>) => (
-	<MessageListScrollContext.Provider value={scroll(overrides)}>
-		<MessageListDateBubble />
-	</MessageListScrollContext.Provider>
-);
+const Bubble = ({ store }: { store: DateBubbleStore }) => {
+	const value: MessageListScrollContextValue = {
+		hasNewMessages: false,
+		hasNewerMessages: false,
+		dateBubbleStore: store,
+		scrollToBottom: jest.fn(),
+	};
+	return (
+		<MessageListScrollContext.Provider value={value}>
+			<MessageListDateBubble />
+		</MessageListScrollContext.Provider>
+	);
+};
 
-const visibility = () => screen.getByText('2024/01/15').closest('[data-visible]');
-
-beforeEach(() => jest.useFakeTimers());
-afterEach(() => jest.useRealTimers());
+const bubble = () => screen.getByText('2024/01/15').closest<HTMLElement>('[data-visible]') as HTMLElement;
 
 describe('the floating date', () => {
-	it("shows the day in the viewer's date format only while the viewer scrolls and a second after (R51)", () => {
-		const { rerender } = render(<Bubble />, { wrapper });
-		expect(visibility()).toHaveAttribute('data-visible', 'false');
+	it("shows the day the list gives it in the viewer's date format, and hides when the list says so (R51)", () => {
+		const store = createDateBubbleStore();
+		render(<Bubble store={store} />, { wrapper });
 
-		rerender(<Bubble isUserScrolling />);
-		expect(visibility()).toHaveAttribute('data-visible', 'true');
+		act(() => store.set({ date: monday, isVisible: true, offset: 0 }));
+		expect(bubble()).toHaveAttribute('data-visible', 'true');
 
-		rerender(<Bubble />);
-		act(() => jest.advanceTimersByTime(999));
-		expect(visibility()).toHaveAttribute('data-visible', 'true');
+		act(() => store.set({ date: monday, isVisible: false, offset: 0 }));
+		expect(bubble()).toHaveAttribute('data-visible', 'false');
+	});
 
-		act(() => jest.advanceTimersByTime(1));
-		expect(visibility()).toHaveAttribute('data-visible', 'false');
+	it('moves up as far as the next day pushes it (R51)', () => {
+		const store = createDateBubbleStore();
+		render(<Bubble store={store} />, { wrapper });
+
+		act(() => store.set({ date: monday, isVisible: true, offset: -12 }));
+		expect(bubble().style.getPropertyValue('--date-bubble-offset')).toBe('-12px');
+
+		act(() => store.set({ date: monday, isVisible: true, offset: 0 }));
+		expect(bubble().style.getPropertyValue('--date-bubble-offset')).toBe('0px');
 	});
 
 	it('is hidden from assistive technology (R51)', () => {
-		render(<Bubble isUserScrolling />, { wrapper });
+		const store = createDateBubbleStore();
+		render(<Bubble store={store} />, { wrapper });
 
-		expect(visibility()).toHaveAttribute('aria-hidden', 'true');
+		act(() => store.set({ date: monday, isVisible: true, offset: 0 }));
+		expect(bubble()).toHaveAttribute('aria-hidden', 'true');
 	});
 
-	it('hides while a divider or the start of the conversation already shows the day (R52)', () => {
-		const { rerender } = render(<Bubble isUserScrolling dateBubble={{ date: new Date(2024, 0, 15, 10), isCovered: true }} />, { wrapper });
-		expect(visibility()).toHaveAttribute('data-visible', 'false');
-
-		rerender(<Bubble isUserScrolling />);
-		expect(visibility()).toHaveAttribute('data-visible', 'true');
-	});
-
-	it('shows nothing before the list reports a day (R51)', () => {
-		render(<Bubble isUserScrolling dateBubble={undefined} />, { wrapper });
+	it('shows nothing before the list gives it a day (R51)', () => {
+		render(<Bubble store={createDateBubbleStore()} />, { wrapper });
 
 		expect(screen.queryByText(/2024/)).not.toBeInTheDocument();
 	});

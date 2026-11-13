@@ -5,7 +5,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { CacheSnapshot, VirtualizerHandle } from 'virtua';
 
 import {
-	DATE_BUBBLE_ZONE_PX,
+	DATE_BUBBLE_IDLE_MS,
 	HIGHLIGHT_DURATION_MS,
 	MESSAGE_ANCHOR_RELEASE_MS,
 	POSITION_REPORT_DEBOUNCE_MS,
@@ -15,6 +15,7 @@ import {
 	SCROLL_KEYS,
 	USER_INPUT_WITHOUT_SCROLL_MS,
 } from './constants';
+import { createDateBubbleStore } from './dateBubbleStore';
 import type {
 	MessageListAnchor,
 	MessageListMeasurement,
@@ -27,6 +28,7 @@ import type {
 import { createInitialScrollState, messageListScrollReducer } from './messageListScrollReducer';
 import { planRowsCommit } from './planRowsCommit';
 import type { MessageListRow, MessageListRows } from '../lib/buildMessageListRows';
+import { placeDateBubble } from '../lib/dateBubble';
 import { DEFAULT_BOTTOM_THRESHOLD, isAtBottom as isScrolledToBottom } from '../lib/geometry';
 import type { MessageListPosition } from '../lib/position';
 import { describeCacheKeys, getReusableCache, resolveRestoreTarget } from '../lib/position';
@@ -35,12 +37,6 @@ export type MessageListVisibility<TMessage extends IMessage = IMessage> = {
 	topMessage: TMessage | undefined;
 	isFirstUnreadVisible: boolean;
 	isAtBottom: boolean;
-};
-
-export type MessageListDateBubble = {
-	date: Date;
-	/** An inline day divider, or the start of the conversation, already shows at the top. */
-	isCovered: boolean;
 };
 
 export type UseMessageListScrollerOptions<TMessage extends IMessage> = {
@@ -111,11 +107,10 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		anchor: stateRef.current?.anchor as MessageListAnchor,
 		phase: stateRef.current?.phase,
 		hasNewMessages: false,
-		userScrolling: false,
 		isConcealed: true,
 	}));
 	const [highlightedMessageId, setHighlightedMessageId] = useState<string>();
-	const [dateBubble, setDateBubble] = useState<MessageListDateBubble>();
+	const [dateBubbleStore] = useState(createDateBubbleStore);
 
 	// Rows reach the virtualizer only once its viewport exists, and in two steps when they change at both ends
 	const renderedKeysRef = useRef<readonly string[]>([]);
@@ -228,19 +223,50 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				reportPositionTimer.current = setTimeout(reportPosition, POSITION_REPORT_DEBOUNCE_MS);
 			}
 		}
+	});
 
-		const bubbleIndex = handle.findItemIndex(scrollOffset + DATE_BUBBLE_ZONE_PX);
-		const bubbleRow = currentRows[bubbleIndex];
-		if (bubbleRow?.kind === 'message') {
-			const rowTop = handle.getItemOffset(bubbleIndex);
-			const isCovered = currentRows[0]?.kind === 'header' && start === 0 ? true : bubbleRow.startsNewDay && rowTop >= scrollOffset;
-			setDateBubble((previous) =>
-				previous?.date.getTime() === bubbleRow.message.ts.getTime() && previous.isCovered === isCovered
-					? previous
-					: { date: bubbleRow.message.ts, isCovered },
-			);
-		} else {
-			setDateBubble((previous) => (previous?.isCovered ? previous : previous && { ...previous, isCovered: true }));
+	const coveredDividerRef = useRef<HTMLElement>(undefined);
+	const coverDivider = (divider: HTMLElement | undefined) => {
+		if (coveredDividerRef.current === divider) {
+			return;
+		}
+		coveredDividerRef.current?.removeAttribute('data-covered');
+		divider?.setAttribute('data-covered', 'true');
+		coveredDividerRef.current = divider;
+	};
+
+	// Every scroll shows the floating date, the viewer's or not; it hides a second after the last one, unless it stands in for
+	// a divider just above the list
+	const hideDateBubbleTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const updateDateBubble = useStableCallback(() => {
+		const viewport = viewportRef.current;
+		if (!viewport || stateRef.current?.isConcealed) {
+			return;
+		}
+		clearTimeout(hideDateBubbleTimer.current);
+
+		const viewportTop = viewport.getBoundingClientRect().top;
+		const elements = Array.from(viewport.querySelectorAll<HTMLElement>('[data-day-divider]'))
+			.map((element) => ({ element, rect: element.getBoundingClientRect() }))
+			.sort((a, b) => a.rect.top - b.rect.top);
+		const placement = placeDateBubble(
+			elements.map(({ element, rect }) => ({
+				top: rect.top - viewportTop,
+				height: rect.height,
+				day: new Date(Number(element.dataset.dayDivider)),
+			})),
+			visibilityRef.current?.topMessage?.ts,
+			{ windowTop: -viewportTop },
+		);
+
+		coverDivider(placement.covered === undefined ? undefined : elements[placement.covered].element);
+		dateBubbleStore.set({ date: placement.date, isVisible: !!placement.date, offset: placement.offset });
+
+		if (!placement.isHeld) {
+			hideDateBubbleTimer.current = setTimeout(() => {
+				coverDivider(undefined);
+				dateBubbleStore.set({ ...dateBubbleStore.get(), isVisible: false });
+			}, DATE_BUBBLE_IDLE_MS);
 		}
 	});
 
@@ -342,16 +368,9 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			previous.anchor === state.anchor &&
 			previous.phase === state.phase &&
 			previous.hasNewMessages === state.hasNewMessages &&
-			previous.userScrolling === state.userScrolling &&
 			previous.isConcealed === state.isConcealed
 				? previous
-				: {
-						anchor: state.anchor,
-						phase: state.phase,
-						hasNewMessages: state.hasNewMessages,
-						userScrolling: state.userScrolling,
-						isConcealed: state.isConcealed,
-					},
+				: { anchor: state.anchor, phase: state.phase, hasNewMessages: state.hasNewMessages, isConcealed: state.isConcealed },
 		);
 		commands.forEach(execute);
 	});
@@ -477,6 +496,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		if (measurement) {
 			dispatch({ type: 'scroll', ...measurement });
 		}
+		updateDateBubble();
 	});
 
 	const onScrollEnd = useStableCallback(() => {
@@ -553,6 +573,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				clearTimeout(scrollEndTimer.current);
 				clearTimeout(messageAnchorTimer.current);
 				clearTimeout(highlightTimer.current);
+				clearTimeout(hideDateBubbleTimer.current);
 			};
 		},
 		[onUserInput, onScrollEnd, onResize, reportPosition, dispatch],
@@ -573,10 +594,9 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		anchor: view.anchor,
 		phase: view.phase,
 		hasNewMessages: view.hasNewMessages,
-		isUserScrolling: view.userScrolling,
 		isConcealed: view.isConcealed,
 		highlightedMessageId,
-		dateBubble,
+		dateBubbleStore,
 		onScroll,
 		onScrollEnd,
 		dispatch,

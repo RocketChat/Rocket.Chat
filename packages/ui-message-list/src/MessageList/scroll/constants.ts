@@ -16,10 +16,7 @@ export const REVEAL_DEADLINE_MS = 500;
 /** A scroll gesture that moves nothing (already at an edge) closes the user-scrolling window after this. */
 export const USER_INPUT_WITHOUT_SCROLL_MS = 300;
 
-/** Height of the band under the top of the viewport where the floating date shows. */
-export const DATE_BUBBLE_ZONE_PX = 48;
-
-/** How long the floating date stays after scrolling stops. */
+/** How long the floating date stays after the last scroll. */
 export const DATE_BUBBLE_IDLE_MS = 1000;
 
 export const POSITION_REPORT_DEBOUNCE_MS = 150;

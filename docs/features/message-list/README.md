@@ -12,7 +12,7 @@ The message list shows a conversation, a room or a thread, as an infinite list t
 - **Loads newer messages** at the bottom after a jump into history, and **"Jump to recent messages"** goes straight back to the latest. (B6)
 - **Jumps to any message**, centered and briefly highlighted, loading the messages around it first when needed, and keeps it centered while images around it load. The unread banner jumps to the first unread message the same way. (B7, B8)
 - **Day and unread dividers** mark the first message of each day and the first unread message, combined when they fall on the same message. (B9)
-- **A floating date** shows the day of the topmost message while the viewer scrolls, fades shortly after, and never doubles an inline day divider. (B10)
+- **A floating date** shows the day at the top of the list on every scroll and fades a second after the last one; it stands in for the day divider under it, which hides meanwhile, and the next day's divider pushes it up. (B10)
 - **Groups consecutive messages** of the same author (see Grouping). (B11)
 - **A header** above the first message once nothing older remains: the room foreword and retention warning in a room. (B12)
 - **Loading indicators** for the first page and for older and newer pages. (B13)
@@ -72,7 +72,7 @@ The list keeps one **anchor**, what it holds in view:
 - **message**: a message stays at the same place, centered after a jump or at its saved offset after a restore, while the rows around it are measured;
 - **none**: the viewer is reading somewhere and nothing is pinned.
 
-Only the viewer's own input (wheel, touch, scroll keys, dragging the scrollbar, moving between messages with the keyboard) releases an anchor. A scroll that the list or the browser makes can take the list back to the bottom when it lands there, but never away from it. Everything the viewer does between the first gesture and the moment scrolling stops is one **user-scrolling window**; the floating date shows only inside it.
+Only the viewer's own input (wheel, touch, scroll keys, dragging the scrollbar, moving between messages with the keyboard) releases an anchor. A scroll that the list or the browser makes can take the list back to the bottom when it lands there, but never away from it. Everything the viewer does between the first gesture and the moment scrolling stops is one **user-scrolling window**: a scroll inside it is the viewer's.
 
 A held message is released after a few seconds without its surroundings changing size, since images resolve well after the first layout.
 

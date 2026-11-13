@@ -29,6 +29,7 @@ tests:
     src/MessageList/lib/diffMessageKeys.spec.ts,
     src/MessageList/lib/geometry.spec.ts,
     src/MessageList/lib/position.spec.ts,
+    src/MessageList/lib/dateBubble.spec.ts,
     src/MessageList/scroll/messageListScrollReducer.spec.ts,
     src/MessageList/scroll/planRowsCommit.spec.ts,
     src/hooks/useItemListNavigation.spec.ts,
@@ -154,9 +155,9 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   list or the browser makes (an arrival, a resize, a measurement) MUST NOT release it (B2; ADR 0001).
 - **R26** A scroll that lands at the bottom MUST take the list back to the bottom, and MUST NOT take it away from it, whoever
   made it (B2).
-- **R27** Everything the viewer does from the first gesture until scrolling stops MUST count as one window, in which the
-  floating date shows (R51). It MUST end at `scrollend`, or 300 ms after a gesture that moved nothing because the list was at
-  an edge.
+- **R27** Everything the viewer does from the first gesture until scrolling stops MUST count as one window, in which a scroll is
+  the viewer's (R25, R26). It MUST end at `scrollend`, or 300 ms after a gesture that moved nothing because the list was at an
+  edge (review round 1: the floating date no longer waits for this window, R51).
 - **R28** A message the list holds in view (a jump target, a restored position) MUST be released by the viewer's input, or 3 s
   after the sizes around it stopped changing, and MUST NOT be released earlier by anything else (B7).
 - **R29** The list is _positioning_ while it opens or restores, and again when its viewport gets a size after having none, and when
@@ -235,12 +236,21 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 
 **Dates**
 
-- **R51** `MessageListDateBubble` MUST show the day, in the viewer's date format, of the message at the top of the viewport
-  (the first message in the 48px below the top) while the window of R27 is open and for 1 s after it closes, then fade out; it
-  MUST NOT show for scrolls the list makes. It MUST be `aria-hidden` and MUST NOT take pointer events. With `prefers-reduced-motion`
-  it MUST NOT animate (B10).
-- **R52** A day MUST show once: the bubble MUST be hidden while an inline day divider, or the start-of-conversation header, is
-  at the top of the viewport, in a room and in a thread (branch 02, fix 3; intent Q1; B10).
+- **R51** `MessageListDateBubble` MUST show on every scroll of the list, the viewer's or not, and fade out 1 s after the last one,
+  over 0.6 s as `develop`'s `BubbleDate`,
+  unless R52 keeps it. It MUST show the day, in the viewer's date format, of the last day divider at or less than 100px above the
+  top of the viewport, or else of the message at the top of the viewport. When the divider of the next day comes within its own
+  height below the top, it MUST push the date up by as much as it overlaps it. It MUST NOT show while the rows are out of sight
+  (R84). It MUST be `aria-hidden` and MUST NOT take pointer events. With `prefers-reduced-motion` it MUST NOT animate (B10;
+  review round 1, user decision: `develop`'s `useDateScroll` rules restored; before, the date showed only while the viewer
+  scrolled and hid under a divider).
+- **R52** A day MUST show once: while the date stands in for a day divider at or above the top of the viewport, that divider MUST
+  be hidden, and the date MUST stay without fading while that divider's top lies above the top of the viewport and below the top
+  of the window, even pushed (R51), as `develop`'s `useDateScroll` holds it (review round 1, second review: it held while the
+  divider was partly in view, which differs where the list sits low in the window). Once the next day pushes
+  the date, or the date fades, the divider MUST show again. This holds in a room and in a thread (branch 02, fix 3; intent Q1;
+  B10; review round 1, user decision: `develop`'s `BubbleDateScope` restored; before, the date hid while a divider or the header
+  was at the top).
 - **R53** A thread MUST be able to compose the date alone and a room all three overlay parts; a part rendered outside a
   `MessageList` MUST throw an error that names the rule.
 
@@ -390,7 +400,9 @@ viewer's input, scrolls and resizes with their measurements, committed data, a t
 on the virtualizer, only ever through `scrollToIndex`. The component renders the viewport itself, the rows through the virtualizer
 (or, in specs, through a renderer of every row), the highlight for the rows and the scroll state for the overlay parts that sit
 inside it. The keyboard is the package's own copy of the item-list navigation, with the options a virtualized list needs. The state
-of the list is its own: nothing of it lives in a context of the app, and nothing here imports from `apps/meteor`. The reasons are in
+of the list is its own: nothing of it lives in a context of the app, and nothing here imports from `apps/meteor`. The floating date
+is placed on every scroll from the dividers drawn near the top and written to a small store only the date reads, and the divider it
+stands in for is hidden by an attribute set on it, so scrolling draws no row. The reasons are in
 [ADR 0001](../adr/0001-message-list-virtua-and-scroll-reducer.md).
 
 ## Out of scope

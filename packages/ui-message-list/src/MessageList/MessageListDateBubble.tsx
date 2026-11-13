@@ -1,17 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useFormatDate } from '@rocket.chat/ui-client';
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import { useMessageListScroll } from './MessageListScrollContext';
-import { DATE_BUBBLE_IDLE_MS } from './scroll/constants';
 
 const bubbleStyle = css`
 	position: absolute;
 	z-index: 1;
 	top: 8px;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translate(-50%, var(--date-bubble-offset, 0));
 	pointer-events: none;
 	opacity: 1;
 	transition: opacity 0.6s;
@@ -26,33 +25,36 @@ const bubbleStyle = css`
 `;
 
 /**
- * Shows the day of the topmost visible message while the viewer scrolls, and fades shortly after they stop.
+ * Shows the day of the top of the list on every scroll, standing in for the day divider under it, pushed up by the next
+ * day's divider, and fades a second after the last scroll.
  */
 const MessageListDateBubble = () => {
 	const formatDate = useFormatDate();
-	const { dateBubble, isUserScrolling } = useMessageListScroll();
-	const [isLingering, setIsLingering] = useState(false);
+	const { dateBubbleStore } = useMessageListScroll();
+	const date = useSyncExternalStore(dateBubbleStore.subscribe, () => dateBubbleStore.get().date);
+	const isVisible = useSyncExternalStore(dateBubbleStore.subscribe, () => dateBubbleStore.get().isVisible);
 
-	useEffect(() => {
-		if (isUserScrolling) {
-			setIsLingering(true);
-			return;
-		}
+	// The offset changes on every scroll while the next day pushes the date up: it is written without drawing again
+	const offsetRef = useCallback(
+		(element: HTMLElement | null) => {
+			if (!element) {
+				return;
+			}
+			const applyOffset = () => element.style.setProperty('--date-bubble-offset', `${dateBubbleStore.get().offset}px`);
+			applyOffset();
+			return dateBubbleStore.subscribe(applyOffset);
+		},
+		[dateBubbleStore],
+	);
 
-		const timeout = setTimeout(() => setIsLingering(false), DATE_BUBBLE_IDLE_MS);
-		return () => clearTimeout(timeout);
-	}, [isUserScrolling]);
-
-	if (!dateBubble) {
+	if (!date) {
 		return null;
 	}
 
-	const isVisible = (isUserScrolling || isLingering) && !dateBubble.isCovered;
-
 	return (
-		<Box className={bubbleStyle} data-visible={isVisible} aria-hidden='true'>
+		<Box ref={offsetRef} className={bubbleStyle} data-visible={isVisible} aria-hidden='true'>
 			<Bubble small secondary>
-				{formatDate(dateBubble.date)}
+				{formatDate(date)}
 			</Bubble>
 		</Box>
 	);

@@ -1,12 +1,11 @@
 import { createContext, useContext } from 'react';
 
-import type { MessageListDateBubble } from './scroll/useMessageListScroller';
+import type { DateBubbleStore } from './scroll/dateBubbleStore';
 
 export type MessageListScrollContextValue = {
 	hasNewMessages: boolean;
 	hasNewerMessages: boolean;
-	isUserScrolling: boolean;
-	dateBubble: MessageListDateBubble | undefined;
+	dateBubbleStore: DateBubbleStore;
 	scrollToBottom: () => void;
 };
 

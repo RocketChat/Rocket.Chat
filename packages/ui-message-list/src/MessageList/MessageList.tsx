@@ -230,11 +230,10 @@ const MessageList = <TMessage extends IMessage>({
 		() => ({
 			hasNewMessages: scroller.hasNewMessages,
 			hasNewerMessages,
-			isUserScrolling: scroller.isUserScrolling,
-			dateBubble: scroller.dateBubble,
+			dateBubbleStore: scroller.dateBubbleStore,
 			scrollToBottom,
 		}),
-		[scroller.hasNewMessages, hasNewerMessages, scroller.isUserScrolling, scroller.dateBubble, scrollToBottom],
+		[scroller.hasNewMessages, hasNewerMessages, scroller.dateBubbleStore, scrollToBottom],
 	);
 
 	const isConcealed = !isWaitingForMessages && scroller.isConcealed;

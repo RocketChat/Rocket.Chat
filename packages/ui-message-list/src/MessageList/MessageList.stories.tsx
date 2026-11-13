@@ -401,15 +401,21 @@ export const HighlightedMessage: Story = {
 	},
 };
 
-/** R27, R51: the floating date shows the day of the top message while the viewer scrolls. */
+/** R51: every scroll shows the floating date, one the viewer does not make too, and it fades a second after the last one. */
 export const FloatingDate: Story = {
 	args: { history: { size: 120 }, source: { pageSize: 120 } },
 	play: async ({ canvasElement }) => {
 		await waitForListSettled(canvasElement);
 		const viewport = getViewport(canvasElement);
-		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -300, bubbles: true }));
+		const bubble = () => canvasElement.querySelector<HTMLElement>('[aria-hidden="true"][data-visible]');
+
 		viewport.scrollTop -= 300;
-		await waitFor(() => canvasElement.querySelector('[data-visible="true"][aria-hidden="true"]') !== null);
+		await waitFor(() => bubble()?.getAttribute('data-visible') === 'true');
+		const shownAt = performance.now();
+		// As `develop`'s `BubbleDate` fades
+		await expect(getComputedStyle(bubble() as HTMLElement).transitionDuration).toBe('0.6s');
+		await waitFor(() => bubble()?.getAttribute('data-visible') === 'false', 3000);
+		await expect(performance.now() - shownAt).toBeGreaterThanOrEqual(900);
 	},
 };
 
@@ -711,27 +717,39 @@ export const ReportsWhatIsVisible: Story = {
 	},
 };
 
-/** R52: a day shows once: the floating date hides while the day's divider is at the top, and shows below it. */
+/**
+ * R51, R52: the floating date stands in for the day divider under it, which hides, and stays while that divider is just above
+ * the list; the next day's divider pushes it up and shows again; away from any divider it fades a second after the last scroll.
+ */
 export const FloatingDateNeverDoublesADay: Story = {
 	args: { history: { size: 120 }, source: { pageSize: 120 } },
 	play: async ({ canvasElement }) => {
 		await waitForListSettled(canvasElement);
 		const viewport = getViewport(canvasElement);
 		const bubble = () => canvasElement.querySelector<HTMLElement>('[aria-hidden="true"][data-visible]') as HTMLElement;
-		for (let step = 0; step < 30 && !viewport.querySelector('.rcx-message-divider'); step++) {
+		for (let step = 0; step < 30 && !viewport.querySelector('[data-day-divider]'); step++) {
 			await userScrollBy(canvasElement, -400);
 		}
-		const divider = Array.from(viewport.querySelectorAll<HTMLElement>('.rcx-message-divider')).at(-1) as HTMLElement;
-		const dividerTop = divider.getBoundingClientRect().top - viewport.getBoundingClientRect().top + viewport.scrollTop;
+		const divider = Array.from(viewport.querySelectorAll<HTMLElement>('[data-day-divider]')).at(-1) as HTMLElement;
+		const dividerTop = () => divider.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
+		const { height } = divider.getBoundingClientRect();
 
-		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: 150, bubbles: true }));
-		viewport.scrollTop = dividerTop + 150;
-		await waitFor(() => bubble().getAttribute('data-visible') === 'true');
+		await userScrollBy(canvasElement, dividerTop() + 10);
+		await waitFor(() => divider.getAttribute('data-covered') === 'true');
+		await expect(bubble()).toHaveAttribute('data-visible', 'true');
+		await expect(bubble()).toHaveTextContent(divider.textContent);
+		await new Promise((resolve) => setTimeout(resolve, 1300));
+		await expect(bubble()).toHaveAttribute('data-visible', 'true');
 
-		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -150, bubbles: true }));
-		viewport.scrollTop = dividerTop;
-		// Hidden at once, while the floating date would still show for a second after scrolling: the time limit is that second
-		await waitFor(() => bubble().getAttribute('data-visible') === 'false', 600);
+		await userScrollBy(canvasElement, dividerTop() - 10);
+		await waitFor(() => divider.getAttribute('data-covered') === null);
+		await expect(bubble()).toHaveAttribute('data-visible', 'true');
+		await expect(Math.abs(parseFloat(bubble().style.getPropertyValue('--date-bubble-offset')) - (10 - height))).toBeLessThanOrEqual(1);
+		await expect(bubble()).not.toHaveTextContent(divider.textContent);
+
+		await userScrollBy(canvasElement, dividerTop() - 200);
+		await waitFor(() => bubble().getAttribute('data-visible') === 'false', 3000);
+		await expect(divider).not.toHaveAttribute('data-covered');
 	},
 };
 
