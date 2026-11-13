@@ -11255,6 +11255,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-message-list@workspace:packages/ui-message-list"
   dependencies:
+    "@react-aria/focus": "npm:^3.21.1"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
@@ -11263,6 +11264,7 @@ __metadata:
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/message-types": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -11277,6 +11279,7 @@ __metadata:
     "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.7"
+    date-fns: "npm:~4.1.0"
     dompurify: "npm:~3.4.17"
     i18next: "npm:~26.4.2"
     jest: "npm:~30.5.2"
@@ -11286,7 +11289,9 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     storybook: "npm:~10.6.5"
     typescript: "npm:~7.0.2"
+    virtua: "npm:^0.49.3"
   peerDependencies:
+    "@react-aria/focus": "*"
     "@react-aria/toolbar": "*"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
@@ -11294,12 +11299,14 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/message-types": "workspace:^"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@tanstack/react-query": "*"
     react: "*"
     react-i18next: "*"
+    virtua: "*"
   languageName: unknown
   linkType: soft
 
