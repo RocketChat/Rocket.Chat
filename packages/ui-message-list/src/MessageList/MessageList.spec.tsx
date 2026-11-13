@@ -1,11 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/fuselage';
 import { createFakeMessage, mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { act, render, screen, within } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { createRef } from 'react';
 
 import type { MessageListHandle, MessageListProps } from './MessageList';
 import MessageList from './MessageList';
+import * as stories from './MessageList.stories';
 import MessageListDateBubble from './MessageListDateBubble';
 import MessageListJumpToLatestButton from './MessageListJumpToLatestButton';
 import MessageListNewMessagesButton from './MessageListNewMessagesButton';
@@ -521,5 +524,60 @@ describe('keyboard', () => {
 		);
 
 		await expectListKeyboard(screen.getByRole('list'), screen.getAllByRole('listitem', { name: /Alice|Bob/ })[0]);
+	});
+});
+
+describe('stories', () => {
+	const composed = composeStories(stories);
+
+	it('has a story for each behaviour of the list (R74)', () => {
+		expect(Object.keys(composed)).toEqual(
+			expect.arrayContaining([
+				'Default',
+				'ShortList',
+				'Empty',
+				'InfiniteOlderHistory',
+				'LiveIncomingAtBottom',
+				'LiveIncomingScrolledUp',
+				'SendOwnMessageWhileDetached',
+				'JumpToLoadedMessage',
+				'JumpToUnloadedMessage',
+				'JumpSurvivesLateMeasurement',
+				'JumpToFirstUnread',
+				'JumpToLatest',
+				'LoadNewerAtBottom',
+				'LateResizingContent',
+				'ContainerAndComposerResize',
+				'RestorePosition',
+				'StartOfConversationHeader',
+				'ThreadLayout',
+				'LoadingStates',
+				'HighlightedMessage',
+				'FloatingDate',
+				'FloatingDateNeverDoublesADay',
+				'UserInputReleasesTheBottom',
+				'FailedLoadSettles',
+				'FillsATallViewport',
+				'HeaderReplacesTheLoader',
+				'HeaderGrowsLate',
+				'LiveMessageWhileOlderLoads',
+				'ReorderedMessage',
+				'ScrollToTop',
+				'OpensOnATarget',
+				'KeepsLiveEmbedsMounted',
+				'KeyboardIntoUnrenderedRows',
+				'ReportsWhatIsVisible',
+				'FirstPageLoading',
+				'OlderPageOfTheSameDay',
+			]),
+		);
+	});
+
+	test.each(Object.entries(composed))('%s has no accessibility violations (R75)', async (_name, Story) => {
+		const { container } = render(<Story />);
+
+		await act(async () => undefined);
+
+		expect(await axe(container)).toHaveNoViolations();
 	});
 });

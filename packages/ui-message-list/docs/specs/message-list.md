@@ -14,6 +14,7 @@ code:
     src/Message/contexts/MessageRowStateContext.ts,
     src/Message/hooks/useIsMessageEmphasized.ts,
     src/index.ts,
+    src/MessageList/stories,
   ]
 tests:
   [
@@ -34,6 +35,7 @@ tests:
     src/MessageList/MessageListDateBubble.spec.tsx,
     src/Message/hooks/useIsMessageEmphasized.spec.tsx,
     src/index.spec.ts,
+    src/MessageList/MessageList.stories.tsx,
   ]
 ---
 
