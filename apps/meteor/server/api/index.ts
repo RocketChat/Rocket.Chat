@@ -1,6 +1,5 @@
 import './validation/ajv';
 import './lib/composeRoomWithLastMessage';
-import './lib/getPaginationItems';
 import './lib/getUserFromParams';
 import './lib/getUserInfo';
 import './lib/isUserFromParams';
