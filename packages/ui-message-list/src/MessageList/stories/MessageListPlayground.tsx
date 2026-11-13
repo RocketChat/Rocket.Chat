@@ -78,6 +78,7 @@ const MessageListPlayground = ({
 		['Grow header', () => setHeaderExtraHeight((current) => current + 120)],
 		['Reorder a message', () => source.reorder()],
 		['Receive a message with the next page', () => source.receiveWithNextPage()],
+		['Nudge composer', () => setComposerHeight((current) => current + 30)],
 		['Toggle composer height', () => setComposerHeight((current) => (current === 56 ? 200 : 56))],
 		['Toggle container height', () => setContainerHeight((current) => (current === height ? height - 160 : height))],
 		['Settle loads', () => source.settleLoads()],

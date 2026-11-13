@@ -761,13 +761,20 @@ export const ReportsAfterAResize: Story = {
 	},
 };
 
-/** R80: with a threshold, a viewer a little above the bottom still follows arrivals, and one beyond it reads away. */
+/** R80: with a threshold, a viewer a little above the bottom still follows resizes and arrivals, all the way to the bottom, and one beyond it reads away. */
 export const BottomThreshold: Story = {
 	args: { history: { size: 60 }, source: { pageSize: 60 }, list: { bottomThreshold: 60 } },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const viewport = getViewport(canvasElement);
 		await waitForListSettled(canvasElement);
+
+		// The composer shrinks the viewport by 30px: a gap of 10 becomes 40, clearly inside the threshold of 60 and clearly more than a pixel
+		await userScrollBy(canvasElement, -10);
+		await expect(viewport.closest('[data-anchor]')).toHaveAttribute('data-anchor', 'bottom');
+		await userEvent.click(canvas.getByRole('button', { name: 'Nudge composer' }));
+		await waitForListSettled(canvasElement);
+		await expectAtBottom(canvasElement);
 
 		await userScrollBy(canvasElement, -40);
 		await expect(viewport.closest('[data-anchor]')).toHaveAttribute('data-anchor', 'bottom');
