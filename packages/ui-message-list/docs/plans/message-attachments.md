@@ -107,5 +107,5 @@ Each step is one commit and builds and passes on its own.
 | R21 | `apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx`, "shows attachments with the package parts (R21)" |
 | R22 | `AuditMessageList.display.spec.tsx`, `PinMessageModal.display.spec.tsx`, `MessageBoxReply.spec.tsx`, each "(R22)" |
 | R23 | `apps/meteor/client/views/room/ShareLocation/ShareLocationModal.spec.tsx`, "previews the location with the map (R23)" |
-| R24 | `apps/meteor/client/hooks/useDownloadFromServiceWorker.spec.tsx`, "downloads again on a second activation (R24)" |
+| R24 | `apps/meteor/client/hooks/useDownloadFromServiceWorker.spec.tsx`, "downloads again on a second activation (message-attachments R24)" |
 | R25 | `apps/meteor/client/providers/MediaPlayerProvider/MediaPlayerProvider.spec.tsx`, "recovers an expired URL on the shared element (R25)" |
