@@ -51,6 +51,8 @@
 		// Node-side build tooling that resolves packages through `exports`, which this app config does not.
 		"./vite/vite.config.mts",
 		"./vite/postcss-plugins.d.ts",
+		// CI scripts run directly by Node's type stripping, which needs explicit `.mts` import extensions.
+		"./tests/e2e/impact/**",
 	],
 	"ts-node": {
 		"files": false,
