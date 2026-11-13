@@ -219,7 +219,8 @@
 		"@tamagui/compose-refs@npm:3.0.18": "patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch",
 		"@tamagui/web@npm:3.0.18": "patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch",
 		"@tamagui/static@npm:3.0.18": "patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch",
-		"@tamagui/vite-plugin@npm:3.0.18": "patch:@tamagui/vite-plugin@npm%3A3.0.18#~/.yarn/patches/@tamagui-vite-plugin-npm-3.0.18-97da028e24.patch"
+		"@tamagui/vite-plugin@npm:3.0.18": "patch:@tamagui/vite-plugin@npm%3A3.0.18#~/.yarn/patches/@tamagui-vite-plugin-npm-3.0.18-97da028e24.patch",
+		"@rocket.chat/federation-sdk": "file:./ee/packages/federation-matrix/vendor/federation-sdk-pr418.tgz"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
