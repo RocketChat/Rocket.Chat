@@ -20,7 +20,8 @@ jest.mock('../../contexts/RoomContext', () => ({
 	useRoomSubscription: () => mockUseRoomSubscription(),
 }));
 
-jest.mock('../../../../hooks/useEndpointMutation', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useEndpointMutation: () => ({ mutateAsync: jest.fn() }),
 }));
 

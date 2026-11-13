@@ -1,5 +1,6 @@
+import { useEndpointMutation } from '@rocket.chat/ui-client';
+
 import { useRoomRejectInvitationModal } from './useRoomRejectInvitationModal';
-import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
 export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
