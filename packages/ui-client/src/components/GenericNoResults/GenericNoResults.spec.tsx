@@ -1,4 +1,5 @@
 ﻿import { render } from '@testing-library/react';
+import GenericNoResults from './GenericNoResults';
 
 jest.mock('@rocket.chat/fuselage', () => {
         const React = jest.requireActual('react');
@@ -25,8 +26,6 @@ jest.mock('react-i18next', () => ({
                 t: (key: string) => key,
         }),
 }));
-
-import GenericNoResults from './GenericNoResults';
 
 describe('GenericNoResults', () => {
         it('should mark the empty state as busy', () => {
