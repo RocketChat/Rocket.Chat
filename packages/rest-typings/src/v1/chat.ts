@@ -1050,7 +1050,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.syncThreadsList': {
 		GET: (params: ChatSyncThreadsList) => {
-			threads: { update: IMessage[]; remove: IMessage[] };
+			threads: { update: IMessage[]; remove: { _id: string; _deletedAt: string }[] };
 		};
 	};
 	'/v1/chat.getThreadMessages': {
@@ -1063,7 +1063,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.syncThreadMessages': {
 		GET: (params: ChatSyncThreadMessages) => {
-			messages: { update: IMessage[]; remove: IMessage[] };
+			messages: { update: IMessage[]; remove: { _id: string; _deletedAt: string }[] };
 		};
 	};
 	'/v1/chat.getMentionedMessages': {
