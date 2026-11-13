@@ -20,28 +20,16 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 	): Promise<LoginServiceConfiguration['_id']> {
 		const service = serviceName.toLowerCase();
 
-		const existing = await this.findOne({ service });
-		if (!existing) {
-			const insertResult = await this.insertOne({
-				service,
-				...serviceData,
-			});
-
-			return insertResult.insertedId;
+		const result = await this.findOneAndUpdate(
+			{ service },
+			{ $set: { ...serviceData, service } },
+			{ upsert: true, returnDocument: 'after', projection: { _id: 1 } },
+		);
+		if (!result) {
+			throw new Error(`Login service ${service} was not saved`);
 		}
 
-		if (Object.keys(serviceData).length > 0) {
-			await this.updateOne(
-				{
-					_id: existing._id,
-				},
-				{
-					$set: serviceData,
-				},
-			);
-		}
-
-		return existing._id;
+		return result._id;
 	}
 
 	async removeAll(): Promise<LoginServiceConfiguration['_id'][]> {
