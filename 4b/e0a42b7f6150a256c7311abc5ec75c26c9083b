@@ -1,0 +1,19 @@
+ee/packages/presence/src/lib/PresenceReaper.spec.ts
+  s_ef962851677545::t_a0251fe6d79484 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4be0a42b7f6150a256c7311abc5ec75c26c9083b",
+  "prompts": {},
+  "sessions": {
+    "s_ef962851677545": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8ffa22ac-7c52-4448-b59c-318f9b82bbaa",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
