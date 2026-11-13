@@ -65,3 +65,36 @@ Fuselage's own doc scopes native readiness narrowly (frames and prop types porta
 ### Tamagui token types (still open)
 
 Augmenting `TamaguiCustomConfig` from `@tamagui/web` with `typeof config` (`@tamagui/config/v5` defaults) makes token props type-checked, but the accepted names lose their `$` prefix (`'color1'` is suggested for `'$color1'`), so `'$background'`, `'$color1'` and `'$4'` are all rejected. Two `@tamagui/web@3.0.18` copies exist (root and `apps/expo-lab/node_modules`), the likely cause. Not fixed; `App.tsx` does not use token props.
+
+## Fuselage source on native: spike
+
+Goal: render real Fuselage components on iOS by resolving `@rocket.chat/fuselage` to `packages/fuselage/src` (not the web-target `dist`). Fuselage source is untouched. Screenshots are in `/tmp/expolab/shots/` (`3-` to `9-`).
+
+### Config that was needed
+
+- `metro.config.js`: `@rocket.chat/fuselage` resolves to `packages/fuselage/src/index.runtime.ts` (it registers Fuselage's Tamagui config; plain `index.ts` does not); `@tamagui/web` resolves to the app's copy; every `*.css`/`*.scss` import resolves to `stubs/empty.js`; `packages/fuselage` is added to `watchFolders`. With the monorepo watch folder the dev server root is the repo root, so the bundle URL is `/apps/expo-lab/index.bundle`.
+- `App.tsx`: `import '@tamagui/core'` for its side effect, and a `TamaguiProvider` (from `@tamagui/web`) with `tamaguiConfig` imported from `packages/fuselage/src/tamagui.config`.
+- `TAMAGUI_TARGET=native` was not needed: `@tamagui/web` resolves its native build through the `react-native` export condition, so the `addEventListener` failure is gone.
+- Run Metro with `node node_modules/expo/bin/cli start --dev-client` (the `rtk` hook mangles `npx`).
+
+### Observed blockers, in order
+
+1. `Err0 TamaguiConfig: no config is available. Received config=null...` at `config.native.js:70` (Badge). Cause: `index.ts` never calls `createTamagui`; only `index.runtime.ts` does. Fixed by aliasing to `index.runtime.ts`.
+2. `Can't find Tamagui configuration` at `useThemeState.native.js:77` (`!parentId && !isRoot`). On native a frame needs a `TamaguiProvider` ancestor (web uses CSS). Fixed by wrapping the app. (Two `@tamagui/web` copies were not the cause; the config was found once registered.)
+3. `View config getter callback for component 'span' must be a function (received 'undefined')` at `ReactNativeViewConfigRegistry.js:103`. `@tamagui/web` base `Text`/`View` have no native host component until `@tamagui/core`'s runtime calls `setupHooks({ getBaseViews })`; without it `createComponent` falls back to the string `'span'`/`'div'`. Fixed by `import '@tamagui/core'` in the app.
+4. Type error only: `TamaguiProvider config={tamaguiConfig}` is not assignable (two `@tamagui/web` type copies); `App.tsx` uses a `@ts-expect-error` with the reason.
+
+### Per-component result (iPhone 17 Pro)
+
+| Component | Result |
+| --- | --- |
+| `Badge variant='primary'` | Renders without error: bold "3" (`fontWeight: 700`). No background, radius or padding: `var(--rcx-*, fallback)` and `rem` values are not applied (`6-badge-attempt4.png`). |
+| `Button variant='primary'` | Renders without error: the text "Send" at the left edge, no fill, padding or press feedback (`7-button.png`). |
+| `Avatar size='x36' url=...` | No error and nothing visible; not investigated whether it is the `img`/`rem` size or the image load (`8-avatar.png`, `9-final.png`). |
+
+### Next blockers, not yet addressed
+
+- Values: every `var(--rcx-*, fallback)`, `rem`, `calc()`, `fit-content`, `paddingBlock/Inline`, `wordBreak`, `textOverflow` in frames is web-only. Fix in Fuselage: generate native-valid frame values (numbers/tokens) in `scripts/generate-frame-values.mts`, or register `--rcx-*` as Tamagui tokens in `src/tamagui.config.ts` (currently `createTokens({ color: {}, space: {}, ... })` is empty).
+- `render={<span/>}` and `render: 'span'` in each frame (e.g. `components/Badge/Badge.tsx`): DOM elements and tags do not apply on native; need a platform split for the `render` prop.
+- `className`/`rcx-*` classes, `ariaAndDataAttributes` and `pickWebPressHandlers`: no effect on native; `onClick` is not `onPress`.
+- Module-scope DOM globals: the whole of `index.runtime.ts` loaded without throwing, so none were hit at load.
