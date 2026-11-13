@@ -61,6 +61,8 @@ inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
 inlineRenderer.listitem = listItemMarked;
 inlineRenderer.hr = horizontalRuleMarked;
+inlineRenderer.code = codeMarked;
+inlineRenderer.codespan = codespanMarked;
 
 inlineWithoutBreaks.link = linkMarked;
 inlineWithoutBreaks.paragraph = paragraphMarked;
