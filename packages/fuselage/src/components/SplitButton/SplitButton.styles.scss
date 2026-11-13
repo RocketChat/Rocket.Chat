@@ -23,6 +23,12 @@
 			border-color: transparent;
 			background-color: $active;
 		}
+
+		@include on-disabled {
+			color: button-colors.$button-secondary-disabled-color;
+			border-color: transparent;
+			background-color: transparent;
+		}
 	}
 }
 

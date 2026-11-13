@@ -1162,5 +1162,9 @@
 	},
 	"book-clock": {
 		"start": "\ue1cf"
+	},
+	"clock-send": {
+		"start": "\u301a",
+		"end": "\u301b"
 	}
 }

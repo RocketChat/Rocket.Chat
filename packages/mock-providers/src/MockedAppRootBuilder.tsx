@@ -22,7 +22,7 @@ import type {
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import type { ExperimentalEndpoints, Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
 	ConnectionStatusContextValue,
 	Device,
@@ -345,6 +345,16 @@ export class MockedAppRootBuilder {
 		this.server.callEndpoint = outerFn;
 
 		return this;
+	}
+
+	withExperimentalEndpoint<TPath extends keyof ExperimentalEndpoints, TMethod extends keyof ExperimentalEndpoints[TPath] & Method>(
+		method: TMethod,
+		path: TPath,
+		response: ExperimentalEndpoints[TPath][TMethod] extends (params: infer P) => infer R
+			? (params: P) => Serialized<R> | Promise<Serialized<R>>
+			: never,
+	): this {
+		return this.withEndpoint(method, path as unknown as PathPattern, response as never);
 	}
 
 	withStream<N extends StreamNames>(streamName: N, ref: StreamControllerRef<N>): this {

@@ -36,13 +36,13 @@ const createChatStub = () => {
 	return chat as unknown as ChatAPI & { composer?: ReturnType<typeof createComposerAPI> };
 };
 
-const renderMessageBox = (onSend: jest.Mock, endpointHandler: jest.Mock) => {
+const renderMessageBox = (onSend: jest.Mock, endpointHandler: jest.Mock, root = mockAppRoot()) => {
 	const chat = createChatStub();
 
 	(useChat as jest.Mock).mockReturnValue(chat);
 
 	const view = render(<MessageBox showFormattingTips={false} onSend={onSend} />, {
-		wrapper: mockAppRoot().withUserPreference('sendOnEnter', 'normal').withEndpoint('POST', '/v1/rooms.saveDraft', endpointHandler).build(),
+		wrapper: root.withUserPreference('sendOnEnter', 'normal').withEndpoint('POST', '/v1/rooms.saveDraft', endpointHandler).build(),
 	});
 
 	return { chat, ...view };
@@ -171,5 +171,21 @@ describe('MessageBox drafts', () => {
 		// …and leaving the room.
 		unmount();
 		await waitFor(() => expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'a message over the limit' }));
+	});
+});
+
+describe('MessageBox send button', () => {
+	it('turns the send pair primary while there is text to send', async () => {
+		renderMessageBox(
+			jest.fn(),
+			jest.fn(),
+			mockAppRoot().withSetting('Message_Scheduling_Enabled', true).withPermission('schedule-message'),
+		);
+		const pair = screen.getByRole('group', { name: 'Send' });
+		expect(pair).not.toHaveClass('rcx-split-button--primary');
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Message #general' }), 'hello');
+
+		expect(pair).toHaveClass('rcx-split-button--primary');
 	});
 });
