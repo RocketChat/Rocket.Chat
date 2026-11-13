@@ -95,8 +95,8 @@ callbacks.add(
 		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id, language);
 		const elements: ActionsBlock['elements'] = [
 			canAddUsers && actionBlocks.addUsersBlock,
-			(canAddUsers || canDMUsers) && actionBlocks.dismissBlock,
 			canDMUsers && actionBlocks.dmBlock,
+			(canAddUsers || canDMUsers) && actionBlocks.dismissBlock,
 		].filter(isTruthy);
 
 		const messageLabel = canAddUsers

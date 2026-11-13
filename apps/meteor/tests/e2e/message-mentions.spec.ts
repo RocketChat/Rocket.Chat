@@ -156,6 +156,7 @@ test.describe.serial('message-mentions', () => {
 			});
 			await test.step('send message to users', async () => {
 				await adminPage.content.getLastMessageActionButton('Let them know').click();
+				await adminPage.content.btnModalForward.click();
 				await expect(adminPage.content.lastUserMessageBody).toContainText(getMentionText(Users.user1.data.username, 3));
 			});
 
@@ -226,6 +227,7 @@ test.describe.serial('message-mentions', () => {
 				});
 				await test.step('send message to users', async () => {
 					await userPage.content.getLastMessageActionButton('Let them know').click();
+					await userPage.content.btnModalForward.click();
 					await expect(userPage.content.lastUserMessageBody).toContainText(getMentionText(Users.user2.data.username, 3));
 				});
 			});
