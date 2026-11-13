@@ -110,8 +110,8 @@ desktop viewer and signed URLs.
 **Places**
 
 - **R21** The room's, a thread's and a system message MUST show their attachments with the package's
-  parts and look and behave as before; where the place does not allow interaction, the action buttons
-  of a default attachment act only when a chat is open, as before.
+  parts and look and behave as before; the action buttons of a default attachment act through the
+  chat of the conversation, and do nothing where no chat is open.
 - **R22** The forward and pin modals and the composer's quote MUST show a quoted message with the
   package's quote, and the audit, moderation's reported messages and contact history MUST show
   attachments with no toolbar, applying the viewer's attachment preferences as `message-capabilities`
