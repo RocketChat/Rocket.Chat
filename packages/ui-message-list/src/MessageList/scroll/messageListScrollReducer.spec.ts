@@ -6,11 +6,15 @@ import type {
 	MessageListScrollState,
 } from './messageListScrollReducer';
 import { createInitialScrollState, messageListScrollReducer } from './messageListScrollReducer';
+import { HEADER_ROW_KEY } from '../lib/buildMessageListRows';
 
 const rowsOf = (keys: string, { hasOlderMessages = false, hasNewerMessages = false } = {}): MessageListRowsSnapshot => {
 	const list = keys.split('');
 	return { keys: list, lastIndex: list.length - 1, hasOlderMessages, hasNewerMessages };
 };
+
+/** A list showing its header and no message yet. */
+const headerOnly: MessageListRowsSnapshot = { keys: [HEADER_ROW_KEY], lastIndex: 0, hasOlderMessages: false, hasNewerMessages: false };
 
 const VIEWPORT = 600;
 const CONTENT = 3000;
@@ -97,6 +101,38 @@ describe('opening', () => {
 
 		expect(loads(state, [committed(rows, at(0, 400), 'replace'), scrolled(at(0, 400))])).toEqual([]);
 		expect(loads(state, [committed(rows, at(0, 400), 'replace'), { type: 'positioningTimeout' }])).toEqual([{ type: 'loadOlder' }]);
+	});
+
+	it('should place itself again on its first messages when they arrive after it stopped, and page only once placed (R29)', () => {
+		const waiting = run(createInitialScrollState({ rows: rowsOf('') }), [{ type: 'positioningTimeout' }]).state;
+		const rows = rowsOf('abcde', { hasOlderMessages: true });
+		const listed: MessageListScrollEvent[] = [{ type: 'restoreResolved', target: { type: 'bottom' } }, committed(rows, TOP, 'replace')];
+
+		expect(run(waiting, listed).state.phase).toBe('positioning');
+		expect(loads(waiting, listed)).toEqual([]);
+		expect(loads(waiting, [...listed, scrolled(BOTTOM), { type: 'positioningTimeout' }])).toEqual([]);
+	});
+
+	it('should not place itself again when its first message arrives in a list that showed its header, unless it opens on a restored message (R29)', () => {
+		const header = idleAt(headerOnly, BOTTOM);
+		const restored: MessageListScrollEvent = { type: 'restoreResolved', target: { type: 'message', messageId: 'a', offset: 30 } };
+
+		expect(run(header, [{ type: 'restoreResolved', target: { type: 'bottom' } }]).state).toMatchObject({
+			phase: 'idle',
+			anchor: { type: 'bottom' },
+		});
+		expect(run(header, [restored]).state).toMatchObject({ phase: 'positioning', anchor: { type: 'message', messageId: 'a' } });
+	});
+
+	it('should place itself again when its viewport gets a size it did not have (R29)', () => {
+		const rows = rowsOf('abcde');
+		const hidden: MessageListMeasurement = { geometry: { scrollTop: 0, scrollHeight: 0, clientHeight: 0 }, messagesStart: 0 };
+		const { state } = run(createInitialScrollState({ rows }), [committed(rows, hidden, 'replace'), { type: 'positioningTimeout' }]);
+		const shown = run(state, [resized(TOP)]);
+
+		expect(shown.state.phase).toBe('positioning');
+		expect(shown.commands).toContainEqual({ type: 'scrollToIndex', index: 4, align: 'end' });
+		expect(run(idleAt(rows, BOTTOM), [resized(at(CONTENT - VIEWPORT, CONTENT + 100))]).state.phase).toBe('idle');
 	});
 
 	it('should stop placing itself as soon as the viewer scrolls (R29)', () => {

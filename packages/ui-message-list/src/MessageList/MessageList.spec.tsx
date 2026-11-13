@@ -654,6 +654,7 @@ describe('stories', () => {
 				'RestorePositionOfAListThatMountsEmpty',
 				'FirstPageLoading',
 				'OlderPageOfTheSameDay',
+				'FirstPageArrivesLate',
 			]),
 		);
 	});

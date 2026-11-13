@@ -159,9 +159,13 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   an edge.
 - **R28** A message the list holds in view (a jump target, a restored position) MUST be released by the viewer's input, or 3 s
   after the sizes around it stopped changing, and MUST NOT be released earlier by anything else (B7).
-- **R29** The list is _positioning_ while it opens or restores: it MUST NOT load a page then, and MUST stop positioning once
-  nothing moved for 5 frames, at the latest after 2 s, or at the viewer's first input. When it stops it MUST check whether a
-  page is due (B1, B21).
+- **R29** The list is _positioning_ while it opens or restores, and again when its viewport gets a size after having none, and when
+  the first messages of a list that mounted without any are listed while it showed nothing at all or nothing but the first page's
+  spinner (R4), or while they open on a restored message (R61): such a list MUST place itself on them, and nothing the viewer saw
+  goes out of sight (R84); a list that already showed rows, a header or a loader, MUST NOT position again for its first messages. While positioning it MUST NOT load a page, and MUST stop positioning once nothing moved for 5 frames, at the
+  latest after 2 s, or at the viewer's first input. When it stops it MUST check whether a page is due (B1, B21; review round 1:
+  positioning ended while a slow first page loaded, and the page then asked for an older one from the top of the list in the same
+  commit that sent it to the bottom; at the second review, a list showing its header positioned again for its first message).
 
 **Paging**
 

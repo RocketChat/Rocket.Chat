@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export const VIEWER = { _id: 'viewer', username: 'viewer', name: 'You' };
 const AUTHORS = [{ _id: 'alice', username: 'alice', name: 'Alice' }, { _id: 'bob', username: 'bob', name: 'Bob' }, VIEWER];
@@ -65,6 +65,8 @@ export type FakeMessageSourceOptions = {
 	firstUnreadMessageId?: string;
 	/** How many of the first loads fail, so a story can see what the list does when a page does not arrive. */
 	failLoads?: number;
+	/** Milliseconds before the first page arrives, during which nothing is listed and the first page is loading. */
+	firstPageDelay?: number;
 };
 
 type Window = { start: number; end: number };
@@ -88,6 +90,7 @@ export const useFakeMessageSource = ({
 	isInitiallyLoading = false,
 	firstUnreadMessageId,
 	failLoads = 0,
+	firstPageDelay = 0,
 }: FakeMessageSourceOptions) => {
 	const [history, setHistory] = useState(initialHistory);
 	const [window, setWindow] = useState<Window>(() => {
@@ -100,6 +103,15 @@ export const useFakeMessageSource = ({
 		return latestWindow(initialHistory.length, pageSize);
 	});
 	const [isLoadingInitialMessages, setIsLoadingInitialMessages] = useState(isInitiallyLoading);
+	const [hasFirstPage, setHasFirstPage] = useState(firstPageDelay === 0);
+
+	useEffect(() => {
+		if (firstPageDelay === 0) {
+			return;
+		}
+		const timeout = setTimeout(() => setHasFirstPage(true), firstPageDelay);
+		return () => clearTimeout(timeout);
+	}, [firstPageDelay]);
 	const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
 	const [isLoadingNewerMessages, setIsLoadingNewerMessages] = useState(false);
 
@@ -218,14 +230,14 @@ export const useFakeMessageSource = ({
 
 	receiveRef.current = () => receive();
 
-	const messages = useMemo(() => history.slice(window.start, window.end), [history, window]);
+	const messages = useMemo(() => (hasFirstPage ? history.slice(window.start, window.end) : []), [hasFirstPage, history, window]);
 
 	return {
 		messages,
 		history,
 		hasOlderMessages: window.start > 0,
 		hasNewerMessages: window.end < history.length,
-		isLoadingInitialMessages,
+		isLoadingInitialMessages: isLoadingInitialMessages || !hasFirstPage,
 		isLoadingOlderMessages,
 		isLoadingNewerMessages,
 		firstUnreadMessageId,

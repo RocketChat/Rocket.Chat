@@ -378,6 +378,20 @@ export const FirstPageLoading: Story = {
 	},
 };
 
+/** R29: a first page that arrives after the list stopped placing itself is placed before any page is due, so it opens at the bottom and loads nothing. */
+export const FirstPageArrivesLate: Story = {
+	args: { history: { size: 200 }, source: { pageSize: 30, firstPageDelay: 600 } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitForListSettled(canvasElement);
+		await waitFor(() => messageRow(canvasElement, fakeMessageId(199)) !== null);
+		await waitForListSettled(canvasElement);
+
+		await expectAtBottom(canvasElement);
+		await expect(canvas.getByLabelText('Loads')).toHaveTextContent('0');
+	},
+};
+
 /** R48: the target of a jump is highlighted for a while. */
 export const HighlightedMessage: Story = {
 	args: { history: { size: 40 }, source: { pageSize: 40 }, initialTargetIndex: 20 },

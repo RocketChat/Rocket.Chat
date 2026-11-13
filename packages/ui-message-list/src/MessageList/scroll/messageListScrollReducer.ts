@@ -60,6 +60,7 @@ export type MessageListScrollEvent =
 			tail: MessageListTailChange | undefined;
 	  } & MessageListMeasurement)
 	| { type: 'targetChanged'; messageId: string | undefined }
+	/** The first messages are listed, in a list that mounted without any, and where they open is known. */
 	| { type: 'restoreResolved'; target: RestoreTarget }
 	| { type: 'loadSettled' }
 	/** The latest page cannot be asked for, so the list stops waiting for it. */
@@ -280,7 +281,9 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 		}
 
 		case 'resize': {
-			const next = { ...state, measurement: measurementOf(event) };
+			// A list that had no size, hidden behind a panel, was placed nowhere: it places itself again before anything else
+			const gotItsSize = state.measurement?.geometry.clientHeight === 0 && event.geometry.clientHeight > 0;
+			const next = { ...state, measurement: measurementOf(event), ...(gotItsSize && { phase: 'positioning' as const }) };
 			return { state: next, commands: [...applyAnchor(next), { type: 'notifyVisibility' }] };
 		}
 
@@ -300,18 +303,20 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 		}
 
 		case 'restoreResolved': {
-			if (state.anchor.type !== 'bottom' || state.pendingTargetId || event.target.type === 'bottom') {
+			// A list that showed nothing but the first page's spinner places itself again on its first messages, as does one that
+			// opens them on a restored message; a list already showing rows, or that the viewer took elsewhere, stays where it is
+			if (state.anchor.type === 'none') {
 				return { state, commands: [] };
 			}
-			// The list may have stopped placing itself while it waited for its messages, so it places itself again
-			return {
-				state: {
-					...state,
-					phase: 'positioning',
-					anchor: { type: 'message', messageId: event.target.messageId, align: 'start', offset: event.target.offset },
-				},
-				commands: [],
-			};
+			const { target } = event;
+			const restoresMessage = state.anchor.type === 'bottom' && !state.pendingTargetId && target.type === 'message';
+			if (state.rows.keys.length > 0 && !restoresMessage) {
+				return { state, commands: [] };
+			}
+			const anchor: MessageListAnchor = restoresMessage
+				? { type: 'message', messageId: target.messageId, align: 'start', offset: target.offset }
+				: state.anchor;
+			return { state: { ...state, phase: 'positioning', anchor }, commands: [] };
 		}
 
 		case 'targetChanged': {
