@@ -1,6 +1,6 @@
-import type { IMessage, ISubscription, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, MessageAttachment, MessageAttachmentBase } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { TooltipProvider } from '@rocket.chat/ui-client';
+import { MarkdownTextContext, TooltipProvider } from '@rocket.chat/ui-client';
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import {
 	MessageReactionList,
@@ -13,6 +13,9 @@ import {
 	messageRenderersDefaultValue,
 	useIsMessageSelected,
 	useIsSelectingMessages,
+	useMessageMedia,
+	useMessageMediaPlayer,
+	MessageAttachments,
 } from '@rocket.chat/ui-message-list';
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -25,9 +28,13 @@ import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { SelectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
+import type { MediaPlayerContextValue } from '../MediaPlayerProvider';
+import { MediaPlayerContext } from '../MediaPlayerProvider';
 
 jest.mock('../../../rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../lib/autotranslate', () => ({ AutoTranslate: { getLanguage: () => 'pt', messageIdsToWait: {} } }));
+const mockDownloadAs = jest.fn();
+jest.mock('../../lib/download', () => ({ downloadAs: (...args: unknown[]) => mockDownloadAs(...args) }));
 jest.mock('../../lib/getPermaLink', () => ({ getPermaLink: async (id: string) => `permalink/${id}` }));
 const mockOpenRouteLink = jest.fn();
 const mockSetMessageJump = jest.fn();
@@ -710,5 +717,263 @@ describe('renderers', () => {
 		expect(Object.keys(result.current).sort()).toEqual(['Emoji', 'Markup', 'PreviewMarkup', 'UiKitMessageBlock']);
 		expect(result.current.Markup).not.toBe(messageRenderersDefaultValue.Markup);
 		expect(result.current.Emoji).not.toBe(messageRenderersDefaultValue.Emoji);
+	});
+});
+
+type TestServiceWorker = { controller?: { postMessage: (message: { id: string; url: string }) => void }; addEventListener: jest.Mock };
+
+const serviceWorker = navigator.serviceWorker as unknown as TestServiceWorker;
+
+// The download module listens for the service worker's answers as soon as it loads.
+const answerListeners = serviceWorker.addEventListener.mock.calls.map(([, listener]) => listener as (event: { data: unknown }) => void);
+
+describe('media', () => {
+	const player = (overrides: Partial<MediaPlayerContextValue> = {}): MediaPlayerContextValue => ({
+		track: null,
+		playing: false,
+		currentTime: 0,
+		duration: 0,
+		playbackRate: 1,
+		play: jest.fn(),
+		toggle: jest.fn(),
+		seek: jest.fn(),
+		cyclePlaybackRate: jest.fn(),
+		close: jest.fn(),
+		isActive: () => false,
+		...overrides,
+	});
+
+	const renderMedia = (value: MediaPlayerContextValue = player()) =>
+		renderHook(() => useMessageMedia(), {
+			wrapper: appRoot()
+				.wrap((children: ReactNode) => (
+					<MediaPlayerContext.Provider value={value}>
+						<MessagesProvider>{children}</MessagesProvider>
+					</MediaPlayerContext.Provider>
+				))
+				.build(),
+		});
+
+	afterEach(() => {
+		delete serviceWorker.controller;
+		delete window.RocketChatDesktop;
+	});
+
+	it('gives attachments the shared player of the app, also to a provider mounted later (message-attachments R14)', () => {
+		const shared = player();
+		const { result: firstResult } = renderMedia(shared);
+		const { result: secondResult } = renderMedia(shared);
+
+		secondResult.current.player.getSnapshot().play({ id: 'm:/audio.mp3', url: '/audio.mp3', title: 'audio.mp3' });
+
+		expect(firstResult.current.player.getSnapshot()).toBe(shared);
+		expect(secondResult.current.player.getSnapshot()).toBe(shared);
+		expect(shared.play).toHaveBeenCalledWith({ id: 'm:/audio.mp3', url: '/audio.mp3', title: 'audio.mp3' });
+	});
+
+	it('downloads an encrypted file through the service worker every time (message-attachments R15)', () => {
+		const posted: { id: string; url: string }[] = [];
+		serviceWorker.controller = { postMessage: (message) => posted.push(message) };
+		const answer = (id: string) =>
+			answerListeners.forEach((listener) => listener({ data: { type: 'attachment-download-result', id, result: new ArrayBuffer(1) } }));
+		mockDownloadAs.mockClear();
+		const { result } = renderMedia();
+
+		for (const activation of [1, 2]) {
+			act(() => result.current.downloadEncrypted('/file-decrypt/id/a.txt', 'a.txt'));
+			expect(posted).toHaveLength(activation);
+			expect(posted[activation - 1].url).toBe('/file-decrypt/id/a.txt');
+			act(() => answer(posted[activation - 1].id));
+			expect(mockDownloadAs).toHaveBeenCalledTimes(activation);
+		}
+		expect(mockDownloadAs).toHaveBeenLastCalledWith(expect.anything(), 'a.txt');
+	});
+
+	it('allows encrypted downloads only under a service worker (message-attachments R16)', () => {
+		expect(renderMedia().result.current.canDownloadEncrypted).toBe(false);
+
+		serviceWorker.controller = { postMessage: jest.fn() };
+
+		expect(renderMedia().result.current.canDownloadEncrypted).toBe(true);
+	});
+
+	it('enables encrypted downloads for the buttons that render after a service worker takes control (message-attachments R16)', () => {
+		const { result } = renderMedia();
+
+		expect(result.current.canDownloadEncrypted).toBe(false);
+
+		serviceWorker.controller = { postMessage: jest.fn() };
+
+		expect(result.current.canDownloadEncrypted).toBe(true);
+	});
+
+	it('offers the desktop document viewer only in the desktop app (message-attachments R17)', () => {
+		expect(renderMedia().result.current.documentViewer).toBeUndefined();
+
+		const openDocumentViewer = jest.fn();
+		window.RocketChatDesktop = { openDocumentViewer, supportedDocumentViewerFormats: () => ['markdown'] } as never;
+		const { documentViewer } = renderMedia().result.current;
+
+		expect(documentViewer?.supportedFormats).toEqual(['markdown']);
+
+		documentViewer?.open('/file.pdf', 'PDF');
+		documentViewer?.open('/blob', 'PDF', 'Report');
+
+		expect(openDocumentViewer).toHaveBeenCalledWith('/file.pdf', 'PDF', '');
+		expect(openDocumentViewer).toHaveBeenCalledWith('/blob', 'PDF', 'Report');
+	});
+
+	describe('opens an encrypted PDF', () => {
+		const originalFetch = global.fetch;
+		const originalCreate = URL.createObjectURL;
+		const originalRevoke = URL.revokeObjectURL;
+		const revoke = jest.fn();
+
+		beforeEach(() => {
+			global.fetch = jest.fn(async () => ({ ok: true, blob: async () => new Blob(['pdf']) })) as never;
+			URL.createObjectURL = jest.fn().mockReturnValueOnce('blob:first').mockReturnValueOnce('blob:second');
+			URL.revokeObjectURL = revoke;
+			revoke.mockClear();
+		});
+
+		afterEach(() => {
+			global.fetch = originalFetch;
+			URL.createObjectURL = originalCreate;
+			URL.revokeObjectURL = originalRevoke;
+		});
+
+		it('in the viewer with the attachment title, keeping the blob of the other files (message-attachments R18)', async () => {
+			const openDocumentViewer = jest.fn();
+			window.RocketChatDesktop = { openDocumentViewer } as never;
+			const { result } = renderMedia();
+
+			await act(async () => {
+				await result.current.openEncryptedPdf('/file-decrypt/a.pdf', { title: 'A', size: 1024, format: 'PDF' });
+				await result.current.openEncryptedPdf('/file-decrypt/b.pdf', { title: 'B', size: 1024, format: 'PDF' });
+			});
+
+			expect(openDocumentViewer).toHaveBeenCalledWith('blob:first', 'PDF', 'A');
+			expect(openDocumentViewer).toHaveBeenCalledWith('blob:second', 'PDF', 'B');
+			expect(revoke).not.toHaveBeenCalled();
+		});
+
+		it('by downloading it when there is no viewer (message-attachments R17)', async () => {
+			const posted: { id: string; url: string }[] = [];
+			serviceWorker.controller = { postMessage: (message) => posted.push(message) };
+			const { result } = renderMedia();
+
+			await act(async () => {
+				await result.current.openEncryptedPdf('/file-decrypt/a.pdf', { title: 'A', size: 1024, format: 'PDF' });
+			});
+
+			expect(posted.map(({ url }) => url)).toEqual(['/file-decrypt/a.pdf']);
+			expect(global.fetch).not.toHaveBeenCalled();
+		});
+
+		it('saves each of two downloads that are pending together once, with its own content under its own title (message-attachments R18)', async () => {
+			const posted: { id: string; url: string }[] = [];
+			serviceWorker.controller = { postMessage: (message) => posted.push(message) };
+			const answer = (id: string, bytes: number) =>
+				answerListeners.forEach((listener) =>
+					listener({ data: { type: 'attachment-download-result', id, result: new ArrayBuffer(bytes) } }),
+				);
+			window.RocketChatDesktop = { openDocumentViewer: jest.fn() } as never;
+			mockDownloadAs.mockClear();
+			const { result } = renderMedia();
+			const tooLarge = 11 * 1024 * 1024;
+
+			await act(async () => {
+				await result.current.openEncryptedPdf('/file-decrypt/a.pdf', { title: 'A', size: tooLarge, format: 'PDF' });
+				await result.current.openEncryptedPdf('/file-decrypt/b.pdf', { title: 'B', size: tooLarge, format: 'PDF' });
+			});
+			act(() => answer(posted[0].id, 1));
+			act(() => answer(posted[1].id, 2));
+
+			expect(mockDownloadAs.mock.calls.map(([{ data }, title]) => [data[0].size, title])).toEqual([
+				[1, 'A'],
+				[2, 'B'],
+			]);
+		});
+
+		it('by downloading a file over the size limit or of unknown size (message-attachments R18)', async () => {
+			const posted: { id: string; url: string }[] = [];
+			serviceWorker.controller = { postMessage: (message) => posted.push(message) };
+			window.RocketChatDesktop = { openDocumentViewer: jest.fn() } as never;
+			const { result } = renderMedia();
+
+			await act(async () => {
+				await result.current.openEncryptedPdf('/file-decrypt/big.pdf', { title: 'Big', size: 11 * 1024 * 1024, format: 'PDF' });
+				await result.current.openEncryptedPdf('/file-decrypt/unknown.pdf', { title: 'Unknown', format: 'PDF' });
+			});
+
+			expect(posted.map(({ url }) => url)).toEqual(['/file-decrypt/big.pdf', '/file-decrypt/unknown.pdf']);
+			expect(global.fetch).not.toHaveBeenCalled();
+		});
+	});
+
+	it('formats file sizes like the rest of the app (message-attachments R19)', () => {
+		expect(renderMedia().result.current.formatFileSize(2048)).toMatch(/2(\.00)? kB/);
+		expect(renderMedia().result.current.formatFileSize(5 * 1024 * 1024)).toMatch(/5(\.00)? MB/);
+	});
+
+	describe('the player', () => {
+		const file = { type: 'file', title: 'report.txt', title_link: '/report.txt', format: 'TXT' } as MessageAttachmentBase;
+
+		const Root = appRoot()
+			.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>)
+			.build();
+
+		const Harness = ({ value, children }: { value: MediaPlayerContextValue; children: ReactNode }) => (
+			<MediaPlayerContext.Provider value={value}>
+				<Root>{children}</Root>
+			</MediaPlayerContext.Provider>
+		);
+
+		it('reaches the readers of the shared player with its changes (message-attachments R20)', () => {
+			// One mounted provider across the change: the store has to take the new player, not start from it.
+			const Reader = () => {
+				const { currentTime, playing } = useMessageMediaPlayer();
+				return <>{`${currentTime}:${playing}`}</>;
+			};
+			const { rerender } = render(
+				<Harness value={player({ currentTime: 1 })}>
+					<Reader />
+				</Harness>,
+			);
+
+			expect(screen.getByText('1:false')).toBeInTheDocument();
+
+			rerender(
+				<Harness value={player({ currentTime: 2, playing: true })}>
+					<Reader />
+				</Harness>,
+			);
+
+			expect(screen.getByText('2:true')).toBeInTheDocument();
+		});
+
+		it('does not render an attachment that is not audio again when the player progresses (message-attachments R20)', () => {
+			const rendered = jest.fn();
+			// Draws the description of the attachment, so it renders whenever the attachment does.
+			const Description = ({ content }: { content: string }) => {
+				rendered();
+				return <>{content}</>;
+			};
+			// Created once, as the list creates the rows, so only a change of what the attachment reads renders it again.
+			const attachment = (
+				<MarkdownTextContext.Provider value={Description}>
+					<MessageAttachments attachments={[{ ...file, description: 'the description' }]} />
+				</MarkdownTextContext.Provider>
+			);
+			const { rerender } = render(<Harness value={player({ currentTime: 1 })}>{attachment}</Harness>);
+			const rendersBefore = rendered.mock.calls.length;
+
+			expect(rendersBefore).toBeGreaterThan(0);
+
+			rerender(<Harness value={player({ currentTime: 2, playing: true })}>{attachment}</Harness>);
+			rerender(<Harness value={player({ currentTime: 3, playing: true })}>{attachment}</Harness>);
+
+			expect(rendered).toHaveBeenCalledTimes(rendersBefore);
+		});
 	});
 });

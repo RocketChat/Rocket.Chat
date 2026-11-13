@@ -82,16 +82,19 @@ desktop viewer and signed URLs.
 
 **The app's media value**
 
-- **R14** `MessagesProvider` MUST give the media context the app's shared audio player, so that
-  audio that started in one room keeps its state in another list, and a message in a place that
+- **R14** `MessagesProvider` MUST give the media context the app's shared audio player, as a store its
+  readers subscribe to, so that audio that started in one room keeps its state in another list, and a message in a place that
   mounts a new provider reads the same player.
 - **R15** `downloadEncrypted` MUST ask the service worker to fetch and decrypt the file, and MUST
   save the result under the title, or the translation of `Download` without one, every time it is
   called, also when the same file is downloaded again.
-- **R16** `canDownloadEncrypted` MUST be true only while a service worker controls the page.
+- **R16** `canDownloadEncrypted` MUST be true only while a service worker controls the page, read
+  each time a download button renders, so a service worker that takes control later enables the
+  buttons that render after it.
 - **R17** `documentViewer` MUST be absent without the desktop app; with it, `supportedFormats` MUST
-  be what the desktop app reports and `open` MUST call its `openDocumentViewer` with the url and the
-  format.
+  be what the desktop app reports and `open` MUST call its `openDocumentViewer` with the url, the
+  format and the title (empty without one). `openEncryptedPdf` MUST decide between the viewer and a
+  download from this value alone: without a viewer it downloads the file.
 - **R18** `openEncryptedPdf` MUST open a PDF within the desktop app's preview size limit (10 MB
   without one) in the viewer from a blob of the decrypted file, titled by the attachment, and MUST
   download a larger one or one of unknown size instead. Each download MUST be asked for and saved
