@@ -5,7 +5,7 @@ import { RoomMessage, SystemMessage, ThreadMessagePreview, useMessageDisplay } f
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRegisterRenderedMessage } from './hooks/useRegisterRenderedMessage';
+import { useRegisterRenderedMessage } from '../body/RoomMessageList/useRegisterRenderedMessage';
 import { useDateRef } from '../providers/DateListProvider';
 
 const dividerClassName = css`

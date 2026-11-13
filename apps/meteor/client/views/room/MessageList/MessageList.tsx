@@ -10,11 +10,9 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { MessageListItem } from './MessageListItem';
-import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
-import { useMessages } from './hooks/useMessages';
 import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
 import { RoomManager } from '../../../lib/RoomManager';
 import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
@@ -24,8 +22,10 @@ import { roomMessageSelection } from '../../../providers/MessagesProvider/messag
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
+import { useMessages } from '../body/RoomMessageList/useMessages';
 import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
+import { useRoomSubscription } from '../contexts/RoomContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 
 export type MessageListProps = {

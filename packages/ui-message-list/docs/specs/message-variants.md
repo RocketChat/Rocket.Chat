@@ -23,7 +23,7 @@ code:
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.ts,
     apps/meteor/client/views/room/MessageList/MessageListItem.tsx,
     apps/meteor/client/views/room/MessageList/MessageList.tsx,
-    apps/meteor/client/views/room/MessageList/hooks/useRegisterRenderedMessage.ts,
+    apps/meteor/client/views/room/body/RoomMessageList/useRegisterRenderedMessage.ts,
     apps/meteor/client/providers/MessagesProvider/messageSelectionFromStore.ts,
     apps/meteor/client/lib/MessageAction.ts,
     apps/meteor/client/views/room/contextualBar/MessageListTab.tsx,

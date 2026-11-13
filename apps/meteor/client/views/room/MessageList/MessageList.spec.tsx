@@ -6,9 +6,9 @@ import type { ReactNode } from 'react';
 
 import type { MessageListProps } from './MessageList';
 import { MessageList } from './MessageList';
-import { useMessages } from './hooks/useMessages';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomMessageSelection } from '../../../providers/MessagesProvider/messageSelectionFromStore';
+import { useMessages } from '../body/RoomMessageList/useMessages';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 
@@ -78,7 +78,7 @@ jest.mock('../../../lib/RoomManager', () => ({
 	},
 }));
 
-jest.mock('./hooks/useMessages', () => ({
+jest.mock('../body/RoomMessageList/useMessages', () => ({
 	useMessages: jest.fn(),
 }));
 
