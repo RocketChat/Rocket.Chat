@@ -1,4 +1,5 @@
 import { StatusVisibility, ClientSafeError } from '@rocket.chat/core-services';
+import { SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS } from '@rocket.chat/core-typings';
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
@@ -86,6 +87,20 @@ const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
+		const { activityFilterHours, activityFilterHidesUnreads } = category;
+		// A `null` filter clears it, so it is not stored; the REST schema lets it through for that.
+		if (activityFilterHours == null) {
+			delete category.activityFilterHours;
+		} else if (activityFilterHours < 1 || activityFilterHours > SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS) {
+			throw new ClientSafeError(
+				'error-invalid-param',
+				`sidebarCategories activityFilterHours must be between 1 and ${SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS}`,
+			);
+		}
+		if (activityFilterHidesUnreads == null) {
+			delete category.activityFilterHidesUnreads;
+		}
+
 		if (category.default) {
 			continue;
 		}

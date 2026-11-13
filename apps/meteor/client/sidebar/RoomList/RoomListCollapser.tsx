@@ -3,6 +3,7 @@ import { useDeferredMenuMount, useIsEnterprise } from '@rocket.chat/ui-client';
 import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomListActivityFilterChip from './RoomListActivityFilterChip';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import CategoryMenu from '../categories/CategoryMenu';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
@@ -14,11 +15,24 @@ type RoomListCollapserProps = {
 	canMoveDown: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
+	onToggleInactive: () => void;
+	/** The user chose a window from the group's Filter submenu; `undefined` means "All". */
+	onActivityFilterChange: (activityFilterHours: number | undefined) => void;
 	onClick: () => void;
 	dragging?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
-const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, onClick, ...props }: RoomListCollapserProps) => {
+const RoomListCollapser = ({
+	group,
+	canMoveUp,
+	canMoveDown,
+	onMoveUp,
+	onMoveDown,
+	onToggleInactive,
+	onActivityFilterChange,
+	onClick,
+	...props
+}: RoomListCollapserProps) => {
 	const { t } = useTranslation();
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
@@ -36,6 +50,17 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 		onClick();
 	};
 
+	// Shown whenever the expanded group has a filter, even one that hides nothing right now, so the filter is seen.
+	const filterChip =
+		!group.collapsed && group.activityFilterHours ? (
+			<RoomListActivityFilterChip
+				activityFilterHours={group.activityFilterHours}
+				inactiveCount={group.inactiveCount}
+				applied={!group.showingInactive}
+				onToggle={onToggleInactive}
+			/>
+		) : undefined;
+
 	return (
 		<SidebarCollapseGroup
 			title={title}
@@ -49,6 +74,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 					</Badge>
 				) : undefined
 			}
+			actions={filterChip}
 			menu={
 				isEnterprise ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
@@ -58,10 +84,13 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 								groupKey={group.key}
 								showUnreads={group.showUnreads}
 								keepUnreadsOnTop={group.keepUnreadsOnTop}
+								activityFilterHours={group.activityFilterHours}
+								activityFilterHidesUnreads={group.activityFilterHidesUnreads}
 								canMoveUp={canMoveUp}
 								canMoveDown={canMoveDown}
 								onMoveUp={onMoveUp}
 								onMoveDown={onMoveDown}
+								onActivityFilterChange={onActivityFilterChange}
 							/>
 						) : (
 							<IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />
