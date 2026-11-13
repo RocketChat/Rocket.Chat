@@ -10,11 +10,24 @@ import { Item, ItemIcon } from '../Item';
 import MenuDropDown from './MenuDropdown';
 import type { OptionProps } from '../Option';
 import MenuPopover from './MenuPopover';
+import type { MenuSubmenuTriggerProps } from './stately/MenuSubmenuTrigger';
 
 type MenuSubmenuProps = {
-	item: Node<{
-		variant?: OptionProps['variant'];
-	}>;
+	// `Node.props` is `any`, which would swallow the type below, so it is dropped before the trigger's props are typed.
+	item: Omit<Node<{ variant?: OptionProps['variant'] }>, 'props'> & {
+		props?: Partial<
+			Pick<
+				MenuSubmenuTriggerProps<unknown>,
+				| 'children'
+				| 'selectionMode'
+				| 'selectedKeys'
+				| 'defaultSelectedKeys'
+				| 'onSelectionChange'
+				| 'disallowEmptySelection'
+				| 'disabledKeys'
+			>
+		>;
+	};
 	state: TreeState<unknown>;
 	rootMenuTriggerState: RootMenuTriggerState;
 	parentMenuRef: RefObject<HTMLElement | null>;
@@ -73,6 +86,9 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 		submenuTriggerProps.onKeyDown?.(event);
 	};
 
+	// The submenu has its own collection and tree state, so its selection and disabled items are declared on the trigger.
+	const { selectionMode, selectedKeys, defaultSelectedKeys, onSelectionChange, disallowEmptySelection, disabledKeys } = item.props ?? {};
+
 	const { isFocusVisible } = useFocusVisible();
 	const { menuItemProps, isFocused, isDisabled } = useMenuItem(
 		{ ...submenuTriggerProps, onKeyDown: onTriggerKeyDown, key: item.key },
@@ -110,6 +126,12 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 						rootMenuTriggerState={rootMenuTriggerState}
 						menuRef={submenuRef}
 						onAction={onAction}
+						selectionMode={selectionMode}
+						selectedKeys={selectedKeys}
+						defaultSelectedKeys={defaultSelectedKeys}
+						onSelectionChange={onSelectionChange}
+						disallowEmptySelection={disallowEmptySelection}
+						disabledKeys={disabledKeys}
 					>
 						{item.props?.children as CollectionChildren<object>}
 					</MenuDropDown>

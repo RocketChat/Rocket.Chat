@@ -6,12 +6,14 @@ import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
+	isSubscriptionsSetUserArchivedProps,
 	isSubscriptionsUnreadProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { unreadMessages } from '../../lib/messaging/unread/unreadMessages';
+import { notifyOnSubscriptionsChangedByRoomIdsAndUserId } from '../../lib/notifyListener';
 import { readMessages } from '../../lib/readMessages';
 import { getSubscriptions } from '../../publications/subscription';
 import { API } from '../api';
@@ -131,6 +133,8 @@ API.v1.post(
 	'subscriptions.read',
 	{
 		authRequired: true,
+		// The sidebar marks a whole group read with one call per room; the default of ten a minute would stop it.
+		rateLimiterOptions: { numRequestsAllowed: 120, intervalTimeInMS: 60000 },
 		body: isSubscriptionsReadProps,
 		response: {
 			200: voidSuccessResponseSchema,
@@ -170,6 +174,32 @@ API.v1.post(
 			'firstUnreadMessage' in this.bodyParams ? this.bodyParams.firstUnreadMessage : undefined,
 			'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined,
 		);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'subscriptions.setUserArchived',
+	{
+		authRequired: true,
+		body: isSubscriptionsSetUserArchivedProps,
+		response: {
+			200: voidSuccessResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { roomIds, archived } = this.bodyParams;
+
+		// One update for the whole list: the sidebar archives a group's worth of rooms at once.
+		const { matchedCount } = await Subscriptions.setUserArchivedByRoomIdsAndUserId(roomIds, this.userId, archived);
+		if (!matchedCount) {
+			throw new Error('error-invalid-subscription');
+		}
+
+		void notifyOnSubscriptionsChangedByRoomIdsAndUserId(roomIds, this.userId);
 
 		return API.v1.success();
 	},

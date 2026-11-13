@@ -168,10 +168,9 @@ export class MockedAppRootBuilder {
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
 		querySubscription: () => [() => () => undefined, () => this.subscription],
-		querySubscriptions: () => [
-			() => () => undefined,
-			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
-		], // apply query and option
+		// One stable snapshot per builder: `useSyncExternalStore` compares snapshots by identity, so a fresh array on
+		// every call would loop any component that reads subscriptions. The query and options are not applied.
+		querySubscriptions: () => [() => () => undefined, () => this.subscriptionsSnapshot],
 		user: null,
 		userId: undefined,
 	};
@@ -500,14 +499,22 @@ export class MockedAppRootBuilder {
 
 	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
 		this.subscriptions = subscriptions;
+		this.refreshSubscriptionsSnapshot();
 
 		return this;
 	}
 
 	withSubscription(subscription: SubscriptionWithRoom): this {
 		this.subscription = subscription;
+		this.refreshSubscriptionsSnapshot();
 
 		return this;
+	}
+
+	private subscriptionsSnapshot: SubscriptionWithRoom[] = [];
+
+	private refreshSubscriptionsSnapshot(): void {
+		this.subscriptionsSnapshot = this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? []);
 	}
 
 	withRoom(room: IRoom): this {

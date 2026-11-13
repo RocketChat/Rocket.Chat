@@ -1,13 +1,23 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isActivityFilterable } from './hooks/useActivityFilter';
+import {
+	ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID,
+	getActivityFilterItemId,
+	useActivityFilterHidesUnreadsItem,
+	useActivityFilterItems,
+} from './hooks/useActivityFilterItems';
+import { useArchiveRoomsItems } from './hooks/useArchiveRoomsItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
+import { useMarkGroupReadItem } from './hooks/useMarkGroupReadItem';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
@@ -15,27 +25,40 @@ import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreate
 type CategoryMenuProps = {
 	category?: ISidebarCategory;
 	groupKey: string;
+	/** The group as its header names it. */
+	groupTitle: string;
+	/** Every room of the group, the ones the collapse or the filter leaves out included. */
+	rooms: SubscriptionWithRoom[];
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
+	activityFilterHours?: number;
+	activityFilterHidesUnreads?: boolean;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
+	/** The user chose a window from the Filter submenu; `undefined` means "All". */
+	onActivityFilterChange?: (activityFilterHours: number | undefined) => void;
 };
 
 const CategoryMenu = ({
 	category,
 	groupKey,
+	groupTitle,
+	rooms,
 	showUnreads,
 	keepUnreadsOnTop,
+	activityFilterHours,
+	activityFilterHidesUnreads = false,
 	canMoveUp,
 	canMoveDown,
 	onMoveUp,
 	onMoveDown,
+	onActivityFilterChange,
 }: CategoryMenuProps) => {
 	const { t } = useTranslation();
 	const [isOpen, toggleOpen] = useToggle(false);
-	const close = () => toggleOpen(false);
+	const close = useCallback(() => toggleOpen(false), [toggleOpen]);
 
 	const { openManage, openDelete } = useCategoryModals();
 	const moveRoomCategory = useMoveRoomCategory();
@@ -103,7 +126,10 @@ const CategoryMenu = ({
 			]
 		: [];
 
+	const markGroupReadItem = useMarkGroupReadItem({ groupTitle, rooms, onOpen: close });
+
 	const unreadItems: GenericMenuItemProps[] = [
+		markGroupReadItem,
 		{
 			id: 'show-unreads',
 			icon: 'flag',
@@ -124,7 +150,30 @@ const CategoryMenu = ({
 		},
 	];
 
-	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...unreadItems];
+	// Stable, so the filter items are rebuilt only when the group or its filter changes, not on every render.
+	const handleActivityFilterChoice = useStableCallback((hours: number | undefined) => {
+		close();
+		onActivityFilterChange?.(hours);
+	});
+	const filterItems = useActivityFilterItems(groupKey, activityFilterHours, handleActivityFilterChoice);
+	const hidesUnreadsItem = useActivityFilterHidesUnreadsItem(groupKey, activityFilterHours, activityFilterHidesUnreads);
+	const activityFilterItems = isActivityFilterable(groupKey) ? [...filterItems, hidesUnreadsItem] : [];
+	// The submenu checks the window in use and, when on, the unreads toggle; a toggle with no window is disabled.
+	const activityFilterSelectedKeys = [
+		getActivityFilterItemId(activityFilterHours),
+		...(activityFilterHidesUnreads ? [ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID] : []),
+	];
+	const activityFilterDisabledKeys = hidesUnreadsItem.disabled ? [ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID] : [];
+	const archiveItems = useArchiveRoomsItems({ groupKey, groupTitle, rooms, onOpen: close });
+
+	const allItems = [
+		...orderItems,
+		...(category ? manageItems : []),
+		...createItems,
+		...activityFilterItems,
+		...archiveItems,
+		...unreadItems,
+	];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 
 	const handleAction = useHandleMenuAction(allItems);
@@ -168,6 +217,38 @@ const CategoryMenu = ({
 									<GenericMenuItem {...item} />
 								</MenuItem>
 							))}
+						{activityFilterItems.length > 0 && (
+							<MenuSubmenuTrigger
+								key='activity-filter'
+								textValue={t('Filter')}
+								selectionMode='multiple'
+								selectedKeys={activityFilterSelectedKeys}
+								disabledKeys={activityFilterDisabledKeys}
+							>
+								<MenuItem aria-label={t('Filter')}>
+									<GenericMenuItem id='activity-filter' icon='clock' content={t('Filter')} />
+								</MenuItem>
+								<MenuSection items={filterItems}>
+									{(item) => (
+										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
+											<GenericMenuItem {...item} />
+										</MenuItem>
+									)}
+								</MenuSection>
+								<MenuSection items={[hidesUnreadsItem]}>
+									{(item) => (
+										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
+											<GenericMenuItem {...item} />
+										</MenuItem>
+									)}
+								</MenuSection>
+							</MenuSubmenuTrigger>
+						)}
+						{archiveItems.map((item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuItem {...item} />
+							</MenuItem>
+						))}
 					</>
 				</MenuSection>,
 				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
