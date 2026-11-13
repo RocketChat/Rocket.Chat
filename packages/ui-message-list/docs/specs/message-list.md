@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented
 adrs: [0001]
 code:
   [
@@ -338,7 +338,20 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 
 ## Design
 
-Decided in the plan.
+One pass builds typed rows from the messages (the older loader or the header, one row per message with its previous message, grouping,
+day and unread flags, the newer loader); it is the only place that maps a message id to a row index, and the keyboard asks it for
+the row next to another. Each change of the messages is classified by where it happened, which decides whether the virtualizer is
+told to keep the rows in place and whether a change at both ends is committed in two steps.
+
+What the list holds in view (the bottom, a message, nothing), whether it is positioning or idle, whether the viewer is scrolling,
+whether a page is loading and whether someone else wrote while the viewer was away are the state of a pure reducer: events in (the
+viewer's input, scrolls and resizes with their measurements, committed data, a target, a settled load), state and commands out
+(scroll to a row, load a page, highlight, report). A hook feeds the reducer from the DOM and the props and carries the commands out
+on the virtualizer, only ever through `scrollToIndex`. The component renders the viewport itself, the rows through the virtualizer
+(or, in specs, through a renderer of every row), the highlight for the rows and the scroll state for the overlay parts that sit
+inside it. The keyboard is the package's own copy of the item-list navigation, with the options a virtualized list needs. The state
+of the list is its own: nothing of it lives in a context of the app, and nothing here imports from `apps/meteor`. The reasons are in
+[ADR 0001](../adr/0001-message-list-virtua-and-scroll-reducer.md).
 
 ## Out of scope
 
@@ -358,9 +371,7 @@ Decided in the plan.
 
 ## Known defects
 
-Defects of the reference's list that the package copies. None can be pinned by a skipped test before the code exists, and the
-checker rejects a `D` entry without one, so each is a `D<n>` entry with its skipped test, written in the commit that copies the
-code that has it:
+Defects of the reference's list that the package still carries, each pinned by a skipped test.
 
 ### D1 An own message followed by another in the same update is not recognised
 
@@ -380,11 +391,13 @@ passes).
 
 Not recorded as defects, because the list is changed instead of carrying them:
 
-- Fixed first (Q1): the position is resolved when the list mounts, so a list that mounts before its messages
-  loses its position (R61); `isAtBottom` reports what the list holds, so it is false for up to 3 s after a jump to the last message
-  (R56); a resize does not refresh the report (R55).
-- Not carried, required differently (intent Q4): every message row object is rebuilt on every change, so the memo of the row
-  never holds (R71, R72).
+- Fixed in this branch (Q1), each in its own commit with a test that failed first: the position was resolved when the list mounted, so a
+  list that mounted before its messages lost its position (R61); `isAtBottom` reported what the list holds, so it was false for up to 3 s
+  after a jump to the last message (R56); a resize did not refresh the report (R55). Also fixed: a check for a page that is due that was
+  not repeated when a load settled after its page was committed (R34), and an arrow that gave up after one frame on a row the
+  virtualizer had not rendered yet (R66).
+- Changed instead (intent Q4): every message row object is rebuilt on every change, so the memo of the row never held; a row is now
+  drawn again only when what it shows changed (R71, R72).
 
 ## Open questions
 
