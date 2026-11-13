@@ -11,7 +11,8 @@ import {
 	VirtualizedScrollbars,
 	ContextualbarEmptyContent,
 } from '@rocket.chat/ui-client';
-import { useRoomToolbox, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useRoomToolbox, useSetting } from '@rocket.chat/ui-contexts';
+import { RoomMessage, SystemMessage } from '@rocket.chat/ui-message-list';
 import { useState, memo, Fragment, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -20,10 +21,9 @@ import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
-import RoomMessage from '../../../../components/message/variants/RoomMessage';
-import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../../lib/utils/isMessageNewDay';
+import { roomMessageSelection } from '../../../../providers/MessagesProvider/messageSelectionFromStore';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import MessageListErrorBoundary from '../../body/MessageListErrorBoundary';
 import { useRoomSubscription } from '../../contexts/RoomContext';
@@ -38,7 +38,6 @@ const MessageSearchTab = () => {
 
 	const [limit, setLimit] = useState(pageSize);
 	const subscription = useRoomSubscription();
-	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const providerQuery = useMessageSearchProviderQuery();
 
@@ -68,7 +67,7 @@ const MessageSearchTab = () => {
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 								{messageSearchData.length > 0 && (
 									<MessageListErrorBoundary>
-										<MessageListProvider>
+										<MessageListProvider selection={roomMessageSelection}>
 											<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 												<VirtualizedScrollbars>
 													<Virtuoso
@@ -91,7 +90,7 @@ const MessageSearchTab = () => {
 																	{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
 																	{system ? (
-																		<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+																		<SystemMessage message={message} />
 																	) : (
 																		<RoomMessage
 																			message={message}
@@ -101,7 +100,6 @@ const MessageSearchTab = () => {
 																			all={all}
 																			context='search'
 																			searchText={searchText}
-																			showUserAvatar={showUserAvatar}
 																		/>
 																	)}
 																</Fragment>

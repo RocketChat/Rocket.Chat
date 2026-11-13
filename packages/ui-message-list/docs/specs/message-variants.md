@@ -26,6 +26,8 @@ code:
     apps/meteor/client/views/room/MessageList/hooks/useRegisterRenderedMessage.ts,
     apps/meteor/client/views/room/MessageList/providers/MessageListProvider.tsx,
     apps/meteor/client/providers/MessagesProvider/messageSelectionFromStore.ts,
+    apps/meteor/client/views/room/contextualBar/MessageListTab.tsx,
+    apps/meteor/client/views/room/contextualBar/MessageSearchTab/MessageSearchTab.tsx,
     apps/meteor/client/views/audit/components/AuditMessageList.tsx,
     apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.tsx,
   ]
@@ -53,6 +55,8 @@ tests:
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.spec.ts,
     apps/meteor/client/views/room/MessageList/MessageListItem.spec.tsx,
     apps/meteor/client/views/room/MessageList/MessageList.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/MessageListTab.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/MessageSearchTab/MessageSearchTab.spec.tsx,
     apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
     apps/meteor/client/views/audit/components/AuditMessageList.roles.spec.tsx,
     apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.spec.tsx,
