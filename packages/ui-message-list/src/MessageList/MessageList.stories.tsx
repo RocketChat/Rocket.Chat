@@ -722,18 +722,22 @@ export const ReportsBeingAtTheBottomAfterAJump: Story = {
 	},
 };
 
+/** R56: at the end of an older window the viewer is not at the bottom of the conversation, and the report says so once it reflects the new position. */
 export const ReportsNotBeingAtTheBottomOfAnOlderWindow: Story = {
 	args: {
 		history: { size: 300 },
-		source: { pageSize: 30, latency: 100, initialWindow: { around: fakeMessageId(100) } },
+		source: { pageSize: 30, latency: 'manual', initialWindow: { around: fakeMessageId(100) } },
 		initialTargetIndex: 100,
 	},
 	play: async ({ canvasElement }) => {
 		await waitForListSettled(canvasElement);
 		const viewport = getViewport(canvasElement);
+		const before = readVisibility(canvasElement).top;
+
 		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: 10_000, bubbles: true }));
 		viewport.scrollTop = viewport.scrollHeight;
 		await waitFor(() => distanceFromBottom(viewport) <= 1);
+		await waitFor(() => readVisibility(canvasElement).top !== before);
 		await expect(readVisibility(canvasElement).isAtBottom).toBe(false);
 	},
 };
