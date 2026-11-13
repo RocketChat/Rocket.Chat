@@ -141,6 +141,35 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
 		});
 
+		test('should keep thread message actions available after resizing', async ({ page }) => {
+			await poHomeChannel.content.sendMessageInThread('thread reply for resizing');
+			const reply = poHomeChannel.content.lastUserThreadMessage;
+			await expect(reply).toContainText('thread reply for resizing');
+
+			const toolbar = reply.getByRole('toolbar', { name: 'Message actions', includeHidden: true });
+			const addReaction = poHomeChannel.content.getLastThreadMessageActionButton('Add reaction');
+
+			for (const width of [1440, 2552, 1920]) {
+				// Clear hover and focus so an already open toolbar cannot mask the next size's visibility check.
+				await poHomeChannel.threadComposer.inputMessage.click();
+				await expect(toolbar).not.toBeAttached();
+				await page.setViewportSize({ width, height: 900 });
+				await reply.hover();
+
+				await expect(addReaction).toBeVisible();
+				await addReaction.click();
+				await expect(poHomeChannel.dialogEmojiPicker).toBeVisible();
+				await poHomeChannel.dialogEmojiPicker.getByRole('textbox', { name: 'Search', exact: true }).press('Escape');
+				await expect(poHomeChannel.dialogEmojiPicker).toBeHidden();
+
+				await poHomeChannel.content.openLastThreadMessageMenu();
+				const copyText = page.getByRole('menuitem', { name: 'Copy text', exact: true });
+				await expect(copyText).toBeVisible();
+				await copyText.press('Escape');
+				await expect(copyText).toBeHidden();
+			}
+		});
+
 		test('expect star the thread message', async () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await poHomeChannel.content.btnOptionStarMessage.click();
