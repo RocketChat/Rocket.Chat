@@ -210,6 +210,35 @@ describe('rows', () => {
 	});
 });
 
+describe('space at the ends', () => {
+	const spaceOf = (text: string) => {
+		const row = screen.getByText(text).closest('[data-message-id]')?.parentElement as HTMLElement;
+		return { start: row.style.paddingBlockStart, end: row.style.paddingBlockEnd };
+	};
+
+	it('gives the space to the first row and the last one, which carry it as rows arrive (R83)', () => {
+		const { rerender } = render(<List startSpacing={21} endSpacing={10} />, { wrapper });
+
+		expect(spaceOf('first')).toEqual({ start: '21px', end: '' });
+		expect(spaceOf('second')).toEqual({ start: '', end: '' });
+		expect(spaceOf('third')).toEqual({ start: '', end: '10px' });
+
+		rerender(
+			<List startSpacing={21} endSpacing={10} messages={[...messages, createFakeMessage({ _id: 'd', msg: 'fourth', ts: day(15, 12) })]} />,
+		);
+
+		expect(spaceOf('third')).toEqual({ start: '', end: '' });
+		expect(spaceOf('fourth')).toEqual({ start: '', end: '10px' });
+	});
+
+	it('leaves no space by default (R83)', () => {
+		render(<List />, { wrapper });
+
+		expect(spaceOf('first')).toEqual({ start: '', end: '' });
+		expect(spaceOf('third')).toEqual({ start: '', end: '' });
+	});
+});
+
 describe('overlays', () => {
 	it('shows "Jump to recent messages" only while newer messages remain (R24)', () => {
 		const { rerender } = render(
@@ -671,6 +700,8 @@ describe('stories', () => {
 				'FirstPageArrivesLate',
 				'PagingWaitsForInput',
 				'PagingWaitsForInputOnAShortPage',
+				'SpaceAtTheEnds',
+				'FirstPageLoadingBelowTheSpace',
 			]),
 		);
 	});

@@ -116,7 +116,7 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 - **R13** A list with no jump target and no position to restore MUST open with its newest message at the bottom of the
   viewport (B1).
 - **R14** A list whose messages are shorter than its viewport MUST sit at the bottom of the viewport, the last row's bottom within
-  1px of the viewport's bottom (B1).
+  1px of the viewport's bottom, above the space of R83 when there is one (B1).
 - **R15** While the viewer is at the bottom, a message arriving at the end, a row at the end growing (a reaction, an image, an
   embed, a collapsible opening) and a late-resolving content MUST leave the viewport at the bottom, within 1px (B2).
 - **R16** While the viewer is at the bottom, the viewport shrinking or growing (the composer growing, the container or the
@@ -355,6 +355,13 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   messages are replaced by another window of the conversation (R40), which waits for input again (user decision, review round 1;
   `develop`'s room, `useGetMore`: no page before the viewer's first wheel, pointer press or scroll key, and again after a jump
   rebuilds the window; for the room of `room-message-list`).
+- **R83** The list MUST accept `startSpacing` and `endSpacing`, in pixels, 0 by default: space above the first row and below the last
+  row, whichever rows they are (the header, a loader, a message). The space MUST count as part of those rows, so that R14 to R17 and
+  R80 hold with it: a list at the bottom MUST keep `endSpacing` between the last row and the bottom of the viewport, within 1px, as
+  messages arrive and the viewport resizes, and a page added at the start MUST keep the visible messages in place (R36). The
+  spinner of the first page (R4) MUST sit below `startSpacing` (review round 1: `develop`'s room keeps 21px above the first row and
+  10px below the last; plain padding around the rows would leave the list short of its bottom and scrolling back on every resize;
+  for the room of `room-message-list`).
 
 ## Design
 
@@ -387,7 +394,9 @@ of the list is its own: nothing of it lives in a context of the app, and nothing
   decided from the listed messages, and the position kept when only a thread reply is unread.
 - The states of a message row (B20) and the row's part of selection (B18): `message-variants`.
 - Message content, attachments and the toolbar: `message-capabilities`, `message-attachments`, `message-toolbar`.
-- Padding at the ends of the list: none, which the room's PR states as a known difference.
+- ~~Padding at the ends of the list~~: offered since review round 1 (R83). The space `develop`'s room keeps under the list while newer
+  messages remain (`.wrapper.has-more-next`, 24px below the scroll container) is outside the list: the consumer shrinks the viewport,
+  which R16 follows.
 - Anchors other than the bottom, a message or nothing, and any change to the keyboard model.
 - Replacing the app's copy of the item-list keyboard hook: it serves the sidebar and the other lists (Q4).
 

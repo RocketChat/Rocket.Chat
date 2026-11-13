@@ -859,3 +859,53 @@ export const PagingWaitsForInputOnAShortPage: Story = {
 		await expect(first.getBoundingClientRect().top).toBeLessThanOrEqual(viewport.getBoundingClientRect().top + 1);
 	},
 };
+
+/** R4, R83: the spinner of the first page sits where the older loader would, below the space above the first row. */
+export const FirstPageLoadingBelowTheSpace: Story = {
+	args: { history: { size: 0 }, source: { latency: 'manual', isInitiallyLoading: true }, list: { startSpacing: 21 } },
+	play: async ({ canvasElement }) => {
+		const viewportTop = getViewport(canvasElement).getBoundingClientRect().top;
+		const spinner = (canvasElement.querySelector('.rcx-throbber') as HTMLElement).getBoundingClientRect();
+		await expect(spinner.top - viewportTop).toBeGreaterThanOrEqual(21);
+		await expect(spinner.bottom - viewportTop).toBeLessThanOrEqual(21 + 32);
+	},
+};
+
+/**
+ * R83: space above the first row and below the last one is part of the list: it rests at the bottom with the space in view,
+ * keeps it as messages arrive and the viewport resizes, and opens the space above the header once at the top.
+ */
+export const SpaceAtTheEnds: Story = {
+	args: { history: { size: 60 }, source: { pageSize: 30, latency: 100 }, list: { startSpacing: 21, endSpacing: 10 } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const viewport = getViewport(canvasElement);
+		const lastMessage = () => Array.from(viewport.querySelectorAll<HTMLElement>('[data-message-id]')).at(-1) as HTMLElement;
+		const spaceBelow = () => viewport.getBoundingClientRect().bottom - lastMessage().getBoundingClientRect().bottom;
+		await waitForListSettled(canvasElement);
+		await expectAtBottom(canvasElement);
+		await expect(Math.abs(spaceBelow() - 10)).toBeLessThanOrEqual(1);
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Receive message' }));
+		await waitFor(() => messageRow(canvasElement, fakeMessageId(60)) !== null);
+		await waitForListSettled(canvasElement);
+		await expectAtBottom(canvasElement);
+		await expect(Math.abs(spaceBelow() - 10)).toBeLessThanOrEqual(1);
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Toggle composer height' }));
+		await waitForListSettled(canvasElement);
+		await expectAtBottom(canvasElement);
+		await expect(Math.abs(spaceBelow() - 10)).toBeLessThanOrEqual(1);
+
+		await userScrollTo(canvasElement, 0);
+		const reading = firstVisibleMessage(canvasElement);
+		await waitFor(() => messageRow(canvasElement, fakeMessageId(29)) !== null);
+		await waitForListSettled(canvasElement);
+		await expect(Math.abs(messageOffset(canvasElement, reading.id) - reading.top)).toBeLessThanOrEqual(1);
+
+		await userScrollTo(canvasElement, 0);
+		await waitFor(() => canvasElement.querySelector('[data-qa="start-of-conversation"]') !== null);
+		const header = viewport.querySelector('[data-row-index="0"]') as HTMLElement;
+		await expect(Math.abs(header.getBoundingClientRect().top - viewport.getBoundingClientRect().top - 21)).toBeLessThanOrEqual(1);
+	},
+};

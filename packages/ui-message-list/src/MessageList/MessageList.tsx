@@ -56,6 +56,10 @@ export type MessageListProps<TMessage extends IMessage> = {
 	 * the window of the conversation is replaced, until the next input. Read when the list mounts.
 	 */
 	'deferPagingUntilInput'?: boolean;
+	/** Space above the first row, in pixels: the list is at its top with it in view. */
+	'startSpacing'?: number;
+	/** Space below the last row, in pixels: the list is at its bottom, and follows what arrives, with it in view. */
+	'endSpacing'?: number;
 	'groupingPeriodSeconds'?: number;
 	/** Whether thread replies show as previews of their thread, as in a room. */
 	'groupsThreadReplies'?: boolean;
@@ -115,6 +119,8 @@ const MessageList = <TMessage extends IMessage>({
 	isOwnMessage = never,
 	bottomThreshold,
 	deferPagingUntilInput,
+	startSpacing = 0,
+	endSpacing = 0,
 	groupingPeriodSeconds = 300,
 	groupsThreadReplies = true,
 	restoredPosition,
@@ -242,7 +248,9 @@ const MessageList = <TMessage extends IMessage>({
 				{/* The first page loads where the older pages do, at the top */}
 				<Box className={contentStyle} data-waiting={isWaitingForMessages}>
 					{isWaitingForMessages ? (
-						<MessageListLoader isLoading />
+						<Box paddingBlockStart={startSpacing}>
+							<MessageListLoader isLoading />
+						</Box>
 					) : (
 						scroller.isMounted && (
 							<MessageRowStateContext.Provider value={rowState}>
@@ -253,6 +261,8 @@ const MessageList = <TMessage extends IMessage>({
 									shift={scroller.shift}
 									cache={scroller.cache}
 									keepMounted={keepMounted}
+									startSpacing={startSpacing}
+									endSpacing={endSpacing}
 									onScroll={scroller.onScroll}
 									onScrollEnd={scroller.onScrollEnd}
 								>

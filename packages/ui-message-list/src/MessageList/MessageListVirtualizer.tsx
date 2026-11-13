@@ -3,6 +3,7 @@ import type { ReactNode, RefObject } from 'react';
 import type { CacheSnapshot, VirtualizerHandle } from 'virtua';
 import { Virtualizer } from 'virtua';
 
+import { edgeSpacing } from './edgeSpacing';
 import type { MessageListRow } from './lib/buildMessageListRows';
 
 export type MessageListVirtualizerProps<TMessage extends IMessage> = {
@@ -12,6 +13,9 @@ export type MessageListVirtualizerProps<TMessage extends IMessage> = {
 	shift: boolean;
 	cache: CacheSnapshot | undefined;
 	keepMounted: readonly number[];
+	/** Space above the first row and below the last one, in pixels, measured as part of those rows. */
+	startSpacing: number;
+	endSpacing: number;
 	onScroll: () => void;
 	onScrollEnd: () => void;
 	children: (row: MessageListRow<TMessage>, index: number) => ReactNode;
@@ -28,6 +32,8 @@ const MessageListVirtualizer = <TMessage extends IMessage>({
 	shift,
 	cache,
 	keepMounted,
+	startSpacing,
+	endSpacing,
 	onScroll,
 	onScrollEnd,
 	children,
@@ -42,7 +48,11 @@ const MessageListVirtualizer = <TMessage extends IMessage>({
 		onScroll={onScroll}
 		onScrollEnd={onScrollEnd}
 	>
-		{(row, index) => <div key={row.key}>{children(row, index)}</div>}
+		{(row, index) => (
+			<div key={row.key} style={edgeSpacing(index, rows.length, startSpacing, endSpacing)}>
+				{children(row, index)}
+			</div>
+		)}
 	</Virtualizer>
 );
 

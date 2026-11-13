@@ -3,6 +3,7 @@ import { useImperativeHandle } from 'react';
 import type { VirtualizerHandle } from 'virtua';
 
 import type { MessageListVirtualizerProps } from './MessageListVirtualizer';
+import { edgeSpacing } from './edgeSpacing';
 
 const inertHandle: VirtualizerHandle = {
 	cache: {} as VirtualizerHandle['cache'],
@@ -20,13 +21,21 @@ const inertHandle: VirtualizerHandle = {
 /**
  * Renders every row, unvirtualized: the stand-in for `MessageListVirtualizer` in specs, where nothing can be measured.
  */
-const MessageListRows = <TMessage extends IMessage>({ ref, rows, children }: MessageListVirtualizerProps<TMessage>) => {
+const MessageListRows = <TMessage extends IMessage>({
+	ref,
+	rows,
+	startSpacing,
+	endSpacing,
+	children,
+}: MessageListVirtualizerProps<TMessage>) => {
 	useImperativeHandle(ref, () => inertHandle, []);
 
 	return (
 		<div>
 			{rows.map((row, index) => (
-				<div key={row.key}>{children(row, index)}</div>
+				<div key={row.key} style={edgeSpacing(index, rows.length, startSpacing, endSpacing)}>
+					{children(row, index)}
+				</div>
 			))}
 		</div>
 	);

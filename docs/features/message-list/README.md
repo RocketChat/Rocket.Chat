@@ -98,6 +98,7 @@ The consumer gives the list:
 - a saved position to restore, and the list must be keyed by conversation for it to take effect; whether unread messages override it is the consumer's decision, which it makes by not passing the position;
 - optionally, how near the bottom counts as the bottom (`bottomThreshold`);
 - optionally, that no page loads before the viewer's first input in the list (`deferPagingUntilInput`), as in a room;
+- optionally, space above the first row and below the last one (`startSpacing`, `endSpacing`), which the list counts as part of those rows, so it rests at the bottom with the space in view;
 - a renderer for each message row and, optionally, a header.
 
 The list reports back when a jump target was reached, where it was left (an opaque position to store and hand back), and what is visible. The latest visibility can also be read at any time from the list's handle, for callers that ask instead of listening, and the handle scrolls to the bottom, the top or a message on demand.
