@@ -26,4 +26,12 @@ describe('geometry', () => {
 		expect(isNearNewerEdge(geometry(1400))).toBe(true);
 		expect(isNearNewerEdge(geometry(1300))).toBe(false);
 	});
+
+	it('should count the distance within the threshold as the bottom, for the bottom and for the newer edge (R17, R80)', () => {
+		expect(isAtBottom(geometry(1340), 60)).toBe(true);
+		expect(isAtBottom(geometry(1339), 60)).toBe(false);
+		expect(isNearNewerEdge(geometry(1340), 60)).toBe(true);
+		expect(isNearNewerEdge(geometry(1339), 60)).toBe(false);
+		expect(isAtBottom(geometry(1340))).toBe(false);
+	});
 });

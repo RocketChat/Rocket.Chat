@@ -464,6 +464,52 @@ describe('a position restored late', () => {
 	});
 });
 
+describe('a bottom threshold', () => {
+	const rows = rowsOf('abcde');
+	const NEAR = { ...at(CONTENT - VIEWPORT - 40), bottomThreshold: 60 };
+	const FAR = { ...at(CONTENT - VIEWPORT - 80), bottomThreshold: 60 };
+	const atBottom = { ...BOTTOM, bottomThreshold: 60 };
+
+	it('keeps the bottom while the viewer scrolls within it, and releases it beyond (R17, R80)', () => {
+		const state = idleAt(rows, atBottom);
+
+		expect(run(state, userScroll(NEAR)).state.anchor).toEqual({ type: 'bottom' });
+		expect(run(state, userScroll(FAR)).state.anchor).toEqual({ type: 'none' });
+	});
+
+	it('takes the bottom back when the viewer comes within it (R80)', () => {
+		const detached = run(idleAt(rows, atBottom), userScroll(FAR)).state;
+
+		expect(run(detached, userScroll(NEAR)).state.anchor).toEqual({ type: 'bottom' });
+	});
+
+	it('brings the list to the true bottom, not just within the threshold, for an arrival (R80)', () => {
+		const { state } = run(idleAt(rows, atBottom), userScroll(NEAR));
+		const grown = rowsOf('abcdef');
+
+		expect(
+			scrolls(state, [committed(grown, { ...at(CONTENT - VIEWPORT - 40, CONTENT + 80), bottomThreshold: 60 }, 'append', 'live')]),
+		).toEqual([{ type: 'scrollToIndex', index: 5, align: 'end' }]);
+		expect(scrolls(state, [resized({ ...at(CONTENT - VIEWPORT - 40), bottomThreshold: 60 })])).toEqual([
+			{ type: 'scrollToIndex', index: 4, align: 'end' },
+		]);
+	});
+
+	it('loads newer messages within it (R31, R80)', () => {
+		const older = rowsOf('abcde', { hasNewerMessages: true });
+		const state = idleAt(older, { ...MIDDLE, bottomThreshold: 60 });
+
+		expect(loads(state, userScroll(NEAR))).toEqual([{ type: 'loadNewer' }]);
+		expect(loads(state, userScroll(FAR))).toEqual([]);
+	});
+
+	it('does not raise the new messages indicator for a viewer within it (R80)', () => {
+		const { state } = run(idleAt(rows, atBottom), userScroll(NEAR));
+
+		expect(run(state, [committed(rowsOf('abcdef'), NEAR, 'append', 'live')]).state.hasNewMessages).toBe(false);
+	});
+});
+
 describe('paging after a page', () => {
 	const rows = rowsOf('abcde', { hasOlderMessages: true });
 

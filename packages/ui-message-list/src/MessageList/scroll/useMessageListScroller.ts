@@ -26,7 +26,7 @@ import type {
 import { createInitialScrollState, messageListScrollReducer } from './messageListScrollReducer';
 import { planRowsCommit } from './planRowsCommit';
 import type { MessageListRow, MessageListRows } from '../lib/buildMessageListRows';
-import { isAtBottom as isScrolledToBottom } from '../lib/geometry';
+import { DEFAULT_BOTTOM_THRESHOLD, isAtBottom as isScrolledToBottom } from '../lib/geometry';
 import type { MessageListPosition } from '../lib/position';
 import { describeCacheKeys, getReusableCache, resolveRestoreTarget } from '../lib/position';
 
@@ -45,6 +45,7 @@ export type MessageListDateBubble = {
 export type UseMessageListScrollerOptions<TMessage extends IMessage> = {
 	rows: MessageListRows<TMessage>;
 	isLoadingNewerMessages: boolean;
+	bottomThreshold?: number;
 	isOwnMessage: (message: TMessage) => boolean;
 	targetMessageId: string | undefined;
 	restoredPosition: MessageListPosition | undefined;
@@ -75,6 +76,7 @@ const sameVisibility = (a: MessageListVisibility | undefined, b: MessageListVisi
 export const useMessageListScroller = <TMessage extends IMessage>({
 	rows,
 	isLoadingNewerMessages,
+	bottomThreshold = DEFAULT_BOTTOM_THRESHOLD,
 	isOwnMessage,
 	targetMessageId,
 	restoredPosition,
@@ -132,6 +134,9 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 	const renderedRowsRef = useRef(renderedRows);
 	renderedRowsRef.current = renderedRows;
 
+	const bottomThresholdRef = useRef(bottomThreshold);
+	bottomThresholdRef.current = bottomThreshold;
+
 	const measure = useCallback((): MessageListMeasurement | undefined => {
 		const viewport = viewportRef.current;
 		if (!viewport) {
@@ -146,6 +151,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		return {
 			geometry: { scrollTop: viewport.scrollTop, scrollHeight: viewport.scrollHeight, clientHeight: viewport.clientHeight },
 			messagesStart,
+			bottomThreshold: bottomThresholdRef.current,
 		};
 	}, []);
 
@@ -182,7 +188,10 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		// Where the viewer stands, not what the list holds: it holds a message for a while after a jump to the last one
 		const isAtBottom =
 			rowsRef.current.rows.at(-1)?.kind !== 'newerLoader' &&
-			isScrolledToBottom({ scrollTop: viewport.scrollTop, scrollHeight: viewport.scrollHeight, clientHeight: viewport.clientHeight });
+			isScrolledToBottom(
+				{ scrollTop: viewport.scrollTop, scrollHeight: viewport.scrollHeight, clientHeight: viewport.clientHeight },
+				bottomThresholdRef.current,
+			);
 
 		const visibility: MessageListVisibility<TMessage> = {
 			topMessage,

@@ -12,7 +12,10 @@ const OLDER_PAGE_VIEWPORT_FRACTION = 1 / 3;
 
 export const distanceFromBottom = ({ scrollTop, scrollHeight, clientHeight }: ScrollGeometry) => scrollHeight - clientHeight - scrollTop;
 
-export const isAtBottom = (geometry: ScrollGeometry) => distanceFromBottom(geometry) <= SUB_PIXEL_TOLERANCE;
+/** How near the bottom counts as the bottom, in pixels: a sub-pixel distance, unless the list is told to be more forgiving. */
+export const DEFAULT_BOTTOM_THRESHOLD = SUB_PIXEL_TOLERANCE;
+
+export const isAtBottom = (geometry: ScrollGeometry, threshold = DEFAULT_BOTTOM_THRESHOLD) => distanceFromBottom(geometry) <= threshold;
 
 /**
  * Whether the viewport is close enough to the first message to fetch older ones.
@@ -21,4 +24,4 @@ export const isAtBottom = (geometry: ScrollGeometry) => distanceFromBottom(geome
 export const isNearOlderEdge = (geometry: ScrollGeometry, messagesStart: number) =>
 	geometry.scrollTop - messagesStart <= geometry.clientHeight * OLDER_PAGE_VIEWPORT_FRACTION;
 
-export const isNearNewerEdge = (geometry: ScrollGeometry) => isAtBottom(geometry);
+export const isNearNewerEdge = (geometry: ScrollGeometry, threshold = DEFAULT_BOTTOM_THRESHOLD) => isAtBottom(geometry, threshold);

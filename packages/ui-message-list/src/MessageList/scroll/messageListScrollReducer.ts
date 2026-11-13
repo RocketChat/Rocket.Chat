@@ -17,6 +17,8 @@ export type MessageListRowsSnapshot = {
 
 export type MessageListMeasurement = {
 	geometry: ScrollGeometry;
+	/** How near the end of the latest messages still counts as the bottom, in pixels. */
+	bottomThreshold?: number;
 	/** Offset of the first message row: what is above it is the older loader or the header. */
 	messagesStart: number;
 };
@@ -111,7 +113,7 @@ export const createInitialScrollState = ({
 };
 
 const isAtLatestBottom = (state: MessageListScrollState) =>
-	!!state.measurement && !state.rows.hasNewerMessages && isAtBottom(state.measurement.geometry);
+	!!state.measurement && !state.rows.hasNewerMessages && isAtBottom(state.measurement.geometry, state.measurement.bottomThreshold);
 
 /**
  * Scrolls to the anchor, unless it is already where it should be. Each call resolves the anchor's index again, so it follows
@@ -153,7 +155,7 @@ const checkPaging = (state: MessageListScrollState): MessageListScrollResult => 
 		return { state: { ...state, loading: 'older' }, commands: [{ type: 'loadOlder' }] };
 	}
 
-	if (rows.hasNewerMessages && isNearNewerEdge(measurement.geometry)) {
+	if (rows.hasNewerMessages && isNearNewerEdge(measurement.geometry, measurement.bottomThreshold)) {
 		return { state: { ...state, loading: 'newer' }, commands: [{ type: 'loadNewer' }] };
 	}
 
@@ -186,6 +188,12 @@ const goToLatest = (state: MessageListScrollState): MessageListScrollResult => {
 	const next = withAnchor({ ...state, pendingTargetId: undefined }, BOTTOM);
 	return { state: next, commands: applyAnchor(next, { force: true }) };
 };
+
+const measurementOf = ({ geometry, messagesStart, bottomThreshold }: MessageListMeasurement): MessageListMeasurement => ({
+	geometry,
+	messagesStart,
+	bottomThreshold,
+});
 
 const onScroll = (state: MessageListScrollState, measurement: MessageListMeasurement): MessageListScrollResult => {
 	let next: MessageListScrollState = { ...state, measurement };
@@ -259,7 +267,7 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 		}
 
 		case 'scroll': {
-			return onScroll(state, { geometry: event.geometry, messagesStart: event.messagesStart });
+			return onScroll(state, measurementOf(event));
 		}
 
 		case 'scrollEnd': {
@@ -267,7 +275,7 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 		}
 
 		case 'resize': {
-			const next = { ...state, measurement: { geometry: event.geometry, messagesStart: event.messagesStart } };
+			const next = { ...state, measurement: measurementOf(event) };
 			return { state: next, commands: [...applyAnchor(next), { type: 'notifyVisibility' }] };
 		}
 
@@ -275,7 +283,7 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			const committed: MessageListScrollState = {
 				...state,
 				rows: event.rows,
-				measurement: { geometry: event.geometry, messagesStart: event.messagesStart },
+				measurement: measurementOf(event),
 			};
 			const anchored = anchorAfterCommit(committed, event.change, event.tail);
 			const paged = checkPaging(anchored.state);

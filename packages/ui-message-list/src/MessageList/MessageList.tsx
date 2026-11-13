@@ -49,6 +49,8 @@ export type MessageListProps<TMessage extends IMessage> = {
 	'targetMessageId'?: string;
 	'onTargetMessageReached'?: (messageId: string) => void;
 	'isOwnMessage'?: (message: TMessage) => boolean;
+	/** How near the end of the latest messages, in pixels, still counts as the bottom: within it the list follows what arrives. */
+	'bottomThreshold'?: number;
 	'groupingPeriodSeconds'?: number;
 	/** Whether thread replies show as previews of their thread, as in a room. */
 	'groupsThreadReplies'?: boolean;
@@ -106,6 +108,7 @@ const MessageList = <TMessage extends IMessage>({
 	targetMessageId,
 	onTargetMessageReached,
 	isOwnMessage = never,
+	bottomThreshold,
 	groupingPeriodSeconds = 300,
 	groupsThreadReplies = true,
 	restoredPosition,
@@ -142,6 +145,7 @@ const MessageList = <TMessage extends IMessage>({
 	const scroller = useMessageListScroller({
 		rows,
 		isLoadingNewerMessages,
+		bottomThreshold,
 		isOwnMessage: useStableCallback(isOwnMessage),
 		targetMessageId,
 		restoredPosition,

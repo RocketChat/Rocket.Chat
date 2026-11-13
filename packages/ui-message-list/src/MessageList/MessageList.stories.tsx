@@ -724,3 +724,30 @@ export const ReportsAfterAResize: Story = {
 		await waitFor(() => readVisibility(canvasElement).isFirstUnreadVisible === false, 1500);
 	},
 };
+
+/** R80: with a threshold, a viewer a little above the bottom still follows arrivals, and one beyond it reads away. */
+export const BottomThreshold: Story = {
+	args: { history: { size: 60 }, source: { pageSize: 60 }, list: { bottomThreshold: 60 } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const viewport = getViewport(canvasElement);
+		await waitForListSettled(canvasElement);
+
+		await userScrollBy(canvasElement, -40);
+		await expect(viewport.closest('[data-anchor]')).toHaveAttribute('data-anchor', 'bottom');
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Receive message' }));
+		await waitFor(() => messageRow(canvasElement, fakeMessageId(60)) !== null);
+		await waitForListSettled(canvasElement);
+		await expectAtBottom(canvasElement);
+		await expect(canvas.getByText('New messages').closest('[data-visible]')).toHaveAttribute('data-visible', 'false');
+
+		await userScrollBy(canvasElement, -300);
+		await expect(viewport.closest('[data-anchor]')).toHaveAttribute('data-anchor', 'none');
+		const reading = firstVisibleMessage(canvasElement);
+		await userEvent.click(canvas.getByRole('button', { name: 'Receive message' }));
+		await waitForListSettled(canvasElement);
+		await expect(firstVisibleMessage(canvasElement)).toEqual(reading);
+		await expect(canvas.getByText('New messages').closest('[data-visible]')).toHaveAttribute('data-visible', 'true');
+	},
+};

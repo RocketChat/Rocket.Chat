@@ -601,6 +601,7 @@ describe('stories', () => {
 				'ReportsWhatIsVisible',
 				'ReportsBeingAtTheBottomAfterAJump',
 				'ReportsAfterAResize',
+				'BottomThreshold',
 				'ReportsNotBeingAtTheBottomOfAnOlderWindow',
 				'RestorePositionOfAListThatMountsEmpty',
 				'FirstPageLoading',
