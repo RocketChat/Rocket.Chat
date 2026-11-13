@@ -24,9 +24,7 @@ export const executeUnbanUserFromRoom = async function (rid: string, user: IUser
 	// the invite was accepted and we receive a leave event (meaning the user was unbanned), so
 	// at this point we just need send the message to say the user was unbanned.
 	if (isInviteSubscription(subscription)) {
-		await Message.saveSystemMessage('user-unbanned', rid, user.username, user, {
-			u: { _id: byUser._id, username: byUser.username },
-		});
+		await Message.saveSystemMessage('user-unbanned', rid, user.username, byUser);
 
 		return;
 	}
@@ -40,9 +38,7 @@ export const executeUnbanUserFromRoom = async function (rid: string, user: IUser
 	// Room count and __rooms were already adjusted during ban, so we only delete the document.
 	await Subscriptions.removeById(subscription._id);
 
-	await Message.saveSystemMessage('user-unbanned', rid, user.username, user, {
-		u: { _id: byUser._id, username: byUser.username },
-	});
+	await Message.saveSystemMessage('user-unbanned', rid, user.username, byUser);
 
 	void notifyOnSubscriptionChanged(subscription, 'removed');
 	void notifyOnRoomChangedById(rid);

@@ -461,11 +461,7 @@ describe('RoomService', () => {
 
 			expect(Subscriptions.unbanToInvitedById.calledOnceWithExactly('sub-id', inviter)).to.be.true;
 			expect(notifyOnSubscriptionChangedById.calledOnceWithExactly('sub-id', 'updated')).to.be.true;
-			expect(
-				Message.saveSystemMessage.calledOnceWithExactly('ui', 'room-id', 'invitee', invitee, {
-					u: { _id: 'inviter-id', username: 'inviter' },
-				}),
-			).to.be.true;
+			expect(Message.saveSystemMessage.calledOnceWithExactly('ui', 'room-id', 'invitee', inviter)).to.be.true;
 		});
 
 		it('notifies the update only once the subscription is written', async () => {
@@ -668,24 +664,22 @@ describe('RoomService', () => {
 				expect(Message.saveSystemMessage.notCalled).to.be.true;
 			});
 
-			const byInviter = { u: { _id: 'inviter-id', username: 'inviter' } };
-
 			(
 				[
-					['added-user-to-team', 'an inviter adds the user to a team', { teamMain: true }, { inviter }, { ts, ...byInviter }],
-					['ui', 'an inviter invites the user', {}, { inviter, status: 'INVITED' }, byInviter],
-					['au', 'an inviter adds the user', {}, { inviter }, { ts, ...byInviter }],
-					['ut', 'the user joins a discussion', { prid: 'parent-id' }, {}, { ts }],
-					['ujt', 'the user joins a team', { teamMain: true }, {}, { ts }],
-					['uj', 'the user joins a room', {}, {}, { ts }],
+					['added-user-to-team', 'an inviter adds the user to a team', { teamMain: true }, { inviter }, [inviter, { ts }]],
+					['ui', 'an inviter invites the user', {}, { inviter, status: 'INVITED' }, [inviter]],
+					['au', 'an inviter adds the user', {}, { inviter }, [inviter, { ts }]],
+					['ut', 'the user joins a discussion', { prid: 'parent-id' }, {}, [userToBeAdded, { ts }]],
+					['ujt', 'the user joins a team', { teamMain: true }, {}, [userToBeAdded, { ts }]],
+					['uj', 'the user joins a room', {}, {}, [userToBeAdded, { ts }]],
 				] as const
-			).forEach(([type, description, roomOverrides, options, extraData]) => {
+			).forEach(([type, description, roomOverrides, options, authorAndExtraData]) => {
 				it(`posts "${type}" when ${description}`, async () => {
 					const target = createFakeRoom({ _id: 'target-id', t: 'c', ...roomOverrides });
 
 					await service.createUserSubscription({ room: target, ts, userToBeAdded, ...options });
 
-					expect(Message.saveSystemMessage.calledOnceWithExactly(type, 'target-id', 'newbie', userToBeAdded, extraData)).to.be.true;
+					expect(Message.saveSystemMessage.calledOnceWithExactly(type, 'target-id', 'newbie', ...authorAndExtraData)).to.be.true;
 				});
 			});
 		});

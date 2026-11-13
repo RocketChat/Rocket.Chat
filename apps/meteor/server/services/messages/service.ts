@@ -163,7 +163,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		rid: string,
 		messageText: string,
 		owner: Pick<IUser, '_id' | 'username' | 'name'>,
-		extraData?: Partial<T>,
+		extraData?: Partial<T> & { u?: never },
 	): Promise<IMessage> {
 		const createdMessage = await this.saveSystemMessage(type, rid, messageText, owner, extraData);
 
@@ -182,7 +182,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		rid: string,
 		message: string,
 		owner: Pick<IUser, '_id' | 'username' | 'name'>,
-		extraData?: Partial<T>,
+		extraData?: Partial<T> & { u?: never },
 	): Promise<IMessage> {
 		const { _id: userId, username, name } = owner;
 		if (!username) {

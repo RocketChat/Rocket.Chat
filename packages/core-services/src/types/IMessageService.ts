@@ -7,7 +7,7 @@ export interface IMessageService {
 		rid: string,
 		message: string,
 		user: Pick<IUser, '_id' | 'username' | 'name'>,
-		extraData?: Partial<T>,
+		extraData?: Partial<T> & { u?: never },
 	): Promise<IMessage>;
 	saveMessageFromFederation({
 		_id,
@@ -43,7 +43,7 @@ export interface IMessageService {
 		rid: string,
 		message: string,
 		user: Pick<IUser, '_id' | 'username' | 'name'>,
-		extraData?: Partial<T>,
+		extraData?: Partial<T> & { u?: never },
 	): Promise<IMessage>;
 	beforeSave(param: { message: IMessage; room: IRoom; user: IUser; previewUrls?: string[]; parseUrls?: boolean }): Promise<IMessage>;
 	sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert?: boolean): Promise<IMessage>;

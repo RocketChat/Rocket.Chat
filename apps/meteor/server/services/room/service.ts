@@ -336,21 +336,12 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		if (!skipSystemMessage && userToBeAdded.username) {
 			if (inviter) {
-				const extraData = {
-					ts,
-					u: {
-						_id: inviter._id,
-						username: inviter.username,
-					},
-				};
 				if (room.teamMain) {
-					await Message.saveSystemMessage('added-user-to-team', room._id, userToBeAdded.username, userToBeAdded, extraData);
+					await Message.saveSystemMessage('added-user-to-team', room._id, userToBeAdded.username, inviter, { ts });
 				} else if (status === 'INVITED') {
-					await Message.saveSystemMessage('ui', room._id, userToBeAdded.username, userToBeAdded, {
-						u: { _id: inviter._id, username: inviter.username },
-					});
+					await Message.saveSystemMessage('ui', room._id, userToBeAdded.username, inviter);
 				} else {
-					await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData);
+					await Message.saveSystemMessage('au', room._id, userToBeAdded.username, inviter, { ts });
 				}
 			} else if (room.prid) {
 				await Message.saveSystemMessage('ut', room._id, userToBeAdded.username, userToBeAdded, { ts });
@@ -386,9 +377,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		void notifyOnSubscriptionChangedById(subscription._id, 'updated');
 
 		if (inviteeUser?.username) {
-			await Message.saveSystemMessage('ui', subscription.rid, inviteeUser.username, inviteeUser, {
-				u: { _id: inviterUser._id, username: inviterUser.username },
-			});
+			await Message.saveSystemMessage('ui', subscription.rid, inviteeUser.username, inviterUser);
 		}
 	}
 }
