@@ -304,8 +304,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return this.finishDeletion(uid, deletedCount, options);
 	}
 
-	public async discardImportedBySource(source: CalendarEventSource, refreshPresenceFor: IUser['_id'][]): Promise<number> {
-		const { deletedCount } = await CalendarEvent.deleteImportedBySource(source);
+	public async discardUpcomingImportedBySource(source: CalendarEventSource, refreshPresenceFor: IUser['_id'][]): Promise<number> {
+		const { deletedCount } = await CalendarEvent.deleteImportedBySourceStartingAfter(source, new Date());
 
 		if (deletedCount) {
 			await this.applyBatchSideEffects(refreshPresenceFor);

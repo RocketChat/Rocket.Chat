@@ -7,7 +7,7 @@ const add = jest.fn();
 const remove = jest.fn();
 const watchMultiple = jest.fn();
 const stopWatching = jest.fn();
-const discardImportedBySource = jest.fn();
+const discardUpcomingImportedBySource = jest.fn();
 const removeAll = jest.fn();
 const whenSyncsIdle = jest.fn();
 const findAllUserIds = jest.fn();
@@ -25,7 +25,7 @@ jest.mock('@rocket.chat/cron', () => ({
 jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn() }));
 jest.mock('../syncLease', () => ({ whenSyncsIdle: (...args: unknown[]) => whenSyncsIdle(...args) }));
 jest.mock('@rocket.chat/core-services', () => ({
-	Calendar: { discardImportedBySource: (...args: unknown[]) => discardImportedBySource(...args) },
+	Calendar: { discardUpcomingImportedBySource: (...args: unknown[]) => discardUpcomingImportedBySource(...args) },
 }));
 jest.mock('@rocket.chat/models', () => ({
 	ExchangeCalendarSyncState: { findAllUserIds: () => findAllUserIds(), removeAll: () => removeAll() },
@@ -114,7 +114,7 @@ describe('registerCalendarSyncJob', () => {
 		add.mockResolvedValue(undefined);
 		remove.mockResolvedValue(undefined);
 		watchMultiple.mockReturnValue(stopWatching);
-		discardImportedBySource.mockResolvedValue(0);
+		discardUpcomingImportedBySource.mockResolvedValue(0);
 		removeAll.mockResolvedValue(undefined);
 		whenSyncsIdle.mockResolvedValue(undefined);
 		findAllUserIds.mockResolvedValue([]);
@@ -158,7 +158,7 @@ describe('registerCalendarSyncJob', () => {
 		expect(add).not.toHaveBeenCalled();
 	});
 
-	it('discards what the sync imported, and the cursors with it, when it is switched off', async () => {
+	it('discards the upcoming events the sync imported, and the cursors with it, when it is switched off', async () => {
 		registerCalendarSyncJob();
 
 		await watchMultiple.mock.calls[0][1]();
@@ -169,7 +169,7 @@ describe('registerCalendarSyncJob', () => {
 		await watchMultiple.mock.calls[0][1]();
 		await flush();
 
-		expect(discardImportedBySource).toHaveBeenCalledWith('outlook', []);
+		expect(discardUpcomingImportedBySource).toHaveBeenCalledWith('outlook', []);
 		expect(removeAll).toHaveBeenCalled();
 	});
 
@@ -188,7 +188,7 @@ describe('registerCalendarSyncJob', () => {
 		await notify();
 		await flush();
 
-		expect(discardImportedBySource).toHaveBeenCalledWith('outlook', ['u1', 'u2']);
+		expect(discardUpcomingImportedBySource).toHaveBeenCalledWith('outlook', ['u1', 'u2']);
 	});
 
 	it('leaves the imported events alone when the cursors cannot be cleared', async () => {
@@ -205,7 +205,7 @@ describe('registerCalendarSyncJob', () => {
 		await notify();
 		await flush();
 
-		expect(discardImportedBySource).not.toHaveBeenCalled();
+		expect(discardUpcomingImportedBySource).not.toHaveBeenCalled();
 	});
 
 	it('stops watching and drops the job when the returned cleanup runs', async () => {

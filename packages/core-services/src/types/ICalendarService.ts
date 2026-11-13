@@ -42,6 +42,6 @@ export interface ICalendarService {
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;
-	discardImportedBySource(source: CalendarEventSource, refreshPresenceFor: IUser['_id'][]): Promise<number>;
+	discardUpcomingImportedBySource(source: CalendarEventSource, refreshPresenceFor: IUser['_id'][]): Promise<number>;
 	refreshBusyPresence(uid: IUser['_id']): Promise<void>;
 }

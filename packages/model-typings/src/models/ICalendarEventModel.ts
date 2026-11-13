@@ -48,5 +48,5 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		seriesMasterIds: string[],
 		keepExternalIds: string[],
 	): Promise<DeleteResult>;
-	deleteImportedBySource(source: CalendarEventSource): Promise<DeleteResult>;
+	deleteImportedBySourceStartingAfter(source: CalendarEventSource, date: Date): Promise<DeleteResult>;
 }
