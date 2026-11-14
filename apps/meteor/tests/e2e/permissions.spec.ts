@@ -100,9 +100,7 @@ test.describe.serial('permissions', () => {
 		});
 	});
 
-	// FIXME: Wrong behavior in Rocket.chat, currently it shows the button
-	// and after a click a "not allowed" alert pops up
-	test.describe.skip('Star message', () => {
+	test.describe.serial('Star message', () => {
 		test.beforeAll(async ({ api }) => {
 			const statusCode = (await api.post('/settings/Message_AllowStarring', { value: false })).status();
 
