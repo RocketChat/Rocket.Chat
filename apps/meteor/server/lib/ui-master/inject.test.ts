@@ -26,6 +26,15 @@ const headHtml = (call = rawModHtml.lastCall) => {
 	return call.args[1]('<html><head></head><body></body></html>');
 };
 
+const request = (url: string) => {
+	const handler: NextHandleFunction = connectHandlersUse.firstCall.args[0];
+	const res = { writeHead: sinon.stub(), write: sinon.stub(), end: sinon.stub() };
+	const next = sinon.stub();
+	handler({ method: 'GET', url } as any, res as any, next);
+
+	return { res, next };
+};
+
 describe('ui-master inject', () => {
 	let inject: ReturnType<typeof loadInject>;
 
@@ -91,14 +100,57 @@ describe('ui-master inject', () => {
 			const href = html.match(/href="([^"]+)"/)?.[1];
 			expect(href).to.match(/^\/theme_[0-9a-f]{40}\.css$/);
 
-			const handler: NextHandleFunction = connectHandlersUse.firstCall.args[0];
-			const res = { writeHead: sinon.stub(), write: sinon.stub(), end: sinon.stub() };
-			const next = sinon.stub();
-			handler({ method: 'GET', url: href } as any, res as any, next);
+			const { res, next } = request(href);
 
 			expect(next.callCount).to.equal(0);
 			expect(res.writeHead.firstCall.args[1]).to.include({ 'Content-type': 'text/css; charset=UTF-8' });
 			expect(res.write.args).to.deep.equal([['body { color: red; }']]);
+		});
+	});
+
+	describe('serving injected assets', () => {
+		it('should serve injected CSS with a Content-Length equal to its UTF-8 byte length', () => {
+			const content = '/* zażółć gęślą jaźń ✓ 🚀 */\nbody { outline: 3px solid red; }';
+			inject.addStyle('css-theme', content);
+
+			const { res, next } = request('/css-theme_hash.css');
+
+			expect(next.called).to.be.false;
+			expect(res.writeHead.firstCall.args[1]).to.include({
+				'Content-type': 'text/css; charset=UTF-8',
+				'Content-Length': Buffer.from(content, 'utf8').length,
+			});
+			expect(res.write.calledOnceWith(content)).to.be.true;
+			expect(res.end.calledOnce).to.be.true;
+		});
+
+		it('should serve injected JS with a Content-Length equal to its UTF-8 byte length', () => {
+			const content = 'console.log("héllo wörld ✓");';
+			inject.addScript('custom-script', content);
+
+			const { res } = request('/custom-script_hash.js');
+
+			expect(res.writeHead.firstCall.args[1]).to.include({
+				'Content-type': 'application/javascript; charset=UTF-8',
+				'Content-Length': Buffer.from(content, 'utf8').length,
+			});
+			expect(res.write.calledOnceWith(content)).to.be.true;
+		});
+
+		it('should serve ASCII-only content with a Content-Length equal to its length', () => {
+			const content = 'body { color: red; }';
+			inject.addStyle('ascii', content);
+
+			const { res } = request('/ascii_hash.css');
+
+			expect(res.writeHead.firstCall.args[1]).to.include({ 'Content-Length': content.length });
+		});
+
+		it('should pass the request on when nothing is injected for the path', () => {
+			const { res, next } = request('/unknown_hash.css');
+
+			expect(next.calledOnce).to.be.true;
+			expect(res.writeHead.called).to.be.false;
 		});
 	});
 
