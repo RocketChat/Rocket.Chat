@@ -147,6 +147,29 @@ describe('Modify accessors (base-runtime)', () => {
 			} as any);
 			assert.deepStrictEqual(rec.methods(), ['bridges:getUploadBridge:doCreateUpload']);
 		});
+
+		it('sends no threadId in the details when the descriptor omits it', async () => {
+			const { rec, sender } = setup();
+			await new UploadCreator(sender).uploadBuffer(Buffer.from([1]), {
+				filename: 'f',
+				room: { id: 'r1' },
+				user: { id: 'u1' },
+			} as any);
+			const [details] = rec.emitted()[0].params as any[];
+			assert.strictEqual(Object.hasOwn(details, 'threadId'), false);
+		});
+
+		it('sends the threadId in the details to doCreateUpload', async () => {
+			const { rec, sender } = setup();
+			await new UploadCreator(sender).uploadBuffer(Buffer.from([1]), {
+				filename: 'f',
+				room: { id: 'r1' },
+				user: { id: 'u1' },
+				threadId: 'tm1',
+			} as any);
+			const [details] = rec.emitted()[0].params as any[];
+			assert.strictEqual(details.threadId, 'tm1');
+		});
 	});
 
 	describe('UIController', () => {

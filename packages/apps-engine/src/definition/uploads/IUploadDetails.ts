@@ -23,4 +23,8 @@ export interface IUploadDetails {
 	 * The token of a Livechat visitor
 	 */
 	visitorToken?: string;
+	/**
+	 * The id of the thread's parent message for the file message
+	 */
+	threadId?: string;
 }
