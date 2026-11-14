@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { IncomingMessage } from 'node:http';
-import type { Stream, Transform } from 'node:stream';
+import type { Transform } from 'node:stream';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
@@ -26,6 +26,10 @@ export type ParseOptions = {
 	allowedMimeTypes?: string[];
 	transforms?: Transform[]; // Optional transform pipeline (e.g., EXIF stripping)
 	fileOptional?: boolean;
+};
+
+type DestroyableStream = {
+	destroy(error?: Error): unknown;
 };
 
 export class MultipartUploadHandler {
@@ -56,7 +60,6 @@ export class MultipartUploadHandler {
 			return writeStream.bytesWritten;
 		} catch (error) {
 			void this.cleanup(strippedPath);
-
 			throw error;
 		}
 	}
@@ -83,22 +86,61 @@ export class MultipartUploadHandler {
 		});
 
 		const fields: Record<string, string> = {};
+		const tempFilePaths = new Set<string>();
+		const activeStreams = new Set<DestroyableStream>();
+		const uploadTasks: Promise<void>[] = [];
+
 		let parsedFile: ParsedUpload | null = null;
 		let busboyFinished = false;
 		let filePendingCount = 0;
+		let settled = false;
+		let requestStream: DestroyableStream | undefined;
 
 		const { promise, resolve, reject } = Promise.withResolvers<{
 			file: ParsedUpload | null;
 			fields: Record<string, string>;
 		}>();
 
-		const tryResolve = () => {
-			if (busboyFinished && filePendingCount < 1) {
-				if (!parsedFile && !options.fileOptional) {
-					return reject(new ClientSafeError('error-no-file', 'No file uploaded'));
-				}
-				resolve({ file: parsedFile, fields });
+		const fail = async (error: Error, currentTask?: Promise<void>): Promise<void> => {
+			if (settled) {
+				return;
 			}
+
+			settled = true;
+
+			bb.destroy();
+
+			if (request instanceof IncomingMessage) {
+				request.unpipe(bb);
+				request.resume();
+			}
+
+			requestStream?.destroy();
+
+			for (const stream of activeStreams) {
+				stream.destroy();
+			}
+
+			// Do not wait for the task that called fail(), otherwise it waits for itself.
+			await Promise.allSettled(uploadTasks.filter((task) => task !== currentTask));
+
+			await Promise.all([...tempFilePaths].map((tempFilePath) => this.cleanup(tempFilePath)));
+
+			reject(error);
+		};
+
+		const tryResolve = (): void => {
+			if (settled || !busboyFinished || filePendingCount > 0) {
+				return;
+			}
+
+			if (!parsedFile && !options.fileOptional) {
+				void fail(new ClientSafeError('error-no-file', 'No file uploaded'));
+				return;
+			}
+
+			settled = true;
+			resolve({ file: parsedFile, fields });
 		};
 
 		bb.on('field', (fieldname: string, value: string) => {
@@ -109,63 +151,84 @@ export class MultipartUploadHandler {
 			const { filename, mimeType } = info;
 
 			++filePendingCount;
+			activeStreams.add(file);
+
+			file.on('error', (error: Error) => {
+				void fail(new ClientSafeError('error-file-upload', error.message));
+			});
 
 			if (options.field && fieldname !== options.field) {
-				file.resume();
-				return reject(new ClientSafeError('invalid-field'));
+				void fail(new ClientSafeError('invalid-field'));
+				return;
 			}
 
 			if (options.allowedMimeTypes && !options.allowedMimeTypes.includes(mimeType)) {
-				file.resume();
-				return reject(new ClientSafeError('error-invalid-file-type', `File type ${mimeType} not allowed`));
+				void fail(new ClientSafeError('error-invalid-file-type', `File type ${mimeType} not allowed`));
+				return;
+			}
+			const tempFilePath = UploadFS.getTempFilePath(Random.id());
+
+			tempFilePaths.add(tempFilePath);
+
+			let writeStream: fs.WriteStream;
+
+			try {
+				writeStream = fs.createWriteStream(tempFilePath);
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+
+				void fail(new ClientSafeError('error-file-upload', message));
+				return;
 			}
 
-			const fileId = Random.id();
-			const tempFilePath = UploadFS.getTempFilePath(fileId);
+			activeStreams.add(writeStream);
 
-			const writeStream = fs.createWriteStream(tempFilePath);
+			const transforms = options.transforms ?? [];
 
-			let currentStream: Stream = file;
-			if (options.transforms?.length) {
-				const fileDestroyer = file.destroy.bind(file);
-				for (const transform of options.transforms) {
-					transform.on('error', fileDestroyer);
-					currentStream = currentStream.pipe(transform);
-				}
+			for (const transform of transforms) {
+				activeStreams.add(transform);
 			}
 
-			currentStream.pipe(writeStream);
+			const uploadTaskRef: { current?: Promise<void> } = {};
 
-			writeStream.on('finish', () => {
-				if (file.truncated) {
-					void this.cleanup(tempFilePath);
-					return reject(new ClientSafeError('error-file-too-large', 'File size exceeds the allowed limit'));
-				}
+			const uploadTask = pipeline([file, ...transforms, writeStream])
+				.then(() => {
+					if (settled) {
+						return;
+					}
 
-				parsedFile = {
-					tempFilePath,
-					filename,
-					mimetype: getMimeType(mimeType, filename),
-					size: writeStream.bytesWritten,
-					fieldname,
-				};
+					if (file.truncated) {
+						throw new ClientSafeError('error-file-too-large', 'File size exceeds the allowed limit');
+					}
 
-				--filePendingCount;
+					parsedFile = {
+						tempFilePath,
+						filename,
+						mimetype: getMimeType(mimeType, filename),
+						size: writeStream.bytesWritten,
+						fieldname,
+					};
+				})
+				.catch((error: Error) => {
+					void fail(
+						error instanceof ClientSafeError ? error : new ClientSafeError('error-file-upload', error.message),
+						uploadTaskRef.current,
+					);
+				})
+				.finally(() => {
+					activeStreams.delete(file);
+					activeStreams.delete(writeStream);
 
-				tryResolve();
-			});
+					for (const transform of transforms) {
+						activeStreams.delete(transform);
+					}
 
-			writeStream.on('error', (err) => {
-				file.destroy();
-				void this.cleanup(tempFilePath);
-				reject(new ClientSafeError('error-file-upload', err.message));
-			});
+					--filePendingCount;
+					tryResolve();
+				});
 
-			file.on('error', (err) => {
-				writeStream.destroy();
-				void this.cleanup(tempFilePath);
-				reject(new ClientSafeError('error-file-upload', err.message));
-			});
+			uploadTaskRef.current = uploadTask;
+			uploadTasks.push(uploadTask);
 		});
 
 		bb.on('finish', () => {
@@ -173,20 +236,20 @@ export class MultipartUploadHandler {
 			tryResolve();
 		});
 
-		bb.on('error', (err: any) => {
-			reject(new ClientSafeError('error-upload-failed', err.message));
+		bb.on('error', (error: Error) => {
+			void fail(new ClientSafeError('error-upload-failed', error.message));
 		});
 
 		bb.on('filesLimit', () => {
-			reject(new ClientSafeError('error-too-many-files', 'Too many files in upload'));
+			void fail(new ClientSafeError('error-too-many-files', 'Too many files in upload'));
 		});
 
 		bb.on('partsLimit', () => {
-			reject(new ClientSafeError('error-too-many-parts', 'Too many parts in upload'));
+			void fail(new ClientSafeError('error-too-many-parts', 'Too many parts in upload'));
 		});
 
 		bb.on('fieldsLimit', () => {
-			reject(new ClientSafeError('error-too-many-fields', 'Too many fields in upload'));
+			void fail(new ClientSafeError('error-too-many-fields', 'Too many fields in upload'));
 		});
 
 		if (request instanceof IncomingMessage) {
@@ -197,6 +260,20 @@ export class MultipartUploadHandler {
 			}
 
 			const nodeStream = Readable.fromWeb(request.body as any);
+
+			requestStream = nodeStream;
+			activeStreams.add(nodeStream);
+
+			nodeStream.on('error', (error: Error) => {
+				void fail(new ClientSafeError('error-upload-failed', error.message));
+			});
+
+			nodeStream.on('close', () => {
+				if (!nodeStream.readableEnded && !settled) {
+					void fail(new ClientSafeError('error-upload-failed', 'Request body stream closed unexpectedly'));
+				}
+			});
+
 			nodeStream.pipe(bb);
 		}
 
