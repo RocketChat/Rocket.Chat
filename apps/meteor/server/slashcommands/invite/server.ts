@@ -18,6 +18,21 @@ function isStringError(error: unknown): error is { error: string } {
 	return typeof (error as any)?.error === 'string';
 }
 
+const errorTranslationKeys = new Map<string, string>([
+	['error-federated-users-in-non-federated-rooms', 'You_cannot_add_external_users_to_non_federated_room'],
+	['cant-invite-for-direct-room', 'Cannot_invite_users_to_direct_rooms'],
+]);
+
+function getErrorTranslationKey(error: unknown): string | undefined {
+	if (!isStringError(error)) {
+		return undefined;
+	}
+
+	const translationKey = errorTranslationKeys.get(error.error) ?? error.error;
+
+	return i18n.exists(translationKey) ? translationKey : undefined;
+}
+
 /*
  * Invite is a named function that will replace /invite commands
  * @param {Object} message - The message object
@@ -114,42 +129,22 @@ slashCommands.add({
 						inviter,
 					);
 				} catch (e: unknown) {
-					if (isClientSafeError(e)) {
-						if (e.error === 'error-app-prevented' && e.reason) {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, { msg: e.reason });
-							return;
-						}
-
-						const translationKey = typeof e.error === 'string' && i18n.exists(e.error) ? e.error : undefined;
-
-						if (!translationKey) {
-							logger.error({ msg: 'Failed to invite user to room', err: e, rid: message.rid, uid: userId });
-						}
-
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(translationKey ?? 'Error_something_went_wrong', {
-								lng: settings.get('Language') || 'en',
-							}),
-						});
+					if (isClientSafeError(e) && e.error === 'error-app-prevented' && e.reason) {
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, { msg: e.reason });
 						return;
 					}
 
-					if (isStringError(e)) {
-						const { error } = e;
-						if (error === 'error-federated-users-in-non-federated-rooms') {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
-							});
-						} else if (error === 'cant-invite-for-direct-room') {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
-							});
-						} else {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t(error, { lng: settings.get('Language') || 'en' }),
-							});
-						}
+					const translationKey = getErrorTranslationKey(e);
+
+					if (!translationKey) {
+						logger.error({ msg: 'Failed to invite user to room', err: e, rid: message.rid, uid: userId });
 					}
+
+					void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+						msg: i18n.t(translationKey ?? 'Error_something_went_wrong', {
+							lng: settings.get('Language') || 'en',
+						}),
+					});
 				}
 			}),
 		);
