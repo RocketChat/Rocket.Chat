@@ -268,6 +268,7 @@ export class MockedAppRootBuilder {
 		queryRole: () => [() => () => undefined, () => false],
 		getRoles: () => this.rolesMap,
 		subscribeToRoles: () => () => undefined,
+		getPermission: () => undefined,
 	};
 
 	private authServices: LoginService[] = [];

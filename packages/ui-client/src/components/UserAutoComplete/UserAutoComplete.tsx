@@ -28,7 +28,14 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 		queryFn: async () => usersAutoCompleteEndpoint(query(debouncedFilter, conditions)),
 	});
 
-	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [], [data]);
+	const options = useMemo(() => {
+		const items = data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) ?? [];
+
+		const selectedValues = ([] as string[]).concat(value ?? []);
+		const missing = selectedValues.filter((v) => !items.some((item) => item.value === v)).map((v) => ({ value: v, label: v }));
+
+		return [...items, ...missing];
+	}, [data, value]);
 
 	return (
 		<AutoComplete
