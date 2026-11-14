@@ -15,14 +15,39 @@ import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:member');
 
+const inFlightFederatedAvatarLookupsByUserId = new Map<string, Promise<string | null | undefined>>();
+
+async function getCurrentFederatedAvatarUrl(
+	userId: string,
+	fallbackAvatarUrl: string | null | undefined,
+): Promise<string | null | undefined> {
+	let lookupPromise = inFlightFederatedAvatarLookupsByUserId.get(userId);
+
+	if (!lookupPromise) {
+		lookupPromise = federationSDK.queryProfile(userId).then((profile) => profile?.avatar_url);
+		inFlightFederatedAvatarLookupsByUserId.set(userId, lookupPromise);
+	}
+
+	try {
+		return await lookupPromise;
+	} catch (error) {
+		logger.warn({ err: error, userId, msg: 'Failed to query current federated profile avatar, falling back to event payload' });
+		return fallbackAvatarUrl;
+	} finally {
+		if (inFlightFederatedAvatarLookupsByUserId.get(userId) === lookupPromise) {
+			inFlightFederatedAvatarLookupsByUserId.delete(userId);
+		}
+	}
+}
+
 async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Promise<void> {
 	try {
 		// if no avatarUrl is provided, it means the user removed his avatar, so we need to set an empty avatar to remove the avatar from their side as well
 		if (!avatarUrl) {
 			await Upload.resetUserAvatar(user);
+			await Users.setFederationAvatarUrlById(user._id, '');
 			return;
 		}
-
 		if (!avatarUrl?.startsWith('mxc://')) {
 			return;
 		}
@@ -67,8 +92,8 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Prom
 			return;
 		}
 
-		// TODO need to perform a validation to check if the user actually changed avatar
 		await Upload.setUserAvatar(user, buffer, contentType, 'rest');
+		await Users.setFederationAvatarUrlById(user._id, avatarUrl);
 	} catch (error) {
 		logger.error({ err: error, user: user.username, msg: `Error downloading/setting avatar for user` });
 	}
@@ -280,8 +305,13 @@ async function handleJoin({
 
 	// handle avatar updates to membership events
 	if (senderServerName !== federationSDK.getConfig('serverName')) {
-		// TODO if there is no avatar_url we may want to validate first if we should remove the user avatar because if may be dealing with an old join event, and the user may have changed their avatar since then, so we need to check if the avatar_url is different from the current one before removing it
-		void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, content.avatar_url || null);
+		const fallbackAvatarUrl = 'avatar_url' in content ? content.avatar_url ?? null : undefined;
+		const currentAvatarUrl = await getCurrentFederatedAvatarUrl(userId, fallbackAvatarUrl);
+		const storedAvatarUrl = joiningUser.federation?.avatarUrl || null;
+
+		if (currentAvatarUrl !== undefined && currentAvatarUrl !== storedAvatarUrl) {
+			void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, currentAvatarUrl);
+		}
 	}
 
 	// updates user name whenever we receive a join event, because Matrix sends a new join event with the updated display name whenever a user changes their display name
