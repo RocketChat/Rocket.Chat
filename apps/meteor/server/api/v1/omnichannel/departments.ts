@@ -47,7 +47,7 @@ API.v1.addRoute(
 			const { departments, total } = await findDepartments({
 				userId: this.userId,
 				text,
-				enabled: enabled === 'true',
+				enabled: enabled !== undefined ? enabled === 'true' : undefined,
 				showArchived: showArchived === 'true',
 				onlyMyDepartments: onlyMyDepartments === 'true',
 				excludeDepartmentId,

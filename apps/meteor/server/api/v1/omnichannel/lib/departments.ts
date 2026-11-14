@@ -48,7 +48,7 @@ export async function findDepartments({
 	let query: FilterOperators<ILivechatDepartment> = {
 		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
 		...(!showArchived && { archived: { $ne: !showArchived } }),
-		...(enabled && { enabled: Boolean(enabled) }),
+		...(typeof enabled === 'boolean' && { enabled }),
 		...(text && { name: new RegExp(escapeRegExp(text), 'i') }),
 		...(excludeDepartmentId && { _id: { $ne: excludeDepartmentId } }),
 	};

@@ -25,7 +25,7 @@ const AutoCompleteDepartmentMultiple = ({
 	value = [],
 	onlyMyDepartments = false,
 	showArchived = false,
-	enabled = false,
+	enabled,
 	withCheckbox = false,
 	excludeId,
 	unitId,
