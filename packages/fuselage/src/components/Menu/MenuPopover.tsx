@@ -1,5 +1,5 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useRef } from 'react';
 import type { AriaPopoverProps } from 'react-aria';
 import { useInteractOutside } from 'react-aria';
@@ -49,6 +49,8 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 		},
 	});
 
+	const popoverStyle: CSSProperties & { '--rcx-menu-max-width'?: string } = { '--rcx-menu-max-width': maxWidth };
+
 	const popover = (
 		<Popover
 			state={state}
@@ -60,7 +62,7 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 			{isMobile ? (
 				<DropdownMobile>{children}</DropdownMobile>
 			) : (
-				<Box maxWidth={maxWidth}>
+				<Box rcx-menu__popover style={popoverStyle}>
 					<DropdownDesktop maxHeight='most-of-screen'>{children}</DropdownDesktop>
 				</Box>
 			)}

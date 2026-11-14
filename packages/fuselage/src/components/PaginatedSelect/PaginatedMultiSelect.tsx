@@ -156,8 +156,7 @@ const PaginatedMultiSelect = ({
 						aria-invalid={ariaInvalid}
 						onClick={show}
 						onBlur={hide}
-						order={1}
-						rcx-input-box--undecorated
+						className='rcx-select__anchor--last'
 					>
 						{placeholder ?? null}
 					</Anchor>

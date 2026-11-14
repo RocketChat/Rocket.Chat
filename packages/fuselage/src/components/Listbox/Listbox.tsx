@@ -14,7 +14,7 @@ export type ListboxProps = {
  */
 function Listbox({ children, ...props }: ListboxProps) {
 	return (
-		<Box is='ul' role='listbox' margin={0} padding={0} {...props}>
+		<Box is='ul' role='listbox' rcx-listbox {...props}>
 			{children}
 		</Box>
 	);

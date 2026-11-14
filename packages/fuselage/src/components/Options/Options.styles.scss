@@ -2,7 +2,19 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/functions.scss' as *;
 
+@property --rcx-options-width {
+	inherits: false;
+	syntax: '*';
+}
+
+@property --rcx-options-max-height {
+	inherits: false;
+	syntax: '*';
+}
+
 .rcx-options {
+	width: var(--rcx-options-width, auto);
+
 	&:hover {
 		.rcx-option--focus:not(.rcx-option--selected):not(:hover),
 		.rcx-item--focused:not(.rcx-item--selected):not(:hover) {
@@ -12,10 +24,33 @@
 }
 
 .rcx-options__list {
-	max-height: to-rem(144);
+	position: relative;
+
+	overflow-y: auto;
+
+	max-height: var(--rcx-options-max-height, #{to-rem(144)});
 
 	border-radius: lengths.border-radius(medium);
 	background-color: colors.surface(light);
+
+	scroll-behavior: smooth;
+
+	&::-webkit-scrollbar {
+		width: to-rem(4);
+		height: to-rem(4);
+	}
+
+	&::-webkit-scrollbar-track {
+		background-color: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--rcx-theme-scrollbar-thumb-color, rgba(0, 0, 0, 0.05));
+	}
+
+	&:hover::-webkit-scrollbar-thumb {
+		background-color: var(--rcx-theme-scrollbar-thumb-hover-color, rgba(0, 0, 0, 0.15));
+	}
 
 	&--container {
 		max-height: to-rem(240);

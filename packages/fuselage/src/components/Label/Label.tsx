@@ -25,7 +25,7 @@ function Label({ disabled, is, required, children, ...props }: LabelProps) {
 			<Box is={component} rcx-label rcx-label--disabled={disabled} {...props}>
 				{children}
 				{required && (
-					<Box is='span' rcx-label__required marginInlineStart='x4' aria-hidden='true'>
+					<Box is='span' rcx-label__required aria-hidden='true'>
 						*
 					</Box>
 				)}

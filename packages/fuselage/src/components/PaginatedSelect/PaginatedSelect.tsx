@@ -91,15 +91,14 @@ export const PaginatedSelect = ({
 			rcx-select--disabled={disabled}
 			{...props}
 		>
-			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<Box is='div' rcx-select__wrapper rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText && (
-					<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2m' color={valueLabel ? 'titles-labels' : 'hint'}>
+					<Box is='span' rcx-select__item rcx-select__item--medium rcx-select__item--placeholder={!valueLabel}>
 						{visibleText}
 					</Box>
 				)}
 				<Anchor
 					disabled={disabled}
-					rcx-input-box--undecorated
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'
