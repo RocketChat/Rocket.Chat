@@ -121,9 +121,14 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		options?: AggregateOptions,
 	): Promise<SpotlightUser[]>;
 
-	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
+	incUnreadForRoomIdExcludingUserIds(
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
+		inc: number,
+		senderId: IUser['_id'],
+	): Promise<UpdateResult | Document>;
 
-	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], senderId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
@@ -297,7 +302,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
 		roomId: IRoom['_id'],
-		userId: IUser['_id'],
+		senderId: IUser['_id'],
 		incGroup?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
@@ -306,14 +311,19 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateCustomFieldsByRoomId(rid: string, cfields: Record<string, any>): Promise<UpdateResult | Document>;
 	setOpenForRoomIdAndUserIds(roomId: string, uids: string[]): Promise<UpdateResult | Document>;
 
-	setAlertForRoomIdAndUserIds(roomId: ISubscription['rid'], uids: ISubscription['u']['_id'][]): Promise<UpdateResult | Document>;
+	setAlertForRoomIdAndUserIds(
+		roomId: ISubscription['rid'],
+		uids: ISubscription['u']['_id'][],
+		senderId: IUser['_id'],
+	): Promise<UpdateResult | Document>;
 	updateTypeByRoomId(roomId: string, type: ISubscription['t']): Promise<UpdateResult | Document>;
 	setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]>;
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
 		roomId: IRoom['_id'],
 		userIds: IUser['_id'][],
-		incUser?: number,
-		incUnread?: number,
+		incUser: number,
+		incUnread: number,
+		senderId: IUser['_id'],
 	): Promise<UpdateResult | Document>;
 
 	ignoreUser(data: { _id: string; ignoredUser: string; ignore?: boolean }): Promise<UpdateResult>;
@@ -356,6 +366,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		rid: string,
 		users: string[],
 		tmid: string,
+		senderId: IUser['_id'],
 		data: { groupMention?: boolean; userMention?: boolean },
 	): Promise<UpdateResult | Document | void>;
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert?: boolean): Promise<UpdateResult>;
