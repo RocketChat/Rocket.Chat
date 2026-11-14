@@ -39,3 +39,13 @@ describe('non-text examples', () => {
 		expect(decoded).toStrictEqual(expectedAsBinary);
 	});
 });
+describe('invalid input', () => {
+	it.each([['AA!A'], ['!AAA'], ['AAA*'], ['AB CD'], ['AA\nA='], ['é'], ['AA-_']])('throws on invalid characters in %p', (input) => {
+		expect(() => Base64.decode(input)).toThrow('invalid base64 string');
+	});
+
+	it('throws on padding in the first two positions of a block', () => {
+		expect(() => Base64.decode('=AAA')).toThrow('invalid base64 string');
+		expect(() => Base64.decode('A=AA')).toThrow('invalid base64 string');
+	});
+});
