@@ -1,5 +1,5 @@
 import { css, keyframes } from '@rocket.chat/css-in-js';
-import type { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
@@ -10,7 +10,10 @@ import type { BoxTransformProps } from '../Box/BoxTransforms';
 export type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
 
 export type AnimatedVisibilityProps = {
-	children: ReactNode;
+	/**
+	 * An element that renders a `Box`, which plays the animation; without one, hiding never completes and the element stays mounted.
+	 */
+	children: ReactElement;
 	visibility?: VisibilityType;
 };
 
