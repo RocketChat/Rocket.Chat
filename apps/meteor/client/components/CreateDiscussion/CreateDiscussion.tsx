@@ -106,6 +106,7 @@ const CreateDiscussion = ({
 			users: usernames,
 			reply: encrypted ? undefined : firstMessage,
 			topic,
+			encrypted,
 			...(parentMessageId && { pmid: parentMessageId }),
 		});
 	};
