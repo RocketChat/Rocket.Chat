@@ -173,7 +173,7 @@ const rolesRoutes = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, role } = this.queryParams;
+			const { roomId, role, search } = this.queryParams;
 			const { offset, count = 50 } = await getPaginationItems(this.queryParams);
 
 			const projection = {
@@ -199,12 +199,17 @@ const rolesRoutes = API.v1
 				throw new ClientSafeError('error-invalid-roleId');
 			}
 
-			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
-				limit: count,
-				sort: { username: 1 },
-				skip: offset,
-				projection,
-			});
+			const { cursor, totalCount } = await getUsersInRolePaginated(
+				roleData._id,
+				roomId,
+				{
+					limit: count,
+					sort: { username: 1 },
+					skip: offset,
+					projection,
+				},
+				search,
+			);
 
 			const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
 
