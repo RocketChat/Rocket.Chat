@@ -5,6 +5,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
+import { _relativeToSiteRootUrl } from '../../../lib/absoluteUrl';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 export type RoomTopicProps = {
@@ -16,9 +17,6 @@ const RoomTopic = ({ room }: RoomTopicProps) => {
 	const canEdit = useCanEditRoom(room);
 	const router = useRouter();
 
-	const currentRoute = router.getLocationPathname();
-	const href = isTeamRoom(room) ? `${currentRoute}/team-info` : `${currentRoute}/channel-settings`;
-
 	const { topic } = room;
 	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
 
@@ -27,6 +25,9 @@ const RoomTopic = ({ room }: RoomTopicProps) => {
 	}
 
 	if (!topic && canEditTopic) {
+		const { path } = router.getRoomRoute(room.t, { name: encodeURIComponent(room.name ?? '') });
+		const href = _relativeToSiteRootUrl(isTeamRoom(room) ? `${path}/team-info` : `${path}/channel-settings`);
+
 		return (
 			<Box is='a' href={href}>
 				{t('Add_topic')}
