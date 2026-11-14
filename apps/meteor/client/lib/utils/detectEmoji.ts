@@ -10,6 +10,6 @@ export const detectEmoji = (text: string): { name: string; className: string; im
 		name: span.title,
 		className: span.className,
 		image: span.style.backgroundImage || undefined,
-		content: span.innerText,
+		content: span.textContent || '',
 	}));
 };
