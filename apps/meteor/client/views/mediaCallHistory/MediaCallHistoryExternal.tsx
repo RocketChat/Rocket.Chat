@@ -22,6 +22,7 @@ export const getExternalContact = (item: ExternalCallEndpointData['item']): Call
 	if (item.type === 'media-call') {
 		return {
 			number: item.contactExtension,
+			...(item.externalContactName && { displayName: item.externalContactName }),
 		};
 	}
 
