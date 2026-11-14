@@ -28,6 +28,7 @@ export const getPlacement = (placement: UsePositionOptions['placement']): ReactA
 	// switch case for placement from usePosition placement to react-aria
 	switch (placement) {
 		case 'bottom':
+		case 'bottom-middle':
 			return 'bottom';
 
 		case 'bottom-start':
@@ -35,6 +36,7 @@ export const getPlacement = (placement: UsePositionOptions['placement']): ReactA
 		case 'bottom-end':
 			return 'bottom end';
 		case 'top':
+		case 'top-middle':
 			return 'top';
 
 		case 'top-start':
@@ -42,12 +44,14 @@ export const getPlacement = (placement: UsePositionOptions['placement']): ReactA
 		case 'top-end':
 			return 'top end';
 		case 'left':
+		case 'left-middle':
 			return 'left';
 		case 'left-start':
 			return 'left top';
 		case 'left-end':
 			return 'left bottom';
 		case 'right':
+		case 'right-middle':
 			return 'right';
 		case 'right-start':
 			return 'right top';
