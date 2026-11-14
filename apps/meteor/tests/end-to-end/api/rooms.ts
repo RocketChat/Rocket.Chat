@@ -1235,6 +1235,129 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		describe('with a discussion started from a message with a file', () => {
+			let originId: IMessage['_id'];
+			let drid: IRoom['_id'];
+
+			const startDiscussionFromOrigin = () =>
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({ prid: publicChannel._id, pmid: originId, t_name: `discussion-${Random.id()}` })
+					.expect(200);
+
+			const pruneAll = (options: Record<string, boolean>) =>
+				request
+					.post(api('rooms.cleanHistory'))
+					.set(credentials)
+					.send({ roomId: publicChannel._id, latest: '9999-12-31T23:59:59.000Z', oldest: '0001-01-01T00:00:00.000Z', ...options })
+					.expect(200);
+
+			const getMessages = async (roomId: IRoom['_id']): Promise<IMessage[]> =>
+				(await request.get(api('channels.messages')).set(credentials).query({ roomId }).expect(200)).body.messages;
+
+			const getFiles = async (): Promise<unknown[]> =>
+				(await request.get(api('channels.files')).set(credentials).query({ roomId: publicChannel._id }).expect(200)).body.files;
+
+			beforeEach(async () => {
+				const mediaResponse = await request
+					.post(api(`rooms.media/${publicChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				originId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'discussion origin' })
+						.expect(200)
+				).body.message._id;
+				drid = (await startDiscussionFromOrigin()).body.discussion._id;
+			});
+
+			it('should keep the origin message and its file when ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await startDiscussionFromOrigin();
+				await sendSimpleMessage({ roomId: publicChannel._id });
+
+				const res = await pruneAll({ ignoreDiscussion: true, ignoreDiscussionOrigin: true });
+
+				expect(res.body).to.have.property('count', 1);
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).to.include(originId);
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should delete the origin message when only ignoreDiscussion is set', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should delete the origin message when ignoreDiscussionOrigin is set without ignoreDiscussion', async () => {
+				await pruneAll({ ignoreDiscussion: false, ignoreDiscussionOrigin: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should keep the origin file when filesOnly, ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await pruneAll({ filesOnly: true, ignoreDiscussion: true, ignoreDiscussionOrigin: true });
+
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should show the deleted file in the discussion post and in the discussion room when the origin is pruned', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				const getQuote = (message: IMessage) => message.attachments?.find(isQuoteAttachment);
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				const copy = (await getMessages(drid)).find((message) => getQuote(message)?.message_link.endsWith(`?msg=${originId}`));
+				expect(post && getQuote(post)?.attachments?.[0]).to.have.property('type', 'removed-file');
+				expect(copy && getQuote(copy)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should show the deleted file in a discussion that survives a prune of discussion messages', async () => {
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				await request.post(api('chat.pinMessage')).set(credentials).send({ messageId: post?._id }).expect(200);
+
+				await pruneAll({ ignoreDiscussion: false, excludePinned: true });
+
+				const prunedPost = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				expect(prunedPost?.attachments?.find(isQuoteAttachment)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should keep the file of another quote in a message that also quotes the pruned origin', async () => {
+				const siteUrl = (await getSettingValueById('Site_Url')) as string;
+				const mediaResponse = await request
+					.post(api(`rooms.media/${drid}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				const otherId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${drid}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'other' })
+						.expect(200)
+				).body.message._id;
+				const quoteBoth = (
+					await sendMessage({
+						message: {
+							rid: drid,
+							msg: `${new URL(`/channel/x?msg=${originId}`, siteUrl)} ${new URL(`/channel/x?msg=${otherId}`, siteUrl)}`,
+						},
+					})
+				).body.message;
+
+				await pruneAll({ ignoreDiscussion: true });
+
+				const quotes = (await getMessages(drid)).find(({ _id }) => _id === quoteBoth._id)?.attachments?.filter(isQuoteAttachment);
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(otherId))?.attachments?.[0]).to.have.property('type', 'file');
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(originId))?.attachments?.[0]).to.have.property(
+					'type',
+					'removed-file',
+				);
+			});
+		});
+
 		it('should return success when send a valid private channel', async () => {
 			const res = await request
 				.post(api('rooms.cleanHistory'))
@@ -2037,6 +2160,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.not.have.property('pmid');
 		});
 		it('should create a discussion successfully when send the required parameters plus the optional parameter "reply"', async () => {
 			const res = await request
@@ -2088,6 +2212,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.have.property('pmid', messageSent._id);
 		});
 
 		describe('when the user is not a member of the parent room', () => {
