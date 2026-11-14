@@ -11,8 +11,8 @@ export const useStoreCookiesOnLogin = (userId: string) => {
 		if (isLoggingIn === false) {
 			const secure = location.protocol === 'https:' ? '; secure' : '';
 
-			document.cookie = `rc_uid=${encodeURI(userId)}; path=/${secure}`;
-			document.cookie = `rc_token=${encodeURI(loginToken ?? '')}; path=/${secure}`;
+			document.cookie = `rc_uid=${encodeURI(userId)}; path=/; SameSite=Lax${secure}`;
+			document.cookie = `rc_token=${encodeURI(loginToken ?? '')}; path=/; SameSite=Lax${secure}`;
 		}
 	}, [isLoggingIn, loginToken, userId]);
 };
