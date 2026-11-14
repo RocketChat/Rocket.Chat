@@ -32,7 +32,10 @@ export const SendMessageActionForm = ({ control, index, ...props }: SendMessageA
 						control={control}
 						name={name}
 						defaultValue=''
-						rules={{ required: t('Required_field', { field: t('Message') }) }}
+						rules={{ 
+							required: t('Required_field', { field: t('Message') }),
+							validate: (value) => !!value?.trim() || t('Required_field', { field: t('Message') })
+						}}
 						render={({ field }) => (
 							<TextAreaInput
 								error={messageError?.message}
