@@ -13,7 +13,7 @@ export type ExchangeErrorCode =
 	| 'email-not-verified'
 	/** Transport level: DNS, TLS, timeout, connection refused. */
 	| 'connection-failed'
-	/** The host is not on the provider's allowlist. This is the air-gap invariant refusing a request. */
+	/** The request was refused before connecting, because the provider may not reach that host. */
 	| 'host-not-allowed'
 	/** NTLM is unusable here: the workspace runs in FIPS mode, which forbids the algorithms it mandates. */
 	| 'ntlm-unavailable'

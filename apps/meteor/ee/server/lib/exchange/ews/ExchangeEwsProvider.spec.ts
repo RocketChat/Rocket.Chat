@@ -246,6 +246,29 @@ describe('ExchangeEwsProvider', () => {
 			]);
 		});
 
+		it('leaves out the lead minutes of an item whose reminder is off', async () => {
+			const ITEM_ID = 'ITEM-1';
+
+			const transport = new FakeTransport([
+				okResponse(
+					`<m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes><t:Create><t:CalendarItem><t:ItemId Id="${ITEM_ID}"/></t:CalendarItem></t:Create></m:Changes>`,
+				),
+				calendarViewOk(ITEM_ID),
+				okResponse(
+					'<m:Items><t:CalendarItem>' +
+						`<t:ItemId Id="${ITEM_ID}"/>` +
+						'<t:Start>2026-08-21T10:00:00Z</t:Start>' +
+						'<t:ReminderIsSet>false</t:ReminderIsSet>' +
+						'<t:ReminderMinutesBeforeStart>15</t:ReminderMinutesBeforeStart>' +
+						'</t:CalendarItem></m:Items>',
+				),
+			]);
+
+			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
+
+			expect(page.items[0]).not.toHaveProperty('reminderMinutesBeforeStart');
+		});
+
 		it.each([
 			['Free', false],
 			['Tentative', false],

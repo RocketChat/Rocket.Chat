@@ -63,6 +63,7 @@ type GraphEvent = {
 	'end'?: GraphDateTimeTimeZone;
 	'isCancelled'?: unknown;
 	'showAs'?: unknown;
+	'isReminderOn'?: unknown;
 	'reminderMinutesBeforeStart'?: unknown;
 	'@removed'?: unknown;
 };
@@ -501,9 +502,10 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			...(endTime && { endTime }),
 			isCancelled: event.isCancelled === true,
 			busy: event.showAs === 'busy',
-			...(typeof event.reminderMinutesBeforeStart === 'number' && {
-				reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
-			}),
+			...(event.isReminderOn !== false &&
+				typeof event.reminderMinutesBeforeStart === 'number' && {
+					reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
+				}),
 		};
 	}
 
@@ -538,7 +540,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			...init,
 			headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
 			timeout: REQUEST_TIMEOUT_MS,
-			// Air-gap invariant: SSRF validation stays on, and only the token client's hosts are reachable.
+			// SSRF validation stays on: a cursor is a URL that Graph handed back.
 			ignoreSsrfValidation: false,
 			allowList: this.tokenClient.allowList,
 		});

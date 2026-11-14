@@ -30,6 +30,7 @@ const CalendarEventMock = {
 	deleteUnfinishedByExternalIdsAndUserId: sinon.stub(),
 	deleteImportedOutsideSet: sinon.stub(),
 	deleteSeriesOutsideSet: sinon.stub(),
+	deleteImportedBySourceStartingAfter: sinon.stub(),
 };
 
 const PresenceMock = {
@@ -127,6 +128,7 @@ describe('CalendarService', () => {
 			deleteUnfinishedByExternalIdsAndUserId: sinon.stub().resolves({ deletedCount: 0 }),
 			deleteImportedOutsideSet: sinon.stub().resolves({ deletedCount: 0 }),
 			deleteSeriesOutsideSet: sinon.stub().resolves({ deletedCount: 0 }),
+			deleteImportedBySourceStartingAfter: sinon.stub().resolves({ deletedCount: 0 }),
 		};
 
 		Object.assign(CalendarEventMock, freshMocks);
@@ -717,6 +719,21 @@ describe('CalendarService', () => {
 			await service.importMany([imported()], { deferSideEffects: false });
 
 			sinon.assert.called(CalendarEventMock.findOverlappingEvents);
+		});
+	});
+
+	describe('#discardUpcomingImportedBySource', () => {
+		it('deletes only what starts after now, so a running or just-started event stays', async () => {
+			const now = new Date('2026-11-13T15:00:00Z');
+			const clock = sinon.useFakeTimers({ now, toFake: ['Date'] });
+
+			try {
+				await service.discardUpcomingImportedBySource('outlook', []);
+			} finally {
+				clock.restore();
+			}
+
+			sinon.assert.calledWith(CalendarEventMock.deleteImportedBySourceStartingAfter, 'outlook', now);
 		});
 	});
 

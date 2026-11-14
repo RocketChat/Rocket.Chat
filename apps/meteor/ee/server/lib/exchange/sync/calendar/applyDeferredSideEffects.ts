@@ -2,7 +2,6 @@ import { Calendar } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { logger } from '../../logger';
-import { scrubForLog } from '../../scrub';
 import { forEachWithConcurrency } from '../forEachWithConcurrency';
 import { PRESENCE_REFRESH_CONCURRENCY } from '../limits';
 
@@ -12,7 +11,7 @@ export const applyDeferredSideEffects = async (dirty: Set<IUser['_id']>): Promis
 			await Calendar.refreshBusyPresence(uid);
 		} catch (err) {
 			// One user's presence write must not cost the rest of the run theirs, nor the reschedule below.
-			logger.error({ msg: 'Could not refresh calendar busy presence after the Exchange calendar sync', uid, err: scrubForLog(err) });
+			logger.error({ msg: 'Could not refresh calendar busy presence after the Exchange calendar sync', uid, err });
 		}
 	});
 
@@ -24,6 +23,6 @@ export const applyDeferredSideEffects = async (dirty: Set<IUser['_id']>): Promis
 		await Calendar.setupNextNotification();
 		await Calendar.setupNextStatusChange();
 	} catch (err) {
-		logger.error({ msg: 'Could not reschedule calendar jobs after the Exchange calendar sync', err: scrubForLog(err) });
+		logger.error({ msg: 'Could not reschedule calendar jobs after the Exchange calendar sync', err });
 	}
 };
