@@ -1,0 +1,26 @@
+apps/meteor/server/lib/rooms/settings/saveRoomName.ts
+  s_90ba85610a7b42::t_da379d8513be2f 66
+apps/meteor/ee/server/hooks/federation/index.ts
+  s_90ba85610a7b42::t_a421a05486c313 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6ac2a3aad6b2a55fa670e2d7004b30eba3cbdda9",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_90ba85610a7b42": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8432e7c3-316e-4123-9f80-cbb51a0e5270",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
