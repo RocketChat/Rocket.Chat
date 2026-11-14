@@ -1,9 +1,11 @@
+import { isRecord } from './isRecord';
+
 export function convertPathsIntoSubObjects(object: Record<string, any>): Record<string, any> {
 	const newObject: Record<string, any> = {};
 
 	for (const key of Object.keys(object)) {
 		const value = object[key];
-		if (!value && typeof value !== 'boolean') {
+		if (value === undefined) {
 			continue;
 		}
 		const keyProperties = key.split('.');
@@ -15,16 +17,16 @@ export function convertPathsIntoSubObjects(object: Record<string, any>): Record<
 
 		const finalProperty = keyProperties.pop() as string;
 		for (const property of keyProperties) {
-			if (!(property in current) || typeof current[property] !== 'object') {
+			if (!(property in current) || !isRecord(current[property])) {
 				current[property] = {};
 			}
 
 			current = current[property];
 		}
 
-		if (current[finalProperty]) {
+		if (isRecord(current[finalProperty]) && isRecord(value)) {
 			current[finalProperty] = {
-				...(typeof value === 'object' && value),
+				...value,
 				...current[finalProperty],
 			};
 		} else {
