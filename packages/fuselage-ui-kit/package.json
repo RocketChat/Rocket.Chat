@@ -45,6 +45,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/fuselage": "workspace:~",
+		"@rocket.chat/fuselage-forms": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
@@ -80,6 +81,7 @@
 	"peerDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/fuselage": "1.0.0",
+		"@rocket.chat/fuselage-forms": "2.0.0",
 		"@rocket.chat/fuselage-hooks": "0.44.0",
 		"@rocket.chat/icons": "0.52.0",
 		"@rocket.chat/styled": "0.34.2",

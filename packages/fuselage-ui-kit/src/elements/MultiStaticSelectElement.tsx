@@ -1,6 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { MultiSelectFiltered } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import { MultiSelectFiltered as FieldMultiSelectFiltered } from '@rocket.chat/fuselage-forms';
+import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useMemo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
@@ -25,8 +26,10 @@ const MultiStaticSelectElement = ({ block, context }: MultiStaticSelectElementPr
 		[action],
 	);
 
+	const Select = context === UiKit.BlockContext.FORM ? FieldMultiSelectFiltered : MultiSelectFiltered;
+
 	return (
-		<MultiSelectFiltered
+		<Select
 			value={value}
 			disabled={loading}
 			error={error}
