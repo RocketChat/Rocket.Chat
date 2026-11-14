@@ -11,13 +11,13 @@ import {
 	MessageReactionList,
 	MessageUrlPreviews,
 	useMessageContent,
+	MessageAttachments,
 } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
-import Attachments from '../../content/Attachments';
 import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
@@ -53,7 +53,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 			)}
 
 			{!!quotes?.length && (
-				<Attachments
+				<MessageAttachments
 					attachments={quotes}
 					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
 				/>
@@ -77,7 +77,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 			)}
 
 			{!!attachments && (
-				<Attachments
+				<MessageAttachments
 					id={message.files?.[0]?._id}
 					attachments={attachments}
 					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}

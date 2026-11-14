@@ -1,11 +1,11 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMergedRefsV2 } from '@rocket.chat/ui-client';
+import { useMediaReloadOnError } from '@rocket.chat/ui-message-list';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
-import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
 
@@ -33,7 +33,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	trackRef.current = track;
 
 	// Reuse the message player's signed-URL recovery on the shared element.
-	const { mediaRef } = useReloadOnError(track?.url ?? '', 'audio');
+	const { mediaRef } = useMediaReloadOnError(track?.url ?? '', 'audio');
 	const audioCallback = useCallback((node: HTMLAudioElement | null) => {
 		audioRef.current = node;
 	}, []);

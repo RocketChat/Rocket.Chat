@@ -232,25 +232,25 @@ hook per context builds its value from the app: settings and preferences for dis
 navigation, the chat, modals, mutations and the REST API for interactions, stores and queries for
 related data, the parser and the translations for content, and gazzodown, UiKit and emoji for the
 renderers. A message fetched by id takes a revision of what the caller reads from it, and a copy fetched for another
-revision is not reused, so what the app caches never outlives what is shown. The toolbar, media and editing
-values are not built yet and keep their defaults.
+revision is not reused, so what the app caches never outlives what is shown. The toolbar and editing
+values are not built yet and keep their defaults; the media value is built, see
+[message-attachments](message-attachments.md).
 
 The old list provider mounts `MessagesProvider` with the room and subscription it already has, so the
 display context and the old list context come from the same settings wherever a list shows messages;
 the places outside the lists mount their own, read-only ones with `allowsInteraction={false}`. The
-app's variants and attachments read the package's content parts. The app's copies are gone, with
-these exceptions: `MessageCollapsible`, `CollapsibleContent`, `Action`, `useCollapse`,
-`useIsCollapsibleToggled` and the five download and size files stay because the app's attachments
-still import them, until attachments move; `location/*` stays because the share-location modal
-imports `MapView`, not because of attachments.
+app's variants and attachments read the package's content parts. The app's copies are gone; the
+collapsible parts, the collapse hooks, the download and size files and the location map went with
+the attachments (see [message-attachments](message-attachments.md)).
 
 Notes for later branches:
 
 - `display.showUsername` is only "the viewer does not hide usernames". It lacks the old
   `getAuthorUsername` conditions (real names on, and the name differing from the username), and
   nothing reads it yet. The variants branch must not treat the two as equal.
-- The exported `MessageCollapsible` with `hasDownload` on an encrypted link does nothing until the
-  attachments branch provides the media context (`downloadEncrypted`).
+- The exported `MessageCollapsible` with `hasDownload` on an encrypted link downloads through the
+  media context, which the app provides from `MessagesProvider` since
+  [message-attachments](message-attachments.md).
 
 ## Out of scope
 
@@ -270,7 +270,8 @@ None.
 ## Open questions
 
 - **Q1** Whether the media context is provided by the app in this round, or stays at its
-  default until attachments arrive. Assumed: it stays at its default (see Out of scope).
+  default until attachments arrive. Assumed: it stays at its default (see Out of scope). Answered
+  later: the app provides it (message-attachments R14 to R20).
 - **Q2** Whether the selection and editing contexts are provided by the app in this round.
   Assumed: the selection adapter `messageSelectionFromStore` and the provider's `selection` prop
   exist (R31), but no mount passes a selection and only the spec uses the adapter until the

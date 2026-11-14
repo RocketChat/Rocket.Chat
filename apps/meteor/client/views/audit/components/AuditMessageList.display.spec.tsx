@@ -1,7 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { useAttachmentDimensions, useAttachmentIsCollapsedByDefault, useMediaUrl } from '@rocket.chat/ui-contexts';
+import { LayoutContext } from '@rocket.chat/ui-contexts';
 import { act, render, screen } from '@testing-library/react';
+import { useContext } from 'react';
+import type { ReactNode } from 'react';
 
 import AuditMessageList from './AuditMessageList';
 import { createFakeMessage } from '../../../../tests/mocks/data';
@@ -20,22 +22,22 @@ jest.mock('../../../lib/settings', () => ({
 	settings: { peek: (id: string) => ({ Site_Url: 'https://chat.example.com/chat' })[id] },
 }));
 
-const MockAttachmentsProbe = () => {
-	const { width, height } = useAttachmentDimensions();
-	const getURL = useMediaUrl();
-
-	return (
-		<>
-			<span>{useAttachmentIsCollapsedByDefault() ? 'attachments collapsed' : 'attachments open'}</span>
-			<span>{`${width}x${height} ${getURL('/file-upload/id/file.png')}`}</span>
-		</>
-	);
-};
-
-jest.mock('../../../components/message/content/Attachments', () => ({
-	__esModule: true,
-	default: () => <MockAttachmentsProbe />,
-}));
+const withImage = (props: Partial<IMessage> = {}) =>
+	createFakeMessage({
+		u: { _id: 'author', username: 'author', name: 'Author' },
+		msg: 'file',
+		attachments: [
+			{
+				type: 'file',
+				title: 'file.png',
+				title_link: '/file-upload/id/file.png',
+				image_url: '/file-upload/id/file.png',
+				image_alt: 'The image',
+				image_dimensions: { width: 1000, height: 1000 },
+			},
+		] as IMessage['attachments'],
+		...props,
+	});
 
 const audited = (props: Partial<IMessage>) => createFakeMessage({ u: { _id: 'author', username: 'author', name: 'Author' }, ...props });
 
@@ -63,14 +65,18 @@ it('highlights the words the viewer highlights and shows mentions with real name
 });
 
 it.each([
-	[true, 'attachments collapsed'],
-	[false, 'attachments open'],
-])("gives attachments the viewer's preferences when collapsing by default is %s (R38)", (collapseMediaByDefault, expected) => {
-	render(<AuditMessageList messages={[audited({ msg: 'file' })]} />, {
-		wrapper: mockAppRoot().withJohnDoe().withUserPreference('collapseMediaByDefault', collapseMediaByDefault).build(),
+	[true, false],
+	[false, true],
+])("gives attachments the viewer's preferences when collapsing by default is %s (R38)", (collapseMediaByDefault, shown) => {
+	render(<AuditMessageList messages={[withImage()]} />, {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withUserPreference('autoImageLoad', true)
+			.withUserPreference('collapseMediaByDefault', collapseMediaByDefault)
+			.build(),
 	});
 
-	expect(screen.getByText(expected)).toBeInTheDocument();
+	expect(screen.queryByRole('img', { name: 'The image' }) !== null).toBe(shown);
 });
 
 it.each([
@@ -98,7 +104,60 @@ it.each([
 });
 
 it('sizes attachments and resolves their URLs as the lists do (R38)', () => {
-	render(<AuditMessageList messages={[audited({ msg: 'file' })]} />, { wrapper: mockAppRoot().withJohnDoe().build() });
+	render(<AuditMessageList messages={[withImage()]} />, {
+		wrapper: mockAppRoot().withJohnDoe().withUserPreference('autoImageLoad', true).build(),
+	});
 
-	expect(screen.getByText('360x360 https://chat.example.com/chat/file-upload/id/file.png')).toBeInTheDocument();
+	const image = screen.getByRole('img', { name: 'The image' });
+
+	expect(image).toHaveAttribute('src', 'https://chat.example.com/chat/file-upload/id/file.png');
+	expect(image).toHaveAttribute('width', '360');
+	expect(image).toHaveAttribute('height', '360');
+});
+
+it.each([
+	[true, true],
+	[false, false],
+])("loads an image at once only when the viewer's preferences say so: autoImageLoad %s (R38)", (autoImageLoad, loaded) => {
+	render(<AuditMessageList messages={[withImage()]} />, {
+		wrapper: mockAppRoot().withJohnDoe().withUserPreference('autoImageLoad', autoImageLoad).build(),
+	});
+
+	expect(screen.queryByRole('img', { name: 'The image' }) !== null).toBe(loaded);
+	expect(screen.queryByText('Click_to_load') !== null).toBe(!loaded);
+});
+
+const OnMobile = ({ children }: { children?: ReactNode }) => {
+	const layout = useContext(LayoutContext);
+
+	return <LayoutContext.Provider value={{ ...layout, isMobile: true }}>{children}</LayoutContext.Provider>;
+};
+
+it.each([
+	[true, true, false],
+	[true, false, true],
+	[false, true, true],
+])(
+	'loads an image at once unless the viewer saves mobile bandwidth on a mobile layout: saving %s, mobile %s (R38)',
+	(saveMobileBandwidth, mobile, loaded) => {
+		const root = mockAppRoot()
+			.withJohnDoe()
+			.withUserPreference('autoImageLoad', true)
+			.withUserPreference('saveMobileBandwidth', saveMobileBandwidth);
+
+		render(<AuditMessageList messages={[withImage()]} />, {
+			wrapper: (mobile ? root.wrap((children: ReactNode) => <OnMobile>{children}</OnMobile>) : root).build(),
+		});
+
+		expect(screen.queryByRole('img', { name: 'The image' }) !== null).toBe(loaded);
+	},
+);
+
+it('shows the attachments of an audited message without a toolbar (message-attachments R22)', () => {
+	render(<AuditMessageList messages={[withImage()]} />, {
+		wrapper: mockAppRoot().withJohnDoe().withUserPreference('autoImageLoad', true).build(),
+	});
+
+	expect(screen.getByRole('img', { name: 'The image' })).toBeInTheDocument();
+	expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
 });

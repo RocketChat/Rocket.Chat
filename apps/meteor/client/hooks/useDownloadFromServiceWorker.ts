@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { TFunction } from 'i18next';
 import type { MouseEvent } from 'react';
-import { useId, useCallback, useEffect } from 'react';
+import { useId, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { downloadAs } from '../lib/download';
@@ -47,7 +47,7 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 
 	const { t } = useTranslation();
 
-	useEffect(() => registerDownloadForUid(uid, t, title), [title, t, uid]);
+	const activations = useRef(0);
 
 	return {
 		disabled: !controller,
@@ -56,9 +56,11 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 			(e: MouseEvent) => {
 				e.preventDefault();
 
-				forAttachmentDownload(uid, href, controller);
+				const downloadId = `${uid}-${++activations.current}`;
+				registerDownloadForUid(downloadId, t, title);
+				forAttachmentDownload(downloadId, href, controller);
 			},
-			[href, uid, controller],
+			[href, uid, controller, t, title],
 		),
 	};
 };
