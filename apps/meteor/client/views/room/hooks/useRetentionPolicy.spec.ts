@@ -78,3 +78,19 @@ it('should isActive be false if global retention is active for rooms of the type
 
 	expect(result.current?.isActive).toBe(false);
 });
+
+it.each([
+	['c', 'RetentionPolicy_TTL_Channels'],
+	['p', 'RetentionPolicy_TTL_Groups'],
+	['d', 'RetentionPolicy_TTL_DMs'],
+] as const)('should fall back to the default max age for a "%s" room when %s is blank', async (roomType, ttlSetting) => {
+	const fakeRoom = createFakeRoom({ t: roomType });
+
+	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
+		wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[roomType] })
+			.withSetting(ttlSetting, '')
+			.build(),
+	});
+
+	expect(result.current?.maxAge).toBe(2592000000);
+});
