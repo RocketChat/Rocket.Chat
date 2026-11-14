@@ -1,8 +1,8 @@
 import { insertInitialData } from './initialData';
 import { reportServerRunning } from './serverRunning';
 import { addUiKitRateLimiter } from '../../ee/server/api/apps/uikit';
+import { configureExchange } from '../../ee/server/configuration/exchange';
 import { configureLdapEnterprise } from '../../ee/server/configuration/ldap';
-import { configureOutlookCalendar } from '../../ee/server/configuration/outlookCalendar';
 import { configureVideoConferenceEnterprise } from '../../ee/server/configuration/videoConference';
 import { AutoCloseOnHoldScheduler } from '../../ee/server/lib/omnichannel/AutoCloseOnHoldScheduler';
 import { AutoTransferChatScheduler } from '../../ee/server/lib/omnichannel/AutoTransferChatScheduler';
@@ -49,7 +49,7 @@ export const runStartupTasks = async (): Promise<void> => {
 	addUiKitRateLimiter();
 	await syncSettingsWithLicense();
 	await configureLdapEnterprise();
-	await configureOutlookCalendar();
+	await configureExchange();
 	await configureVideoConferenceEnterprise();
 	await loadOutgoingIntegrations();
 	await removeLegacyThemeSettings();
