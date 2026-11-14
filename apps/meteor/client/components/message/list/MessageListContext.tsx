@@ -12,7 +12,6 @@ export type MessageListContextValue = {
 		autoTranslateLanguage?: string;
 		autoTranslateEnabled: boolean;
 	};
-	autoLinkDomains: string;
 	useShowStarred: ({ message }: { message: IMessage }) => boolean;
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
@@ -73,7 +72,6 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 		enabled: false,
 		storeUsers: false,
 	},
-	autoLinkDomains: '',
 	formatDateAndTime: () => '',
 	formatTime: () => '',
 	formatDate: () => '',
@@ -115,9 +113,6 @@ export const useMessageListReadReceipts = (): MessageListContextValue['readRecei
 export const useMessageListAutoTranslate = (): MessageListContextValue['autoTranslate'] => useContext(MessageListContext).autoTranslate;
 
 export const useMessageListOembedEnabled = (): MessageListContextValue['apiEmbedEnabled'] => useContext(MessageListContext).apiEmbedEnabled;
-
-export const useMessageListAutoLinkDomains = (): MessageListContextValue['autoLinkDomains'] =>
-	useContext(MessageListContext).autoLinkDomains;
 
 export const useMessageListFormatDateAndTime = (): MessageListContextValue['formatDateAndTime'] =>
 	useContext(MessageListContext).formatDateAndTime;
