@@ -1,0 +1,22 @@
+apps/meteor/server/settings/retention-policy.ts
+  s_96383f258293bb::t_8e63d0b4b48cb0 194-201
+packages/i18n/src/locales/en.i18n.json
+  s_96383f258293bb::t_cb9dde89188ed1 1261
+  s_96383f258293bb::t_de0ff597a221ef 3021,5827-5828
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "053a2c8bdbfa3da8f4e61a5a37aa6d61d60d73b1",
+  "prompts": {},
+  "sessions": {
+    "s_96383f258293bb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a13be43d-4e7c-4d6c-b33b-7cdcf6d22c81",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
