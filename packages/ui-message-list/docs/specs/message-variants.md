@@ -21,9 +21,8 @@ code:
     apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageEditingValue.ts,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.ts,
-    apps/meteor/client/views/room/MessageList/MessageListItem.tsx,
-    apps/meteor/client/views/room/MessageList/MessageList.tsx,
-    apps/meteor/client/views/room/MessageList/hooks/useRegisterRenderedMessage.ts,
+    apps/meteor/client/views/room/body/RoomMessageList/RoomMessageRow.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/useRegisterRenderedMessage.ts,
     apps/meteor/client/providers/MessagesProvider/messageSelectionFromStore.ts,
     apps/meteor/client/lib/MessageAction.ts,
     apps/meteor/client/views/room/contextualBar/MessageListTab.tsx,
@@ -50,6 +49,7 @@ tests:
     src/Message/header/MessageRoles.spec.tsx,
     src/Message/hooks/useSelectableMessage.spec.tsx,
     src/Message/hooks/useIsMessageEmphasized.spec.tsx,
+    src/Message/hooks/useCanReplyToBroadcast.spec.tsx,
     src/Message/lib/getAuthorUsername.spec.ts,
     src/index.spec.ts,
     src/Message/contexts/contexts.spec.tsx,
@@ -57,8 +57,7 @@ tests:
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.conversation.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.spec.ts,
     apps/meteor/client/providers/MessagesProvider/MessageVariants.contexts.spec.tsx,
-    apps/meteor/client/views/room/MessageList/MessageListItem.spec.tsx,
-    apps/meteor/client/views/room/MessageList/MessageList.spec.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/RoomMessageRow.spec.tsx,
     apps/meteor/client/views/room/contextualBar/MessageListTab.spec.tsx,
     apps/meteor/client/views/room/contextualBar/MessageSearchTab/MessageSearchTab.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageItem.spec.tsx,
@@ -189,8 +188,8 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 - **R25** The room, the tabs and search MUST give their rows the room's selection, so selection mode, the checkbox state and
   the toggles are the room's; a thread, and the audit, give their rows none, so a thread's messages never join the
   room's selection, whatever state the room's selection is in (branch 02's fix, kept).
-- **R26** Until the room list is replaced (branch 08), "Select all" and the composer's "Select N messages" button MUST work as
-  today on the room's selection: the count and the messages selected are those the room list has rendered and are not selected yet, the count
+- **R26** "Select all" and the composer's "Select N messages" button MUST work as today on the room's selection, as the room's list
+  keeps them (`room-message-list` R45 to R48): the count and the messages selected are those the room list has rendered and are not selected yet, the count
   follows scrolling, selecting and unselecting, and the button is disabled at 0. The rows of a thread MUST add none to the count.
 
 **Ignored messages**
@@ -271,12 +270,12 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 
 - **R47** `MessagesProvider` MUST provide the editing context from the store that jumps to a message and editing both write to, so the id it carries is the one
   that store holds and it changes whenever the store does, in every list that shows the message (room, thread, tabs, search), until the
-  store is renamed in branch 09 (the bridge: a jump highlights a message in the old lists as it does today). Where the place does not allow interaction it MUST provide none (Q4, answered).
+  store is renamed in branch 09 (the bridge: a jump highlights a message in the thread's list as it does today; the room's list highlights through the engine, `room-message-list` R36). Where the place does not allow interaction it MUST provide none (Q4, answered).
 - **R48** `MessagesProvider` MUST provide the selection context only when it is given a selection. The room's list, the tabs and search MUST give the room's
   selection (`messageSelectionFromStore` over the room's selected messages store, with the same identity across renders); a thread
   and the audit MUST give none.
 - **R49** `MessagesProvider` MUST answer the data the variants read about other things: the conversation of a message (its room and subscription, from the place's own when the message is of its room, else the stores, with no request,
-  R38), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
+  R38; a reader may pass `select` to take only what it reads, and is then given that, and renders again only when it changes, `room-message-list` R50), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
   fetched with the others asked for in the same half second), each with `data`, `isLoading` and `isError`. The roles of a place's own room MUST be resolved once for the
   place, in `MessagesProvider`, not once per header (#43471; Q1, answered).
 - **R50** Wherever the app mounted `MessageListProvider`, it MUST mount `MessagesProvider` with the same room and subscription, and no place may provide
@@ -303,13 +302,13 @@ are not treated as equal (`message-capabilities` notes). The selection click and
 `develop`, and `useSelectableMessage` is the one place a row learns what a click, Space or Enter does to it.
 
 The app owns the provider's values: `MessagesProvider` resolves the roles of its room once (`useRolesByUser`), answers the conversation of a
-message from its own room and subscription or the stores, and provides the editing context from the highlight store and the selection it is
+message from its own room and subscription or the stores (applying a reader's `select`), and provides the editing context from the highlight store and the selection it is
 given. Bridges, with their end: (1) the editing context reads the store that jumps and editing write to (R47), until the rename in branch
 09; (2) the room's selection for the room's list, tabs and search, none for a thread or the audit (R48, `roomMessageSelection`); (3) each
-row the old room list renders registers itself for "Select all" while it is not selected (`useRegisterRenderedMessage`), as the old variants did,
-until the list engine replaces the list in branch 08.
+row the room's list renders registers itself for "Select all" while it is not selected (`useRegisterRenderedMessage`, in `RoomMessageRow`), as the old variants
+did, which `room-message-list` R46 keeps.
 
-The old room list, thread list and tabs stay and draw the package's variants; they mount `MessagesProvider` directly where the old list
+The thread list and the tabs stay and draw the package's variants; they mount `MessagesProvider` directly where the old list
 provider was. The app's variants and their parts, the old list context and its provider, the highlight context and `useMessageBody` are
 deleted, and `lib/MessageAction.ts` re-exports the package's types. "No `components/message` is left in the app" is a check of the plan (a file
 listing), not a requirement, as `message-capabilities` R35 was. `message-capabilities` R33 is retired, R34 and its notes follow, and the

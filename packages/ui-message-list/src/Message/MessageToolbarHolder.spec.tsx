@@ -4,7 +4,7 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MessageToolbarHolder from './MessageToolbarHolder';
-import type { MessageConversation } from './contexts/MessageRelatedDataContext';
+import type { MessageConversation, MessageRelatedDataContextValue } from './contexts/MessageRelatedDataContext';
 import { mockMessageProviders } from '../../tests/utils/mockMessageProviders';
 
 let mockOnScreen = true;
@@ -39,7 +39,7 @@ const renderHolder = ({
 	const { wrapper } = mockMessageProviders({
 		root: mockAppRoot().withTranslations('en', 'core', { Message_actions: 'Message actions', More: 'More', Edit: 'Edit' }),
 		display: { allowsInteraction },
-		relatedData: { useConversation },
+		relatedData: { useConversation: useConversation as unknown as MessageRelatedDataContextValue['useConversation'] },
 		toolbar: { useMenuActions: () => [edit] },
 	});
 

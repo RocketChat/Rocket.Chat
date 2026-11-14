@@ -49,6 +49,8 @@ export type MessageListProps<TMessage extends IMessage> = {
 	'targetMessageId'?: string;
 	'onTargetMessageReached'?: (messageId: string) => void;
 	'isOwnMessage'?: (message: TMessage) => boolean;
+	/** Whether a message that is appended at the end is an arrival; one that is not is neither the viewer's nor new. Every message is one by default. */
+	'countsAsArrival'?: (message: TMessage) => boolean;
 	/** How near the end of the latest messages, in pixels, still counts as the bottom: within it the list follows what arrives. */
 	'bottomThreshold'?: number;
 	/**
@@ -103,6 +105,7 @@ const contentStyle = css`
 `;
 
 const never = () => false;
+const always = () => true;
 
 /**
  * An infinite list of messages that opens on the latest one, keeps the viewer where they are while pages load and messages
@@ -124,6 +127,7 @@ const MessageList = <TMessage extends IMessage>({
 	targetMessageId,
 	onTargetMessageReached,
 	isOwnMessage = never,
+	countsAsArrival = always,
 	bottomThreshold,
 	deferPagingUntilInput,
 	startSpacing = 0,
@@ -169,6 +173,7 @@ const MessageList = <TMessage extends IMessage>({
 		deferPagingUntilInput,
 		overlayTopInset,
 		isOwnMessage: useStableCallback(isOwnMessage),
+		countsAsArrival: useStableCallback(countsAsArrival),
 		targetMessageId,
 		restoredPosition,
 		onLoadOlderMessages: isLoadingOlderMessages ? undefined : onLoadOlderMessages,

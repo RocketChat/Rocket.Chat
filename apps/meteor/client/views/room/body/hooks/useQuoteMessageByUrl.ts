@@ -1,19 +1,20 @@
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useChat } from '../../contexts/ChatContext';
+import { useChat, useChatComposer } from '../../contexts/ChatContext';
 
 export const useQuoteMessageByUrl = () => {
 	const replyMID = useSearchParameter('reply');
 
 	const chat = useChat();
+	const composer = useChatComposer();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
 
 	useEffect(() => {
-		if (!replyMID) {
+		if (!replyMID || !composer) {
 			return;
 		}
 
@@ -22,7 +23,7 @@ export const useQuoteMessageByUrl = () => {
 				return;
 			}
 
-			chat.composer?.quoteMessage(message);
+			composer.quoteMessage(message);
 		});
-	}, [chat.data, chat.composer, replyMID]);
+	}, [chat.data, composer, replyMID]);
 };

@@ -1,9 +1,11 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { MessageRelatedDataContextValue } from '@rocket.chat/ui-message-list';
+import type { MessageConversation, MessageRelatedDataContextValue } from '@rocket.chat/ui-message-list';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
+import type { MessagePlace, PlaceConversationStore } from './placeConversationStore';
+import { createPlaceConversationStore } from './placeConversationStore';
 import { useParentMessage } from './useParentMessage';
 import type { PlaceUserRoles } from './useRolesByUser';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
@@ -37,11 +39,21 @@ const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, 
 	return [toggled !== initiallyCollapsed, togglePersisted];
 };
 
-export type MessagePlace = { room?: IRoom; subscription?: ISubscription };
+type ConversationSelection<TSelected> = { enabled: boolean; select?: (conversation: MessageConversation) => TSelected };
 
 /** The room and the subscription of a message: the place's own when it is the place's room, else the client's stores', with no request. */
-const useConversation = ({ room, subscription }: MessagePlace, message: IMessage, enabled: boolean) => {
-	const inPlace = !!room && room._id === message.rid;
+const useConversation = <TSelected = MessageConversation>(
+	place: PlaceConversationStore,
+	message: IMessage,
+	{ enabled, select }: ConversationSelection<TSelected>,
+) => {
+	const inPlace = useSyncExternalStore(place.subscribe, () => place.getRoomId() === message.rid);
+	const inPlaceData = useSyncExternalStore(place.subscribe, () => {
+		if (!enabled || !inPlace) {
+			return undefined;
+		}
+		return select ? select(place.getConversation()) : place.getConversation();
+	});
 	const roomOfMessage = Rooms.use((state) => (enabled && !inPlace ? state.get(message.rid) : undefined));
 	const subscriptionOfMessage = Subscriptions.use((state) =>
 		enabled && !inPlace ? state.find((record) => record.rid === message.rid) : undefined,
@@ -52,17 +64,26 @@ const useConversation = ({ room, subscription }: MessagePlace, message: IMessage
 			return { data: undefined, isLoading: false, isError: false };
 		}
 
-		return {
-			data: inPlace ? { room, subscription } : { room: roomOfMessage, subscription: subscriptionOfMessage },
-			isLoading: false,
-			isError: false,
-		};
-	}, [enabled, inPlace, room, subscription, roomOfMessage, subscriptionOfMessage]);
+		if (inPlace) {
+			return { data: inPlaceData as TSelected, isLoading: false, isError: false };
+		}
+
+		const conversation = { room: roomOfMessage, subscription: subscriptionOfMessage };
+
+		return { data: (select ? select(conversation) : conversation) as TSelected, isLoading: false, isError: false };
+	}, [enabled, inPlace, inPlaceData, roomOfMessage, subscriptionOfMessage, select]);
 };
 
-/** Data messages show about other things, read from the client's stores first and fetched when missing. */
-export const useMessageRelatedDataValue = (place: MessagePlace, placeUserRoles?: PlaceUserRoles): MessageRelatedDataContextValue =>
-	useMemo(
+/**
+ * Data messages show about other things, read from the client's stores first and fetched when missing. The value is the same for as long
+ * as the place's roles are, so a change of the room or the subscription renders only the readers of what it changed.
+ */
+export const useMessageRelatedDataValue = (place: MessagePlace, placeUserRoles?: PlaceUserRoles): MessageRelatedDataContextValue => {
+	const [placeStore] = useState(() => createPlaceConversationStore(place));
+	placeStore.replace(place);
+	useLayoutEffect(() => placeStore.flush());
+
+	return useMemo(
 		() => ({
 			usePlaceUserRoles: (uid, rid) => (placeUserRoles?.rid === rid ? placeUserRoles.get(uid) : undefined),
 			useUserRoles: (uid, rid, { enabled }) => useUserRolesByScope(uid, rid, { enabled }),
@@ -80,8 +101,9 @@ export const useMessageRelatedDataValue = (place: MessagePlace, placeUserRoles?:
 				});
 				return { data, isLoading, isError };
 			},
-			useConversation: (message, { enabled }) => useConversation(place, message, enabled),
+			useConversation: (message, options) => useConversation(placeStore, message, options),
 			useCollapsedState,
 		}),
-		[place, placeUserRoles],
+		[placeStore, placeUserRoles],
 	);
+};
