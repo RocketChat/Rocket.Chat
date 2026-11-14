@@ -21,7 +21,7 @@ jest.mock('@rocket.chat/fuselage-hooks', () => {
 test.each(testCases)('AppLogsItem should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 	// Audit the loaded filters, not their loading skeletons.
-	await waitFor(() => expect(container.querySelector('[aria-busy="true"]')).not.toBeInTheDocument());
+	await waitFor(() => expect(screen.queryAllByRole('generic', { busy: true })).toHaveLength(0));
 
 	/**
 	 ** Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant

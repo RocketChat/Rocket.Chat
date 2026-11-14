@@ -59,21 +59,19 @@ const AppsPageContent = () => {
 	});
 	const statusFilterOnSelected = useRadioToggle(setStatusFilterStructure);
 
-	const baseFilterStructureItems = [
-		{ id: 'az', label: 'A-Z', checked: false },
-		{ id: 'za', label: 'Z-A', checked: false },
-		{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-		{ id: 'lru', label: t('Least_recent_updated'), checked: false },
-	];
-
-	const requestedFilterItems = [
-		{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
-		{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
-	];
-
-	const createFilterStructureItems = () => {
+	const createFilterStructureItems = useCallback(() => {
+		const baseFilterStructureItems = [
+			{ id: 'az', label: 'A-Z', checked: false },
+			{ id: 'za', label: 'Z-A', checked: false },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
+			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+		];
+		const requestedFilterItems = [
+			{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
+			{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
+		];
 		return isRequested ? [...requestedFilterItems, ...baseFilterStructureItems] : baseFilterStructureItems;
-	};
+	}, [isRequested, t]);
 
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>(() => {
 		return {
@@ -87,7 +85,7 @@ const AppsPageContent = () => {
 			label: t('Sort_By'),
 			items: createFilterStructureItems(),
 		});
-	}, [isRequested]);
+	}, [createFilterStructureItems, t]);
 
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 

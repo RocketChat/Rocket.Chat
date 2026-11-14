@@ -213,7 +213,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
-		for await (const bh of businessHourToOpen) {
+		for (const bh of businessHourToOpen) {
 			await openBusinessHour(bh, false);
 		}
 

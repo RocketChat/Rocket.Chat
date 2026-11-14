@@ -111,7 +111,7 @@ export const useExportMessagesAsPDFMutation = () => {
 			withVariationSelectors: true,
 			builder: renderEmojiToDataURL,
 		});
-	}, []);
+	}, [absoluteUrl]);
 
 	return useMutation({
 		mutationFn: async (messageIds: IMessage['_id'][]) => {

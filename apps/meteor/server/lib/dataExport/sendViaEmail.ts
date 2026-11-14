@@ -56,6 +56,7 @@ export async function sendViaEmail(
 	if (lang !== 'en') {
 		const localeFn = await getMomentLocale(lang);
 		if (localeFn) {
+			// oxlint-disable-next-line typescript/no-implied-eval -- runs the trusted locale asset bundled with the server to register it with moment
 			Function(localeFn).call({ moment });
 			localMoment.locale(lang);
 		}

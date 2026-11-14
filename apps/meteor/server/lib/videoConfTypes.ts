@@ -27,7 +27,7 @@ export const videoConfTypes = {
 	},
 
 	async getTypeForRoom(room: RoomRequiredFields, allowRinging: boolean): Promise<AtLeast<VideoConferenceCreateData, 'type'>> {
-		for await (const { data, condition } of typeConditions) {
+		for (const { data, condition } of typeConditions) {
 			if (await condition(room, allowRinging)) {
 				if (typeof data === 'string') {
 					return {

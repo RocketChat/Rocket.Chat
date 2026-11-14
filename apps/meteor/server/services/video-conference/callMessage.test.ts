@@ -2,6 +2,7 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
@@ -14,7 +15,6 @@ import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, provi
  * of it. Where the call's chat is *not* a thread there is nothing to name, and the message stays as it was, so
  * these cases are as much about when the text is absent as when it is there.
  */
-const proxyquire = require('proxyquire');
 
 /** Flipped per case, since the answer turns on the two persistent-chat settings. */
 let settingsValues: Record<string, unknown> = {};

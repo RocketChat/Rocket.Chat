@@ -36,7 +36,7 @@ export const useComposerActions = ({ tmid, onSend }: ComposerActionsOptions) => 
 
 			onSend: async ({ value: text, tshow, previewUrls, isSlashCommandAllowed }: ComposerSendInput): Promise<void> => {
 				try {
-					await chat?.action.stop('typing');
+					chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
@@ -49,12 +49,12 @@ export const useComposerActions = ({ tmid, onSend }: ComposerActionsOptions) => 
 					dispatchToastMessage({ type: 'error', message: error });
 				}
 			},
-			onTyping: async (): Promise<void> => {
+			onTyping: (): void => {
 				if (chat?.composer?.text?.trim() === '') {
-					await chat?.action.stop('typing');
+					chat?.action.stop('typing');
 					return;
 				}
-				await chat?.action.start('typing');
+				chat?.action.start('typing');
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),

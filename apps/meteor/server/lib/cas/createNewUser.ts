@@ -49,7 +49,7 @@ export const createNewUser = async (username: string, { attributes, casVersion, 
 	logger.debug({ msg: 'Joining user to attribute channels', rooms: attributes.rooms });
 	if (attributes.rooms) {
 		const roomNames = attributes.rooms.split(',');
-		for await (const roomName of roomNames) {
+		for (const roomName of roomNames) {
 			if (roomName) {
 				let room = await Rooms.findOneByNameAndType(roomName, 'c');
 				if (!room) {

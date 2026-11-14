@@ -41,7 +41,7 @@ try {
 	});
 
 	await startupApp();
-	await startRestAPI();
+	startRestAPI();
 	// not a static import: it would evaluate the modules it needs ahead of importPackages and reorder their side effects
 	const { runStartupTasks } = await import('./startup/startupTasks');
 	await runStartupTasks();

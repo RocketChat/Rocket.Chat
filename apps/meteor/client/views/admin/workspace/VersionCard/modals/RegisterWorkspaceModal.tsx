@@ -22,7 +22,7 @@ import useFeatureBullets from '../hooks/useFeatureBullets';
 
 export type RegisterWorkspaceModalProps = {
 	onClose: () => void;
-	onStatusChange?: () => void;
+	onStatusChange?: () => void | Promise<unknown>;
 };
 
 const documentationLink = links.go.registerInfoCollected;

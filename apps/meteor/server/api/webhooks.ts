@@ -215,8 +215,7 @@ async function executeIntegrationRest(
 			buffers.push(result.value);
 		}
 		const contentRaw = Buffer.concat(buffers).toString('utf8');
-		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
-		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
+		const url = new URL(this.request.url);
 		const query = isPlainObject(this.queryParams) ? this.queryParams : {};
 
 		const request = {

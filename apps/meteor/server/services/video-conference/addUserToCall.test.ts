@@ -3,6 +3,7 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import {
@@ -28,7 +29,6 @@ import {
  * call's message and is read in our own call window's chat panel, so it follows the window rather than the
  * provider — an iframed Jitsi call in our window threads exactly like a call we run ourselves.
  */
-const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;
 

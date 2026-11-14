@@ -25,7 +25,7 @@ export const userDataDownloadsCron = (): void => {
 		};
 	};
 
-	let unplug: (() => void) | undefined;
+	let unplug: (() => Promise<void>) | undefined;
 
 	settings.watchMultiple(
 		['Troubleshoot_Disable_Data_Exporter_Processor', 'UserData_ProcessingFrequency'],

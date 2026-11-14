@@ -1,6 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import UserAvatarChip from './UserAvatarChip';
@@ -16,10 +17,10 @@ describe('UserAvatarChip', () => {
 		expect(results).toHaveNoViolations();
 	});
 
-	it('should pass extra props to the Chip component', () => {
+	it('should pass extra props to the Chip component', async () => {
 		const handleClick = jest.fn();
 		render(<UserAvatarChip username='testuser' onClick={handleClick} />);
-		screen.getByRole('button').click();
+		await userEvent.click(screen.getByRole('button'));
 		expect(handleClick).toHaveBeenCalled();
 	});
 

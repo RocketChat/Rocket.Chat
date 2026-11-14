@@ -55,7 +55,7 @@ registerGuest.patch(async (originalFn, newData, options) => {
 
 	// If a visitor was updated who already had contacts, load up the contacts and update that information as well
 	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-	for await (const contact of contacts) {
+	for (const contact of contacts) {
 		await ContactMerger.mergeFieldsIntoContact({
 			fields,
 			contact,

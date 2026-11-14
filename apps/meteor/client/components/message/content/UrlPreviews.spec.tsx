@@ -70,13 +70,14 @@ describe('UrlPreviews', () => {
 				meta: {
 					pageTitle: 'Page title',
 					oembedType: 'video',
-					oembedHtml: '<iframe src="https://video.example/1"></iframe><script>alert(1)</script><img src=x onerror="alert(1)">',
+					oembedHtml:
+						'<iframe title="Video preview" src="https://video.example/1"></iframe><script>alert(1)</script><img src=x onerror="alert(1)">',
 				},
 			},
 		]);
 
-		expect(container.querySelector('iframe')).toHaveAttribute('src', 'https://video.example/1');
-		expect(container.querySelector('script')).not.toBeInTheDocument();
+		expect(screen.getByTitle('Video preview')).toHaveAttribute('src', 'https://video.example/1');
+		expect(container.innerHTML).not.toContain('<script');
 		expect(container.innerHTML).not.toContain('onerror');
 	});
 
@@ -115,14 +116,19 @@ describe('UrlPreviews', () => {
 		expect(container).toBeEmptyDOMElement();
 	});
 
-	it.each([
-		['image/png', 'img'],
-		['audio/mpeg', 'audio'],
-		['video/mp4', 'video'],
-	])('should show a media preview for the content type %s', (contentType, element) => {
-		const { container } = renderPreviews([{ headers: { contentType } }]);
+	it('should show an image preview for image content', () => {
+		renderPreviews([{ headers: { contentType: 'image/png' } }]);
+		expect(screen.getByAltText('')).toBeInTheDocument();
+	});
 
-		expect(container.querySelector(element)).toBeInTheDocument();
+	it('should show audio controls for audio content', () => {
+		renderPreviews([{ headers: { contentType: 'audio/mpeg' } }]);
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+	});
+
+	it('should show a video preview for video content', () => {
+		renderPreviews([{ headers: { contentType: 'video/mp4' } }]);
+		expect(screen.getByText("Your browser doesn't support the video element.", { selector: 'video' })).toBeInTheDocument();
 	});
 
 	it('should show nothing for a content type with no preview', () => {
@@ -132,16 +138,16 @@ describe('UrlPreviews', () => {
 	});
 
 	it('should use the headers when the metadata has nothing to show', () => {
-		const { container } = renderPreviews([{ meta: { ogType: 'website' }, headers: { contentType: 'image/png' } }]);
+		renderPreviews([{ meta: { ogType: 'website' }, headers: { contentType: 'image/png' } }]);
 
-		expect(container.querySelector('img')).toBeInTheDocument();
+		expect(screen.getByAltText('')).toBeInTheDocument();
 	});
 
 	it('should prefer the metadata over the headers', () => {
-		const { container } = renderPreviews([{ meta: { ogTitle: 'Page title' }, headers: { contentType: 'image/png' } }]);
+		renderPreviews([{ meta: { ogTitle: 'Page title' }, headers: { contentType: 'image/png' } }]);
 
 		expect(screen.getByText('Page title')).toBeInTheDocument();
-		expect(container.querySelector('img')).not.toBeInTheDocument();
+		expect(screen.queryByAltText('')).not.toBeInTheDocument();
 	});
 
 	it('should show one preview for each URL with something to show', () => {

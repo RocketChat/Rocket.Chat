@@ -184,7 +184,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		}
 
 		if (roomData.t === 'd') {
-			for await (const member of roomData.users) {
+			for (const member of roomData.users) {
 				const userId = await this._cache.findImportedUserId(member);
 				if (userId) {
 					return userId;

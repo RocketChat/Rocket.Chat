@@ -1265,7 +1265,7 @@ export default class SlackAdapter {
 		const requestModule = /https/i.test(slackFileURL) ? https : http;
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { Authorization: `Bearer ${this.apiToken}` };
-		await requestModule.get(parsedUrl, async (stream) => {
+		requestModule.get(parsedUrl, async (stream) => {
 			const fileStore = FileUpload.getStore('Uploads');
 
 			const file = await fileStore.insert(details, stream);

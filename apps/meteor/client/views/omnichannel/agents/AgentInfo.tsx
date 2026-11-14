@@ -44,6 +44,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 		return <Box marginBlockStart={16}>{t('User_not_found')}</Box>;
 	}
 
+	// oxlint-disable-next-line eslint-js/no-unsafe-optional-chaining -- the endpoint answers { user: null } for a non-agent; handled in CORE-3043
 	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (

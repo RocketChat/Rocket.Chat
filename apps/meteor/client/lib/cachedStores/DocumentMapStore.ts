@@ -266,7 +266,7 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 
 			const records = new Map<T['_id'], T>();
 
-			for await (const record of get().records.values()) {
+			for (const record of get().records.values()) {
 				if (predicate(record)) {
 					const newRecord = await modifier(record);
 					records.set(record._id, newRecord);

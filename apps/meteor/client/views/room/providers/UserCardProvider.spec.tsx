@@ -31,6 +31,9 @@ const Trigger = () => {
 	);
 };
 
+// oxlint-disable-next-line testing-library/no-node-access -- the hover handlers sit on the card's unlabelled wrapper
+const getCardContainer = () => screen.getByTestId('user-card').parentElement as HTMLElement;
+
 // Stands in for a contextual bar / search panel that closes on a bubbling Escape.
 const EscapeListener = ({ onEscape, children }: { onEscape: () => void; children: ReactNode }) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -59,7 +62,7 @@ it('consumes Escape while the card is open so an underlying handler does not als
 	);
 
 	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 
@@ -82,7 +85,7 @@ it('does not consume Escape while a menu is open, leaving the card as it is', as
 	);
 
 	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 
@@ -250,7 +253,7 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 		const trigger = screen.getByText('author jane');
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
-		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// from the trigger into the card: it stays open
 		fireEvent.mouseLeave(trigger);
@@ -366,7 +369,7 @@ it('keeps the card open while its own menu is open, and closes once that menu cl
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
 		const content = screen.getByTestId('user-card');
-		const card = content.parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// the card's kebab opens its menu, portaled outside the card, and the pointer follows it there
 		fireEvent.mouseLeave(trigger);
@@ -440,7 +443,7 @@ it('stays open when the pointer jumps straight from the trigger onto the card', 
 		const trigger = screen.getByText('author jane');
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
-		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// a single fast move: the browser fires every pointer event before the matching mouse events
 		fireEvent.pointerLeave(trigger);

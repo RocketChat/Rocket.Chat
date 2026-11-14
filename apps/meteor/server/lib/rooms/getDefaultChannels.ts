@@ -10,7 +10,7 @@ export async function getDefaultChannels(): Promise<IRoom[]> {
 	// If any of those are teams, we need to get all the channels that have the auto-join flag as well
 	const teamRooms = defaultRooms.filter((room) => room.teamMain && room.teamId);
 	if (teamRooms.length > 0) {
-		for await (const teamRoom of teamRooms) {
+		for (const teamRoom of teamRooms) {
 			const defaultTeamRooms = await Rooms.findDefaultRoomsForTeam(teamRoom.teamId).toArray();
 
 			const defaultTeamRoomsThatWereNotAlreadyAdded = defaultTeamRooms.filter((channel) => !roomsThatAreGoingToBeJoined.has(channel._id));

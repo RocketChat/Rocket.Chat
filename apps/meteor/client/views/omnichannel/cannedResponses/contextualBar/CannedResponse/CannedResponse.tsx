@@ -65,7 +65,7 @@ const CannedResponse = ({
 							{t('Content')}:
 						</Box>
 						<Text fontScale='c1' color='hint'>
-							"{text}"
+							&quot;{text}&quot;
 						</Text>
 					</Box>
 					<Box marginBlockEnd='16px'>

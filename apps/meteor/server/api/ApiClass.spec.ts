@@ -1,3 +1,4 @@
+// oxlint-disable jest/expect-expect -- these tests assert types at compile time
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
 

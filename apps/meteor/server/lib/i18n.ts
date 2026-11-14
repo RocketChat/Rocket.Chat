@@ -88,7 +88,7 @@ void i18n.init({
 			language,
 			extractTranslationNamespaces(
 				// TODO: commonjs is terrible but we don't have esm build yet
-				// oxlint-disable-next-line import-x/no-dynamic-require
+				// oxlint-disable-next-line import-x/no-dynamic-require, @typescript-eslint/no-require-imports
 				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
 			),
 		]),
@@ -105,7 +105,7 @@ export function getLanguageResourceJSON(lng: string): string | undefined {
 
 	let json = languageResourceJSONs.get(lng);
 	if (json === undefined) {
-		// eslint-disable-next-line import-x/no-dynamic-require
+		// oxlint-disable-next-line import-x/no-dynamic-require, @typescript-eslint/no-require-imports
 		json = JSON.stringify(require(`@rocket.chat/i18n/dist/resources/${lng}.i18n.json`));
 		languageResourceJSONs.set(lng, json);
 	}

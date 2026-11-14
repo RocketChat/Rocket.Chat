@@ -26,7 +26,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
 				{shouldShowSearchText && (
 					<StatesSubtitle>
-						{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+						{t('No_marketplace_matches_for')}: <strong>&quot;{text}&quot;</strong>
 					</StatesSubtitle>
 				)}
 				<StatesSuggestion>

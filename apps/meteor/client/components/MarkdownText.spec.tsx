@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
@@ -579,7 +579,7 @@ describe('emoji parsing', () => {
 			wrapper: mockAppRoot().build(),
 		});
 
-		const emojiElement = container.querySelector('.emoji');
+		const emojiElement = screen.getByTitle(':smile:');
 		expect(emojiElement).toBeInTheDocument();
 		expect(emojiElement).toHaveAttribute('title', ':smile:');
 		expect(emojiElement).toHaveTextContent('😄');
@@ -595,19 +595,19 @@ describe('emoji parsing', () => {
 		expect(anchorElement.tagName).toBe('A');
 		// The shortcode inside the href must stay untouched instead of being replaced by an emoji span
 		expect(anchorElement).toHaveAttribute('href', 'https://example.test/:smile:');
-		expect(anchorElement.querySelector('.emoji')).toBeNull();
+		expect(within(anchorElement).queryByTitle(':smile:')).not.toBeInTheDocument();
 	});
 
 	it('should render emoji in text while keeping a shortcode inside an href intact', () => {
-		const { container } = render(<MarkdownText content=':smile: [docs](https://example.test/:smile:)' variant='document' parseEmoji />, {
+		render(<MarkdownText content=':smile: [docs](https://example.test/:smile:)' variant='document' parseEmoji />, {
 			wrapper: mockAppRoot().build(),
 		});
 
 		const anchorElement = screen.getByText('docs');
 		expect(anchorElement).toHaveAttribute('href', 'https://example.test/:smile:');
-		expect(anchorElement.querySelector('.emoji')).toBeNull();
+		expect(within(anchorElement).queryByTitle(':smile:')).not.toBeInTheDocument();
 
-		const emojiElement = container.querySelector('.emoji');
+		const emojiElement = screen.getByTitle(':smile:');
 		expect(emojiElement).toBeInTheDocument();
 		expect(emojiElement).toHaveTextContent('😄');
 	});

@@ -75,7 +75,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	private idToPath(id: GridFSBucketWriteStream['id']): string {
-		return this.pathPrefix + id;
+		return this.pathPrefix + String(id);
 	}
 
 	private itemToObjectId(item: IAppStorageItem): ObjectId {

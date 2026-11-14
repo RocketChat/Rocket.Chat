@@ -41,7 +41,7 @@ export type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
-	onUpdate?: (params: OmnichannelBusinessUnitPayload) => void;
+	onUpdate?: (params: OmnichannelBusinessUnitPayload) => void | Promise<unknown>;
 	onDelete?: () => void;
 	onClose: () => void;
 };

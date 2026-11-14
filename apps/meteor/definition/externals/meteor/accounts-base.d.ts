@@ -10,7 +10,7 @@ declare module 'meteor/accounts-base' {
 
 		function _getLoginToken(connectionId: string): string | undefined;
 
-		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): Promise<string>;
 
 		function _generateStampedLoginToken(): { token: string; when: Date };
 
