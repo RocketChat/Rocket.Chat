@@ -1,5 +1,5 @@
 import type { App, SettingValue } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLoading from './AppDetailsPageLoading';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import AppDetailsPageBody from './layout/AppDetailsPageBody';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
@@ -110,19 +111,21 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 			<Page flexDirection='column' height='full'>
 				<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
 				<PageScrollableContentWithShadow paddingInline={24} paddingBlockStart={24} paddingBlockEnd={0} height='full'>
-					<Box width='full' alignSelf='center' height='full' display='flex' flexDirection='column'>
+					<AppDetailsPageBody>
 						{!appData && <AppDetailsPageLoading />}
 						{appData && (
 							<>
-								<AppDetailsPageHeader app={appData} />
-								<AppDetailsPageTabs
-									context={context || ''}
-									installed={installed}
-									isSecurityVisible={isSecurityVisible}
-									settings={settings}
-									tab={tab}
-									hasCluster={!!appData.clusterStatus}
-								/>
+								<Stack gap='x20'>
+									<AppDetailsPageHeader app={appData} />
+									<AppDetailsPageTabs
+										context={context || ''}
+										installed={installed}
+										isSecurityVisible={isSecurityVisible}
+										settings={settings}
+										tab={tab}
+										hasCluster={!!appData.clusterStatus}
+									/>
+								</Stack>
 								{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 								{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
 								{tab === 'security' && isSecurityVisible && (
@@ -147,7 +150,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 								{tab === 'instances' && <AppInstances id={id} />}
 							</>
 						)}
-					</Box>
+					</AppDetailsPageBody>
 				</PageScrollableContentWithShadow>
 				<PageFooter isDirty={isDirty}>
 					<ButtonGroup>

@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, Stack, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { SetStateAction } from 'react';
@@ -8,8 +8,10 @@ import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
+import ContentColumn from '../../../../../components/ContentColumn';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 import { useAppsReload } from '../../../hooks/useAppsReload';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 type itemsPerPage = 25 | 50 | 100;
 
@@ -57,33 +59,37 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 
 	if (isLoading) {
 		return (
-			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart='x32'>
-				<AppRequestsLoading />
-			</Box>
+			<AppDetailsTabContent spaceAbove='x32'>
+				<ContentColumn>
+					<AppRequestsLoading />
+				</ContentColumn>
+			</AppDetailsTabContent>
 		);
 	}
 
 	return (
-		<Box height='full' display='flex' flexDirection='column'>
-			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart='x32' flexGrow='1'>
-				{isSuccess && paginatedAppRequests.data?.length ? (
-					paginatedAppRequests.data.map((request) => (
-						<AppRequestItem
-							key={request.id}
-							seen={request.seen}
-							name={request.requester.name}
-							createdDate={request.createdDate}
-							message={request.message}
-							username={request.requester.username}
-						/>
-					))
-				) : (
-					<States>
-						<StatesTitle>{t('No_requests')}</StatesTitle>
-						<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
-					</States>
-				)}
-			</Box>
+		<Stack grow justify='space-between'>
+			<AppDetailsTabContent spaceAbove='x32'>
+				<ContentColumn>
+					{isSuccess && paginatedAppRequests.data?.length ? (
+						paginatedAppRequests.data.map((request) => (
+							<AppRequestItem
+								key={request.id}
+								seen={request.seen}
+								name={request.requester.name}
+								createdDate={request.createdDate}
+								message={request.message}
+								username={request.requester.username}
+							/>
+						))
+					) : (
+						<States>
+							<StatesTitle>{t('No_requests')}</StatesTitle>
+							<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
+						</States>
+					)}
+				</ContentColumn>
+			</AppDetailsTabContent>
 			{isSuccess && paginatedAppRequests.data?.length && (
 				<Pagination
 					divider
@@ -94,7 +100,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 					onSetCurrent={onSetCurrent}
 				/>
 			)}
-		</Box>
+		</Stack>
 	);
 };
 

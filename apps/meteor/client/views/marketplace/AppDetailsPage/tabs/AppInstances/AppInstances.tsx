@@ -1,6 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Box, Tag, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { Stack, Tag, type TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericMenu,
 	CustomScrollbars,
@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 type AppInstanceProps = {
 	id: string;
@@ -44,13 +45,9 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	const columns: TableColumnWidth[] = ['auto', 'auto', 64];
 
 	return (
-		<Box height='full' width='full' marginInline='auto' color='default' paddingBlockStart={24}>
+		<AppDetailsTabContent spaceAbove='x24' fill>
 			{isLoading && <AccordionLoading />}
-			{isError && (
-				<Box maxWidth='x600' alignSelf='center'>
-					{t('App_not_found')}
-				</Box>
-			)}
+			{isError && t('App_not_found')}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
 				<CustomScrollbars>
 					<GenericTable columns={columns}>
@@ -64,11 +61,11 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 								<GenericTableRow key={instance.instanceId}>
 									<GenericTableCell>{instance.instanceId}</GenericTableCell>
 									<GenericTableCell>
-										<Box justifyContent='flex-start' display='flex'>
+										<Stack direction='row'>
 											<Tag medium variant={isFailing(instance.status) ? 'secondary-danger' : undefined}>
 												{t(`App_status_${instance.status}`)}
 											</Tag>
-										</Box>
+										</Stack>
 									</GenericTableCell>
 									<GenericTableCell>
 										<GenericMenu
@@ -94,7 +91,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 					<GenericNoResults />
 				</CustomScrollbars>
 			)}
-		</Box>
+		</AppDetailsTabContent>
 	);
 };
 

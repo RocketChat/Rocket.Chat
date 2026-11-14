@@ -1,17 +1,18 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { CustomScrollbars, usePagination, GenericNoResults, GenericError } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
-import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
+import { CollapsiblePanel } from './layout/CollapsiblePanel';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
 import { marketplaceQueryKeys } from '../../../../../lib/queryKeys';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 function expandedReducer(
 	expandedStates: { id: string; expanded: boolean }[],
@@ -110,7 +111,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	return (
 		<>
-			<Box paddingBlock={16}>
+			<AppDetailsTabContent spaceAbove='x16' spaceBelow='x16'>
 				<AppLogsFilter
 					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
@@ -119,7 +120,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 					collapseAll={() => handleCollapseAll()}
 					refetchLogs={() => refetch()}
 				/>
-			</Box>
+			</AppDetailsTabContent>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
 			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}

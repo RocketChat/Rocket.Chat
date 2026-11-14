@@ -1,14 +1,14 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton, Stack } from '@rocket.chat/fuselage';
 
 const AppDetailsPageLoading = () => (
-	<Box display='flex' flexDirection='row' gap={32} marginBlockEnd={20} width='full'>
+	<Stack direction='row' gap='x32'>
 		<Skeleton variant='rect' width='x120' height='x120' />
-		<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
+		<Stack grow justify='space-between'>
 			<Skeleton variant='rect' width='full' height='x32' />
 			<Skeleton variant='rect' width='full' height='x32' />
 			<Skeleton variant='rect' width='full' height='x32' />
-		</Box>
-	</Box>
+		</Stack>
+	</Stack>
 );
 
 export default AppDetailsPageLoading;

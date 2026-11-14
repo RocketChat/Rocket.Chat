@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { useTranslation } from 'react-i18next';
@@ -36,66 +36,58 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' marginBlockEnd={20} width='full'>
-			<Box marginInlineEnd={32}>
-				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-			</Box>
-			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={8}>
-					<Box fontScale='h1' marginInlineEnd={8}>
-						{name}
-					</Box>
-					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
-				</Box>
-
-				{shortDescription && (
-					<Box fontScale='p1' marginBlockEnd={16}>
-						{shortDescription}
-					</Box>
-				)}
-
-				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={16}>
-					<AppStatus app={app} installed={installed} isAppDetailsPage />
-					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
-				</Box>
-				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
-					{author?.name}
-					<Box marginInline={16} color='disabled'>
-						|
-					</Box>
-					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
-					{lastUpdated && (
-						<>
-							<Box marginInline={16} color='disabled'>
-								|
-							</Box>
-							<Box>
-								{t('Marketplace_app_last_updated', {
-									lastUpdated,
-								})}
-							</Box>
-						</>
+		<Stack direction='row' gap='x32'>
+			<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			<Stack gap='x8'>
+				<Stack direction='row' align='center' gap='x8'>
+					<Text fontScale='h1'>{name}</Text>
+					{bundledIn && Boolean(bundledIn.length) && (
+						<Stack direction='row' align='center'>
+							<BundleChips bundledIn={bundledIn} />
+						</Stack>
 					)}
+				</Stack>
 
-					{versionIncompatible && (
-						<>
-							<Box marginInline={16} color='disabled'>
-								|
-							</Box>
+				<Stack gap='x16'>
+					{shortDescription && <Text fontScale='p1'>{shortDescription}</Text>}
 
-							<Box>
-								<Tag
-									title={incompatibleStatus?.tooltipText}
-									variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
-								>
-									{incompatibleStatus?.label}
-								</Tag>
-							</Box>
-						</>
-					)}
-				</Box>
-			</Box>
-		</Box>
+					<Stack direction='row' align='center'>
+						<AppStatus app={app} installed={installed} isAppDetailsPage />
+						{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
+					</Stack>
+
+					<Text fontScale='c1' color='hint'>
+						<Stack direction='row' align='center' gap='x16'>
+							{author?.name}
+							<Text color='disabled'>|</Text>
+							<Text>{t('Version_version', { version: versioni18nKey(app) })}</Text>
+							{lastUpdated && (
+								<>
+									<Text color='disabled'>|</Text>
+									<Text>
+										{t('Marketplace_app_last_updated', {
+											lastUpdated,
+										})}
+									</Text>
+								</>
+							)}
+
+							{versionIncompatible && (
+								<>
+									<Text color='disabled'>|</Text>
+									<Tag
+										title={incompatibleStatus?.tooltipText}
+										variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
+									>
+										{incompatibleStatus?.label}
+									</Tag>
+								</>
+							)}
+						</Stack>
+					</Text>
+				</Stack>
+			</Stack>
+		</Stack>
 	);
 };
 

@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, CardGroup } from '@rocket.chat/fuselage';
+import { CardGroup, Stack, Text } from '@rocket.chat/fuselage';
 
 import AppRow from './AppRow';
 
@@ -11,18 +11,18 @@ export type AppsListProps = {
 
 const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
-		<Box marginBlockEnd={16}>
+		<Stack gap='x20'>
 			{title && (
-				<Box is='h2' id={appsListId} fontScale='h3' color='default' marginBlockEnd={20}>
+				<Text is='h2' id={appsListId} fontScale='h3' color='default'>
 					{title}
-				</Box>
+				</Text>
 			)}
 			<CardGroup vertical stretch aria-labelledby={appsListId} role='list'>
 				{apps.map((app) => (
 					<AppRow key={app.id} {...app} />
 				))}
 			</CardGroup>
-		</Box>
+		</Stack>
 	);
 };
 
