@@ -38,6 +38,11 @@ const generateSubscription = (
 	},
 });
 
+/**
+ * Finds or creates a direct room for the resolved users and updates their subscriptions.
+ * Repeated recipients count once when determining room size and whether a recipient's subscription opens by default.
+ * Set `forceNew` to create a room even if one already exists for the same users.
+ */
 export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
@@ -89,7 +94,7 @@ export async function createDirectRoom(
 	const roomInfo = {
 		t: 'd',
 		usernames,
-		usersCount: members.length,
+		usersCount: roomMembers.length,
 		msgs: 0,
 		ts: new Date(),
 		uids,
@@ -185,7 +190,7 @@ export async function createDirectRoom(
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
 					$setOnInsert: generateSubscription(fname, name, member, {
-						...(options?.creator !== member._id && { open: members.length > 2 }),
+						...(options?.creator !== member._id && { open: roomMembers.length > 2 }),
 						...options?.subscriptionExtra,
 						...subscriptionStatus,
 						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
