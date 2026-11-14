@@ -88,6 +88,48 @@ it('runs only success function receiving event object', async () => {
 	expect(onCopyError).toHaveBeenCalledTimes(0);
 });
 
+it('keeps feedback visible for clearTime after the latest successful copy', async () => {
+	const { result } = renderHook(() => useClipboard('Lorem Ipsum', { clearTime: 100 }));
+
+	await act(async () => {
+		await result.current.copy();
+	});
+	act(() => jest.advanceTimersByTime(50));
+	await act(async () => {
+		await result.current.copy();
+	});
+	act(() => jest.advanceTimersByTime(50));
+	expect(result.current.hasCopied).toBe(true);
+	act(() => jest.advanceTimersByTime(50));
+	expect(result.current.hasCopied).toBe(false);
+});
+
+it('does not extend feedback when the next copy fails', async () => {
+	const { result } = renderHook(() => useClipboard('Lorem Ipsum', { clearTime: 100 }));
+
+	await act(async () => {
+		await result.current.copy();
+	});
+	act(() => jest.advanceTimersByTime(50));
+	withWriteText(() => Promise.reject(new Error('rejected')));
+	await act(async () => {
+		await result.current.copy();
+	});
+	act(() => jest.advanceTimersByTime(50));
+	expect(result.current.hasCopied).toBe(false);
+});
+
+it('cleans up the feedback timeout on unmount', async () => {
+	const { result, unmount } = renderHook(() => useClipboard('Lorem Ipsum', { clearTime: 100 }));
+	await act(async () => {
+		await result.current.copy();
+	});
+	const pendingTimerCount = jest.getTimerCount();
+	expect(pendingTimerCount).toBeGreaterThan(0);
+	unmount();
+	expect(jest.getTimerCount()).toBe(pendingTimerCount - 1);
+});
+
 it('runs only error function receiving error object', async () => {
 	const rejection = new Error('rejected');
 	withWriteText(() => Promise.reject(rejection));
