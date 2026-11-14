@@ -38,7 +38,7 @@ test.describe('Omnichannel chat history', () => {
 
 	test('Receiving a message from visitor', async ({ api }) => {
 		await test.step('Expect send a message as a visitor', async () => {
-			await poLiveChat.goto();
+			await poLiveChat.gotoExpecting(poLiveChat.inputName, { state: 'attached' });
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
