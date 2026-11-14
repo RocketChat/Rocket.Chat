@@ -3624,12 +3624,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hono/node-server@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@hono/node-server@npm:2.1.5"
+"@hono/node-server@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@hono/node-server@npm:2.1.6"
   peerDependencies:
     hono: ^4 || ^5.0.0-0
-  checksum: 10/4b6f21fe37f956a61856b6f517f91543962f32466a88477d362e8cff77272e541ea6388b8026275e1a2a1976d098c9bf4c3e1d8f8087505e8eac777f0f872901
+  checksum: 10/43e5fa3972b20e22a6471874f4858011a80633011df60e312c37f472051f983ae47ea8f76004157c38a6317cea4a152745601a031d2428b7c44bdf7778a9a0b6
   languageName: node
   linkType: hard
 
@@ -9424,7 +9424,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/http-router@workspace:packages/http-router"
   dependencies:
-    "@hono/node-server": "npm:2.1.5"
+    "@hono/node-server": "npm:2.1.6"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
@@ -9789,7 +9789,7 @@ __metadata:
     "@emotion/hash": "npm:^0.9.2"
     "@faker-js/faker": "npm:~10.5.0"
     "@google-cloud/storage": "npm:^7.21.0"
-    "@hono/node-server": "npm:2.1.5"
+    "@hono/node-server": "npm:2.1.6"
     "@kaciras/deasync": "npm:^1.1.0"
     "@livekit/components-react": "npm:2.9.23"
     "@nivo/bar": "npm:0.88.0"
