@@ -18,6 +18,10 @@ npm install @rocket.chat/core-typings
 
 The package is published as CommonJS with TypeScript declarations.
 
+Releases `8.4.0` through `8.9.1` declare `typia` as a Yarn `patch:` URL, which npm cannot resolve and reports as `EUNSUPPORTEDPROTOCOL`. With npm, add `"overrides": { "typia": "9.7.2" }` to the root `package.json` of the project doing the install: npm reads `overrides` only from the root `package.json`, and only from npm 8.3.0 onwards. That key replaces every `typia` in the tree, so if another dependency in the project needs typia 15.x, install an unaffected release instead. If your project depends on `typia` itself, the override has to repeat that dependency's spec exactly, or be `"$typia"`, since npm otherwise stops with `EOVERRIDE`.
+
+To install an unaffected release, use `npm install --save-exact @rocket.chat/core-typings@8.3.8`: npm then saves a plain `8.3.8`, while a saved range such as `^8.3.8` still resolves an affected release on a later install (8.4.0 through 8.9.1 all satisfy it). An exact pin only helps when nothing else asks for a newer `@rocket.chat/core-typings`; `@rocket.chat/rest-typings` 8.9.x requires `^8.9.1`, so a project that uses it needs the override.
+
 ## Usage
 
 ### Typing Rocket.Chat objects
