@@ -207,17 +207,23 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			event.stopImmediatePropagation();
 			return true;
 		}
-		if (event.which === keys.ARROW_UP && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
+		const isArrowKey = event.which === keys.ARROW_UP || event.which === keys.ARROW_DOWN;
+		if (!isArrowKey || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) {
+			return;
+		}
+
+		const list = items
+			.filter((item) => item.isSuccess)
+			.flatMap((item) => item.data)
+			.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
+
+		// With nothing to move between, the arrow keys keep moving the caret
+		if (list.length === 0) {
+			return;
+		}
+
+		if (event.which === keys.ARROW_UP) {
 			moveByKeyboard((focused) => {
-				const list = items
-					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data)
-					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
-
-				if (!list) {
-					return;
-				}
-
 				const focusedIndex = list.findIndex((item) => item === focused);
 
 				return focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1];
@@ -226,17 +232,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			event.stopImmediatePropagation();
 			return true;
 		}
-		if (event.which === keys.ARROW_DOWN && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
+		if (event.which === keys.ARROW_DOWN) {
 			moveByKeyboard((focused) => {
-				const list = items
-					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data)
-					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
-
-				if (!list) {
-					return undefined;
-				}
-
 				const focusedIndex = list.findIndex((item) => item === focused);
 
 				return focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0];
