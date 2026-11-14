@@ -1,6 +1,6 @@
 import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
+import type { MiddlewareHandler } from 'hono';
 import { every } from 'hono/combine';
-import { createMiddleware } from 'hono/factory';
 
 import { isAuthenticatedMiddleware } from './isAuthenticated';
 
@@ -23,8 +23,9 @@ function extractEntityId(
 	return null;
 }
 
-const canAccessResource = (entityType: 'event' | 'media' | 'room') =>
-	createMiddleware(async (c, next) => {
+const canAccessResource =
+	(entityType: 'event' | 'media' | 'room'): MiddlewareHandler =>
+	async (c, next) => {
 		try {
 			const mediaId = c.req.param('mediaId');
 			const eventId = c.req.param('eventId');
@@ -50,7 +51,7 @@ const canAccessResource = (entityType: 'event' | 'media' | 'room') =>
 		} catch (error) {
 			return c.json(errCodes.M_UNKNOWN, 500);
 		}
-	});
+	};
 
 export const canAccessResourceMiddleware = (entityType: 'event' | 'media' | 'room') =>
 	every(isAuthenticatedMiddleware(), canAccessResource(entityType));
