@@ -1,8 +1,10 @@
 import { Sidebar as FuselageSidebar } from '@rocket.chat/fuselage';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Inbox from './Inbox';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import BannerSection from './sections/BannerSection';
@@ -12,6 +14,10 @@ const Sidebar = () => {
 	const { t } = useTranslation();
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
+	const {
+		isEmbedded,
+		sidebar: { shouldToggle },
+	} = useLayout();
 
 	return (
 		<FuselageSidebar
@@ -26,7 +32,14 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			<SidebarRoomList />
+			<FeaturePreview feature='sidebarRail' disabled={shouldToggle || isEmbedded}>
+				<FeaturePreviewOn>
+					<Inbox />
+				</FeaturePreviewOn>
+				<FeaturePreviewOff>
+					<SidebarRoomList />
+				</FeaturePreviewOff>
+			</FeaturePreview>
 			<NowPlayingSection />
 			<SidebarFooter />
 		</FuselageSidebar>

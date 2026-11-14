@@ -36,11 +36,22 @@ export type SidebarRoomListGroup = {
 
 type useRoomListReturnType = {
 	groups: SidebarRoomListGroup[];
+	groupKeys: string[];
+	filtering: boolean;
 	groupsCount: number[];
 	totalCount: number;
 };
 
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+const matchesFilter = (room: { fname?: string; name?: string }, text: string) =>
+	[room.fname, room.name].some((name) => name?.toLocaleLowerCase().includes(text));
+
+export const useRoomList = ({
+	collapsedGroups,
+	filterText = '',
+}: {
+	collapsedGroups?: string[];
+	filterText?: string;
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
@@ -67,9 +78,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const groups = useDebouncedValue(
+	const { groups, groupKeys, filtering } = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
+			const text = filterText.trim().toLocaleLowerCase();
+			const activeCollapsedGroups = text ? undefined : collapsedGroups;
+			const isCollapsed = (key: string) => activeCollapsedGroups?.includes(key) ?? false;
 
 			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
 			categoryList.forEach((category) => {
@@ -77,6 +90,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			rooms.forEach((room) => {
+				if (text && !matchesFilter(room, text)) {
+					return;
+				}
+
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
@@ -98,7 +115,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			if (unfilteredGroups.has('Incoming_Livechats')) {
-				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
+				const matchingQueue = text ? queue.filter((inquiry) => matchesFilter(inquiry, text)) : queue;
+				unfilteredGroups.set('Incoming_Livechats', new Set(matchingQueue) as unknown as Set<SubscriptionWithRoom>);
 			}
 
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
@@ -142,7 +160,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
-			return groups;
+			return {
+				groups: text ? groups.filter((group) => group.rooms.length > 0) : groups,
+				groupKeys: groups.map((group) => group.key),
+				filtering: Boolean(text),
+			};
 		}, [
 			categoryList,
 			rooms,
@@ -155,6 +177,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			openedRoom,
+			filterText,
 		]),
 		50,
 	);
@@ -165,6 +188,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	return {
 		groups,
+		groupKeys,
+		filtering,
 		groupsCount,
 		totalCount: useMemo(() => groupsCount.reduce((acc, count) => acc + count, 0), [groupsCount]),
 	};
