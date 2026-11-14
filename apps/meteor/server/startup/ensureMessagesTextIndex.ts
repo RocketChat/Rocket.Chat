@@ -2,15 +2,37 @@ import { Messages } from '@rocket.chat/models';
 
 import { SystemLogger } from '../lib/logger/system';
 
-const { USE_ROOM_SEARCH_INDEX = 'false' } = process.env;
+export const TEXT_INDEX_FIELDS = {
+	'msg': 'text',
+	'attachments.description': 'text',
+	'attachments.title': 'text',
+	'attachments.text': 'text',
+	'attachments.pretext': 'text',
+	'attachments.author_name': 'text',
+	'attachments.fields.title': 'text',
+	'attachments.fields.value': 'text',
+} as const;
 
 // MongoDB stores a text index's key with `_fts: 'text'` / `_ftsx: 1` placeholders
 // and tracks the original text fields in `weights`. Classify by looking at the
 // non-placeholder prefix fields plus weights.
-const classifyTextIndex = (idx: { key: Record<string, unknown>; weights?: Record<string, number> }) => {
+export const classifyTextIndex = (idx: { key: Record<string, unknown>; weights?: Record<string, number> }) => {
 	const { weights, key } = idx;
-	if (weights?.msg !== 1 || Object.keys(weights).length !== 1) {
+	if (!weights) {
 		return 'other';
+	}
+
+	const expectedFields = Object.keys(TEXT_INDEX_FIELDS);
+	const weightKeys = Object.keys(weights);
+
+	if (weightKeys.length !== expectedFields.length) {
+		return 'other';
+	}
+
+	for (const field of expectedFields) {
+		if (weights[field] !== 1) {
+			return 'other';
+		}
 	}
 
 	const prefix = Object.keys(key).filter((k) => k !== '_fts' && k !== '_ftsx');
@@ -26,6 +48,7 @@ const classifyTextIndex = (idx: { key: Record<string, unknown>; weights?: Record
 };
 
 export const ensureMessagesTextIndex = async (): Promise<void> => {
+	const { USE_ROOM_SEARCH_INDEX = 'false' } = process.env;
 	const desiredShape = USE_ROOM_SEARCH_INDEX === 'true' ? 'room-scoped' : 'default';
 
 	SystemLogger.debug({
@@ -79,7 +102,9 @@ export const ensureMessagesTextIndex = async (): Promise<void> => {
 		shape: desiredShape,
 	});
 	try {
-		const name = await Messages.col.createIndex(desiredShape === 'room-scoped' ? { rid: 1, msg: 'text' } : { msg: 'text' });
+		const name = await Messages.col.createIndex(
+			desiredShape === 'room-scoped' ? { rid: 1, ...TEXT_INDEX_FIELDS } : { ...TEXT_INDEX_FIELDS },
+		);
 		SystemLogger.startup({ msg: 'created messages text index', name, shape: desiredShape });
 	} catch (err) {
 		SystemLogger.error({ msg: 'failed to create messages text index', shape: desiredShape, err });

@@ -47,9 +47,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'editedBy._id': 1 }, sparse: true },
 			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
-			// The text index on `msg` is managed at startup by `ensureMessagesTextIndex`
+			// The text index on `msg` and attachment text fields is managed at startup by `ensureMessagesTextIndex`
 			// because its shape is controlled by the `USE_ROOM_SEARCH_INDEX` env var
-			// (default `{ msg: 'text' }` vs. room-scoped `{ rid: 1, msg: 'text' }`).
+			// (default text index vs. room-scoped text index with `rid: 1`).
 			{ key: { 'file._id': 1 }, sparse: true },
 			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
