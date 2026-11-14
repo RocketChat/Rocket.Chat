@@ -14,6 +14,7 @@ import { adminPassword, adminUsername, password } from '../../../../../../apps/m
 import { createUser, deleteUser, findUserByUsername, getRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
 import { DDPListener } from '../../../../federation-matrix/tests/helper/ddp-listener';
+import { escapeLocalpart } from '../../../src/jid/escaping';
 import { isDomainAllowed } from '../../../src/jid/normalize';
 
 type Endpoint = Parameters<typeof api>[0];
@@ -61,6 +62,9 @@ export const setSetting = (rc: Pick<RocketChat, 'admin'>, id: string, value: unk
 		{ value },
 		{ 'x-2fa-code': crypto.createHash('sha256').update(adminPassword).digest('hex'), 'x-2fa-method': 'password' },
 	);
+
+/** A `UTF8_User_Names_Validation` that lets usernames hold `@` and `'`, as SAML, LDAP or an admin can. */
+export const WIDENED_USERNAMES = "[0-9a-zA-Z-_.@']+";
 
 /** Changes a setting for the rest of the suite and queues the original value for restoring. */
 export async function overrideSetting(rc: RocketChat, id: string, value: unknown): Promise<void> {
@@ -121,11 +125,16 @@ export async function createLocalUser(
 	rc: RocketChat,
 	label: string,
 	username = `xe2e-${label}-${uniqueSuffix()}`,
-	email?: string,
+	profile: { email?: string; name?: string } = {},
 ): Promise<LocalUser> {
-	const user = await createUser({ username, ...(email && { email }), joinDefaultChannels: false }, rc.admin);
+	const user = await createUser({ username, ...profile, joinDefaultChannels: false }, rc.admin);
 	rc.cleanup.add(() => deleteUser(user, { confirmRelinquish: true }, rc.admin));
-	return { _id: user._id, username, jid: `${username}@${rc.domain}`, config: await getRequestConfig(apiUrl, username, password) };
+	return {
+		_id: user._id,
+		username,
+		jid: `${escapeLocalpart(username)}@${rc.domain}`,
+		config: await getRequestConfig(apiUrl, username, password),
+	};
 }
 
 /** Keeps a DDP session open for the user: without one their connection status stays offline, masking any status they pick. */

@@ -19,14 +19,12 @@ import {
 	updateMessage,
 	waitForDirectMessageWith,
 	waitForMessage,
+	WIDENED_USERNAMES,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
 import type { XmppUser } from './helper/xmpp-client';
 import { escapeLocalpart } from '../../src/jid/escaping';
-
-// Lets usernames hold `@` and `'`, as SAML, LDAP or an admin can
-const WIDENED_USERNAMES = "[0-9a-zA-Z-_.@']+";
 
 describe('XMPP federation: direct messages', () => {
 	let rc: RocketChat;
@@ -140,12 +138,11 @@ describe('XMPP federation: direct messages', () => {
 		await alice.expectNone(isChat({ from: local.jid, body: text }), 'an echo of her own message', { after });
 	});
 
-	// Known defect: ../../docs/specs/addressing.md#d1-a-local-username-shaped-like-a-bare-jid-is-taken-for-an-xmpp-account
-	it.skip('treats a local user whose username looks like a JID as that local user (addressing D1)', async () => {
+	it('treats a local user whose username looks like a JID as that local user (addressing R12)', async () => {
 		await overrideSetting(rc, 'UTF8_User_Names_Validation', WIDENED_USERNAMES);
 		const username = `xe2e-lookalike-${uniqueSuffix()}@corp.example`;
-		// The username doubles as the email, as when a SAML or LDAP sync copies one into the other.
-		const lookalike = await createLocalUser(rc, 'lookalike', username, username);
+		// The username doubles as the email, as when a SAML or LDAP sync copies one into the other along with a display name.
+		const lookalike = await createLocalUser(rc, 'lookalike', username, { email: username, name: 'Look Alike' });
 
 		const room = await createDirectMessage(rc, lookalike, alice.bareJid);
 		assert.ok(room.xmppFederation?.role === 'dm', `expected a dm room, got ${room.xmppFederation?.role}`);
@@ -154,8 +151,7 @@ describe('XMPP federation: direct messages', () => {
 		await inviteToRoom(local, await createPlainGroup(rc, local), lookalike.username);
 	});
 
-	// Known defect: ../../docs/specs/addressing.md#d2-local-jids-are-not-escaped
-	it.skip('sends from the escaped JID of a local user whose username needs escaping (addressing D2)', async () => {
+	it('sends from the escaped JID of a local user whose username needs escaping (addressing R1)', async () => {
 		await overrideSetting(rc, 'UTF8_User_Names_Validation', WIDENED_USERNAMES);
 		const quoted = await createLocalUser(rc, "o'quote");
 		const escapedJid = `${escapeLocalpart(quoted.username)}@${rc.domain}`;

@@ -5,9 +5,11 @@ import p from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
+const findByUsernamesIgnoringCase = sinon.stub();
 
-const { isXMPPServerEnabled } = p.noCallThru().load('./utils', {
+const { filterXMPPJids, isXMPPServerEnabled } = p.noCallThru().load('./utils', {
 	'../../settings': { settings: { get: settingsGet } },
+	'@rocket.chat/models': { Users: { findByUsernamesIgnoringCase } },
 });
 
 describe('isXMPPServerEnabled', () => {
@@ -38,5 +40,26 @@ describe('isXMPPServerEnabled', () => {
 	it('is disabled when the toggle is off', () => {
 		given(false, 'chat.example.com');
 		expect(isXMPPServerEnabled()).to.be.false;
+	});
+});
+
+describe('filterXMPPJids', () => {
+	const holders = (users: object[]) => findByUsernamesIgnoringCase.returns({ toArray: async () => users });
+
+	beforeEach(() => findByUsernamesIgnoringCase.reset());
+
+	it('keeps a JID no user holds, and one a remote XMPP user holds', async () => {
+		holders([{ username: 'bob@xmpp.example', xmppFederation: { version: 1, origin: 'xmpp.example' } }]);
+		expect(await filterXMPPJids(['alice@xmpp.example', 'bob@xmpp.example'])).to.deep.equal(['alice@xmpp.example', 'bob@xmpp.example']);
+	});
+
+	it('drops a JID-shaped username a local user holds, whatever its case (addressing R12)', async () => {
+		holders([{ username: 'Carol@Corp.Example' }]);
+		expect(await filterXMPPJids(['carol@corp.example', 'alice@xmpp.example'])).to.deep.equal(['alice@xmpp.example']);
+	});
+
+	it('ignores usernames not shaped like a bare JID, without a lookup', async () => {
+		expect(await filterXMPPJids(['alice', 'room/resource'])).to.deep.equal([]);
+		expect(findByUsernamesIgnoringCase.called).to.be.false;
 	});
 });

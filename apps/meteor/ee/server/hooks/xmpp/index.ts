@@ -17,7 +17,7 @@ import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLe
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
-import { isXMPPServerEnabled } from '../../../../server/services/federation/utils';
+import { filterXMPPJids, isXMPPServerEnabled } from '../../../../server/services/federation/utils';
 import { settings } from '../../../../server/settings';
 
 const logger = new Logger('XMPPServerHooks');
@@ -71,7 +71,7 @@ callbacks.add(
 		if (!isXMPPServerEnabled() || !isRoomXMPPFederated(room)) {
 			return;
 		}
-		const jids = members.filter((member): member is string => isBareJid(member));
+		const jids = await filterXMPPJids(members);
 		if (jids.length) {
 			await XMPPServer.ensureXMPPUsersExistLocally(jids);
 		}
@@ -162,7 +162,7 @@ async function syncHostedRoomMember(room: IRoom, userId: string, inviterId?: str
 
 beforeAddUsersToRoom.add(
 	async ({ usernames }, room) => {
-		const jids = usernames.filter(isBareJid);
+		const jids = await filterXMPPJids(usernames);
 		if (!jids.length) {
 			return;
 		}

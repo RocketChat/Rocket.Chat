@@ -11,11 +11,12 @@ import {
 	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { isBareJid, normalizeBareJid } from '@rocket.chat/tools';
+import { normalizeBareJid } from '@rocket.chat/tools';
 
 import { createDirectRoom } from './createDirectRoom';
 import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { filterXMPPJids } from '../../services/federation/utils';
 import { callbacks } from '../callbacks';
 import { afterCreateRoomCallback } from '../callbacks/afterCreateRoomCallback';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
@@ -90,9 +91,9 @@ async function createUsersSubscriptions({
 		return;
 	}
 
+	const jids = isRoomXMPPHostedMuc(room) ? await filterXMPPJids(members) : [];
 	// A typed JID names the user record of that XMPP account, however its domain was spelled
-	const memberUsernames = isRoomXMPPHostedMuc(room) ? members.map((member) => normalizeBareJid(member) ?? member) : members;
-	const jids = isRoomXMPPHostedMuc(room) ? memberUsernames.filter(isBareJid) : [];
+	const memberUsernames = members.map((member) => (jids.includes(member) ? (normalizeBareJid(member) ?? member) : member));
 	if (jids.length) {
 		await XMPPServer.ensureXMPPUsersExistLocally(jids);
 	}
