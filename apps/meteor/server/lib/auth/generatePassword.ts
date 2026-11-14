@@ -21,7 +21,7 @@ export const generatePassword = (): string => {
 				strict: true,
 			});
 
-			if (passwordPolicy.validate(password)) {
+			if (passwordPolicy.sendValidationMessage(password).every(({ isValid }) => isValid)) {
 				return password;
 			}
 		}
