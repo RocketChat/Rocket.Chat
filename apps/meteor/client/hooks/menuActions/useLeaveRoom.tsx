@@ -1,9 +1,11 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
+import LeaveRoomWarning from '../../components/LeaveRoomWarning';
 import WarningModal from '../../components/WarningModal';
 import { LegacyRoomManager } from '../../lib/LegacyRoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -29,10 +31,24 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
+	const subscription = useUserSubscription(rid);
+	const room = useUserRoom(rid);
+	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 
 	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
 
-	const handleLeave = useStableCallback(() => {
+	const handleLeave = useStableCallback(async () => {
+		let isEncrypted = subscription?.encrypted ?? room?.encrypted;
+
+		if (isEncrypted === undefined) {
+			try {
+				const { room: fetchedRoom } = await getRoomInfo({ roomId: rid });
+				isEncrypted = Boolean(fetchedRoom?.encrypted);
+			} catch {
+				isEncrypted = false;
+			}
+		}
+
 		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom({ roomId: rid });
@@ -51,7 +67,14 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 
 		setModal(
 			<WarningModal
-				text={t(warnText, { roomName: name })}
+				text={
+					<LeaveRoomWarning
+						name={name}
+						warnText={warnText as TranslationKey}
+						isEncrypted={Boolean(isEncrypted)}
+						rid={rid}
+					/>
+				}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}
