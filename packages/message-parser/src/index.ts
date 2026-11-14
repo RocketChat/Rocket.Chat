@@ -21,3 +21,6 @@ export const parse = (input: string, options?: Options): Root => grammar.parse(i
 
 export type { Root as MarkdownAST };
 export { parse as parser };
+
+export * from './compactAst';
+
