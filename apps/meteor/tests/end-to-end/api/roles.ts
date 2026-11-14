@@ -131,11 +131,13 @@ describe('[Roles]', () => {
 		let testUser: IUser;
 		let testUserCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 		const testRoleName = `role.getUsersInRole.${Date.now()}`;
+		const testDisplayName = `Role Search Display ${Date.now()}`;
+		const testEmail = `role.search.${Date.now()}@rocket.chat`;
 		let testRoleId = '';
 
 		before(async () => {
 			await updatePermission('access-permissions', ['admin']);
-			testUser = await createUser();
+			testUser = await createUser({ name: testDisplayName, email: testEmail });
 			testUserCredentials = await login(testUser.username, password);
 
 			if (!isEnterprise) {
@@ -186,18 +188,17 @@ describe('[Roles]', () => {
 		});
 
 		it('should successfully get a list of users in a role', { skip: !isEnterprise }, async () => {
-			await request
-				.post(api('roles.addUserToRole'))
-				.set(credentials)
-				.send({
-					roleId: testRoleId,
-					username: adminUsername,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			for (const username of [adminUsername, testUser.username]) {
+				await request
+					.post(api('roles.addUserToRole'))
+					.set(credentials)
+					.send({ roleId: testRoleId, username })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			}
 
 			await request
 				.get(api('roles.getUsersInRole'))
@@ -209,9 +210,65 @@ describe('[Roles]', () => {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body).to.have.property('users').that.is.an('array').of.length(2);
+				});
+
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({
+					role: testRoleId,
+					search: adminUsername.slice(1, -1).toUpperCase(),
+					count: 1,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('total', 1);
-					expect(res.body).to.have.property('users').that.is.an('array').of.length(1);
+					expect(res.body.users).to.have.length(1);
 					expect(res.body.users[0]).to.have.property('_id', credentials['X-User-Id']);
+				});
+
+			for (const search of [testDisplayName.slice(6, 12).toUpperCase(), testEmail.slice(0, 12)]) {
+				await request
+					.get(api('roles.getUsersInRole'))
+					.set(credentials)
+					.query({ role: testRoleId, search, count: 1 })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('total', 1);
+						expect(res.body.users).to.have.length(1);
+						expect(res.body.users[0]).to.have.property('_id', testUser._id);
+					});
+			}
+
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({ role: testRoleId, search: 'a', count: 1, offset: 1 })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body.users).to.have.length(1);
+					expect(res.body.users[0]).to.have.property('_id', testUser._id);
+				});
+
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({ role: testRoleId, search: '' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body.users).to.have.length(2);
 				});
 		});
 

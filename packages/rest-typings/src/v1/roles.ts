@@ -79,6 +79,7 @@ export const isRoleRemoveUserFromRoleProps = ajv.compile<RoleRemoveUserFromRoleP
 type RolesGetUsersInRoleProps = PaginatedRequest<{
 	roomId?: string;
 	role: string;
+	search?: string;
 }>;
 
 const RolesGetUsersInRolePropsSchema = {
@@ -93,6 +94,10 @@ const RolesGetUsersInRolePropsSchema = {
 		},
 		...paginationQueryProperties,
 		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		search: {
 			type: 'string',
 			nullable: true,
 		},
