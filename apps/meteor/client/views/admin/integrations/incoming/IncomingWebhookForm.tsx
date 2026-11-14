@@ -18,7 +18,7 @@ import {
 	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useClipboardWithToast, UserAutoComplete } from '@rocket.chat/ui-client';
-import { useAbsoluteUrl, useGetPermission } from '@rocket.chat/ui-contexts';
+import { useAbsoluteUrl, useGetPermission, usePermission } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -35,6 +35,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 	const permission = useGetPermission('message-impersonate');
+	const canFilterByRole = usePermission('view-full-other-user-info');
 
 	const {
 		control,
@@ -209,7 +210,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 										<UserAutoComplete
 											id={usernameField}
 											{...field}
-											conditions={permission?.roles ? { roles: { $in: permission.roles } } : undefined}
+											conditions={canFilterByRole && permission?.roles ? { roles: { $in: permission.roles } } : undefined}
 											aria-describedby={`${usernameField}-hint-1 ${usernameField}-hint-2 ${usernameField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.username)}
