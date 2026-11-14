@@ -1,5 +1,23 @@
 # @rocket.chat/stylis-logical-props-middleware
 
+## 0.31.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/css-supports@0.31.27
+
+  </details>
+
+## 0.31.27-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/css-supports@0.31.27-rc.0
+
+  </details>
+
 ## 0.31.26
 
 ### Patch Changes

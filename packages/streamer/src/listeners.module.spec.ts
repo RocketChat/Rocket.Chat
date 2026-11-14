@@ -75,6 +75,19 @@ describe('ListenersModule', () => {
 		});
 	});
 
+	describe('ephemeral messages', () => {
+		it('gives each message dispatched in the same millisecond its own id', () => {
+			jest.spyOn(Date, 'now').mockReturnValue(1);
+			const emit = jest.spyOn(notifications.streamUser, '_emit');
+
+			fire('notify.ephemeralMessage', 'user1', 'room1', { msg: 'Users added' });
+			fire('notify.ephemeralMessage', 'user1', 'room1', { msg: 'Members not added' });
+
+			const [first, second] = emit.mock.calls.map(([, [message]]) => message._id);
+			expect(first).not.toBe(second);
+		});
+	});
+
 	describe('stream relay', () => {
 		it('delivers relayed stream events from other processes to local subscribers', () => {
 			const emit = jest.spyOn(notifications.streamRoom, '_emit');

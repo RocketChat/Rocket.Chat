@@ -1,5 +1,5 @@
 import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, FlexContainer, FlexItem } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -32,14 +32,14 @@ const UsersTableRow = ({
 						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
 						<Box withTruncatedText marginInline={8}>
 							<Box display='flex'>
-								<Box fontScale='p2m' withTruncatedText>
+								<Text fontScale='p2m' truncate>
 									{name || username}
 									{nickname && ` (${nickname})`}
-								</Box>{' '}
+								</Text>{' '}
 								<Box marginInline={4} />{' '}
-								<Box fontScale='p2' color='hint' withTruncatedText>
+								<Text fontScale='p2' color='hint' truncate>
 									{username}
-								</Box>
+								</Text>
 							</Box>
 							<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 						</Box>

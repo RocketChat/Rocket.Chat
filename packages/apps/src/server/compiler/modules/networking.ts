@@ -17,7 +17,7 @@ const networkingModuleBlockList = ['createServer', 'Server'];
 
 export const moduleHandlerFactory = (module: string) => {
 	return (appId: string): ProxyHandler<NetworkingLibs> => ({
-		get(target, prop: string, receiver) {
+		get(target, prop: string, receiver): unknown {
 			if (networkingModuleBlockList.includes(prop)) {
 				throw new ForbiddenNativeModuleAccess(module, prop);
 			}

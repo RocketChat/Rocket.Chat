@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { BasicMessageTemplate } from '../helpers';
 import MessageReaction from './MessageReaction';
@@ -27,9 +27,15 @@ type Story = StoryObj<typeof MessageReactions>;
 
 const reactions = (
 	<MessageReactions>
-		<MessageReaction title='reaction 1' mine counter={1} />
-		<MessageReaction title='reaction 2' counter={2} />
-		<MessageReaction title='reaction 3' counter={3} />
+		<MessageReaction title='reaction 1' mine>
+			<MessageReactionCounter counter={1} />
+		</MessageReaction>
+		<MessageReaction title='reaction 2'>
+			<MessageReactionCounter counter={2} />
+		</MessageReaction>
+		<MessageReaction title='reaction 3'>
+			<MessageReactionCounter counter={3} />
+		</MessageReaction>
 		<MessageReaction title='grinning' mine>
 			<MessageReactionEmoji name='grinning'>😀</MessageReactionEmoji>
 			<MessageReactionCounter counter={5} />

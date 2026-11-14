@@ -21,6 +21,7 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -34,6 +35,7 @@ import {
 	ExternalLink,
 	GenericModal,
 	getDirtyFields,
+	links,
 } from '@rocket.chat/ui-client';
 import { useSetting, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -49,7 +51,6 @@ import { MessageTypesValues } from '../../../../../../lib/MessageTypes';
 import AbacAttributesRemovalWarning from '../../../../../components/ABAC/AbacAttributesRemovalWarning';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
-import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
@@ -396,9 +397,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
 									<FieldGroup>
-										<Box is='h5' fontScale='h5' color='titles-labels'>
+										<Text is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
-										</Box>
+										</Text>
 										{canViewReadOnly && (
 											<Field>
 												<FieldRow>

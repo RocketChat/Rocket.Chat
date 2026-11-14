@@ -1,4 +1,4 @@
-import { isAbsoluteURL } from './isAbsoluteURL';
+import { isAbsoluteURL } from './isAbsoluteURL.js';
 
 describe('isAbsoluteURL', () => {
 	test.each([

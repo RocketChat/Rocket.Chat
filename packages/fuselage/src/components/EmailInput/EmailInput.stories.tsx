@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { PropsVariationSection } from '../../../.storybook/helpers';
+import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
 import { Icon } from '../Icon';
 import EmailInput from './EmailInput';
 
@@ -105,11 +105,12 @@ export const WithValue: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStates },
 	render: () => (
 		<>
 			<PropsVariationSection
 				component={EmailInput}
-				common={{ 'onChange': () => {}, 'aria-label': 'email' }}
+				common={{ 'onChange': () => undefined, 'aria-label': 'email' }}
 				xAxis={{
 					'default': {},
 					'with placeholder': { placeholder: 'Placeholder' },
@@ -121,19 +122,19 @@ export const States: Story = {
 				}}
 				yAxis={{
 					'default': {},
-					'hover': { className: 'hover' },
-					'active': { className: 'active' },
-					'focus': { className: 'focus' },
+					'hover': {},
+					'active': {},
+					'focus': {},
 					'disabled': { disabled: true },
 					'errored': { error: 'Error' },
-					'errored + hover': { className: 'hover', error: 'Error' },
-					'errored + active': { className: 'active', error: 'Error' },
-					'errored + focus': { className: 'focus', error: 'Error' },
+					'errored + hover': { error: 'Error' },
+					'errored + active': { error: 'Error' },
+					'errored + focus': { error: 'Error' },
 				}}
 			/>
 			<PropsVariationSection
 				component={EmailInput}
-				common={{ 'onChange': () => {}, 'small': true, 'aria-label': 'email' }}
+				common={{ 'onChange': () => undefined, 'small': true, 'aria-label': 'email' }}
 				xAxis={{
 					'small': {},
 					'with placeholder': { placeholder: 'Placeholder' },
@@ -145,14 +146,14 @@ export const States: Story = {
 				}}
 				yAxis={{
 					'small': {},
-					'hover': { className: 'hover' },
-					'active': { className: 'active' },
-					'focus': { className: 'focus' },
+					'hover': {},
+					'active': {},
+					'focus': {},
 					'disabled': { disabled: true },
 					'errored': { error: 'Error' },
-					'errored + hover': { className: 'hover', error: 'Error' },
-					'errored + active': { className: 'active', error: 'Error' },
-					'errored + focus': { className: 'focus', error: 'Error' },
+					'errored + hover': { error: 'Error' },
+					'errored + active': { error: 'Error' },
+					'errored + focus': { error: 'Error' },
 				}}
 			/>
 		</>

@@ -3,6 +3,13 @@
 	"version": "1.0.13",
 	"private": true,
 	"description": "SHA256 implementation; Fork of Meteor's SHA256 package",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/sha256.d.ts",
+			"default": "./dist/sha256.js"
+		}
+	},
 	"main": "./dist/sha256.js",
 	"types": "./dist/sha256.d.ts",
 	"scripts": {

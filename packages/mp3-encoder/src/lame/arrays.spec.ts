@@ -1,4 +1,4 @@
-import { sortArray } from './arrays';
+import { sortArray } from './arrays.js';
 
 test('sortArray sorts only the given range, numerically', () => {
 	const a = new Float32Array([5, 10, 9, 0.5, 2, 1]);

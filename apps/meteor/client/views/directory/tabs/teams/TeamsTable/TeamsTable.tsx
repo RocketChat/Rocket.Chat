@@ -7,25 +7,25 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const TeamsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
 
 	const columns: TableColumnWidth[] = ['auto', '100px', ...(mediaQuery ? (['150px'] as const) : [])];
@@ -56,10 +56,25 @@ const TeamsTable = () => {
 	const groupsRoute = useRoute('group');
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'teams');
+	const queryKey = ['getDirectoryData', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getDirectoryData({ ...query, ...page }),
+		},
+		itemsKey: 'result',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useMemo(

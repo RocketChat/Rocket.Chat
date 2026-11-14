@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius, backgroundColor, fontColor } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -93,12 +93,16 @@ const speakingWhileMutedTooltip = css`
 
 	padding: 0.5rem 0.75rem;
 	border-radius: ${borderRadius('medium')};
-	background: ${Palette.badge['badge-background-level-4'].toString()};
-	color: ${Palette.text['font-pure-white'].toString()};
+	background: ${backgroundColor('neutral')};
+	color: ${fontColor('hint')};
 	white-space: nowrap;
 	pointer-events: auto;
 	cursor: pointer;
 	animation: swm-fade-in 200ms ease-out;
+
+	&:hover {
+		background: ${backgroundColor('hover')};
+	}
 `;
 
 /**
@@ -235,6 +239,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					titles={[t('Send_reaction'), t('Send_reaction')]}
 					pressed={reactionPickerOpen}
 					aria-expanded={reactionPickerOpen}
+					info
 					size='large'
 					onToggle={() => setReactionPickerOpen((p) => !p)}
 				/>
@@ -250,7 +255,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 			{(self.speakingWhileMuted || reactionPickerOpen) && (
 				<Box className={controlNoticesStyles}>
 					{self.speakingWhileMuted && (
-						<Box className={speakingWhileMutedTooltip} fontScale='c1' onClick={toggleMic}>
+						<Box className={speakingWhileMutedTooltip} fontScale='c2' onClick={toggleMic}>
 							{t('You_are_muted')}
 						</Box>
 					)}

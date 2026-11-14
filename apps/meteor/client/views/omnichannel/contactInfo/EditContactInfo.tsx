@@ -12,6 +12,7 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 	ContextualbarSkeleton,
+	useHasLicenseModule,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,7 +24,6 @@ import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { hasAtLeastOnePermission } from '../../../lib/authorization';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';

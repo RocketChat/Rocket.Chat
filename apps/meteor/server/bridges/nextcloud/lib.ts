@@ -1,5 +1,4 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 
 import { addPassportCustomOAuth } from '../../lib/oauth/addPassportCustomOAuth';
@@ -36,9 +35,7 @@ function configureNextcloudOAuth(): void {
 	addPassportCustomOAuth('nextcloud', { ...NEXTCLOUD_PATHS, serverURL, clientId, clientSecret });
 }
 
-Meteor.startup(() => {
-	settings.watchMultiple(
-		['Accounts_OAuth_Nextcloud', 'Accounts_OAuth_Nextcloud_URL', 'Accounts_OAuth_Nextcloud_id', 'Accounts_OAuth_Nextcloud_secret'],
-		configureNextcloudOAuth,
-	);
-});
+settings.watchMultiple(
+	['Accounts_OAuth_Nextcloud', 'Accounts_OAuth_Nextcloud_URL', 'Accounts_OAuth_Nextcloud_id', 'Accounts_OAuth_Nextcloud_secret'],
+	configureNextcloudOAuth,
+);

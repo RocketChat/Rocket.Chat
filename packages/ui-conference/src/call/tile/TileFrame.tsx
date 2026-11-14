@@ -19,6 +19,8 @@ const tileStyles = css`
 	height: 100%;
 	overflow: hidden;
 	border-radius: ${borderRadius('large')};
+	/* Keeps the layering of the ring and the badges inside the tile, under whatever floats over the stage. */
+	isolation: isolate;
 	container-type: inline-size;
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
@@ -54,6 +56,7 @@ const leftIndicatorRowStyles = css`
 	align-items: center;
 	gap: 0.25rem;
 	pointer-events: none;
+	z-index: 2;
 `;
 
 const sendBadgeStyles = css`
@@ -71,6 +74,7 @@ const indicatorRowStyles = css`
 	display: flex;
 	gap: 0.25rem;
 	pointer-events: none;
+	z-index: 2;
 `;
 
 const indicatorBadgeStyles = css`

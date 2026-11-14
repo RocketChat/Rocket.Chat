@@ -1,8 +1,10 @@
-import type { RequestHandler } from 'express';
-import type express from 'express';
-import { WebApp } from 'meteor/webapp';
+import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
+import type { MiddlewareHandler } from 'hono';
 
-import { getOAuthIssuer, getWellKnownUrl, isWellKnownRequest } from '../../../../server/oauth2-server/metadata';
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
+import { httpApp } from '../../../../server/lib/http/httpServer';
+import { getOAuthIssuer, getWellKnownUrl, isWellKnownPath } from '../../../../server/oauth2-server/metadata';
 import { settings } from '../../../../server/settings/cached';
 
 const MCP_PATH = '/api/v1/mcp';
@@ -23,18 +25,16 @@ export const getProtectedResourceMetadata = (issuer: string) => ({
  * which ignore the 401 challenge fall back to. For a workspace served under a path, the RFC location is outside that
  * path, so this must see requests before the path prefix is stripped.
  */
-export const serveProtectedResourceMetadata: RequestHandler = (req, res, next) => {
-	if (!isWellKnownRequest(req, [getProtectedResourceMetadataUrl(), BARE_METADATA_PATH])) {
-		next();
-		return;
+export const serveProtectedResourceMetadata: MiddlewareHandler = async (c, next) => {
+	if (!isWellKnownPath(c.req.path, [getProtectedResourceMetadataUrl(), BARE_METADATA_PATH])) {
+		return next();
 	}
 
 	if (!settings.get<boolean>('MCP_Enabled')) {
-		res.status(404).send({ error: 'not_found', error_description: 'MCP endpoint is disabled' });
-		return;
+		return c.json({ error: 'not_found', error_description: 'MCP endpoint is disabled' }, 404);
 	}
 
-	res.send(getProtectedResourceMetadata(getOAuthIssuer()));
+	return c.json(getProtectedResourceMetadata(getOAuthIssuer()));
 };
 
-(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(BARE_METADATA_PATH, serveProtectedResourceMetadata);
+httpApp.get(`${BARE_METADATA_PATH}/*`, nodeHandler(nodeLoggerMiddleware(new Logger('OAuth'))), serveProtectedResourceMetadata);

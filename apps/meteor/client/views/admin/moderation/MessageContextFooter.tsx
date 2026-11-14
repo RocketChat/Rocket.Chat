@@ -24,7 +24,7 @@ const MessageContextFooter = ({ userId, deleted }: MessageContextFooterProps) =>
 
 			<Box flexGrow={0} marginInlineStart={8}>
 				<GenericMenu
-					large
+					size='large'
 					title={t('More')}
 					items={[
 						{ ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },

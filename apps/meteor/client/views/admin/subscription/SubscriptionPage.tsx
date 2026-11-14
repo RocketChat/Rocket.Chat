@@ -7,6 +7,7 @@ import {
 	PageBlockWithBorder,
 	useInvalidateLicense,
 	useLicenseWithCloudAnnouncement,
+	useIsEnterprise,
 } from '@rocket.chat/ui-client';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
@@ -29,7 +30,6 @@ import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {

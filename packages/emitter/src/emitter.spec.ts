@@ -1,4 +1,4 @@
-import { Emitter } from './index';
+import { Emitter } from './index.js';
 
 const times = (n: number, fn: () => void): number => {
 	Array.from({ length: n }, () => fn());

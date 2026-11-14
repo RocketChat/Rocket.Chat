@@ -1,12 +1,12 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { SDP } from './sdp';
-import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
-import type { MediaStreamIdentification } from '../../../definition/media/MediaStreamIdentification';
-import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
-import type { ServerMediaSignalRemoteSDP } from '../../../definition/signals';
-import { MediaStreamManager } from '../../media/MediaStreamManager';
-import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
+import { SDP } from './sdp.js';
+import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition/index.js';
+import type { MediaStreamIdentification } from '../../../definition/media/MediaStreamIdentification.js';
+import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor.js';
+import type { ServerMediaSignalRemoteSDP } from '../../../definition/signals/index.js';
+import { MediaStreamManager } from '../../media/MediaStreamManager.js';
+import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter.js';
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
 type P2PCommand = 'mute' | 'unmute' | 'end';
@@ -611,9 +611,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
 		try {
-			const obj = JSON.parse(message);
-			if (obj.command && this.isValidCommand(obj.command)) {
-				return obj.command;
+			const command: unknown = JSON.parse(message).command;
+			if (typeof command === 'string' && this.isValidCommand(command)) {
+				return command;
 			}
 		} catch {
 			this.config.logger?.debug('Failed to parse Data Channel Command');

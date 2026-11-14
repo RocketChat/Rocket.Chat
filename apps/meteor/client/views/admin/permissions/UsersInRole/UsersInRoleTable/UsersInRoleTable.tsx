@@ -8,11 +8,11 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 	GenericNoResults,
+	GenericError,
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTableRow from './UsersInRoleTableRow';
-import GenericError from '../../../../../components/GenericError';
 
 export type UsersInRoleTableProps = {
 	isLoading: boolean;

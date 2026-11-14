@@ -74,7 +74,8 @@ export const useSearchActiveOption = (state: OverlayTriggerState, listboxId: str
 			const option = document.getElementById(activeId);
 			if (option) {
 				event.preventDefault();
-				option.click();
+				const { metaKey, ctrlKey } = event;
+				option.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window, metaKey, ctrlKey }));
 			}
 		}
 	});

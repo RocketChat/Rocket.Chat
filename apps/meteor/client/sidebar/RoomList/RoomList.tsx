@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,14 +10,14 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useOpenedRoom } from '../../lib/RoomManager';
+import { useSidebarListDrag } from './useSidebarListDrag';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
+import { useRingingCalls } from '../hooks/useRingingCalls';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
@@ -46,7 +47,8 @@ const RoomList = () => {
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
-	const openedRoom = useOpenedRoom() ?? '';
+	const ringingCalls = useRingingCalls();
+	const formatTime = useShortTimeAgo();
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
 	const sidebarDisplayAvatar = !!useUserPreference<boolean>('sidebarDisplayAvatar');
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
@@ -56,11 +58,11 @@ const RoomList = () => {
 			t,
 			viewMode: sidebarViewMode,
 			showAvatar: sidebarDisplayAvatar,
-			openedRoom,
+			formatTime,
 			isAnonymous,
 			userId,
 		}),
-		[isAnonymous, openedRoom, sidebarDisplayAvatar, sidebarViewMode, t, userId],
+		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
@@ -81,7 +83,10 @@ const RoomList = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
+	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups);
+	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, dragRef);
+
+	const isGroupDragged = (groupKey: string) => dragSource?.kind === 'group' && dragSource.key === groupKey;
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
@@ -94,6 +99,10 @@ const RoomList = () => {
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
 					<RoomListCollapser
+						data-drag-key={group.key}
+						data-drag-kind='group'
+						data-drag-group={group.key}
+						dragging={isGroupDragged(group.key)}
 						group={group}
 						canMoveUp={canMoveGroup(groups, index, 'up')}
 						canMoveDown={canMoveGroup(groups, index, 'down')}
@@ -102,9 +111,14 @@ const RoomList = () => {
 						onClick={() => handleClick(group.key)}
 					/>
 				)}
-				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
-					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
+				renderItem={(item, _itemIndex, group, _groupIndex, rowIndex) => (
+					<RoomListRowWrapper data-index={rowIndex} data-drag-key={item.rid} data-drag-kind='item' data-drag-group={group.key}>
+						<RoomListRow
+							data={itemData}
+							item={item}
+							videoConfActions={ringingCalls.get(item.rid)}
+							dragging={isGroupDragged(group.key) || (dragSource?.kind === 'item' && dragSource.key === item.rid)}
+						/>
 					</RoomListRowWrapper>
 				)}
 			/>

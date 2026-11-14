@@ -48,7 +48,7 @@ const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProp
 			</CollapseButton>
 
 			<CollapsibleRegion expanded={expanded} id={regionId} paddingBlockStart={expanded ? 'x16' : '0px'} marginInlineStart='x32'>
-				{props.instanceId && <AppsLogItemField marginBlockStart={0} field={props.instanceId} label='Instance' />}
+				{props.instanceId && <AppsLogItemField marginBlockStart={0} field={props.instanceId} label={t('Instance')} />}
 				{props.totalTime !== undefined && <AppsLogItemField field={`${props.totalTime}ms`} label={t('Total_time')} />}
 				{props.startTime && <AppsLogItemField field={formatDateAndTime(Date.parse(props.startTime))} label={t('Time')} />}
 				{props.method && <AppsLogItemField field={props.method} label={t('Event')} />}

@@ -1,5 +1,7 @@
 import {
 	Box,
+	Button,
+	ButtonGroup,
 	Field,
 	FieldError,
 	FieldGroup,
@@ -7,8 +9,8 @@ import {
 	FieldLabel,
 	FieldRow,
 	PasswordInput,
-	Button,
-	ButtonGroup,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
@@ -17,6 +19,7 @@ import { useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import SecuritySection from './layout/SecuritySection';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { useE2EEState } from '../../room/hooks/useE2EEState';
 
@@ -108,14 +111,11 @@ export const ChangePassphrase = () => {
 	};
 
 	return (
-		<>
-			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
+		<Stack gap='x32'>
+			<Text is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
-			</Box>
-			<Box marginBlockStart='x32' width='full' display='flex' flexDirection='column' gap='x12'>
-				<Box is='h3' fontScale='h4'>
-					{t('Change_E2EE_password')}
-				</Box>
+			</Text>
+			<SecuritySection title={t('Change_E2EE_password')} headingLevel='h3'>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
@@ -207,7 +207,7 @@ export const ChangePassphrase = () => {
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Box>
-		</>
+			</SecuritySection>
+		</Stack>
 	);
 };

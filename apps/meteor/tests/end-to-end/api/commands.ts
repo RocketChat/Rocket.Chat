@@ -232,7 +232,8 @@ describe('[Commands]', () => {
 					.send({ command: 'archive', roomId: 'GENERAL' })
 					.expect(401)
 					.expect((res) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 
@@ -245,11 +246,11 @@ describe('[Commands]', () => {
 						roomId: 'GENERAL',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-forbidden');
-						expect(res.body.error).to.include('error-forbidden');
+
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					});
 			});
 		});
@@ -308,7 +309,8 @@ describe('[Commands]', () => {
 					.send({ command: 'unarchive', roomId: 'GENERAL' })
 					.expect(401)
 					.expect((res) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 
@@ -321,11 +323,11 @@ describe('[Commands]', () => {
 						roomId: 'GENERAL',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-forbidden');
-						expect(res.body.error).to.include('error-forbidden');
+
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					});
 			});
 		});
@@ -378,11 +380,11 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(userCredentials)
 				.send({ command: 'topic', roomId: 'GENERAL', params: 'new topic' })
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-forbidden');
-					expect(res.body.error).to.include('error-forbidden');
+
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 	});
@@ -461,7 +463,7 @@ describe('[Commands]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('error', 'unauthorized');
+					expect(res.body).to.have.a.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -527,10 +529,9 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'kick', roomId: directMessageRoom._id, params: user1.username })
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error').that.is.a('string');
 		});
 	});
@@ -563,10 +564,9 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'leave', roomId: directMessageRoom._id })
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error').that.is.a('string');
 		});
 	});
@@ -605,7 +605,7 @@ describe('[Commands]', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').that.is.a('string');
-			expect(res.body.error).to.equal('unauthorized');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 	});
 });

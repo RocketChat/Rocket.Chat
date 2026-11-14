@@ -86,7 +86,7 @@ describe('LIVECHAT - contacts', () => {
 				});
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('create-livechat-contact');
 		});
@@ -338,8 +338,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal("must have required property 'name' [invalid-params]");
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal("must have required property 'name' [error-invalid-params]");
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if emails is missing', async () => {
@@ -353,8 +353,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal("must have required property 'emails' [invalid-params]");
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal("must have required property 'emails' [error-invalid-params]");
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if phones is missing', async () => {
@@ -368,8 +368,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal("must have required property 'phones' [invalid-params]");
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal("must have required property 'phones' [error-invalid-params]");
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if emails is not an array', async () => {
@@ -384,8 +384,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be array [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be array [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if emails is not an array of strings', async () => {
@@ -400,8 +400,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be string [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be string [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if phones is not an array of strings', async () => {
@@ -416,8 +416,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be string [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be string [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if additional fields are provided', async () => {
@@ -433,8 +433,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must NOT have additional properties [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must NOT have additional properties [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 		});
 	});
@@ -565,7 +565,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 
@@ -650,8 +650,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal("must have required property 'contactId' [error-invalid-params]");
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if emails is not an array', async () => {
@@ -662,8 +662,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be array [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be array [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if emails is not an array of strings', async () => {
@@ -677,8 +677,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be string [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be string [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if phones is not an array', async () => {
@@ -689,8 +689,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be array [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be array [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if phones is not an array of strings', async () => {
@@ -704,8 +704,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must be string [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must be string [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 
 			it('should return an error if additional fields are provided', async () => {
@@ -716,8 +716,8 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('must NOT have additional properties [invalid-params]');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.error).to.be.equal('must NOT have additional properties [error-invalid-params]');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			});
 		});
 	});
@@ -1029,7 +1029,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1037,7 +1037,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should return an error if contactId and visitor association is missing', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials);
 
-			expectInvalidParams(res, ["must have required property 'contactId' [invalid-params]"]);
+			expectInvalidParams(res, ["must have required property 'contactId' [error-invalid-params]"]);
 		});
 
 		describe('Contact Channels', () => {
@@ -1200,7 +1200,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(response.status).to.be.equal(403);
 				expect(response.body).to.have.property('success', false);
-				expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(response.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 
@@ -1324,7 +1324,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1336,7 +1336,7 @@ describe('LIVECHAT - contacts', () => {
 				"must have required property 'contactId'",
 				"must have required property 'email'",
 				"must have required property 'phone'",
-				'must match exactly one schema in oneOf [invalid-params]',
+				'must match exactly one schema in oneOf [error-invalid-params]',
 			]);
 		});
 
@@ -1347,7 +1347,7 @@ describe('LIVECHAT - contacts', () => {
 				'must NOT have additional properties',
 				'must NOT have additional properties',
 				'must NOT have additional properties',
-				'must match exactly one schema in oneOf [invalid-params]',
+				'must match exactly one schema in oneOf [error-invalid-params]',
 			]);
 		});
 	});
@@ -1465,7 +1465,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});
@@ -1629,7 +1629,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1639,8 +1639,8 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
-			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
-			expect(res.body.errorType).to.be.equal('invalid-params');
+			expect(res.body.error).to.be.equal("must have required property 'contactId' [error-invalid-params]");
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 		});
 	});
 
@@ -1729,7 +1729,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'visitor' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'visitor' [error-invalid-params]");
 		});
 
 		it('should return an error if visitorId is missing', async () => {
@@ -1740,7 +1740,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'visitorId' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'visitorId' [error-invalid-params]");
 		});
 
 		it('should return an error if source is missing', async () => {
@@ -1751,7 +1751,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'source' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'source' [error-invalid-params]");
 		});
 
 		it('should return an error if source type is missing', async () => {
@@ -1762,7 +1762,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'type' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'type' [error-invalid-params]");
 		});
 
 		describe('Permissions', () => {
@@ -1778,7 +1778,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});
@@ -1847,7 +1847,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'visitor' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'visitor' [error-invalid-params]");
 		});
 
 		it('should return an error if visitorId is missing', async () => {
@@ -1858,7 +1858,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'visitorId' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'visitorId' [error-invalid-params]");
 		});
 
 		it('should return an error if source is missing', async () => {
@@ -1869,7 +1869,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'source' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'source' [error-invalid-params]");
 		});
 
 		it('should return an error if source type is missing', async () => {
@@ -1880,7 +1880,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'type' [invalid-params]");
+			expect(res.body.error).to.be.equal("must have required property 'type' [error-invalid-params]");
 		});
 
 		describe('Permissions', () => {
@@ -1896,7 +1896,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitor: association });
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});

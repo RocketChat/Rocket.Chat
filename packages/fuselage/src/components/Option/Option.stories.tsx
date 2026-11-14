@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
 import { exampleAvatar } from '../../../.storybook/helpers';
@@ -135,7 +135,7 @@ export default {
 type Story = StoryObj<typeof Option>;
 
 const MenuExample = () => (
-	<Menu detached small title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
+	<Menu detached size='small' title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
 		<MenuItem key='1'>Profile</MenuItem>
 		<MenuItem key='2'>Chats</MenuItem>
 		<MenuItem key='3'>Settings</MenuItem>
@@ -224,7 +224,7 @@ export const WithMenu: Story = {
 				</OptionColumn>
 				<OptionContent>Lorem Ipsum Lorem Lorem Ipsum Lorem Lorem Ipsum Lorem Lorem Ipsum Lorem</OptionContent>
 				<OptionMenu>
-					<Menu detached small title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
+					<Menu detached size='small' title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
 						<MenuItem key='1'>Profile</MenuItem>
 						<MenuItem key='2'>Chats</MenuItem>
 						<MenuItem key='3'>Settings</MenuItem>

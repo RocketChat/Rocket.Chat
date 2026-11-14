@@ -46,7 +46,7 @@ const NavBarSearchMessageRow = ({ item, onClick }: NavBarSearchMessageRowProps):
 			icon={<SidebarItemIcon icon={<Icon name='stars' size='x16' />} />}
 			actions={
 				roomLabel ? (
-					<Box color='hint' fontScale='c1' withTruncatedText flexShrink={0} maxWidth='x120'>
+					<Box color='hint' fontScale='c1' withTruncatedText flexShrink={0} maxWidth='50%'>
 						{roomLabel}
 					</Box>
 				) : undefined

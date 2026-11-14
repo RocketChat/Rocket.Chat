@@ -3,7 +3,6 @@ import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../../lib/integrations/lib/validateScriptEngine';
@@ -13,24 +12,6 @@ import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 const validChannelChars = ['@', '#'];
 
 export const addIncomingIntegration = async (userId: string, integration: INewIncomingIntegration): Promise<IIncomingIntegration> => {
-	check(
-		integration,
-		Match.ObjectIncluding({
-			type: String,
-			name: String,
-			enabled: Boolean,
-			username: String,
-			channel: String,
-			alias: Match.Maybe(String),
-			emoji: Match.Maybe(String),
-			scriptEnabled: Boolean,
-			scriptEngine: Match.Maybe(String),
-			overrideDestinationChannelEnabled: Match.Maybe(Boolean),
-			script: Match.Maybe(String),
-			avatar: Match.Maybe(String),
-		}),
-	);
-
 	if (
 		!userId ||
 		(!(await hasPermissionAsync(userId, 'manage-incoming-integrations')) &&

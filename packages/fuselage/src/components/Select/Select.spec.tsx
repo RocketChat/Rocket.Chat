@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -181,14 +181,18 @@ describe('[Select Component]', () => {
 	});
 
 	it('should keep its own value when not controlled, and submit it under its name', async () => {
-		const { container } = render(<Select aria-label='Time unit' options={units} defaultSelectedKey='minutes' name='unit' />);
+		render(
+			<form aria-label='Schedule'>
+				<Select aria-label='Time unit' options={units} defaultSelectedKey='minutes' name='unit' />
+			</form>,
+		);
 		const combobox = screen.getByRole('combobox');
 
 		combobox.focus();
 		await userEvent.keyboard('{ArrowDown}{End}{Enter}');
 
 		expect(combobox).toHaveTextContent('Days');
-		expect(container.querySelector('input[type="hidden"][name="unit"]')).toHaveValue('days');
+		expect(screen.getByRole('form', { name: 'Schedule' })).toHaveFormValues({ unit: 'days' });
 	});
 
 	it('should have no a11y violations while open', async () => {
@@ -200,5 +204,13 @@ describe('[Select Component]', () => {
 		// The popup renders in a portal, so the scan covers the page, whose bare test markup has no landmarks.
 		const results = await axe(document.body, { rules: { region: { enabled: false } } });
 		expect(results).toHaveNoViolations();
+	});
+
+	it('should forward className and style to the trigger', () => {
+		render(<Select aria-label='Time unit' options={units} className='custom' style={{ marginTop: 3 }} />);
+
+		const combobox = screen.getByRole('combobox');
+		expect(combobox).toHaveClass('custom', 'rcx-select');
+		expect(combobox).toHaveStyle({ marginTop: '3px' });
 	});
 });

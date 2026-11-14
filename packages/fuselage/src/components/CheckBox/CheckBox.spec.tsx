@@ -1,5 +1,6 @@
-import { composeStories } from '@storybook/react-webpack5';
-import { fireEvent, getByRole } from '@testing-library/react';
+import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import * as stories from './CheckBox.stories';
@@ -19,34 +20,33 @@ describe('[CheckBox Rendering]', () => {
 });
 
 describe('[CheckBox Interacting]', () => {
-	it('changes style of element as checkbox is checked', () => {
-		const { container } = render(<Default />);
-		const checkbox = getByRole(container, 'checkbox') as HTMLInputElement;
-		fireEvent.click(checkbox);
-		expect(checkbox.checked).toEqual(true);
+	it('changes style of element as checkbox is checked', async () => {
+		const user = userEvent.setup();
+		render(<Default />);
+		const checkbox = screen.getByRole('checkbox');
+		await user.click(checkbox);
+		expect(checkbox).toBeChecked();
 	});
-	it('changes style of element as checkbox is checked/unchecked', () => {
-		const { container } = render(<Default />);
-		const checkbox = getByRole(container, 'checkbox') as HTMLInputElement;
-		fireEvent.click(checkbox);
-		fireEvent.click(checkbox);
-		expect(checkbox.checked).toEqual(false);
+	it('changes style of element as checkbox is checked/unchecked', async () => {
+		const user = userEvent.setup();
+		render(<Default />);
+		const checkbox = screen.getByRole('checkbox');
+		await user.click(checkbox);
+		await user.click(checkbox);
+		expect(checkbox).not.toBeChecked();
 	});
 	it('displays checkbox indeterminate correctly', () => {
-		const { container } = render(<Indeterminate />);
-		const checkbox = getByRole(container, 'checkbox') as HTMLInputElement;
-		expect(checkbox.indeterminate).toEqual(true);
+		render(<Indeterminate />);
+		expect(screen.getByRole('checkbox')).toBePartiallyChecked();
 	});
 
 	it('displays checkbox with defaultChecked value correctly', () => {
-		const { container } = render(<DefaultChecked />);
-		const checkbox = getByRole(container, 'checkbox') as HTMLInputElement;
-		expect(checkbox.defaultChecked).toEqual(true);
+		render(<DefaultChecked />);
+		expect(screen.getByRole('checkbox')).toBeChecked();
 	});
 
 	it('displays checkbox disabled correctly', () => {
-		const { container } = render(<Disabled />);
-		const checkbox = getByRole(container, 'checkbox') as HTMLInputElement;
-		expect(checkbox.disabled).toEqual(true);
+		render(<Disabled />);
+		expect(screen.getByRole('checkbox')).toBeDisabled();
 	});
 });

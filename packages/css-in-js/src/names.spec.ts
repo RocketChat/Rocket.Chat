@@ -1,4 +1,4 @@
-import { createAnimationName, createClassName, escapeName } from './names';
+import { createAnimationName, createClassName, escapeName } from './names.js';
 
 describe('names', () => {
 	describe('createAnimationName', () => {

@@ -2,7 +2,6 @@ import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
@@ -19,16 +18,11 @@ export const registerUser = async (formData: {
 	reason?: string;
 }): Promise<string> => {
 	const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
-	check(
-		formData,
-		Match.ObjectIncluding({
-			email: String,
-			pass: String,
-			name: String,
-			secretURL: Match.Optional(String),
-			reason: Match.Optional(String),
-		}),
-	);
+	if (typeof formData.name !== 'string' || (formData.reason !== undefined && typeof formData.reason !== 'string')) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'registerUser',
+		});
+	}
 
 	if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
 		throw new ClientSafeError('error-user-registration-disabled', 'User registration is disabled', {

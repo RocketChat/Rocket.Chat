@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 		const uid = Meteor.userId();
 
 		if (!uid) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'restart_server' });
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'restart_server' });
 		}
 
 		if ((await hasPermissionAsync(uid, 'restart-server')) !== true) {

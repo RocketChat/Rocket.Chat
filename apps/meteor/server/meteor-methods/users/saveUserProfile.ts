@@ -1,9 +1,8 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -47,15 +46,17 @@ async function saveUserProfile(
 	}
 
 	if (!this.userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'saveUserProfile',
 		});
 	}
 
+	const username = settings.username || undefined;
+
 	await validateUserEditing(this.userId, {
 		_id: this.userId,
 		email: settings.email,
-		username: settings.username,
+		username,
 		name: settings.realname,
 		password: settings.newPassword,
 		statusText: settings.statusText,
@@ -69,14 +70,9 @@ async function saveUserProfile(
 		});
 	}
 
-	if (settings.realname || settings.username) {
-		if (
-			!(await saveUserIdentity({
-				_id: this.userId,
-				name: settings.realname,
-				username: settings.username,
-			}))
-		) {
+	// An empty name removes the optional display name; a username can be changed but never removed, so an empty one is ignored.
+	if (settings.realname !== undefined || username !== undefined) {
+		if (!(await saveUserIdentity({ _id: this.userId, name: settings.realname, username }))) {
 			throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
 			});
@@ -146,9 +142,7 @@ async function saveUserProfile(
 
 			passwordPolicy.validate(settings.newPassword);
 
-			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
-				logout: false,
-			});
+			await Users.setPasswordHash(this.userId, await hashPassword(settings.newPassword));
 
 			if (user.requirePasswordChange) {
 				await Users.unsetRequirePasswordChange(user._id);
@@ -165,7 +159,7 @@ async function saveUserProfile(
 			try {
 				await Users.removeNonLoginTokensExcept(this.userId, this.token);
 			} catch (e) {
-				Accounts._clearAllLoginTokens(this.userId);
+				await Users.unsetLoginTokens(this.userId);
 			}
 		}
 	}
@@ -242,9 +236,6 @@ export function executeSaveUserProfile(
 	customFields: Record<string, any> = {},
 	...args: unknown[]
 ) {
-	check(settings, Object);
-	check(customFields, Match.Maybe(Object));
-
 	if (
 		(settings.email && user.emails?.length) ||
 		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)

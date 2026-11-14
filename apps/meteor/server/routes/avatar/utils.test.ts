@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -21,11 +22,6 @@ const {
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
 } = proxyquire.noCallThru().load('./utils', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
-		},
-	},
 	'../../lib/media/file-upload': {
 		FileUpload: {
 			get: mocks.fileUploadGet,
@@ -215,6 +211,10 @@ describe('#setCacheAndDispositionHeaders', () => {
 });
 
 describe('#userCanAccessAvatar()', async () => {
+	before(() => {
+		mockModel('Users', { findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken });
+	});
+
 	beforeEach(() => {
 		mocks.findOneByIdAndLoginToken.reset();
 		mocks.settingsGet.reset();

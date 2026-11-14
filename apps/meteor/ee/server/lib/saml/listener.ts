@@ -3,7 +3,6 @@ import type { ServerResponse } from 'node:http';
 import { License } from '@rocket.chat/license';
 import bodyParser from 'body-parser';
 import express from 'express';
-import { Meteor } from 'meteor/meteor';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
 
@@ -11,6 +10,7 @@ import type { ISAMLAction } from './definition/ISAMLAction';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getWorkspaceURL } from '../../../../server/lib/utils/getURL';
 
 RoutePolicy.declare('/_saml/', 'network');
 
@@ -68,7 +68,7 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 		SystemLogger.error({ err });
 
 		if (!res.headersSent) {
-			const url = Meteor.absoluteUrl('home');
+			const url = getWorkspaceURL('home');
 			res.writeHead(302, {
 				Location: url,
 			});

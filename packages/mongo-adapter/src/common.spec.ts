@@ -8,7 +8,7 @@ import {
 	isIndexable,
 	equals,
 	isEmptyArray,
-} from './common';
+} from './common.js';
 
 describe('assertIsValidFieldName', () => {
 	it('should not throw for valid field names', () => {

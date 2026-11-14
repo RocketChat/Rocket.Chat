@@ -4,14 +4,15 @@ import { isElement } from 'react-is';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import NavBarDivider from './NavBarDivider';
+import { cx } from '../../helpers/composeClassNames';
 
 export type NavbarSectionProps = HTMLAttributes<HTMLSpanElement>;
 
-const NavBarSection = ({ children, ...props }: NavbarSectionProps) => {
+const NavBarSection = ({ children, className, ...props }: NavbarSectionProps) => {
 	const groups = flattenChildren(children).filter(isElement);
 
 	return (
-		<span className='rcx-navbar-section' {...props}>
+		<span {...props} className={cx('rcx-navbar-section', className)}>
 			{groups.map((child, index) => (
 				<Fragment key={index}>
 					{child}

@@ -1,12 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { mountRouter } from '@rocket.chat/http-router';
 import type { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import type express from 'express';
-import { WebApp } from 'meteor/webapp';
 
 import { APIClass } from './ApiClass';
 import type { RateLimiterOptions } from './definition';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
+import { httpApp } from '../lib/http/httpServer';
 import { metrics } from '../lib/metrics';
 import { settings } from '../settings';
 import { cors } from './v1/middlewares/cors';
@@ -109,7 +109,8 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 export const startRestAPI = () => {
-	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
+	mountRouter(
+		httpApp,
 		API.api
 			.use(
 				metricsMiddleware({
@@ -155,7 +156,7 @@ export const startRestAPI = () => {
 			.use(loggerMiddleware(logger))
 			.use(API.v1.router)
 			.use(API.experimental.router)
-			.use(API.default.router).router,
+			.use(API.default.router),
 	);
 };
 

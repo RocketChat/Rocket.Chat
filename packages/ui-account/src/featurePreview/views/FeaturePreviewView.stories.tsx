@@ -24,7 +24,7 @@ const features: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'roomToolboxLayout',
-		i18n: 'Room_Toolbox_Layout',
+		i18n: 'Room_toolbox_layout',
 		description: 'Room_Toolbox_Layout_description',
 		group: 'Room',
 		value: false,
@@ -51,7 +51,7 @@ const meta = {
 				Filters_and_secondary_sidebar_description: 'Stay on top of important conversations.',
 				Sidebar_rail: 'Sidebar rail',
 				Sidebar_rail_description: 'A compact sidebar.',
-				Room_Toolbox_Layout: 'Room toolbox layout',
+				Room_toolbox_layout: 'Room toolbox layout',
 				Room_Toolbox_Layout_description: 'A new layout for the room toolbox.',
 				Cancel: 'Cancel',
 				Save_changes: 'Save changes',

@@ -1,4 +1,5 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import Tag from './Tag';
@@ -16,15 +17,19 @@ describe('[Tag Rendering]', () => {
 	});
 
 	test('applies the pill modifier when pill is set', () => {
-		const { getByText } = render(<Tag pill>john.doe</Tag>);
-		const tag = getByText('john.doe').parentElement;
+		render(
+			<Tag pill data-testid='tag'>
+				john.doe
+			</Tag>,
+		);
+		const tag = screen.getByTestId('tag');
 
 		expect(tag).toHaveClass('rcx-tag', 'rcx-tag--pill');
 	});
 
 	test('does not apply the pill modifier by default', () => {
-		const { getByText } = render(<Tag>john.doe</Tag>);
-		const tag = getByText('john.doe').parentElement;
+		render(<Tag data-testid='tag'>john.doe</Tag>);
+		const tag = screen.getByTestId('tag');
 
 		expect(tag).toHaveClass('rcx-tag');
 		expect(tag).not.toHaveClass('rcx-tag--pill');

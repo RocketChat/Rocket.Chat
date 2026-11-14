@@ -86,6 +86,7 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 	}
 
 	try {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- the handler is the app's own UIKit interaction method, narrowed only by typeof 'function', so its result is untyped
 		return await interactionHandler.call(
 			wrapAppForRequest(app, request),
 			context,

@@ -1,6 +1,6 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, Text } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
@@ -130,17 +130,17 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 						<Box marginInline={8}>
 							<UserStatus status={status || Status.OFFLINE} />
 						</Box>
-						<Box fontScale='p2' withTruncatedText>
+						<Text fontScale='p2' truncate>
 							{name || username}
-						</Box>
+						</Text>
 					</Box>
 				</Box>
 			</GenericTableCell>
 
 			<GenericTableCell>
-				<Box fontScale='p2m' color='hint' withTruncatedText>
+				<Text fontScale='p2m' color='hint' truncate>
 					{username}
-				</Box>
+				</Text>
 			</GenericTableCell>
 
 			{!isLaptop && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}

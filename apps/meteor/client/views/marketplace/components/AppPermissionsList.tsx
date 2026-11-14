@@ -1,5 +1,5 @@
 import type { AppPermission } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -46,9 +46,9 @@ const AppPermissionsList = ({ appPermissions }: AppPermissionsListProps) => {
 					<Fragment key={permission.name}>
 						<li>{handleAppPermissions(permission.name)}</li>
 						{permission.required && (
-							<Box is='span' color='status-font-on-danger'>
+							<Text is='span' color='status-font-on-danger'>
 								({t('required')})
-							</Box>
+							</Text>
 						)}
 					</Fragment>
 				))}

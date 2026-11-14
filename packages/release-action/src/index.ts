@@ -3,11 +3,11 @@ import path from 'node:path';
 
 import * as core from '@actions/core';
 
-import { bumpNextVersion } from './bumpNextVersion';
-import { setupGitUser } from './gitUtils';
-import { publishRelease } from './publishRelease';
-import { startPatchRelease } from './startPatchRelease';
-import { updatePRDescription } from './updatePRDescription';
+import { bumpNextVersion } from './bumpNextVersion.js';
+import { setupGitUser } from './gitUtils.js';
+import { publishRelease } from './publishRelease.js';
+import { startPatchRelease } from './startPatchRelease.js';
+import { updatePRDescription } from './updatePRDescription.js';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 

@@ -1,4 +1,5 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import ToastBar from './ToastBar';
@@ -18,26 +19,38 @@ describe('[ToastBar Rendering]', () => {
 
 describe('[ToastBar Roles]', () => {
 	it('should use role="status" for `info` variant (polite announcement)', () => {
-		const { getByRole } = render(<ToastBar variant='info'>Info message</ToastBar>);
-		expect(getByRole('status')).toBeInTheDocument();
-		expect(getByRole('status')).toHaveTextContent('Info message');
+		render(<ToastBar variant='info'>Info message</ToastBar>);
+		expect(screen.getByRole('status')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toHaveTextContent('Info message');
 	});
 
 	it('should use role="status" for `success` variant (polite announcement)', () => {
-		const { getByRole } = render(<ToastBar variant='success'>Success message</ToastBar>);
-		expect(getByRole('status')).toBeInTheDocument();
-		expect(getByRole('status')).toHaveTextContent('Success message');
+		render(<ToastBar variant='success'>Success message</ToastBar>);
+		expect(screen.getByRole('status')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toHaveTextContent('Success message');
 	});
 
 	it('should use role="alert" for `error` variant (assertive announcement)', () => {
-		const { getByRole } = render(<ToastBar variant='error'>Error message</ToastBar>);
-		expect(getByRole('alert')).toBeInTheDocument();
-		expect(getByRole('alert')).toHaveTextContent('Error message');
+		render(<ToastBar variant='error'>Error message</ToastBar>);
+		expect(screen.getByRole('alert')).toBeInTheDocument();
+		expect(screen.getByRole('alert')).toHaveTextContent('Error message');
 	});
 
 	it('should default to role="status" when no variant is specified', () => {
-		const { getByRole } = render(<ToastBar>Default message</ToastBar>);
-		expect(getByRole('status')).toBeInTheDocument();
-		expect(getByRole('status')).toHaveTextContent('Default message');
+		render(<ToastBar>Default message</ToastBar>);
+		expect(screen.getByRole('status')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toHaveTextContent('Default message');
+	});
+});
+
+describe('[ToastBar id]', () => {
+	it('renders the id it receives on the root', () => {
+		render(
+			<ToastBar id='toast-1' data-testid='toast'>
+				Message
+			</ToastBar>,
+		);
+		expect(screen.getByTestId('toast')).toHaveAttribute('id', 'toast-1');
+		expect(screen.getByTestId('toast')).toHaveClass('rcx-toastbar');
 	});
 });

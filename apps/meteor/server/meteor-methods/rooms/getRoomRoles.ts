@@ -1,7 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
@@ -15,10 +14,8 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUser?: IUser | null) => {
-	check(rid, String);
-
 	if (!fromUser && settings.get('Accounts_AllowAnonymousRead') === false) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'getRoomRoles' });
 	}
 
 	const room = await Rooms.findOneById(rid);
@@ -27,7 +24,7 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUser?: IUser | 
 	}
 
 	if (fromUser && !(await canAccessRoomAsync(room, fromUser))) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
+		throw new ClientSafeError('error-not-authorized', 'Not authorized', { method: 'getRoomRoles' });
 	}
 
 	return getRoomRoles(rid);

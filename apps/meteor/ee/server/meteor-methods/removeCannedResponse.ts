@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { CannedResponse } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import notifications from '../../../server/lib/notifications/core/lib/Notifications';
@@ -11,8 +10,6 @@ export const removeCannedResponse = async (uid: string, _id: string): Promise<vo
 			method: 'removeCannedResponse',
 		});
 	}
-
-	check(_id, String);
 
 	const cannedResponse = await CannedResponse.findOneById(_id);
 	if (!cannedResponse) {

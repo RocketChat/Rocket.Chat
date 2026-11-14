@@ -1,4 +1,4 @@
-export const debounce = <TFunction extends (...args: any[]) => any>(
+export const debounce = <TFunction extends (...args: any[]) => unknown>(
 	func: TFunction,
 	delay: number,
 ): {

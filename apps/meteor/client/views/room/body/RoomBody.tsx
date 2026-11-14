@@ -1,12 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { CustomVirtuaScrollbars, useEmbeddedLayout, useMergedRefsV2 } from '@rocket.chat/ui-client';
+import { useRole, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
+import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
+import { BubbleDateScope } from '../BubbleDate/BubbleDateScope';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -22,15 +24,18 @@ import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
-import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
+import { useCanPreviewRoom } from '../hooks/useCanPreviewRoom';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
+import { useRoomMessages } from '../hooks/useRoomMessages';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import { useUserScrollIntent } from './hooks/useUserScrollIntent';
 import { useKeepAtBottom } from '../MessageList/hooks/useKeepAtBottom';
 import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
@@ -40,7 +45,7 @@ const RoomBody = () => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
 	const user = useUser();
@@ -74,27 +79,7 @@ const RoomBody = () => {
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
-
-	const canPreviewChannelRoom = usePermission('preview-c-room');
-
-	const subscribed = !!subscription;
-
-	const canPreview = useMemo(() => {
-		if (room && room.t !== 'c') {
-			return true;
-		}
-
-		if (allowAnonymousRead === true) {
-			return true;
-		}
-
-		if (canPreviewChannelRoom) {
-			return true;
-		}
-
-		return subscribed;
-	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
+	const canPreview = useCanPreviewRoom(room, subscription);
 
 	const {
 		handleUnreadBarJumpToButtonClick,
@@ -105,7 +90,10 @@ const RoomBody = () => {
 		debouncedMessageRead,
 	} = useHandleUnread(room, subscription);
 
-	const { handleDateScroll, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
+	const { handleDateScroll, bubbleRef, bubbleDateStore, resetBubbleDate } = useDateScroll();
+
+	// RoomBody persists across room switches, so the bubble of the room being left must not carry over.
+	useEffect(() => resetBubbleDate, [room._id, resetBubbleDate]);
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
@@ -124,6 +112,14 @@ const RoomBody = () => {
 	} = useHasNewMessages(room._id, user?._id, setShouldJumpToBottom, isAtBottom);
 
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
+
+	const { ref: userScrollIntentRef, hasUserScrolled } = useUserScrollIntent(debouncedMessageRead);
+
+	useEffect(() => {
+		chat.readStateManager.setHasUserReachedLatestMessageCallback(
+			() => hasUserScrolled.current && isAtBottom.current && !hasMoreNextMessages && RoomHistoryManager.isLoaded(room._id),
+		);
+	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages, room._id]);
 
 	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
 
@@ -174,7 +170,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			<Box key={room._id} className={['main-content-flex', listStyle]}>
+			<BubbleDateScope key={room._id} store={bubbleDateStore} className='main-content-flex'>
 				<section
 					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
@@ -193,9 +189,9 @@ const RoomBody = () => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-								<BubbleDate ref={bubbleRef} {...bubbleDate} />
+								<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 							</Box>
-							<div className={['messages-box'].filter(isTruthy).join(' ')}>
+							<div ref={userScrollIntentRef} className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}
@@ -258,7 +254,7 @@ const RoomBody = () => {
 						</div>
 					</div>
 				</section>
-			</Box>
+			</BubbleDateScope>
 		</>
 	);
 };

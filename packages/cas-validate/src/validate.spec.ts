@@ -1,4 +1,4 @@
-import { getQueryPath } from './validate';
+import { getQueryPath } from './validate.js';
 
 describe('getQueryPath', () => {
 	it('should generate the correct query path without trailing slash', () => {

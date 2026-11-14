@@ -1,7 +1,7 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 
 import { QuickActionsEnum, type QuickActionsActionConfig } from '../../views/room/lib/quickActions';
-import { useHasLicenseModule } from '../useHasLicenseModule';
 
 export const useOnHoldChatQuickAction = (): QuickActionsActionConfig | undefined => {
 	const { data: licensed = false } = useHasLicenseModule('livechat-enterprise');

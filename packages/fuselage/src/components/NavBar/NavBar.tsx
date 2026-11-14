@@ -1,7 +1,9 @@
 import type { HTMLAttributes } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
+
 export type NavBarProps = HTMLAttributes<HTMLElement>;
 
-const NavBar = (props: NavBarProps) => <nav className='rcx-navbar' {...props} />;
+const NavBar = ({ className, ...props }: NavBarProps) => <nav {...props} className={cx('rcx-navbar', className)} />;
 
 export default NavBar;

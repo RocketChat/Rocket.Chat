@@ -2,17 +2,17 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 import { useContext } from 'react';
 
-import ComposerBoldSpan from './ComposerBoldSpan';
-import ComposerCodeElement from './ComposerCodeElement';
-import ComposerItalicSpan from './ComposerItalicSpan';
-import ComposerLinkSpan from './ComposerLinkSpan';
-import { ComposerMarkupContext } from './ComposerMarkupContext';
-import ComposerMentionChannel from './ComposerMentionChannel';
-import ComposerMentionUser from './ComposerMentionUser';
-import ComposerPlainSpan from './ComposerPlainSpan';
-import ComposerSpoilerSpan from './ComposerSpoilerSpan';
-import ComposerStrikeSpan from './ComposerStrikeSpan';
-import { sourceOf } from './sourceOf';
+import ComposerBoldSpan from './ComposerBoldSpan.js';
+import ComposerCodeElement from './ComposerCodeElement.js';
+import ComposerItalicSpan from './ComposerItalicSpan.js';
+import ComposerLinkSpan from './ComposerLinkSpan.js';
+import { ComposerMarkupContext } from './ComposerMarkupContext.js';
+import ComposerMentionChannel from './ComposerMentionChannel.js';
+import ComposerMentionUser from './ComposerMentionUser.js';
+import ComposerPlainSpan from './ComposerPlainSpan.js';
+import ComposerSpoilerSpan from './ComposerSpoilerSpan.js';
+import ComposerStrikeSpan from './ComposerStrikeSpan.js';
+import { sourceOf } from './sourceOf.js';
 
 type ComposerInlineElementsProps = {
 	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];

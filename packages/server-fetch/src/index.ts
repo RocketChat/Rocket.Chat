@@ -4,10 +4,9 @@ import type { Readable } from 'node:stream';
 
 import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
-import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import fetch, { FetchError, Response } from 'node-fetch';
+import fetch, { FetchError, Headers as NodeFetchHeaders, Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
@@ -137,7 +136,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			const headers: Record<string, string> = {};
 
 			if (existingHeaders && typeof existingHeaders === 'object') {
-				if (existingHeaders instanceof Headers) {
+				if (existingHeaders instanceof Headers || existingHeaders instanceof NodeFetchHeaders) {
 					existingHeaders.forEach((value, key) => {
 						headers[key] = value;
 					});
@@ -162,7 +161,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			}
 
 			const response = await fetch(url.toString(), {
-				// @ts-expect-error - This complained when types were moved to file :/
 				signal: controller.signal,
 				...parsedOptions,
 				redirect: 'manual',

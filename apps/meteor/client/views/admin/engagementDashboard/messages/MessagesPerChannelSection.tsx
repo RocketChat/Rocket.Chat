@@ -4,16 +4,17 @@ import {
 	FlexContainer,
 	FlexItem,
 	Icon,
-	Skeleton,
-	Table,
-	Tile,
 	Palette,
-	Tooltip,
-	TableHead,
-	TableRow,
+	Skeleton,
+	Stack,
+	Table,
 	TableBody,
 	TableCell,
-	Stack,
+	TableHead,
+	TableRow,
+	Text,
+	Tile,
+	Tooltip,
 } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -139,18 +140,18 @@ const MessagesPerChannelSection = () => {
 										</FlexItem>
 										<FlexItem basis='auto'>
 											<Stack gap={4}>
-												<Box color='hint' fontScale='p1'>
+												<Text color='hint' fontScale='p1'>
 													<LegendSymbol color={colors.warning} />
 													{t('Private_Chats')}
-												</Box>
-												<Box color='hint' fontScale='p1'>
+												</Text>
+												<Text color='hint' fontScale='p1'>
 													<LegendSymbol color={colors.success} />
 													{t('Private_Channels')}
-												</Box>
-												<Box color='hint' fontScale='p1'>
+												</Text>
+												<Text color='hint' fontScale='p1'>
 													<LegendSymbol color={colors.info} />
 													{t('Public_Channels')}
-												</Box>
+												</Text>
 											</Stack>
 										</FlexItem>
 									</Box>
@@ -162,7 +163,7 @@ const MessagesPerChannelSection = () => {
 					</FlexItem>
 					<FlexItem grow={1} shrink={0} basis='0'>
 						<Stack gap={16}>
-							{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
+							{table ? <Text fontScale='p1'>{t('Most_popular_channels_top_5')}</Text> : <Skeleton width='50%' />}
 							{table && !table.length && (
 								<Tile>
 									<Box fontScale='p1' color='hint' textAlign='center'>

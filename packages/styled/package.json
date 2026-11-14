@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/styled",
-	"version": "0.34.1",
+	"version": "0.34.2",
 	"description": "A simple styled API for React components",
 	"keywords": [
 		"react",
@@ -22,10 +22,16 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"main": "dist/index.js",
-	"module": "dist/index.module.js",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
 	"source": "src/index.ts",
-	"types": "dist/index.d.ts",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],

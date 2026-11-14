@@ -8,7 +8,7 @@ import remarkStringify from 'remark-stringify';
 import semver from 'semver';
 import unified from 'unified';
 
-import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
+import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata.js';
 
 export const BumpLevels = {
 	dep: 0,
@@ -54,7 +54,7 @@ export function getChangelogEntry(changelog: string, version: string) {
 		}
 	}
 	if (headingStartInfo) {
-		(ast as any).children = ((ast as any).children as any).slice(headingStartInfo.index + 1, endIndex);
+		(ast as any).children = nodes.slice(headingStartInfo.index + 1, endIndex);
 	}
 	return {
 		content: unified().use(remarkStringify).stringify(ast),
@@ -62,9 +62,19 @@ export function getChangelogEntry(changelog: string, version: string) {
 	};
 }
 
+type PackageJson = {
+	name: string;
+	version: string;
+	engines?: { node?: string; yarn?: string; npm?: string };
+	houston?: { updateFiles?: string[] };
+	dependencies?: Record<string, string>;
+	devDependencies?: Record<string, string>;
+	peerDependencies?: Record<string, string>;
+};
+
 export async function readPackageJson(cwd: string) {
 	const filePath = path.resolve(cwd, 'package.json');
-	return JSON.parse(await readFile(filePath, 'utf-8'));
+	return JSON.parse(await readFile(filePath, 'utf-8')) as PackageJson;
 }
 
 async function getUpdateFilesList(cwd: string): Promise<string[]> {
@@ -134,8 +144,26 @@ export function isPreRelease(cwd: string) {
 	return false;
 }
 
-export function createTempReleaseNotes(version: string, releaseBody: string) {
-	return `
+// GitHub rejects bodies over these lengths in characters, and JS string length never undercounts them
+export const MAX_PULL_REQUEST_BODY_LENGTH = 65536;
+export const MAX_RELEASE_BODY_LENGTH = 125000;
+
+const TRUNCATION_NOTICE = '\n\n_The change log was truncated. See the full change log in `CHANGELOG.md`._\n';
+
+export function truncateReleaseNotes(releaseBody: string, maxLength: number) {
+	if (releaseBody.length <= maxLength) {
+		return releaseBody;
+	}
+
+	const head = releaseBody.slice(0, Math.max(0, maxLength - TRUNCATION_NOTICE.length));
+	// cut between top-level blocks so no list item or <details> is left open
+	const cut = [...head.matchAll(/\n\n(?=\S)/g)].at(-1)?.index ?? head.length;
+
+	return `${head.slice(0, cut)}${TRUNCATION_NOTICE}`;
+}
+
+export function createTempReleaseNotes(version: string, releaseBody: string, maxLength = MAX_PULL_REQUEST_BODY_LENGTH) {
+	const wrap = (notes: string) => `
 <!-- release-notes-start -->
 <!-- This content is automatically generated. Changing this will not reflect on the final release log -->
 
@@ -143,8 +171,10 @@ _You can see below a preview of the release change log:_
 
 # ${version}
 
-${releaseBody}
+${notes}
 <!-- release-notes-end -->`;
+
+	return wrap(truncateReleaseNotes(releaseBody, maxLength - wrap('').length));
 }
 
 export function getReleaseName(version: string, ltsVersions: string[]) {

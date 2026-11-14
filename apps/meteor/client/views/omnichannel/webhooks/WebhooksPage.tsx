@@ -13,13 +13,14 @@ import {
 	FieldLabel,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { ExternalLink, links, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { links } from '../../../lib/links';
+import ContentColumn from '../../../components/ContentColumn';
 
 export type WebhooksPageProps = {
 	settings: Record<string, SettingValue>;
@@ -85,7 +86,7 @@ const getInitialValues = ({
 };
 
 const WebhooksPage = ({ settings }: WebhooksPageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const defaultValues = getInitialValues(settings);
 	const {
@@ -167,7 +168,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' width='full' alignSelf='center'>
+				<ContentColumn>
 					<p>{t('You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM')}</p>
 					<p>
 						<ExternalLink to={INTEGRATION_URL}>{t('Click_here')}</ExternalLink> {t('to_see_more_details_on_how_to_integrate')}
@@ -224,7 +225,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 							</FieldRow>
 						</Field>
 					</FieldGroup>
-				</Box>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 		</Page>
 	);

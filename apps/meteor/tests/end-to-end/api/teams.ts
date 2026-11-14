@@ -242,7 +242,7 @@ describe('[Teams]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -876,7 +876,7 @@ describe('/teams.listAll', () => {
 			.expect(403)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 	});
 });
@@ -1103,7 +1103,7 @@ describe('/teams.removeMember', () => {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			})
 			.then(() => done())
 			.catch(done);
@@ -1256,7 +1256,7 @@ describe('/teams.leave', () => {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			})
 			.then(() => done())
 			.catch(done);
@@ -1342,7 +1342,7 @@ describe('/teams.info', () => {
 			.expect(403)
 			.expect((response) => {
 				expect(response.body).to.have.property('success', false);
-				expect(response.body).to.have.property('error', 'unauthorized');
+				expect(response.body).to.have.property('errorType', 'error-forbidden');
 			})
 			.then(() => done())
 			.catch(done);
@@ -1782,7 +1782,7 @@ describe('/teams.addRooms', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('error-no-permission-team-channel');
+		expect(res.body.errorType).to.be.equal('error-forbidden');
 	});
 
 	it('should add public and private rooms to team', async () => {
@@ -2435,7 +2435,7 @@ describe('/teams.updateRoom', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('unauthorized');
+		expect(res.body.errorType).to.be.equal('error-forbidden');
 	});
 
 	it('should set room to team default', async () => {
@@ -2817,7 +2817,7 @@ describe('/teams.removeRoom', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('unauthorized');
+		expect(res.body.errorType).to.be.equal('error-forbidden');
 	});
 
 	it('should remove room from team', async () => {

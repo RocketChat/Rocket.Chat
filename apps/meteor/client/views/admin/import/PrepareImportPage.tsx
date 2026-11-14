@@ -1,5 +1,5 @@
 import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
-import { Badge, Box, Button, ButtonGroup, ProgressBar, Throbber, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, ProgressBar, Text, Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -21,6 +21,7 @@ import {
 	ImportingErrorStates,
 } from '../../../../lib/importer/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
+import { PageTabs } from '../../../components/PageTabs';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
@@ -183,7 +184,6 @@ function PrepareImportPage() {
 	};
 
 	const [tab, setTab] = useState('users');
-	const handleTabClick = useMemo(() => (tab: string) => () => setTab(tab), []);
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
@@ -213,25 +213,20 @@ function PrepareImportPage() {
 					paddingBlockEnd={24}
 				>
 					<Box>
-						<Box is='h2' fontScale='p2m'>
+						<Text is='h2' fontScale='p2m'>
 							{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
-						</Box>
+						</Text>
 						{!isPreparing && (
-							<Tabs>
-								<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
-									{t('Users')} <Badge>{usersCount}</Badge>
-								</TabsItem>
-								<TabsItem selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
-									{t('Contacts')} <Badge>{contactsCount}</Badge>
-								</TabsItem>
-								<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
-									{t('Channels')} <Badge>{channelsCount}</Badge>
-								</TabsItem>
-								<TabsItem disabled>
-									{t('Messages')}
-									<Badge>{messageCount}</Badge>
-								</TabsItem>
-							</Tabs>
+							<PageTabs
+								items={[
+									{ id: 'users', label: t('Users'), counter: <Badge>{usersCount}</Badge> },
+									{ id: 'contacts', label: t('Contacts'), counter: <Badge>{contactsCount}</Badge> },
+									{ id: 'channels', label: t('Channels'), counter: <Badge>{channelsCount}</Badge> },
+									{ id: 'messages', label: t('Messages'), counter: <Badge>{messageCount}</Badge>, disabled: true },
+								]}
+								selected={tab}
+								onSelect={setTab}
+							/>
 						)}
 					</Box>
 					{isPreparing && (

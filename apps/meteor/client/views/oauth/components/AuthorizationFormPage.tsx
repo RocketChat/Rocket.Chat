@@ -1,5 +1,5 @@
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Form, FormContainer, FormFooter, FormHeader, FormTitle } from '@rocket.chat/layout';
 import { useLoginToken, useLogout, useRoute } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useRef } from 'react';
@@ -7,6 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
+import RichContent from '../../../components/RichContent';
 
 export type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
@@ -53,7 +54,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 					<FormTitle id={formLabelId}>{t('core.Authorize_access_to_your_account')}</FormTitle>
 				</FormHeader>
 				<FormContainer>
-					<Box withRichContent>
+					<RichContent>
 						<CurrentUserDisplay user={user} />
 
 						<p>
@@ -61,7 +62,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 								<strong>{oauthApp.name}</strong>
 							</Trans>
 						</p>
-					</Box>
+					</RichContent>
 					<input type='hidden' name='access_token' value={token} />
 					<input type='hidden' name='client_id' value={oauthApp.clientId} />
 					<input type='hidden' name='redirect_uri' value={redirectUri} />

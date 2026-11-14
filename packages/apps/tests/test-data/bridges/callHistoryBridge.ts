@@ -1,5 +1,5 @@
 import type { ICallHistorySearchResult } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
 
 import { CallHistoryBridge } from '../../../src/server/bridges';
 

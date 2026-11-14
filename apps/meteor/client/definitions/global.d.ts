@@ -10,6 +10,8 @@ declare global {
 		__rocketChatLoginWithToken?: (token: string) => Promise<void>;
 		/** Calls a server method through the same path as the UI; end-to-end specs use it. */
 		__rocketChatCallMethod?: (method: string, ...args: unknown[]) => Promise<unknown>;
+		/** The client's end-to-end encryption state; end-to-end specs use it. */
+		__rocketChatE2E?: typeof import('../lib/e2ee/rocketchat.e2e').e2e;
 	}
 
 	interface Navigator {

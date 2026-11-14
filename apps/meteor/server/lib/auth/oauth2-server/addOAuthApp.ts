@@ -9,7 +9,7 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 
 export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IUser['_id'] | undefined): Promise<IOAuthApps> {
 	if (!uid) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'addOAuthApp' });
 	}
 
 	const user = await Users.findOneById(uid, { projection: { username: 1 } });

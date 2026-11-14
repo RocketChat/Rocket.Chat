@@ -1,16 +1,12 @@
 import type { IApiService, IBroker, IServiceMetrics } from '@rocket.chat/core-services';
 import { Presence, asyncLocalStorage } from '@rocket.chat/core-services';
+import { ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server, createStreamAdapter } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
 import { DDPStreamer } from './DDPStreamer';
 import { makeSession, sentPackets } from './__tests__/helpers';
-import { ConnectionRegistry } from './ddp/ConnectionRegistry';
-import { Server } from './ddp/Server';
-import { ConnectionLifecycle } from './ddp/lifecycle';
-import { MeteorCollection } from './lib/MeteorCollection';
-import { createStreamAdapter } from './streams/StreamAdapter';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
@@ -18,13 +14,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 		newConnection: jest.fn().mockResolvedValue(undefined),
 		removeConnection: jest.fn().mockResolvedValue(undefined),
 		updateConnection: jest.fn().mockResolvedValue(undefined),
-	},
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	...jest.requireActual('@rocket.chat/models'),
-	Users: {
-		findOneById: jest.fn(),
 	},
 }));
 
@@ -42,7 +31,7 @@ jest.mock('@rocket.chat/logger', () => ({
 	}),
 }));
 
-const mockFindOneById = jest.mocked(Users.findOneById);
+const mockFindOneById = jest.fn();
 
 const server = new Server();
 const notifications = new NotificationsModule(createStreamAdapter(server), 'self');
@@ -94,6 +83,10 @@ async function flushMicrotasks(): Promise<void> {
 }
 
 describe('DDPStreamer lifecycle handling', () => {
+	beforeAll(() => {
+		mockModel('Users', { findOneById: mockFindOneById });
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -264,7 +257,6 @@ describe('DDPStreamer lifecycle handling', () => {
 					'username': 1,
 					'nickname': 1,
 					'emails': 1,
-					'status': 1,
 					'statusDefault': 1,
 					'statusText': 1,
 					'statusConnection': 1,

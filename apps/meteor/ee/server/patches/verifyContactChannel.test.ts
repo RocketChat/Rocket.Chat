@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -44,10 +45,15 @@ const { runVerifyContactChannel } = proxyquire.noCallThru().load('./verifyContac
 	'../../../server/lib/omnichannel/QueueManager': { QueueManager: queueManager },
 	'../../../server/database/utils': { client: clientMock },
 	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
-	'@rocket.chat/models': modelsMock,
 });
 
 describe('verifyContactChannel', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('LivechatInquiry', modelsMock.LivechatInquiry);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.getUpdater.reset();
 		modelsMock.LivechatContacts.setVerifiedUpdateQuery.reset();

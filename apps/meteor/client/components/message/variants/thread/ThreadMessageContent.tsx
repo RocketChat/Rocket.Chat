@@ -14,9 +14,9 @@ import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import UrlPreviews from '../../content/UrlPreviews';
+import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
@@ -27,8 +27,7 @@ export type ThreadMessageContentProps = {
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const { enabled: oembedEnabled } = useOembedLayout();
-	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
-	const broadcast = subscription?.broadcast ?? false;
+	const broadcast = useMessageBroadcast(message);
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };

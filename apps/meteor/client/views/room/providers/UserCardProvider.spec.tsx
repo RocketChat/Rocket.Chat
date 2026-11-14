@@ -9,9 +9,12 @@ jest.mock('../contexts/RoomContext', () => ({
 	useRoom: () => ({ _id: 'r1', t: 'c', uids: [] }),
 }));
 
+const mockOpenTab = jest.fn();
+let mockActions: { id: string }[] = [];
+
 jest.mock('@rocket.chat/ui-contexts', () => {
 	const actual = jest.requireActual('@rocket.chat/ui-contexts');
-	return { ...actual, useRoomToolbox: () => ({ openTab: jest.fn() }) };
+	return { ...actual, useRoomToolbox: () => ({ openTab: mockOpenTab, actions: mockActions }) };
 });
 
 jest.mock('../UserCard', () => ({
@@ -192,6 +195,33 @@ it('keeps the context value stable when a card opens and closes', async () => {
 
 	expect(new Set(values).size).toBe(1);
 	expect(screen.getByText('open')).not.toHaveAttribute('aria-expanded');
+});
+
+it.each([
+	['the member list when it is available', [{ id: 'members-list' }], 'members-list'],
+	['the profile on its own when the member list is hidden', [{ id: 'thread' }], 'user-info'],
+])('opens a channel member info through %s', (_, actions, expectedTab) => {
+	mockActions = actions;
+	mockOpenTab.mockClear();
+
+	const InfoTrigger = () => {
+		const { openUserInfo } = useUserCard();
+		return (
+			<button type='button' onClick={() => openUserInfo('john')}>
+				info
+			</button>
+		);
+	};
+
+	render(
+		<UserCardProvider>
+			<InfoTrigger />
+		</UserCardProvider>,
+	);
+
+	fireEvent.click(screen.getByText('info'));
+
+	expect(mockOpenTab).toHaveBeenCalledWith(expectedTab, 'john');
 });
 
 const AuthorTrigger = ({ username }: { username: string }) => {

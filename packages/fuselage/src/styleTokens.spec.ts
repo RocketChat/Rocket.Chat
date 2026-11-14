@@ -1,4 +1,21 @@
-import { inset, spacing, spacingScale } from './styleTokens';
+import {
+	backgroundColor,
+	borderRadius,
+	borderWidth,
+	fontColor,
+	fontFamily,
+	fontScale,
+	inset,
+	resolveBackgroundColor,
+	resolveBorderRadius,
+	resolveBorderWidth,
+	resolveFontColor,
+	resolveFontScale,
+	resolveStrokeColor,
+	spacing,
+	spacingScale,
+	strokeColor,
+} from './styleTokens';
 
 describe('spacingScale', () => {
 	it('lists the eight steps in pixels', () => {
@@ -43,5 +60,38 @@ describe('inset', () => {
 		['auto', 'auto'],
 	])('keeps resolving %p to %p', (value, expected) => {
 		expect(inset(value)).toBe(expected);
+	});
+});
+
+describe('typed token helpers', () => {
+	it('resolve the names of the token lists', () => {
+		expect(borderRadius('medium')).toMatch(/rem$/);
+		expect(borderWidth('default')).toMatch(/px$/);
+		expect(fontScale('p2').fontSize).toMatch(/rem$/);
+		expect(fontFamily('sans')).toContain('Inter');
+		expect(strokeColor('light')).toBe(resolveStrokeColor('light'));
+		expect(backgroundColor('tint')).toBe(resolveBackgroundColor('tint'));
+		expect(fontColor('default')).toBe(resolveFontColor('default'));
+	});
+
+	it('reject names outside the token lists when typechecked', () => {
+		const typecheck = () => {
+			// @ts-expect-error not a border radius
+			borderRadius('huge');
+			// @ts-expect-error the stroke prefix is added by the helper
+			strokeColor('stroke-light');
+			// @ts-expect-error not a font scale
+			fontScale('p9');
+		};
+
+		expect(typecheck).toBeDefined();
+	});
+});
+
+describe('runtime token resolvers', () => {
+	it('return undefined for values outside the token lists', () => {
+		expect(resolveBorderRadius('huge')).toBeUndefined();
+		expect(resolveBorderWidth(3)).toBeUndefined();
+		expect(resolveFontScale('p9')).toBeUndefined();
 	});
 });

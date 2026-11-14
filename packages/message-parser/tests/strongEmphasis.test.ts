@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { bold, link, paragraph, plain, italic, strike, emoji, emojiUnicode, mentionChannel, mentionUser } from './helpers';
+import { bold, link, paragraph, plain, italic, strike, emoji, emojiUnicode, mentionChannel, mentionUser } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	['*:smile:*', [paragraph([bold([emoji('smile')])])]],

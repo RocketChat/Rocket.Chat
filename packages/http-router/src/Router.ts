@@ -1,13 +1,11 @@
 import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
-import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
-import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
-import type { OpenAPIDocsOptions, Route } from './openapi';
+import type { Route } from './openapi';
 import { buildOperation, toOpenAPIPath } from './openapi';
 import { parseQueryParams } from './parseQueryParams';
 
@@ -79,7 +77,7 @@ export class Router<
 		const documentedPath = toOpenAPIPath(path);
 		this.typedRoutes = this.typedRoutes || {};
 		this.typedRoutes[documentedPath] = this.typedRoutes[documentedPath] || {};
-		this.typedRoutes[documentedPath][method.toLowerCase()] = buildOperation(method, path, options as OpenAPIDocsOptions);
+		this.typedRoutes[documentedPath][method.toLowerCase()] = buildOperation(method, path, options);
 	}
 
 	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {
@@ -141,7 +139,7 @@ export class Router<
 						msg: 'Query parameters validation failed - route spec does not match request payload',
 						method: req.method,
 						path: req.url,
-						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						bodyParams: undefined,
 						queryParams,
 					});
@@ -149,7 +147,7 @@ export class Router<
 						{
 							success: false,
 							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						},
 						400,
 					);
@@ -166,15 +164,15 @@ export class Router<
 						msg: 'Request body validation failed - route spec does not match request payload',
 						method: req.method,
 						path: req.url,
-						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						bodyParams,
 						queryParams: undefined,
 					});
 					return c.json(
 						{
 							success: false,
-							errorType: 'invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						},
 						400,
 					);
@@ -200,7 +198,7 @@ export class Router<
 							const pathDesc = error.instancePath ? `at path '${error.instancePath}'` : "at path '(root)'";
 							const paramsStr = Object.keys(error.params || {}).length
 								? ` (${Object.entries(error.params)
-										.map(([key, value]) => `${key}: ${value}`)
+										.map(([key, value]) => `${key}: ${String(value)}`)
 										.join(', ')})`
 								: '';
 							return `${pathDesc}: ${error.message}${paramsStr}`;
@@ -349,22 +347,16 @@ export class Router<
 		if (typeof innerRouter === 'function') {
 			this.innerRouter.use(innerRouter as any);
 		}
-		return this as any;
+		return this;
 	}
 
-	get router(): express.Router {
-		// oxlint-disable-next-line new-cap
-		const router = express.Router();
-		const hono = new Hono();
-		router.use(
-			this.base,
-			honoAdapterForExpress(
-				hono.route(this.base, this.innerRouter).options('*', (c) => {
-					return c.body('OK');
-				}),
-			),
-		);
-		return router;
+	/**
+	 * An app answering every request under the router's base, with the routes the router has when it is called.
+	 */
+	toHono(): Hono {
+		return new Hono().route(this.base, this.innerRouter).options(`${this.base}/*`, (c) => {
+			return c.body('OK');
+		});
 	}
 
 	getHonoRouter(): InnerRouter {

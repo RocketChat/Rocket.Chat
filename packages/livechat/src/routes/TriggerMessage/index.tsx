@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { Screen, ScreenContent } from '../../components/Screen';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
@@ -21,6 +21,7 @@ export const TriggerMessage = (_: TriggerMessageProps) => {
 	const handleStartChatClick = async () => {
 		parentCall('setFullScreenDocumentMobile');
 		parentCall('openWidget');
+		// oxlint-disable-next-line typescript/await-thenable -- the tick lets the restored state render before route('/') swaps the screen
 		await onRestore();
 		route('/');
 	};

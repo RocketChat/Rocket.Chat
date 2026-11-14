@@ -6,6 +6,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
@@ -52,10 +53,26 @@ import { authenticationMiddlewareForHono } from './v1/middlewares/authentication
 import { permissionsMiddleware } from './v1/middlewares/permissions';
 import { license } from '../../ee/server/api/v1/middlewares/license';
 import { licenseRequired } from '../../ee/server/api/v1/middlewares/licenseRequired';
+import { createMeteorInvocation } from '../lib/utils/createMeteorInvocation';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
 
 const logger = new Logger('API');
+
+// error codes that mean the caller was refused, answered with 403
+export const refusalErrorCodes = new Set([
+	'unauthorized',
+	'error-unauthorized',
+	'not-authorized',
+	'not_authorized',
+	'error-not-authorized',
+	'error-not-allowed',
+	'not-allowed',
+	'no-permission',
+	'error-not-authorized-federation',
+	'forbidden',
+	'error-forbidden',
+]);
 
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
@@ -384,19 +401,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden(): ForbiddenResult<string>;
-
-	public forbidden<T>(msg: T): ForbiddenResult<T>;
-
-	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+	public forbidden(message = 'You are not allowed to do this'): ForbiddenResult {
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
-				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
-				// but thanks to the semver check tests should break as soon we bump to a new version
-				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
+				error: message,
+				errorType: 'error-forbidden',
 			},
 		};
 	}
@@ -597,7 +608,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				} & Omit<TOptions, 'response'>
 		  >
 	> {
-		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		// any thrown refusal answers 403, so every typed route can answer it
+		const response = options.response && { ...options.response, 403: validateForbiddenErrorResponse };
+		this.addRoute([subpath], { tags: [], ...options, response, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		return this;
 	}
 
@@ -801,7 +814,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new ClientSafeError('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new ClientSafeError('error-invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -819,32 +832,28 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
 							if (options.applyMeteorContext) {
-								const invocation = APIClass.createMeteorInvocation(connection, this.userId, this.token);
-								result = await invocation
-									.applyInvocation(() => originalAction.apply(this))
-									.finally(() => invocation[Symbol.asyncDispose]());
+								result = await createMeteorInvocation(connection, this.userId, this.token).applyInvocation(() =>
+									originalAction.apply(this),
+								);
 							} else {
 								result = await originalAction.apply(this);
 							}
 						} catch (e: any) {
 							result = ((e: any) => {
-								switch (e.error) {
+								// plain `Error`s carry the code in `message`
+								const code = typeof e === 'string' ? e : (e.error ?? e.message);
+								const message: string = typeof e === 'string' ? e : e.message;
+								if (refusalErrorCodes.has(code)) {
+									// a ClientSafeError's message ends in a `[code]` suffix; its reason is the readable part
+									return api.forbidden(isClientSafeError(e) ? e.reason : message);
+								}
+								switch (code) {
 									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
-									case 'unauthorized':
-									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
-									case 'forbidden':
-									case 'error-forbidden':
-										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
-										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.tooManyRequests(message);
+									case 'error-unauthenticated':
+										return api.unauthorized(message);
 									default:
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.failure(message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
 							})(e);
 						} finally {
@@ -1023,18 +1032,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 						const result = self.unauthorized();
 
-						if (!applyBreakingChanges) {
-							Object.assign(result.body, {
-								status: 'error',
-								error: error.error,
-								details: error.details,
-								message: error.reason || error.message,
-								...(error.reason === 'User not found' && {
-									error: 'Unauthorized',
-									message: 'Unauthorized',
-								}),
-							});
-						}
+						// Clients read these to drive 2FA prompts and explain refused logins
+						Object.assign(result.body, {
+							...(!applyBreakingChanges && { status: 'error' }),
+							error: error.error,
+							details: error.details,
+							message: error.reason || error.message,
+							...(error.reason === 'User not found' && {
+								error: 'Unauthorized',
+								message: 'Unauthorized',
+							}),
+						});
 						return result;
 					}
 				},
@@ -1107,39 +1115,5 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			},
 		);
-	}
-
-	static createMeteorInvocation(
-		connection: {
-			id: string;
-			close: () => void;
-			clientAddress: string;
-			httpHeaders: Record<string, any>;
-		},
-		userId?: string,
-		token?: string,
-	) {
-		const invocation = new DDPCommon.MethodInvocation({
-			connection,
-			isSimulation: false,
-			userId,
-		});
-
-		Accounts._accountData[connection.id] = {
-			connection,
-		};
-		if (token) {
-			Accounts._setAccountData(connection.id, 'loginToken', token);
-		}
-
-		return {
-			invocation,
-			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
-				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
-			},
-			[Symbol.asyncDispose]() {
-				return Promise.resolve();
-			},
-		};
 	}
 }

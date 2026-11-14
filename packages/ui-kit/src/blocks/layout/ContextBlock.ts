@@ -1,6 +1,6 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
-import type { ImageElement } from '../elements/ImageElement';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
+import type { ImageElement } from '../elements/ImageElement.js';
 
 export type ContextBlockElements = TextObject | ImageElement;
 export type ContextBlock = LayoutBlockish<{

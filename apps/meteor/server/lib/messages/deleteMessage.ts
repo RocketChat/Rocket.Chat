@@ -14,7 +14,7 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 		throw new ClientSafeError('error-invalid-message', 'Invalid message');
 	}
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 	}
 
 	const user = await Users.findOneById(userId);

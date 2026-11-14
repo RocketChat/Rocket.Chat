@@ -21,6 +21,7 @@ export default function handleOnPreSettingUpdate(request: RequestContext): Promi
 
 	const [setting] = params as [Record<string, unknown>];
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- Function.prototype.call returns any because strictBindCallApply is off in this package; the value is the app's onPreSettingUpdate result
 	return app.onPreSettingUpdate.call(
 		wrapAppForRequest(app, request),
 		setting,

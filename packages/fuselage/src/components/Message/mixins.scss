@@ -1,13 +1,14 @@
-@use '../../styles/lengths.scss';
-@use '../../styles/colors.scss';
-
 @mixin message-focus-visible {
 	@content;
+
+	pointer-events: none;
 
 	opacity: 0;
 
 	.rcx-message:hover &,
 	.rcx-message:focus-visible & {
+		pointer-events: auto;
+
 		opacity: 1;
 	}
 
@@ -16,6 +17,8 @@
    ** :has pseudo class are not stable on some Firefox versions
   **/
 	.rcx-message:has(:focus-visible) & {
+		pointer-events: auto;
+
 		opacity: 1;
 	}
 }

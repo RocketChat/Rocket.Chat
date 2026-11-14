@@ -1,3 +1,4 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
@@ -335,7 +336,7 @@ export class LDAPManager {
 	): Promise<void> {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-			await Accounts.setPasswordAsync(user._id, password, { logout: false });
+			await UsersRaw.setPasswordHash(user._id, await hashPassword(password));
 		}
 
 		await this.syncUserAvatar(user, ldapUser);

@@ -1,8 +1,9 @@
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useSessionDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSessionDispatch } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 const ComposerAnonymous = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setForceLogin = useSessionDispatch('forceLogin');
 
 	return (

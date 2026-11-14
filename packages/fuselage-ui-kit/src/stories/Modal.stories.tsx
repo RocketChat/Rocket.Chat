@@ -19,10 +19,8 @@ import { action } from 'storybook/actions';
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
 
-type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
-
 const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boolean }) => (
-	<AnimatedVisibility visibility={visible ? (AnimatedVisibility.VISIBLE as VisibilityType) : (AnimatedVisibility.HIDDEN as VisibilityType)}>
+	<AnimatedVisibility visibility={visible ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
 		<Modal open={visible}>
 			<ModalHeader>
 				<ModalThumb url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />

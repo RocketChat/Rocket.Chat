@@ -1,4 +1,4 @@
-import type { Meta, StoryObj, StoryFn, StoryContext } from '@storybook/react-webpack5';
+import type { Meta, StoryObj, StoryFn, StoryContext } from '@storybook/react';
 import { cloneElement } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
@@ -88,7 +88,7 @@ export const StatusColors: Story = {
 							alignItems: 'center',
 							justifyContent: 'center',
 						} satisfies BoxProps,
-						child.props.backgroundColor.replace('status-background-', ''),
+						(child.props.backgroundColor as string).replace('status-background-', ''),
 					),
 				)}
 			</Box>

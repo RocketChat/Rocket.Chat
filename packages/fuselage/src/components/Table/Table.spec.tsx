@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './Table.stories';
@@ -18,6 +18,7 @@ describe('[Table Rendering]', () => {
 		const { Columns } = composeStories(stories);
 		const { container } = render(<Columns />);
 
+		// oxlint-disable-next-line testing-library/no-container -- `col` elements have no ARIA role
 		expect(container.querySelectorAll('table > colgroup > col')).toHaveLength(4);
 	});
 });

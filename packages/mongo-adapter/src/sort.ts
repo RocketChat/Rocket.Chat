@@ -1,9 +1,9 @@
 import type { Sort } from 'mongodb';
 
-import { compareBSONValues } from './bson';
-import { isEmptyArray } from './common';
-import { createLookupFunction } from './lookups';
-import type { LookupBranch } from './types';
+import { compareBSONValues } from './bson.js';
+import { isEmptyArray } from './common.js';
+import { createLookupFunction } from './lookups.js';
+import type { LookupBranch } from './types.js';
 
 const createSortSpecParts = <T>(
 	spec: Sort,
@@ -43,7 +43,7 @@ const createSortSpecParts = <T>(
 
 const reduceValue = (branchValues: LookupBranch[], ascending: boolean): unknown =>
 	branchValues
-		.flatMap(({ value }) => {
+		.flatMap(({ value }): unknown[] => {
 			if (!Array.isArray(value)) {
 				return [value];
 			}

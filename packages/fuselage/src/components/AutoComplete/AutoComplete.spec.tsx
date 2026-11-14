@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -24,7 +24,14 @@ describe('[AutoComplete Rendering]', () => {
 describe('[Autocomplete functionality]', () => {
 	it('should disabled the input when disabled prop is true', () => {
 		render(
-			<AutoComplete value='1' filter='test' setFilter={() => {}} options={[{ value: '1', label: 'test1' }]} onChange={() => {}} disabled />,
+			<AutoComplete
+				value='1'
+				filter='test'
+				setFilter={jest.fn()}
+				options={[{ value: '1', label: 'test1' }]}
+				onChange={jest.fn()}
+				disabled
+			/>,
 		);
 
 		const input = screen.getByRole('textbox');
@@ -37,7 +44,7 @@ describe('[Autocomplete functionality]', () => {
 			<AutoComplete
 				value={['1', '2']}
 				filter='test'
-				setFilter={() => {}}
+				setFilter={jest.fn()}
 				options={[
 					{ value: '1', label: 'test1' },
 					{ value: '2', label: 'test2' },
@@ -56,7 +63,7 @@ describe('[Autocomplete functionality]', () => {
 
 	it('should remove selected item when clicking on the remove button (single)', async () => {
 		const onChange = jest.fn();
-		render(<AutoComplete value='1' filter='test' setFilter={() => {}} options={[{ value: '1', label: 'test1' }]} onChange={onChange} />);
+		render(<AutoComplete value='1' filter='test' setFilter={jest.fn()} options={[{ value: '1', label: 'test1' }]} onChange={onChange} />);
 
 		const removeButton = screen.getByRole('button', { name: 'test1' });
 		await userEvent.click(removeButton);
@@ -69,9 +76,9 @@ describe('[Autocomplete functionality]', () => {
 			<AutoComplete
 				value={['1']}
 				filter='test'
-				setFilter={() => {}}
+				setFilter={jest.fn()}
 				options={[{ value: '1', label: 'test1' }]}
-				onChange={() => {}}
+				onChange={jest.fn()}
 				multiple
 			/>,
 		);
@@ -82,12 +89,12 @@ describe('[Autocomplete functionality]', () => {
 			<AutoComplete
 				value={[]}
 				filter='test'
-				setFilter={() => {}}
+				setFilter={jest.fn()}
 				options={[
 					{ value: '1', label: 'test1' },
 					{ value: '2', label: 'test2' },
 				]}
-				onChange={() => {}}
+				onChange={jest.fn()}
 			/>,
 		);
 		expect(screen.queryByRole('button', { name: 'test1' })).not.toBeInTheDocument();

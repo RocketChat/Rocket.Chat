@@ -1,12 +1,12 @@
 import {
-	Box,
 	Pagination,
 	States,
-	StatesActions,
 	StatesAction,
+	StatesActions,
 	StatesIcon,
 	StatesTitle,
 	type TableColumnWidth,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
@@ -17,14 +17,15 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
 
@@ -34,26 +35,32 @@ export type CustomEmojiProps = {
 };
 
 const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const columns: TableColumnWidth[] = ['x200', 'x200'];
+
+	const queryKey = ['getEmojiList', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
 
 	const headers = useMemo(
 		() => [
@@ -66,9 +73,14 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['getEmojiList', query],
-		queryFn: () => getEmojiList(query),
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getEmojiList({ ...query, ...page }),
+		},
+		itemsKey: 'emojis',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	useEffect(() => {
@@ -103,10 +115,10 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 										qa-emoji-id={emojis._id}
 									>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{emojis.name}</Box>
+											<Text truncate>{emojis.name}</Text>
 										</GenericTableCell>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Box>
+											<Text truncate>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Text>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}

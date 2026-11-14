@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -16,9 +17,7 @@ const mocks = {
 	},
 	serverFetch: sandbox.stub(),
 	getWorkspaceAccessToken: sandbox.stub().resolves('workspace-token'),
-	Meteor: {
-		absoluteUrl: sandbox.stub().returns('http://localhost:3000/'),
-	},
+	getWorkspaceURL: sandbox.stub().returns('http://localhost:3000'),
 	logger: {
 		error: sandbox.stub(),
 	},
@@ -28,15 +27,18 @@ const mocks = {
 };
 
 const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
-	'@rocket.chat/models': { Statistics: mocks.Statistics },
 	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
 	'../index': { statistics: mocks.statistics },
 	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
-	'meteor/meteor': { Meteor: mocks.Meteor },
+	'../../utils/getURL': { getWorkspaceURL: mocks.getWorkspaceURL },
 	'../../../../rocketchat.info': { Info: mocks.Info },
 });
 
 describe('sendUsageReport', () => {
+	before(() => {
+		mockModel('Statistics', mocks.Statistics);
+	});
+
 	beforeEach(() => {
 		sandbox.resetHistory();
 	});
@@ -63,6 +65,7 @@ describe('sendUsageReport', () => {
 		expect(mocks.statistics.save.called).to.be.true;
 		expect(mocks.serverFetch.calledOnce).to.be.true;
 		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinon.match({ method: 'POST' }))).to.be.true;
+		expect(mocks.serverFetch.firstCall.args[1].body.host).to.equal('http://localhost:3000/');
 		expect(result).to.be.undefined;
 	});
 

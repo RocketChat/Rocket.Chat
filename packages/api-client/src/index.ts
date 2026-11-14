@@ -16,8 +16,8 @@ import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } f
 export type { RestClientInterface, Credentials };
 
 const pipe =
-	<T extends (...args: any[]) => any>(fn: T) =>
-	(...args: Parameters<T>): ReturnType<T> =>
+	<TArgs extends unknown[], TReturn>(fn: (...args: TArgs) => TReturn) =>
+	(...args: TArgs): TReturn =>
 		fn(...args);
 
 function buildFormData(data?: Record<string, any> | void, formData = new FormData(), parentKey?: string): FormData {
@@ -32,8 +32,8 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 		Object.keys(data).forEach((key) => {
 			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
 		});
-	} else {
-		data && parentKey && formData.append(parentKey, data);
+	} else if (data && parentKey) {
+		formData.append(parentKey, data);
 	}
 	return formData;
 }
@@ -100,7 +100,8 @@ export class RestClient implements RestClientInterface {
 		}
 		const queryParams = this.getParams(params);
 		const response = await this.send(`${endpoint}${queryParams ? `?${queryParams}` : ''}`, 'GET', options ?? {});
-		return response.json();
+		// TODO: validate the response body (e.g. with ajv) instead of casting it
+		return response.json() as Promise<Serialized<OperationResult<'GET', TPathPattern>>>;
 	}
 
 	post<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'POST'> = PathWithParamsFor<'POST'>>(
@@ -136,10 +137,11 @@ export class RestClient implements RestClientInterface {
 
 		// If the server sent no data, return an empty record as we're only expecting objects.
 		if (response.status === 204) {
-			return {} as any;
+			return {} as Serialized<OperationResult<'POST', TPathPattern>>;
 		}
 
-		return response.json();
+		// TODO: validate the response body (e.g. with ajv) instead of casting it
+		return response.json() as Promise<Serialized<OperationResult<'POST', TPathPattern>>>;
 	}
 
 	put<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'PUT'> = PathWithParamsFor<'PUT'>>(
@@ -171,7 +173,8 @@ export class RestClient implements RestClientInterface {
 
 			...options,
 		});
-		return response.json();
+		// TODO: validate the response body (e.g. with ajv) instead of casting it
+		return response.json() as Promise<Serialized<OperationResult<'PUT', TPathPattern>>>;
 	}
 
 	delete<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'DELETE'> = PathWithParamsFor<'DELETE'>>(
@@ -192,7 +195,8 @@ export class RestClient implements RestClientInterface {
 		options: Omit<RequestInit, 'method'> = {},
 	): Promise<Serialized<OperationResult<'DELETE', TPathPattern>>> {
 		const response = await this.send(endpoint, 'DELETE', options ?? {});
-		return response.json();
+		// TODO: validate the response body (e.g. with ajv) instead of casting it
+		return response.json() as Promise<Serialized<OperationResult<'DELETE', TPathPattern>>>;
 	}
 
 	protected getCredentialsAsHeaders(): Record<string, string> {
@@ -216,6 +220,7 @@ export class RestClient implements RestClientInterface {
 			}
 
 			if (response.status !== 400) {
+				// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers' middlewares read the status and body off the rejected Response; wrapping it breaks the public contract
 				return Promise.reject(response);
 			}
 
@@ -244,6 +249,7 @@ export class RestClient implements RestClientInterface {
 				});
 			}
 
+			// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers' middlewares read the status and body off the rejected Response; wrapping it breaks the public contract
 			return Promise.reject(response);
 		});
 	}
@@ -259,12 +265,14 @@ export class RestClient implements RestClientInterface {
 		const xhr = new XMLHttpRequest();
 		const data = new FormData();
 
-		Object.entries(params as any).forEach(([key, value]) => {
+		Object.entries(params).forEach(([key, value]) => {
 			if (value instanceof File) {
 				data.append(key, value, value.name);
 				return;
 			}
-			value && data.append(key, value as any);
+			if (value) {
+				data.append(key, value);
+			}
 		});
 
 		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
@@ -294,7 +302,7 @@ export class RestClient implements RestClientInterface {
 		const fn = this.send.bind(this);
 		this.send = function (this: RestClient, ...context: Parameters<RestClientInterface['send']>): ReturnType<RestClientInterface['send']> {
 			return middleware(context, pipe(fn));
-		} as RestClientInterface['send'];
+		};
 	}
 
 	handleTwoFactorChallenge(

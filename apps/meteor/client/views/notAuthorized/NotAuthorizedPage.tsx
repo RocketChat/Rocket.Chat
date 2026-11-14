@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { Page, PageContent } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -8,9 +8,9 @@ const NotAuthorizedPage = () => {
 	return (
 		<Page>
 			<PageContent paddingBlock={24}>
-				<Box is='p' fontScale='p2' color='default'>
+				<Text is='p' fontScale='p2' color='default'>
 					{t('You_are_not_authorized_to_view_this_page')}
-				</Box>
+				</Text>
 			</PageContent>
 		</Page>
 	);

@@ -63,7 +63,7 @@ Meteor.methods<ServerMethods>({
 		if (isAnonymous) {
 			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
 			if (!allowAnon || type !== 'c') {
-				throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+				throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 					method: 'getRoomByTypeAndName',
 				});
 			}
