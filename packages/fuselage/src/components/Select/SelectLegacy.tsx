@@ -148,7 +148,7 @@ function SelectLegacy({
 							onClick={internalChangedByClick}
 						/>
 					) : (
-						<Box is='span' rcx-select__item rcx-select__item--placeholder={!valueLabel}>
+						<Box is='span' rcx-input-box__item rcx-input-box__item--placeholder={!valueLabel}>
 							{visibleText}
 						</Box>
 					))}
