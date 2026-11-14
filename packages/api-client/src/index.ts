@@ -11,9 +11,10 @@ import { stringify } from 'query-string';
 
 import type { Credentials } from './Credentials';
 import type { Middleware, RestClientInterface } from './RestClientInterface';
-import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';
+import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError, InvalidResponseError } from './errors';
 
 export type { RestClientInterface, Credentials };
+export { InvalidResponseError } from './errors';
 
 const pipe =
 	<TArgs extends unknown[], TReturn>(fn: (...args: TArgs) => TReturn) =>
@@ -100,8 +101,7 @@ export class RestClient implements RestClientInterface {
 		}
 		const queryParams = this.getParams(params);
 		const response = await this.send(`${endpoint}${queryParams ? `?${queryParams}` : ''}`, 'GET', options ?? {});
-		// TODO: validate the response body (e.g. with ajv) instead of casting it
-		return response.json() as Promise<Serialized<OperationResult<'GET', TPathPattern>>>;
+		return this.parseJsonBody<Serialized<OperationResult<'GET', TPathPattern>>>(response);
 	}
 
 	post<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'POST'> = PathWithParamsFor<'POST'>>(
@@ -135,13 +135,7 @@ export class RestClient implements RestClientInterface {
 			...options,
 		});
 
-		// If the server sent no data, return an empty record as we're only expecting objects.
-		if (response.status === 204) {
-			return {} as Serialized<OperationResult<'POST', TPathPattern>>;
-		}
-
-		// TODO: validate the response body (e.g. with ajv) instead of casting it
-		return response.json() as Promise<Serialized<OperationResult<'POST', TPathPattern>>>;
+		return this.parseJsonBody<Serialized<OperationResult<'POST', TPathPattern>>>(response, { allowEmpty: true });
 	}
 
 	put<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'PUT'> = PathWithParamsFor<'PUT'>>(
@@ -173,8 +167,7 @@ export class RestClient implements RestClientInterface {
 
 			...options,
 		});
-		// TODO: validate the response body (e.g. with ajv) instead of casting it
-		return response.json() as Promise<Serialized<OperationResult<'PUT', TPathPattern>>>;
+		return this.parseJsonBody<Serialized<OperationResult<'PUT', TPathPattern>>>(response);
 	}
 
 	delete<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'DELETE'> = PathWithParamsFor<'DELETE'>>(
@@ -195,8 +188,25 @@ export class RestClient implements RestClientInterface {
 		options: Omit<RequestInit, 'method'> = {},
 	): Promise<Serialized<OperationResult<'DELETE', TPathPattern>>> {
 		const response = await this.send(endpoint, 'DELETE', options ?? {});
-		// TODO: validate the response body (e.g. with ajv) instead of casting it
-		return response.json() as Promise<Serialized<OperationResult<'DELETE', TPathPattern>>>;
+		return this.parseJsonBody<Serialized<OperationResult<'DELETE', TPathPattern>>>(response);
+	}
+
+	private async parseJsonBody<T>(response: Response, { allowEmpty = false }: { allowEmpty?: boolean } = {}): Promise<T> {
+		// Only operations that tolerate an empty response opt in. For everyone else a
+		// bodyless response is a failure, reported as InvalidResponseError below.
+		if (allowEmpty && response.status === 204) {
+			return {} as T;
+		}
+
+		try {
+			return (await response.json()) as T;
+		} catch (cause) {
+			// Rethrow aborts and network errors raised while reading the body as-is.
+			if (!(cause instanceof SyntaxError)) {
+				throw cause;
+			}
+			throw new InvalidResponseError('Response body is not valid JSON', response, { cause });
+		}
 	}
 
 	protected getCredentialsAsHeaders(): Record<string, string> {
