@@ -36,10 +36,12 @@ export const envelope = (body: string, impersonatedMailbox?: string): string => 
 	].join('');
 };
 
+const MAX_CHANGES_RETURNED = 512;
+
 /**
  * The EWS delta query. `syncState` is the resume token; omit it for an initial sync.
  */
-export const syncFolderItemsRequest = (mailbox: string, syncState?: string, maxChanges = 100): string =>
+export const syncFolderItemsRequest = (mailbox: string, syncState?: string, maxChanges = MAX_CHANGES_RETURNED): string =>
 	envelope(
 		[
 			'<m:SyncFolderItems>',

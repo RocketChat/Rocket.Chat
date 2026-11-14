@@ -16,6 +16,8 @@ import {
 	EmailInboxRaw,
 	EmailMessageHistoryRaw,
 	EmojiCustomRaw,
+	ExchangeCalendarSyncStateRaw,
+	ExchangeSyncLeaseRaw,
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	ImportDataRaw,
@@ -97,6 +99,8 @@ registerModel('ICustomUserStatusModel', new CustomUserStatusRaw(db));
 registerModel('IEmailInboxModel', new EmailInboxRaw(db));
 registerModel('IEmailMessageHistoryModel', new EmailMessageHistoryRaw(db));
 registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
+registerModel('IExchangeCalendarSyncStateModel', new ExchangeCalendarSyncStateRaw(db));
+registerModel('IExchangeSyncLeaseModel', new ExchangeSyncLeaseRaw(db));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));

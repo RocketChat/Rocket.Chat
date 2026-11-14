@@ -1,16 +1,42 @@
 import { Calendar } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
-import { registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
+import { detachExchangeProvider, registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
+import { registerCalendarSyncJob } from '../lib/exchange/sync/calendar/registerCalendarSyncJob';
 import { addSettings } from '../settings/exchange';
 
 export const configureExchange = async (): Promise<void> => {
-	await License.onLicense('outlook-calendar', async () => {
-		await addSettings();
+	let stopProviderWatcher: (() => void) | undefined;
+	let stopSyncWatcher: (() => void) | undefined;
 
-		await Calendar.setupNextNotification();
-		await Calendar.setupNextStatusChange();
+	// Added because 'up' could finish registering after `down` and that would keep syncing unlicensed
+	let generation = 0;
 
-		registerExchangeProviderWatchers();
+	License.onToggledFeature('outlook-calendar', {
+		up: async () => {
+			const started = ++generation;
+
+			await addSettings();
+
+			await Calendar.setupNextNotification();
+			await Calendar.setupNextStatusChange();
+
+			if (generation !== started) {
+				return;
+			}
+
+			stopProviderWatcher = registerExchangeProviderWatchers();
+			stopSyncWatcher = registerCalendarSyncJob();
+		},
+		down: () => {
+			generation += 1;
+
+			stopProviderWatcher?.();
+			stopSyncWatcher?.();
+			stopProviderWatcher = undefined;
+			stopSyncWatcher = undefined;
+
+			detachExchangeProvider();
+		},
 	});
 };

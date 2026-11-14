@@ -9,6 +9,8 @@ export type ExchangeErrorCode =
 	| 'authorization-failed'
 	/** The mailbox address does not resolve on the server. */
 	| 'mailbox-not-found'
+	/** No verified email address is available to use as the mailbox. */
+	| 'email-not-verified'
 	/** Transport level: DNS, TLS, timeout, connection refused. */
 	| 'connection-failed'
 	/** The request was refused before connecting, because the provider may not reach that host. */
@@ -19,8 +21,12 @@ export type ExchangeErrorCode =
 	| 'endpoint-not-recognized'
 	/** Rate limited and out of retries. */
 	| 'rate-limited'
+	/** Another sync of the same mailbox is running, on this instance or another. Exchange was never asked. */
+	| 'sync-in-progress'
 	/** The server answered, but not in a shape we understand. */
-	| 'unexpected-response';
+	| 'unexpected-response'
+	/** The persisted delta cursor is no longer valid. Discard it and resync from scratch. */
+	| 'sync-state-invalid';
 
 export class ExchangeError extends Error {
 	public readonly code: ExchangeErrorCode;
