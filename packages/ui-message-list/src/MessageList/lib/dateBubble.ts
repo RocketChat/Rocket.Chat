@@ -13,7 +13,7 @@ export type DateBubblePlacement = {
 	/** The divider the floating date stands in for, hidden while it does. */
 	covered: number | undefined;
 	/**
-	 * The divider the floating date stands in for lies above the top of the list but below the top of the window, so it stays
+	 * The divider the floating date stands in for lies above where the date rests but below the top of the window, so it stays
 	 * until the next scroll.
 	 */
 	isHeld: boolean;
@@ -22,6 +22,8 @@ export type DateBubblePlacement = {
 export type DateBubbleFrame = {
 	/** Where the top of the window is, measured from the top of the viewport: zero or less. */
 	windowTop: number;
+	/** How far down from the top of the viewport the consumer draws over the list. */
+	inset?: number;
 };
 
 /** A divider further above the top of the viewport than this is no longer under the floating date. */
@@ -29,14 +31,14 @@ const DIVIDER_NEAR_TOP_PX = 100;
 
 /**
  * Places the floating date for the dividers drawn in the list, ordered top to bottom: it stands in for the last divider at
- * or above the top of the viewport, and the divider of the next day pushes it up as it comes within its own height of the
- * top. With no divider near the top it shows the day of the message at the top. It stays without fading while the divider it
- * stands in for is above the top of the list and below the top of the window.
+ * or above where it rests (the top of the viewport, or below the inset), and the divider of the next day pushes it up as it
+ * comes within its own height of that line. With no divider near the top it shows the day of the message at the top. It stays
+ * without fading while the divider it stands in for is above that line and below the top of the window.
  */
 export const placeDateBubble = (
 	dividers: readonly DayDividerBox[],
 	topMessageDate: Date | undefined,
-	{ windowTop }: DateBubbleFrame,
+	{ windowTop, inset = 0 }: DateBubbleFrame,
 ): DateBubblePlacement => {
 	let date: Date | undefined;
 	let covered: number | undefined;
@@ -44,13 +46,15 @@ export const placeDateBubble = (
 	let isPushed = false;
 
 	dividers.forEach((divider, index) => {
-		if (divider.top + DIVIDER_NEAR_TOP_PX < 0 || divider.top >= divider.height) {
+		// Measured from where the floating date rests
+		const top = divider.top - inset;
+		if (divider.top + DIVIDER_NEAR_TOP_PX < 0 || top >= divider.height) {
 			return;
 		}
 
-		if (divider.top > 0) {
+		if (top > 0) {
 			date = date ?? topMessageDate ?? divider.day;
-			offset = divider.top - divider.height;
+			offset = top - divider.height;
 			isPushed = true;
 			return;
 		}
@@ -68,6 +72,6 @@ export const placeDateBubble = (
 		offset,
 		// Pushed out by the next day, the floating date no longer stands in for the divider above
 		covered: isPushed ? undefined : covered,
-		isHeld: !!coveredDivider && coveredDivider.top > windowTop && coveredDivider.top < 0,
+		isHeld: !!coveredDivider && coveredDivider.top > windowTop && coveredDivider.top < inset,
 	};
 };

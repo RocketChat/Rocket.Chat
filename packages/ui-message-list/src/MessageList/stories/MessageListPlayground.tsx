@@ -48,6 +48,7 @@ const MessageListPlayground = ({
 	const [composerHeight, setComposerHeight] = useState(56);
 	const [containerHeight, setContainerHeight] = useState(height);
 	const [headerExtraHeight, setHeaderExtraHeight] = useState(0);
+	const [overlayTopInset, setOverlayTopInset] = useState(list?.overlayTopInset ?? 0);
 	const [visibility, setVisibility] = useState<MessageListVisibility>();
 
 	const jumpTo = (messageId: string | undefined) => {
@@ -81,6 +82,7 @@ const MessageListPlayground = ({
 		['Nudge composer', () => setComposerHeight((current) => current + 30)],
 		['Toggle composer height', () => setComposerHeight((current) => (current === 56 ? 200 : 56))],
 		['Toggle container height', () => setContainerHeight((current) => (current === height ? height - 160 : height))],
+		['Toggle top inset', () => setOverlayTopInset((current) => (current === 0 ? 60 : 0))],
 		['Settle loads', () => source.settleLoads()],
 	];
 
@@ -130,6 +132,7 @@ const MessageListPlayground = ({
 						onVisibleMessagesChange={setVisibility}
 						renderMessage={(row) => <PlaceholderMessage message={row.message} isSequential={row.isSequential} />}
 						{...list}
+						overlayTopInset={overlayTopInset}
 					>
 						<MessageListDateBubble />
 						{!isThread && <MessageListNewMessagesButton />}

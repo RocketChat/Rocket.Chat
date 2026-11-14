@@ -60,6 +60,8 @@ export type MessageListProps<TMessage extends IMessage> = {
 	'startSpacing'?: number;
 	/** Space below the last row, in pixels: the list is at its bottom, and follows what arrives, with it in view. */
 	'endSpacing'?: number;
+	/** How far down from the top of the list, in pixels, the consumer draws over it: the floating date sits below that. */
+	'overlayTopInset'?: number;
 	'groupingPeriodSeconds'?: number;
 	/** Whether thread replies show as previews of their thread, as in a room. */
 	'groupsThreadReplies'?: boolean;
@@ -126,6 +128,7 @@ const MessageList = <TMessage extends IMessage>({
 	deferPagingUntilInput,
 	startSpacing = 0,
 	endSpacing = 0,
+	overlayTopInset = 0,
 	groupingPeriodSeconds = 300,
 	groupsThreadReplies = true,
 	restoredPosition,
@@ -164,6 +167,7 @@ const MessageList = <TMessage extends IMessage>({
 		isLoadingNewerMessages,
 		bottomThreshold,
 		deferPagingUntilInput,
+		overlayTopInset,
 		isOwnMessage: useStableCallback(isOwnMessage),
 		targetMessageId,
 		restoredPosition,
@@ -231,9 +235,10 @@ const MessageList = <TMessage extends IMessage>({
 			hasNewMessages: scroller.hasNewMessages,
 			hasNewerMessages,
 			dateBubbleStore: scroller.dateBubbleStore,
+			overlayTopInset,
 			scrollToBottom,
 		}),
-		[scroller.hasNewMessages, hasNewerMessages, scroller.dateBubbleStore, scrollToBottom],
+		[scroller.hasNewMessages, hasNewerMessages, scroller.dateBubbleStore, overlayTopInset, scrollToBottom],
 	);
 
 	const isConcealed = !isWaitingForMessages && scroller.isConcealed;

@@ -240,7 +240,7 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   over 0.6 s as `develop`'s `BubbleDate`,
   unless R52 keeps it. It MUST show the day, in the viewer's date format, of the last day divider at or less than 100px above the
   top of the viewport, or else of the message at the top of the viewport. When the divider of the next day comes within its own
-  height below the top, it MUST push the date up by as much as it overlaps it. It MUST NOT show while the rows are out of sight
+  height below the top, it MUST push the date up by as much as it overlaps it; with an inset, these read from below it (R85). It MUST NOT show while the rows are out of sight
   (R84). It MUST be `aria-hidden` and MUST NOT take pointer events. With `prefers-reduced-motion` it MUST NOT animate (B10;
   review round 1, user decision: `develop`'s `useDateScroll` rules restored; before, the date showed only while the viewer
   scrolled and hid under a divider).
@@ -383,6 +383,16 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   were measured; at the second review, the first message of an empty conversation hid its header for a few frames, and the rows
   stayed in the tab order while out of sight: they stay in it, so the focus can still return into the list, and the focus brings them
   into sight).
+- **R85** The list MUST accept `overlayTopInset`, in pixels, 0 by default: how far down from the top of the list the consumer draws
+  over it (a banner). `MessageListDateBubble` MUST rest that far plus 8px below the top of the viewport, and R51 and R52 MUST measure
+  from that line instead of the top of the viewport: the date stands in for, and hides, the last divider at or above the line; the
+  next day's divider pushes it up by as much as it comes within its own height below the line; and it stays without fading while
+  the divider it stands in for lies above the line and below the top of the window. A divider more than 100px above the top of the
+  viewport is still forgotten (R51). When the inset changes while the date shows, the list MUST place the date again for the new
+  line at once, without waiting for a scroll (review round 1, second review: `develop` drew the room's date below the unread banner
+  and the upload progress, and `useDateScroll` measured the dividers from the bottom of what it was drawn under; for the room of
+  `room-message-list`; at a later review, the date and the divider it hid stayed as they were until the next scroll when a banner
+  came or went).
 
 ## Design
 

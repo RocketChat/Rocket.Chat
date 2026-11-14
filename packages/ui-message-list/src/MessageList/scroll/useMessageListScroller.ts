@@ -44,6 +44,7 @@ export type UseMessageListScrollerOptions<TMessage extends IMessage> = {
 	isLoadingNewerMessages: boolean;
 	bottomThreshold?: number;
 	deferPagingUntilInput?: boolean;
+	overlayTopInset?: number;
 	isOwnMessage: (message: TMessage) => boolean;
 	targetMessageId: string | undefined;
 	restoredPosition: MessageListPosition | undefined;
@@ -76,6 +77,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 	isLoadingNewerMessages,
 	bottomThreshold = DEFAULT_BOTTOM_THRESHOLD,
 	deferPagingUntilInput = false,
+	overlayTopInset = 0,
 	isOwnMessage,
 	targetMessageId,
 	restoredPosition,
@@ -136,6 +138,8 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 
 	const bottomThresholdRef = useRef(bottomThreshold);
 	bottomThresholdRef.current = bottomThreshold;
+	const overlayTopInsetRef = useRef(overlayTopInset);
+	overlayTopInsetRef.current = overlayTopInset;
 
 	const measure = useCallback((): MessageListMeasurement | undefined => {
 		const viewport = viewportRef.current;
@@ -236,7 +240,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 	};
 
 	// Every scroll shows the floating date, the viewer's or not; it hides a second after the last one, unless it stands in for
-	// a divider just above the list
+	// a divider just above the line it rests below
 	const hideDateBubbleTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 	const updateDateBubble = useStableCallback(() => {
 		const viewport = viewportRef.current;
@@ -256,7 +260,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				day: new Date(Number(element.dataset.dayDivider)),
 			})),
 			visibilityRef.current?.topMessage?.ts,
-			{ windowTop: -viewportTop },
+			{ windowTop: -viewportTop, inset: overlayTopInsetRef.current },
 		);
 
 		coverDivider(placement.covered === undefined ? undefined : elements[placement.covered].element);
@@ -269,6 +273,13 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			}, DATE_BUBBLE_IDLE_MS);
 		}
 	});
+
+	// What the consumer draws over the list can come or go without a scroll: the date that shows is placed again for its new line
+	useLayoutEffect(() => {
+		if (dateBubbleStore.get().isVisible) {
+			updateDateBubble();
+		}
+	}, [overlayTopInset, dateBubbleStore, updateDateBubble]);
 
 	// Re-applying an anchor more than once per frame only fights the virtualizer's own corrections
 	const scrollFrame = useRef<number>(undefined);

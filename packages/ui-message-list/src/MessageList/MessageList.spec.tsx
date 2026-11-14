@@ -756,6 +756,7 @@ describe('stories', () => {
 				'FirstPageLoadingBelowTheSpace',
 				'OpensWhereItLands',
 				'FirstMessageStaysInSight',
+				'FloatingDateBelowAnInset',
 			]),
 		);
 	});

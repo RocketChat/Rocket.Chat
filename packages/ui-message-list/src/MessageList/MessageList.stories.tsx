@@ -753,6 +753,58 @@ export const FloatingDateNeverDoublesADay: Story = {
 	},
 };
 
+/**
+ * R85, R51, R52: with an inset for what the consumer draws over the top of the list, the floating date rests below it and stands in
+ * for the divider under itself, not for the one at the top of the viewport.
+ */
+export const FloatingDateBelowAnInset: Story = {
+	args: { history: { size: 120 }, source: { pageSize: 120 }, list: { overlayTopInset: 60 } },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		const bubble = () => canvasElement.querySelector<HTMLElement>('[aria-hidden="true"][data-visible]') as HTMLElement;
+		for (let step = 0; step < 30 && !viewport.querySelector('[data-day-divider]'); step++) {
+			await userScrollBy(canvasElement, -400);
+		}
+		const divider = Array.from(viewport.querySelectorAll<HTMLElement>('[data-day-divider]')).at(-1) as HTMLElement;
+		const dividerTop = () => divider.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
+
+		// Under the inset, below the top of the viewport
+		await userScrollBy(canvasElement, dividerTop() - 50);
+		await waitFor(() => divider.getAttribute('data-covered') === 'true');
+		await expect(bubble()).toHaveAttribute('data-visible', 'true');
+		await expect(bubble()).toHaveTextContent(divider.textContent);
+		await expect(Math.abs(bubble().getBoundingClientRect().top - viewport.getBoundingClientRect().top - (60 + 8))).toBeLessThanOrEqual(1);
+	},
+};
+
+/**
+ * R85: when what the consumer draws over the list goes without a scroll, the floating date is placed again for the new line: the
+ * divider it stood in for shows again and the date fades.
+ */
+export const FloatingDateFollowsTheInset: Story = {
+	args: { history: { size: 120 }, source: { pageSize: 120 }, list: { overlayTopInset: 60 } },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		const bubble = () => canvasElement.querySelector<HTMLElement>('[aria-hidden="true"][data-visible]') as HTMLElement;
+		for (let step = 0; step < 30 && !viewport.querySelector('[data-day-divider]'); step++) {
+			await userScrollBy(canvasElement, -400);
+		}
+		const divider = Array.from(viewport.querySelectorAll<HTMLElement>('[data-day-divider]')).at(-1) as HTMLElement;
+		const dividerTop = () => divider.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
+
+		// Under the inset, below the top of the viewport: the date holds for it
+		await userScrollBy(canvasElement, dividerTop() - 50);
+		await waitFor(() => divider.getAttribute('data-covered') === 'true');
+
+		await userEvent.click(within(canvasElement).getByRole('button', { name: 'Toggle top inset' }));
+		await waitFor(() => divider.getAttribute('data-covered') === null);
+		await expect(bubble()).not.toHaveTextContent(divider.textContent);
+		await waitFor(() => bubble().getAttribute('data-visible') === 'false', 3000);
+	},
+};
+
 /** R56: being at the bottom is the position, so it is reported right after a jump to the last message, and not on an older window. */
 export const ReportsBeingAtTheBottomAfterAJump: Story = {
 	args: { history: { size: 80 }, source: { pageSize: 80 } },

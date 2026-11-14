@@ -8,7 +8,7 @@ import { useMessageListScroll } from './MessageListScrollContext';
 const bubbleStyle = css`
 	position: absolute;
 	z-index: 1;
-	top: 8px;
+	top: calc(8px + var(--date-bubble-inset, 0px));
 	left: 50%;
 	transform: translate(-50%, var(--date-bubble-offset, 0));
 	pointer-events: none;
@@ -25,12 +25,12 @@ const bubbleStyle = css`
 `;
 
 /**
- * Shows the day of the top of the list on every scroll, standing in for the day divider under it, pushed up by the next
- * day's divider, and fades a second after the last scroll.
+ * Shows the day of the top of the list on every scroll, below what the consumer draws over the list, standing in for the day
+ * divider under it, pushed up by the next day's divider, and fades a second after the last scroll.
  */
 const MessageListDateBubble = () => {
 	const formatDate = useFormatDate();
-	const { dateBubbleStore } = useMessageListScroll();
+	const { dateBubbleStore, overlayTopInset } = useMessageListScroll();
 	const date = useSyncExternalStore(dateBubbleStore.subscribe, () => dateBubbleStore.get().date);
 	const isVisible = useSyncExternalStore(dateBubbleStore.subscribe, () => dateBubbleStore.get().isVisible);
 
@@ -40,11 +40,12 @@ const MessageListDateBubble = () => {
 			if (!element) {
 				return;
 			}
+			element.style.setProperty('--date-bubble-inset', `${overlayTopInset}px`);
 			const applyOffset = () => element.style.setProperty('--date-bubble-offset', `${dateBubbleStore.get().offset}px`);
 			applyOffset();
 			return dateBubbleStore.subscribe(applyOffset);
 		},
-		[dateBubbleStore],
+		[dateBubbleStore, overlayTopInset],
 	);
 
 	if (!date) {

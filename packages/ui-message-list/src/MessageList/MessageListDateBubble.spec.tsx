@@ -11,11 +11,12 @@ const wrapper = mockAppRoot().withSetting('Message_DateFormat', 'YYYY/MM/DD').bu
 
 const monday = new Date(2024, 0, 15, 10);
 
-const Bubble = ({ store }: { store: DateBubbleStore }) => {
+const Bubble = ({ store, overlayTopInset = 0 }: { store: DateBubbleStore; overlayTopInset?: number }) => {
 	const value: MessageListScrollContextValue = {
 		hasNewMessages: false,
 		hasNewerMessages: false,
 		dateBubbleStore: store,
+		overlayTopInset,
 		scrollToBottom: jest.fn(),
 	};
 	return (
@@ -48,6 +49,17 @@ describe('the floating date', () => {
 
 		act(() => store.set({ date: monday, isVisible: true, offset: 0 }));
 		expect(bubble().style.getPropertyValue('--date-bubble-offset')).toBe('0px');
+	});
+
+	it('rests below what the consumer draws over the top of the list (R85)', () => {
+		const store = createDateBubbleStore();
+		const { rerender } = render(<Bubble store={store} overlayTopInset={60} />, { wrapper });
+
+		act(() => store.set({ date: monday, isVisible: true, offset: 0 }));
+		expect(bubble().style.getPropertyValue('--date-bubble-inset')).toBe('60px');
+
+		rerender(<Bubble store={store} overlayTopInset={0} />);
+		expect(bubble().style.getPropertyValue('--date-bubble-inset')).toBe('0px');
 	});
 
 	it('is hidden from assistive technology (R51)', () => {

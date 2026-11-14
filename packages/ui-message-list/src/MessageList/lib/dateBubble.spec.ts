@@ -74,4 +74,30 @@ describe('placeDateBubble', () => {
 	it('should show nothing without a divider near the top or a message (R51)', () => {
 		expect(placeDateBubble([], undefined, frame).date).toBeUndefined();
 	});
+
+	it('should measure from below the inset the consumer draws over the list, as from the top of the viewport without one (R85)', () => {
+		const banner = { ...frame, inset: 40 };
+
+		expect(placeDateBubble([divider(-20, monday), divider(30, tuesday)], topMessageDate, banner)).toEqual({
+			date: tuesday,
+			offset: 0,
+			covered: 1,
+			isHeld: true,
+		});
+		expect(placeDateBubble([divider(-20, monday), divider(50, tuesday)], topMessageDate, banner)).toEqual({
+			date: monday,
+			offset: -22,
+			covered: undefined,
+			isHeld: true,
+		});
+		expect(placeDateBubble([divider(-20, monday), divider(80, tuesday)], topMessageDate, banner)).toEqual({
+			date: monday,
+			offset: 0,
+			covered: 0,
+			isHeld: true,
+		});
+		// The 100px are counted from the top of the viewport, not from below the inset
+		expect(placeDateBubble([divider(-80, monday)], topMessageDate, banner)).toEqual({ date: monday, offset: 0, covered: 0, isHeld: true });
+		expect(placeDateBubble([divider(-110, monday)], topMessageDate, banner).covered).toBeUndefined();
+	});
 });

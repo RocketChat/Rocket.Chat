@@ -6,6 +6,8 @@ export type MessageListScrollContextValue = {
 	hasNewMessages: boolean;
 	hasNewerMessages: boolean;
 	dateBubbleStore: DateBubbleStore;
+	/** How far down from the top of the list the consumer draws over it, in pixels. */
+	overlayTopInset: number;
 	scrollToBottom: () => void;
 };
 
