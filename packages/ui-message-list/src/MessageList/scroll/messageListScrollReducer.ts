@@ -43,6 +43,8 @@ export type MessageListScrollState = {
 	defersPagingUntilInput: boolean;
 	/** The viewer has used the list since it opened or since its window of the conversation was replaced. */
 	hasViewerInput: boolean;
+	/** The rows are out of sight while the list places itself, so no frame shows them anywhere but where they land. */
+	isConcealed: boolean;
 };
 
 /**
@@ -72,6 +74,10 @@ export type MessageListScrollEvent =
 	/** The latest page cannot be asked for, so the list stops waiting for it. */
 	| { type: 'jumpToLatestUnavailable' }
 	| { type: 'positioningTimeout' }
+	/** Placing the list takes too long to keep its rows out of sight any longer. */
+	| { type: 'revealDeadlinePassed' }
+	/** The focus entered the list, so what it lands on must be in sight. */
+	| { type: 'focusEntered' }
 	| { type: 'messageAnchorExpired' }
 	| { type: 'scrollToBottomRequested' }
 	| { type: 'scrollToTopRequested' };
@@ -125,6 +131,7 @@ export const createInitialScrollState = ({
 		isJumpingToLatest: false,
 		defersPagingUntilInput,
 		hasViewerInput: false,
+		isConcealed: true,
 	};
 };
 
@@ -273,11 +280,11 @@ const anchorAfterCommit = (
 	return { state: next, commands: applyAnchor(next) };
 };
 
-/**
- * Decides how a message list scrolls. The anchor is what the list keeps in view: the bottom, a message, or nothing. Only the
- * viewer's own input releases an anchor; scroll events alone can only take the list back to the bottom.
- */
-export const messageListScrollReducer = (state: MessageListScrollState, event: MessageListScrollEvent): MessageListScrollResult => {
+/** Rows out of sight come back once the list is placed. */
+const withConcealment = (next: MessageListScrollState): MessageListScrollState =>
+	next.phase === 'idle' && next.isConcealed ? { ...next, isConcealed: false } : next;
+
+const reduce = (state: MessageListScrollState, event: MessageListScrollEvent): MessageListScrollResult => {
 	switch (event.type) {
 		case 'userInput': {
 			return withViewerInput(state, {
@@ -307,7 +314,11 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 		case 'resize': {
 			// A list that had no size, hidden behind a panel, was placed nowhere: it places itself again before anything else
 			const gotItsSize = state.measurement?.geometry.clientHeight === 0 && event.geometry.clientHeight > 0;
-			const next = { ...state, measurement: measurementOf(event), ...(gotItsSize && { phase: 'positioning' as const }) };
+			const next = {
+				...state,
+				measurement: measurementOf(event),
+				...(gotItsSize && { phase: 'positioning' as const, isConcealed: true }),
+			};
 			return { state: next, commands: [...applyAnchor(next), { type: 'notifyVisibility' }] };
 		}
 
@@ -342,7 +353,9 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			const anchor: MessageListAnchor = restoresMessage
 				? { type: 'message', messageId: target.messageId, align: 'start', offset: target.offset }
 				: state.anchor;
-			return { state: { ...state, phase: 'positioning', anchor }, commands: [] };
+			// Rows the viewer already saw stay in sight
+			const isConcealed = state.isConcealed || state.rows.keys.length === 0;
+			return { state: { ...state, phase: 'positioning', anchor, isConcealed }, commands: [] };
 		}
 
 		case 'targetChanged': {
@@ -374,6 +387,11 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			return { state: paged.state, commands: [{ type: 'notifyVisibility' }, ...paged.commands] };
 		}
 
+		case 'revealDeadlinePassed':
+		case 'focusEntered': {
+			return { state: { ...state, isConcealed: false }, commands: [] };
+		}
+
 		case 'messageAnchorExpired': {
 			if (state.anchor.type !== 'message') {
 				return { state, commands: [] };
@@ -392,4 +410,13 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			};
 		}
 	}
+};
+
+/**
+ * Decides how a message list scrolls. The anchor is what the list keeps in view: the bottom, a message, or nothing. Only the
+ * viewer's own input releases an anchor; scroll events alone can only take the list back to the bottom.
+ */
+export const messageListScrollReducer = (state: MessageListScrollState, event: MessageListScrollEvent): MessageListScrollResult => {
+	const result = reduce(state, event);
+	return { state: withConcealment(result.state), commands: result.commands };
 };

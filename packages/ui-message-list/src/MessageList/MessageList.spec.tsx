@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/fuselage';
 import { createFakeMessage, mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { createRef } from 'react';
 
@@ -55,10 +55,10 @@ const List = (props: Partial<MessageListProps<IMessage>>) => (
 const host = () => screen.getByRole('list').parentElement as HTMLElement;
 
 describe('rows', () => {
-	it('renders a labelled list, busy while any page loads (R1)', () => {
+	it('renders a labelled list, busy while any page loads (R1)', async () => {
 		const { rerender } = render(<List />, { wrapper });
 
-		expect(screen.getByRole('list', { name: 'Message list' })).toHaveAttribute('aria-busy', 'false');
+		await waitFor(() => expect(screen.getByRole('list', { name: 'Message list' })).toHaveAttribute('aria-busy', 'false'));
 
 		rerender(<List isLoadingOlderMessages hasOlderMessages />);
 		expect(screen.getByRole('list')).toHaveAttribute('aria-busy', 'true');
@@ -207,6 +207,58 @@ describe('rows', () => {
 		render(<List />, { wrapper: mockAppRoot().build() });
 
 		expect(screen.getByText('first')).toBeInTheDocument();
+	});
+});
+
+describe('rows out of sight while the list places itself', () => {
+	beforeEach(() => jest.useFakeTimers());
+	afterEach(() => {
+		jest.useRealTimers();
+		jest.restoreAllMocks();
+	});
+
+	/** Content that keeps resizing, so the list never finds itself placed before its timeout. */
+	const keepResizing = () => {
+		let height = 0;
+		jest.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(() => ++height);
+	};
+
+	it('shows its rows half a second after it started placing itself, although it still places itself (R84)', () => {
+		keepResizing();
+		render(<List />, { wrapper });
+		expect(screen.getByText('first')).not.toBeVisible();
+
+		act(() => jest.advanceTimersByTime(499));
+		expect(screen.getByText('first')).not.toBeVisible();
+
+		act(() => jest.advanceTimersByTime(1));
+		expect(screen.getByText('first')).toBeVisible();
+		expect(host()).toHaveAttribute('data-phase', 'positioning');
+	});
+
+	it('keeps the spinner of the first page in sight while it places itself (R4, R84)', () => {
+		render(<List messages={[]} isLoadingInitialMessages />, { wrapper });
+
+		expect(host()).toHaveAttribute('data-phase', 'positioning');
+		expect(document.querySelector('.rcx-throbber')).toBeVisible();
+	});
+
+	it('is busy while its rows are out of sight (R1, R84)', () => {
+		render(<List />, { wrapper });
+		expect(screen.getByRole('list')).toHaveAttribute('aria-busy', 'true');
+
+		act(() => jest.advanceTimersByTime(500));
+		expect(screen.getByRole('list')).toHaveAttribute('aria-busy', 'false');
+	});
+
+	it('shows its rows as soon as the focus enters the list (R84)', () => {
+		keepResizing();
+		render(<List />, { wrapper });
+
+		fireEvent.focusIn(screen.getByText('second'));
+
+		expect(screen.getByText('first')).toBeVisible();
+		expect(host()).toHaveAttribute('data-phase', 'positioning');
 	});
 });
 
@@ -702,6 +754,8 @@ describe('stories', () => {
 				'PagingWaitsForInputOnAShortPage',
 				'SpaceAtTheEnds',
 				'FirstPageLoadingBelowTheSpace',
+				'OpensWhereItLands',
+				'FirstMessageStaysInSight',
 			]),
 		);
 	});

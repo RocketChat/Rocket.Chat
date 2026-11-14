@@ -655,3 +655,47 @@ describe('paging that waits for the viewer', () => {
 		]);
 	});
 });
+
+describe('rows out of sight while the list places itself', () => {
+	const rows = rowsOf('abcde');
+
+	it('keeps them out of sight until it is placed (R84)', () => {
+		const opening = run(createInitialScrollState({ rows }), [committed(rows, TOP, 'replace'), resized(BOTTOM)]).state;
+
+		expect(opening.isConcealed).toBe(true);
+		expect(run(opening, [{ type: 'positioningTimeout' }]).state.isConcealed).toBe(false);
+	});
+
+	it('shows them once the deadline passes, even while it still places itself (R84)', () => {
+		const { state } = run(createInitialScrollState({ rows }), [committed(rows, TOP, 'replace'), { type: 'revealDeadlinePassed' }]);
+
+		expect(state).toMatchObject({ phase: 'positioning', isConcealed: false });
+	});
+
+	it('shows them at once on the viewer’s input (R84)', () => {
+		expect(run(createInitialScrollState({ rows }), [{ type: 'userInput' }]).state.isConcealed).toBe(false);
+	});
+
+	it('shows them as soon as the focus enters the list, which goes on placing itself (R84)', () => {
+		expect(run(createInitialScrollState({ rows }), [{ type: 'focusEntered' }]).state).toMatchObject({
+			phase: 'positioning',
+			isConcealed: false,
+		});
+	});
+
+	it('keeps rows the viewer already saw in sight when it places itself again on a restored message (R84)', () => {
+		const header = idleAt(headerOnly, BOTTOM);
+		const restored: MessageListScrollEvent = { type: 'restoreResolved', target: { type: 'message', messageId: 'a', offset: 30 } };
+
+		expect(run(header, [restored]).state).toMatchObject({ phase: 'positioning', isConcealed: false });
+	});
+
+	it('puts them out of sight again when it places itself again (R84)', () => {
+		const waiting = run(createInitialScrollState({ rows: rowsOf('') }), [{ type: 'positioningTimeout' }]).state;
+		const hidden: MessageListMeasurement = { geometry: { scrollTop: 0, scrollHeight: 0, clientHeight: 0 }, messagesStart: 0 };
+
+		expect(waiting.isConcealed).toBe(false);
+		expect(run(waiting, [{ type: 'restoreResolved', target: { type: 'bottom' } }]).state.isConcealed).toBe(true);
+		expect(run(idleAt(rows, hidden), [resized(BOTTOM)]).state.isConcealed).toBe(true);
+	});
+});

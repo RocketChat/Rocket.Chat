@@ -76,7 +76,7 @@ Only the viewer's own input (wheel, touch, scroll keys, dragging the scrollbar, 
 
 A held message is released after a few seconds without its surroundings changing size, since images resolve well after the first layout.
 
-The list has two **phases**. While **positioning** (opening, restoring, and again when its first messages arrive late while it showed nothing but a spinner, or when its viewport gets a size), it does not load pages; it counts as placed once nothing moved for a few frames, or after a timeout. Then it is **idle**.
+The list has two **phases**. While **positioning** (opening, restoring, and again when its first messages arrive late while it showed nothing but a spinner, or when its viewport gets a size), it does not load pages and keeps its rows out of sight, so the viewer never sees it moving into place, and the list says it is busy meanwhile; a list the viewer already saw is never hidden again. It counts as placed once nothing moved for a few frames, or after a timeout. Then it is **idle**, and its rows show; they also show at the viewer's first input, when the focus enters the list, or after half a second when the content keeps resizing.
 
 The viewer's own messages always take the list to the bottom. When the list shows an older window of the conversation, it first asks the consumer for the latest page, then goes to the bottom once that page is in.
 

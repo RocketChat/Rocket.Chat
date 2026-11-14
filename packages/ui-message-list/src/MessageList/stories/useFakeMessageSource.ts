@@ -15,6 +15,8 @@ export type FakeHistoryOptions = {
 	hasMixedHeights?: boolean;
 	/** The indexes of messages that carry a file, so they hold a live embed. */
 	liveEmbedAt?: number[];
+	/** Gives every other message content that takes its height in the first frames after it mounts, each at its own time. */
+	hasSettlingContent?: boolean;
 };
 
 const textOf = (index: number, hasMixedHeights: boolean) => {
@@ -36,6 +38,7 @@ export const createFakeHistory = ({
 	minutesApart = 47,
 	hasMixedHeights = false,
 	liveEmbedAt = [],
+	hasSettlingContent = false,
 }: FakeHistoryOptions): IMessage[] =>
 	Array.from({ length: size }, (_, index) => {
 		const ts = new Date(endsAt.getTime() - (size - 1 - index) * minutesApart * 60_000);
@@ -48,6 +51,8 @@ export const createFakeHistory = ({
 			msg: textOf(index, hasMixedHeights),
 			u: author,
 			...(hasMixedHeights && index % 13 === 6 && { customFields: { lateContent: { height: 180, delay: 600 } } }),
+			...(hasSettlingContent &&
+				index % 2 === 1 && { customFields: { lateContent: { height: 40 + (index % 5) * 30, delay: 30 + (index % 7) * 25 } } }),
 			...(liveEmbedAt.includes(index) && {
 				files: [{ _id: `file-${index}`, name: `file-${index}.txt`, type: 'text/plain', size: 1, format: 'txt' }],
 			}),

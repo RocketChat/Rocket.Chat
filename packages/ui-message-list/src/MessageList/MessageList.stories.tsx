@@ -12,6 +12,7 @@ import {
 	messageOffset,
 	messageRow,
 	offsetFromCenter,
+	recordShownFrames,
 	userScrollBy,
 	userScrollTo,
 	waitFor,
@@ -907,5 +908,78 @@ export const SpaceAtTheEnds: Story = {
 		await waitFor(() => canvasElement.querySelector('[data-qa="start-of-conversation"]') !== null);
 		const header = viewport.querySelector('[data-row-index="0"]') as HTMLElement;
 		await expect(Math.abs(header.getBoundingClientRect().top - viewport.getBoundingClientRect().top - 21)).toBeLessThanOrEqual(1);
+	},
+};
+
+/**
+ * R84: a list is seen only where it opens, in every frame from the first one shown: at the bottom for a conversation opened
+ * anew, on the message it was left at for one opened again, even when the height of its rows settles a few frames after they
+ * mount.
+ */
+export const OpensWhereItLands: Story = {
+	render: () => <TwoRoomsPlayground hasSettlingContent />,
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitForListSettled(canvasElement);
+		await userScrollBy(canvasElement, -900);
+		const left = firstVisibleMessage(canvasElement);
+
+		const stopOpeningB = recordShownFrames(canvasElement);
+		await userEvent.click(canvas.getByRole('button', { name: 'Room B' }));
+		await waitForListSettled(canvasElement);
+		const framesOfB = stopOpeningB();
+		await expect(framesOfB.length).toBeGreaterThan(0);
+		await expect(Math.max(...framesOfB.map((frame) => frame.distanceFromBottom))).toBeLessThanOrEqual(1);
+
+		const stopOpeningA = recordShownFrames(canvasElement);
+		await userEvent.click(canvas.getByRole('button', { name: 'Room A' }));
+		await waitForListSettled(canvasElement);
+		const framesOfA = stopOpeningA();
+		await expect(framesOfA.length).toBeGreaterThan(0);
+		await expect(framesOfA.filter((frame) => frame.firstMessage.id !== left.id || Math.abs(frame.firstMessage.top - left.top) > 1)).toEqual(
+			[],
+		);
+	},
+};
+
+/**
+ * R84, R29: a list the viewer already saw is never hidden again: an empty conversation showing its header stays in sight, header
+ * and content, in every frame from before its first message arrives until after the list settles on it.
+ */
+export const FirstMessageStaysInSight: Story = {
+	args: { history: { size: 0 } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		await expect(canvasElement.querySelector('[data-qa="start-of-conversation"]')).not.toBeNull();
+
+		const frames: { isHeaderInSight: boolean; contentOpacity: string }[] = [];
+		let isRecording = true;
+		const record = () => {
+			const header = canvasElement.querySelector<HTMLElement>('[data-qa="start-of-conversation"]');
+			const content = viewport.firstElementChild as HTMLElement;
+			frames.push({
+				isHeaderInSight: !!header?.checkVisibility({ opacityProperty: true, visibilityProperty: true }),
+				contentOpacity: getComputedStyle(content).opacity,
+			});
+		};
+		const onFrame = () => {
+			if (!isRecording) {
+				return;
+			}
+			record();
+			setTimeout(record);
+			requestAnimationFrame(onFrame);
+		};
+		requestAnimationFrame(onFrame);
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Receive message' }));
+		await waitFor(() => messageRow(canvasElement, fakeMessageId(0)) !== null);
+		await waitForListSettled(canvasElement);
+		isRecording = false;
+
+		await expect(frames.length).toBeGreaterThan(10);
+		await expect(frames.filter((frame) => !frame.isHeaderInSight || frame.contentOpacity !== '1')).toEqual([]);
 	},
 };

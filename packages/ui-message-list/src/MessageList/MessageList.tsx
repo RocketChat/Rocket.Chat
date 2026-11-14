@@ -93,6 +93,11 @@ const contentStyle = css`
 	&[data-waiting='true'] {
 		justify-content: flex-start;
 	}
+
+	&[data-concealed='true'] {
+		opacity: 0;
+		pointer-events: none;
+	}
 `;
 
 const never = () => false;
@@ -232,7 +237,9 @@ const MessageList = <TMessage extends IMessage>({
 		[scroller.hasNewMessages, hasNewerMessages, scroller.isUserScrolling, scroller.dateBubble, scrollToBottom],
 	);
 
-	const isBusy = isLoadingInitialMessages || isLoadingOlderMessages || isLoadingNewerMessages;
+	const isConcealed = !isWaitingForMessages && scroller.isConcealed;
+	// Rows out of sight are not ready to be read either
+	const isBusy = isLoadingInitialMessages || isLoadingOlderMessages || isLoadingNewerMessages || isConcealed;
 
 	return (
 		<Box
@@ -246,7 +253,7 @@ const MessageList = <TMessage extends IMessage>({
 		>
 			<Box ref={viewportRef} className={viewportStyle} role='list' aria-label={ariaLabel} aria-busy={isBusy}>
 				{/* The first page loads where the older pages do, at the top */}
-				<Box className={contentStyle} data-waiting={isWaitingForMessages}>
+				<Box className={contentStyle} data-waiting={isWaitingForMessages} data-concealed={isConcealed}>
 					{isWaitingForMessages ? (
 						<Box paddingBlockStart={startSpacing}>
 							<MessageListLoader isLoading />

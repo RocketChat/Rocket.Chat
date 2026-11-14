@@ -11,6 +11,7 @@ import {
 	POSITION_REPORT_DEBOUNCE_MS,
 	POSITIONING_STABLE_FRAMES,
 	POSITIONING_TIMEOUT_MS,
+	REVEAL_DEADLINE_MS,
 	SCROLL_KEYS,
 	USER_INPUT_WITHOUT_SCROLL_MS,
 } from './constants';
@@ -111,6 +112,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		phase: stateRef.current?.phase,
 		hasNewMessages: false,
 		userScrolling: false,
+		isConcealed: true,
 	}));
 	const [highlightedMessageId, setHighlightedMessageId] = useState<string>();
 	const [dateBubble, setDateBubble] = useState<MessageListDateBubble>();
@@ -340,9 +342,16 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			previous.anchor === state.anchor &&
 			previous.phase === state.phase &&
 			previous.hasNewMessages === state.hasNewMessages &&
-			previous.userScrolling === state.userScrolling
+			previous.userScrolling === state.userScrolling &&
+			previous.isConcealed === state.isConcealed
 				? previous
-				: { anchor: state.anchor, phase: state.phase, hasNewMessages: state.hasNewMessages, userScrolling: state.userScrolling },
+				: {
+						anchor: state.anchor,
+						phase: state.phase,
+						hasNewMessages: state.hasNewMessages,
+						userScrolling: state.userScrolling,
+						isConcealed: state.isConcealed,
+					},
 		);
 		commands.forEach(execute);
 	});
@@ -440,10 +449,12 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		};
 		frame = requestAnimationFrame(check);
 		const timeout = setTimeout(() => dispatch({ type: 'positioningTimeout' }), POSITIONING_TIMEOUT_MS);
+		const revealDeadline = setTimeout(() => dispatch({ type: 'revealDeadlinePassed' }), REVEAL_DEADLINE_MS);
 
 		return () => {
 			cancelAnimationFrame(frame);
 			clearTimeout(timeout);
+			clearTimeout(revealDeadline);
 		};
 	}, [view.phase, isMounted, dispatch]);
 
@@ -505,6 +516,11 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				}
 				dispatch({ type: 'pointerPressed' });
 			};
+			const onFocusIn = () => {
+				if (stateRef.current?.isConcealed) {
+					dispatch({ type: 'focusEntered' });
+				}
+			};
 
 			const resizeObserver = new ResizeObserver(() => onResize());
 			resizeObserver.observe(viewport);
@@ -517,6 +533,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			viewport.addEventListener('touchmove', onUserInput, { passive: true });
 			viewport.addEventListener('keydown', onKeyDown);
 			viewport.addEventListener('scrollend', onScrollEnd);
+			viewport.addEventListener('focusin', onFocusIn);
 			scrollbarsHost?.addEventListener('pointerdown', onPointerDown);
 
 			return () => {
@@ -527,6 +544,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				viewport.removeEventListener('touchmove', onUserInput);
 				viewport.removeEventListener('keydown', onKeyDown);
 				viewport.removeEventListener('scrollend', onScrollEnd);
+				viewport.removeEventListener('focusin', onFocusIn);
 				scrollbarsHost?.removeEventListener('pointerdown', onPointerDown);
 				viewportRef.current = null;
 				if (scrollFrame.current !== undefined) {
@@ -556,6 +574,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		phase: view.phase,
 		hasNewMessages: view.hasNewMessages,
 		isUserScrolling: view.userScrolling,
+		isConcealed: view.isConcealed,
 		highlightedMessageId,
 		dateBubble,
 		onScroll,

@@ -75,7 +75,7 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 **The list and its rows**
 
 - **R1** The list MUST render an element with role `list` named by `aria-label`, whose `aria-busy` is true exactly while the
-  first page, an older page or a newer page is loading, and false otherwise (B19, B13).
+  first page, an older page or a newer page is loading or while its rows are out of sight (R84), and false otherwise (B19, B13).
 - **R2** The rows MUST appear in this order: the older loader while `hasOlderMessages` is true, else the header when the
   consumer gave one; then one row per message, oldest first; then the newer loader while `hasNewerMessages` is true. The header
   MUST NOT show while older messages remain and MUST show as soon as none do (B12).
@@ -362,6 +362,17 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   spinner of the first page (R4) MUST sit below `startSpacing` (review round 1: `develop`'s room keeps 21px above the first row and
   10px below the last; plain padding around the rows would leave the list short of its bottom and scrolling back on every resize;
   for the room of `room-message-list`).
+- **R84** While the list places itself (R29), its rows MUST be out of sight: still mounted, laid out and measured, keeping their names
+  and focus, but transparent and taking no pointer events, so no frame shows them anywhere but where the list lands (the bottom, a
+  restored message, a jump target). They MUST come into sight once positioning ends, at the viewer's first input, as soon as the
+  focus enters the list, or 500 ms after positioning started, whichever comes first, so a list whose content keeps resizing still
+  shows and the focus never rests on a row out of sight; meanwhile the list is busy (R1), so assistive technologies wait for it.
+  Rows the viewer already saw MUST NOT go out of sight again: a list showing its header or a loader stays in sight, in every frame,
+  when its first messages arrive, and so does one that places itself again on a restored message. The spinner of the first page
+  (R4) MUST stay in sight (user decision, review round 1: a long thread opened again was seen scrolling to its bottom while its rows
+  were measured; at the second review, the first message of an empty conversation hid its header for a few frames, and the rows
+  stayed in the tab order while out of sight: they stay in it, so the focus can still return into the list, and the focus brings them
+  into sight).
 
 ## Design
 

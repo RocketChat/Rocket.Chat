@@ -10,6 +10,9 @@ export const POSITIONING_STABLE_FRAMES = 5;
 /** Placing the list never takes longer than this, even while content keeps resizing. */
 export const POSITIONING_TIMEOUT_MS = 2000;
 
+/** The rows are kept out of sight while the list places itself for no longer than this. */
+export const REVEAL_DEADLINE_MS = 500;
+
 /** A scroll gesture that moves nothing (already at an edge) closes the user-scrolling window after this. */
 export const USER_INPUT_WITHOUT_SCROLL_MS = 300;
 

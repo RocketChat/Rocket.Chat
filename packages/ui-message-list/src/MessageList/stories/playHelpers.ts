@@ -112,6 +112,38 @@ export const userScrollTo = async (canvasElement: HTMLElement, scrollTop: number
 export const userScrollBy = (canvasElement: HTMLElement, delta: number) =>
 	userScrollTo(canvasElement, getViewport(canvasElement).scrollTop + delta);
 
+/**
+ * Records what each frame shows once the rows are in sight: how far the list is from the bottom and the first message in
+ * view. Each frame is read before it is painted and again right after, since the virtualizer corrects itself in between.
+ */
+export const recordShownFrames = (canvasElement: HTMLElement) => {
+	const frames: { distanceFromBottom: number; firstMessage: ReturnType<typeof firstVisibleMessage> }[] = [];
+	let isRecording = true;
+
+	const record = () => {
+		const viewport = canvasElement.querySelector<HTMLElement>('[role="list"]');
+		const rows = viewport?.firstElementChild;
+		if (!viewport || !rows || !viewport.querySelector('[data-message-id]') || getComputedStyle(rows).opacity === '0') {
+			return;
+		}
+		frames.push({ distanceFromBottom: distanceFromBottom(viewport), firstMessage: firstVisibleMessage(canvasElement) });
+	};
+	const onFrame = () => {
+		if (!isRecording) {
+			return;
+		}
+		record();
+		setTimeout(record);
+		requestAnimationFrame(onFrame);
+	};
+	requestAnimationFrame(onFrame);
+
+	return () => {
+		isRecording = false;
+		return frames;
+	};
+};
+
 export const waitFor = async (condition: () => boolean, timeout = SETTLE_TIMEOUT_MS) => {
 	const startedAt = performance.now();
 	while (!condition()) {
