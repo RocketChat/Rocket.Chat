@@ -20,6 +20,19 @@ export const DEFAULT_MAX_STANZA_SIZE = 262144;
 
 const MAX_DEPTH = 32;
 const MAX_ATTRIBUTES = 64;
+const MAX_DECLARATION_LENGTH = 1024;
+
+const XML_DECLARATION = /^\s*<\?xml[^?]*\?>/;
+const XML_DECLARATION_OPENER = '<?xml';
+
+/** Whether more bytes could still turn `prolog` into a complete XML declaration. */
+const mayBecomeDeclaration = (prolog: string): boolean => {
+	const start = prolog.trimStart();
+	return (
+		prolog.length <= MAX_DECLARATION_LENGTH &&
+		(XML_DECLARATION_OPENER.startsWith(start) || (start.startsWith(XML_DECLARATION_OPENER) && !start.includes('?>')))
+	);
+};
 
 /** Frames an XMPP stream into its header and depth-1 elements, rejecting what RFC 6120 §11.1 restricts. */
 export class StanzaParser extends Emitter<StanzaParserEvents> {
@@ -38,7 +51,10 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 
 	private stanzaBytes = 0;
 
-	private sawFirstBytes = false;
+	private awaitingProlog = true;
+
+	// Holds back the stream's first bytes until they prove to be, or not to be, an XML declaration
+	private heldProlog = '';
 
 	private lastChar = '';
 
@@ -133,17 +149,25 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 			return;
 		}
 
+		let toParse = this.heldProlog + text;
+		this.heldProlog = '';
+
 		// RFC 6120 restricted-xml: any literal `<!` is a comment, DOCTYPE or CDATA section —
 		// all prohibited. `<?` is only tolerated as the very first bytes (XML declaration).
 		// The boundary check catches sequences split across chunks.
-		if (text.includes('<!') || (this.lastChar === '<' && text.startsWith('!'))) {
+		if (toParse.includes('<!') || (this.lastChar === '<' && toParse.startsWith('!'))) {
 			return this.fail(new Error('Restricted XML (comment, DOCTYPE or CDATA) is not allowed'));
 		}
 
-		let toParse = text;
-		if (!this.sawFirstBytes) {
-			this.sawFirstBytes = true;
-			toParse = toParse.replace(/^\s*<\?xml[^?]*\?>/, '');
+		if (this.awaitingProlog) {
+			const declaration = XML_DECLARATION.exec(toParse);
+			if (declaration) {
+				toParse = toParse.slice(declaration[0].length);
+			} else if (mayBecomeDeclaration(toParse)) {
+				this.heldProlog = toParse;
+				return;
+			}
+			this.awaitingProlog = false;
 		}
 		if (toParse.includes('<?') || (this.lastChar === '<' && toParse.startsWith('?'))) {
 			return this.fail(new Error('Processing instructions are not allowed'));
@@ -181,7 +205,8 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 		this.current = undefined;
 		this.depth = 0;
 		this.stanzaBytes = 0;
-		this.sawFirstBytes = false;
+		this.awaitingProlog = true;
+		this.heldProlog = '';
 		this.lastChar = '';
 		this.failed = false;
 	}

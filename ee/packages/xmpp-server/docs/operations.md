@@ -34,12 +34,9 @@ Do not change or clear it.
 
 ### When a change takes effect
 
-- **Domain, port, MUC subdomain, certificate or key**: the listener restarts at once and every
-  open S2S connection is dropped.
+- **Domain, port, MUC subdomain, certificate, key or Domain Allow List**: the listener
+  restarts at once and every open S2S connection is dropped.
 - **Exchange Presence**: takes effect at once.
-- **Domain Allow List**: applied only the next time the listener starts. Restart the service,
-  turn **Enabled** off and on, or change one of the listener settings above
-  ([configuration-and-lifecycle D1](specs/configuration-and-lifecycle.md#d1-allow-list-changes-need-a-service-restart)).
 
 ### Domain allow list
 

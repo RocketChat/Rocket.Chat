@@ -205,8 +205,7 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		expect(dispatched[0].attrs.from).toBe('alice@a.localhost');
 	});
 
-	// Known defect: ../../docs/specs/s2s-connectivity.md#d1-an-xml-declaration-split-across-reads-closes-the-stream
-	it.skip('opens a stream whose XML declaration arrives split across reads (R7, D1)', async () => {
+	it('opens a stream whose XML declaration arrives split across reads (R7)', async () => {
 		const peer = await RawPeer.connect(ports.get('b.localhost') as number);
 		peers.push(peer);
 		peer.write('<?xm');
