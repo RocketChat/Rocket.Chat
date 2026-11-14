@@ -15,14 +15,9 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 	const room = message.drid ? await chat.data.getDiscussionByID(message.drid) : undefined;
 
 	await new Promise<void>((resolve, reject) => {
-		const mid = chat.currentEditingMessage.getMID();
-
 		const onCloseModal = async (): Promise<void> => {
 			imperativeModal.close();
 
-			if (mid === message._id) {
-				chat.currentEditingMessage.stop();
-			}
 			chat.composer?.focus();
 
 			resolve();
