@@ -20,7 +20,7 @@ const Avatar = ({ size = 'x36', rounded = false, objectFit, url, className, alt,
 
 	return (
 		<AvatarContainer size={size} className={className}>
-			<img src={url} className={innerClass} alt={alt || ''} {...props} />
+			<img {...props} src={url} className={innerClass} alt={alt || ''} />
 		</AvatarContainer>
 	);
 };
