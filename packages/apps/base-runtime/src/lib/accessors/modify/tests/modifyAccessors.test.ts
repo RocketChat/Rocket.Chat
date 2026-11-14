@@ -150,6 +150,25 @@ describe('Modify accessors (base-runtime)', () => {
 	});
 
 	describe('UIController', () => {
+		it('assigns app-scoped block ids for deprecated surface methods', async () => {
+			const { rec, sender } = setup();
+			const controller = new UIController(sender);
+			const user = { id: 'u1' } as any;
+			const createView = () => ({ blocks: [{ type: 'section' }] }) as any;
+
+			await controller.openModalView(createView(), { triggerId: 'tr1' } as any, user);
+			await controller.updateModalView(createView(), { triggerId: 'tr1' } as any, user);
+			await controller.openContextualBarView(createView(), { triggerId: 'tr1' } as any, user);
+			await controller.updateContextualBarView(createView(), { triggerId: 'tr1' } as any, user);
+
+			for (const call of rec.emitted()) {
+				const interaction = call.params[1] as { view: { blocks: Array<{ appId?: string; blockId?: string }> } };
+				const [block] = interaction.view.blocks;
+				assert.strictEqual(block.appId, 'deno-test');
+				assert.ok(block.blockId);
+			}
+		});
+
 		it('openSurfaceView routes a modal through doNotifyUser with the APP_ID sentinel and stamps the real app id', async () => {
 			const { rec, sender } = setup();
 			const user = { id: 'u1' } as any;
