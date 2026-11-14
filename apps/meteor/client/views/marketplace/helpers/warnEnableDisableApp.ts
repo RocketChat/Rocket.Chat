@@ -6,7 +6,7 @@ import { dispatchToastMessage } from '../../../lib/toast';
 
 export const warnEnableDisableApp = (appName: string, status: AppStatus, type: string): void => {
 	if (appErroredStatuses.includes(status)) {
-		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
+		dispatchToastMessage({ type: 'error', title: appName, message: t(`App_status_${status}`) });
 		return;
 	}
 
