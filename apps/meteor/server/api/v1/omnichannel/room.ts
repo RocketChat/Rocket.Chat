@@ -25,8 +25,9 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	ajv,
+	isGETLivechatRoomParams,
+	isPOSTLivechatVisitorDepartmentTransferParams,
 } from '@rocket.chat/rest-typings';
-import { isGETLivechatRoomParams, isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 
 import { API } from '../..';
 import { findGuest, findRoom, settings, findAgent } from './lib/livechat';

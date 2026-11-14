@@ -1,11 +1,13 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
-import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps, isPUTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import {
+	isGETLivechatDepartmentProps,
 	isLivechatDepartmentDepartmentIdAgentsGETProps,
 	isLivechatDepartmentDepartmentIdAgentsPOSTProps,
-} from '@rocket.chat/rest-typings/src/v1/omnichannel';
+	isPOSTLivechatDepartmentProps,
+	isPUTLivechatDepartmentProps,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import {
