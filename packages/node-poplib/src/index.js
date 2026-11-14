@@ -50,7 +50,10 @@ function POP3Client(port, host, options) {
 	var locked = false;
 	var multiline = false;
 	var socket = null;
+	var transportSocket = null;
+	var tlsPair = null;
 	var tlssock = null;
+	var destroyed = false;
 	var callback = function (resp, data) {
 		if (resp === false) {
 			locked = false;
@@ -130,23 +133,48 @@ function POP3Client(port, host, options) {
 		socket.end();
 	};
 
+	this.destroy = function () {
+		destroyed = true;
+		callback = function () {};
+		locked = false;
+		state = 0;
+
+		var sockets = [socket, tlsPair && tlsPair.cleartext, tlsPair && tlsPair.encrypted, transportSocket];
+		socket = null;
+		transportSocket = null;
+		tlsPair = null;
+
+		for (var i = 0; i < sockets.length; i++) {
+			if (sockets[i] && sockets.indexOf(sockets[i]) === i) sockets[i].destroy();
+		}
+	};
+
 	// Upgrades a standard unencrypted TCP connection to use TLS
 	// Liberally copied and modified from https://gist.github.com/848444
 	// starttls() should be a private function, but I can't figure out
 	// how to get a public prototypal method (stls) to talk to private method (starttls)
 	// which references private variables without going through a privileged method
 	this.starttls = function (options) {
+		if (destroyed) return;
+
 		var s = socket;
 		s.removeAllListeners('end');
 		s.removeAllListeners('data');
 		s.removeAllListeners('error');
-		socket = null;
 
 		var sslcontext = crypto.createCredentials(options);
 		var pair = tls.createSecurePair(sslcontext, false);
+		tlsPair = pair;
 		var cleartext = pipe(pair);
 
 		pair.on('secure', function () {
+			if (destroyed) {
+				cleartext.destroy();
+				pair.encrypted.destroy();
+				s.destroy();
+				return;
+			}
+
 			var verifyError = pair.ssl.verifyError();
 			cleartext.authorized = true;
 
@@ -192,6 +220,7 @@ function POP3Client(port, host, options) {
 	// Private methods follow
 	// Event handlers follow
 	function onData(data) {
+		self.emit('activity');
 		data = data.toString('ascii');
 		bufferedData += data;
 
@@ -250,6 +279,9 @@ function POP3Client(port, host, options) {
 	}
 
 	function onClose() {
+		socket = null;
+		transportSocket = null;
+		tlsPair = null;
 		self.emit('close');
 	}
 
@@ -272,6 +304,7 @@ function POP3Client(port, host, options) {
 
 		socket = tlssock;
 	} else socket = new net.createConnection(port, host);
+	transportSocket = socket;
 
 	// Set up event handlers
 	socket.on('data', onData);
