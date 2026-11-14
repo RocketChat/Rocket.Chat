@@ -1,13 +1,13 @@
 import type { VideoAttachmentProps } from '@rocket.chat/core-typings';
 import { Box, MessageGenericPreview } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { MessageContentBody } from '@rocket.chat/ui-message-list';
 import { useMemo } from 'react';
 
 import { useReloadOnError } from './hooks/useReloadOnError';
 import { userAgentMIMETypeFallback } from '../../../../../lib/utils/userAgentMIMETypeFallback';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
 
 const VideoAttachment = ({
 	title,

@@ -3,6 +3,7 @@ import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fu
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { IgnoredContent, MessageContentFallback } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +11,6 @@ import { useTranslation } from 'react-i18next';
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import Emoji from '../../Emoji';
-import IgnoredContent from '../IgnoredContent';
-import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';

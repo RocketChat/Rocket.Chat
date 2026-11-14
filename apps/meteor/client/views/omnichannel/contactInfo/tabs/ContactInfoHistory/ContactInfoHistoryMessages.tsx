@@ -23,6 +23,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ListViewport from '../../../../../components/ListViewport';
 import { isMessageNewDay } from '../../../../../lib/utils/isMessageNewDay';
 import { isMessageSequential } from '../../../../../lib/utils/isMessageSequential';
+import { MessagesProvider } from '../../../../../providers/MessagesProvider';
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
 import { useHistoryMessageList } from '../../../contactHistory/MessageList/useHistoryMessageList';
 
@@ -59,66 +60,68 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 
 	return (
 		<>
-			<ContextualbarContent flush>
-				<Box
-					display='flex'
-					flexDirection='row'
-					padding={24}
-					borderBlockEndWidth='default'
-					borderBlockEndStyle='solid'
-					borderBlockEndColor='extra-light'
-					flexShrink={0}
-				>
-					<Stack direction='row' align='center' grow gap={8}>
-						<TextInput
-							placeholder={t('Search')}
-							value={text}
-							onChange={handleSearchChange}
-							endAddon={<Icon name='magnifier' size='x20' />}
-						/>
-						<IconButton title={t('Back')} size='small' icon='back' onClick={onBack} />
-					</Stack>
-				</Box>
-				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
-				{error && (
-					<States>
-						<StatesIcon name='warning' variation='danger' />
-						<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-						<StatesSubtitle>{error.toString()}</StatesSubtitle>
-					</States>
-				)}
-				{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<ListViewport ref={ref}>
-					{!error && totalItemCount > 0 && messages.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								totalCount={totalItemCount}
-								initialTopMostItemIndex={{ index: 'LAST' }}
-								followOutput
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
-								endReached={() => fetchNextPage()}
-								overscan={25}
-								data={messages}
-								itemContent={(index, data) => {
-									const lastMessage = messages[index - 1];
-									const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
-									const isNewDay = isMessageNewDay(data, lastMessage);
-									return (
-										<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
-									);
-								}}
+			<MessagesProvider allowsInteraction={false}>
+				<ContextualbarContent flush>
+					<Box
+						display='flex'
+						flexDirection='row'
+						padding={24}
+						borderBlockEndWidth='default'
+						borderBlockEndStyle='solid'
+						borderBlockEndColor='extra-light'
+						flexShrink={0}
+					>
+						<Stack direction='row' align='center' grow gap={8}>
+							<TextInput
+								placeholder={t('Search')}
+								value={text}
+								onChange={handleSearchChange}
+								endAddon={<Icon name='magnifier' size='x20' />}
 							/>
-						</VirtualizedScrollbars>
+							<IconButton title={t('Back')} size='small' icon='back' onClick={onBack} />
+						</Stack>
+					</Box>
+					{isPending && (
+						<Box paddingInline={24} paddingBlock={12}>
+							<Throbber size='x12' />
+						</Box>
 					)}
-				</ListViewport>
-			</ContextualbarContent>
+					{error && (
+						<States>
+							<StatesIcon name='warning' variation='danger' />
+							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+							<StatesSubtitle>{error.toString()}</StatesSubtitle>
+						</States>
+					)}
+					{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
+					<ListViewport ref={ref}>
+						{!error && totalItemCount > 0 && messages.length > 0 && (
+							<VirtualizedScrollbars>
+								<Virtuoso
+									totalCount={totalItemCount}
+									initialTopMostItemIndex={{ index: 'LAST' }}
+									followOutput
+									style={{
+										height: blockSize,
+										width: inlineSize,
+									}}
+									endReached={() => fetchNextPage()}
+									overscan={25}
+									data={messages}
+									itemContent={(index, data) => {
+										const lastMessage = messages[index - 1];
+										const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
+										const isNewDay = isMessageNewDay(data, lastMessage);
+										return (
+											<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+										);
+									}}
+								/>
+							</VirtualizedScrollbars>
+						)}
+					</ListViewport>
+				</ContextualbarContent>
+			</MessagesProvider>
 			{onOpenRoom && (
 				<ContextualbarFooter>
 					<ButtonGroup stretch>

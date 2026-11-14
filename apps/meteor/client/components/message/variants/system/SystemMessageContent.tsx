@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageSystemBlock } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { MessageActionLinks } from '@rocket.chat/ui-message-list';
 
 import Attachments from '../../content/Attachments';
-import MessageActions from '../../content/MessageActions';
 
 type SystemMessageContentProps = {
 	message: IMessage;
@@ -17,7 +17,7 @@ const SystemMessageContent = ({ message }: SystemMessageContentProps) => (
 			</MessageSystemBlock>
 		)}
 		{!!message.actionLinks?.length && (
-			<MessageActions
+			<MessageActionLinks
 				message={message}
 				actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 					methodId,

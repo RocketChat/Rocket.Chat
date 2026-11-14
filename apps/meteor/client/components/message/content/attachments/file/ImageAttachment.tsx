@@ -1,10 +1,10 @@
 import type { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { MessageContentBody } from '@rocket.chat/ui-message-list';
 
 import { useLoadImage } from './hooks/useLoadImage';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
 import AttachmentImage from '../structure/AttachmentImage';
 
 const ImageAttachment = ({
