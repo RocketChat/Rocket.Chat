@@ -559,6 +559,76 @@ describe('createTransformFromUpdateFilter', () => {
 				expect(() => updater(baseDoc)).toThrow('Cannot apply $pull/pullAll modifier to non-array');
 			});
 
+			it('should remove elements matching an element operator condition', () => {
+				type DocType = { _id: string; scores: number[] };
+				const doc = { _id: 'test', scores: [10, 20, 30] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { scores: { $gte: 20 } as any } });
+				const result = updater(doc);
+				expect(result.scores).toEqual([10]);
+			});
+
+			it('should remove elements matching a regex value', () => {
+				type DocType = { _id: string; tags: string[] };
+				const doc = { _id: 'test', tags: ['tmp-1', 'keep', 'tmp-2'] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { tags: /^tmp/ as any } });
+				const result = updater(doc);
+				expect(result.tags).toEqual(['keep']);
+			});
+
+			it('should remove elements matching a date value', () => {
+				type DocType = { _id: string; dates: Date[] };
+				const d1 = new Date(1);
+				const d2 = new Date(2);
+				const doc = { _id: 'test', dates: [new Date(1), new Date(2)] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { dates: d1 as any } });
+				const result = updater(doc);
+				expect(result.dates).toEqual([d2]);
+			});
+
+			it('should remove elements matching a document condition with a diff field', () => {
+				type DocType = { _id: string; items: { diff: number }[] };
+				const doc = { _id: 'test', items: [{ diff: 1 }, { diff: 2 }] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { items: { diff: 1 } } });
+				const result = updater(doc);
+				expect(result.items).toEqual([{ diff: 2 }]);
+			});
+
+			it('should remove elements matching a logical operator condition', () => {
+				type DocType = { _id: string; items: { a: number }[] };
+				const doc = { _id: 'test', items: [{ a: 1 }, { a: 2 }] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { items: { $or: [{ a: 1 }] } } });
+				const result = updater(doc);
+				expect(result.items).toEqual([{ a: 2 }]);
+			});
+
+			it('should remove nested arrays matching with $all', () => {
+				type DocType = { _id: string; matrix: number[][] };
+				const doc = {
+					_id: 'test',
+					matrix: [
+						[1, 2],
+						[2, 3],
+					],
+				};
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { matrix: { $all: [1, 2] } as any } });
+				const result = updater(doc);
+				expect(result.matrix).toEqual([[2, 3]]);
+			});
+
+			it('should retain nested arrays containing excluded elements when using $nin', () => {
+				type DocType = { _id: string; items: number[][] };
+				const doc = {
+					_id: 'test',
+					items: [
+						[1, 2],
+						[3],
+					],
+				};
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { items: { $nin: [2] } as any } });
+				const result = updater(doc);
+				expect(result.items).toEqual([[1, 2]]);
+			});
+
 			it('should pull items based on complex queries', () => {
 				type DocType = { _id: string; items: { type: string; value: number; active: boolean }[] };
 				const doc = {

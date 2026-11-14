@@ -495,7 +495,7 @@ const logicalOperators = {
 
 const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators => operator in logicalOperators;
 
-const isOperatorObject = <TOperator extends `$${string}`>(
+export const isOperatorObject = <TOperator extends `$${string}`>(
 	valueSelector: unknown,
 	inconsistentOK = false,
 ): valueSelector is Record<TOperator, any> => {
@@ -560,6 +560,11 @@ export const createDocumentMatcherFromFilter = <T>(filter: Filter<T>) => {
 		.filter(isTruthy);
 
 	return (doc: T) => everyMatches(docMatchers, (fn) => fn(doc));
+};
+
+export const createPredicateFromValueSelector = (valueSelector: unknown): ((value: unknown) => boolean) => {
+	const valueMatcher = compileValueSelector(valueSelector);
+	return (value: unknown) => valueMatcher([{ value }]).result;
 };
 
 export const createPredicateFromFilter = <T>(filter: Filter<T>): ((doc: T) => boolean) => {
