@@ -593,8 +593,7 @@ describe('ReadStateManager.subscribeToMessages', () => {
 			_updatedAt: new Date('2026-01-03T00:00:00.000Z'),
 		};
 
-		// Seed the message BEFORE subscribing to the store.
-		// This prevents the store subscription from triggering the recalculation.
+		// Exercise realtime callback repair for a stale marker.
 		Messages.state.store(realtimeMessage);
 
 		const unsubscribe = registerCleanup(manager.subscribeToMessages());
