@@ -130,6 +130,7 @@ function MultiSelect({
 		'aria-describedby': ariaDescribedBy,
 		'aria-invalid': ariaInvalid,
 		'aria-required': ariaRequired,
+		autoFocus,
 		...containerProps
 	} = props;
 
@@ -165,6 +166,7 @@ function MultiSelect({
 						aria-describedby={ariaDescribedBy}
 						aria-invalid={ariaInvalid}
 						aria-required={ariaRequired}
+						autoFocus={autoFocus}
 					>
 						{internalValue.length === 0 ? placeholder : null}
 					</Anchor>

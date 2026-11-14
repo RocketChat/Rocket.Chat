@@ -41,6 +41,10 @@
 		"@rocket.chat/ui-kit": "workspace:~"
 	},
 	"devDependencies": {
+		"@nivo/bar": "0.88.0",
+		"@nivo/core": "0.88.0",
+		"@nivo/line": "0.88.0",
+		"@nivo/pie": "0.88.0",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",
@@ -78,6 +82,10 @@
 		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {
+		"@nivo/bar": "0.88.0",
+		"@nivo/core": "0.88.0",
+		"@nivo/line": "0.88.0",
+		"@nivo/pie": "0.88.0",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/fuselage": "1.0.0",
 		"@rocket.chat/fuselage-hooks": "0.44.0",

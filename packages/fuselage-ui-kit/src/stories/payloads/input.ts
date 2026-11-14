@@ -251,3 +251,34 @@ export const inputWithLinearScale: readonly UiKit.LayoutBlock[] = [
 		},
 	},
 ] as const;
+
+export const inputWithExternalSelect: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'external_select',
+			actionId: 'input-0',
+			placeholder: { type: 'plain_text', text: 'Type at least 3 characters' },
+			initial_option: { text: { type: 'plain_text', text: 'Rocket.Chat' }, value: 'rocketchat' },
+		},
+		label: { type: 'plain_text', text: 'Project', emoji: true },
+	},
+] as const;
+
+export const inputWithMultiExternalSelect: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'multi_external_select',
+			actionId: 'input-0',
+			placeholder: { type: 'plain_text', text: 'Type at least 3 characters' },
+			min_query_length: 2,
+			max_selected_items: 3,
+		},
+		label: { type: 'plain_text', text: 'Projects', emoji: true },
+	},
+] as const;

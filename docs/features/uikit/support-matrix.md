@@ -10,8 +10,12 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `context_actions`, `header`, `info_card`, `input`, `markdown`, `preview`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
-- **element `multi_static_select` in Livechat**: the method exists but returns `null`.
+- **Livechat, message blocks**: `alert`, `card`, `carousel`, `container`, `data_table`, `data_visualization`, `file`, `info_card`, `input`, `rich_text` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget. `info_card` needs icons the widget does not ship, and `video_conf` needs the call UI of the web client.
+- **Livechat, `rich_text` elements**: the `color`, `tag`, `citation`, `message_mention`, `attachment_mention`, `usergroup` and `team` inline elements are not rendered in Livechat, since it does not draw `rich_text`. Elsewhere `usergroup` and `team` both resolve a team id (Rocket.Chat has no user groups).
+- **Livechat, `layout`**: `MessageParser` draws the `fallback` blocks of a layout in its place and never the rows; a layout without `fallback` renders as nothing.
+- **Livechat, simplified drawing**: `context_actions` shows an emoji (feedback) or the label (icon button) instead of an icon; `multi_static_select` is a native multiple `<select>` that ignores `maxSelectItems`; `video` frames only absolute `https` URLs and `markdown` and `table` cells use the widget's own Markdown renderer.
+- **Livechat, modals**: the widget draws modal views with `actions`, `callout`, `context`, `divider`, `header`, `image`, `markdown`, `preview`, `section`, `table`, `video` and `input` blocks. `input` supports `plain_text_input`, `static_select`, `multi_static_select` and `datepicker`; other input elements render as nothing. Contextual bars, banners and `tab_navigation` are not drawn.
+- **Livechat, task blocks**: `plan` and `task_card` are accepted in messages, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 - **`feedback_buttons` and `icon_button` outside their containers**: the types only allow them in the containers marked below, but the Fuselage renderer draws them in any element container, so a `feedback_buttons` inside an `actions` block still renders in a message.
 
@@ -22,25 +26,40 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | Block | message | Livechat (message) | modal | banner | contextualBar | attachment |
 | --- | --- | --- | --- | --- | --- | --- |
 | `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| `alert` | ✅ | — | ✅ | — | ✅ | — |
+| `callout` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `card` | ✅ | — | ✅ | — | ✅ | — |
+| `carousel` | ✅ | — | — | — | — | — |
+| `container` | ✅ | — | ✅ | — | ✅ | — |
 | `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `context_actions` | ✅ | — | — | — | — | — |
+| `context_actions` | ✅ | ✅ | — | — | — | — |
+| `data_table` | ✅ | — | ✅ | — | ✅ | — |
+| `data_visualization` | ✅ | — | ✅ | — | ✅ | — |
 | `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `header` | ✅ | — | ✅ | — | ✅ | — |
+| `file` | ✅ | — | — | — | — | — |
+| `header` | ✅ | ✅ | ✅ | — | ✅ | — |
 | `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `info_card` | ✅ | — | — | ✅ | — | — |
 | `input` | ✅ | — | ✅ | ✅ | ✅ | — |
-| `markdown` | ✅ | — | ✅ | — | ✅ | — |
-| `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
+| `layout` | ✅ | fallback | ✅ | — | ✅ | — |
+| `markdown` | ✅ | ✅ | ✅ | — | ✅ | — |
+| `plan` | ✅ | — | ✅ | — | ✅ | — |
+| `preview` | ✅ | ✅ | ✅ | ✅ | ✅ | — |
+| `rich_text` | ✅ | — | ✅ | — | ✅ | — |
 | `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `tab_navigation` | — | — | — | — | ✅ | — |
-| `table` | ✅ | — | ✅ | — | ✅ | — |
-| `video` | ✅ | — | ✅ | — | ✅ | — |
+| `table` | ✅ | ✅ | ✅ | — | ✅ | — |
+| `task_card` | ✅ | — | ✅ | — | ✅ | — |
+| `video` | ✅ | ✅ | ✅ | — | ✅ | — |
 | `video_conf` | ✅ | — | — | — | — | — |
+
+`file_input` needs a room to store the files in, so it only works in a modal or contextual bar opened from a conversation; in a banner, or a modal opened with no room on screen, it renders disabled.
 
 `input` in a message has no view state to submit to: its elements only reach the app through `dispatchActionConfig` (see [interactions.md](interactions.md#when-an-element-sends-blockaction)).
 
 The attachment surface has no client renderer, so its column is the list only.
+
+`url` is the only element that is not in the table below: it is typed only for the `sources` of a `task_card`, and the `task_card` block draws it itself.
 
 ## Elements per container
 
@@ -55,19 +74,23 @@ Container columns come from the block types; renderer columns tell whether a met
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `email_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
-| `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | — |
+| `external_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | ✅ |
+| `file_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `icon` | — | — | — | — | — | — | ✅ | — | — | ✅ | — |
-| `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | — |
+| `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | ✅ |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `multi_channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — (returns `null`) |
+| `multi_external_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `multi_users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `number_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `overflow` | ✅ | — | ✅ | — | — | ✅ | — | — | — | ✅ | ✅ |
-| `plain_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `plain_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | ✅ (modal only) |
 | `radio_button` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `rich_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
 | `time_picker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |

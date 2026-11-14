@@ -13,7 +13,22 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'actions'` | yes |  |
-| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| RichTextInputElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `alert`
+
+Source: [`packages/ui-kit/src/blocks/layout/AlertBlock.ts`](../../../packages/ui-kit/src/blocks/layout/AlertBlock.ts)
+
+A short notice styled by its level. Drawn with the same component as `callout`, with no title or accessory; `error` takes the `danger` style.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'alert'` | yes |  |
+| `text` | `TextObject` | yes | At most 200 characters. |
+| `level` | `'default' \| 'info' \| 'warning' \| 'error' \| 'success'` | no | Defaults to `default`. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -31,6 +46,40 @@ Source: [`packages/ui-kit/src/blocks/layout/CalloutBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `card`
+
+Source: [`packages/ui-kit/src/blocks/layout/CardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CardBlock.ts)
+
+A self-contained card. Images must have a safe URL to be drawn. The type does not say that a card needs at least one of `hero_image`, `title`, `body` or `actions`; a card with none draws an empty frame.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'card'` | yes |  |
+| `hero_image` | `CardImage` | no | Wide image across the top. |
+| `icon` | `CardImage` | no | Small image beside the title and subtitle. |
+| `title` | `TextObject` | no | At most 150 characters. |
+| `subtitle` | `TextObject` | no | At most 150 characters. |
+| `body` | `TextObject` | no | At most 200 characters. |
+| `subtext` | `TextObject` | no | Small text under the body; at most 200 characters. |
+| `actions` | `readonly ButtonElement[]` | no | At most 3. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+`CardImage` is `{ type: 'image', image_url: string, alt_text: string }`: `image_url` has at most 3000 characters and `alt_text` at most 2000.
+
+### `carousel`
+
+Source: [`packages/ui-kit/src/blocks/layout/CarouselBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CarouselBlock.ts)
+
+Cards in a row that scrolls sideways. The previous and next buttons are tab stops and the row itself is focusable, so the keyboard scrolls it natively; there is no arrow-key navigation between cards. Anything in `elements` that is not a `card` is skipped.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'carousel'` | yes |  |
+| `elements` | `readonly CardBlock[]` | yes | From 1 to 10 cards. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `conditional`
 
 Source: [`packages/ui-kit/src/blocks/layout/ConditionalBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ConditionalBlock.ts)
@@ -40,6 +89,29 @@ Source: [`packages/ui-kit/src/blocks/layout/ConditionalBlock.ts`](../../../packa
 | `type` | `'conditional'` | yes |  |
 | `when` | `{ [K in keyof Conditions]: readonly Conditions[K][]; }` | no |  |
 | `render` | `readonly RenderableLayoutBlock[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `container`
+
+Source: [`packages/ui-kit/src/blocks/layout/ContainerBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ContainerBlock.ts)
+
+A titled frame around other blocks. The type does not say that one of `title` and `rich_text_title` is required; `validateLayoutBlocks` reports a container with neither. A collapsible container draws a button in its header that hides everything but the header, with `aria-expanded` and `aria-controls`; the children stay mounted while hidden, so inputs keep their value. `has_header_divider` is ignored when the container is collapsible. Children are drawn through the surface's renderer, so a child the surface does not accept is not drawn. The nested blocks count toward the block limit of the surface.
+
+Containers and layouts nest at most 2 deep: `layout` > `container` > `rich_text` is valid, `layout` > `container` > `layout` is not.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'container'` | yes |  |
+| `title` | `PlainText` | no | At most 150 characters. |
+| `rich_text_title` | `RichTextBlock` | no | Wins over `title` when both are given. |
+| `subtitle` | `TextObject` | no | At most 150 characters. |
+| `child_blocks` | `readonly ContainerChildBlock[]` | yes | From 1 to 10 of `actions`, `context`, `divider`, `file`, `header`, `image`, `input`, `layout`, `rich_text`, `section`, `table` and `video`. |
+| `width` | `'narrow' \| 'standard' \| 'wide' \| 'full'` | no | Defaults to `standard`. `narrow` is 280px, `standard` is the width of a message block (368px), `wide` is 640px and `full` fills the space. The caps apply on every surface. |
+| `icon` | `CardImage` | no | Small image beside the title and subtitle; it must have a safe URL to be drawn. |
+| `is_collapsible` | `boolean` | no | Defaults to false. |
+| `default_collapsed` | `boolean` | no | Starts collapsed when `is_collapsible` is true. |
+| `has_header_divider` | `boolean` | no | Draws a line under the header when `is_collapsible` is not true. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -64,6 +136,61 @@ Source: [`packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts`](../../../pa
 | `elements` | `readonly (FeedbackButtonsElement \| IconButtonElement)[]` | yes | Each element gets the block's `appId` and `blockId` when it has none. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
+
+### `data_table`
+
+Source: [`packages/ui-kit/src/blocks/layout/DataTableBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DataTableBlock.ts)
+
+A table the reader can filter, sort and page through. Unlike `table`, its cells can hold rich text and buttons. The filter box matches the text each cell shows (the label of a button, the `text` of a number when it has one); clicking a column header sorts by it, and a second click reverses the order. A column sorts by number when every cell below the header is a `raw_number`, and alphabetically otherwise. Rows, filtering and sorting live in the client: nothing is sent to the app until a button is clicked.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'data_table'` | yes |  |
+| `caption` | `string` | yes | Names the table for assistive technology and is shown above it. |
+| `rows` | `readonly (readonly DataTableCell[])[]` | yes | The first row is the header and takes only `raw_text` and `raw_number` cells. From 2 to 201 rows, each with the same 1 to 20 cells; the text of all cells adds up to at most 20,000 characters, counting the label of every button. |
+| `page_size` | `number` | no | Rows per page, an integer from 1 to 100; 5 when omitted. |
+| `row_header_column_index` | `number` | no | The 0-based column that names each row for assistive technology, drawn as the row header; 0 when omitted. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+A `DataTableCell` is one of:
+
+| Cell | Fields |
+| --- | --- |
+| `raw_text` | `text`: shown as is |
+| `raw_number` | `value`: number; `text?`: shown instead of the number |
+| `rich_text` | a [`rich_text`](#rich_text) block; not allowed in the header row |
+| `action_cell` | `element`: a `button`; `fallback?`: a `raw_text` or `raw_number` cell for clients that cannot draw the button. Not allowed in the header row |
+
+The button of an `action_cell` gets the block's `appId` and `blockId` when it has none, and clicking it sends the usual block action, so set its `value` to tell the rows apart. Any other cell renders empty.
+
+### `data_visualization`
+
+Source: [`packages/ui-kit/src/blocks/layout/DataVisualizationBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DataVisualizationBlock.ts)
+
+A pie, bar, area or line chart under a title. The chart is drawn by a library that the web client loads only when a message shows one. It is announced as an image named by `title`, and its values are also available to assistive technology as a table. A message can hold up to 2 `data_visualization` blocks; this is checked when blocks are validated and does not apply to views.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'data_visualization'` | yes |  |
+| `title` | `string` | yes | At most 50 characters. |
+| `chart` | `PieChart \| SeriesChart` | yes | See below. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+A `pie` chart has `segments`, from 1 to 12 `{ label, value }` slices: `label` is at most 20 characters and `value` is greater than 0. The share of a slice is its value over the sum of all values.
+
+A `bar`, `area` or `line` chart has `series`, from 1 to 12 `{ name, data }`, and an `axis_config`:
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `series[].name` | `string` | yes | At most 20 characters, unique in the chart; shown in the legend, which appears when there is more than one series. |
+| `series[].data` | `{ label, value }[]` | yes | Exactly one point for each category, no other; `value` may be negative. |
+| `axis_config.categories` | `string[]` | yes | From 1 to 20 labels of at most 20 characters, in x-axis order. |
+| `axis_config.x_label` | `string` | no | Title under the x-axis, at most 50 characters. |
+| `axis_config.y_label` | `string` | no | Title beside the y-axis, at most 50 characters. |
+
+Bars of several series are grouped by category. Areas are layered in array order, the first at the back.
 
 ### `divider`
 
@@ -99,6 +226,20 @@ Source: [`packages/ui-kit/src/blocks/layout/ImageBlock.ts`](../../../packages/ui
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `file`
+
+Source: [`packages/ui-kit/src/blocks/layout/FileBlock.ts`](../../../packages/ui-kit/src/blocks/layout/FileBlock.ts)
+
+An uploaded file shown as a card with a link to download it. The card shows a generic "File" label, not the file name, size or type: the client fetches no file details. The link is the file URL, which enforces room access, so a viewer who cannot read the file gets a `403` when they open it. Only files of the workspace are supported: any `source` other than `local` renders nothing.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'file'` | yes |  |
+| `file_id` | `string` | yes |  |
+| `source` | `'local'` | no |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `info_card`
 
 Source: [`packages/ui-kit/src/blocks/layout/InfoCardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/InfoCardBlock.ts)
@@ -118,9 +259,33 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | --- | --- | --- | --- |
 | `type` | `'input'` | yes |  |
 | `label` | `PlainText` | yes |  |
-| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
+| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
 | `hint` | `PlainText` | no |  |
 | `optional` | `boolean` | no |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `layout`
+
+Source: [`packages/ui-kit/src/blocks/layout/LayoutGridBlock.ts`](../../../packages/ui-kit/src/blocks/layout/LayoutGridBlock.ts)
+
+Arranges blocks in rows of up to 3 items side by side. It is purely visual: it adds no grid, table or group role, and tab order follows the source order of the items. Items share a row in the ratio of their `width` weight (`narrow` 1, `standard` 2, `wide` 3) and wrap to the next line, in source order, when they cannot keep their minimum width; there are no vertical dividers. The label is only drawn, as bold text without heading semantics, when `is_label_visible` is true. `grid_lines` `rows` draws an outer border and a line between rows, `outer` the border only. `start` and `end` alignment follow the text direction.
+
+Beyond the types, `validateLayoutBlocks` reports a row with more than one of `carousel`, `data_table` and `data_visualization`, a `data_visualization` item whose weight is not more than half of its row, and layouts and containers nested more than 2 deep. Every nested block counts toward the block limit of the surface; the label does not. Items go through the surface's renderer, so an item the surface does not accept is not drawn.
+
+The web client never draws `fallback`; Livechat draws it in place of the layout, since it cannot draw the rows.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'layout'` | yes |  |
+| `label` | `string` | yes | At most 150 characters. |
+| `is_label_visible` | `boolean` | no | Defaults to false; a hidden label is not drawn at all. |
+| `rows` | `readonly LayoutRow[]` | yes | From 1 to 5 rows of `{ items }`, with 1 to 3 items each. |
+| `rows[].items[].block` | `LayoutItemBlock` | yes | One of `actions`, `alert`, `card`, `carousel`, `container`, `context`, `data_table`, `data_visualization`, `divider`, `file`, `header`, `image`, `input`, `rich_text`, `section`, `table` and `video`; not `markdown`. |
+| `rows[].items[].width` | `'narrow' \| 'standard' \| 'wide'` | no | Defaults to `standard`. |
+| `rows[].items[].horizontal_alignment` | `'start' \| 'center' \| 'end'` | no | Omit to let the content fill the cell. |
+| `grid_lines` | `'none' \| 'rows' \| 'outer'` | no | Defaults to `none`. |
+| `fallback` | `readonly LayoutFallbackBlock[]` | no | `context`, `divider`, `header`, `image`, `rich_text`, `section`, `table` and `video`. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -134,6 +299,20 @@ Source: [`packages/ui-kit/src/blocks/layout/MarkdownBlock.ts`](../../../packages
 | `text` | `string` | yes |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
+
+### `plan`
+
+Source: [`packages/ui-kit/src/blocks/layout/PlanBlock.ts`](../../../packages/ui-kit/src/blocks/layout/PlanBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'plan'` | yes | The steps of a multi-step task, such as an AI agent's, shown together under a title. |
+| `title` | `string` | yes | Plain text. |
+| `tasks` | `readonly TaskCard[]` | yes | At most 50, checked by `validateLayoutBlocks`. Each is the fields of a `task_card` without `type`, `appId` and `blockId`. `task_id` should be unique in the plan; nothing checks it, and the renderer keys tasks by it. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+An app shows progress by sending the message or view again with the new statuses.
 
 ### `preview`
 
@@ -152,6 +331,60 @@ Source: [`packages/ui-kit/src/blocks/layout/PreviewBlock.ts`](../../../packages/
 | `externalUrl` | `string` | no |  |
 | `oembedUrl` | `string` | no |  |
 
+### `rich_text`
+
+Source: [`packages/ui-kit/src/blocks/layout/RichTextBlock.ts`](../../../packages/ui-kit/src/blocks/layout/RichTextBlock.ts)
+
+Structured rich text. Fuselage maps it to the `@rocket.chat/message-parser` AST and renders it with the same `Markup` component as a chat message.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'rich_text'` | yes |  |
+| `elements` | `RichTextContainer[]` | yes | `rich_text_section`, `rich_text_list`, `rich_text_quote` or `rich_text_preformatted`. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+Containers:
+
+| Container | Fields |
+| --- | --- |
+| `rich_text_section` | `elements`: inline elements |
+| `rich_text_list` | `style`: `'bullet'` or `'ordered'`; `indent?`: number; `elements`: `rich_text_section[]` |
+| `rich_text_quote` | `elements`: inline elements |
+| `rich_text_preformatted` | `elements`: inline elements, whose `text` is joined and shown as a code block |
+
+Inline elements:
+
+| Element | Fields |
+| --- | --- |
+| `text` | `text`; `style?`: `{ bold?, italic?, strike?, code? }` |
+| `link` | `url`; `text?` (defaults to the url); `style?` |
+| `emoji` | `name`; `unicode?` (shown instead of the shortcode when set) |
+| `user` | `user_id`: resolved to the username through `/v1/users.info` |
+| `channel` | `channel_id`: resolved to the room name through `/v1/rooms.info` |
+| `date` | `timestamp`: Unix seconds; `format?`: `t`, `T`, `d`, `D`, `f` (default), `F` or `R` |
+| `broadcast` | `range`: `'here'`, `'channel'` or `'everyone'`; the last two both mention `@all` |
+| `color` | `value`: `#RRGGBB` or `#RRGGBBAA`, drawn as a colour swatch; anything else is shown as text |
+| `tag` | `text`; `color?`: `gray`, `brown`, `purple`, `indigo`, `blue`, `green`, `yellow`, `orange` or `red`; `style?` |
+| `citation` | `url`, `text`, `index`; `details?`: `{ citation_type: 'web' \| 'external' \| 'message' \| 'file', … }`; `from_llm?` |
+| `message_mention` | `channel_id`, `message_id`; `text?` (defaults to "message"); `url?`; `author_id?`; `style?` |
+| `attachment_mention` | `url`; `text?` (defaults to the url); `app_id?`; `icon_url?`; `style?` |
+| `usergroup` | `usergroup_id`: a team id, shown as a user mention of the team's name; `style?` |
+| `team` | `team_id`: shown as a channel mention of the team's name; `style?` |
+
+Notes:
+
+- `tag` is drawn as a Fuselage `Tag`. Fuselage has no green, brown or orange tag, so the colours map to its variants as `gray`/`green` to `secondary`, `brown`/`orange` to `secondary-warning`, `purple` to `featured`, `indigo` to `primary`, `blue` to `secondary-info`, `yellow` to `warning` and `red` to `danger`; a tag without `color` is gray. A section, quote or list item that holds a tag or a citation is laid out as a wrapping row of text runs and chips.
+- `citation` is a link labelled `[index]`. Its accessible name is `[index] text`, with line breaks removed, and its title is `host — text`, where `host` is the host the link opens; the sender-supplied source names in `details` are not shown, so they cannot pass for the destination. `details` is not drawn, and `from_llm` is ignored. A citation whose `url` is not http(s) shows `[index]` as text.
+- `message_mention` links to `url` when it is an http(s) URL, and otherwise to the message's permalink, built from the room found through `/v1/rooms.info`. Messages are identified by `message_id`, not by a timestamp. Without a resolvable link the label shows as text.
+- `attachment_mention` only links http(s) URLs; `app_id` and `icon_url` are accepted and ignored.
+- `usergroup` and `team` both take a team id and read the name from `/v1/teams.info`. Rocket.Chat has no user groups, so `usergroup` mentions a team the way a user mention would. Both show the id until the name loads.
+- `style` on `message_mention`, `attachment_mention`, `usergroup`, `team` and `tag` applies `bold`, `italic` and `strike`; `code` only applies to text and tags. `color` has no `style`. The `style` of a `link` element is ignored, as it always was.
+
+- Mentions arrive by id and are resolved on the client with cached requests; the id is shown until the name loads, and stays if the lookup fails.
+- The message-parser AST has flat lists, so `indent` is ignored when rendering: a nested list shows at the top level.
+- Only the message, modal and contextual bar surfaces accept it.
+
 ### `section`
 
 Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/ui-kit/src/blocks/layout/SectionBlock.ts)
@@ -161,7 +394,7 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `type` | `'section'` | yes |  |
 | `text` | `TextObject` | no |  |
 | `fields` | `readonly TextObject[]` | no |  |
-| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
+| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ExternalSelectElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -185,6 +418,23 @@ Source: [`packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts`](
 | --- | --- | --- | --- |
 | `type` | `'tab_navigation'` | yes |  |
 | `tabs` | `readonly ExperimentalTabElement[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `task_card`
+
+Source: [`packages/ui-kit/src/blocks/layout/TaskCardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/TaskCardBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'task_card'` | yes | One step of a multi-step task, such as an AI agent's, with its status. |
+| `task_id` | `string` | yes | Tells the tasks of a plan apart. |
+| `title` | `string` | yes | Plain text. |
+| `status` | `'pending' \| 'in_progress' \| 'complete' \| 'error'` | yes | Drawn as an icon and a label. An unknown value draws as `pending`. |
+| `details` | `RichTextBlock` | no | What the task sets out to do. |
+| `output` | `RichTextBlock` | no | What the task produced. |
+| `sources` | `readonly UrlSourceElement[]` | no | Links to the pages the task drew on. A link whose URL is not safe to open is left out. |
+| `hide_title` | `boolean` | no | Leaves out the title, so `details` comes first. `title` is still required. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -261,7 +511,7 @@ Source: [`packages/ui-kit/src/blocks/elements/CheckboxElement.ts`](../../../pack
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'checkbox'` | yes |  |
+| `type` | `'checkbox' \| 'checkboxes'` | yes | Both names are typed and accepted. |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -336,6 +586,25 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `external_select`
+
+Source: [`packages/ui-kit/src/blocks/elements/ExternalSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/ExternalSelectElement.ts)
+
+The app provides the options as the user types: see [`blockSuggestion`](interactions.md#options-for-external-selects).
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'external_select'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_option` | `Option` | no | Option selected when the view opens. |
+| `min_query_length` | `number` | no | Characters the user types before the app is asked for options. Defaults to 3. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `feedback_buttons`
 
 Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../../packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts)
@@ -358,7 +627,7 @@ Source: [`packages/ui-kit/src/blocks/elements/IconElement.ts`](../../../packages
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'icon'` | yes |  |
-| `icon` | `AvailableIcons` | yes |  |
+| `icon` | `AvailableIcons` | yes | One of `phone`, `phone-off`, `phone-issue`, `phone-question-mark`, `clock`, `arrow-forward`, `info`, `copy`, `flag`, `trash`, `edit`, `link`, `check`, `cross`, `star`, `pin`, `share`, `download`, `eye`, `bell`, `kebab`. |
 | `variant` | `'default' \| 'danger' \| 'secondary' \| 'warning'` | yes |  |
 | `framed` | `boolean` | no |  |
 
@@ -388,6 +657,23 @@ Source: [`packages/ui-kit/src/blocks/elements/ImageElement.ts`](../../../package
 | `type` | `'image'` | yes |  |
 | `imageUrl` | `string` | yes |  |
 | `altText` | `string` | yes |  |
+
+### `file_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/FileInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/FileInputElement.ts)
+
+Lets the user attach files; the value in the view state is the list of the uploaded file IDs (`string[]`). Each file is uploaded when picked, as a temporary file of the room the view was opened from, and the app reads it with `IUploadRead` after the submit; see [interactions.md](interactions.md#files-in-views). Without a room, the element renders disabled.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'file_input'` | yes |  |
+| `filetypes` | `string[]` | no | Accepted extensions, without the dot (`pdf`, `png`). Any file is accepted when omitted. |
+| `max_files` | `number` | no | Defaults to 10. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
 ### `linear_scale`
 
@@ -443,6 +729,26 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `multi_external_select`
+
+Source: [`packages/ui-kit/src/blocks/elements/MultiExternalSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/MultiExternalSelectElement.ts)
+
+Like `external_select`, with several selections.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'multi_external_select'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_options` | `Option[]` | no | Options selected when the view opens. |
+| `min_query_length` | `number` | no | Characters the user types before the app is asked for options. Defaults to 3. |
+| `max_selected_items` | `number` | no | Most options that can be selected. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `multi_static_select`
 
 Source: [`packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts)
@@ -456,6 +762,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts`](../.
 | `maxSelectItems` | `number` | no |  |
 | `initialValue` | `Option['value'][]` | no |  |
 | `initialOption` | `Option[]` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -531,13 +838,33 @@ Source: [`packages/ui-kit/src/blocks/elements/PlainTextInputElement.ts`](../../.
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `rich_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/RichTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/RichTextInputElement.ts)
+
+A multi-line field where the user types Markdown. Its value, in view state and in the payload sent to the app, is a `rich_text` block built by parsing the text the way a chat message is parsed. `initial_value` is converted back to Markdown for display.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'rich_text_input'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_value` | `RichTextBlock` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+Typed `@name` and `#name` mentions have no ids on the client, so they come back as `text` elements; `@here` and `@all` become `broadcast` elements. A nested list comes back as separate `rich_text_list` containers with `indent` set to the depth.
+
 ### `radio_button`
 
 Source: [`packages/ui-kit/src/blocks/elements/RadioButtonElement.ts`](../../../packages/ui-kit/src/blocks/elements/RadioButtonElement.ts)
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'radio_button'` | yes |  |
+| `type` | `'radio_button' \| 'radio_buttons'` | yes | Both names are typed and accepted. |
 | `options` | `Option[]` | yes |  |
 | `initialOption` | `Option` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -559,6 +886,7 @@ Source: [`packages/ui-kit/src/blocks/elements/StaticSelectElement.ts`](../../../
 | `optionGroups` | `readonly OptionGroup[]` | no |  |
 | `initialOption` | `Option` | no |  |
 | `initialValue` | `Option['value']` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -587,9 +915,10 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'time_picker'` | yes |  |
+| `type` | `'time_picker' \| 'timepicker'` | yes | Both names are typed and accepted. |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
+| `timezone` | `string` | no | IANA name of the time zone `initialTime` and the picked time are in; the user's own when absent. The value sent stays `HH:mm`. |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
@@ -611,6 +940,16 @@ Source: [`packages/ui-kit/src/blocks/elements/ToggleSwitchElement.ts`](../../../
 | `actionId` | `string` | yes |  |
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `url`
+
+Source: [`packages/ui-kit/src/blocks/elements/UrlSourceElement.ts`](../../../packages/ui-kit/src/blocks/elements/UrlSourceElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'url'` | yes | A link to a page a task drew on. Typed only for the `sources` of a `task_card`. |
+| `url` | `string` | yes |  |
+| `text` | `string` | yes | The link's label. |
 
 ### `url_text_input`
 
@@ -717,6 +1056,13 @@ Source: [`packages/ui-kit/src/surfaces/modal/ModalView.ts`](../../../packages/ui
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ModalSurfaceLayout` | yes |  |
+| `private_metadata` | `string` | no | Data the app gets back on submit and close. Kept on the server; whatever the client sends for it is ignored. |
+| `callback_id` | `string` | no | An id the app picks to recognize the view in its handlers. |
+| `external_id` | `string` | no | An id the app picks, unique among the views it opened for a user. An update that carries it, and no known `id`, updates that view. |
+| `submit_disabled` | `boolean` | no | Disables the submit button. |
+| `hash` | `string` | no | Set by the server on every save. An update that carries a different `hash` is stale and is dropped. |
+| `clearOnClose` | `boolean` | no | Closing the view closes every modal of the app (modal only). |
+| `notifyOnClose` | `boolean` | no | Whether closing the view sends `viewClosed` to the app. Defaults to `true`, so views that do not set it keep notifying. |
 
 ### BannerView
 
@@ -744,3 +1090,31 @@ Source: [`packages/ui-kit/src/surfaces/contextualBar/ContextualBarView.ts`](../.
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ContextualBarSurfaceLayout` | yes |  |
+| `private_metadata` | `string` | no | Data the app gets back on submit and close. Kept on the server; whatever the client sends for it is ignored. |
+| `callback_id` | `string` | no | An id the app picks to recognize the view in its handlers. |
+| `external_id` | `string` | no | An id the app picks, unique among the views it opened for a user. An update that carries it, and no known `id`, updates that view. |
+| `submit_disabled` | `boolean` | no | Disables the submit button. |
+| `hash` | `string` | no | Set by the server on every save. An update that carries a different `hash` is stale and is dropped. |
+| `clearOnClose` | `boolean` | no | Closing the view closes every modal of the app (modal only). |
+| `notifyOnClose` | `boolean` | no | Whether closing the view sends `viewClosed` to the app. Defaults to `true`, so views that do not set it keep notifying. |
+
+## Size limits
+
+Checked by `validateLayoutBlocks` (see [interactions.md](interactions.md#validation)), never by the renderers.
+
+| What | Limit |
+| --- | --- |
+| Blocks in a message | 50 |
+| Blocks in a view | 100 |
+| Elements in an `actions` block | 25 |
+| Tasks in a `plan` | 50 |
+| Options in a select (`options`) | 100 |
+| `header` text | 150 characters |
+| `section` text | 3000 characters |
+| `section` field | 2000 characters |
+| `button` text | 75 characters |
+| Option text | 75 characters |
+| `placeholder` | 150 characters |
+| Input `label` and `hint` | 2000 characters |
+
+The limits live in `packages/ui-kit/src/blocks/blockLimits.ts`.

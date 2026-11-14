@@ -23,12 +23,19 @@ import { AppInterface, AppMethod } from '@rocket.chat/apps-engine/definition/met
 import type { IRoom, IRoomUserJoinedContext, IRoomUserLeaveContext } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
-import type { IUIKitResponse, IUIKitSurface, UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type {
+	IUIKitBlockSuggestionResponse,
+	IUIKitResponse,
+	IUIKitSurface,
+	UIKitIncomingInteraction,
+} from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { isUIKitIncomingInteractionActionButtonMessageBox } from '@rocket.chat/apps-engine/definition/uikit/IUIKitIncomingInteractionActionButton';
 import type {
 	IUIKitLivechatBlockIncomingInteraction,
 	IUIKitLivechatIncomingInteraction,
+	IUIKitLivechatViewCloseIncomingInteraction,
+	IUIKitLivechatViewSubmitIncomingInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/livechat';
 import type { IFileUploadInternalContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
@@ -158,7 +165,7 @@ export interface IListenerExecutor {
 	};
 	[AppInterface.IUIKitInteractionHandler]: {
 		args: [UIKitIncomingInteraction];
-		result: IUIKitResponse;
+		result: IUIKitResponse | IUIKitBlockSuggestionResponse;
 	};
 	[AppInterface.IUIKitLivechatInteractionHandler]: {
 		args: [IUIKitLivechatIncomingInteraction];
@@ -259,7 +266,7 @@ export interface IListenerExecutor {
 export class AppListenerManager {
 	private listeners: Map<string, Array<string>>;
 
-	private defaultHandlers = new Map<string, IUIKitResponse>();
+	private defaultHandlers = new Map<string, IUIKitResponse | IUIKitBlockSuggestionResponse>();
 
 	/**
 	 * Locked events are those who are listed in an app's
@@ -279,6 +286,7 @@ export class AppListenerManager {
 		});
 
 		this.defaultHandlers.set('executeViewClosedHandler', { success: true });
+		this.defaultHandlers.set('executeBlockSuggestionHandler', { options: [] });
 	}
 
 	public registerListeners(app: ProxiedApp): void {
@@ -947,7 +955,7 @@ export class AppListenerManager {
 		}
 	}
 
-	private async executeUIKitInteraction(data: UIKitIncomingInteraction): Promise<IUIKitResponse> {
+	private async executeUIKitInteraction(data: UIKitIncomingInteraction): Promise<IUIKitResponse | IUIKitBlockSuggestionResponse> {
 		const { appId } = data;
 
 		const app = this.manager.getOneById(appId);
@@ -985,6 +993,23 @@ export class AppListenerManager {
 						room: data.room,
 						triggerId,
 						value,
+						message: data.message,
+						container: data.container,
+					})
+					.catch(handleError(method));
+			}
+			case 'blockSuggestion': {
+				const method = 'executeBlockSuggestionHandler';
+
+				return app
+					.call<IUIKitBlockSuggestionResponse>(method, {
+						appId,
+						actionId,
+						blockId: data.blockId,
+						value: data.value,
+						user,
+						room: data.room,
+						triggerId,
 						message: data.message,
 						container: data.container,
 					})
@@ -1060,6 +1085,10 @@ export class AppListenerManager {
 			switch (interactionType) {
 				case UIKitIncomingInteractionType.BLOCK:
 					return AppMethod.UIKIT_LIVECHAT_BLOCK_ACTION;
+				case UIKitIncomingInteractionType.VIEW_SUBMIT:
+					return AppMethod.UIKIT_LIVECHAT_VIEW_SUBMIT;
+				case UIKitIncomingInteractionType.VIEW_CLOSED:
+					return AppMethod.UIKIT_LIVECHAT_VIEW_CLOSE;
 			}
 		})(type);
 
@@ -1068,7 +1097,8 @@ export class AppListenerManager {
 		const interactionData = ((
 			interactionType: UIKitIncomingInteractionType,
 			interaction: IUIKitLivechatIncomingInteraction,
-		): IUIKitLivechatBlockIncomingInteraction => {
+		):
+			IUIKitLivechatBlockIncomingInteraction | IUIKitLivechatViewSubmitIncomingInteraction | IUIKitLivechatViewCloseIncomingInteraction => {
 			const { actionId, message, visitor, room, triggerId, container } = interaction;
 
 			switch (interactionType) {
@@ -1086,6 +1116,16 @@ export class AppListenerManager {
 						message,
 						container,
 					};
+				}
+				case UIKitIncomingInteractionType.VIEW_SUBMIT: {
+					const { view } = interaction.payload as { view: IUIKitSurface };
+
+					return { appId, actionId, view, visitor, room, triggerId };
+				}
+				case UIKitIncomingInteractionType.VIEW_CLOSED: {
+					const { view, isCleared } = interaction.payload as { view: IUIKitSurface; isCleared: boolean };
+
+					return { appId, actionId, view, visitor, room, isCleared };
 				}
 			}
 		})(type, data);

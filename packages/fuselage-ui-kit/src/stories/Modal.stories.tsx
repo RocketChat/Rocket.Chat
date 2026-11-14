@@ -19,6 +19,12 @@ import { action } from 'storybook/actions';
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
 
+const suggestProjects = async ({ value }: { value: string }): Promise<UiKit.BlockSuggestionResponse> => ({
+	options: ['Rocket.Chat', 'Rocket.Chat Apps', 'Rocketeer', 'Livechat', 'Omnichannel']
+		.filter((name) => name.toLowerCase().includes(value.toLowerCase()))
+		.map((name) => ({ text: { type: 'plain_text', text: name }, value: name.toLowerCase().replace(/\W+/g, '-') })),
+});
+
 const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boolean }) => (
 	<AnimatedVisibility visibility={visible ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
 		<Modal open={visible}>
@@ -62,6 +68,7 @@ export default {
 					action: action('action'),
 					updateState: action('updateState'),
 					values: {},
+					suggest: suggestProjects,
 					errors,
 				}}
 			>
@@ -83,6 +90,10 @@ export const Divider = createStory(payloads.divider);
 export const Header = createStory(payloads.header);
 
 export const Markdown = createStory(payloads.markdown);
+
+export const RichText = createStory(payloads.richText);
+
+export const InputWithRichTextInput = createStory(payloads.inputWithRichTextInput);
 
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
@@ -146,6 +157,10 @@ export const InputWithMultiUsersSelect = createStory(payloads.inputWithMultiUser
 	'input-0': 'Error',
 });
 
+export const InputWithExternalSelect = createStory(payloads.inputWithExternalSelect);
+
+export const InputWithMultiExternalSelect = createStory(payloads.inputWithMultiExternalSelect);
+
 export const InputWithConversationsSelect = createStory(payloads.inputWithConversationsSelect, {
 	'input-0': 'Error',
 });
@@ -170,7 +185,35 @@ export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 	'input-0': 'Error',
 });
 
+export const InputWithFileInput = createStory(payloads.inputWithFileInput, {
+	'input-0': 'Error',
+});
+
 export const Conditional = createStory(payloads.conditional);
+
+export const Alert = createStory(payloads.alert);
+
+export const Card = createStory(payloads.card);
+
+export const Container = createStory(payloads.container);
+
+export const ContainerCollapsed = createStory(payloads.containerCollapsed);
+
+export const ContainerWithHeaderDivider = createStory(payloads.containerWithHeaderDivider);
+
+export const LayoutThreeColumns = createStory(payloads.layoutThreeColumns);
+
+export const LayoutWithGridLines = createStory(payloads.layoutWithGridLines);
+
+export const DataTable = createStory(payloads.dataTable);
+
+export const DataVisualizationPie = createStory(payloads.dataVisualizationPie);
+
+export const DataVisualizationBar = createStory(payloads.dataVisualizationBar);
+
+export const DataVisualizationArea = createStory(payloads.dataVisualizationArea);
+
+export const DataVisualizationLine = createStory(payloads.dataVisualizationLine);
 
 export const Callout = createStory(payloads.callout);
 

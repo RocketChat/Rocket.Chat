@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import type { Dispatch, ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
+import { useUiKitFileUpload } from '../../../../hooks/uikit/useUiKitFileUpload';
 
 type UseContextualBarContextValueParams = {
 	view: UiKit.ContextualBarView;
@@ -35,6 +36,7 @@ export const useContextualBarContextValue = ({
 
 	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
 	const debouncedEmitInteraction = useDebouncedCallback(emitInteraction, 700);
+	const fileUpload = useUiKitFileUpload(rid);
 
 	return {
 		action: async ({ appId, viewId, actionId, dispatchActionConfig, blockId, value }): Promise<void> => {
@@ -58,6 +60,25 @@ export const useContextualBarContextValue = ({
 				rid,
 			});
 		},
+		suggest: async ({ appId, actionId, blockId, value, viewId }) => {
+			if (!viewId) {
+				return {};
+			}
+
+			return actionManager.suggestOptions(appId, {
+				type: 'blockSuggestion',
+				actionId,
+				blockId,
+				appId,
+				value,
+				container: {
+					type: 'view',
+					id: viewId,
+				},
+				viewId,
+				rid,
+			});
+		},
 		updateState: ({ actionId, value, blockId = 'default' }) => {
 			updateValues({
 				actionId,
@@ -68,6 +89,7 @@ export const useContextualBarContextValue = ({
 			});
 		},
 		...view,
+		...fileUpload,
 		values,
 		viewId: view.id,
 		rid,

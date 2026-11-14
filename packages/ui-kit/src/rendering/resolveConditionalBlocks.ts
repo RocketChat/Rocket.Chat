@@ -3,7 +3,7 @@ import type { Block } from '../blocks/Block.js';
 import { LayoutBlockType } from '../blocks/LayoutBlockType.js';
 import type { ConditionalBlock } from '../blocks/layout/ConditionalBlock.js';
 
-const conditionsMatch = (conditions: Conditions | undefined = undefined, filters: ConditionalBlock['when'] = {}): boolean => {
+export const conditionsMatch = (conditions: Conditions | undefined = undefined, filters: ConditionalBlock['when'] = {}): boolean => {
 	if (!conditions) {
 		return true;
 	}

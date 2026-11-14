@@ -9226,6 +9226,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit"
   dependencies:
+    "@nivo/bar": "npm:0.88.0"
+    "@nivo/core": "npm:0.88.0"
+    "@nivo/line": "npm:0.88.0"
+    "@nivo/pie": "npm:0.88.0"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "workspace:~"
@@ -9263,6 +9267,10 @@ __metadata:
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
+    "@nivo/bar": 0.88.0
+    "@nivo/core": 0.88.0
+    "@nivo/line": 0.88.0
+    "@nivo/pie": 0.88.0
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/fuselage": 1.0.0
     "@rocket.chat/fuselage-hooks": 0.44.0
@@ -9598,6 +9606,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/fuselage-tokens": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
@@ -9623,6 +9632,8 @@ __metadata:
     emoji-mart: "npm:^3.0.1"
     history: "npm:~5.3.0"
     i18next: "npm:~26.4.2"
+    identity-obj-proxy: "npm:~3.0.0"
+    jest: "npm:~30.5.2"
     lorem-ipsum: "npm:^2.0.10"
     mem: "npm:^8.1.1"
     path-to-regexp: "npm:^6.3.0"

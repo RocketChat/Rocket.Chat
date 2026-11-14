@@ -36,37 +36,37 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' marginBlockEnd={20} width='full'>
-			<Box marginInlineEnd={32}>
+		<Box color='default' display='flex' flexDirection='row' marginBlockEnd='x20' width='full'>
+			<Box marginInlineEnd='x32'>
 				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={8}>
-					<Box fontScale='h1' marginInlineEnd={8}>
+				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd='x8'>
+					<Box fontScale='h1' marginInlineEnd='x8'>
 						{name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
 
 				{shortDescription && (
-					<Box fontScale='p1' marginBlockEnd={16}>
+					<Box fontScale='p1' marginBlockEnd='x16'>
 						{shortDescription}
 					</Box>
 				)}
 
-				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={16}>
+				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd='x16'>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
 					{author?.name}
-					<Box marginInline={16} color='disabled'>
+					<Box marginInline='x16' color='disabled'>
 						|
 					</Box>
 					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 					{lastUpdated && (
 						<>
-							<Box marginInline={16} color='disabled'>
+							<Box marginInline='x16' color='disabled'>
 								|
 							</Box>
 							<Box>
@@ -79,7 +79,7 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 
 					{versionIncompatible && (
 						<>
-							<Box marginInline={16} color='disabled'>
+							<Box marginInline='x16' color='disabled'>
 								|
 							</Box>
 

@@ -9,6 +9,14 @@ How `SurfaceRenderer.render(blocks)` in [`packages/ui-kit/src/rendering/SurfaceR
 3. **Each remaining block goes to the renderer method named after its `type`** (`section`, `actions`, ...), called with `BlockContext.BLOCK`. A missing method means the block renders as nothing.
 4. **Block components render their children** through the renderer again, using the context helpers below. Text objects go to `plain_text` and `mrkdwn`, which every renderer must implement.
 
+## Alternative element type names
+
+`renderBlockElement` and the guards map `checkboxes`, `radio_buttons` and `timepicker` to `checkbox`, `radio_button` and `time_picker` (`toCanonicalElementType` in [`elementTypeAliases.ts`](../../../packages/ui-kit/src/blocks/elementTypeAliases.ts)) before looking up the renderer method. Renderers only ever see the canonical type. View state is keyed by `actionId` and read from the element's fields, so the value an app receives is the same as for the canonical element. Both names are part of the element types (`CheckboxElement['type']` is `'checkbox' | 'checkboxes'`), so apps, `validateLayoutBlocks` and the container unions accept either; `BlockRenderers` only has the canonical keys, and `ActionOf` is the same for both names.
+
+## Emoji-only text
+
+Text made only of emoji is parsed as a big emoji block. Fuselage's `MarkdownTextElement` renders it at normal size (paragraph of inline emoji) so it does not stretch table rows, fields or context lines. The `markdown` block passes `bigEmoji` and keeps the chat-like large rendering.
+
 ## Block contexts
 
 The same method can be reached from different places, so every call carries a `BlockContext` and methods use it to decide what to return. `image` is the clearest case: in `BLOCK` context it draws an image block; anywhere else it draws an image element.
@@ -40,6 +48,10 @@ Each surface's allowlist is a constant exported by `@rocket.chat/ui-kit` (for ex
 A renderer still needs a method for every block in its list. Fuselage has a spec that checks this; Livechat does not, and the gaps are listed in [support-matrix.md](support-matrix.md#divergences).
 
 `FuselageSurfaceRenderer` keeps a default list for subclasses that pass none. Only internal surfaces should rely on it.
+
+## Width in a message
+
+A top-level block of a message is capped to the message block width (`--rcx-message-block-width-fixed`, 368px by default). `layout`, `data_table`, `data_visualization`, `carousel`, `table` and `container` take the full width of the message instead; a `container` is sized by its own `width` (see the `container` reference), so `wide` reaches 640px. Which blocks do so is decided by `sizesItselfInMessage` in `packages/fuselage-ui-kit/src/utils/messageBlockWidth.tsx`, applied by `UiKitMessage`. Blocks held by another block are never capped on their own, and the other surfaces do not cap their blocks.
 
 ## Links
 

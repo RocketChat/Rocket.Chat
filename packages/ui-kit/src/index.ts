@@ -15,8 +15,11 @@ export type { ConversationsSelectFilter } from './blocks/elements/ConversationsS
 export type { DatePickerElement } from './blocks/elements/DatePickerElement.js';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement.js';
 export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement.js';
+export type { ExternalSelectElement } from './blocks/elements/ExternalSelectElement.js';
 export type { ImageElement } from './blocks/elements/ImageElement.js';
+export type { FileInputElement } from './blocks/elements/FileInputElement.js';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement.js';
+export type { MultiExternalSelectElement } from './blocks/elements/MultiExternalSelectElement.js';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement.js';
 export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement.js';
 export type { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement.js';
@@ -31,6 +34,7 @@ export type { UsersSelectElement } from './blocks/elements/UsersSelectElement.js
 export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement.js';
 export type { CheckboxElement } from './blocks/elements/CheckboxElement.js';
 export type { RadioButtonElement } from './blocks/elements/RadioButtonElement.js';
+export type { RichTextInputElement } from './blocks/elements/RichTextInputElement.js';
 export type { TimePickerElement } from './blocks/elements/TimePickerElement.js';
 export type { BlockElement } from './blocks/BlockElement.js';
 export type { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement.js';
@@ -46,15 +50,44 @@ export type { HeaderBlock } from './blocks/layout/HeaderBlock.js';
 export type { ImageBlock } from './blocks/layout/ImageBlock.js';
 export type { InputBlock } from './blocks/layout/InputBlock.js';
 export type { MarkdownBlock } from './blocks/layout/MarkdownBlock.js';
+export type * from './blocks/layout/RichTextBlock.js';
 export type { SectionBlock } from './blocks/layout/SectionBlock.js';
 export type { ContextActionsBlock } from './blocks/layout/ContextActionsBlock.js';
+export type { TaskCardBlock, TaskCard, TaskStatus } from './blocks/layout/TaskCardBlock.js';
+export type { PlanBlock } from './blocks/layout/PlanBlock.js';
+export type { UrlSourceElement } from './blocks/elements/UrlSourceElement.js';
 export type { VideoBlock } from './blocks/layout/VideoBlock.js';
 export type { TableBlock, TableCell, RawTextTableCell, TableColumnSetting } from './blocks/layout/TableBlock.js';
 export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock.js';
 export type { LayoutBlock } from './blocks/LayoutBlock.js';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock.js';
+export type { AlertBlock } from './blocks/layout/AlertBlock.js';
+export type { CardBlock, CardImage } from './blocks/layout/CardBlock.js';
+export type { CarouselBlock } from './blocks/layout/CarouselBlock.js';
+export type {
+	DataTableBlock,
+	DataTableCell,
+	RawNumberTableCell,
+	RichTextTableCell,
+	ActionTableCell,
+} from './blocks/layout/DataTableBlock.js';
+export type {
+	DataVisualizationBlock,
+	DataVisualizationChart,
+	PieChart,
+	SeriesChart,
+	PieSegment,
+	DataSeries,
+	DataPoint,
+	AxisConfig,
+} from './blocks/layout/DataVisualizationBlock.js';
+export { containerChildBlockTypes } from './blocks/layout/ContainerBlock.js';
+export type { ContainerBlock, ContainerChildBlock } from './blocks/layout/ContainerBlock.js';
+export { layoutItemBlockTypes } from './blocks/layout/LayoutGridBlock.js';
+export type { LayoutGridBlock, LayoutItem, LayoutItemBlock, LayoutRow, LayoutFallbackBlock } from './blocks/layout/LayoutGridBlock.js';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock.js';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock.js';
+export type { FileBlock } from './blocks/layout/FileBlock.js';
 
 export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction.js';
 
@@ -85,3 +118,6 @@ export * from './surfaces/modal/index.js';
 
 export * from './interactions/UserInteraction.js';
 export * from './interactions/ServerInteraction.js';
+export type { CanonicalElementType, ElementTypeAlias } from './blocks/elementTypeAliases.js';
+export { toCanonicalElement, toCanonicalElementType } from './blocks/elementTypeAliases.js';
+export { flattenBlocks, nestedBlocks } from './blocks/nestedBlocks.js';

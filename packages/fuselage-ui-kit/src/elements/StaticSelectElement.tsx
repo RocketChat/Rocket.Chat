@@ -31,6 +31,7 @@ const StaticSelectElement = ({ block, context }: StaticSelectElementProps) => {
 			error={error}
 			options={options}
 			placeholder={fromTextObjectToString(block.placeholder)}
+			autoFocus={block.focus_on_load}
 			onChange={handleChange}
 		/>
 	);

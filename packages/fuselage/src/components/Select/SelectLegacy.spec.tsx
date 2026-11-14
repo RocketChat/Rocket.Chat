@@ -36,6 +36,14 @@ describe.each<[string, ComponentType<any>, string]>([
 		expect(control).toHaveAttribute('aria-invalid', 'true');
 	});
 
+	it('should focus its control on mount only when asked to', () => {
+		const { rerender } = render(<Component placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		expect(screen.getByRole(role)).not.toHaveFocus();
+
+		rerender(<Component key='focused' autoFocus placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		expect(screen.getByRole(role)).toHaveFocus();
+	});
+
 	it('should focus its control when the label pointing to its id is clicked', async () => {
 		render(
 			<>

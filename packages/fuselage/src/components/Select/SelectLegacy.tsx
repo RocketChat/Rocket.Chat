@@ -55,6 +55,7 @@ function SelectLegacy({
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
+	autoFocus,
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
@@ -158,6 +159,7 @@ function SelectLegacy({
 					aria-labelledby={ariaLabelledBy}
 					aria-describedby={ariaDescribedBy}
 					aria-invalid={ariaInvalid}
+					autoFocus={autoFocus}
 					disabled={disabled ?? false}
 					onClick={show}
 					onBlur={hide}

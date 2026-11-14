@@ -29,6 +29,9 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (view.submit_disabled || contextValue.uploading) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
 			payload: {
@@ -41,8 +44,25 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 		});
 	});
 
+	// Returns whether the app is to be told about the close.
+	const beforeClosing = () => {
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
+
+		if (view.notifyOnClose === false) {
+			actionManager.disposeView(view.id);
+			return false;
+		}
+
+		return true;
+	};
+
 	const handleCancel = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (!beforeClosing()) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -57,6 +77,9 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	});
 
 	const handleClose = useStableCallback(() => {
+		if (!beforeClosing()) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {

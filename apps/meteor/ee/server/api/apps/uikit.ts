@@ -12,6 +12,9 @@ import rateLimit from 'express-rate-limit';
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
+import { confirmViewFiles } from '../../../../server/lib/uikit/confirmViewFiles';
+import { recordInteractionView, withRecordedView } from '../../../../server/lib/uikit/recordedViews';
+import { reportInvalidInteractionBlocks } from '../../../../server/lib/uikit/reportInvalidBlocks';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
 
@@ -245,6 +248,33 @@ export class AppUIKitInteractionApi {
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
+				} catch (e) {
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
+				}
+				break;
+			}
+
+			case 'blockSuggestion': {
+				const { type, actionId, blockId, value, container, triggerId, rid } = req.body;
+				const mid = 'mid' in req.body ? req.body.mid : undefined;
+
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+				const action = { type, appId, actionId, blockId, value, container, triggerId, user, message, room };
+
+				try {
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -257,27 +287,40 @@ export class AppUIKitInteractionApi {
 				const {
 					type,
 					rid,
+					triggerId,
 					payload: { view, isCleared },
 				} = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const { visitor } = req.body;
 				const action = {
 					type,
 					appId,
+					triggerId,
 					user,
+					visitor,
 					room,
 					payload: {
-						view,
+						view: await withRecordedView(view, appId, req.user?._id),
 						isCleared,
 					},
 				};
 
 				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+					const result = await orch.triggerEvent(
+						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+						action,
+					);
 
-					res.send(result);
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -291,20 +334,33 @@ export class AppUIKitInteractionApi {
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const view = await withRecordedView(payload.view, appId, req.user?._id);
+				const { visitor } = req.body;
 				const action = {
 					type,
 					appId,
 					actionId,
 					triggerId,
-					payload,
+					payload: { ...payload, view },
 					user,
+					visitor,
 					room,
 				};
 
 				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+					await confirmViewFiles(view, req.user?._id);
+					const result = await orch.triggerEvent(
+						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+						action,
+					);
 
-					res.send(result);
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -345,7 +401,13 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
-					res.send(result);
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
