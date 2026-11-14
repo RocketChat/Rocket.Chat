@@ -89,3 +89,20 @@ describe('ReadStateManager.attemptMarkAsRead', () => {
 		expect(sdk.rest.post).not.toHaveBeenCalled();
 	});
 });
+
+describe('ReadStateManager.updateSubscription', () => {
+	it('should clear the first unread record when the subscription becomes read', () => {
+		const manager = createManager();
+
+		expect(manager.getFirstUnreadRecordId()).toBe('first-unread');
+
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 0,
+			alert: false,
+			ls: new Date('2026-01-02'),
+		} as ISubscription);
+
+		expect(manager.getFirstUnreadRecordId()).toBeUndefined();
+	});
+});
