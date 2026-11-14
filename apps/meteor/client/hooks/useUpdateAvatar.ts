@@ -10,7 +10,7 @@ const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => ava
 const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject =>
 	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' in avatarObj;
 const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
-	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
+	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'avatarUrl' in avatarObj;
 
 export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) => {
 	const { t } = useTranslation();
