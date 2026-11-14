@@ -21,6 +21,9 @@ describe('isAbsoluteURL', () => {
 		['http://localhost:3000', true],
 		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', true],
 		['data:text/plain;charset=utf-8,Hello', true],
+		['HTTPS://example.com', true],
+		['hTtP://example.com', true],
+		['DATA:text/plain,hello', true],
 	])('should return true for absolute URL %# (%s)', (input, expected) => {
 		expect(isAbsoluteURL(input)).toBe(expected);
 	});
