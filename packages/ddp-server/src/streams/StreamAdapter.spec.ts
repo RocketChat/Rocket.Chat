@@ -91,6 +91,52 @@ describe('Stream adapter fan-out', () => {
 		expect(allowed.subscription.client.sendFrames).toHaveBeenCalledTimes(1);
 	});
 
+	it('shares a lookup within each emission and refreshes it for the next emission', async () => {
+		const denied = makeSubscription({ connectionId: 'denied' });
+		const allowed = makeSubscription({ connectionId: 'allowed' });
+		const subscriptions = new Set([denied, allowed]);
+		let roomIsPublic = true;
+
+		const lookup = jest.fn(async () => roomIsPublic);
+		const authorize = jest.fn((isPublic: boolean, connectionId: string) => isPublic && connectionId === 'allowed');
+
+		const createRule = jest.fn(() => {
+			let roomPromise: Promise<boolean> | undefined;
+
+			return async function (this: { connection: { id: string } }) {
+				roomPromise ??= lookup();
+				return authorize(await roomPromise, this.connection.id);
+			};
+		});
+
+		stream.allowEmitWithContext(createRule);
+
+		await stream.sendToManySubscriptions(subscriptions, undefined, 'event', [], message);
+
+		expect(createRule).toHaveBeenCalledTimes(1);
+		expect(createRule).toHaveBeenCalledWith('event');
+		expect(lookup).toHaveBeenCalledTimes(1);
+		expect(authorize).toHaveBeenCalledTimes(2);
+		expect(authorize).toHaveBeenNthCalledWith(1, true, 'denied');
+		expect(authorize).toHaveBeenNthCalledWith(2, true, 'allowed');
+		expect(denied.subscription.client.sendFrames).not.toHaveBeenCalled();
+		expect(allowed.subscription.client.sendFrames).toHaveBeenCalledTimes(1);
+
+		roomIsPublic = false;
+		authorize.mockClear();
+		allowed.subscription.client.sendFrames.mockClear();
+
+		await stream.sendToManySubscriptions(subscriptions, undefined, 'event', [], message);
+
+		expect(createRule).toHaveBeenCalledTimes(2);
+		expect(lookup).toHaveBeenCalledTimes(2);
+		expect(authorize).toHaveBeenCalledTimes(2);
+		expect(authorize).toHaveBeenNthCalledWith(1, false, 'denied');
+		expect(authorize).toHaveBeenNthCalledWith(2, false, 'allowed');
+		expect(denied.subscription.client.sendFrames).not.toHaveBeenCalled();
+		expect(allowed.subscription.client.sendFrames).not.toHaveBeenCalled();
+	});
+
 	describe('when the socket rejects the write', () => {
 		const destroyed = Object.assign(new Error('write after destroy'), { code: 'ERR_STREAM_DESTROYED' });
 

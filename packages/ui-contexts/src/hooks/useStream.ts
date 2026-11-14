@@ -17,6 +17,10 @@ type StreamsConfigs<N extends StreamNames> = StreamerEvents[N][number];
 type StreamerCallback<S extends StreamNames, N extends StreamsConfigs<S> = StreamsConfigs<S>> = <E extends N['key']>(
 	eventName: E,
 	cb: (...event: StreamerCallbackArgs<S, E>) => void,
+	options?: {
+		onReady?: () => void;
+		onError?: (error: unknown) => void;
+	},
 ) => () => void;
 export function useStream<N extends StreamNames>(
 	streamName: N,

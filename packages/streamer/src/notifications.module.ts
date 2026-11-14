@@ -8,6 +8,7 @@ import type {
 	IUserDataEvent,
 	PresenceSource,
 	PresenceStatusCode,
+	IRoom,
 } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
@@ -16,7 +17,7 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import { emit, StreamPresence } from './StreamPresence';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
-import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
+import type { IPublication, IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
 
 const logger = new Logger('NotificationsModule');
 
@@ -407,28 +408,48 @@ export class NotificationsModule {
 			return user ? Authorization.hasPermission(user, 'view-l-room') : false;
 		});
 
-		this.streamRoomData.allowWrite('none');
-		this.streamRoomData.allowRead(async function (rid) {
-			const user = await getCachedUserForPublication(this);
-			if (!user) {
-				return false;
-			}
-
+		async function canAccessRoomData(
+			this: IPublication,
+			rid: string,
+			getRoom: () => Promise<IRoom | null> = () => Rooms.findOneById(rid),
+		): Promise<boolean> {
 			try {
-				const room = await Rooms.findOneById(rid);
+				const user = await getCachedUserForPublication(this);
+				if (!user) {
+					return false;
+				}
+
+				const room = await getRoom();
 				if (!room) {
 					return false;
 				}
 
-				const canAccess = await Authorization.canAccessRoom(room, user);
-				if (!canAccess) {
-					return false;
-				}
-
-				return true;
+				return await Authorization.canAccessRoom(room, user);
 			} catch (error) {
+				logger.error({
+					msg: 'Failed to check room-data access',
+					roomId: rid,
+					err: error,
+				});
 				return false;
 			}
+		}
+
+		this.streamRoomData.allowWrite('none');
+		this.streamRoomData.allowRead(async function (rid) {
+			return canAccessRoomData.call(this, rid);
+		});
+		this.streamRoomData.allowEmitWithContext((rid) => {
+			let roomPromise: Promise<IRoom | null> | undefined;
+
+			const getRoom = () => {
+				roomPromise ??= Rooms.findOneById(rid);
+				return roomPromise;
+			};
+
+			return async function () {
+				return canAccessRoomData.call(this, rid, getRoom);
+			};
 		});
 
 		this.streamRoles.allowWrite('none');

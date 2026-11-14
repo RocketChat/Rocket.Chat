@@ -474,17 +474,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	unsetTeamId(teamId: ITeam['_id'], options: UpdateOptions = {}): Promise<Document | UpdateResult> {
-		const query: Filter<IRoom> = { teamId };
-		const update: UpdateFilter<IRoom> = {
-			$unset: {
-				teamId: '',
-				teamDefault: '',
-				teamMain: '',
-			},
-		};
-
-		return this.updateMany(query, update, options);
+	detachOneRoomFromTeam(teamId: ITeam['_id']): Promise<Pick<IRoom, '_id'> | null> {
+		return this.findOneAndUpdate(
+			{ teamId },
+			{ $unset: { teamId: '', teamDefault: '', teamMain: '' } },
+			{ projection: { _id: 1 }, returnDocument: 'before' },
+		);
 	}
 
 	unsetTeamById(rid: IRoom['_id'], options: UpdateOptions = {}): Promise<UpdateResult> {

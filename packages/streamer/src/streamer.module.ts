@@ -36,6 +36,8 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 
 	private _allowEmit: IRules = {};
 
+	private createEmitRule?: (eventName: string) => Rule;
+
 	private readonly relay?: StreamRelay;
 
 	constructor(
@@ -112,7 +114,12 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 	}
 
 	allowEmit(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void {
+		this.createEmitRule = undefined;
 		this.allow(this._allowEmit, 'allowEmit')(eventName, fn);
+	}
+
+	allowEmitWithContext(createRule: (eventName: string) => Rule): void {
+		this.createEmitRule = createRule;
 	}
 
 	private isAllowed(rules: IRules) {
@@ -129,7 +136,25 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		return this.isAllowed(this._allowRead)(scope, eventName, args);
 	}
 
+	protected createEmissionPermissionCheck(eventName: string) {
+		const { createEmitRule } = this;
+		let emissionRule: Rule | undefined;
+
+		return async (scope: IPublication, ...args: any[]): Promise<boolean | object> => {
+			if (!createEmitRule) {
+				return this.isEmitAllowed(scope, eventName, ...args);
+			}
+
+			emissionRule ??= createEmitRule(eventName);
+			return emissionRule.call(scope, eventName, ...args);
+		};
+	}
+
 	async isEmitAllowed(scope: IPublication, eventName: string, ...args: any[]): Promise<boolean | object> {
+		if (this.createEmitRule) {
+			return this.createEmitRule(eventName).call(scope, eventName, ...args);
+		}
+
 		return this.isAllowed(this._allowEmit)(scope, eventName, args);
 	}
 
@@ -310,6 +335,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		args: any[],
 		getMsg: string | TransformMessage,
 	): Promise<void> {
+		const checkPermission = this.createEmissionPermissionCheck(eventName);
 		await Promise.all(
 			[...subscriptions].map(async (subscription) => {
 				try {
@@ -317,7 +343,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 						return;
 					}
 
-					const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+					const allowed = await checkPermission(subscription.subscription, ...args);
 					if (allowed) {
 						const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
 						if (msg) {

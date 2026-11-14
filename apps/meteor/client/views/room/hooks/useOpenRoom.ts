@@ -1,8 +1,9 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useStream, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import debounce from 'lodash.debounce';
 import { useCallback, useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
@@ -28,6 +29,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const isEmbeddedLayout = useEmbeddedLayout();
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
+	const subscribeToRoomData = useStream('room-data');
 
 	// Try to resolve the reference to a known rid using locally cached subscriptions and rooms.
 	// Returns null when the cache can't safely answer (anonymous user, public preview, DM redirect
@@ -175,6 +177,49 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	const queryClient = useQueryClient();
 	const { error } = result;
+	const rid = result.data?.rid;
+	const userId = user?._id;
+
+	useEffect(() => {
+		if (!rid || !userId || type !== 'c' || !hasPreviewPermission) {
+			return;
+		}
+
+		if (Subscriptions.state.find((sub) => sub.rid === rid)) {
+			return;
+		}
+
+		const refreshRoom = debounce(
+			() => {
+				void queryClient.invalidateQueries({
+					queryKey: roomsQueryKeys.roomReference(reference, type, userId, user?.username),
+					exact: true,
+				});
+			},
+			1000,
+			{ leading: true, trailing: true, maxWait: 1000 },
+		);
+
+		const unsubscribe = subscribeToRoomData(
+			rid,
+			() => {
+				refreshRoom();
+			},
+			{
+				onReady: () => {
+					refreshRoom();
+				},
+				onError: () => {
+					// Recheck access through the room query if the subscription fails.
+					refreshRoom();
+				},
+			},
+		);
+		return () => {
+			unsubscribe();
+			refreshRoom.cancel();
+		};
+	}, [rid, userId, user?.username, type, hasPreviewPermission, reference, subscribeToRoomData, queryClient]);
 
 	useEffect(() => {
 		if (error) {
