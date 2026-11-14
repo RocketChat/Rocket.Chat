@@ -9,7 +9,7 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 type InsertOrUpdateUserStatus = {
 	_id?: string;
 	name: string;
-	statusType: string;
+	statusType?: string;
 	status?: string;
 	emoji?: string;
 	message?: string;
@@ -65,7 +65,7 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 		// insert user status
 		const createUserStatus: InsertionModel<ICustomUserStatus> = {
 			name: userStatusData.name,
-			statusType: userStatusData.statusType,
+			statusType: userStatusData.statusType || '',
 		};
 
 		const _id = (await CustomUserStatus.create(createUserStatus)).insertedId;
@@ -80,11 +80,14 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 		await CustomUserStatus.setName(userStatusData._id, userStatusData.name);
 	}
 
-	if (userStatusData.statusType !== userStatusData.previousStatusType) {
+	if (userStatusData.statusType !== undefined) {
 		await CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 	}
 
-	void api.broadcast('user.updateCustomStatus', { ...userStatusData, _id: userStatusData._id });
+	const updatedStatus = await CustomUserStatus.findOneById(userStatusData._id);
+	if (updatedStatus) {
+		void api.broadcast('user.updateCustomStatus', updatedStatus);
+	}
 
 	return true;
 };
