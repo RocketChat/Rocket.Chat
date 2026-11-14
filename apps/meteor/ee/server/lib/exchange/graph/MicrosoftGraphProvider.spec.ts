@@ -139,7 +139,7 @@ describe('MicrosoftGraphProvider', () => {
 				graphResponse({
 					value: [
 						{
-							id: EVENT_ID,
+							id: 'AAMkAD',
 							start: { dateTime: '2026-08-21T10:00:00.0000000', timeZone: 'UTC' },
 							isReminderOn: false,
 							reminderMinutesBeforeStart: 15,
@@ -148,7 +148,7 @@ describe('MicrosoftGraphProvider', () => {
 				}),
 			);
 
-			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
 
 			expect(page.items[0]).not.toHaveProperty('reminderMinutesBeforeStart');
 		});
