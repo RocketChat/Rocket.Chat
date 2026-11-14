@@ -33,7 +33,29 @@ export class ReadStateManager extends Emitter {
 	};
 
 	public subscribeToMessages() {
-		return RoomHistoryManager.on('loaded-messages', () => this.updateFirstUnreadRecordId());
+		const offLoadedMessages = RoomHistoryManager.on('loaded-messages', () => this.updateFirstUnreadRecordId());
+		const offRoomMessages = RoomHistoryManager.subscribeToRoomMessages(this.rid, (msg) => {
+			if (msg.u?._id === getUserId()) {
+				return;
+			}
+
+			if (document.hasFocus() && this.firstUnreadRecordId && Messages.state.has(this.firstUnreadRecordId)) {
+				return;
+			}
+
+			this.updateFirstUnreadRecordId();
+		});
+		const offStoreMessages = Messages.use.subscribe((state) => {
+			if (this.firstUnreadRecordId && !state.has(this.firstUnreadRecordId)) {
+				this.updateFirstUnreadRecordId();
+			}
+		});
+
+		return () => {
+			offLoadedMessages?.();
+			offRoomMessages?.();
+			offStoreMessages?.();
+		};
 	}
 
 	public updateSubscription(subscription?: ISubscription) {
@@ -56,7 +78,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (document.hasFocus() && this.firstUnreadRecordId) {
+		if (document.hasFocus() && this.firstUnreadRecordId && Messages.state.has(this.firstUnreadRecordId)) {
 			return;
 		}
 
@@ -81,6 +103,10 @@ export class ReadStateManager extends Emitter {
 	}
 
 	private setFirstUnreadRecordId(firstUnreadRecordId: string | undefined) {
+		if (this.firstUnreadRecordId === firstUnreadRecordId) {
+			return;
+		}
+
 		this.firstUnreadRecordId = firstUnreadRecordId;
 		this.emit('unread-state-change', this.firstUnreadRecordId);
 	}
