@@ -16,6 +16,21 @@ describe('[CardGrid Rendering]', () => {
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
+
+	test('renders one GridItem for each real child', () => {
+		const { container } = render(
+			<CardGrid>
+				<div>First card</div>
+				{null}
+				{undefined}
+				{false}
+				<div>Second card</div>
+				{true}
+			</CardGrid>,
+		);
+
+		expect(container.querySelectorAll('.rcx-card-grid__item')).toHaveLength(2);
+	});
 });
 
 describe('[CardGrid Props]', () => {
