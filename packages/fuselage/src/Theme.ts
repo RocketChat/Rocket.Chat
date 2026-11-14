@@ -147,6 +147,7 @@ export const shadowColors = {
 	'shadow-elevation-2y': new Var('shadow-elevation-2y', shadowTokens['elevation-2y']),
 	'shadow-highlight': new Var('shadow-highlight', shadowTokens.highlight),
 	'shadow-danger': new Var('shadow-danger', shadowTokens.danger),
+	'shadow-extra-light-error': new Var('shadow-extra-light-error', shadowTokens['extra-light-error']),
 };
 
 type ShadowColors = keyof typeof shadowColors;
