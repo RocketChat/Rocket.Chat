@@ -39,16 +39,22 @@ export class ReadStateManager extends Emitter {
 				return;
 			}
 
-			if (document.hasFocus() && this.firstUnreadRecordId) {
+			if (document.hasFocus() && this.firstUnreadRecordId && Messages.state.has(this.firstUnreadRecordId)) {
 				return;
 			}
 
 			this.updateFirstUnreadRecordId();
 		});
+		const offStoreMessages = Messages.use.subscribe((state) => {
+			if (this.firstUnreadRecordId && !state.has(this.firstUnreadRecordId)) {
+				this.updateFirstUnreadRecordId();
+			}
+		});
 
 		return () => {
 			offLoadedMessages?.();
 			offRoomMessages?.();
+			offStoreMessages?.();
 		};
 	}
 
@@ -72,7 +78,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (document.hasFocus() && this.firstUnreadRecordId) {
+		if (document.hasFocus() && this.firstUnreadRecordId && Messages.state.has(this.firstUnreadRecordId)) {
 			return;
 		}
 

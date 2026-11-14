@@ -400,4 +400,216 @@ describe('ReadStateManager.subscribeToMessages', () => {
 
 		unsubListener();
 	});
+
+	it('updates firstUnreadRecordId when the first unread message is deleted', () => {
+		const msg1: IMessage = {
+			_id: 'msg-1',
+			rid: 'room-id',
+			ts: new Date('2026-01-02T00:00:00.000Z'),
+			msg: 'First unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+		};
+		const msg2: IMessage = {
+			_id: 'msg-2',
+			rid: 'room-id',
+			ts: new Date('2026-01-03T00:00:00.000Z'),
+			msg: 'Second unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-03T00:00:00.000Z'),
+		};
+		const unrelatedRoomMsg: IMessage = {
+			_id: 'msg-other-room',
+			rid: 'other-room-id',
+			ts: new Date('2026-01-02T12:00:00.000Z'),
+			msg: 'Unrelated room message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-02T12:00:00.000Z'),
+		};
+
+		Messages.state.replaceAll([msg1, msg2, unrelatedRoomMsg]);
+
+		const manager = new ReadStateManager('room-id');
+		const listener = jest.fn();
+		const unsubListener = registerCleanup(manager.onUnreadStateChange(listener));
+
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 2,
+			alert: true,
+			ls: new Date('2026-01-01T00:00:00.000Z'),
+		} as ISubscription);
+
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-1');
+		expect(listener).toHaveBeenCalledWith('msg-1');
+		listener.mockClear();
+
+		const unsubscribe = registerCleanup(manager.subscribeToMessages());
+
+		// Deleting an unrelated message in another room does not affect the marker
+		Messages.state.delete('msg-other-room');
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-1');
+		expect(listener).not.toHaveBeenCalled();
+
+		// Deleting the first unread message updates marker to the second unread message
+		Messages.state.delete('msg-1');
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-2');
+		expect(listener).toHaveBeenCalledWith('msg-2');
+		listener.mockClear();
+
+		// Deleting the remaining unread message clears the marker
+		Messages.state.delete('msg-2');
+		expect(manager.getFirstUnreadRecordId()).toBeUndefined();
+		expect(listener).toHaveBeenCalledWith(undefined);
+
+		unsubscribe();
+		unsubListener();
+	});
+
+	it('does not recalculate when a message other than the first unread message is deleted', () => {
+		const msg1: IMessage = {
+			_id: 'msg-1',
+			rid: 'room-id',
+			ts: new Date('2026-01-02T00:00:00.000Z'),
+			msg: 'First unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+		};
+		const msg2: IMessage = {
+			_id: 'msg-2',
+			rid: 'room-id',
+			ts: new Date('2026-01-03T00:00:00.000Z'),
+			msg: 'Second unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-03T00:00:00.000Z'),
+		};
+		const unrelatedRoomMsg: IMessage = {
+			_id: 'msg-other-room',
+			rid: 'other-room-id',
+			ts: new Date('2026-01-02T12:00:00.000Z'),
+			msg: 'Unrelated room message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-02T12:00:00.000Z'),
+		};
+
+		Messages.state.replaceAll([msg1, msg2, unrelatedRoomMsg]);
+
+		const manager = new ReadStateManager('room-id');
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 2,
+			alert: true,
+			ls: new Date('2026-01-01T00:00:00.000Z'),
+		} as ISubscription);
+
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-1');
+
+		const findFirstSpy = jest.spyOn(Messages.state, 'findFirst');
+		const restoreSpy = registerCleanup(() => {
+			findFirstSpy.mockRestore();
+			Messages.use.setState({ findFirst: initialFindFirst });
+		});
+		findFirstSpy.mockClear();
+
+		const unsubscribe = registerCleanup(manager.subscribeToMessages());
+
+		// Deleting unrelated message from another room does not call findFirst
+		Messages.state.delete('msg-other-room');
+		expect(findFirstSpy).not.toHaveBeenCalled();
+
+		// Deleting a later message in the same room does not call findFirst
+		Messages.state.delete('msg-2');
+		expect(findFirstSpy).not.toHaveBeenCalled();
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-1');
+
+		unsubscribe();
+		restoreSpy();
+	});
+
+	it('stops listening to store deletions after unsubscribe', () => {
+		const msg1: IMessage = {
+			_id: 'msg-1',
+			rid: 'room-id',
+			ts: new Date('2026-01-02T00:00:00.000Z'),
+			msg: 'First unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+		};
+		const msg2: IMessage = {
+			_id: 'msg-2',
+			rid: 'room-id',
+			ts: new Date('2026-01-03T00:00:00.000Z'),
+			msg: 'Second unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-03T00:00:00.000Z'),
+		};
+
+		Messages.state.replaceAll([msg1, msg2]);
+
+		const manager = new ReadStateManager('room-id');
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 2,
+			alert: true,
+			ls: new Date('2026-01-01T00:00:00.000Z'),
+		} as ISubscription);
+
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-1');
+
+		const unsubscribe = registerCleanup(manager.subscribeToMessages());
+		unsubscribe();
+
+		Messages.state.delete('msg-1');
+		expect(manager.getFirstUnreadRecordId()).toBe('msg-1');
+	});
+	it('recalculates firstUnreadRecordId when a real-time message arrives while focused if the marker message was deleted', () => {
+		let roomMessageCallback: ((msg: IMessage) => void) | undefined;
+
+		const hasFocusSpy = jest.spyOn(document, 'hasFocus').mockReturnValue(true);
+		const restoreHasFocusSpy = registerCleanup(() => hasFocusSpy.mockRestore());
+		(RoomHistoryManager.subscribeToRoomMessages as jest.Mock).mockImplementation((_rid: string, cb: (msg: IMessage) => void) => {
+			roomMessageCallback = cb;
+			return jest.fn();
+		});
+
+		const manager = new ReadStateManager('room-id');
+
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 1,
+			alert: true,
+			ls: new Date('2026-01-01T00:00:00.000Z'),
+		} as ISubscription);
+
+		// Simulate a stale marker whose message has already been deleted.
+		(manager as any).firstUnreadRecordId = 'stale-deleted-id';
+
+		const realtimeMessage: IMessage = {
+			_id: 'realtime-msg-id',
+			rid: 'room-id',
+			ts: new Date('2026-01-03T00:00:00.000Z'),
+			msg: 'New incoming message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-03T00:00:00.000Z'),
+		};
+
+		// Seed the message BEFORE subscribing to the store.
+		// This prevents the store subscription from triggering the recalculation.
+		Messages.state.store(realtimeMessage);
+
+		const unsubscribe = registerCleanup(manager.subscribeToMessages());
+
+		expect(document.hasFocus()).toBe(true);
+		expect(manager.getFirstUnreadRecordId()).toBe('stale-deleted-id');
+
+		expect(roomMessageCallback).toBeDefined();
+		roomMessageCallback?.(realtimeMessage);
+
+		// The real-time callback must repair the stale marker,
+		// even while the window is focused.
+		expect(manager.getFirstUnreadRecordId()).toBe('realtime-msg-id');
+
+		unsubscribe();
+		restoreHasFocusSpy();
+	});
 });
