@@ -1826,13 +1826,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<IMessage | null> {
-		const query = { _id };
+		const query: Filter<IMessage> = { _id, tcount: { $gt: 0 } };
 		const update: UpdateFilter<IMessage> = {
 			$inc: {
 				tcount: inc,
 			},
 		};
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	unsetThreadByIdIfEmpty(_id: string): Promise<UpdateResult> {
+		const query: Filter<IMessage> = {
+			_id,
+			tcount: { $lte: 0 },
+		};
+		const update: UpdateFilter<IMessage> = {
+			$unset: {
+				tcount: 1,
+				tlm: 1,
+				replies: 1,
+			},
+		};
+		return this.updateOne(query, update);
 	}
 
 	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment) {
