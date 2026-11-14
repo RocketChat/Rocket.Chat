@@ -1,4 +1,4 @@
-import { use, type InputEvent } from 'react';
+import { useContext, type InputEvent } from 'react';
 
 import { Input } from '../InputBox';
 import type { SelectAnchorParams } from './SelectAnchorParams';
@@ -7,7 +7,7 @@ import { SelectFilteredContext } from './SelectFilteredContext';
 type SelectFilteredAnchorProps = SelectAnchorParams;
 
 function SelectFilteredAnchor({ children: _children, ...props }: SelectFilteredAnchorProps) {
-	const { placeholder, filter, setFilter } = use(SelectFilteredContext);
+	const { placeholder, filter, setFilter } = useContext(SelectFilteredContext);
 
 	return (
 		<Input
