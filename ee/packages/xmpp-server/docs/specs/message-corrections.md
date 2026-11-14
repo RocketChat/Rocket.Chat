@@ -56,7 +56,7 @@ occupants unchanged.
   and marks it edited by its author, instead of storing a new message. Every copy of the
   correction after the first changes nothing.
 - **R5** A hosted room MUST relay a correction from one occupant to the others with its
-  `<replace/>` intact. Not met, see D2.
+  `<replace/>` intact.
 - **R6** In a remote room, the reflection of our own correction is recognised by its replace
   id and not stored ([remote-muc R9](remote-muc.md)).
 - **R7** A correction is applied only to a message of the same author in the same room: the
@@ -96,13 +96,7 @@ equal to its body and changes nothing.
 
 ## Known defects
 
-### D2 The room strips corrections it relays between XMPP users
-
-In a hosted room, a correction from one XMPP occupant reaches the other XMPP occupants
-without its `<replace/>` element, so their clients show it as a new message. The room
-rebuilds every relayed message from body and id alone. Where: `MucRoom.handleGroupchatMessage`.
-Test: `hosted-muc.spec.ts`, "relays an XMPP user's correction to the other XMPP occupants as
-a correction".
+None.
 
 ## Open questions
 

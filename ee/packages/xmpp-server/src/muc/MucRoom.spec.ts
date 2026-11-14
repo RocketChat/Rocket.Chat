@@ -76,6 +76,22 @@ describe('MucRoom', () => {
 		expect(sent.indexOf(subject as (typeof sent)[number])).toBe(sent.length - 1);
 	});
 
+	it('tells remote occupants about a new subject, and nobody about an unchanged one (R19)', async () => {
+		const { room, sent } = setup();
+		room.setSubject('release planning');
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		room.addLocalOccupant({ nick: 'carol', realJid: 'carol@rc.tld' });
+		sent.length = 0;
+
+		room.setSubject('release planning');
+		expect(sent).toHaveLength(0);
+
+		room.setSubject('retrospective');
+		expect(sent).toHaveLength(1);
+		expect(sent[0].attrs).toMatchObject({ from: ROOM, to: 'alice@remote.tld/pc', type: 'groupchat' });
+		expect(sent[0].getChildText('subject')).toBe('retrospective');
+	});
+
 	it('sends the existing roster to a newcomer and announces them to others', async () => {
 		const { room, sent } = setup();
 		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
@@ -135,6 +151,22 @@ describe('MucRoom', () => {
 		);
 
 		expect(events.find((e) => e.event === 'message')?.args[0]).toMatchObject({ body: 'fixed', id: 'm2', replaceId: 'm1' });
+	});
+
+	it('relays a correction to the other occupants with its replace id (message-corrections R5)', async () => {
+		const { room, sent } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		await room.handleJoin(join('bob@remote.tld/pc', 'bob'));
+		sent.length = 0;
+
+		room.handleGroupchatMessage(
+			p(
+				`<message from='alice@remote.tld/pc' to='${ROOM}' type='groupchat' id='m2'><body>fixed</body><replace xmlns='urn:xmpp:message-correct:0' id='m1'/></message>`,
+			),
+		);
+
+		const relayed = sent.find((s) => s.attrs.to === 'bob@remote.tld/pc' && s.name === 'message');
+		expect(relayed?.getChild('replace', 'urn:xmpp:message-correct:0')?.attrs.id).toBe('m1');
 	});
 
 	it('does not deliver stanzas to local (virtual) occupants but keeps them in the roster', async () => {
@@ -210,5 +242,22 @@ describe('MucRoom', () => {
 				.map((s) => s.attrs.code),
 		).toContain('307');
 		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
+	});
+
+	it('tells the kicked occupant they were removed, with 307 and 110 (R9)', async () => {
+		const { room, sent } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		await room.handleJoin(join('bob@remote.tld/pc', 'bob'));
+		sent.length = 0;
+
+		room.kick('bob');
+		const ownNotice = sent.find((s) => s.attrs.to === 'bob@remote.tld/pc');
+		expect(ownNotice?.attrs).toMatchObject({ from: `${ROOM}/bob`, type: 'unavailable' });
+		expect(
+			ownNotice
+				?.getChild('x')
+				?.getChildren('status')
+				.map((s) => s.attrs.code),
+		).toEqual(['307', '110']);
 	});
 });

@@ -59,6 +59,10 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   its Rocket.Chat settings change, so a switch between public channel and private group
   changes R3's listing and features at once, and a new topic is the subject the next
   newcomer receives.
+- **R19** A topic change in Rocket.Chat is sent to every remote occupant as a `groupchat`
+  message carrying the new `<subject/>` (XEP-0045 §8.1). It comes from the bare room JID,
+  since the change has no occupant behind it. Registering the room again with an unchanged
+  topic sends nothing.
 - **R3** Public channels are listed by `disco#items` on the MUC domain and describe themselves
   as `muc_public`/`muc_open`; private groups are unlisted and `muc_hidden`/`muc_membersonly`
   ([service-discovery R4, R5](service-discovery.md)).
@@ -79,8 +83,9 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 - **R8** An `unavailable` presence from an occupant removes them from the room, is broadcast
   to the remaining remote occupants, and removes their Rocket.Chat subscription without
   running the room-leave callbacks.
-- **R9** Removing a remote member on the Rocket.Chat side kicks them: the remaining remote
-  occupants receive their `unavailable` presence with status code 307.
+- **R9** Removing a remote member on the Rocket.Chat side kicks them (XEP-0045 §8.2): they
+  receive their own `unavailable` presence with status codes 307 and 110, and the remaining
+  remote occupants receive it with status code 307.
 - **R10** Removing or a leave by a local member broadcasts their `unavailable` presence to
   remote occupants.
 - **R16** A local member added to the room by a local user, or joining it in Rocket.Chat,
@@ -142,13 +147,6 @@ Parts of XEP-0045 not implemented:
 
 ## Known defects
 
-### D1 Kicked XMPP users are not told they were removed
-
-When Rocket.Chat removes an XMPP user from a room it hosts, the other occupants get the
-`unavailable` presence with status 307 but the removed user does not. Their client keeps
-showing them in the room. Where: `MucRoom.kick` deletes the occupant before building the
-recipients list. Test: `hosted-muc.spec.ts`, "tells the kicked XMPP user they were removed".
-
 ### D2 Occupants are never removed when their server's connection drops
 
 Hosted-room occupants are keyed by JID and only leave on an `unavailable` presence or a
@@ -158,14 +156,6 @@ reconnects. Where: nothing acts on `connection.lost` on behalf of the rooms. Tes
 `tests/integration/muc.spec.ts`, "drops the occupants of a server whose connection is
 lost"; the end-to-end harness cannot sever the link to ejabberd, so this one is an
 integration test.
-
-### D3 A new topic does not reach occupants already in the room
-
-XEP-0045 §8.1 has the room send every occupant a message carrying the new `<subject/>` when
-it changes. A topic changed in Rocket.Chat becomes the subject only for whoever joins next
-(R2); occupants already in the room keep the old one. Where: `MucRoom.setSubject` stores the
-subject without broadcasting it. Test: `hosted-muc.spec.ts`, "tells occupants already in
-the room about a new topic".
 
 ### D4 A deleted room keeps running until the service restarts
 
