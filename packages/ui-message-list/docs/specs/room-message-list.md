@@ -9,6 +9,7 @@ code:
     apps/meteor/client/views/room/body/RoomMessageList/useMessages.ts,
     apps/meteor/client/views/room/body/RoomMessageList/useRegisterRenderedMessage.ts,
     apps/meteor/client/lib/RoomManager.ts,
+    apps/meteor/client/views/room/body/hooks/useElementHeight.ts,
   ]
 tests:
   [
@@ -17,6 +18,7 @@ tests:
     apps/meteor/client/hooks/useAutoLinkDomains.spec.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/useMessages.spec.tsx,
     apps/meteor/client/lib/RoomManager.spec.ts,
+    apps/meteor/client/views/room/body/hooks/useElementHeight.spec.ts,
   ]
 ---
 
