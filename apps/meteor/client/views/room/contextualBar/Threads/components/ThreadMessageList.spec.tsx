@@ -8,9 +8,11 @@ import { forwardRef } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import { createFakeMessage, createFakeRoom } from '../../../../../../tests/mocks/data';
+import { createBubbleDateStore, initialBubbleDateState } from '../../../BubbleDate/bubbleDateStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 
 const room = createFakeRoom({ _id: 'room-id', t: 'c' });
+const mockBubbleDateStore = createBubbleDateStore();
 const mockVirtualizerHandle = {
 	scrollToIndex: jest.fn(),
 	findItemIndex: jest.fn(() => 0),
@@ -85,6 +87,7 @@ jest.mock('../../../hooks/useDateScroll', () => ({
 	useDateScroll: () => ({
 		bubbleRef: { current: null },
 		handleDateScroll: jest.fn(),
+		bubbleDateStore: mockBubbleDateStore,
 	}),
 }));
 
@@ -111,7 +114,17 @@ jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => (
 }));
 
 jest.mock('./ThreadMessageItem', () => ({
-	ThreadMessageItem: ({ message }: { message: IMessage }) => <div role='listitem'>{message._id}</div>,
+	ThreadMessageItem: ({ message }: { message: IMessage }) => (
+		<div
+			role='listitem'
+			data-time={new Date(message.ts)
+				.toISOString()
+				.replaceAll(/[-T:.]/g, '')
+				.substring(0, 8)}
+		>
+			{message._id}
+		</div>
+	),
 }));
 
 jest.mock('../../../BubbleDate', () => ({
@@ -139,6 +152,10 @@ const createThreadMessage = (index: number): IThreadMessage => {
 };
 
 describe('ThreadMessageList', () => {
+	afterEach(() => {
+		mockBubbleDateStore.set(() => initialBubbleDateState);
+	});
+
 	it('fetches the previous page after a pointer interaction with the overlay scrollbar', async () => {
 		const user = userEvent.setup();
 		const fetchPreviousPage = jest.fn().mockResolvedValue(undefined);
@@ -177,6 +194,39 @@ describe('ThreadMessageList', () => {
 		await user.pointer({ keys: '[/MouseLeft]' });
 
 		expect(fetchPreviousPage).toHaveBeenCalledTimes(1);
+	});
+
+	it('hides the day divider the floating date stands in for', () => {
+		const mainMessage = createFakeMessage<IThreadMainMessage>({
+			_id: 'thread-id',
+			rid: room._id,
+			msg: 'main message',
+			tcount: 2,
+			u: {
+				_id: 'user-id',
+				username: 'user',
+				name: 'User',
+			},
+		});
+		(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+			data: { messages: [createThreadMessage(1), createThreadMessage(2)] },
+			isLoading: false,
+			fetchNextPage: jest.fn(),
+			hasNextPage: false,
+			isFetchingNextPage: false,
+			fetchPreviousPage: jest.fn(),
+			hasPreviousPage: false,
+			isFetchingPreviousPage: false,
+			loadMessageAround: jest.fn(),
+		});
+		mockBubbleDateStore.set(() => ({ date: new Date(Date.UTC(2026, 0, 2)).toISOString(), show: true, showDivider: false }));
+
+		render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+			wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true).build(),
+		});
+
+		expect(screen.getByText('reply-2')).toHaveStyle({ opacity: '0' });
+		expect(screen.getByText('reply-1')).not.toHaveStyle({ opacity: '0' });
 	});
 });
 
