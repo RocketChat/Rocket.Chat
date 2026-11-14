@@ -93,6 +93,11 @@ export class Login extends Main {
 	get loginIframeError(): Locator {
 		return this.loginIframe.locator('#login-error', { hasText: 'Login failed' });
 	}
+
+	// use enter to avoid clicks landing on the outer page while the iframe loads.
+	async submitLoginIframe(): Promise<void> {
+		await this.loginIframeSubmitButton.press('Enter');
+	}
 }
 
 export class Registration extends Main {
