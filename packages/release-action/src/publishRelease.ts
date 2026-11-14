@@ -114,8 +114,6 @@ export async function publishRelease({
 		await mergeBranch(branchName);
 
 		await pushChanges();
-
-		await checkoutBranch(branchName);
 	}
 
 	core.info('fix dependencies in workspace packages');
