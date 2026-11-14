@@ -31,7 +31,7 @@ describe('MoleculerBroker', () => {
 		const instance = new (class extends ServiceClass {
 			name = 'test';
 
-			async stopped() {
+			override async stopped() {
 				stoppedStub();
 			}
 		})();

@@ -8,7 +8,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc -p tsconfig.build.json",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
@@ -19,6 +19,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"ejson": "^2.2.3",
 		"moleculer": "^0.14.36",
+		"nats": "^2.29.1",
 		"pino": "10.3.1"
 	},
 	"devDependencies": {
