@@ -365,7 +365,11 @@ const e2eEndpoints = API.v1
 			}
 
 			const { roomIds = [] } = this.queryParams;
-			const usersWaitingForE2EKeys = (await Subscriptions.findUsersWithPublicE2EKeyByRids(roomIds, this.userId).toArray()).reduce<
+			const uniqueRoomIds = [...new Set(roomIds)];
+			const roomAccess = await Promise.all(uniqueRoomIds.map((rid) => canAccessRoomIdAsync(rid, this.userId)));
+			const accessibleRoomIds = uniqueRoomIds.filter((_rid, index) => roomAccess[index]);
+
+			const usersWaitingForE2EKeys = (await Subscriptions.findUsersWithPublicE2EKeyByRids(accessibleRoomIds, this.userId).toArray()).reduce<
 				Record<string, { _id: string; public_key: string }[]>
 			>((acc, { rid, users }) => ({ [rid]: users, ...acc }), {});
 
