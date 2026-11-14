@@ -4,8 +4,8 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { RoomMessage, SystemMessage, ThreadMessagePreview } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 
-import { useMessageMarkers } from './MessageMarkers';
 import { useRegisterRenderedMessage } from './useRegisterRenderedMessage';
+import { useMessageMarkers } from '../../../../providers/MessagesProvider/MessageMarkers';
 
 type RoomMessageRowProps = {
 	message: IMessage;

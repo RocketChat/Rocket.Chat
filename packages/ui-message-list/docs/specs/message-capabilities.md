@@ -155,12 +155,12 @@ render any conversation.
   the app cannot render.
 - **R28** `MessagesProvider` MUST carry out the interactions through the app: reacting through
   `chat.react` only for a logged-in viewer, and opening the reaction picker only for one;
-  quoting, replying, sending, editing, requesting deletion and replying to a broadcast through
-  the room's chat where one is open; following and unfollowing a thread, with an error toast
-  when it fails; and opening the forward, report, reaction list, read receipts and discussion
-  modals; pinning, unpinning, starring, unstarring, marking unread, translating and showing the original
-  through the REST API and the client's stores; and opening the reaction picker with a way to learn that it
-  closed, which it reports also when it could not open.
+  quoting, replying, sending and replying to a broadcast through the room's chat where one is open;
+  following and unfollowing a thread, with an error toast when it fails; opening the forward modal;
+  and opening the reaction picker with a way to learn that it closed, which it reports also when it could not open.
+  The interactions context offers these and no capability the package does not read (`thread-message-list` R53); the menu
+  entries of the toolbar (pin, star, mark unread, translate, edit, delete, report, reactions, read receipts, discussions) are carried
+  out by the app's own action hooks (`message-toolbar` R24).
 - **R29** `MessagesProvider` MUST route navigation through the app's router: open a room, open
   a thread, jump to a message, resolve a permalink, open a direct message, run an action
   link and open an external link.

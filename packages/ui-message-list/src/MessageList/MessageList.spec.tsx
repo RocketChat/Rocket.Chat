@@ -471,8 +471,7 @@ describe('going to the latest', () => {
 		expect(host()).toHaveAttribute('data-anchor', 'bottom');
 	});
 
-	// Known defect: ../../docs/specs/message-list.md#d3-a-failed-jump-to-the-latest-page-leaves-the-list-waiting-for-it
-	it.skip('does not go to the bottom by itself after a failed jump to the latest page (R20)', async () => {
+	it('does not go to the bottom by itself after a failed jump to the latest page (R20)', async () => {
 		const onJumpToLatest = jest.fn().mockRejectedValue(new Error('offline'));
 		const ref = createRef<MessageListHandle>();
 		const { rerender } = render(<List ref={ref} hasNewerMessages onJumpToLatest={onJumpToLatest} />, { wrapper });

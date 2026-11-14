@@ -6,6 +6,7 @@ import { CurrentEditingMessage } from './CurrentEditingMessage';
 import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI } from './chats/ChatAPI';
 import { createDataAPI } from './chats/data';
+import { setEditingMessage } from './chats/editingMessageSubscription';
 import { processMessageEditing } from './chats/flows/processMessageEditing';
 import { processMessageUploads } from './chats/flows/processMessageUploads';
 import { processSetReaction } from './chats/flows/processSetReaction';
@@ -16,7 +17,6 @@ import { requestMessageDeletion } from './chats/flows/requestMessageDeletion';
 import { sendMessage } from './chats/flows/sendMessage';
 import { uploadFiles } from './chats/flows/uploadFiles';
 import { ReadStateManager } from './chats/readStateManager';
-import { setHighlightMessage } from '../views/room/MessageList/providers/messageHighlightSubscription';
 
 export class ChatMessages implements ChatAPI {
 	public uid: string | undefined;
@@ -131,7 +131,7 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			this.currentEditingMessage.setMID(message._id);
-			setHighlightMessage(message._id);
+			setEditingMessage(message._id);
 			this.composer.setEditingMode(true);
 
 			this.composer.setText(text);

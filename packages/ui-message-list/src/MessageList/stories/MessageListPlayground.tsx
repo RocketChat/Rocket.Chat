@@ -21,9 +21,13 @@ export type MessageListPlaygroundProps = {
 	hasHeader?: boolean;
 	/** Lays the list out as a thread: replies grouped by author, only the floating date over it. */
 	isThread?: boolean;
+	/** Puts the main message of the thread first once no older message remains, as a thread does. */
+	hasMainMessage?: boolean;
 	initialTargetIndex?: number;
 	list?: Partial<MessageListProps<IMessage>>;
 };
+
+export const MAIN_MESSAGE_ID = 'thread-main-message';
 
 const isOwnMessage = (message: IMessage) => message.u._id === VIEWER._id;
 
@@ -38,12 +42,18 @@ const MessageListPlayground = ({
 	hasControls = true,
 	hasHeader = true,
 	isThread = false,
+	hasMainMessage = false,
 	initialTargetIndex,
 	list,
 }: MessageListPlaygroundProps) => {
 	const history = useMemo(() => createFakeHistory(historyOptions), [historyOptions]);
 	const source = useFakeMessageSource({ history, ...sourceOptions });
 	const listRef = useRef<MessageListHandle>(null);
+	const mainMessage = useMemo<IMessage>(() => {
+		const ts = new Date((history[0]?.ts.getTime() ?? Date.now()) - 60_000);
+		return { _id: MAIN_MESSAGE_ID, rid: 'room', ts, _updatedAt: ts, msg: 'The main message of the thread', u: history[0]?.u ?? VIEWER };
+	}, [history]);
+	const messages = hasMainMessage && !source.hasOlderMessages ? [mainMessage, ...source.messages] : source.messages;
 	const [targetMessageId, setTargetMessageId] = useState(initialTargetIndex === undefined ? undefined : fakeMessageId(initialTargetIndex));
 	const [composerHeight, setComposerHeight] = useState(56);
 	const [containerHeight, setContainerHeight] = useState(height);
@@ -114,7 +124,7 @@ const MessageListPlayground = ({
 					<MessageList<IMessage>
 						ref={listRef}
 						aria-label='Message list'
-						messages={source.messages}
+						messages={messages}
 						hasOlderMessages={source.hasOlderMessages}
 						hasNewerMessages={source.hasNewerMessages}
 						isLoadingOlderMessages={source.isLoadingOlderMessages}

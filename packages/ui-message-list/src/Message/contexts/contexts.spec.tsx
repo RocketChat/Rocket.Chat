@@ -70,13 +70,30 @@ it('turns presentation off and allows interaction by default (R2)', () => {
 	expect(messageDisplayDefaultValue.katex).toBeUndefined();
 });
 
+it('offers only the capabilities the package reads (thread-message-list R53)', () => {
+	expect(Object.keys(messageInteractionsDefaultValue).sort()).toEqual(
+		[
+			'hasReacted',
+			'followThread',
+			'openForward',
+			'openReactionPicker',
+			'quote',
+			'quoteMessageById',
+			'replyBroadcast',
+			'replyWith',
+			'sendMessage',
+			'toggleReaction',
+			'unfollowThread',
+		].sort(),
+	);
+});
+
 it('keeps app-acting capabilities inert by default (R3)', async () => {
-	const { hasReacted, canDelete, toggleReaction, followThread } = messageInteractionsDefaultValue;
+	const { hasReacted, toggleReaction, followThread } = messageInteractionsDefaultValue;
 	const { getPermalink, openExternalLink, openRoom, replyInThread } = messageNavigationDefaultValue;
 	const open = jest.spyOn(window, 'open').mockImplementation(() => null);
 
 	expect(hasReacted(message, ':tada:')).toBe(false);
-	expect(canDelete(message)).toBe(false);
 	expect(toggleReaction(message, ':tada:')).toBeUndefined();
 	expect(followThread(message)).toBeUndefined();
 	expect(openRoom('rid')).toBeUndefined();

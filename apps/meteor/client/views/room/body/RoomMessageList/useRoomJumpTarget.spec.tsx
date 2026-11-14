@@ -4,8 +4,8 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useRoomJumpTarget } from './useRoomJumpTarget';
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
+import { clearEditingMessage, getSnapshot, setEditingMessage } from '../../../../lib/chats/editingMessageSubscription';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
-import { getSnapshot } from '../../MessageList/providers/messageHighlightSubscription';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 jest.mock('../../../../lib/SDKClient', () => ({ sdk: { rest: { get: jest.fn() } } }));
@@ -31,6 +31,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+	clearEditingMessage();
 	jest.clearAllMocks();
 });
 
@@ -175,14 +176,15 @@ it('drops the jump when the message cannot be fetched (R35)', async () => {
 });
 
 describe('when the list reaches the target', () => {
-	it('clears the parameter of the target reached and writes no highlight (R36)', async () => {
+	it('clears the parameter of the target reached and leaves the editing store alone (R36, thread-message-list R47)', async () => {
+		act(() => setEditingMessage('being-edited'));
 		const { result } = renderJumpTarget({ ...message, rid }, [{ _id: 'msg-1' }]);
 		await waitFor(() => expect(result.current.targetMessageId).toBe('msg-1'));
 
 		act(() => result.current.onTargetMessageReached('msg-1'));
 
 		expect(setMessageJumpQueryStringParameter).toHaveBeenCalledWith(null);
-		expect(getSnapshot()).toBeUndefined();
+		expect(getSnapshot()).toBe('being-edited');
 	});
 
 	it('keeps the parameter when the target reached is the main message of a thread reply (R36)', async () => {

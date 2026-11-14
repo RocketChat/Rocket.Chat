@@ -67,11 +67,6 @@
 	max-height: 270px;
 }
 
-.load-more {
-	position: relative;
-	height: 2rem;
-}
-
 .page-loading {
 	position: absolute;
 	inset: 0;
