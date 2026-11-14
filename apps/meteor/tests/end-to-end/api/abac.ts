@@ -889,8 +889,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const setDefaultRes = await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
-				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
-				.send({ teamId, roomId: teamPrivateRoomId, isDefault: true })
+				
+				.send({ roomId: teamPrivateRoomId, isDefault: true })
 				.expect(200);
 
 			if (setDefaultRes.body?.room?.teamDefault) {
@@ -1101,8 +1101,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
-				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
-				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
+			
+				.send({ roomId: teamRoomId, isDefault: true })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
