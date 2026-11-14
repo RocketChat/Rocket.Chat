@@ -63,6 +63,10 @@ export const buildVersionUpdateMessage = async (
 
 	await cleanupOutdatedVersionUpdateBanners();
 
+	if (!settings.get<boolean>('Update_EnableChecker')) {
+		return;
+	}
+
 	for await (const version of sortedVersions) {
 		if (semver.prerelease(version.version)) {
 			continue;
