@@ -66,6 +66,7 @@ export interface IUpload extends IRocketChatRecord {
 
 export interface IUploadWithUser extends IUpload {
 	user?: Pick<IUser, '_id' | 'name' | 'username'>;
+	thumbnailPath?: string;
 }
 
 export interface IE2EEUpload extends IUpload {

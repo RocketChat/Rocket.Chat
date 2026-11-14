@@ -74,7 +74,7 @@ import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { settings } from '../../settings';
 import { API } from '../api';
-import { addUserToFileObj } from '../lib/addUserToFileObj';
+import { addUserAndThumbnailToFiles } from '../lib/addUserAndThumbnailToFiles';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
@@ -1202,7 +1202,7 @@ API.v1.get(
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			files: await addUserToFileObj(files),
+			files: await addUserAndThumbnailToFiles(files),
 			count: files.length,
 			offset,
 			total,
