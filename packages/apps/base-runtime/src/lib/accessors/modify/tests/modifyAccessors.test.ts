@@ -83,6 +83,15 @@ describe('Modify accessors (base-runtime)', () => {
 				params: ['job_deno-test', 'APP_ID'],
 			});
 		});
+
+		it('appends the app id when it appears in the middle of the job id', async () => {
+			const { rec, sender } = setup();
+			await new SchedulerModify(sender).cancelJob('job_deno-test-suffix');
+			assert.deepStrictEqual(rec.emitted()[0], {
+				method: 'bridges:getSchedulerBridge:doCancelJob',
+				params: ['job_deno-test-suffix_deno-test', 'APP_ID'],
+			});
+		});
 	});
 
 	describe('ModerationModify', () => {
