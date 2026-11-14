@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useDropTarget } from './useDropTarget';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useIsRoomOverMacLimit } from '../../../omnichannel/hooks/useIsRoomOverMacLimit';
-import { useChat } from '../../contexts/ChatContext';
+import { useChat, useChatComposer } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 export const useFileUploadDropTarget = (): readonly [
@@ -39,12 +39,10 @@ export const useFileUploadDropTarget = (): readonly [
 	);
 
 	const chat = useChat();
+	const composer = useChatComposer();
 	const subscription = useRoomSubscription();
 
-	const isEditing = useSyncExternalStore(
-		chat?.composer?.editing.subscribe ?? (() => () => undefined),
-		chat?.composer?.editing.get ?? (() => false),
-	);
+	const isEditing = useSyncExternalStore(composer?.editing.subscribe ?? (() => () => undefined), composer?.editing.get ?? (() => false));
 
 	const onFileDrop = useStableCallback(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../lib/mimeTypes');

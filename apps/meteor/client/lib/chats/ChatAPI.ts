@@ -129,6 +129,8 @@ export type ChatAPI = {
 	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
+	/** Calls `onChange` whenever a composer registers or goes away, since the composer may register after its readers render. */
+	readonly subscribeToComposer: (onChange: () => void) => () => void;
 	readonly data: DataAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
