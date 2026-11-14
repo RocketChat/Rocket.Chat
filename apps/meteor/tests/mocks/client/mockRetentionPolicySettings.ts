@@ -20,6 +20,10 @@ export const createRenteionPolicySettingsMock = ({
 			RetentionPolicy_RoomWarning_Unpinned_NextRunDate: 'Unpinned {{maxAge}} {{nextRunDate}}',
 			RetentionPolicy_RoomWarning_FilesOnly_NextRunDate: 'FilesOnly {{maxAge}} {{nextRunDate}}',
 			RetentionPolicy_RoomWarning_UnpinnedFilesOnly_NextRunDate: 'UnpinnedFilesOnly {{maxAge}} {{nextRunDate}}',
+			RetentionPolicy_RoomBanner: 'Deleted {{maxAge}}',
+			RetentionPolicy_RoomBanner_Unpinned: 'Unpinned deleted {{maxAge}}',
+			RetentionPolicy_RoomBanner_FilesOnly: 'FilesOnly deleted {{maxAge}}',
+			RetentionPolicy_RoomBanner_UnpinnedFilesOnly: 'UnpinnedFilesOnly deleted {{maxAge}}',
 		})
 		.withSetting('RetentionPolicy_Enabled', enabled)
 		.withSetting('RetentionPolicy_FilesOnly', filesOnly)

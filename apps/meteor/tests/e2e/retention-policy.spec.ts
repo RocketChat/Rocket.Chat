@@ -178,7 +178,7 @@ test.describe.serial('retention-policy', () => {
 			test('should display the default max age in edit channel', async () => {
 				await poHomeChannel.tabs.editRoom.checkboxOverrideGlobalRetention.click();
 
-				await expect(poHomeChannel.tabs.editRoom.getMaxAgeLabel('15')).toBeVisible();
+				await expect(poHomeChannel.tabs.editRoom.inputRetentionMaxAge).toHaveAttribute('placeholder', '15');
 			});
 
 			test('should display overridden retention max age value', async () => {
@@ -191,16 +191,16 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.editRoom.pruneAccordion.click();
 
-				await expect(poHomeChannel.tabs.editRoom.getMaxAgeLabel('15')).toBeVisible();
+				await expect(poHomeChannel.tabs.editRoom.inputRetentionMaxAge).toHaveAttribute('placeholder', '15');
 				await expect(poHomeChannel.tabs.editRoom.inputRetentionMaxAge).toHaveValue('365');
 			});
 
-			test('should ignore threads be checked accordingly with the global default value', async () => {
-				await expect(poHomeChannel.tabs.editRoom.checkboxIgnoreThreads).toBeChecked({ checked: ignoreThreadsSetting });
+			test('should delete thread messages be checked accordingly with the global default value', async () => {
+				await expect(poHomeChannel.tabs.editRoom.checkboxDeleteThreads).toBeChecked({ checked: !ignoreThreadsSetting });
 			});
 
-			test('should override ignore threads default value', async () => {
-				await poHomeChannel.tabs.editRoom.checkboxIgnoreThreads.click();
+			test('should override delete thread messages default value', async () => {
+				await poHomeChannel.tabs.editRoom.checkboxDeleteThreads.click();
 				await poHomeChannel.tabs.editRoom.btnSave.click();
 				await poHomeChannel.toastMessage.dismissToast();
 
@@ -208,7 +208,7 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.editRoom.pruneAccordion.click();
 
-				await expect(poHomeChannel.tabs.editRoom.checkboxIgnoreThreads).toBeChecked({ checked: !ignoreThreadsSetting });
+				await expect(poHomeChannel.tabs.editRoom.checkboxDeleteThreads).toBeChecked({ checked: ignoreThreadsSetting });
 			});
 		});
 	});

@@ -33,11 +33,7 @@ export class EditRoomFlexTab extends FlexTab {
 	}
 
 	get pruneAccordion(): Locator {
-		return this.root.getByRole('button', { name: 'Prune', exact: true });
-	}
-
-	getMaxAgeLabel(maxAge = '30') {
-		return this.root.getByText(`Maximum message age in days (default: ${maxAge})`);
+		return this.root.getByRole('button', { name: 'Data retention', exact: true });
 	}
 
 	get inputRetentionMaxAge(): Locator {
@@ -45,15 +41,15 @@ export class EditRoomFlexTab extends FlexTab {
 	}
 
 	get checkboxPruneMessages(): Locator {
-		return this.root.locator('label', { hasText: 'Automatically prune old messages' });
+		return this.root.locator('label', { hasText: 'Autodelete messages' });
 	}
 
 	get checkboxOverrideGlobalRetention(): Locator {
-		return this.root.locator('label', { hasText: 'Override global retention policy' });
+		return this.root.locator('label', { hasText: 'Override global policy' });
 	}
 
-	get checkboxIgnoreThreads(): Locator {
-		return this.root.locator('label', { hasText: 'Do not prune threads' });
+	get checkboxDeleteThreads(): Locator {
+		return this.root.locator('label', { hasText: 'Delete thread messages' });
 	}
 
 	get checkboxChannels(): Locator {
