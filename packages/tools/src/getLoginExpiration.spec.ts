@@ -13,6 +13,9 @@ describe('getLoginExpirationInDays', () => {
 	it('should return 90 when value is negative', () => {
 		expect(getLoginExpirationInDays(-1)).toBe(90);
 	});
+	it.each([0.5, 85.5, Infinity])('should return 90 when value is not a finite integer (%s)', (expiry) => {
+		expect(getLoginExpirationInDays(expiry)).toBe(90);
+	});
 	it('should return 90 when value is undefined', () => {
 		expect(getLoginExpirationInDays(undefined)).toBe(90);
 	});
@@ -31,5 +34,8 @@ describe('getLoginExpirationInMs', () => {
 	});
 	it('should return the value passed when its valid', () => {
 		expect(getLoginExpirationInMs(85)).toBe(85 * 24 * 60 * 60 * 1000);
+	});
+	it.each([0.5, 85.5, Infinity])('should return 90 days when value is not a finite integer (%s)', (expiry) => {
+		expect(getLoginExpirationInMs(expiry)).toBe(90 * 24 * 60 * 60 * 1000);
 	});
 });
