@@ -11,8 +11,6 @@ code:
     src/Message/MessageCollapsible.tsx,
     src/Message/index.ts,
     apps/meteor/client/providers/MessagesProvider,
-    apps/meteor/client/views/room/MessageList/providers/MessageListProvider.tsx,
-    apps/meteor/client/components/message/variants,
   ]
 tests:
   [
@@ -28,7 +26,6 @@ tests:
     src/Message/content/actions/MessageAction.spec.tsx,
     src/Message/hooks/useCollapse.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
-    apps/meteor/client/views/room/MessageList/providers/MessageListProvider.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/actions/useToggleReactionMutation.spec.ts,
     apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.spec.tsx,
     apps/meteor/client/views/room/composer/messageBox/MessageBoxReply.spec.tsx,
@@ -36,7 +33,7 @@ tests:
     apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
     apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.display.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/ThreadList.display.spec.tsx,
-    apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessageVariants.contexts.spec.tsx,
   ]
 ---
 
@@ -176,13 +173,14 @@ render any conversation.
   threads list, audit, moderation's reported messages, contact history, the forward, pin and
   report modals and the composer's quote; the read-only ones MUST pass
   `allowsInteraction={false}`.
-- **R33** Wherever the app's old list context is provided, the display context MUST be
+- ~~**R33** Wherever the app's old list context is provided, the display context MUST be
   provided from the same settings, so the highlight words and the real-name preference that
-  `GazzodownText` reads agree with the list around it.
+  `GazzodownText` reads agree with the list around it.~~ Retired: [message-variants](message-variants.md) deletes the old
+  list context, so there is nothing left to agree with.
 
 **Messages in the app**
 
-- **R34** The app's message variants MUST render the body, ignored content, fallback,
+- **R34** The message variants (the app's, and the package's since [message-variants](message-variants.md)) MUST render the body, ignored content, fallback,
   reactions, URL previews, location, action links and the thread, discussion and broadcast
   metrics with the package's components, and a message MUST look and behave as it did
   before, except where R15 and R36 to R40 name: markdown with mentions, channels, highlights, KaTeX,
@@ -237,18 +235,17 @@ revision is not reused, so what the app caches never outlives what is shown. The
 yet and keeps its default; the media value is built, see [message-attachments](message-attachments.md), and
 so is the toolbar's, see [message-toolbar](message-toolbar.md).
 
-The old list provider mounts `MessagesProvider` with the room and subscription it already has, so the
-display context and the old list context come from the same settings wherever a list shows messages;
-the places outside the lists mount their own, read-only ones with `allowsInteraction={false}`. The
-app's variants and attachments read the package's content parts. The app's copies are gone; the
+The lists mount `MessagesProvider` with the room and subscription they already have; the places outside the
+lists mount their own, read-only ones with `allowsInteraction={false}`. The variants and attachments read the
+package's content parts (the variants are the package's since [message-variants](message-variants.md)). The app's copies are gone; the
 collapsible parts, the collapse hooks, the download and size files and the location map went with
 the attachments (see [message-attachments](message-attachments.md)).
 
 Notes for later branches:
 
-- `display.showUsername` is only "the viewer does not hide usernames". It lacks the old
-  `getAuthorUsername` conditions (real names on, and the name differing from the username), and
-  nothing reads it yet. The variants branch must not treat the two as equal.
+- `display.showUsername` is only "the viewer does not hide usernames". The old `getAuthorUsername`
+  conditions (real names on, and the name differing from the username) belong to the parts that show a
+  name, which [message-variants](message-variants.md) R12 states and `getAuthorUsername` carries out.
 - The exported `MessageCollapsible` with `hasDownload` on an encrypted link downloads through the
   media context, which the app provides from `MessagesProvider` since
   [message-attachments](message-attachments.md).
@@ -260,8 +257,8 @@ Notes for later branches:
   the file size and download controls the collapsible shows.
 - ~~The toolbar and its actions: the toolbar context keeps its default until the toolbar
   arrives.~~ Done by [message-toolbar](message-toolbar.md).
-- The message variants, their header, avatar and status parts, and the editing context: the
-  app's variants stay and read the app's own editing state.
+- ~~The message variants, their header, avatar and status parts, and the editing context: the
+  app's variants stay and read the app's own editing state.~~ Done by [message-variants](message-variants.md).
 - The list, scrolling and virtualization.
 
 ## Known defects
@@ -276,7 +273,9 @@ None.
 - **Q2** Whether the selection and editing contexts are provided by the app in this round.
   Assumed: the selection adapter `messageSelectionFromStore` and the provider's `selection` prop
   exist (R31), but no mount passes a selection and only the spec uses the adapter until the
-  variants arrive; editing is not provided.
+  variants arrive; editing is not provided. Answered later: the app provides both, the room's
+  selection to the room's list, tabs and search and the editing context from the store that jumps and
+  editing write to ([message-variants](message-variants.md) R47, R48).
 - **Q3** Where the download and size controls the collapsible needs live while attachments
   are absent. Assumed: with the collapsible, in the package's attachment structure folder.
 - **Q4** Whether the threads list switches to the package parts in this round. Assumed: yes
