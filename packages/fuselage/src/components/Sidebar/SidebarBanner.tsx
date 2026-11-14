@@ -1,4 +1,4 @@
-import type { AllHTMLAttributes, ReactNode } from 'react';
+import type { AllHTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { IconButton } from '../Button';
@@ -8,10 +8,12 @@ export type SidebarBannerVariant = 'default' | 'info' | 'success' | 'warning' | 
 export type SidebarBannerProps = {
 	title?: ReactNode;
 	linkText?: string;
-	linkProps?: AllHTMLAttributes<HTMLAnchorElement>;
+	/** With an `href` the action is a link; without one it is a button, so it is activated from the keyboard. */
+	linkProps?: Omit<AllHTMLAttributes<HTMLAnchorElement>, 'onClick'> & { onClick?: MouseEventHandler<HTMLElement> };
 	onClick?: () => void;
 	variant?: SidebarBannerVariant;
 	onClose?: () => void;
+	closeLabel?: string;
 	children?: ReactNode;
 	addon?: ReactNode;
 	className?: string;
@@ -24,6 +26,7 @@ export const SidebarBanner = ({
 	variant = 'default',
 	addon,
 	onClose,
+	closeLabel = 'Close',
 	children,
 	className,
 	...props
@@ -31,16 +34,28 @@ export const SidebarBanner = ({
 	<div {...props} className={cx('rcx-box rcx-box--full rcx-sidebar-banner', `rcx-sidebar-banner--${variant}`, className)}>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__content'>
 			{title && <h5 className='rcx-box rcx-box--full rcx-sidebar-banner__title'>{title}</h5>}
-			{linkText && (
-				<a className='rcx-box rcx-box--full rcx-sidebar-banner__link' {...linkProps}>
-					{linkText}
-				</a>
-			)}
+			{linkText &&
+				(linkProps?.href ? (
+					<a className='rcx-box rcx-box--full rcx-sidebar-banner__link' {...linkProps}>
+						{linkText}
+					</a>
+				) : (
+					<button
+						type='button'
+						className='rcx-box rcx-box--full rcx-sidebar-banner__link'
+						id={linkProps?.id}
+						title={linkProps?.title}
+						tabIndex={linkProps?.tabIndex}
+						onClick={linkProps?.onClick}
+					>
+						{linkText}
+					</button>
+				))}
 			{children}
 		</div>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__addon'>
 			{addon}
-			{onClose && <IconButton onClick={onClose} size='tiny' icon='cross' />}
+			{onClose && <IconButton aria-label={closeLabel} onClick={onClose} size='tiny' icon='cross' />}
 		</div>
 	</div>
 );
