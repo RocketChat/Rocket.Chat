@@ -97,4 +97,24 @@ describe('licenses', () => {
 			expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 		});
 	});
+
+	describe('[/licenses.diagnostics]', () => {
+		it('should fail if user is unauthorized', async () => {
+			const res = await request
+				.get(api('licenses.diagnostics'))
+				.set(unauthorizedUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should return diagnostics if user is authorized', async () => {
+			const res = await request.get(api('licenses.diagnostics')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('candidates').and.to.be.an('array');
+			expect(res.body).to.have.property('summaryText').and.to.be.a('string');
+		});
+	});
 });
