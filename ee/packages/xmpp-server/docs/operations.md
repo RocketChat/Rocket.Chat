@@ -242,12 +242,6 @@ up:
 Gaps an administrator or user will notice today. Each is recorded in its spec, as a known
 defect or as out of scope; the spec has the details.
 
-### Presence
-
-Presence works one way only. A contact's XMPP presence sets their Rocket.Chat status, but
-Rocket.Chat status changes do not reach XMPP contacts
-([presence D2](specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts)).
-
 ### Hosted rooms
 
 - A topic changed in Rocket.Chat reaches only XMPP occupants who join afterwards
@@ -305,10 +299,10 @@ node --import tsx --test --test-force-exit --test-name-pattern='stores a message
 
 ### The Openfire stack
 
-`docker-compose.test.yml` runs Rocket.Chat in microservices mode (with the authorization,
-presence and XMPP server services) and Openfire 5.1 in its default configuration, already
-federating with each other. `yarn test:e2e:stack` builds the images from the working tree,
-starts the stack, runs the suite against it and tears it down:
+`docker-compose.test.yml` runs Rocket.Chat in microservices mode (with the account,
+authorization, presence, DDP streamer and XMPP server services) and Openfire 5.1 in its
+default configuration, already federating with each other. `yarn test:e2e:stack` builds the images
+from the working tree, starts the stack, runs the suite against it and tears it down:
 
 ```sh
 echo 'ENTERPRISE_LICENSE=<license with the federation module>' > ee/packages/xmpp-server/.env
@@ -330,7 +324,8 @@ yarn workspace @rocket.chat/xmpp-server test:e2e:stack
 | Reached at | `http://localhost:3000`, the test admin (`rocketchat.internal.admin.test`, same password) | `xmpp://localhost:5222`; admin console `http://localhost:9090` (`admin` / `admin`) |
 | Host port variable | `XMPP_STACK_RC_PORT` | `XMPP_STACK_OPENFIRE_C2S_PORT`, `XMPP_STACK_OPENFIRE_ADMIN_PORT` |
 
-The service's `/stats` is on `XMPP_STACK_SERVICE_PORT` (3039). The license is validated
+The service's `/stats` is on `XMPP_STACK_SERVICE_PORT` (3039), and the DDP streamer, which the
+suite's websocket sessions go to, on `XMPP_STACK_DDP_PORT` (4000). The license is validated
 against `XMPP_STACK_ROOT_URL`, `http://rc.host` by default.
 
 Inside the stack each server's domain and `conference.` subdomain are network aliases, with
