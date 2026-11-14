@@ -173,3 +173,23 @@ describe('MessageBox drafts', () => {
 		await waitFor(() => expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'a message over the limit' }));
 	});
 });
+
+describe('MessageBox paste', () => {
+	it('should not queue a pasted image while editing a message', async () => {
+		const user = userEvent.setup();
+		const { chat } = renderMessageBox(
+			jest.fn(),
+			jest.fn(() => null),
+		);
+		const { handleUploadFiles } = (useFileUpload as jest.Mock).mock.results[0].value;
+
+		act(() => chat.composer?.setEditingMode(true));
+
+		await user.click(screen.getByRole('textbox', { name: 'Message #general' }));
+		const image = new File(['image'], 'image.png', { type: 'image/png' });
+		const clipboardData = { items: [{ kind: 'file', type: 'image/png', getAsFile: () => image }], getData: () => '' };
+		await user.paste(clipboardData as unknown as DataTransfer);
+
+		expect(handleUploadFiles).not.toHaveBeenCalled();
+	});
+});

@@ -69,11 +69,18 @@ test.describe.serial('file-upload', () => {
 
 	test('should not be able to attach files when editing a message', async () => {
 		await poHomeChannel.content.sendMessage('message to be edited');
+		const editedMessageId = await poHomeChannel.content.lastUserMessage.getAttribute('data-mid');
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();
 
 		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
-		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
+		await poHomeChannel.content.pasteImage();
+		await poHomeChannel.composer.inputMessage.fill('updated text');
+		await poHomeChannel.composer.btnSend.click();
+
+		await expect(poHomeChannel.content.messageById(editedMessageId ?? '')).toContainText('updated text');
+		await expect(poHomeChannel.content.lastUserMessage).toHaveAttribute('data-mid', editedMessageId ?? '');
+		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(0);
 	});
 
 	test('should send lst file successfully', async () => {

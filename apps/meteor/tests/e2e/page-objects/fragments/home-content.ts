@@ -399,6 +399,16 @@ export class HomeContent {
 		}
 	}
 
+	async pasteImage(): Promise<void> {
+		const image = await fs.readFile(getFilePath('number1.png'));
+		await this.composer.inputMessage.evaluate((element, base64) => {
+			const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+			const data = new DataTransfer();
+			data.items.add(new File([bytes], 'number1.png', { type: 'image/png' }));
+			element.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
+		}, image.toString('base64'));
+	}
+
 	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {

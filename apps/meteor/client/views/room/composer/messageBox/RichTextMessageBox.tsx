@@ -405,7 +405,11 @@ const RichTextMessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			handleUploadFiles?.(files);
+
+			if (!isEditing) {
+				handleUploadFiles?.(files);
+			}
+
 			return;
 		}
 
