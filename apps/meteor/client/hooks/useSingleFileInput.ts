@@ -54,6 +54,7 @@ export const useSingleFileInput = (
 			const formData = new FormData();
 			formData.append(fileField, file);
 			onSetFile(file, formData);
+			fileInput.value = '';
 		};
 
 		fileInput.addEventListener('change', handleFiles, false);
@@ -63,7 +64,12 @@ export const useSingleFileInput = (
 		};
 	}, [fileField, fileType, onSetFile, maxSize, onError]);
 
-	const onClick = useStableCallback(() => ref?.current?.click());
+	const onClick = useStableCallback(() => {
+		if (ref.current) {
+			ref.current.value = '';
+		}
+		ref?.current?.click();
+	});
 	const reset = useStableCallback(() => {
 		if (ref.current) {
 			ref.current.value = '';
