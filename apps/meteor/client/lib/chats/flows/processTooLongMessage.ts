@@ -26,7 +26,8 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
+			const safeTimestamp = new Date().toISOString().replace(/[:]/g, '-');
+			const fileName = `${getUser()?.username ?? 'anonymous'}-${safeTimestamp}.txt`;
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),
