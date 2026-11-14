@@ -42,4 +42,6 @@ export default {
 	},
 
 	collectCoverage: true,
+
+	...(process.env.CI ? { maxWorkers: 2 } : {}),
 } satisfies Config;
