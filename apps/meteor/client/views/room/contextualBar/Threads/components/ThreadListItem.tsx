@@ -17,10 +17,11 @@ export type ThreadListItemProps = {
 	unreadUser: string[];
 	unreadGroup: string[];
 	hasDraft?: boolean;
+	ignoredUser?: boolean;
 	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
-const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onClick }: ThreadListItemProps) => {
+const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, ignoredUser, onClick }: ThreadListItemProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
@@ -55,6 +56,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 			all={unreadGroup.includes(thread._id)}
 			following={following}
 			hasDraft={hasDraft}
+			ignored={ignoredUser}
 			data-id={thread._id}
 			msg={msg ?? ''}
 			rid={thread.rid}

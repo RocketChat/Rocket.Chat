@@ -178,6 +178,7 @@ const ThreadList = () => {
 											unreadUser={subscription?.tunreadUser ?? []}
 											unreadGroup={subscription?.tunreadGroup ?? []}
 											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
+											ignoredUser={Boolean(subscription?.ignored?.includes(data.u._id))}
 											onClick={handleThreadClick}
 										/>
 									)}

@@ -38,6 +38,7 @@ export type ThreadListMessageProps = {
 	tlm: Date;
 	emoji: IMessage['emoji'];
 	hasDraft?: boolean;
+	ignored?: boolean;
 } & Omit<ComponentProps<typeof Box>, 'is'>;
 
 const ThreadListMessage = ({
@@ -57,6 +58,7 @@ const ThreadListMessage = ({
 	className = [],
 	emoji,
 	hasDraft,
+	ignored,
 	...props
 }: ThreadListMessageProps) => {
 	const { t } = useTranslation();
@@ -74,7 +76,15 @@ const ThreadListMessage = ({
 						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
 						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Thread_draft')} />}
 					</MessageHeader>
-					<MessageBody clamp={2}>{msg}</MessageBody>
+					<MessageBody clamp={2}>
+						{ignored ? (
+							<Box is='span' fontSize='c2' color='hint'>
+								{t('Message_Ignored')}
+							</Box>
+						) : (
+							msg
+						)}
+					</MessageBody>
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
 				</MessageContainer>
 				<MessageContainerFixed>
