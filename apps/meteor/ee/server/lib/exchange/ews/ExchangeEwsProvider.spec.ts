@@ -263,7 +263,7 @@ describe('ExchangeEwsProvider', () => {
 				),
 			]);
 
-			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow);
+			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
 			expect(page.items[0]).not.toHaveProperty('reminderMinutesBeforeStart');
 		});
