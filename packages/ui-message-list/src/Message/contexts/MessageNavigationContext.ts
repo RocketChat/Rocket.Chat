@@ -4,6 +4,8 @@ import { createContext, useContext } from 'react';
 export type MessageNavigationContextValue = {
 	openRoom: (rid: IRoom['_id']) => void;
 	openThread: (target: { rid: IRoom['_id']; tmid: IMessage['_id']; messageId?: IMessage['_id'] }) => void;
+	/** Opens the thread a reply to this message belongs to, leaving the URL's search parameters behind. */
+	replyInThread: (message: Pick<IMessage, '_id' | 'rid' | 'tmid'>) => void;
 	jumpToMessage: (message: Pick<IMessage, '_id' | 'rid' | 'tmid'>) => void;
 	getPermalink: (messageId: IMessage['_id']) => Promise<string>;
 	openDirectMessage: (username: string) => void;
@@ -17,6 +19,7 @@ const noop = () => undefined;
 export const messageNavigationDefaultValue: MessageNavigationContextValue = {
 	openRoom: noop,
 	openThread: noop,
+	replyInThread: noop,
 	jumpToMessage: noop,
 	getPermalink: async (messageId) => `#${messageId}`,
 	openDirectMessage: noop,

@@ -1,10 +1,12 @@
-import { isE2EEMessage, type IMessage } from '@rocket.chat/core-typings';
-import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { MessageActionContext } from '../../../lib/MessageAction';
-import { useMessageActionAppsActionButtons } from '../../../providers/MessagesProvider/actions/useMessageActionAppsActionButtons';
+import type { MessageActionContext } from '../contexts/MessageAction';
+import { useMessageToolbar } from '../contexts/MessageToolbarContext';
 
 type MessageActionSection = {
 	id: string;
@@ -12,24 +14,32 @@ type MessageActionSection = {
 	items: GenericMenuItemProps[];
 };
 
-type MessageActionMenuProps = {
+export type MessageToolbarStarsActionMenuProps = {
 	message: IMessage;
 	context: MessageActionContext;
+	room: IRoom;
+	subscription: ISubscription | undefined;
 	onChangeMenuVisibility: (visible: boolean) => void;
 };
 
-const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibility }: MessageActionMenuProps) => {
-	const starsAction = useMessageActionAppsActionButtons(message, context, 'ai');
+const MessageToolbarStarsActionMenu = ({
+	message,
+	context,
+	room,
+	subscription,
+	onChangeMenuVisibility,
+}: MessageToolbarStarsActionMenuProps) => {
+	const aiActions = useMessageToolbar().useAiActions(message, { room, subscription, context });
 	const { t } = useTranslation();
 	const id = useId();
 
-	if (!starsAction.data?.length) {
+	if (!aiActions.length) {
 		return null;
 	}
 
 	const isMessageEncrypted = isE2EEMessage(message);
 
-	const groupOptions = starsAction.data.reduce((acc, option) => {
+	const groupOptions = aiActions.reduce((acc, option) => {
 		const transformedOption = {
 			variant: option.variant,
 			id: option.id,
@@ -49,10 +59,8 @@ const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibilit
 			acc.push(section);
 		}
 
-		// Add option to the appropriate section
 		section.items.push(transformedOption);
 
-		// Handle the "apps" section if message is encrypted
 		if (group === 'apps' && isMessageEncrypted) {
 			section.items = [
 				{

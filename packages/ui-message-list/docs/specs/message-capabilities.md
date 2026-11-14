@@ -161,8 +161,9 @@ render any conversation.
   quoting, replying, sending, editing, requesting deletion and replying to a broadcast through
   the room's chat where one is open; following and unfollowing a thread, with an error toast
   when it fails; and opening the forward, report, reaction list, read receipts and discussion
-  modals. Pinning, starring, marking unread and translating are also carried out, but only the
-  toolbar reads them, so their proof arrives with the toolbar.
+  modals; pinning, unpinning, starring, unstarring, marking unread, translating and showing the original
+  through the REST API and the client's stores; and opening the reaction picker with a way to learn that it
+  closed, which it reports also when it could not open.
 - **R29** `MessagesProvider` MUST route navigation through the app's router: open a room, open
   a thread, jump to a message, resolve a permalink, open a direct message, run an action
   link and open an external link.
@@ -232,9 +233,9 @@ hook per context builds its value from the app: settings and preferences for dis
 navigation, the chat, modals, mutations and the REST API for interactions, stores and queries for
 related data, the parser and the translations for content, and gazzodown, UiKit and emoji for the
 renderers. A message fetched by id takes a revision of what the caller reads from it, and a copy fetched for another
-revision is not reused, so what the app caches never outlives what is shown. The toolbar and editing
-values are not built yet and keep their defaults; the media value is built, see
-[message-attachments](message-attachments.md).
+revision is not reused, so what the app caches never outlives what is shown. The editing value is not built
+yet and keeps its default; the media value is built, see [message-attachments](message-attachments.md), and
+so is the toolbar's, see [message-toolbar](message-toolbar.md).
 
 The old list provider mounts `MessagesProvider` with the room and subscription it already has, so the
 display context and the old list context come from the same settings wherever a list shows messages;
@@ -257,8 +258,8 @@ Notes for later branches:
 - Attachments, including quotes, files and the media value of the provider: a later
   capability. The media context keeps its default, which no content part here needs beyond
   the file size and download controls the collapsible shows.
-- The toolbar and its actions: the toolbar context keeps its default until the toolbar
-  arrives.
+- ~~The toolbar and its actions: the toolbar context keeps its default until the toolbar
+  arrives.~~ Done by [message-toolbar](message-toolbar.md).
 - The message variants, their header, avatar and status parts, and the editing context: the
   app's variants stay and read the app's own editing state.
 - The list, scrolling and virtualization.

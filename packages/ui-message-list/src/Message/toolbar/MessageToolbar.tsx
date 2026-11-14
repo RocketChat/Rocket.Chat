@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { MessageToolbarVisibilityContext } from './MessageToolbarVisibilityContext';
 import DefaultItems from './items/DefaultItems';
 import DirectItems from './items/DirectItems';
 import FederatedItems from './items/FederatedItems';
@@ -19,7 +20,7 @@ import StarredItems from './items/StarredItems';
 import ThreadsItems from './items/ThreadsItems';
 import VideoconfItems from './items/VideoconfItems';
 import VideoconfThreadsItems from './items/VideoconfThreadsItems';
-import type { MessageActionContext } from '../../../lib/MessageAction';
+import type { MessageActionContext } from '../contexts/MessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -47,7 +48,6 @@ const itemsByContext: Record<
 		message: IMessage;
 		room: IRoom;
 		subscription: ISubscription | undefined;
-		onChangeMenuVisibility?: (visible: boolean) => void;
 	}>
 > = {
 	'message': DefaultItems,
@@ -83,8 +83,16 @@ const MessageToolbar = ({ message, messageContext, room, subscription, onChangeM
 
 	return (
 		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
-			<MessageToolbarItems message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
-			<MessageToolbarStarsActionMenu message={message} context={context} onChangeMenuVisibility={onChangeMenuVisibility} />
+			<MessageToolbarVisibilityContext.Provider value={onChangeMenuVisibility}>
+				<MessageToolbarItems message={message} room={room} subscription={subscription} />
+			</MessageToolbarVisibilityContext.Provider>
+			<MessageToolbarStarsActionMenu
+				message={message}
+				context={context}
+				room={room}
+				subscription={subscription}
+				onChangeMenuVisibility={onChangeMenuVisibility}
+			/>
 			<MessageToolbarActionMenu
 				message={message}
 				context={context}

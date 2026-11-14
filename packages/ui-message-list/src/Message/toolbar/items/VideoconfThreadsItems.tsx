@@ -7,13 +7,12 @@ export type VideoconfThreadsItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
-	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const VideoconfThreadsItems = ({ message, room, subscription, onChangeMenuVisibility }: VideoconfThreadsItemsProps) => {
+const VideoconfThreadsItems = ({ message, room, subscription }: VideoconfThreadsItemsProps) => {
 	return (
 		<>
-			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
+			<ReactionMessageAction message={message} room={room} subscription={subscription} />
 			<JumpToMessageAction id='jump-to-message' message={message} />
 		</>
 	);

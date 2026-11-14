@@ -69,10 +69,12 @@ export const useMessageInteractionsValue = (
 			hasReacted: (message, reaction) => !!username && !!message.reactions?.[reaction]?.usernames.includes(username),
 			openReactionPicker: (event, message, { onClose } = {}) => {
 				event.nativeEvent.stopImmediatePropagation();
-				if (!user) {
+				if (!user || !chat) {
+					// Whoever asked to hold something open while the picker is must not wait for one that never opened.
+					onClose?.();
 					return;
 				}
-				chat?.emojiPicker.open(event.currentTarget, (emoji) => react(message, `:${emoji}:`), onClose);
+				chat.emojiPicker.open(event.currentTarget, (emoji) => react(message, `:${emoji}:`), onClose);
 			},
 			quote: (message: IMessage & Partial<ITranslatedMessage>) => {
 				const isTranslated = autoTranslateEnabled && autoTranslateLanguage && showAutoTranslate(message);
