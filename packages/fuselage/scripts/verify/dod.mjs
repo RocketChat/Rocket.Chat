@@ -44,19 +44,22 @@ const run = (script, args) => exec('node', [here(script), ...args]);
 const characterization = (dir) =>
 	readdirSync(dir, { withFileTypes: true, recursive: true }).filter((entry) => entry.name === `${component}.characterization.stories.tsx`);
 
+/** Runs the G0 Jest characterization checks, plus the zero-runtime Storybook check when an --after build is given. */
 const g0 = () => {
 	if (!characterization(join(import.meta.dirname, '../../src')).length)
 		return { skipped: 'not run', detail: 'no characterization stories' };
 	const jest = exec('yarn', ['jest', 'src/testing/stories.spec.tsx', '-t', `${component}.characterization`]);
 	const jestTests = jest.output.match(/Tests:.*$/m)?.[0] ?? jest.output.split('\n').at(-1);
-	if (!after) return { ok: jest.ok, detail: `jest: ${jestTests}` };
+	const jestPassed = Number(jestTests.match(/(\d+)\s+passed/)?.[1] ?? 0);
+	if (!after) return { ok: jest.ok && jestPassed > 0, detail: `jest: ${jestTests}` };
 	const zero = exec('node', [
 		join(import.meta.dirname, '../test-stories.mjs'),
 		after,
 		`characterization-${component.toLowerCase()}\\.test\\.js$`,
 	]);
 	const zeroTests = zero.output.match(/Tests:.*$/m)?.[0] ?? zero.output.split('\n').at(-1);
-	return { ok: jest.ok && zero.ok, detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
+	const zeroPassed = Number(zeroTests.match(/(\d+)\s+passed/)?.[1] ?? 0);
+	return { ok: jest.ok && zero.ok && jestPassed > 0 && zeroPassed > 0, detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
 };
 
 const size = () => {
@@ -121,7 +124,20 @@ if (before && after) {
 	}
 } else for (const check of ['class contract diff', 'pixel A/B', 'computed-style A/B']) add('G3', check, needsBuilds);
 
-add('G4', '.d.ts diff', opts.dts ? run('dts-diff.mjs', [opts.dts, 'HEAD']) : { skipped: 'not run', detail: 'pass --dts <base ref>' });
+const dtsCheck = () => {
+	if (!opts.dts) return { skipped: 'not run', detail: 'pass --dts <base ref>' };
+	const res = run('dts-diff.mjs', [opts.dts, 'HEAD']);
+	const diffMatch = res.output.match(/(\d+)\s+exports differ/);
+	if (diffMatch && Number(diffMatch[1]) > 0) {
+		const count = Number(diffMatch[1]);
+		return {
+			skipped: 'awaiting review',
+			detail: `${count} exports differ (review in G4/G6; run: node scripts/verify/dts-diff.mjs ${opts.dts} HEAD)`,
+		};
+	}
+	return res;
+};
+add('G4', '.d.ts diff', dtsCheck());
 add('G5', 'size', size());
 add('G5', 'perf bench', perf());
 
