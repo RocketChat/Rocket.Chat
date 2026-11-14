@@ -136,6 +136,13 @@ test.describe.serial('message-mentions', () => {
 				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 			});
 
+			await test.step('show the mentioned user as a mention', async () => {
+				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block [data-uid]')).toHaveAttribute(
+					'data-uid',
+					Users.user1.data._id,
+				);
+			});
+
 			await test.step('show "Do nothing" action', async () => {
 				await expect(adminPage.content.getLastMessageActionButton('Do nothing')).toBeVisible();
 			});

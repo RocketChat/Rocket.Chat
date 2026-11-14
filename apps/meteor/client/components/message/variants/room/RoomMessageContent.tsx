@@ -87,7 +87,12 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
+				<UiKitMessageBlock
+					rid={normalizedMessage.rid}
+					mid={normalizedMessage._id}
+					blocks={normalizedMessage.blocks}
+					mentions={normalizedMessage.mentions}
+				/>
 			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}

@@ -71,7 +71,12 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
+				<UiKitMessageBlock
+					rid={normalizedMessage.rid}
+					mid={normalizedMessage._id}
+					blocks={normalizedMessage.blocks}
+					mentions={normalizedMessage.mentions}
+				/>
 			)}
 
 			{!!attachments && (

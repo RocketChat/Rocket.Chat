@@ -10,15 +10,16 @@ export type UiKitMessageBlockProps = {
 	rid: IRoom['_id'];
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;
+	mentions?: IMessage['mentions'];
 };
 
-const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps) => {
+const UiKitMessageBlock = ({ rid, mid, blocks, mentions }: UiKitMessageBlockProps) => {
 	const contextValue = useMessageBlockContextValue(rid, mid);
 
 	return (
 		<MessageBlock fixedWidth>
 			<UiKitContext.Provider value={contextValue}>
-				<GazzodownText>
+				<GazzodownText mentions={mentions}>
 					<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />
 				</GazzodownText>
 			</UiKitContext.Provider>
