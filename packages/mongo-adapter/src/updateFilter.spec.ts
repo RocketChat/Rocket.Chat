@@ -585,6 +585,34 @@ describe('createTransformFromUpdateFilter', () => {
 					{ type: 'B', value: 20, active: false },
 				]);
 			});
+
+			it('should remove elements matching a condition on the elements themselves', () => {
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { scores: { $gte: 20 } } });
+				const result = updater(baseDoc);
+				expect(result.scores).toEqual([10]);
+			});
+
+			it('should remove elements listed by an $in condition', () => {
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { scores: { $in: [10, 30] } } });
+				const result = updater(baseDoc);
+				expect(result.scores).toEqual([20]);
+			});
+
+			it('should remove only the elements matching a regular expression', () => {
+				type DocType = { _id: string; tags: string[] };
+				const doc = { _id: 'test123', tags: ['tmp-1', 'keep', 'tmp-2'] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { tags: /^tmp/ } });
+				const result = updater(doc);
+				expect(result.tags).toEqual(['keep']);
+			});
+
+			it('should remove only the elements equal to a given date', () => {
+				type DocType = { _id: string; dates: Date[] };
+				const doc = { _id: 'test123', dates: [new Date(1), new Date(2)] };
+				const updater = createTransformFromUpdateFilter<DocType>({ $pull: { dates: new Date(1) } });
+				const result = updater(doc);
+				expect(result.dates).toEqual([new Date(2)]);
+			});
 		});
 
 		describe('$pullAll', () => {

@@ -316,6 +316,28 @@ const $pop = <TField extends string>(target: Record<TField, unknown[]>, field: T
 	}
 };
 
+const isElementCondition = (arg: unknown): boolean =>
+	isPlainObject(arg) && Object.keys(arg).length > 0 && Object.keys(arg).every((key) => key.startsWith('$'));
+
+// `$pull` reads its argument three ways: an operator expression or a regular expression states a
+// condition on the elements themselves, any other plain object is a query against elements that
+// are documents, and anything else — dates included — is matched by equality.
+const createPullMatcher = (arg: unknown): ((element: unknown) => boolean) => {
+	if (arg instanceof RegExp || isElementCondition(arg)) {
+		const predicate = createPredicateFromFilter<{ value: unknown }>({ value: arg } as Filter<{ value: unknown }>);
+
+		return (element) => predicate({ value: element });
+	}
+
+	if (isPlainObject(arg)) {
+		const predicate = createPredicateFromFilter<Document>(arg as Filter<Document>);
+
+		return (element) => predicate(element as Document);
+	}
+
+	return (element) => equals(element, arg);
+};
+
 const $pull = <TField extends string, TDocument extends object>(
 	target: Record<TField, TDocument[]>,
 	field: TField,
@@ -334,16 +356,9 @@ const $pull = <TField extends string, TDocument extends object>(
 		throw new Error('Cannot apply $pull/pullAll modifier to non-array');
 	}
 
-	let out;
-	if (arg != null && typeof arg === 'object' && !Array.isArray(arg)) {
-		const predicate = createPredicateFromFilter(arg);
+	const matches = createPullMatcher(arg);
 
-		out = toPull.filter((element) => !predicate(element));
-	} else {
-		out = toPull.filter((element) => !equals(element, arg as any));
-	}
-
-	target[field] = out;
+	target[field] = toPull.filter((element) => !matches(element));
 };
 
 const $pullAll = <TField extends string, TDocument extends object>(
