@@ -27,6 +27,8 @@ export const useDebouncedCallback = <P extends unknown[]>(
 	const debouncedCallback = useCallback(
 		(...args: P) => {
 			timerCallbackRef.current = (): void => {
+				timerCallbackRef.current = undefined;
+				timerRef.current = undefined;
 				effectiveCallback(...args);
 			};
 			clearTimeout(timerRef.current);
@@ -42,6 +44,8 @@ export const useDebouncedCallback = <P extends unknown[]>(
 
 	const cancel = useCallback(() => {
 		clearTimeout(timerRef.current);
+		timerRef.current = undefined;
+		timerCallbackRef.current = undefined;
 	}, []);
 
 	useEffect(
