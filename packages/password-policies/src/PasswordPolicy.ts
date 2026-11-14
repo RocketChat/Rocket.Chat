@@ -262,12 +262,12 @@ export class PasswordPolicy {
 			}
 			if (this.forbidRepeatingCharacters) {
 				data.policy.push(['get-password-policy-forbidRepeatingCharacters']);
-			}
-			if (this.forbidRepeatingCharactersCount) {
-				data.policy.push([
-					'get-password-policy-forbidRepeatingCharactersCount',
-					{ forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount },
-				]);
+				if (this.forbidRepeatingCharactersCount) {
+					data.policy.push([
+						'get-password-policy-forbidRepeatingCharactersCount',
+						{ forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount },
+					]);
+				}
 			}
 			if (this.mustContainAtLeastOneLowercase) {
 				data.policy.push(['get-password-policy-mustContainAtLeastOneLowercase']);
