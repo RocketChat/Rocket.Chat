@@ -12,8 +12,8 @@ import { parse } from '@rocket.chat/message-parser';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { toPlainTextRoot } from './toPlainTextRoot';
-import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
-import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
+import type { AutoTranslateOptions } from '../hooks/useAutoTranslate';
+import { isParsedMessage } from './utils/isParsedMessage';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];

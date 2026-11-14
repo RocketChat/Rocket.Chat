@@ -3,7 +3,7 @@ import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerMessageProps } from './ComposerMessage';
-import { useCountSelected, useClearSelection, useAvailableMessagesCount } from '../MessageList/contexts/SelectedMessagesContext';
+import { useCountSelected, useClearSelection, useAvailableMessagesCount } from '../providers/SelectedMessagesContext';
 
 const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps, 'onClickSelectAll'>) => {
 	const { t } = useTranslation();

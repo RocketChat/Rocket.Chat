@@ -2,9 +2,9 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { useOpenEncryptedPdf } from './useOpenEncryptedPdf';
-import { forAttachmentDownload, registerDownloadForUid } from '../../../../../../hooks/useDownloadFromServiceWorker';
+import { forAttachmentDownload, registerDownloadForUid } from '../../hooks/useDownloadFromServiceWorker';
 
-jest.mock('../../../../../../hooks/useDownloadFromServiceWorker', () => ({
+jest.mock('../../hooks/useDownloadFromServiceWorker', () => ({
 	forAttachmentDownload: jest.fn(),
 	registerDownloadForUid: jest.fn(),
 }));

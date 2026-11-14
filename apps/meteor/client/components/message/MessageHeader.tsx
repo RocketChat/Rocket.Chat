@@ -21,7 +21,7 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from './list/MessageListContext';
-import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useIsSelecting } from '../../views/room/providers/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
 	message: IMessage;

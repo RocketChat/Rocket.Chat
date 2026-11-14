@@ -31,8 +31,8 @@ import { Virtuoso } from 'react-virtuoso';
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
 import ListViewport from '../../../../components/ListViewport';
-import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
-import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
+import { isMessageNewDay } from '../../../../lib/utils/isMessageNewDay';
+import { isMessageSequential } from '../../../../lib/utils/isMessageSequential';
 
 export type ContactHistoryMessagesListProps = {
 	chatId: string;

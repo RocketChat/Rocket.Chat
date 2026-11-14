@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 
+import { useMessageListReadReceipts } from '../../../components/message/list/MessageListContext';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import ReadReceiptsModal from '../../../views/room/modals/ReadReceiptsModal';
-import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionConfig | null => {
 	const setModal = useSetModal();

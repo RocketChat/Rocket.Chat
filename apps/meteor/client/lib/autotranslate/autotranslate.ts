@@ -2,9 +2,9 @@ import type { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, Mess
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 import mem from 'mem';
 
+import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from './hasTranslationLanguage';
 import { PermissionsCachedStore } from '../../cachedStores';
 import { Messages, Subscriptions, Users } from '../../stores';
-import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../views/room/MessageList/lib/autoTranslate';
 import { sdk } from '../SDKClient';
 import { hasPermission } from '../authorization';
 import { settings } from '../settings';
