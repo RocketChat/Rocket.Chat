@@ -3,7 +3,7 @@ export function convertPathsIntoSubObjects(object: Record<string, any>): Record<
 
 	for (const key of Object.keys(object)) {
 		const value = object[key];
-		if (!value && typeof value !== 'boolean') {
+		if (value === undefined) {
 			continue;
 		}
 		const keyProperties = key.split('.');
@@ -15,16 +15,23 @@ export function convertPathsIntoSubObjects(object: Record<string, any>): Record<
 
 		const finalProperty = keyProperties.pop() as string;
 		for (const property of keyProperties) {
-			if (!(property in current) || typeof current[property] !== 'object') {
+			if (!(property in current) || typeof current[property] !== 'object' || current[property] === null) {
 				current[property] = {};
 			}
 
 			current = current[property];
 		}
 
-		if (current[finalProperty]) {
+		if (
+			typeof current[finalProperty] === 'object' &&
+			current[finalProperty] !== null &&
+			!Array.isArray(current[finalProperty]) &&
+			typeof value === 'object' &&
+			value !== null &&
+			!Array.isArray(value)
+		) {
 			current[finalProperty] = {
-				...(typeof value === 'object' && value),
+				...value,
 				...current[finalProperty],
 			};
 		} else {
