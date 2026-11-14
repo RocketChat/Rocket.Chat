@@ -15,18 +15,29 @@ const RoomFilesWithData = () => {
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 
 	const debouncedText = useDebouncedValue(text, 400);
-
+  
 	const { isPending, isSuccess, data, fetchNextPage, refetch } = useFilesList({
 		rid: room._id,
 		type,
 		text: debouncedText,
 	});
-
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const handleDeleteFile = useDeleteFile(refetch);
+	const query = useMemo(
+		() => ({
+			rid: room._id,
+			type,
+			text: debouncedText,
+		}),
+		[room._id, type, debouncedText],
+	);
+
+	const { filesList, loadMoreItems, reload } = useFilesList(query);
+	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
+
+	const handleDeleteFile = useDeleteFile(reload);
 
 	return (
 		<RoomFiles
