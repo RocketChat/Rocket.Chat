@@ -1,13 +1,23 @@
 import type { Readable } from 'node:stream';
+import { finished } from 'node:stream/promises';
 
-export const streamToBuffer = (stream: Readable): Promise<Buffer> =>
-	new Promise((resolve, reject) => {
-		const chunks: Array<Buffer> = [];
+export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+	if (stream.destroyed && !stream.readableEnded) {
+		throw stream.errored ?? Object.assign(new Error('Premature close'), { code: 'ERR_STREAM_PREMATURE_CLOSE' });
+	}
 
-		stream
-			.on('data', (data) => chunks.push(data))
-			.on('end', () => resolve(Buffer.concat(chunks)))
-			.on('error', (error) => reject(error))
-			// force stream to resume data flow in case it was explicitly paused before
-			.resume();
-	});
+	const chunks: Buffer[] = [];
+	const onData = (chunk: Buffer): void => {
+		chunks.push(chunk);
+	};
+	const completion = finished(stream, { readable: true, writable: false, cleanup: true });
+
+	stream.on('data', onData).resume();
+
+	try {
+		await completion;
+		return Buffer.concat(chunks);
+	} finally {
+		stream.off('data', onData);
+	}
+};
