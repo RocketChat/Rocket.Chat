@@ -188,7 +188,7 @@ export class IMAPInterceptor extends EventEmitter {
 						}
 						this.emit('email', email);
 						if (this.options.deleteAfterRead) {
-							this.imap.seq.addFlags(email, 'Deleted', (err) => {
+							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
 								if (err) {
 									logger.warn({ msg: 'Mark deleted error', err });
 								}
