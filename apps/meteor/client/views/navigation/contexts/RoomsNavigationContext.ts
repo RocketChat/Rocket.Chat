@@ -91,6 +91,7 @@ export type GroupedUnreadInfoData = {
 	groupMentions: number;
 	tunread: string[];
 	tunreadUser: string[];
+	tunreadGroup: string[];
 	unread: number;
 };
 
@@ -121,6 +122,7 @@ export const getEmptyUnreadInfo = (): GroupedUnreadInfoData => ({
 	groupMentions: 0,
 	tunread: [],
 	tunreadUser: [],
+	tunreadGroup: [],
 	unread: 0,
 });
 
