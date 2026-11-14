@@ -39,3 +39,24 @@ describe('non-text examples', () => {
 		expect(decoded).toStrictEqual(expectedAsBinary);
 	});
 });
+
+describe('invalid input', () => {
+	it.each(['!!!!', 'A!AA', 'AB@C', 'AB#C', 'AB$C'])(
+		'should reject invalid Base64 character in %p',
+		(input) => {
+			expect(() => Base64.decode(input)).toThrow('invalid base64 string');
+		},
+	);
+});
+
+describe('string input', () => {
+	it('should encode string input', () => {
+		expect(Base64.encode('Hello')).toBe('SGVsbG8=');
+	});
+
+	it('should reject non-ASCII string input', () => {
+		expect(() => Base64.encode('你好')).toThrow(
+			'Not ascii. Base64.encode can only take ascii strings.',
+		);
+	});
+});
