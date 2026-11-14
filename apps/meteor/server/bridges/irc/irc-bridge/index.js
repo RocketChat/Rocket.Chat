@@ -59,6 +59,10 @@ class Bridge {
 		this.loggedInUsers = [];
 
 		const lastPing = await Settings.findOneById('IRC_Bridge_Last_Ping');
+		if (!this.server) {
+			return;
+		}
+
 		if (lastPing) {
 			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
 				this.log('Not trying to connect.');
@@ -79,10 +83,14 @@ class Bridge {
 	}
 
 	stop() {
-		this.server.disconnect();
+		this.server?.disconnect();
 	}
 
 	remove() {
+		if (!this.server) {
+			return;
+		}
+
 		this.log('Removing current connection.');
 		removed = true;
 		this.server = null;
@@ -118,7 +126,17 @@ class Bridge {
 			return;
 		}
 
-		const lastResetTime = Settings.findOneById('IRC_Bridge_Reset_Time');
+		let lastResetTime;
+		try {
+			lastResetTime = await Settings.findOneById('IRC_Bridge_Reset_Time');
+		} catch (e) {
+			this.logQueue(e);
+		}
+
+		if (!this.server) {
+			return;
+		}
+
 		if (lastResetTime && lastResetTime.value > this.initTime) {
 			this.stop();
 			this.remove();
