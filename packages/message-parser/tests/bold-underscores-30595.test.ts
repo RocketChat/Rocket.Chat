@@ -436,3 +436,52 @@ describe('PR review finding 3 — leading underscore in bold (correct behavior)'
 		]);
 	});
 });
+
+// ---------------------------------------------------------------------------
+// Section J: Edge case — combining mark after the character consumed by [.] AlphaNumericChar
+// ---------------------------------------------------------------------------
+
+/**
+ * Edge case: combining mark immediately after the AlphaNumericChar consumed
+ * by the dot-separator alternative.
+ *
+ * Input: *v1.e\u0301_2_00_x*
+ *
+ * The dot-separator alternative is `[.] AlphaNumericChar MarkChar*`.
+ * Without `MarkChar*` after the AlphaNumericChar in that alternative,
+ * U+0301 (following `e`) was not consumed by the guard. The loop stopped
+ * at `v1.e`, next char was U+0301 (not `_`), guard failed. BoldPlainRun
+ * took `v1.e\u0301`, then `_2_` fired as italic.
+ *
+ * Fix: add `MarkChar*` after `AlphaNumericChar` in the `[.] AlphaNumericChar`
+ * alternative: `[.] AlphaNumericChar MarkChar*`. The hyphen alternative
+ * (`[\-] DecimalNumberChar`) does not need this change — decimal digits are
+ * not base characters for combining marks.
+ *
+ * Final Italic alt 1 expression:
+ *   AlphaNumericChar MarkChar* (AlphaNumericChar MarkChar* / [.] AlphaNumericChar MarkChar* / [\-] DecimalNumberChar)* [\x5F] [\x5F]?
+ *
+ * Trace for `v1.e\u0301_2_00_x` with fix:
+ *   `v`=AlphaNum, MarkChar*=0.
+ *   `1`=AlphaNum, MarkChar*=0.
+ *   `.e`=[.] AlphaNum ✓, MarkChar*=U+0301 ✓.
+ *   `_`=[\x5F] ✓. Guard fires → plain("v1.e\u0301_").
+ *   `2_` → plain. `00_` → plain. `x` → BoldPlainRun. All merged → plain. ✓
+ */
+describe('edge case J — combining mark after separator-consumed character', () => {
+	it('*v1.e\\u0301_2_00_x* — combining mark after dot-separator alpha; all underscores plain', () => {
+		// NFD "é" split as dot-separator target "e" + combining mark U+0301.
+		// Guard must consume U+0301 via MarkChar* in the [.] AlphaNumericChar MarkChar* alternative.
+		expect(parse('*v1.e\u0301_2_00_x*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('v1.e\u0301_2_00_x')])]),
+		]);
+	});
+
+	it('*v1.e\u0301_text_* — combining mark after dot-separator; nested italic NOT suppressed incorrectly', () => {
+		// Guard fires for "v1.e\u0301_", returning plain. Remaining "text_*":
+		// "text" via BoldPlainRun, "_" via AnyBold (no closing "_"). All plain.
+		expect(parse('*v1.e\u0301_text_*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('v1.e\u0301_text_')])]),
+		]);
+	});
+});
