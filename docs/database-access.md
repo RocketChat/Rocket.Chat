@@ -15,6 +15,11 @@ await Users.findOneByUsername(username, { projection: { _id: 1 } });
 await Rooms.setTeamMainById(rid, teamId, { session });
 ```
 
+The `rocket.chat/no-generic-model-methods` oxlint rule reports these calls, and any use of
+`.col`, on a model imported from `@rocket.chat/models`. It is a warning while existing call
+sites are moved into models, and becomes an error once none remain. Models, migrations and
+tests are exempt; see the overrides in `.oxlintrc.json`.
+
 ## Why
 
 - A query sits next to the index that serves it (`modelIndexes()`). An index can only be
