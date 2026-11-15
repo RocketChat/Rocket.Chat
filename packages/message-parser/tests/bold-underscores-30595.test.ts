@@ -388,31 +388,59 @@ describe('PR review finding 2 — combining marks after alphanumeric', () => {
 /**
  * PR review Finding 3 (CodeRabbit):
  *
- * Input `*_ОЛ_1.2_2_00_ЭС_*` — reviewer noted "the underscore after ОЛ
- * is consumed as an italic delimiter."
+ * Input `*_ОЛ_1.2_2_00_ЭС_*` — reviewer expected:
+ *   bold([italic([plain('ОЛ_1.2_2_00_ЭС')])])
+ * i.e. a single italic node spanning all the underscored content.
+ *
+ * Actual output:
+ *   bold([italic([plain('ОЛ')]), plain('1.2_2_00_ЭС_')])
  *
  * Investigation result: this IS correct grammar behavior, not a regression.
+ * The reviewer's expected AST is unreachable with the current grammar.
  *
- * Trace:
- *   - Cursor starts inside bold at "_".
- *   - Guard (Italic alt 1) requires AlphaNumericChar first. "_" fails. Guard FAILS.
- *   - Italic alt 5: `[\x5F] ItalicContent [\x5F]` tries "_ОЛ_". ItalicPlainRun
- *     matches "ОЛ" (stops at "_"). Close "_". Succeeds → italic("ОЛ").
- *   - Remaining "1.2_2_00_ЭС_*": guard fires for each segment → all plain.
+ * Why the first internal `_` closes the italic span:
+ *   `ItalicPlainRun = $[^\x0a\_ \u00a0*~]+` — underscore is in the exclusion
+ *   list. When `Italic alt 5` opens at the leading `_`, ItalicContent calls
+ *   ItalicContentItems, which calls ItalicPlainRun. That rule matches `ОЛ` and
+ *   stops at the very first `_` it encounters. Neither ItalicPlainRun nor
+ *   AnyItalic (`[^\x0a\_ ]`) can advance past a `_`. The closing `[\x5F]` of
+ *   alt 5 therefore matches the internal `_` after `ОЛ`, closing the italic
+ *   span there. This is identical to how `*_italic_ word*` works — the `_`
+ *   after `italic` closes the span, leaving ` word` as plain text.
+ *
+ * The reviewer's expected AST is not supported by the current ItalicContent
+ * grammar: both ItalicPlainRun (`$[^\x0a\_ \u00a0*~]+`) and AnyItalic
+ * (`[^\x0a\_ ]`) explicitly exclude `_`, so ItalicContent cannot span across
+ * an internal underscore. Supporting that behavior would require a broader
+ * italic parsing redesign — such as greedy longest-match or a whitespace-
+ * boundary heuristic — and could affect existing italic behavior throughout
+ * the parser.
+ *
+ * Detailed trace for `*_ОЛ_1.2_2_00_ЭС_*`:
+ *   - BoldContent cursor at `_`. Guard (Italic alt 1) requires AlphaNumericChar
+ *     first; `_` fails. Guard FAILS.
+ *   - Italic alt 5: `[\x5F] ItalicContent [\x5F]` opens at `_`.
+ *     ItalicPlainRun matches `ОЛ` (stops at the next `_`).
+ *     Closing `[\x5F]` matches that `_`. → italic("ОЛ").
+ *   - Remaining BoldContent: `1.2_2_00_ЭС_*`.
+ *     Guard fires for `1.2_`, `2_`, `00_`, `ЭС_` → all plain.
+ *     reducePlainTexts merges → plain("1.2_2_00_ЭС_").
  *   - Result: BOLD[italic("ОЛ"), plain("1.2_2_00_ЭС_")].
  *
- * The leading `_ОЛ_` is a valid italic span. The fix for issue #30595 does
- * not affect inputs that BEGIN with `_` inside bold — those always were and
- * remain italic. No grammar change is needed.
+ * No grammar change is needed. The #30595 fix is not involved — removing it
+ * would only make the remaining `1.2_2_00_ЭС_` content produce spurious italic
+ * nodes, as in the original bug.
  *
  * This test documents ACTUAL behavior. The assertion reflects what the parser
  * produces, not an aspirational output.
  */
 describe('PR review finding 3 — leading underscore in bold (correct behavior)', () => {
 	it('*_ОЛ_1.2_2_00_ЭС_* — _ОЛ_ is italic; remaining underscores are plain', () => {
-		// "_ОЛ_" is a valid italic span at the start of bold content.
-		// The issue #30595 fix ensures "1.2_2_00_ЭС_" is all plain (guard fires
-		// for each segment). This is correct and expected behavior.
+		// ItalicPlainRun excludes `_`, so the first internal `_` (after "ОЛ")
+		// closes the italic span. The reviewer's expected AST — a single italic
+		// node spanning "ОЛ_1.2_2_00_ЭС" — is unreachable: ItalicContent cannot
+		// cross an internal underscore. The remaining "1.2_2_00_ЭС_" is correctly
+		// plain thanks to the #30595 guard firing for each segment.
 		expect(parse('*_ОЛ_1.2_2_00_ЭС_*', { emoticons: false })).toEqual([
 			paragraph([
 				bold([
