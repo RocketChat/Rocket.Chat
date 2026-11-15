@@ -8,7 +8,7 @@
  *
  * Fix (one-line change to `src/grammar.pegjs`, Italic alt 1):
  *   Before: value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
- *   After:  value:$(AlphaNumericChar MarkChar* (AlphaNumericChar MarkChar* / [.] AlphaNumericChar / [\-] DecimalNumberChar)* [\x5F] [\x5F]?)
+ *   After:  value:$(AlphaNumericChar MarkChar* (AlphaNumericChar MarkChar* / [.] AlphaNumericChar MarkChar* / [\-] DecimalNumberChar)* [\x5F] [\x5F]?)
  *             { return plain(value); }
  *
  * The fix extends the intra-word underscore guard from ASCII-only [a-zA-Z0-9]
@@ -477,7 +477,7 @@ describe('edge case J — combining mark after separator-consumed character', ()
 		]);
 	});
 
-	it('*v1.e\u0301_text_* — combining mark after dot-separator; nested italic NOT suppressed incorrectly', () => {
+	it('*v1.e\u0301_text_* — combining mark after dot-separator; underscores stay plain', () => {
 		// Guard fires for "v1.e\u0301_", returning plain. Remaining "text_*":
 		// "text" via BoldPlainRun, "_" via AnyBold (no closing "_"). All plain.
 		expect(parse('*v1.e\u0301_text_*', { emoticons: false })).toEqual([
