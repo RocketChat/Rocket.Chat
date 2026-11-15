@@ -3,7 +3,7 @@ import { ButtonGroup } from '@rocket.chat/fuselage';
 import { useRef } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type HeaderToolbarProps = ComponentPropsWithoutRef<typeof ButtonGroup>;
+export type HeaderToolbarProps = ComponentPropsWithoutRef<typeof ButtonGroup>;
 
 const HeaderToolbar = (props: HeaderToolbarProps) => {
 	const ref = useRef(null);

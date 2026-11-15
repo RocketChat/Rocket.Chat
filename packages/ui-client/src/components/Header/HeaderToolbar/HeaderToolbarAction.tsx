@@ -2,7 +2,7 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
 
-type HeaderToolbarActionProps = ComponentPropsWithoutRef<typeof IconButton> & {
+export type HeaderToolbarActionProps = ComponentPropsWithoutRef<typeof IconButton> & {
 	tooltip?: string;
 };
 

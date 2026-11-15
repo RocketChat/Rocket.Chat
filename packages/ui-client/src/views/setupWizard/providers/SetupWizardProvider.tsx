@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import {
 	useToastMessageDispatch,
@@ -6,13 +6,12 @@ import {
 	useLoginWithPassword,
 	useSettingSetValue,
 	useSettingsDispatch,
-	useMethod,
 	useEndpoint,
-	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ContextType } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useInvalidateLicense } from '../../../hooks';
 import { clientCallbacks } from '../../../lib';
@@ -37,9 +36,13 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
-const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+export type SetupWizardProviderProps = {
+	children: ReactNode;
+};
+
+const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const invalidateLicenseQuery = useInvalidateLicense();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { isSuccess, data } = useParameters();
@@ -47,8 +50,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const dispatchSettings = useSettingsDispatch();
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
-	const registerUser = useMethod('registerUser');
-	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
+	const registerUser = useEndpoint('POST', '/v1/users.register');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
@@ -80,7 +82,13 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			email: string;
 			password: string;
 		}): Promise<void> => {
-			await registerUser({ name: fullname, username, email, pass: password });
+			try {
+				await registerUser({ name: fullname, username, email, pass: password });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				throw error;
+			}
+
 			void clientCallbacks.run('userRegistered', {});
 
 			try {
@@ -98,11 +106,10 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 			setForceLogin(false);
 
-			await setBasicInfo({ data: { username } });
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 			void clientCallbacks.run('usernameSet', {});
 		},
-		[registerUser, setForceLogin, setBasicInfo, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
+		[registerUser, setForceLogin, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
 	const saveAgreementData = useCallback(
@@ -163,7 +170,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const queryClient = useQueryClient();
 
-	const registerServer: HandleRegisterServer = useEffectEvent(
+	const registerServer: HandleRegisterServer = useStableCallback(
 		async ({ email, resend = false }: { email: string; resend?: boolean }): Promise<void> => {
 			try {
 				const { intentData } = await createRegistrationIntent({ resend, email });
@@ -183,7 +190,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		},
 	);
 
-	const completeSetupWizard = useEffectEvent(async (): Promise<void> => {
+	const completeSetupWizard = useStableCallback(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
 	});

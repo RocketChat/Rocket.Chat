@@ -1,4 +1,4 @@
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export function isFederationEnabled(): boolean {
 	return settings.get<boolean>('Federation_Service_Enabled');

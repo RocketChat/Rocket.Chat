@@ -1,5 +1,5 @@
 import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import {
 	GenericTable,
@@ -37,37 +37,41 @@ const results = Array.from({ length: 10 }, (_, i) => ({
 
 const filter = (
 	<>
-		<Box mb={16} is='form' display='flex' flexDirection='column'>
-			<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20' />} />
+		<Box marginBlock={16} is='form' display='flex' flexDirection='column'>
+			<TextInput flexShrink={0} placeholder='Search...' endAddon={<Icon name='magnifier' size='x20' />} />
 		</Box>
 	</>
 );
 
-export const Default: StoryFn<typeof GenericTable> = () => (
-	<>
-		{filter}
-		<GenericTable>
-			<GenericTableHeader>{headers}</GenericTableHeader>
-			<GenericTableBody>
-				{results?.map(({ _id, name, email }: any) => (
-					<GenericTableRow key={_id}>
-						<GenericTableCell>{name}</GenericTableCell>
-						<GenericTableCell>{email}</GenericTableCell>
-					</GenericTableRow>
-				))}
-			</GenericTableBody>
-		</GenericTable>
-	</>
-);
+export const Default: StoryObj<typeof GenericTable> = {
+	render: () => (
+		<>
+			{filter}
+			<GenericTable>
+				<GenericTableHeader>{headers}</GenericTableHeader>
+				<GenericTableBody>
+					{results?.map(({ _id, name, email }: any) => (
+						<GenericTableRow key={_id}>
+							<GenericTableCell>{name}</GenericTableCell>
+							<GenericTableCell>{email}</GenericTableCell>
+						</GenericTableRow>
+					))}
+				</GenericTableBody>
+			</GenericTable>
+		</>
+	),
+};
 
-export const Loading: StoryFn<typeof GenericTable> = () => (
-	<>
-		{filter}
-		<GenericTable>
-			<GenericTableHeader>{headers}</GenericTableHeader>
-			<GenericTableBody>
-				<GenericTableLoadingTable headerCells={2} />
-			</GenericTableBody>
-		</GenericTable>
-	</>
-);
+export const Loading: StoryObj<typeof GenericTable> = {
+	render: () => (
+		<>
+			{filter}
+			<GenericTable>
+				<GenericTableHeader>{headers}</GenericTableHeader>
+				<GenericTableBody>
+					<GenericTableLoadingTable headerCells={2} />
+				</GenericTableBody>
+			</GenericTable>
+		</>
+	),
+};

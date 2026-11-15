@@ -1,10 +1,10 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { type LocationPathname, UserContext, useLoginWithCustomOauth, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect } from 'react';
 
-import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { AccountBox } from '../../../lib/AccountBox';
 import { baseURI } from '../../../lib/baseURI';
 import { loginServices } from '../../../lib/loginServices';
 import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
@@ -17,6 +17,7 @@ export const useIframeCommands = () => {
 	const loginWithToken = useLoginWithToken();
 	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
 		if (!iframeReceiveEnabled) {
@@ -50,6 +51,21 @@ export const useIframeCommands = () => {
 			},
 
 			'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
+				if (enableModernOAuthFlow) {
+					const url = new URL(window.location.href);
+					const queryParams = url.searchParams;
+					const loginClient = queryParams.get('loginClient');
+
+					const redirectUrl = new URL(`/oauth/${data.service}`, window.location.origin);
+
+					if (loginClient) {
+						redirectUrl.searchParams.set('loginClient', loginClient);
+					}
+
+					window.location.href = redirectUrl.toString();
+					return;
+				}
+
 				const customOAuthCallback = (response: unknown) => {
 					event.source?.postMessage(
 						{
@@ -65,7 +81,7 @@ export const useIframeCommands = () => {
 					data.redirectUrl = null;
 				}
 
-				if (typeof data.service === 'string' && window.ServiceConfiguration) {
+				if (window.ServiceConfiguration) {
 					const customOauth = loginServices.getLoginService(data.service);
 
 					if (customOauth) {
@@ -117,5 +133,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, enableModernOAuthFlow]);
 };

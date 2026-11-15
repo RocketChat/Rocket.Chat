@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
@@ -23,7 +22,7 @@ const getLimits = ({ max, current }: { max: number; current: number }) => {
 	};
 };
 
-const ActiveSessionsCard = (): ReactElement => {
+const ActiveSessionsCard = () => {
 	const { t } = useTranslation();
 	const result = useActiveConnections();
 
@@ -59,7 +58,7 @@ const ActiveSessionsCard = (): ReactElement => {
 		>
 			<FeatureUsageCardBody justifyContent='flex-start'>
 				<Box color='font-secondary-info' textAlign='center'>
-					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} marginBlockEnd={12}>
 						{used} / {total}
 					</Box>
 					{available} {t('ActiveSessions_available')}

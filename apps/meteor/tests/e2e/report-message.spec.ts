@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { AdminModeration, HomeChannel } from './page-objects';
 import { ReportMessageModal } from './page-objects/fragments';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
@@ -108,7 +108,7 @@ test.describe.serial('report message', () => {
 		});
 
 		await test.step('verify report in moderation console', async () => {
-			await adminPage.goto('/admin/moderation/messages');
+			await new AdminModeration(adminPage).gotoMessages();
 
 			await expect(adminPage.getByRole('tab', { name: 'Reported messages' })).toBeVisible();
 			const reportedUserLink = adminPage.getByRole('table').getByRole('link', { name: 'user1' });

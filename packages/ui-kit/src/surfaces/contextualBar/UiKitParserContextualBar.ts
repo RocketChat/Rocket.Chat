@@ -1,16 +1,24 @@
-import type { ActionsBlock } from '../../blocks/layout/ActionsBlock';
-import type { ContextBlock } from '../../blocks/layout/ContextBlock';
-import type { DividerBlock } from '../../blocks/layout/DividerBlock';
-import type { ImageBlock } from '../../blocks/layout/ImageBlock';
-import type { InputBlock } from '../../blocks/layout/InputBlock';
-import type { SectionBlock } from '../../blocks/layout/SectionBlock';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock';
 import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 
-type ContextualBarSurfaceLayoutBlock = ActionsBlock | ContextBlock | DividerBlock | ImageBlock | InputBlock | SectionBlock;
+/** Layout blocks a contextual bar accepts; every contextual bar renderer must allow exactly these. */
+export const contextualBarSurfaceLayoutBlockTypes = [
+	'actions',
+	'callout',
+	'context',
+	'divider',
+	'image',
+	'input',
+	'preview',
+	'section',
+	'tab_navigation',
+] as const satisfies readonly RenderableLayoutBlock['type'][];
+
+type ContextualBarSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof contextualBarSurfaceLayoutBlockTypes)[number] }>;
 
 export abstract class UiKitParserContextualBar<OutputElement> extends SurfaceRenderer<OutputElement, ContextualBarSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section']);
+		super(contextualBarSurfaceLayoutBlockTypes);
 	}
 }
 

@@ -59,6 +59,7 @@ export type { BlockRenderers } from './rendering/BlockRenderers';
 export type { RenderableLayoutBlock } from './blocks/RenderableLayoutBlock';
 
 export { SurfaceRenderer } from './rendering/SurfaceRenderer';
+export { isSafeUrl } from './rendering/isSafeUrl';
 export type { ActionableElement } from './blocks/ActionableElement';
 export type { ActionOf } from './rendering/ActionOf';
 

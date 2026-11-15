@@ -1,6 +1,7 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { endOfDay, subDays } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { subDays } from 'date-fns/subDays';
 
 type UseHourlyChatActivityOptions = {
 	displacement: number;

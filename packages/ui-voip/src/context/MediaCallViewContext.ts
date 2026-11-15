@@ -12,6 +12,7 @@ export type MediaCallStreams = {
 
 type MediaCallViewContextValue = {
 	sessionState: SessionState;
+	targetPeer?: PeerInfo;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
 	onHold: () => void;
@@ -23,16 +24,18 @@ type MediaCallViewContextValue = {
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
+	onOpenPopout: () => void;
+	onClosePopout: () => void;
 	streams: MediaCallStreams;
 	widgetPositionTracker?: {
 		onChangePosition: (position: LastKnownPosition | null) => void;
-		getRestorePosition: () => LastKnownPosition | null;
+		lastKnownPosition: LastKnownPosition | null;
 	};
 };
 
-const defaultSessionState: SessionState = {
-	state: 'closed',
-	connectionState: 'CONNECTED',
+export const defaultSessionState: SessionState = {
+	state: 'none',
+	connectionState: 'CONNECTING',
 	peerInfo: undefined,
 	transferredBy: undefined,
 	hidden: false,
@@ -41,11 +44,14 @@ const defaultSessionState: SessionState = {
 	remoteMuted: false,
 	remoteHeld: false,
 	callId: undefined,
+	startedAt: undefined,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	confirmed: false,
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
+	targetPeer: undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
 	onDeviceChange: () => undefined,
@@ -56,6 +62,8 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onAccept: () => Promise.resolve(undefined),
 	onSelectPeer: () => undefined,
 	onToggleScreenSharing: () => undefined,
+	onOpenPopout: () => undefined,
+	onClosePopout: () => undefined,
 	streams: {},
 };
 

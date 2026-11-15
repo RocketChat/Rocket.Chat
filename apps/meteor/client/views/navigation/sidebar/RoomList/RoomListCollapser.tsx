@@ -1,12 +1,12 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import { Badge, SidebarCollapseGroup } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type RoomListCollapserProps = {
+export type RoomListCollapserProps = {
 	group: AllGroupsKeys;
 	groupTitle: string;
 	collapsedGroups: string[];
@@ -20,7 +20,7 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
 	return (
-		<SidebarV2CollapseGroup
+		<SidebarCollapseGroup
 			title={t(groupTitle)}
 			expanded={!collapsedGroups.includes(group)}
 			badge={

@@ -8,7 +8,6 @@ import {
 	ContextualbarSkeleton,
 } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +21,7 @@ interface IGameCenterListProps {
 	isLoading: boolean;
 }
 
-const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGameCenterListProps): ReactElement => {
+const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGameCenterListProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

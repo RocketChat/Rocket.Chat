@@ -1,30 +1,30 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import {
-	ContextualbarHeader,
 	ContextualbarBack,
-	ContextualbarIcon,
-	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	UserCardRole,
+	UserInfo,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
-import { UserCardRole } from '../../../../components/UserCard';
-import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
-type UserInfoWithDataProps = {
+export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
@@ -33,7 +33,7 @@ type UserInfoWithDataProps = {
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -57,7 +57,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			name,
 			username,
 			roles = [],
-			statusText,
 			bio,
 			utcOffset,
 			lastLogin,
@@ -67,6 +66,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
+			federated,
 		} = data.user;
 
 		return {
@@ -87,18 +87,18 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			utcOffset,
 			createdAt,
 			status: <ReactiveUserStatus uid={_id} />,
-			statusText,
+			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			federated,
 		};
 	}, [data, getRoles]);
 
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				{!onClickBack && <ContextualbarIcon name='user' />}
-				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='user' />}
+				<ContextualbarTitle>{t('Full_profile')}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 
@@ -109,7 +109,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			)}
 
 			{isError && !user && (
-				<ContextualbarContent pb={16}>
+				<ContextualbarContent paddingBlock={16}>
 					<Callout type='danger'>{t('User_not_found')}</Callout>
 				</ContextualbarContent>
 			)}

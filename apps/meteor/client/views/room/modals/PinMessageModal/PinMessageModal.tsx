@@ -2,14 +2,14 @@ import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings
 import { Box } from '@rocket.chat/fuselage';
 import { useUserDisplayName, GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 
-type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
+export type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
 
-const PinMessageModal = ({ message, ...props }: PinMessageModalProps): ReactElement => {
+const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 	const t = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const displayName = useUserDisplayName(message.u);
@@ -27,13 +27,13 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps): ReactElem
 
 	return (
 		<GenericModal icon='pin' title={t('Pin_Message')} variant='warning' confirmText={t('Yes_pin_message')} {...props}>
-			<Box mbe={16} is='p'>
+			<Box marginBlockEnd={16} is='p'>
 				{t('Are_you_sure_you_want_to_pin_this_message')}
 			</Box>
 			<AttachmentProvider>
 				<QuoteAttachment attachment={attachment} />
 			</AttachmentProvider>
-			<Box is='p' fontScale='c1' mbs={16}>
+			<Box is='p' fontScale='c1' marginBlockStart={16}>
 				{t('Pinned_messages_are_visible_to_everyone')}
 			</Box>
 			<Box is='p' fontScale='c1'>

@@ -1,7 +1,7 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 import { createRef } from 'preact';
+import { action } from 'storybook/actions';
 
 import { FilesDropTarget } from '.';
 import { Button } from '../Button';
@@ -23,7 +23,6 @@ const DummyContent = () => (
 );
 
 export default {
-	title: 'Components/FilesDropTarget',
 	component: FilesDropTarget,
 	args: {
 		overlayed: false,
@@ -35,60 +34,67 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
+	render: (args) => (
+		<FilesDropTarget {...args}>
+			<DummyContent />
+		</FilesDropTarget>
+	),
 } satisfies Meta<ComponentProps<typeof FilesDropTarget>>;
 
-const Template: StoryFn<ComponentProps<typeof FilesDropTarget>> = (args) => (
-	<FilesDropTarget {...args}>
-		<DummyContent />
-	</FilesDropTarget>
-);
+type Story = StoryObj<ComponentProps<typeof FilesDropTarget>>;
 
-export const Default = Template.bind({});
-Default.storyName = 'default';
-Default.args = {};
-
-export const Overlayed = Template.bind({});
-Overlayed.storyName = 'overlayed';
-Overlayed.args = {
-	overlayed: true,
+export const Default: Story = {
+	name: 'default',
+	args: {},
 };
 
-export const OverlayedWithText = Template.bind({});
-OverlayedWithText.storyName = 'overlayed with text';
-OverlayedWithText.args = {
-	overlayed: true,
-	overlayText: 'You can release your files now',
+export const Overlayed: Story = {
+	name: 'overlayed',
+	args: {
+		overlayed: true,
+	},
 };
 
-export const AcceptingOnlyImages = Template.bind({});
-AcceptingOnlyImages.storyName = 'accepting only images';
-AcceptingOnlyImages.args = {
-	accept: 'image/*',
+export const OverlayedWithText: Story = {
+	name: 'overlayed with text',
+	args: {
+		overlayed: true,
+		overlayText: 'You can release your files now',
+	},
 };
 
-export const AcceptingMultipleFiles = Template.bind({});
-AcceptingMultipleFiles.storyName = 'accepting multiple files';
-AcceptingMultipleFiles.args = {
-	multiple: true,
+export const AcceptingOnlyImages: Story = {
+	name: 'accepting only images',
+	args: {
+		accept: 'image/*',
+	},
 };
 
-export const TriggeringBrowseAction = Template.bind({});
-TriggeringBrowseAction.storyName = 'triggering browse action';
+export const AcceptingMultipleFiles: Story = {
+	name: 'accepting multiple files',
+	args: {
+		multiple: true,
+	},
+};
+
 const inputRef = createRef();
-TriggeringBrowseAction.args = {
-	children: (
-		<div
-			style={{
-				display: 'flex',
-				width: '100vw',
-				height: '100vh',
-				alignItems: 'center',
-				justifyContent: 'center',
-				flexDirection: 'column',
-			}}
-		>
-			<Button onClick={() => inputRef.current.browse()}>Browse</Button>
-		</div>
-	),
-	inputRef,
+export const TriggeringBrowseAction: Story = {
+	name: 'triggering browse action',
+	args: {
+		children: (
+			<div
+				style={{
+					display: 'flex',
+					width: '100vw',
+					height: '100vh',
+					alignItems: 'center',
+					justifyContent: 'center',
+					flexDirection: 'column',
+				}}
+			>
+				<Button onClick={() => inputRef.current.browse()}>Browse</Button>
+			</div>
+		),
+		inputRef,
+	},
 };

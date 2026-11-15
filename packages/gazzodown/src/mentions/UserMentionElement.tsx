@@ -1,25 +1,25 @@
 import { MessageHighlight } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type UserMentionElementProps = {
+export type UserMentionElementProps = {
 	mention: string;
 };
 
 const handleUserMention = (mention: string | undefined, withSymbol: boolean | undefined): string | undefined =>
 	withSymbol ? `@${mention}` : mention;
 
-const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
+const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 	const { t } = useTranslation();
-	const { resolveUserMention, onUserMentionClick, ownUserId, useRealName, showMentionSymbol, triggerProps } =
+	const { resolveUserMention, onUserMentionClick, onUserMentionHover, ownUserId, useRealName, showMentionSymbol } =
 		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
+	const handleMouseEnter = useMemo(() => (resolved ? onUserMentionHover?.(resolved) : undefined), [resolved, onUserMentionHover]);
 	const buttonProps = useButtonPattern((e) => handleClick?.(e));
 
 	if (mention === 'all') {
@@ -47,8 +47,8 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
-			{...buttonProps}
-			{...triggerProps}
+			{...(handleClick && buttonProps)}
+			onMouseEnter={handleMouseEnter}
 			data-uid={resolved._id}
 		>
 			{handleUserMention((useRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}

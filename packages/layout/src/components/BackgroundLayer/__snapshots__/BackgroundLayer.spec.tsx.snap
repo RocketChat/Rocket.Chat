@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders SystemDarkMode without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-css-e3hvet"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-tile--elevation-1 rcx-tile rcx-css-4jy2w6"
+      >
+        An example tile
+      </div>
+    </div>
+  </div>
+</body>
+`;

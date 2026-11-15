@@ -1,10 +1,12 @@
 import { Buffer } from 'node:buffer';
 
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 import type { PDFFile } from '../../../types/ChatTranscriptData';
+
+const { fontScale } = typography;
 
 const styles = StyleSheet.create({
 	container: {
@@ -15,7 +17,7 @@ const styles = StyleSheet.create({
 		color: colors.n700,
 		marginBottom: 16,
 		flexDirection: 'column',
-		fontSize: fontScales.c1.fontSize,
+		fontSize: fontScale.c1.fontSize,
 		width: '100%',
 	},
 	fileName: {
@@ -38,7 +40,9 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const Files = ({ files, invalidMessage }: { files: PDFFile[]; invalidMessage: string }) => (
+export type FilesProps = { files: PDFFile[]; invalidMessage: string };
+
+export const Files = ({ files, invalidMessage }: FilesProps) => (
 	<View style={styles.container}>
 		{files?.map((file, index) => (
 			<View style={styles.file} key={index} wrap>

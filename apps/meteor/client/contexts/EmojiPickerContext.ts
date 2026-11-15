@@ -1,6 +1,6 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 
-import type { EmojiPickerItem, CategoriesIndexes } from '../../app/emoji/client';
+import type { EmojiPickerItem, CategoriesIndexes } from '../lib/emoji';
 
 type EmojiPickerContextValue = {
 	open: (ref: Element, callback: (emoji: string) => void) => void;
@@ -33,11 +33,13 @@ const useEmojiPickerContext = (): EmojiPickerContextValue => {
 	return context;
 };
 
-export const useEmojiPicker = () => ({
-	open: useEmojiPickerContext().open,
-	isOpen: useEmojiPickerContext().isOpen,
-	close: useEmojiPickerContext().close,
-});
+export const useEmojiPicker = () => {
+	const { open, isOpen, close } = useEmojiPickerContext();
+	// Stable identity: consumers (e.g. ChatAPI.emojiPicker) use this as a memo
+	// dependency, so returning a fresh object each render invalidates them and
+	// cascades re-renders across the whole message list.
+	return useMemo(() => ({ open, isOpen, close }), [open, isOpen, close]);
+};
 
 export const usePreviewEmoji = () => ({
 	emojiToPreview: useEmojiPickerContext().emojiToPreview,

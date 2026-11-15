@@ -1,13 +1,12 @@
 import { Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
-import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 
-type InstancesModalProps = {
+export type InstancesModalProps = {
 	instances: IInstance[];
 	onClose: () => void;
 };

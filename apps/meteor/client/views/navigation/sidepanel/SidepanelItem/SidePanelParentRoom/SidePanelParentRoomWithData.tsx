@@ -2,7 +2,9 @@ import { useUserSubscription } from '@rocket.chat/ui-contexts';
 
 import SidePanelParentRoom from './SidePanelParentRoom';
 
-const SidePanelParentRoomWithData = ({ prid }: { prid: string }) => {
+export type SidePanelParentRoomWithDataProps = { prid: string };
+
+const SidePanelParentRoomWithData = ({ prid }: SidePanelParentRoomWithDataProps) => {
 	const subscription = useUserSubscription(prid);
 
 	if (!subscription) {

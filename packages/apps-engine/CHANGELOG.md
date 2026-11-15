@@ -1,5 +1,75 @@
 # @rocket.chat/apps-engine
 
+## 1.67.0-rc.0
+
+### Minor Changes
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#42229](https://github.com/RocketChat/Rocket.Chat/pull/42229)) Adds a read-only call history accessor for apps. An app that declares the new `media-call.history` permission can read a user's call history through `read.getCallHistoryReader()`, which exposes `getById`, `getByCallId` and a paginated `search`.
+
+## 1.66.0
+
+### Minor Changes
+
+- ([#41765](https://github.com/RocketChat/Rocket.Chat/pull/41765)) Accepts a role name in the `when.hasOneRole` and `when.hasAllRoles` filters of an app action button
+
+## 1.66.0-rc.0
+
+### Minor Changes
+
+- ([#41765](https://github.com/RocketChat/Rocket.Chat/pull/41765)) Accepts a role name in the `when.hasOneRole` and `when.hasAllRoles` filters of an app action button
+
+## 1.65.1
+
+### Patch Changes
+
+- ([#41304](https://github.com/RocketChat/Rocket.Chat/pull/41304)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+
+## 1.64.1-rc.0
+
+### Patch Changes
+
+- ([#41304](https://github.com/RocketChat/Rocket.Chat/pull/41304)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+
+## 1.64.1
+
+### Patch Changes
+
+- ([#41308](https://github.com/RocketChat/Rocket.Chat/pull/41308) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+
+## 1.64.0
+
+### Minor Changes
+
+- ([#40791](https://github.com/RocketChat/Rocket.Chat/pull/40791)) Exposes the `isFederated` and `federation` fields for room and user objects in apps
+
+## 1.64.0-rc.0
+
+### Minor Changes
+
+- ([#40791](https://github.com/RocketChat/Rocket.Chat/pull/40791)) Exposes the `isFederated` and `federation` fields for room and user objects in apps
+
+## 1.63.0
+
+### Minor Changes
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Remove files that weren't accessible to apps at development time
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40604](https://github.com/RocketChat/Rocket.Chat/pull/40604)) Adds the capability for fetching a user by their sip extension to the apps
+
+## 1.63.0-rc.0
+
+### Minor Changes
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Remove files that weren't accessible to apps at development time
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40604](https://github.com/RocketChat/Rocket.Chat/pull/40604)) Adds the capability for fetching a user by their sip extension to the apps
+
 ## 1.62.0
 
 ### Minor Changes

@@ -1,9 +1,12 @@
 import type { IUserDataFile } from '@rocket.chat/core-typings';
-import type { FindOptions, InsertOneResult, WithId } from 'mongodb';
+import type { Document } from 'mongodb';
 
 import type { IBaseUploadsModel } from './IBaseUploadsModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IUserDataFilesModel extends IBaseUploadsModel<IUserDataFile> {
-	findLastFileByUser(userId: string, options?: FindOptions<IUserDataFile>): Promise<IUserDataFile | null>;
-	create(data: IUserDataFile): Promise<InsertOneResult<WithId<IUserDataFile>>>;
+	findLastFileByUser<T extends Document = IUserDataFile, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 }

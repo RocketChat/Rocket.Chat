@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'react';
 
 import { useOmnichannelLivechatToggle } from './hooks/useOmnichannelLivechatToggle';
 
-type NavBarItemOmnichannelLivechatToggleProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemOmnichannelLivechatToggleProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemOmnichannelLivechatToggle = (props: NavBarItemOmnichannelLivechatToggleProps) => {
 	const { handleAvailableStatusChange, title, icon, isSuccess } = useOmnichannelLivechatToggle();

@@ -1,0 +1,68 @@
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Messages, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+
+import { canAccessRoomAsync } from '../../lib/authorization';
+import { callbacks } from '../../lib/callbacks';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { readThread } from '../../lib/messaging/threads/functions';
+import { settings } from '../../settings';
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getThreadMessages(params: { tmid: IMessage['_id']; limit?: number; skip?: number }): Promise<IMessage[]>;
+	}
+}
+
+const MAX_LIMIT = 100;
+
+Meteor.methods<ServerMethods>({
+	async getThreadMessages({ tmid, limit, skip }) {
+		methodDeprecationLogger.method('getThreadMessages', '9.0.0', '/v1/chat.getThreadMessages');
+
+		if ((limit ?? 0) > MAX_LIMIT) {
+			throw new Meteor.Error('error-not-allowed', `max limit: ${MAX_LIMIT}`, {
+				method: 'getThreadMessages',
+			});
+		}
+
+		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', {
+				method: 'getThreadMessages',
+			});
+		}
+
+		if (typeof tmid !== 'string') {
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'getThreadMessages' });
+		}
+
+		const thread = await Messages.findOneById(tmid);
+		if (!thread) {
+			return [];
+		}
+
+		const user = await Meteor.userAsync();
+		const room = await Rooms.findOneById(thread.rid);
+
+		if (!user || !room || !(await canAccessRoomAsync(room, user))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
+		}
+
+		if (!thread.tcount) {
+			return [];
+		}
+
+		await callbacks.run('beforeReadMessages', thread.rid, user._id);
+		await readThread({ user: user as IUser, room, tmid: thread._id });
+
+		const result = await Messages.findVisibleThreadByThreadId(thread._id, {
+			...(skip && { skip }),
+			...(limit && { limit }),
+			sort: { ts: -1 },
+		}).toArray();
+
+		return [thread, ...result];
+	},
+});

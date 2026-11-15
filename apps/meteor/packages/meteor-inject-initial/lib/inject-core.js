@@ -45,6 +45,8 @@ Inject.appUrl = function (url) {
 	// Avoid serving app HTML for declared routes such as /sockjs/.
 	if (typeof RoutePolicy !== 'undefined' && RoutePolicy.classify(url)) return false;
 
+	if (url === '/voice-call-popup.html') return false;
+
 	// we currently return app HTML on all URLs by default
 	return true;
 };

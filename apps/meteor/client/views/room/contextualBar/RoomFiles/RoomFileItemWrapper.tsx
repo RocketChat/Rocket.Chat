@@ -11,7 +11,7 @@ const customClass = css`
 	}
 `;
 
-type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
+export type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
 
 const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 	{ item, ...props }: RoomFileItemWrapperProps,
@@ -23,9 +23,9 @@ const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 			role='listitem'
 			aria-label={item.name}
 			display='flex'
-			pb={12}
-			pi={24}
-			borderRadius={4}
+			paddingBlock={12}
+			paddingInline={24}
+			borderRadius='medium'
 			className={customClass}
 			{...props}
 		/>

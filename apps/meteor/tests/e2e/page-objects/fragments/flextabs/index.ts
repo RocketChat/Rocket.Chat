@@ -1,3 +1,4 @@
+export * from './auto-translate-flextab';
 export * from './admin-flextab-emoji';
 export * from './admin-edit-room-flextab';
 export * from './channels-flextab';

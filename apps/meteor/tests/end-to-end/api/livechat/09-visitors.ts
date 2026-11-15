@@ -11,6 +11,7 @@ import {
 	createAgent,
 	createLivechatRoom,
 	createVisitor,
+	deleteVisitor,
 	startANewLivechatRoomAndTakeIt,
 	closeOmnichannelRoom,
 	createVisitorWithCustomData,
@@ -671,6 +672,35 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body).to.have.property('count');
 				});
 		});
+		describe('token disclosure', () => {
+			let visitor: ILivechatVisitor;
+			let room: IOmnichannelRoom;
+			before(async () => {
+				await updatePermission('view-l-room', ['admin']);
+				visitor = await createVisitor();
+				room = await createLivechatRoom(visitor.token);
+				await sendMessage(room._id, 'hello from visitor', visitor.token);
+			});
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
+
+			it('should not expose the visitor session token in the room documents', async () => {
+				await request
+					.get(api(`livechat/visitors.chatHistory/room/${room._id}/visitor/${visitor._id}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.history).to.be.an('array').with.lengthOf.at.least(1);
+						expect(res.body.history[0]).to.have.property('v');
+						expect(res.body.history[0].v).to.not.have.property('token');
+						expect(res.body.history[0].lastMessage).to.not.have.property('token');
+						expect(JSON.stringify(res.body)).to.not.include(visitor.token);
+					});
+			});
+		});
 	});
 
 	describe('livechat/visitor/:token', () => {
@@ -1102,6 +1132,35 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.history.filter((chat: any) => !chat.closedAt).length === 1).to.be.true;
 			expect(body.total).to.be.equal(3);
 		});
+		describe('token disclosure', () => {
+			let visitor: ILivechatVisitor;
+			let roomId: string;
+			before(async () => {
+				await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
+				await createAgent();
+				const started = await startANewLivechatRoomAndTakeIt();
+				roomId = started.room._id;
+				visitor = started.visitor;
+			});
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
+
+			it('should not expose the visitor session token in the room documents', async () => {
+				await request
+					.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=true`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.history).to.be.an('array').with.lengthOf.at.least(1);
+						expect(res.body.history[0]).to.have.property('v');
+						expect(res.body.history[0].v).to.not.have.property('token');
+						expect(JSON.stringify(res.body)).to.not.include(visitor.token);
+					});
+			});
+		});
 	});
 
 	describe('livechat/visitor.status', () => {
@@ -1285,6 +1344,31 @@ describe('LIVECHAT - visitors', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.contact).to.be.null;
 		});
+		describe('token disclosure', () => {
+			let visitor: ILivechatVisitor;
+			before(async () => {
+				visitor = await createVisitor();
+			});
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
+
+			it('should not expose the visitor session token in the response', async () => {
+				await request
+					.get(api('omnichannel/contact.search'))
+					.query({ email: visitor.visitorEmails?.[0].address })
+					.set(credentials)
+					.send()
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact._id).to.be.equal(visitor._id);
+						expect(res.body.contact).to.not.have.property('token');
+					});
+			});
+		});
 	});
 
 	describe('livechat/visitors.search', () => {
@@ -1447,6 +1531,31 @@ describe('LIVECHAT - visitors', () => {
 			contact = await getLivechatVisitorByToken(contact.token);
 			expect(contact).to.have.property('livechatData');
 			expect(contact.livechatData).to.have.property(cfName, 'test');
+		});
+		describe('token disclosure', () => {
+			let visitor: ILivechatVisitor;
+			before(async () => {
+				visitor = await createVisitor();
+			});
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
+
+			it('should not expose the visitor session token in the response', async () => {
+				await request
+					.get(api('omnichannel/contact'))
+					.query({ contactId: visitor._id })
+					.set(credentials)
+					.send()
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact._id).to.be.equal(visitor._id);
+						expect(res.body.contact).to.not.have.property('token');
+					});
+			});
 		});
 	});
 

@@ -1,11 +1,15 @@
 import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { format } from 'date-fns/format';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
 import type { Key } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DateRangePickerProps = {
+export type DateRangePickerProps = {
 	onChange(range: { start: string; end: string }): void;
 	defaultSelectedKey?: 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
 };
@@ -33,7 +37,7 @@ const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: nu
 const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRangePickerProps) => {
 	const { t } = useTranslation();
 
-	const handleRange = useEffectEvent((range: { start: string; end: string }) => {
+	const handleRange = useStableCallback((range: { start: string; end: string }) => {
 		onChange(range);
 	});
 
@@ -48,7 +52,7 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 		].map(([value, label]) => [value, label] as SelectOption);
 	}, [t]);
 
-	const handleOptionClick = useEffectEvent((action: Key) => {
+	const handleOptionClick = useStableCallback((action: Key) => {
 		switch (action) {
 			case 'today':
 				handleRange(getWeekRange(0, 0));

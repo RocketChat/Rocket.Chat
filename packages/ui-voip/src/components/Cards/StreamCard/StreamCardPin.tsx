@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import CardSlotContainer from '../CardSlot';
 import type { SlotPosition } from '../CardSlot';
 
-type CardSlotPinProps = {
+export type CardSlotPinProps = {
 	onClick: () => void;
 	focused?: boolean;
 	position?: SlotPosition;

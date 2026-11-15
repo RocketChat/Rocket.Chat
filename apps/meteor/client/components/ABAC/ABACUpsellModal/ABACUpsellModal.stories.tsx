@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import ABACUpsellModal from './ABACUpsellModal';
 

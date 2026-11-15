@@ -1,7 +1,7 @@
 import './UiKitElementWrapper.scss';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
-const ElementWrapper = (props: ComponentProps<typeof Box>): ReactElement => <Box className='uikit-element-wrapper' {...props} />;
+const ElementWrapper = (props: ComponentProps<typeof Box>) => <Box className='uikit-element-wrapper' {...props} />;
 
 export default ElementWrapper;

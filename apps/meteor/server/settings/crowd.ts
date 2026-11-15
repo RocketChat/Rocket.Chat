@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const crowdIntervalValuesToCronMap: Record<string, string> = {
 	every_10_minutes: '*/10 * * * *',

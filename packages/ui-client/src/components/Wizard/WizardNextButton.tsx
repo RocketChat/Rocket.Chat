@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useWizardContext } from './useWizardContext';
 
-type WizardNextButtonProps = Omit<ComponentPropsWithoutRef<typeof Button>, 'primary' | 'onClick'> & {
+export type WizardNextButtonProps = Omit<ComponentPropsWithoutRef<typeof Button>, 'primary' | 'onClick'> & {
 	manual?: boolean;
 	onClick?(event?: MouseEvent<HTMLElement>): unknown | Promise<unknown>;
 };

@@ -53,5 +53,6 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
+	licenseRequired?: boolean;
 	authRequired?: boolean;
 };

@@ -1,6 +1,5 @@
 import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
@@ -22,7 +21,7 @@ import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOn
 import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
 import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const room = useRoom();
 
 	const canJoinWithoutCode = usePermission('join-without-join-code');

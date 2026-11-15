@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { PageHeader } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
@@ -13,7 +12,9 @@ import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 import UpdateRocketChatButton from './UpdateRocketChatButton';
 
-const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }): ReactElement | null => {
+export type MarketplaceHeaderProps = { title: string; unsupportedVersion: boolean };
+
+const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps) => {
 	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
@@ -43,7 +44,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsup
 
 	return (
 		<PageHeader title={title}>
-			{result.isLoading && <GenericResourceUsageSkeleton mi={16} />}
+			{result.isLoading && <GenericResourceUsageSkeleton marginInline={16} />}
 
 			{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
 				<Margins inline={16}>

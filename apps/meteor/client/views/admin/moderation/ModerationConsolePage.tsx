@@ -10,7 +10,7 @@ import { getPermaLink } from '../../../lib/getPermaLink';
 
 type TabType = 'users' | 'messages';
 
-type ModerationConsolePageProps = {
+export type ModerationConsolePageProps = {
 	tab: TabType;
 	onSelectTab?: (tab: TabType) => void;
 };

@@ -5,6 +5,7 @@ import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 const COUNT = 150;
+const ATTRIBUTE_LIST_STALE_TIME = 15_000;
 
 export const useAttributeList = () => {
 	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
@@ -12,6 +13,7 @@ export const useAttributeList = () => {
 
 	return useQuery({
 		enabled: isABACAvailable,
+		staleTime: ATTRIBUTE_LIST_STALE_TIME,
 		queryKey: ABACQueryKeys.roomAttributes.list(),
 		queryFn: async () => {
 			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });

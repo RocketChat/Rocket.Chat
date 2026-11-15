@@ -1,35 +1,58 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GroupedVirtuoso } from 'react-virtuoso';
+import type { VirtualizerHandle } from 'virtua';
 
+import MoreUnreadsBubble from './MoreUnreadsBubble';
 import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import UserRoomCategoryGroupMenu from './UserRoomCategoryGroupMenu';
+import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
+import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { SIDEBAR_BUILTIN_GROUP_KEYS, useRoomList } from '../hooks/useRoomList';
+import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
+const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
+	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
+	if (direction === 'down') return index + 1 < groups.length;
+	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
+};
+
+type SidebarViewMode = 'extended' | 'medium' | 'condensed';
+
+const sidebarRowHeight: Record<SidebarViewMode, number> = {
+	condensed: 28,
+	medium: 36,
+	extended: 48,
+};
+
+const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
+
 const RoomList = () => {
 	const { t } = useTranslation();
-	const isAnonymous = !useUserId();
+	const userId = useUserId();
+	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
+	const { groups } = useRoomList({ collapsedGroups });
+	const moveCategory = useMoveCategoryPosition();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
-	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
+	const virtualizerRef = useRef<VirtualizerHandle>(null);
+	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
+	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
+	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
 	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
@@ -41,60 +64,67 @@ const RoomList = () => {
 			openedRoom,
 			sidebarViewMode,
 			isAnonymous,
+			userId,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
+		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
 	);
 
-	usePreventDefault(ref);
-	useShortcutOpenMenu(ref);
+	const movableGroups = useMemo(() => groups.filter((group) => !group.userRoomCategory), [groups]);
+	const allGroupKeys = useMemo(() => movableGroups.map((group) => group.key), [movableGroups]);
+
+	const virtualGroups = useMemo(
+		() =>
+			groups.map((group) => ({
+				key: group.key,
+				group,
+				items: group.rooms,
+			})),
+		[groups],
+	);
+
+	const scrollToUnread = (index: number) => {
+		virtualizerRef.current?.scrollToIndex(index, { align: 'center', smooth: true });
+	};
+
+	const preventDefaultRef = usePreventDefault();
+	const shortcutOpenMenuRef = useShortcutOpenMenu();
+	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
-			<VirtualizedScrollbars>
-				<GroupedVirtuoso
-					groupCounts={groupsCount}
-					groupContent={(index) => {
-						const groupTitle = groupsList[index];
-						const isBuiltin = SIDEBAR_BUILTIN_GROUP_KEYS.has(groupTitle);
-						const headerActions = !isAnonymous && !isBuiltin ? <UserRoomCategoryGroupMenu categoryName={groupTitle} /> : undefined;
-						const ariaTitle = isBuiltin ? t(groupTitle) : groupTitle;
-						const displayTitle = headerActions ? (
-							<Box display='flex' alignItems='center' justifyContent='space-between' width='full'>
-								<Box is='span' flexGrow={1} flexShrink={1} style={{ minWidth: 0 }}>
-									{ariaTitle}
-								</Box>
-								<Box
-									is='span'
-									flexGrow={0}
-									flexShrink={0}
-									onClickCapture={(e) => e.stopPropagation()}
-									onMouseDownCapture={(e) => e.stopPropagation()}
-								>
-									{headerActions}
-								</Box>
-							</Box>
-						) : (
-							ariaTitle
-						);
+			<SidebarVirtualList
+				ref={virtualizerRef}
+				groups={virtualGroups}
+				as={RoomListWrapper}
+				bufferSize={bufferSize}
+				onRangeChange={handleRangeChange}
+				getItemKey={(item) => item._id}
+				renderGroup={(group) => {
+					const movableIndex = allGroupKeys.indexOf(group.key);
+					const canMove = movableIndex !== -1;
 
-						return (
-							<RoomListCollapser
-								collapsedGroups={collapsedGroups}
-								onClick={() => handleClick(groupsList[index])}
-								onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-								groupTitle={groupTitle}
-								displayTitle={displayTitle}
-								ariaTitle={ariaTitle}
-								unreadCount={groupedUnreadInfo[index]}
-							/>
-						);
-					}}
-					{...(roomList.length > 0 && {
-						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
-					})}
-					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
-				/>
-			</VirtualizedScrollbars>
+					return (
+						<RoomListCollapser
+							group={group}
+							canMoveUp={canMove && canMoveGroup(movableGroups, movableIndex, 'up')}
+							canMoveDown={canMove && canMoveGroup(movableGroups, movableIndex, 'down')}
+							onMoveUp={() => canMove && moveCategory(allGroupKeys, group.key, 'up')}
+							onMoveDown={() => canMove && moveCategory(allGroupKeys, group.key, 'down')}
+							onClick={() => handleClick(group.key)}
+							onKeyDown={(e) => handleKeyDown(e, group.key)}
+						/>
+					);
+				}}
+				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
+					<RoomListRowWrapper data-index={rowIndex}>
+						<RoomListRow data={itemData} item={item} />
+					</RoomListRowWrapper>
+				)}
+			/>
+			{previousUnread && (
+				<MoreUnreadsBubble direction='up' mention={previousUnread.mention} onClick={() => scrollToUnread(previousUnread.index)} />
+			)}
+			{nextUnread && <MoreUnreadsBubble direction='down' mention={nextUnread.mention} onClick={() => scrollToUnread(nextUnread.index)} />}
 		</Box>
 	);
 };

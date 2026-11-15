@@ -8,9 +8,9 @@ const ScrollableSideBar = () => (
 	<Scrollable vertical>
 		<Box
 			width='100%'
-			mbs='39px'
+			marginBlockStart='39px'
 			borderBlockStart='var(--default-border)'
-			bg='var(--primaryBackgroundColor)'
+			backgroundColor='var(--primaryBackgroundColor)'
 			className={css`
 				box-shadow: var(--dropdown-box-shadow);
 			`}

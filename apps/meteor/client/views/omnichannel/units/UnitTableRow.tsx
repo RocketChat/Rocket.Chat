@@ -1,16 +1,18 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveUnit } from './useRemoveUnit';
 
-const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; visibility: string }) => {
+export type UnitsTableRowProps = { _id: string; name: string; visibility: string };
+
+const UnitsTableRow = ({ _id, name, visibility }: UnitsTableRowProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/units/edit/${id}`));
+	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/units/edit/${id}`));
 	const handleDelete = useRemoveUnit(_id);
 
 	return (

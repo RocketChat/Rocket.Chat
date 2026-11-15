@@ -5,7 +5,7 @@ import { memo, useCallback } from 'preact/compat';
 import DateInput from '../../../Form/DateInput';
 import { usePerformAction } from '../Block';
 
-type DatePickerElementProps = uikit.DatePickerElement;
+export type DatePickerElementProps = uikit.DatePickerElement;
 
 const DatePickerElement = ({ actionId, confirm /* , placeholder */, initialDate /* , parser */ }: DatePickerElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);

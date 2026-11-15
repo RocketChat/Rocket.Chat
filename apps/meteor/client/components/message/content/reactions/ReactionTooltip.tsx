@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 import MarkdownText from '../../../MarkdownText';
 
-type ReactionTooltipProps = {
+export type ReactionTooltipProps = {
 	emojiName: string;
 	usernames: string[];
 	username: string | undefined;

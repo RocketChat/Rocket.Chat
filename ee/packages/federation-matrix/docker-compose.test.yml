@@ -41,7 +41,7 @@ services:
 
   # HomeServer 1 (synapse)
   hs1:
-    image: matrixdotorg/synapse:latest
+    image: matrixdotorg/synapse:v1.160.0
     profiles:
       - test
       - element
@@ -82,6 +82,7 @@ services:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
       dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
+      target: release-standard
     image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
     profiles:
       - test
@@ -102,6 +103,9 @@ services:
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@admin.com
       TEST_MODE: api
+      # keep server sockets alive longer than traefik's 90s idleConnTimeout so
+      # the proxy always closes pooled conns first and never reuses a dead one
+      HTTP_SOCKET_TIMEOUT_MS: 120000
     volumes:
       - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
     networks:

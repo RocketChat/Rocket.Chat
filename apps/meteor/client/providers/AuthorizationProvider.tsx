@@ -3,7 +3,7 @@ import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import { createAuthorizationFunctions } from '../../app/authorization/lib/createAuthorizationFunctions';
+import { createAuthorizationFunctions } from '../../lib/authorization/createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../cachedStores';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
 
@@ -13,7 +13,7 @@ import { Permissions, Roles, Subscriptions, Users } from '../stores';
 // avatar etag changes, etc. — none of which affect any permission answer.
 type AuthorizableUser = Pick<IUser, '_id' | 'roles'>;
 
-type AuthorizationProviderProps = {
+export type AuthorizationProviderProps = {
 	children?: ReactNode;
 };
 

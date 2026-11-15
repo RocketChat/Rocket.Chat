@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useLocalStorage, useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, usePermission, useAtLeastOnePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
@@ -34,15 +34,15 @@ const TeamsChannelsWithData = () => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const handleAddExisting = useEffectEvent(() => {
+	const handleAddExisting = useStableCallback(() => {
 		setModal(<AddExistingModal teamId={teamId} onClose={() => setModal(null)} reload={refetch} />);
 	});
 
-	const handleCreateNew = useEffectEvent(() => {
+	const handleCreateNew = useStableCallback(() => {
 		setModal(<CreateChannelModal teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={refetch} />);
 	});
 
-	const goToRoom = useEffectEvent((room: IRoom) => {
+	const goToRoom = useStableCallback((room: IRoom) => {
 		roomCoordinator.openRouteLink(room.t, room);
 	});
 

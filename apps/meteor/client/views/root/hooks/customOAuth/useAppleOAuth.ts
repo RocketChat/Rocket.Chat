@@ -1,4 +1,4 @@
-import { config } from '../../../../../app/apple/lib/config';
+import { config } from '../../../../../lib/apple/config';
 import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
 /* const Apple =*/ CustomOAuth.configureOAuthService('apple', config);

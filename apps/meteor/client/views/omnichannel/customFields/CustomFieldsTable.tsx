@@ -1,5 +1,5 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -10,6 +10,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import { useMemo, useState } from 'react';
 
 import { useRemoveCustomField } from './useRemoveCustomField';
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 import { links } from '../../../lib/links';
 import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
 
@@ -29,8 +29,8 @@ const CustomFieldsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'_id' | 'label' | 'scope' | 'visibility'>('_id');
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/customfields/new'));
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/customfields/new'));
+	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
 
 	const handleDelete = useRemoveCustomField();
 
@@ -72,7 +72,7 @@ const CustomFieldsTable = () => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60' />
+			<GenericTableHeaderCell key='remove' width='x60' />
 		</>
 	);
 

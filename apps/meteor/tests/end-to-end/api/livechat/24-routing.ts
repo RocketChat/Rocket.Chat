@@ -7,6 +7,7 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, api, credentials } from '../../../data/api-data';
 import {
+	closeOpenRoomsServedBy,
 	createAgent,
 	makeAgentAvailable,
 	createDepartment,
@@ -50,9 +51,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await closeOpenRoomsServedBy(botUser.user._id);
 			await deleteUser(botUser.user);
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 		});
 
@@ -114,8 +116,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await deleteUser(botUser.user);
 			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await closeOpenRoomsServedBy(botUser.user._id);
+			await deleteUser(botUser.user);
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 		});
 
@@ -171,9 +174,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await closeOpenRoomsServedBy(botUser.user._id);
 			await deleteUser(botUser.user);
 			await updateSetting('Livechat_waiting_queue', false);
-			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 		});
 
@@ -272,14 +276,19 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		after(async () =>
-			Promise.all([
+		after(async () => {
+			await Promise.all([
+				closeOpenRoomsServedBy(testUser.user._id),
+				closeOpenRoomsServedBy(testUser2.user._id),
+				closeOpenRoomsServedBy(testUser3.user._id),
+			]);
+			await Promise.all([
 				deleteUser(testUser.user),
 				deleteUser(testUser2.user),
 				deleteUser(testUser3.user),
 				updateSetting('Livechat_enabled_when_agent_idle', true),
-			]),
-		);
+			]);
+		});
 
 		it('should route a room to an available agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
@@ -481,6 +490,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
+			await Promise.all([closeOpenRoomsServedBy(testUser.user._id), closeOpenRoomsServedBy(testUser2.user._id)]);
 			await deleteUser(testUser.user);
 			await deleteUser(testUser2.user);
 		});
@@ -609,6 +619,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
+			await Promise.all([closeOpenRoomsServedBy(testUser.user._id), closeOpenRoomsServedBy(testUser2.user._id)]);
 			await deleteUser(testUser.user);
 			await deleteUser(testUser2.user);
 		});

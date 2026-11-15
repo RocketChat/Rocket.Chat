@@ -3,7 +3,7 @@ import { Box, Button, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isSafeAvatarUrl } from '../../../lib/utils/isSafeAvatarUrl';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
-type UserAvatarEditorProps = {
+export type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
@@ -23,7 +23,7 @@ type UserAvatarEditorProps = {
 	name: IUser['name'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps) {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
@@ -99,7 +99,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
 			{t('Profile_picture')}
-			<Box display='flex' flexDirection='row' mbs={4}>
+			<Box display='flex' flexDirection='row' marginBlockStart={4}>
 				<UserAvatar
 					size='x124'
 					url={url}
@@ -113,20 +113,20 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					}}
 					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
-				<Box display='flex' flexDirection='column' flexGrow='1' mis={4}>
-					<Box display='flex' flexDirection='row' mbs='none'>
-						<Button square disabled={disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+				<Box display='flex' flexDirection='column' flexGrow='1' marginInlineStart={4}>
+					<Box display='flex' flexDirection='row' marginBlockStart='none'>
+						<Button square disabled={disabled} marginInline={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
-						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
+						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} marginInline={4} onClick={clickUpload} />
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Field pis={4} mbs={12}>
+					<Field paddingInlineStart={4} marginBlockStart={12}>
 						<FieldLabel>{t('Use_url_for_avatar')}</FieldLabel>
 						<FieldRow>
 							<TextInput
 								placeholder={t('Use_url_for_avatar')}
-								addon={
+								endAddon={
 									<IconButton
 										icon='permalink'
 										secondary
@@ -134,8 +134,8 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 										disabled={!canAddUrl}
 										title={t('Add_URL')}
 										onClick={handleAddUrl}
-										mb={-4}
-										mie={-4}
+										marginBlock={-4}
+										marginInlineEnd={-4}
 									/>
 								}
 								disabled={disabled}

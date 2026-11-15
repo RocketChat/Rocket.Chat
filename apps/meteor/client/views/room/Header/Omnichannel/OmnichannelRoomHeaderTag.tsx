@@ -10,7 +10,7 @@ const OmnichannelRoomHeaderTag = () => {
 	const { verified } = useOmnichannelRoom();
 
 	return (
-		<Box mis={4} withTruncatedText>
+		<Box marginInlineStart={4} withTruncatedText>
 			<OmnichannelVerificationTag verified={verified} onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)} />
 		</Box>
 	);

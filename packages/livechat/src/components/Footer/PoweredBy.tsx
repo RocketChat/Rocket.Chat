@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 
-type PoweredByProps = {
+export type PoweredByProps = {
 	className?: string;
 };
 

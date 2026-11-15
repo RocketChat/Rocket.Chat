@@ -29,7 +29,7 @@ export class FederationHomeFlextab {
 	}
 
 	get btnAddExistingChannelToTeam(): Locator {
-		return this.page.locator('role=button[name="Add Existing"]');
+		return this.page.locator('role=button[name="Add existing"]');
 	}
 
 	async searchForChannelOnAddChannelToTeam(channelName: string): Promise<void> {

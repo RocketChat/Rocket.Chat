@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import ForwardChatModal from './ForwardChatModal';
 import { createFakeOmnichannelRoom } from '../../../../tests/mocks/data';
@@ -16,4 +16,4 @@ export default {
 	},
 } satisfies Meta<typeof ForwardChatModal>;
 
-export const Default: StoryFn<typeof ForwardChatModal> = (args) => <ForwardChatModal {...args} />;
+export const Default: StoryObj<typeof ForwardChatModal> = {};

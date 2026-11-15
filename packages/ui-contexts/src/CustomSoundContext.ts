@@ -1,6 +1,9 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
+/** Stops the sound it was returned for; absent when there was nothing to play. */
+type StopSound = (() => void) | undefined;
+
 export type CustomSoundContextValue = {
 	play: (
 		soundId: string,
@@ -8,19 +11,19 @@ export type CustomSoundContextValue = {
 			volume?: number | undefined;
 			loop?: boolean | undefined;
 		},
-	) => void;
+	) => StopSound;
 	pause: (sound: ICustomSound['_id']) => void;
 	stop: (sound: ICustomSound['_id']) => void;
 	callSounds: {
-		playRinger: () => void;
-		playDialer: () => void;
+		playRinger: () => StopSound;
+		playDialer: () => StopSound;
 		stopRinger: () => void;
 		stopDialer: () => void;
 	};
 	voipSounds: {
-		playRinger: () => void;
-		playDialer: () => void;
-		playCallEnded: () => void;
+		playRinger: () => StopSound;
+		playDialer: () => StopSound;
+		playCallEnded: () => StopSound;
 		stopRinger: () => void;
 		stopDialer: () => void;
 		stopCallEnded: () => void;

@@ -7,7 +7,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type { NextFunction } from 'connect';
 
 import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<void> => {
 	const response = await fetch(externalProviderUrl.replace('{username}', username), {

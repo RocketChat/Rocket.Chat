@@ -1,11 +1,10 @@
-import type { ComponentChildren } from 'preact';
 import { cloneElement } from 'preact';
-import type { JSXInternal } from 'preact/src/jsx';
+import type { ComponentChildren, JSX as JSXInternal } from 'preact';
 
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type FormFieldProps = {
+export type FormFieldProps = {
 	required?: boolean;
 	label?: string;
 	description?: string;

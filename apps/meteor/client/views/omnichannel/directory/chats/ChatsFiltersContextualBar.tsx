@@ -9,7 +9,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
 
-type ChatsFiltersContextualBarProps = {
+export type ChatsFiltersContextualBarProps = {
 	onClose: () => void;
 };
 

@@ -3,11 +3,11 @@ import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rock
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -24,7 +24,7 @@ import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
-type RoomMessageProps = {
+export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
 	showUserAvatar: boolean;
 	sequential: boolean;
@@ -71,13 +71,13 @@ const RoomMessage = ({
 	ignoredUser,
 	searchText,
 	...props
-}: RoomMessageProps): ReactElement => {
+}: RoomMessageProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	const selecting = useIsSelecting();
 
@@ -88,7 +88,7 @@ const RoomMessage = ({
 
 	useCountSelected();
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!selecting) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;
@@ -126,11 +126,13 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}

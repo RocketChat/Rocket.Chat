@@ -5,7 +5,7 @@ import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import { Avatar } from '../../Avatar';
 
-type MessageAvatarsProps = {
+export type MessageAvatarsProps = {
 	avatarResolver: (username: string) => string | undefined;
 	usernames: string[];
 	className?: string;

@@ -1,6 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 
 import AppDetailsPage from './AppDetailsPage';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
@@ -25,8 +26,8 @@ jest.mock('@rocket.chat/ui-client', () => {
 	const originalModule = jest.requireActual('@rocket.chat/ui-client');
 	return {
 		...originalModule,
-		PageHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-		PageFooter: ({ children, isDirty }: { children: React.ReactNode; isDirty: boolean }) => isDirty && <div>{children}</div>,
+		PageHeader: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+		PageFooter: ({ children, isDirty }: { children: ReactNode; isDirty: boolean }) => isDirty && <div>{children}</div>,
 	};
 });
 

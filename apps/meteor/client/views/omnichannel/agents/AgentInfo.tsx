@@ -1,12 +1,14 @@
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import {
-	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarSkeletonBody,
+	ContextualbarTitle,
 	InfoPanelLabel,
 	InfoPanelText,
+	UserInfoAvatar,
+	UserInfoUsername,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,11 +17,10 @@ import { useTranslation } from 'react-i18next';
 
 import AgentInfoAction from './AgentInfoAction';
 import { useRemoveAgent } from './hooks/useRemoveAgent';
-import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 
-type AgentInfoProps = {
+export type AgentInfoProps = {
 	uid: string;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
@@ -40,7 +41,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	}
 
 	if (isError) {
-		return <Box mbs={16}>{t('User_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('User_not_found')}</Box>;
 	}
 
 	const { username, statusLivechat, status: userStatus } = data?.user;
@@ -68,7 +69,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon='trash' />
 				</ButtonGroup>
 				<Margins block={4}>
-					<Box mb={2}>
+					<Box marginBlock={2}>
 						<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
 					</Box>
 					{statusLivechat && (

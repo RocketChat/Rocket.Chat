@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
-const MessageComposerButton = (props: ComponentProps<typeof Button>): ReactElement => <Button small {...props} />;
+const MessageComposerButton = (props: ComponentProps<typeof Button>) => <Button small {...props} />;
 
 export default MessageComposerButton;

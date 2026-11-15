@@ -35,11 +35,11 @@ test.describe.serial('Notification Sounds', () => {
 
 	test.beforeEach(async ({ page, browser }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel}`);
+		await poHomeChannel.gotoChannel(targetChannel);
 
 		user1Page = await browser.newPage({ storageState: Users.user1.state });
 		user1PoHomeChannel = new HomeChannel(user1Page);
-		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1PoHomeChannel.gotoChannel(targetChannel);
 
 		await page.evaluate(() => {
 			Audio.prototype.play = ((fn) =>

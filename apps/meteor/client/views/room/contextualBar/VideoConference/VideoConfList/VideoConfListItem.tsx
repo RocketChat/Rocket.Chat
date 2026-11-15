@@ -1,4 +1,4 @@
-import type { VideoConference } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
@@ -16,14 +16,12 @@ import {
 	ButtonGroup,
 	AvatarStack,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useTimeAgo, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
@@ -36,7 +34,7 @@ const VideoConfListItem = ({
 	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
-}): ReactElement => {
+}) => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
@@ -51,7 +49,11 @@ const VideoConfListItem = ({
 	} = videoConfData;
 
 	const displayName = useUserDisplayName({ name, username });
-	const joinedUsers = users.filter((user) => user._id !== _id);
+	// Excludes the creator, and also members who never joined: `users` is the conference's membership list, so
+	// someone added to the call is in it whether or not they ever answered. A member with no username is left out
+	// too — the avatar stack has nothing to draw for them, so they took a place in the row and left a gap in it
+	// while still counting towards the total underneath.
+	const joinedUsers = users.filter((user) => user._id !== _id && !!user.username && hasJoinedVideoConference(user));
 
 	const hovered = css`
 		&:hover,
@@ -63,7 +65,7 @@ const VideoConfListItem = ({
 		}
 	`;
 
-	const handleJoinConference = useEffectEvent((): void => {
+	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
 	});
@@ -73,11 +75,11 @@ const VideoConfListItem = ({
 	return (
 		<Box
 			color='default'
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={[...className, hovered].filter(Boolean)}
-			pb={8}
+			paddingBlock={8}
 		>
 			<Message {...props}>
 				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
@@ -104,7 +106,7 @@ const VideoConfListItem = ({
 							)}
 						</ButtonGroup>
 						{joinedUsers.length > 0 && (
-							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
+							<Box marginInlineStart={8} fontScale='c1' display='flex' alignItems='center'>
 								<AvatarStack>
 									{joinedUsers.map(
 										(user, index) =>
@@ -120,7 +122,7 @@ const VideoConfListItem = ({
 											),
 									)}
 								</AvatarStack>
-								<Box mis={4}>
+								<Box marginInlineStart={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
@@ -128,7 +130,7 @@ const VideoConfListItem = ({
 							</Box>
 						)}
 						{joinedUsers.length === 0 && !endedAt && (
-							<Box mis={8} fontScale='c1'>
+							<Box marginInlineStart={8} fontScale='c1'>
 								{t('Be_the_first_to_join')}
 							</Box>
 						)}

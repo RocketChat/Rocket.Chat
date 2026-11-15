@@ -1,5 +1,5 @@
 import type { Optional } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { useContext, createContext } from 'react';
 
 export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id: string; sort?: number }> = {
@@ -21,7 +21,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 
 	getValue: (item: T) => string;
 
-	renderItem?: ({ item }: { item: T }) => ReactElement;
+	renderItem?: ({ item }: { item: T }) => ReactNode;
 	disabled?: boolean;
 };
 

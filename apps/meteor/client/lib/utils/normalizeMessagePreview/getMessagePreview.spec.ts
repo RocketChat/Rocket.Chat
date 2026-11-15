@@ -16,6 +16,46 @@ describe('getMessagePreview', () => {
 		mockNormalizeMessagePreview.mockReturnValue('normalized message');
 	});
 
+	describe('when room has a draft', () => {
+		it('should return "Draft: content" taking precedence over the last message', () => {
+			const room = createFakeSubscription({ draft: 'unfinished text' });
+			const message = createFakeMessage();
+
+			const result = getMessagePreview(room, message, mockT);
+
+			expect(result).toBe('Draft: unfinished text');
+			expect(mockT).toHaveBeenCalledWith('Draft');
+			expect(mockNormalizeMessagePreview).not.toHaveBeenCalled();
+		});
+
+		it('should escape HTML in the draft content', () => {
+			const room = createFakeSubscription({ draft: '<img src=x onerror=alert(1)>' });
+
+			const result = getMessagePreview(room, undefined, mockT);
+
+			expect(result).toBe('Draft: &lt;img src=x onerror=alert(1)&gt;');
+			expect(mockNormalizeMessagePreview).not.toHaveBeenCalled();
+		});
+
+		it('should fall back to a thread-composer draft when there is no main draft', () => {
+			const room = createFakeSubscription({ draft: undefined, threadDrafts: { 'thread-id': 'unfinished thread reply' } });
+			const message = createFakeMessage();
+
+			const result = getMessagePreview(room, message, mockT);
+
+			expect(result).toBe('Draft: unfinished thread reply');
+			expect(mockNormalizeMessagePreview).not.toHaveBeenCalled();
+		});
+
+		it('should prefer the main draft over thread-composer drafts', () => {
+			const room = createFakeSubscription({ draft: 'main draft', threadDrafts: { 'thread-id': 'thread draft' } });
+
+			const result = getMessagePreview(room, undefined, mockT);
+
+			expect(result).toBe('Draft: main draft');
+		});
+	});
+
 	describe('when lastMessage is undefined', () => {
 		it('should return translation for No_messages_yet', () => {
 			const room = createFakeSubscription();

@@ -86,7 +86,7 @@ describe('Apps - Installation', () => {
 				.then((user) => {
 					expect(user.username).to.be.equal(APP_USERNAME);
 				})
-				.then(done);
+				.then(done, done);
 		});
 		it('should successfully get app details by id', (done) => {
 			void request

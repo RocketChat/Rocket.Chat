@@ -1,10 +1,10 @@
 import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
-import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
@@ -40,7 +40,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 
 // TODO: review inner logic
 function PrepareImportPage() {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
@@ -204,23 +204,23 @@ function PrepareImportPage() {
 			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
-						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_') as TranslationKey)}
+						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
 					</Box>
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
-							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+							<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 								{t('Users')} <Badge>{usersCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+							</TabsItem>
+							<TabsItem selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
 								{t('Contacts')} <Badge>{contactsCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+							</TabsItem>
+							<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 								{t('Channels')} <Badge>{channelsCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item disabled>
+							</TabsItem>
+							<TabsItem disabled>
 								{t('Messages')}
 								<Badge>{messageCount}</Badge>
-							</Tabs.Item>
+							</TabsItem>
 						</Tabs>
 					)}
 					<Margins block='x24'>
@@ -229,7 +229,7 @@ function PrepareImportPage() {
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
 										<ProgressBar percentage={Math.floor(progressRate)} />
-										<Box is='span' mis='x24'>
+										<Box is='span' marginInlineStart='x24'>
 											{numberFormat(progressRate, 0)}%
 										</Box>
 									</Box>

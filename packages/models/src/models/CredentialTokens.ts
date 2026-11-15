@@ -32,4 +32,13 @@ export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements IC
 
 		return this.findOne(query);
 	}
+
+	removeNotExpiredById(_id: string): Promise<ICredentialToken | null> {
+		const query = {
+			_id,
+			expireAt: { $gt: new Date() },
+		};
+
+		return this.findOneAndDelete(query);
+	}
 }

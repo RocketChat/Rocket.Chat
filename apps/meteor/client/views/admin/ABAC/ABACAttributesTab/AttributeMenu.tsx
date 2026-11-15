@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAttributeOptions } from '../hooks/useAttributeOptions';
 
-type AttributeMenuProps = {
+export type AttributeMenuProps = {
 	attribute: { _id: string; key: string };
 };
 

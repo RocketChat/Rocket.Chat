@@ -1,4 +1,4 @@
-import { emoji } from '../../../app/emoji/client/lib';
+import { emoji } from '../emoji/lib';
 
 const emojiList = emoji.list as Record<string, { emojiPackage: string }>;
 const emojiPackages = emoji.packages as Record<string, { render(emojiName: string): string }>;
@@ -46,7 +46,7 @@ const createGetEmojiClassNameAndDataTitle =
 					];
 
 		return {
-			'className': emojiElement.getAttribute('class') || '',
+			'className': [image ? 'rcx-message__emoji--custom' : '', emojiElement.getAttribute('class') || ''].filter(Boolean).join(' '),
 			'data-title': emojiElement.getAttribute('data-title') || '',
 			'name': emojiElement.getAttribute('name') || '',
 			'children': emojiElement.innerHTML,

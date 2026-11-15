@@ -1,10 +1,14 @@
 import type { MessageTypesValues, IMessage } from '@rocket.chat/core-typings';
 import type { TFunction } from 'i18next';
 
+type MessageTypeTextOptions = {
+	capitalize?: boolean;
+};
+
 type MessageType = {
 	readonly id: MessageTypesValues;
 	readonly system: boolean;
-	readonly text: (t: TFunction, message: IMessage) => string;
+	readonly text: (t: TFunction, message: IMessage, options?: MessageTypeTextOptions) => string;
 };
 
 export class MessageTypes {

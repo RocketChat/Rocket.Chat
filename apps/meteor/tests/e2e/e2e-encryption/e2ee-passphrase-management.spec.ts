@@ -6,10 +6,12 @@ import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
+import { Authenticated } from '../page-objects/auth';
 import { Navbar } from '../page-objects/fragments';
-import { E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
+import { CreateE2EEChannel, E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
 import { EnterE2EEPasswordModal, ResetE2EEPasswordModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -45,8 +47,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 			await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
-			await page.goto('/home');
-			await loginPage.waitForIt();
+			await loginPage.goto();
 			await loginPage.loginByUserState(Users.admin);
 		});
 
@@ -178,8 +179,10 @@ test.use({ storageState: Users.admin.state });
 const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
+	const createdChannels: string[] = [];
 	let poAccountSecurity: AccountSecurity;
 	let poHomeChannel: HomeChannel;
+	let createE2EEChannel: CreateE2EEChannel;
 	let e2eePassword: string;
 
 	preserveSettings(roomSetupSettingsList);
@@ -187,6 +190,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	test.beforeEach(async ({ page }) => {
 		poAccountSecurity = new AccountSecurity(page);
 		poHomeChannel = new HomeChannel(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -198,8 +202,12 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await api.recreateContext();
 	});
 
+	test.afterAll(async () => {
+		await deletePrivateRoomsByName(ADMIN_CREDENTIALS, createdChannels);
+	});
+
 	test('expect save password state on encrypted room', async ({ page }) => {
-		await page.goto('/account/security');
+		await poAccountSecurity.goto();
 		await poAccountSecurity.securityE2EEncryptionSection.click();
 		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
@@ -208,14 +216,13 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
-		await page.goto('/home');
-		await page.waitForSelector('#main-content');
+		await new Authenticated(page).goto();
 
 		await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -248,7 +255,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 
 		// Logout to remove e2ee keys
 		await poHomeChannel.navbar.logout();
@@ -258,7 +265,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -294,11 +301,11 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test('expect waiting for room keys state', async ({ page }) => {
-		await page.goto('/home');
+		await poHomeChannel.goto();
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 

@@ -5,7 +5,7 @@ import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 import ReplyInThreadMessageAction from './actions/ReplyInThreadMessageAction';
 
-type DefaultItemsProps = {
+export type DefaultItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

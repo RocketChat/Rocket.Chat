@@ -7,7 +7,6 @@ import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManager';
 import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController';
-import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
@@ -92,9 +91,9 @@ describe('AppRuntimeManager', () => {
 			prependListener: () => mockSubprocessController,
 			prependOnceListener: () => mockSubprocessController,
 			eventNames: () => [],
-		} as IRuntimeController;
+		} satisfies IRuntimeController;
 
-		runtimeManager = new AppRuntimeManager(mockManager, () => mockSubprocessController as unknown as DenoRuntimeSubprocessController);
+		runtimeManager = new AppRuntimeManager(mockManager, () => mockSubprocessController);
 	});
 
 	afterEach(() => {

@@ -5,6 +5,7 @@ import { FlexTab } from '../../fragments/flextabs/flextab';
 import { Listbox } from '../../fragments/listbox';
 import { OmnichannelConfirmRemoveChat } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
+import { OmnichannelSectionsHref } from '../omnichannel-admin';
 
 class OmnichannelConversationFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -42,7 +43,7 @@ export class OmnichannelChatsFilters extends FlexTab {
 	}
 
 	get inputServedBy(): Locator {
-		return this.root.getByLabel('Served By').locator('input');
+		return this.root.getByLabel('Served by').locator('input');
 	}
 
 	get inputDepartment(): Locator {
@@ -116,30 +117,31 @@ export class OmnichannelChatsFilters extends FlexTab {
 }
 
 class OmnichannelContactCenterChatsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Omnichannel Contact Center Chats' }));
-	}
-
 	btnRemoveByName(name: string): Locator {
 		return this.findRowByName(name).getByRole('button', { name: 'Remove' });
 	}
 }
 
 export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
+	protected readonly route = OmnichannelSectionsHref.currentChats;
+
+	protected override readonly tableName = 'Omnichannel contact center chats';
+
 	readonly filters: OmnichannelChatsFilters;
 
 	readonly confirmRemoveChatModal: OmnichannelConfirmRemoveChat;
 
 	readonly conversation: OmnichannelConversationFlexTab;
 
-	readonly table: OmnichannelContactCenterChatsTable;
-
 	constructor(page: Page) {
 		super(page);
 		this.filters = new OmnichannelChatsFilters(page);
 		this.confirmRemoveChatModal = new OmnichannelConfirmRemoveChat(page);
 		this.conversation = new OmnichannelConversationFlexTab(page);
-		this.table = new OmnichannelContactCenterChatsTable(page);
+	}
+
+	override get table(): OmnichannelContactCenterChatsTable {
+		return new OmnichannelContactCenterChatsTable(this.page.getByRole('table', { name: this.tableName }));
 	}
 
 	async removeChatByName(name: string) {

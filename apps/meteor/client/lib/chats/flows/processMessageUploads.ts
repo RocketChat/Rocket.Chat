@@ -1,9 +1,9 @@
 import type { AtLeast, FileAttachmentProps, IE2EEMessage, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
 import { imperativeModal, GenericModal } from '@rocket.chat/ui-client';
 
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { sdk } from '../../SDKClient';
 import { e2e } from '../../e2ee/rocketchat.e2e';
 import type { E2ERoom } from '../../e2ee/rocketchat.e2e.room';
 import { dispatchToastMessage } from '../../toast';
@@ -59,7 +59,7 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
 			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
-			description: fileToUpload.description,
+			image_alt: fileToUpload.altText,
 		}),
 	};
 };
@@ -123,7 +123,7 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 			confirmFilesQueue.push({
 				_id: upload.id,
 				name: upload.file.name,
-				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.description },
+				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.altText || undefined },
 			});
 			continue;
 		}

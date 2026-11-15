@@ -8,7 +8,7 @@ import styles from './styles.scss';
 
 const MAX_SIZE = 360;
 
-type ImageBlockProps = uikit.ImageBlock & {
+export type ImageBlockProps = uikit.ImageBlock & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 

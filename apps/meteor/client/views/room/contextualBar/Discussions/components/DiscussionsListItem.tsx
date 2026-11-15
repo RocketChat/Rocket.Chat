@@ -15,14 +15,14 @@ import {
 	MessageMetricsItemIcon,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
 
-type DiscussionListItemProps = {
+export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
@@ -41,15 +41,15 @@ const DiscussionListItem = ({
 	name = username,
 	ts,
 	dcount,
-	formatDate = (date: any) => date,
+	formatDate,
 	dlm,
 	className = [],
 	emoji,
 	...props
-}: DiscussionListItemProps): ReactElement => {
+}: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
+		<Box is={Message} {...props} className={className} paddingBlockStart={16} paddingBlockEnd={8}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>

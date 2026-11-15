@@ -1,12 +1,12 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'sidebarDrafts';
+export type FeaturesAvailable = 'secondarySidebar' | 'aiSearch' | 'roomToolboxLayout' | 'realtimeMessageComposer' | 'sidebarRail';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
 	i18n: TranslationKey;
 	description: TranslationKey;
-	group: 'Message' | 'Navigation';
+	group: 'AI' | 'Message' | 'Navigation' | 'Room';
 	imageUrl?: string;
 	value: boolean;
 	enabled: boolean;
@@ -29,11 +29,34 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		enabled: true,
 	},
 	{
-		name: 'sidebarDrafts',
-		i18n: 'Drafts_in_sidebar',
-		description: 'Drafts_in_sidebar_description',
+		name: 'aiSearch',
+		i18n: 'Intelligent_Search',
+		description: 'Intelligent_Search_upsell_description',
+		group: 'AI',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'roomToolboxLayout',
+		i18n: 'Room_Toolbox_Layout',
+		description: 'Room_Toolbox_Layout_description',
+		group: 'Room',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'realtimeMessageComposer',
+		i18n: 'Realtime_message_composer',
+		description: 'Realtime_message_composer_description',
+		group: 'Room',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'sidebarRail',
+		i18n: 'Sidebar_rail',
+		description: 'Sidebar_rail_description',
 		group: 'Navigation',
-		imageUrl: 'images/featurePreview/sidebar-drafts.png',
 		value: false,
 		enabled: true,
 	},

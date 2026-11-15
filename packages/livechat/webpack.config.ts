@@ -83,7 +83,27 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 					],
 				},
 				{
-					test: /\.s?css$/,
+					test: /\.css$/,
+					include: [_('./src/components'), _('./src/routes')],
+					use: [
+						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+						{
+							loader: 'css-loader',
+							options: {
+								importLoaders: 1,
+								sourceMap: true,
+							},
+						},
+						{
+							loader: 'postcss-loader',
+							options: {
+								sourceMap: true,
+							},
+						},
+					],
+				},
+				{
+					test: /\.scss$/,
 					include: [_('./src/components'), _('./src/routes')],
 					use: [
 						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',

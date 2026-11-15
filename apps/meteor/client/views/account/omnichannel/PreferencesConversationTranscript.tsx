@@ -24,11 +24,11 @@ const PreferencesConversationTranscript = () => {
 						<FieldLabel>
 							{t('Omnichannel_transcript_pdf')}
 							{!hasLicense && (
-								<Tag mi={4} variant='featured'>
+								<Tag marginInline={4} variant='featured'>
 									{t('Premium')}
 								</Tag>
 							)}
-							{!canSendTranscriptPDF && hasLicense && <Tag mi={4}>{t('No_permission')}</Tag>}
+							{!canSendTranscriptPDF && hasLicense && <Tag marginInline={4}>{t('No_permission')}</Tag>}
 						</FieldLabel>
 						<Controller
 							control={control}
@@ -42,7 +42,7 @@ const PreferencesConversationTranscript = () => {
 					<FieldRow>
 						<FieldLabel>
 							{t('Omnichannel_transcript_email')}
-							{!canSendTranscriptEmailPermission && <Tag mi={4}>{t('No_permission')}</Tag>}
+							{!canSendTranscriptEmailPermission && <Tag marginInline={4}>{t('No_permission')}</Tag>}
 						</FieldLabel>
 						<Controller
 							control={control}

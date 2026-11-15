@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ConferenceChat renders what it shows when everyone in the call can read the chat 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-rddm0b"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-lm07yg"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
+        >
+          <h5
+            class="rcx-box rcx-box--full rcx-css-1spko5i"
+            id="contextualbarTitle"
+          >
+            Chat
+          </h5>
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`ConferenceChat renders what it shows when the chat was never shared with this member 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-rddm0b"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-lm07yg"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
+        >
+          <h5
+            class="rcx-box rcx-box--full rcx-css-1spko5i"
+            id="contextualbarTitle"
+          >
+            Chat
+          </h5>
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pebrle"
+      >
+        <div
+          class="rcx-states"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-balloon-off rcx-icon rcx-css-d884y5"
+          >
+            
+          </i>
+          <h3
+            class="rcx-states__title"
+          >
+            Chat_not_shared_with_you
+          </h3>
+          <div
+            class="rcx-states__subtitle"
+          >
+            Chat_not_shared_with_you_description
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`ConferenceChat renders what it shows when this member can read the chat, and someone else cannot 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-rddm0b"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-lm07yg"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
+        >
+          <h5
+            class="rcx-box rcx-box--full rcx-css-1spko5i"
+            id="contextualbarTitle"
+          >
+            Chat
+          </h5>
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="__count__participants_cannot_see_the_chat"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button"
+              title="__count__participants_cannot_see_the_chat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-balloon-exclamation rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

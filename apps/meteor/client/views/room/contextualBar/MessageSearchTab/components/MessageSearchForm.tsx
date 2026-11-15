@@ -1,7 +1,6 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -10,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
 import { useRoom } from '../../../contexts/RoomContext';
 
-type MessageSearchFormProps = {
+export type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
 	onSearch: (params: { searchText: string; globalSearch: boolean }) => void;
 	searchListId: string;
@@ -31,7 +30,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 		setFocus('searchText');
 	}, [setFocus]);
 
-	const debouncedOnSearch = useDebouncedCallback(useEffectEvent(onSearch), 300);
+	const debouncedOnSearch = useDebouncedCallback(useStableCallback(onSearch), 300);
 
 	const submitHandler = handleSubmit(({ searchText, globalSearch }) => {
 		debouncedOnSearch.cancel();
@@ -51,19 +50,17 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	const { t } = useTranslation();
 
 	return (
-		<Box is='form' onSubmit={submitHandler} w='full'>
+		<Box is='form' onSubmit={submitHandler} width='full'>
 			<Field>
 				<TextInput
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					placeholder={t('Search_Messages')}
 					aria-label={t('Search_Messages')}
 					aria-controls={isSuccess ? searchListId : undefined}
 					autoComplete='off'
 					{...register('searchText')}
 				/>
-				{provider.description && (
-					<FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description as TranslationKey)) }} />
-				)}
+				{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />}
 			</Field>
 			{globalSearchEnabled && (
 				<Field>
@@ -72,7 +69,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 				</Field>
 			)}
 			{room.encrypted && (
-				<Callout type='warning' mbs={12} icon='circle-exclamation'>
+				<Callout type='warning' marginBlockStart={12} icon='circle-exclamation'>
 					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>

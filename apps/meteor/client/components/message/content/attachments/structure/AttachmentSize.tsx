@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 import Title from './AttachmentTitle';
 import { useFormatMemorySize } from '../../../../../hooks/useFormatMemorySize';
 
-type AttachmentSizeProps = ComponentPropsWithoutRef<typeof Box> & { size: number; wrapper?: boolean };
+export type AttachmentSizeProps = ComponentPropsWithoutRef<typeof Box> & { size: number; wrapper?: boolean };
 
 const AttachmentSize = ({ size, wrapper = true, ...props }: AttachmentSizeProps) => {
 	const format = useFormatMemorySize();

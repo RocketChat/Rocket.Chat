@@ -269,6 +269,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		'accessibility-certification',
 		'outbound-messaging',
 		'abac',
+		'video-conference-native',
 	]),
 	externalModules: [],
 	preventedActions: {

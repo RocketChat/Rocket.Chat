@@ -13,8 +13,8 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter, getDirtyFields } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -22,12 +22,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 
-type EditRoomProps = {
+export type EditRoomProps = {
 	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
@@ -97,7 +96,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
+	const handleUpdateRoomData = useStableCallback(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 
@@ -117,7 +116,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		}
 	});
 
-	const handleSave = useEffectEvent((data: EditRoomFormData) =>
+	const handleSave = useStableCallback((data: EditRoomFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
@@ -141,7 +140,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		<>
 			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
-					<Box pbe={24} display='flex' justifyContent='center'>
+					<Box paddingBlockEnd={24} display='flex' justifyContent='center'>
 						<Controller
 							name='roomAvatar'
 							control={control}
@@ -353,7 +352,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
 						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
 							{t('Delete')}

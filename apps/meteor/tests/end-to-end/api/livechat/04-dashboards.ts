@@ -12,6 +12,7 @@ import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, dele
 import {
 	closeOmnichannelRoom,
 	deleteVisitor,
+	makeAgentAvailable,
 	placeRoomOnHold,
 	sendAgentMessage,
 	sendMessage,
@@ -565,6 +566,8 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
+
+			await Promise.all(agents.map((agent) => makeAgentAvailable(agent.credentials)));
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))

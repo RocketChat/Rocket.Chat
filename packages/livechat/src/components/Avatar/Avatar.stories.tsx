@@ -1,11 +1,10 @@
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Avatar } from '.';
 import { gazzoAvatar } from '../../../.storybook/helpers';
 
 export default {
-	title: 'Components/Avatar',
 	component: Avatar,
 	args: {
 		src: gazzoAvatar,
@@ -26,41 +25,48 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Avatar>>;
 
-const Template: StoryFn<ComponentProps<typeof Avatar>> = (args) => <Avatar {...args} />;
+type Story = StoryObj<ComponentProps<typeof Avatar>>;
 
-export const Default = Template.bind({});
-Default.storyName = 'default';
-
-export const Large = Template.bind({});
-Large.storyName = 'large';
-Large.args = {
-	large: true,
+export const Default: Story = {
+	name: 'default',
 };
 
-export const Small = Template.bind({});
-Small.storyName = 'small';
-Small.args = {
-	small: true,
+export const Large: Story = {
+	name: 'large',
+	args: {
+		large: true,
+	},
 };
 
-export const AsPlaceholder: StoryFn<ComponentProps<typeof Avatar>> = (args) => (
-	<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-		<Avatar {...args} style={{ margin: '0.5rem' }} large />
-		<Avatar {...args} style={{ margin: '0.5rem' }} />
-		<Avatar {...args} style={{ margin: '0.5rem' }} small />
-	</div>
-);
-AsPlaceholder.storyName = 'as placeholder';
-AsPlaceholder.args = {
-	src: '',
+export const Small: Story = {
+	name: 'small',
+	args: {
+		small: true,
+	},
 };
 
-export const WithStatusIndicator: StoryFn<ComponentProps<typeof Avatar>> = (args) => (
-	<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-		<Avatar {...args} style={{ margin: '0.5rem' }} status='offline' />
-		<Avatar {...args} style={{ margin: '0.5rem' }} status='away' />
-		<Avatar {...args} style={{ margin: '0.5rem' }} status='busy' />
-		<Avatar {...args} style={{ margin: '0.5rem' }} status='online' />
-	</div>
-);
-WithStatusIndicator.storyName = 'with status indicator';
+export const AsPlaceholder: Story = {
+	name: 'as placeholder',
+	args: {
+		src: '',
+	},
+	render: (args) => (
+		<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+			<Avatar {...args} style={{ margin: '0.5rem' }} large />
+			<Avatar {...args} style={{ margin: '0.5rem' }} />
+			<Avatar {...args} style={{ margin: '0.5rem' }} small />
+		</div>
+	),
+};
+
+export const WithStatusIndicator: Story = {
+	name: 'with status indicator',
+	render: (args) => (
+		<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+			<Avatar {...args} style={{ margin: '0.5rem' }} status='offline' />
+			<Avatar {...args} style={{ margin: '0.5rem' }} status='away' />
+			<Avatar {...args} style={{ margin: '0.5rem' }} status='busy' />
+			<Avatar {...args} style={{ margin: '0.5rem' }} status='online' />
+		</div>
+	),
+};

@@ -6,11 +6,11 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, useEffect, useId } from 'react';
 
-import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
+import { getURL } from '../../../../../lib/getURL';
 import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
 
-type FileItemMenuProps = {
+export type FileItemMenuProps = {
 	rid: IRoom['_id'];
 	fileData: IUpload;
 	onClickDelete: (id: IUpload['_id']) => void;

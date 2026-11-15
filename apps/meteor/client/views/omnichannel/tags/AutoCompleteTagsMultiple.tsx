@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useTagsList } from '../hooks/useTagsList';
 
-type AutoCompleteTagsMultipleProps = Omit<
+export type AutoCompleteTagsMultipleProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {

@@ -1,5 +1,4 @@
-import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
-import type { CSSProperties, MutableRefObject, RefCallback } from 'react';
+import type { CSSProperties, RefCallback } from 'react';
 import { useCallback } from 'react';
 
 function shouldScrollToBottom(textarea: HTMLTextAreaElement) {
@@ -10,42 +9,34 @@ function shouldScrollToBottom(textarea: HTMLTextAreaElement) {
 }
 
 export const useAutoGrow = (
-	ref: MutableRefObject<HTMLTextAreaElement | null>,
 	hideTextArea?: boolean,
 ): {
 	textAreaStyle: CSSProperties;
 	autoGrowRef: RefCallback<HTMLTextAreaElement>;
 } => {
-	const autoGrowRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLTextAreaElement) => {
-				ref.current = node;
+	const autoGrowRef = useCallback((node: HTMLTextAreaElement) => {
+		const resize = () => {
+			const shouldScroll = shouldScrollToBottom(node);
 
-				const resize = () => {
-					const shouldScroll = shouldScrollToBottom(node);
+			node.style.height = '0';
+			node.style.height = `${node.scrollHeight}px`;
 
-					node.style.height = '0';
-					node.style.height = `${node.scrollHeight}px`;
+			if (shouldScroll) {
+				node.scrollTop = node.scrollHeight;
+			}
+		};
 
-					if (shouldScroll) {
-						node.scrollTop = node.scrollHeight;
-					}
-				};
+		const resizeObserver = new ResizeObserver(resize);
 
-				const resizeObserver = new ResizeObserver(resize);
+		resizeObserver.observe(node);
 
-				resizeObserver.observe(node);
+		node.addEventListener('input', resize);
 
-				node.addEventListener('input', resize);
-
-				return () => {
-					resizeObserver.disconnect();
-					node.removeEventListener('input', resize);
-				};
-			},
-			[ref],
-		),
-	);
+		return () => {
+			resizeObserver.disconnect();
+			node.removeEventListener('input', resize);
+		};
+	}, []);
 
 	return {
 		autoGrowRef,

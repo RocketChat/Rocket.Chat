@@ -1,13 +1,16 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
+import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
+import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
@@ -42,6 +45,7 @@ type RoomListRowProps = {
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
+	userId?: string;
 
 	room: SubscriptionWithRoom;
 	id?: string;
@@ -67,30 +71,38 @@ const SidebarItemTemplateWithData = ({
 	t,
 	isAnonymous,
 	videoConfActions,
+	userId,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
+	const dmUserId = getUidDirectMessage(room, userId);
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
+
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
 	const icon = (
-		<SidebarV2ItemIcon
+		<SidebarItemIcon
 			highlighted={highlighted}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
 		/>
 	);
 
+	const titleIcon = getSubscriptionDraft(room) ? (
+		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
+	) : undefined;
+
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarV2Actions>
-					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarV2Actions>
+				<SidebarActions>
+					<SidebarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SidebarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SidebarActions>
 			),
 		[videoConfActions],
 	);
@@ -111,20 +123,21 @@ const SidebarItemTemplateWithData = ({
 			aria-current={selected ? 'page' : undefined}
 			href={href}
 			onClick={(): void => {
-				!selected && sidebar.toggle();
+				if (!selected) sidebar.toggle();
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
 			icon={icon}
+			titleIcon={titleIcon}
 			style={style}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? (): ReactElement => (
+					? () => (
 							<RoomMenu
 								alert={alert}
 								threadUnread={unreadCount.threads > 0}
@@ -139,6 +152,7 @@ const SidebarItemTemplateWithData = ({
 						)
 					: undefined
 			}
+			{...dmStatusTooltipHandlers}
 		/>
 	);
 };
@@ -162,7 +176,6 @@ const keys: (keyof RoomListRowProps)[] = [
 	'videoConfActions',
 ];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
@@ -185,6 +198,12 @@ export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+	if (prevProps.room.draft !== nextProps.room.draft) {
+		return false;
+	}
+	if (prevProps.room.threadDrafts !== nextProps.room.threadDrafts) {
 		return false;
 	}
 	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {

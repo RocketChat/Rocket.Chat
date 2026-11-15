@@ -8,7 +8,7 @@ import { createClassName } from '../../../../helpers/createClassName';
 import { SelectInput } from '../../../Form/SelectInput';
 import { usePerformAction } from '../Block';
 
-type StaticSelectElementProps = uikit.StaticSelectElement & {
+export type StaticSelectElementProps = uikit.StaticSelectElement & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 

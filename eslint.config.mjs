@@ -7,7 +7,6 @@ export default [
 	...rocketChatConfig,
 	{
 		ignores: [
-			'apps/meteor/app/emoji-emojione/generateEmojiIndex.js',
 			'apps/meteor/**/public',
 			'apps/meteor/**/private/moment-locales',
 			'apps/meteor/**/imports',
@@ -30,11 +29,11 @@ export default [
 			'you-dont-need-lodash-underscore': youDontNeedLodashUnderscorePlugin,
 		},
 		settings: {
-			'import/ignore': ['meteor/.+'],
+			'import-x/ignore': ['meteor/.+'],
 		},
 		rules: {
-			'import/named': 'error',
-			'import/no-unresolved': [
+			'import-x/named': 'error',
+			'import-x/no-unresolved': [
 				'error',
 				{
 					commonjs: true,
@@ -250,8 +249,8 @@ export default [
 		},
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'error',
-			'import/named': 'error',
-			'import/order': [
+			'import-x/named': 'error',
+			'import-x/order': [
 				'error',
 				{
 					'newlines-between': 'always',
@@ -327,7 +326,7 @@ export default [
 				},
 			],
 			'@typescript-eslint/no-empty-function': 'off',
-			'@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+			'@typescript-eslint/no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true }],
 			'new-cap': 'off',
 		},
 	},
@@ -339,7 +338,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
+		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib)'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],
@@ -404,6 +403,7 @@ export default [
 			'apps/meteor/ee/server/**/*.ts',
 			'apps/meteor/server/**/*.ts',
 			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
+			'packages/ui-account/**/*.@(ts|tsx)',
 			'packages/ui-client/**/*.@(ts|tsx)',
 			'packages/ui-voip/**/*.@(ts|tsx)',
 			'packages/web-ui-registration/**/*.@(ts|tsx)',
@@ -432,12 +432,31 @@ export default [
 			],
 		},
 	},
-	// FIXME: React 19 useEffectEvent conflicts with fuselage-hooks
+	// View-agnostic logic: must stay reusable by clients that do not render with Fuselage (e.g. mobile).
 	{
-		files: ['**/*.@(ts|tsx)'],
+		files: ['packages/ui-account/src/**/logic/**/*.@(ts|tsx)'],
+		ignores: ['**/*.spec.@(ts|tsx)'],
 		rules: {
-			'react-hooks/exhaustive-deps': 'warn',
-			'react-hooks/rules-of-hooks': 'warn',
+			'no-restricted-imports': [
+				'error',
+				{
+					paths: [
+						{
+							// ui-client mixes headless hooks with Fuselage components; only the former are allowed here.
+							name: '@rocket.chat/ui-client',
+							allowTypeImports: true,
+							allowImportNames: ['usePreferenceFeaturePreviewList'],
+							message: 'logic/ may only use headless hooks from ui-client; add the hook to the allow list if it renders nothing.',
+						},
+					],
+					patterns: [
+						{
+							group: ['@rocket.chat/fuselage', 'react-dom', '**/views/**'],
+							message: 'logic/ must not depend on rendering; move this to views/ or pass it in.',
+						},
+					],
+				},
+			],
 		},
 	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json
@@ -461,7 +480,7 @@ export default [
 			'@(ee/packages|packages)/*/jest.config.ts',
 
 			'ee/packages/pdf-worker/.storybook/*.@(ts|tsx)',
-			'packages/@(gazzodown|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
+			'packages/@(gazzodown|ui-account|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/prefer-optional-chain': 'off',
@@ -479,7 +498,14 @@ export default [
 	{
 		files: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
 		rules: {
-			'import/order': 'warn',
+			'import-x/order': 'warn',
+		},
+	},
+	{
+		files: ['packages/mp3-encoder/src/lame/**/*.ts'],
+		rules: {
+			'@typescript-eslint/naming-convention': 'off',
+			'new-cap': 'off',
 		},
 	},
 ];

@@ -22,12 +22,8 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
 
-	get header(): Locator {
-		return this.page.locator('header');
-	}
-
 	get btnReturn(): Locator {
-		return this.header.getByRole('button', { name: 'Back' });
+		return this.header.root.getByRole('button', { name: 'Back' });
 	}
 
 	get btnResume(): Locator {
@@ -40,8 +36,9 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	async selectCannedResponse(cannedResponseName: string): Promise<void> {
 		await this.composer.inputMessage.pressSequentially('!');
-		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
+		const popup = this.composer.boxPopup;
+		await popup.waitFor({ state: 'visible' });
 		await this.composer.inputMessage.pressSequentially(cannedResponseName);
-		await this.page.keyboard.press('Enter');
+		await popup.getByText(cannedResponseName, { exact: true }).click();
 	}
 }

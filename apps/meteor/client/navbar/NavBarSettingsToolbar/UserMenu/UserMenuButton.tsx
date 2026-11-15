@@ -14,13 +14,23 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
+export type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
 
 const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonProps, ref: ForwardedRef<HTMLElement>) {
 	const user = useUser();
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+
+	const getDisplayedStatus = () => {
+		if (!userStatusEnabled || (adminStatusHidingEnabled && user?.presenceDisabledByAdmin)) {
+			return 'offline';
+		}
+
+		return presenceDisabled ? 'disabled' : status;
+	};
 
 	return (
 		<IconButton
@@ -46,11 +56,11 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 				overflow='hidden'
 				size='x12'
 				borderWidth='default'
-				bg='surface-tint'
+				backgroundColor='surface-tint'
 				borderColor='extra-light'
 				borderRadius='full'
 			>
-				<UserStatus small status={presenceDisabled ? 'disabled' : status} />
+				<UserStatus small status={getDisplayedStatus()} />
 			</Box>
 		</IconButton>
 	);

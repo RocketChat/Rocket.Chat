@@ -2,12 +2,29 @@ import { VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
+import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
+import { settings } from '../../../server/settings';
+import { LIVEKIT_CAPABILITIES } from '../lib/livekit/capabilities';
+import { isLiveKitFullyConfigured, isLiveKitLicensed } from '../lib/livekit/config';
 import { addSettings } from '../settings/video-conference';
+
+/**
+ * Offers LiveKit as a provider only while the license includes it, it is fully configured and the conference window,
+ * where its call renders, is on: a registered provider is one the camera button offers, and one that cannot connect
+ * would fail the call.
+ */
+const refreshLiveKitProviderRegistration = (): void => {
+	if (isLiveKitLicensed() && isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
+		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
+	} else {
+		videoConfProviders.unRegisterProvider('livekit');
+	}
+};
 
 Meteor.startup(async () => {
 	await License.onLicense('videoconference-enterprise', async () => {
@@ -26,27 +43,34 @@ Meteor.startup(async () => {
 			},
 		);
 
+		// Ringing on start is for the rooms where every member is someone who chose to be in a conversation
+		// with the caller: a DM, handled by the `direct` type above, and a group DM, handled here. Starting a
+		// call in a channel, private group or team does not ring anyone — the people who want in are told by
+		// the call itself, and whoever else wants to reach a specific person can ring them from the call.
 		videoConfTypes.registerVideoConferenceType({ type: 'videoconference', ringing: true }, async ({ _id, t }, allowRinging) => {
-			if (!allowRinging || t === 'l') {
+			if (!allowRinging || t !== 'd') {
 				return false;
 			}
 
-			if (t === 'd') {
-				const room = await Rooms.findOneById<Pick<IRoom, 'uids'>>(_id, { projection: { uids: 1 } });
-				if (room && (!room.uids || room.uids.length <= 2)) {
-					return false;
-				}
-			}
+			// A two-person DM is the `direct` type's, so what rings here is a group DM.
+			const room = await Rooms.findOneById<Pick<IRoom, 'uids'>>(_id, { projection: { uids: 1 } });
 
-			if ((await Subscriptions.countByRoomId(_id)) > 10) {
-				return false;
-			}
-
-			return true;
+			return Boolean(room?.uids && room.uids.length > 2);
 		});
 
 		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId?: IUser['_id']) =>
 			VideoConf.addUser(callId, userId),
 		);
+
+		// Inside the EE licence gate already, and every step is idempotent. LiveKit's own module can come and go with
+		// the license, without a restart, so it is followed as closely as the settings are.
+		refreshLiveKitProviderRegistration();
+		settings.watchByRegex(/^VideoConf_(LiveKit_(Enabled|Url|Api_Key|Api_Secret)|Conference_Window_Enabled)$/, () =>
+			refreshLiveKitProviderRegistration(),
+		);
+		License.onToggledFeature('video-conference-native', {
+			up: refreshLiveKitProviderRegistration,
+			down: refreshLiveKitProviderRegistration,
+		});
 	});
 });

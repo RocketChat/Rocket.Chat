@@ -20,6 +20,12 @@ export class LoginPage {
 		await this.loginButton.waitFor();
 	}
 
+	/** Navigates to `url` and waits for the login screen — for routes that bounce an anonymous visitor. */
+	async goto(url = '/home'): Promise<void> {
+		await this.page.goto(url);
+		await this.waitForIt();
+	}
+
 	protected async waitForLogin() {
 		await expect(this.loginButton).not.toBeVisible();
 		await expect(this.page.getByRole('main')).toBeVisible();
@@ -42,13 +48,17 @@ export class LoginPage {
 		const localStorageItems = userState.state.origins[0].localStorage.filter((item) => options.except.indexOf(item.name) === -1);
 
 		// Injects the login token to the local storage
-		await this.page.evaluate((items) => {
-			items.forEach(({ name, value }) => {
-				window.localStorage.setItem(name, value);
-			});
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
-			require('meteor/accounts-base').Accounts._pollStoredLoginToken();
-		}, localStorageItems);
+		await this.page.evaluate(
+			({ items, loginToken }) => {
+				items.forEach(({ name, value }) => {
+					window.localStorage.setItem(name, value);
+				});
+
+				// The storage poller skips a token it already saw, and every login of this user reuses the same token.
+				require('meteor/accounts-base').Accounts.loginWithToken(loginToken);
+			},
+			{ items: localStorageItems, loginToken: userState.data.loginToken },
+		);
 
 		await this.waitForLogin();
 	}

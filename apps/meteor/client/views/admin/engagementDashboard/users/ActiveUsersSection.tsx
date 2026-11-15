@@ -1,8 +1,12 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
-import type { ReactElement } from 'react';
+import { Box, FlexContainer, FlexItem, Skeleton, Tile } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { endOfDay } from 'date-fns/endOfDay';
+import { format } from 'date-fns/format';
+import { startOfDay } from 'date-fns/startOfDay';
+import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,11 +17,11 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import LegendSymbol from '../dataView/LegendSymbol';
 
-type ActiveUsersSectionProps = {
+export type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement => {
+const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useActiveUsers({ utc });
 
@@ -154,10 +158,10 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 					},
 				]}
 			/>
-			<Flex.Container>
+			<FlexContainer>
 				{data ? (
 					<Box style={{ height: 240 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
 								<Box
 									style={{
@@ -249,7 +253,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											},
 										}}
 										enableSlices='x'
-										sliceTooltip={({ slice: { points } }): ReactElement => (
+										sliceTooltip={({ slice: { points } }) => (
 											<Tile elevation='2'>
 												<Box>
 													<Box>{formatDate(points[0].data.x)}</Box>
@@ -268,12 +272,12 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Skeleton variant='rect' height={240} />
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

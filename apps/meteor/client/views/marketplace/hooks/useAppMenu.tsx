@@ -68,14 +68,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
 	const buttonLabel = button?.label.replace(' ', '_') as
-		| 'Update'
-		| 'Install'
-		| 'Subscribe'
-		| 'See_Pricing'
-		| 'Try_now'
-		| 'Buy'
-		| 'Request'
-		| 'Requested';
+		'Update' | 'Install' | 'Subscribe' | 'See_Pricing' | 'Try_now' | 'Buy' | 'Request' | 'Requested';
 	const action = button?.action || '';
 
 	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
@@ -342,7 +335,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					section: 0,
 					content: (
 						<>
-							<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
+							<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd={4} />
 							{t('Subscription')}
 						</>
 					),
@@ -358,7 +351,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					disabled: requestedEndUser,
 					content: (
 						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
+							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd={4} />}
 							{t(buttonLabel)}
 						</>
 					),
@@ -388,7 +381,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					section: 0,
 					content: (
 						<>
-							<Icon name='desktop-text' size='x16' mie={4} />
+							<Icon name='desktop-text' size='x16' marginInlineEnd={4} />
 							{t('View_Logs')}
 						</>
 					),
@@ -401,7 +394,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					section: 0,
 					content: (
 						<>
-							<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
+							<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd={4} />
 							{t('Update')}
 						</>
 					),
@@ -414,7 +407,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					section: 0,
 					content: (
 						<Box color='status-font-on-warning'>
-							<Icon name='ban' size='x16' mie={4} />
+							<Icon name='ban' size='x16' marginInlineEnd={4} />
 							{t('Disable')}
 						</Box>
 					),
@@ -438,7 +431,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					section: 1,
 					content: (
 						<Box color='status-font-on-danger'>
-							<Icon name='trash' size='x16' mie={4} />
+							<Icon name='trash' size='x16' marginInlineEnd={4} />
 							{t('Uninstall')}
 						</Box>
 					),

@@ -37,7 +37,7 @@ const WorkspacePage = ({
 	const warningMultipleInstances = !data?.isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeader title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>
@@ -49,15 +49,15 @@ const WorkspacePage = ({
 				)}
 			</PageHeader>
 
-			<PageScrollableContentWithShadow p={16}>
+			<PageScrollableContentWithShadow padding={16}>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					{warningMultipleInstances && (
 						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd={16}></Callout>
 					)}
-					<Box mbe={16}>
+					<Box marginBlockEnd={16}>
 						<VersionCard serverInfo={serverInfo} />
 					</Box>
-					<CardGrid breakpoints={{ lg: 4, xs: 4, p: 8 }}>
+					<CardGrid breakpoints={{ lg: 4, xs: 4, padding: 8 }}>
 						<DeploymentCard serverInfo={serverInfo} statistics={statistics} instances={instances} />
 						<UsersUploadsCard statistics={statistics} />
 						<MessagesRoomsCard statistics={statistics} />

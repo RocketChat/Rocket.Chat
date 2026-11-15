@@ -1,5 +1,253 @@
 # @rocket.chat/i18n
 
+## 4.1.0-rc.0
+
+### Minor Changes
+
+- ([#41020](https://github.com/RocketChat/Rocket.Chat/pull/41020)) Adds a **Realtime Message Composer**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Message → **Realtime message composer**). While the feature preview is off, the message composer keeps its current plain-text behavior.
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#42102](https://github.com/RocketChat/Rocket.Chat/pull/42102)) Adds hybrid retrieval to AI Search. A single search balance setting decides how much semantic retrieval contributes relative to keyword search, so a workspace can find messages by meaning without losing exact matches on error codes, ticket ids or function names. An optional recency boost, disabled by default, promotes newer messages after relevance ranking.
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#41088](https://github.com/RocketChat/Rocket.Chat/pull/41088)) Adds a configurable **Room Toolbox Layout**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Room → **Room Toolbox Layout**). While the feature preview is off, the room header toolbox keeps its current behavior and the setting has no effect.
+
+  Admins can define the layout through the new workspace setting **Room Toolbox Layout** (`Room_Toolbox_Layout`) under **Admin → Settings → Layout → Room Header**, which is itself only shown when **Feature Preview** is enabled for the workspace. The setting value is validated against a JSON schema when saved, so a malformed configuration is rejected with an error instead of being silently ignored
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- ([#41548](https://github.com/RocketChat/Rocket.Chat/pull/41548)) Improves performance of several hot code paths without changing behavior: generates random IDs with a single `crypto.randomBytes` call instead of one per character, caches constant regular expressions used by the markdown/mention/autotranslate parsers instead of recompiling them for every message, skips the channel-mention database query for messages without channel mentions, deduplicates the room member count query when a message contains both `@all` and `@here`, and replaces linear array scans and spread-accumulators with Map/Set lookups in API response shaping (files, DM members, directory search and team listing).
+
+## 4.0.0
+
+### Minor Changes
+
+- ([#41642](https://github.com/RocketChat/Rocket.Chat/pull/41642)) Deprecates LDAP and SAML authentication on workspaces without a Premium plan. Both keep working as they are today, but the admin settings now warn that version 9.0.0 will require a license including the `ldap-enterprise` or `saml-enterprise` module, and a warning is logged when an unlicensed workspace authenticates a user through either of them.
+
+- ([#41095](https://github.com/RocketChat/Rocket.Chat/pull/41095)) Adds a workspace setting **Force end-to-end encryption on private rooms** (`E2E_Force_Encryption_For_Private_Rooms`) under **Admin → Settings → End-to-End Encryption**. When enabled, every newly created private room is encrypted by default and users can no longer opt out: the encryption toggle in the create-room modal is locked on for private rooms, and the server rejects any attempt to create a private room with `encrypted: false` (e.g. via `groups.create`) with the error `error-encrypted-private-rooms-enforced`. Public rooms are unaffected. Federated rooms are exempt since federation does not support E2EE. Creating a discussion under an unencrypted private parent room is rejected with a dedicated error instructing the user to make the parent public or enable encryption on it, and the create-discussion dialog now surfaces creation errors as toasts.
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+- ([#41082](https://github.com/RocketChat/Rocket.Chat/pull/41082)) Adds an AI add-on-gated native Model Context Protocol endpoint and its administration controls in AI Center
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+- ([#41954](https://github.com/RocketChat/Rocket.Chat/pull/41954)) Promotes Voice Call Screen Sharing to stable by removing the `beta` alert from its setting and enabling the "In-Room" call interface for every call regardless of screen-share availability.
+
+### Patch Changes
+
+- ([#41481](https://github.com/RocketChat/Rocket.Chat/pull/41481)) Adds an Import IdP metadata option to SAML settings that fetches the Identity Provider metadata from a URL and prefills the matching setting fields — certificate, entry point and IDP SLO redirect URL, plus identifier format on Enterprise — for the admin to review before saving.
+
+- ([#41673](https://github.com/RocketChat/Rocket.Chat/pull/41673)) Fixes the messages count displayed on a discussion taking into account system messages which are hidden inside of it, making the count higher than the number of messages actually visible after opening the discussion. The count now excludes every system message type hidden either globally or on the discussion itself. A hint was also added to the `Hide system messages` option of the room edit panel clarifying that the hidden messages are not included in the count.
+
+- <details><summary>Updated dependencies [742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+  - @rocket.chat/tools@0.4.0
+
+  </details>
+
+## 4.0.0-rc.1
+
+### Minor Changes
+
+- ([#41954](https://github.com/RocketChat/Rocket.Chat/pull/41954)) Promotes Voice Call Screen Sharing to stable by removing the `beta` alert from its setting and enabling the "In-Room" call interface for every call regardless of screen-share availability.
+
+## 4.0.0-rc.0
+
+### Minor Changes
+
+- ([#41642](https://github.com/RocketChat/Rocket.Chat/pull/41642)) Deprecates LDAP and SAML authentication on workspaces without a Premium plan. Both keep working as they are today, but the admin settings now warn that version 9.0.0 will require a license including the `ldap-enterprise` or `saml-enterprise` module, and a warning is logged when an unlicensed workspace authenticates a user through either of them.
+
+- ([#41095](https://github.com/RocketChat/Rocket.Chat/pull/41095)) Adds a workspace setting **Force end-to-end encryption on private rooms** (`E2E_Force_Encryption_For_Private_Rooms`) under **Admin → Settings → End-to-End Encryption**. When enabled, every newly created private room is encrypted by default and users can no longer opt out: the encryption toggle in the create-room modal is locked on for private rooms, and the server rejects any attempt to create a private room with `encrypted: false` (e.g. via `groups.create`) with the error `error-encrypted-private-rooms-enforced`. Public rooms are unaffected. Federated rooms are exempt since federation does not support E2EE. Creating a discussion under an unencrypted private parent room is rejected with a dedicated error instructing the user to make the parent public or enable encryption on it, and the create-discussion dialog now surfaces creation errors as toasts.
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+- ([#41082](https://github.com/RocketChat/Rocket.Chat/pull/41082)) Adds an AI add-on-gated native Model Context Protocol endpoint and its administration controls in AI Center
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+### Patch Changes
+
+- ([#41481](https://github.com/RocketChat/Rocket.Chat/pull/41481)) Adds an Import IdP metadata option to SAML settings that fetches the Identity Provider metadata from a URL and prefills the matching setting fields — certificate, entry point and IDP SLO redirect URL, plus identifier format on Enterprise — for the admin to review before saving.
+
+- ([#41673](https://github.com/RocketChat/Rocket.Chat/pull/41673)) Fixes the messages count displayed on a discussion taking into account system messages which are hidden inside of it, making the count higher than the number of messages actually visible after opening the discussion. The count now excludes every system message type hidden either globally or on the discussion itself. A hint was also added to the `Hide system messages` option of the room edit panel clarifying that the hidden messages are not included in the count.
+
+- <details><summary>Updated dependencies [742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+  - @rocket.chat/tools@0.4.0-rc.0
+
+  </details>
+
+## 3.3.0
+
+### Minor Changes
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+- ([#40890](https://github.com/RocketChat/Rocket.Chat/pull/40890)) Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.
+
+- ([#41142](https://github.com/RocketChat/Rocket.Chat/pull/41142)) Adds inline JSON validation feedback to admin settings that hold JSON (`code: application/json`), showing an error in the editor and blocking save while the value is malformed
+
+- ([#41120](https://github.com/RocketChat/Rocket.Chat/pull/41120)) Added a persistent audio player. Playing an audio attachment now continues across room navigation: the audio keeps playing when you switch or close the conversation, and a "Now playing" card appears at the top of the sidebar with play/pause, seek, playback speed (1x/1.5x/2x), and a shortcut back to the originating conversation.
+
+- ([#40916](https://github.com/RocketChat/Rocket.Chat/pull/40916)) Adds a manage license flow to the subscription admin page, allowing license verification before applying it and an option to remove the license. Note: From this point license management should be made in subscription page instead of the Enterprise settings page.
+
+## 3.3.0-rc.0
+
+### Minor Changes
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+- ([#40890](https://github.com/RocketChat/Rocket.Chat/pull/40890)) Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.
+
+- ([#41142](https://github.com/RocketChat/Rocket.Chat/pull/41142)) Adds inline JSON validation feedback to admin settings that hold JSON (`code: application/json`), showing an error in the editor and blocking save while the value is malformed
+
+- ([#41120](https://github.com/RocketChat/Rocket.Chat/pull/41120)) Added a persistent audio player. Playing an audio attachment now continues across room navigation: the audio keeps playing when you switch or close the conversation, and a "Now playing" card appears at the top of the sidebar with play/pause, seek, playback speed (1x/1.5x/2x), and a shortcut back to the originating conversation.
+
+- ([#40916](https://github.com/RocketChat/Rocket.Chat/pull/40916)) Adds a manage license flow to the subscription admin page, allowing license verification before applying it and an option to remove the license. Note: From this point license management should be made in subscription page instead of the Enterprise settings page.
+
+## 3.2.0
+
+### Minor Changes
+
+- ([#40988](https://github.com/RocketChat/Rocket.Chat/pull/40988)) Added Tagalog (`tl`) as a selectable interface language. It appears in the user's **Account → Preferences → Localization → Language** dropdown; interface strings fall back to English until translations are contributed (same approach as other not-yet-translated locales).
+
+- ([#40826](https://github.com/RocketChat/Rocket.Chat/pull/40826)) Shows a confirmation modal when switching attribute store setting
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- ([#40900](https://github.com/RocketChat/Rocket.Chat/pull/40900)) Added LibreTranslate as a message auto-translation provider, alongside Google, DeepL and Microsoft. LibreTranslate can be self-hosted, enabling fully on-premise / offline message auto-translation. Configure the instance URL (and optional API key) under **Admin → Settings → Message → Auto-Translate → LibreTranslate** and select it as the Service Provider.
+
+## 3.2.0-rc.0
+
+### Minor Changes
+
+- ([#40988](https://github.com/RocketChat/Rocket.Chat/pull/40988)) Added Tagalog (`tl`) as a selectable interface language. It appears in the user's **Account → Preferences → Localization → Language** dropdown; interface strings fall back to English until translations are contributed (same approach as other not-yet-translated locales).
+
+- ([#40826](https://github.com/RocketChat/Rocket.Chat/pull/40826)) Shows a confirmation modal when switching attribute store setting
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- ([#40900](https://github.com/RocketChat/Rocket.Chat/pull/40900)) Added LibreTranslate as a message auto-translation provider, alongside Google, DeepL and Microsoft. LibreTranslate can be self-hosted, enabling fully on-premise / offline message auto-translation. Configure the instance URL (and optional API key) under **Admin → Settings → Message → Auto-Translate → LibreTranslate** and select it as the Service Provider.
+
+## 3.1.0
+
+### Minor Changes
+
+- ([#40408](https://github.com/RocketChat/Rocket.Chat/pull/40408)) Adds 4 new permissions (assigned to admins by default) to control the visibility of each tab inside the ABAC Administration panel
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+- ([#38225](https://github.com/RocketChat/Rocket.Chat/pull/38225)) Adds a new "Drafts" group to the sidebar, providing quick access to all rooms with unfinished messages.
+  > This feature is available under the `Drafts in sidebar` feature preview and needs to be enabled in settings to be tested.
+
+### Patch Changes
+
+- ([#40420](https://github.com/RocketChat/Rocket.Chat/pull/40420)) Fixes Insert Timestamp relative time preview not updating on input changes and losing the user's locale after the first refresh tick.
+
+- ([#40456](https://github.com/RocketChat/Rocket.Chat/pull/40456)) Fixes signed URL generation for S3 and Google Cloud Storage when the expiry setting is below 5 seconds, which previously caused expired or invalid preview URLs. Adds a dedicated URL expiry setting for Google Cloud Storage since it was incorrectly reusing the AWS S3 setting.
+
+- ([#40405](https://github.com/RocketChat/Rocket.Chat/pull/40405)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+## 3.1.0-rc.0
+
+### Minor Changes
+
+- ([#40408](https://github.com/RocketChat/Rocket.Chat/pull/40408)) Adds 4 new permissions (assigned to admins by default) to control the visibility of each tab inside the ABAC Administration panel
+
+- ([#39760](https://github.com/RocketChat/Rocket.Chat/pull/39760)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+- ([#38225](https://github.com/RocketChat/Rocket.Chat/pull/38225)) Adds a new "Drafts" group to the sidebar, providing quick access to all rooms with unfinished messages.
+  > This feature is available under the `Drafts in sidebar` feature preview and needs to be enabled in settings to be tested.
+
+### Patch Changes
+
+- ([#40420](https://github.com/RocketChat/Rocket.Chat/pull/40420)) Fixes Insert Timestamp relative time preview not updating on input changes and losing the user's locale after the first refresh tick.
+
+- ([#40456](https://github.com/RocketChat/Rocket.Chat/pull/40456)) Fixes signed URL generation for S3 and Google Cloud Storage when the expiry setting is below 5 seconds, which previously caused expired or invalid preview URLs. Adds a dedicated URL expiry setting for Google Cloud Storage since it was incorrectly reusing the AWS S3 setting.
+
+- ([#40405](https://github.com/RocketChat/Rocket.Chat/pull/40405)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+## 3.0.1
+
+### Patch Changes
+
+- ([#40410](https://github.com/RocketChat/Rocket.Chat/pull/40410) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
 ## 3.0.0
 
 ### Minor Changes
@@ -15,8 +263,8 @@
 - ([#39985](https://github.com/RocketChat/Rocket.Chat/pull/39985)) Adds error feedback when clicking on a mentioned room you don't have access to
 
 - <details><summary>Updated dependencies [95a82f72dd45fc51d54bb1beed295315facf9109]:</summary>
-
   - @rocket.chat/tools@0.3.0
+
   </details>
 
 ## 3.0.0-rc.0
@@ -34,8 +282,8 @@
 - ([#39985](https://github.com/RocketChat/Rocket.Chat/pull/39985)) Adds error feedback when clicking on a mentioned room you don't have access to
 
 - <details><summary>Updated dependencies [95a82f72dd45fc51d54bb1beed295315facf9109]:</summary>
-
   - @rocket.chat/tools@0.3.0-rc.0
+
   </details>
 
 ## 2.2.0
@@ -59,8 +307,8 @@
 - ([#39461](https://github.com/RocketChat/Rocket.Chat/pull/39461)) Deprecates `Anonymous write`. Feature will be removed in version 9.0.0.
 
 - <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
-
   - @rocket.chat/tools@0.2.5
+
   </details>
 
 ## 2.2.0-rc.0
@@ -82,8 +330,8 @@
 - ([#39461](https://github.com/RocketChat/Rocket.Chat/pull/39461)) Deprecates `Anonymous write`. Feature will be removed in version 9.0.0.
 
 - <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
-
   - @rocket.chat/tools@0.2.5-rc.0
+
   </details>
 
 ## 2.1.0
@@ -143,8 +391,8 @@
 - ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
 
 - <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
-
   - @rocket.chat/tools@0.2.4
+
   </details>
 
 ## 2.0.0-rc.0
@@ -176,8 +424,8 @@
 - ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
 
 - <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
-
   - @rocket.chat/tools@0.2.4-rc.0
+
   </details>
 
 ## 1.13.0
@@ -309,8 +557,8 @@
 - ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
 
 - <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/tools@0.2.3
+
   </details>
 
 ## 1.9.0-rc.0
@@ -332,8 +580,8 @@
 - ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
 
 - <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/tools@0.2.3-rc.0
+
   </details>
 
 ## 1.8.0

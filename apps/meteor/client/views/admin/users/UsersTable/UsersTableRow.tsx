@@ -4,7 +4,7 @@ import { Box, Button } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,11 +14,12 @@ import type { AdminUsersTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
+import { useManageUserStatusAction } from '../hooks/useManageUserStatusAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
 
-type UsersTableRowProps = {
+export type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
 	tab: AdminUsersTab;
 	isMobile: boolean;
@@ -29,16 +30,7 @@ type UsersTableRowProps = {
 	showVoipExtension: boolean;
 };
 
-const UsersTableRow = ({
-	user,
-	tab,
-	isMobile,
-	isLaptop,
-	isSeatsCapExceeded,
-	showVoipExtension,
-	onClick,
-	onReload,
-}: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, showVoipExtension, onClick, onReload }: UsersTableRowProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -90,6 +82,7 @@ const UsersTableRow = ({
 
 	const changeAdminStatusAction = useChangeAdminStatusAction(username, isAdmin, onReload);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onReload);
+	const manageUserStatusAction = useManageUserStatusAction(userId);
 	const deleteUserAction = useDeleteUserAction(userId, onReload, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
@@ -111,6 +104,10 @@ const UsersTableRow = ({
 				!isFederatedUser && {
 					changeUserStatusAction,
 				}),
+			...(manageUserStatusAction &&
+				!isFederatedUser && {
+					manageUserStatusAction,
+				}),
 			...(deleteUserAction && {
 				deleteUserAction,
 			}),
@@ -118,6 +115,7 @@ const UsersTableRow = ({
 		[
 			changeAdminStatusAction,
 			changeUserStatusAction,
+			manageUserStatusAction,
 			deleteUserAction,
 			isFederatedUser,
 			isNotPendingDeactivatedNorFederated,
@@ -142,7 +140,7 @@ const UsersTableRow = ({
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
-						<Box mi={8}>
+						<Box marginInline={8}>
 							<UserStatus status={status || Status.OFFLINE} />
 						</Box>
 						<Box fontScale='p2' withTruncatedText>

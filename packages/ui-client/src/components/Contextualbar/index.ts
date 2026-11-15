@@ -1,39 +1,21 @@
-import Contextualbar from './Contextualbar';
-import ContextualbarAction from './ContextualbarAction';
-import ContextualbarActions from './ContextualbarActions';
-import ContextualbarBack from './ContextualbarBack';
-import ContextualbarButton from './ContextualbarButton';
-import ContextualbarClose from './ContextualbarClose';
-import ContextualbarContent from './ContextualbarContent';
-import ContextualbarDialog from './ContextualbarDialog';
-import ContextualbarEmptyContent from './ContextualbarEmptyContent';
-import ContextualbarFooter from './ContextualbarFooter';
-import ContextualbarHeader from './ContextualbarHeader';
-import ContextualbarIcon from './ContextualbarIcon';
-import ContextualbarInnerContent from './ContextualbarInnerContent';
-import ContextualbarScrollableContent from './ContextualbarScrollableContent';
-import ContextualbarSection from './ContextualbarSection';
-import ContextualbarSkeleton from './ContextualbarSkeleton';
-import ContextualbarSkeletonBody from './ContextualbarSkeletonBody';
-import ContextualbarTitle from './ContextualbarTitle';
-
 export {
 	Contextualbar,
-	ContextualbarDialog,
-	ContextualbarHeader,
 	ContextualbarAction,
 	ContextualbarActions,
-	ContextualbarBack,
 	ContextualbarButton,
-	ContextualbarClose,
 	ContextualbarContent,
-	ContextualbarSkeleton,
-	ContextualbarIcon,
-	ContextualbarFooter,
-	ContextualbarTitle,
 	ContextualbarEmptyContent,
-	ContextualbarScrollableContent,
-	ContextualbarInnerContent,
+	ContextualbarFooter,
+	ContextualbarIcon,
 	ContextualbarSection,
-	ContextualbarSkeletonBody,
-};
+} from '@rocket.chat/fuselage';
+
+export { default as ContextualbarBack } from './ContextualbarBack';
+export { default as ContextualbarClose } from './ContextualbarClose';
+export { default as ContextualbarDialog } from './ContextualbarDialog';
+export { default as ContextualbarHeader } from './ContextualbarHeader';
+export { default as ContextualbarInnerContent } from './ContextualbarInnerContent';
+export { default as ContextualbarScrollableContent } from './ContextualbarScrollableContent';
+export { default as ContextualbarSkeleton } from './ContextualbarSkeleton';
+export { default as ContextualbarSkeletonBody } from './ContextualbarSkeletonBody';
+export { default as ContextualbarTitle } from './ContextualbarTitle';

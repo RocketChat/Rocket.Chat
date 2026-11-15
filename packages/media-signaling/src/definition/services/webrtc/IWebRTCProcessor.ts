@@ -4,6 +4,7 @@ import type { IClientMediaCall } from '../../call';
 import type { IMediaSignalLogger } from '../../logger';
 import type { IMediaStreamManager } from '../../media/IMediaStreamManager';
 import type { MediaStreamIdentification } from '../../media/MediaStreamIdentification';
+import type { ServerMediaSignalRemoteSDP } from '../../signals';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
 
 export type WebRTCInternalStateMap = {
@@ -48,7 +49,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	isRemoteHeld(): boolean;
 	isRemoteMute(): boolean;
 
-	setRemoteIds(streams: MediaStreamIdentification[]): void;
+	setRemoteIds(signal: ServerMediaSignalRemoteSDP): void;
 	getLocalStreamIds(): MediaStreamIdentification[];
 }
 

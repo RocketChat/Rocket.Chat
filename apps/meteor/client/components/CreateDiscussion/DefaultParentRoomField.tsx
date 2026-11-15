@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-type DefaultParentRoomFieldProps = {
+export type DefaultParentRoomFieldProps = {
 	defaultParentRoom: string;
 } & Omit<ComponentPropsWithoutRef<typeof TextInput>, 'defaultValue' | 'disabled'>;
 

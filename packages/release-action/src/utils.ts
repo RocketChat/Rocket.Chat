@@ -5,9 +5,10 @@ import path from 'node:path';
 import mdastToString from 'mdast-util-to-string';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
+import semver from 'semver';
 import unified from 'unified';
 
-import { getAppsEngineVersion, getDenoVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
+import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
 
 export const BumpLevels = {
 	dep: 0,
@@ -110,13 +111,11 @@ Bump ${pkgName} version.
 export async function getEngineVersionsMd(cwd: string) {
 	const { node } = await getNodeNpmVersions(cwd);
 	const appsEngine = await getAppsEngineVersion(cwd);
-	const deno = await getDenoVersion(cwd);
 	const mongo = await getMongoVersion(cwd);
 
 	return `### Engine versions
 
 - Node: \`${node}\`
-- Deno: \`${deno}\`
 - MongoDB: \`${mongo.join(', ')}\`
 - Apps-Engine: \`${appsEngine}\`
 
@@ -146,4 +145,11 @@ _You can see below a preview of the release change log:_
 
 ${releaseBody}
 <!-- release-notes-end -->`;
+}
+
+export function getReleaseName(version: string, ltsVersions: string[]) {
+	const parsed = semver.parse(version);
+	const isLts = !!parsed && !parsed.prerelease.length && ltsVersions.includes(`${parsed.major}.${parsed.minor}`);
+
+	return isLts ? `${version} LTS` : version;
 }

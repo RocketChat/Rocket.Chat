@@ -9,6 +9,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import { useMemo, useState } from 'react';
 
 import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const TeamsTable = () => {
@@ -34,7 +34,7 @@ const TeamsTable = () => {
 				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key='channelsCount' w='100px'>
+				<GenericTableHeaderCell key='channelsCount' width='100px'>
 					{t('Channels')}
 				</GenericTableHeaderCell>,
 				mediaQuery && (
@@ -44,7 +44,7 @@ const TeamsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						w='150px'
+						width='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>

@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, afterEach, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
@@ -539,6 +539,112 @@ describe('[Outgoing Integrations]', () => {
 						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
+			});
+		});
+	});
+
+	describe('[/integrations.clearHistory] and [/integrations.replayOutgoing]', () => {
+		let integrationId: IIntegration['_id'];
+
+		before(async () => {
+			await updatePermission('manage-outgoing-integrations', ['admin']);
+			const created = await createIntegration(
+				{
+					type: 'webhook-outgoing',
+					name: 'clear-replay-test',
+					enabled: true,
+					username: 'rocket.cat',
+					urls: ['http://example.com/hook'],
+					scriptEnabled: false,
+					channel: '#general',
+					triggerWords: ['!clearreplaytest'],
+					event: 'sendMessage',
+				},
+				credentials,
+			);
+			integrationId = created._id;
+		});
+
+		after(async () => {
+			await updatePermission('manage-outgoing-integrations', ['admin']);
+			await removeIntegration(integrationId, 'outgoing');
+			await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
+		});
+
+		// the shared method enforces the permission (no route-level permissionsRequired), so a permission
+		// failure surfaces as 400 + errorType 'not_authorized', matching integrations.create above.
+		afterEach(() => updatePermission('manage-outgoing-integrations', ['admin']));
+
+		describe('[/integrations.clearHistory]', () => {
+			it('should fail when unauthenticated', () => request.post(api('integrations.clearHistory')).send({ integrationId }).expect(401));
+
+			it('should fail with 400 when integrationId is not provided', () =>
+				request.post(api('integrations.clearHistory')).set(credentials).send({}).expect(400));
+
+			it('should fail with 400 when the integration does not exist', () =>
+				request
+					.post(api('integrations.clearHistory'))
+					.set(credentials)
+					.send({ integrationId: 'does-not-exist' })
+					.expect(400)
+					.expect((res) => expect(res.body).to.have.property('success', false)));
+
+			it('should fail with 400 when the user lacks the manage-outgoing-integrations permission', async () => {
+				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
+				await request
+					.post(api('integrations.clearHistory'))
+					.set(credentials)
+					.send({ integrationId })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'not_authorized');
+					});
+			});
+
+			it('should clear the integration history', () =>
+				request
+					.post(api('integrations.clearHistory'))
+					.set(credentials)
+					.send({ integrationId })
+					.expect(200)
+					.expect((res) => expect(res.body).to.have.property('success', true)));
+		});
+
+		describe('[/integrations.replayOutgoing]', () => {
+			it('should fail when unauthenticated', () =>
+				request.post(api('integrations.replayOutgoing')).send({ integrationId, historyId: 'x' }).expect(401));
+
+			it('should fail with 400 when required params are missing', () =>
+				request.post(api('integrations.replayOutgoing')).set(credentials).send({ integrationId }).expect(400));
+
+			it('should fail with 400 when the integration does not exist', () =>
+				request
+					.post(api('integrations.replayOutgoing'))
+					.set(credentials)
+					.send({ integrationId: 'does-not-exist', historyId: 'x' })
+					.expect(400)
+					.expect((res) => expect(res.body).to.have.property('success', false)));
+
+			it('should fail with 400 when the history does not exist', () =>
+				request
+					.post(api('integrations.replayOutgoing'))
+					.set(credentials)
+					.send({ integrationId, historyId: 'does-not-exist' })
+					.expect(400)
+					.expect((res) => expect(res.body).to.have.property('success', false)));
+
+			it('should fail with 400 when the user lacks permission (integration becomes inaccessible)', async () => {
+				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
+				await request
+					.post(api('integrations.replayOutgoing'))
+					.set(credentials)
+					.send({ integrationId, historyId: 'x' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-integration');
+					});
 			});
 		});
 	});

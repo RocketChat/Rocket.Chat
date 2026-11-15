@@ -17,8 +17,8 @@ import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
 import { camelCase } from 'lodash';
 
-import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { settings } from '../../../settings';
 import { afterParseUrlContent, beforeGetUrlContent } from '../lib/oembed/providers';
 
 const MAX_EXTERNAL_URL_PREVIEWS = 5;

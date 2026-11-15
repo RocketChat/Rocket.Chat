@@ -2,9 +2,9 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { EmojiCategory } from '../../../../app/emoji/client';
+import type { EmojiCategory } from '../../../lib/emoji';
 
-type EmojiPickerCategoryItemProps = {
+export type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;
 	active: boolean;
 	handleGoToCategory: () => void;
@@ -53,6 +53,7 @@ const EmojiPickerCategoryItem = ({ category, active, handleGoToCategory, ...prop
 		<IconButton
 			role='tab'
 			pressed={active}
+			aria-selected={active}
 			title={t(category.i18n)}
 			className={category.key}
 			small

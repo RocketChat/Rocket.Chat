@@ -4,7 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 
 import type { GenericCardButton } from './GenericCardButton';
 
-type GenericCardProps = {
+export type GenericCardProps = {
 	title: string;
 	body: string;
 	buttons?: ReactElement<typeof GenericCardButton>[];

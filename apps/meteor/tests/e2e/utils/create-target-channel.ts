@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker';
+import { request as baseRequest } from '@playwright/test';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
+import { BASE_API_URL } from '../config/constants';
 
 /**
  * createTargetChannel:
@@ -45,8 +47,45 @@ export async function deleteChannel(api: BaseTest['api'], roomName: string): Pro
 	await api.post('/channels.delete', { roomName });
 }
 
+export async function isChannelMember(api: BaseTest['api'], roomName: string, username: string): Promise<boolean> {
+	const response = await api.get(`/channels.members?roomName=${roomName}`);
+	const { members }: { members: { username: string }[] } = await response.json();
+	return members.some((member) => member.username === username);
+}
+
 export async function deleteRoom(api: BaseTest['api'], roomId: string): Promise<void> {
 	await api.post('/rooms.delete', { roomId });
+}
+
+export async function deletePrivateRoomsByName(credentials: { username: string; password: string }, roomNames: string[]): Promise<void> {
+	const userApi = await baseRequest.newContext();
+
+	try {
+		const loginResponse = await userApi.post(`${BASE_API_URL}/login`, { data: credentials });
+
+		if (!loginResponse.ok()) {
+			return;
+		}
+
+		const { data } = await loginResponse.json();
+		await Promise.allSettled(
+			roomNames.map((roomName) =>
+				userApi.post(`${BASE_API_URL}/groups.delete`, {
+					data: { roomName },
+					headers: {
+						'X-Auth-Token': data.authToken,
+						'X-User-Id': data.userId,
+					},
+				}),
+			),
+		);
+	} finally {
+		await userApi.dispose();
+	}
+}
+
+export async function markRoomAsRead(api: BaseTest['api'], roomId: string): Promise<void> {
+	await api.post('/subscriptions.read', { rid: roomId });
 }
 
 export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {

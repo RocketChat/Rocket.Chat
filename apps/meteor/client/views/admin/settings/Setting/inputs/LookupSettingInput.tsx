@@ -2,13 +2,12 @@ import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fus
 import type { PathPattern } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 import { miscQueryKeys } from '../../../../../lib/queryKeys';
 
-type LookupSettingInputProps = SettingInputProps & {
+export type LookupSettingInputProps = SettingInputProps & {
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
 };
 
@@ -26,7 +25,7 @@ function LookupSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: LookupSettingInputProps): ReactElement {
+}: LookupSettingInputProps) {
 	const handleChange = (value: string): void => {
 		onChangeValue?.(value);
 	};

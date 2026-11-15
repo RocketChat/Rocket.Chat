@@ -77,7 +77,7 @@ const EditorPanel = () => {
 						className={tabChangeStyle(editorTabsToggle)}
 					>
 						{Object.values(tabsItem).map(({ Container: ContainerComponent }, index) => (
-							<Fragment key={index}>{index === editorTabsToggle ? <ContainerComponent /> : <Box w='100%' h='100%' />}</Fragment>
+							<Fragment key={index}>{index === editorTabsToggle ? <ContainerComponent /> : <Box width='100%' height='100%' />}</Fragment>
 						))}
 					</Box>
 				</Box>

@@ -1,9 +1,9 @@
 import debounce from 'lodash.debounce';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { initCustomOAuthServices } from '../lib/oauth/initCustomOAuthServices';
 import { removeOAuthService } from '../lib/oauth/removeOAuthService';
 import { updateOAuthServices } from '../lib/oauth/updateOAuthServices';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureOAuth(settings: ICachedSettings): Promise<void> {
 	const _updateOAuthServices = debounce(updateOAuthServices, 2000);

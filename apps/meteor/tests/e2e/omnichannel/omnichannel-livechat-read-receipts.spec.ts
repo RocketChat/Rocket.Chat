@@ -63,9 +63,14 @@ test.describe('OC - Livechat - Read Receipts', () => {
 		});
 
 		await test.step('agent reads the message', async () => {
+			const markedAsRead = agentPage.waitForResponse(
+				(res) => /api\/v1\/subscriptions\.read(?:\/|\?|$)/.test(res.url()) && res.request().method() === 'POST',
+			);
 			await poHomeOmnichannel.navbar.openChat(visitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText(testMessage);
+			await markedAsRead;
+			await expect(poHomeOmnichannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 		});
 
 		await test.step('read receipts show both agent and visitor names', async () => {

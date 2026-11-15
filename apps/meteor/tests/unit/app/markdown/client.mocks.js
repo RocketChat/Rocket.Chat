@@ -19,6 +19,6 @@ const mocks = {
 	},
 };
 
-export const { Markdown } = proxyquire.noCallThru().load('../../../../app/markdown/lib/markdown', mocks);
-export const { original } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/original/original', mocks);
-export const { filtered } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/filtered/filtered', mocks);
+export const { Markdown } = proxyquire.noCallThru().load('../../../../lib/markdown/markdown', mocks);
+export const { original } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/original/original', mocks);
+export const { filtered } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/filtered/filtered', mocks);

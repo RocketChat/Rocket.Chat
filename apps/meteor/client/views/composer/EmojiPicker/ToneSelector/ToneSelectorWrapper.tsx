@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type ToneSelectorWrapperProps = {
+export type ToneSelectorWrapperProps = {
 	caption: string;
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'caption'>;
 

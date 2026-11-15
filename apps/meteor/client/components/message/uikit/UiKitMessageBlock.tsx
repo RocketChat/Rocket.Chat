@@ -6,7 +6,7 @@ import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { useMessageBlockContextValue } from '../../../uikit/hooks/useMessageBlockContextValue';
 import GazzodownText from '../../GazzodownText';
 
-type UiKitMessageBlockProps = {
+export type UiKitMessageBlockProps = {
 	rid: IRoom['_id'];
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;

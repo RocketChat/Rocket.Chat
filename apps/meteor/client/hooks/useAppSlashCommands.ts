@@ -4,8 +4,8 @@ import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { slashCommands } from '../../app/utils/client/slashCommand';
 import { appsQueryKeys } from '../lib/queryKeys';
+import { slashCommands } from '../lib/slashCommand';
 
 type SlashCommandBasicInfo = Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>;
 
@@ -52,9 +52,10 @@ export const useAppSlashCommands = () => {
 		// Add a bit of randomness to avoid thundering herd problem
 		retryDelay: (attemptIndex) => Math.min(500 * Math.random() * 10 * 2 ** attemptIndex, 30000),
 		queryFn: async () => {
-			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
+			const fetchBatch = async (accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
+				// TODO: make `API_Upper_Count_Limit` public and use it here instead of this guess
 				const count = 50;
-				const { commands, appsLoaded, total } = await getSlashCommands({ offset: currentOffset, count });
+				const { commands, appsLoaded, total } = await getSlashCommands({ offset: accumulator.length, count });
 
 				if (!appsLoaded) {
 					throw new Error('Apps not loaded, retry later');
@@ -62,14 +63,14 @@ export const useAppSlashCommands = () => {
 
 				const newAccumulator = [...accumulator, ...commands];
 
-				if (newAccumulator.length < total) {
-					return fetchBatch(currentOffset + count, newAccumulator);
+				if (commands.length > 0 && newAccumulator.length < total) {
+					return fetchBatch(newAccumulator);
 				}
 
 				return newAccumulator;
 			};
 
-			return fetchBatch(0);
+			return fetchBatch();
 		},
 	});
 

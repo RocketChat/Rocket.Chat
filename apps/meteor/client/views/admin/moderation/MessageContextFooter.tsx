@@ -7,7 +7,7 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-type MessageContextFooterProps = { userId: string; deleted: boolean };
+export type MessageContextFooterProps = { userId: string; deleted: boolean };
 
 const MessageContextFooter = ({ userId, deleted }: MessageContextFooterProps) => {
 	const { t } = useTranslation();

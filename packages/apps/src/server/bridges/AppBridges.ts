@@ -1,6 +1,7 @@
 import type { ApiBridge } from './ApiBridge';
 import type { AppActivationBridge } from './AppActivationBridge';
 import type { AppDetailChangesBridge } from './AppDetailChangesBridge';
+import type { CallHistoryBridge } from './CallHistoryBridge';
 import type { CloudWorkspaceBridge } from './CloudWorkspaceBridge';
 import type { CommandBridge } from './CommandBridge';
 import type { ContactBridge } from './ContactBridge';
@@ -52,7 +53,8 @@ export type Bridge =
 	| OAuthAppsBridge
 	| ModerationBridge
 	| RoleBridge
-	| OutboundMessageBridge;
+	| OutboundMessageBridge
+	| CallHistoryBridge;
 
 export abstract class AppBridges {
 	public abstract getCommandBridge(): CommandBridge;
@@ -110,4 +112,6 @@ export abstract class AppBridges {
 	public abstract getOutboundMessageBridge(): OutboundMessageBridge;
 
 	public abstract getExperimentalBridge(): ExperimentalBridge;
+
+	public abstract getCallHistoryBridge(): CallHistoryBridge;
 }

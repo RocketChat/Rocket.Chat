@@ -1,6 +1,5 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
-import { format } from 'date-fns';
-import type { ReactElement } from 'react';
+import { format } from 'date-fns/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,7 @@ import { usePeriodSelectorState } from '../../../../components/dashboards/usePer
 import Growth from '../../../../components/dataView/Growth';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 
-const ChannelsOverview = (): ReactElement => {
+const ChannelsOverview = () => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const { t } = useTranslation();
@@ -121,7 +120,7 @@ const ChannelsOverview = (): ReactElement => {
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={(): string => t('Items_per_page:')}
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
+						t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
 					}
 					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}

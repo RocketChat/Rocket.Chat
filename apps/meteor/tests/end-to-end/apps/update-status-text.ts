@@ -67,9 +67,7 @@ const APP_USERNAME = 'update-status-test.bot';
 			expect(appUser.statusText).to.be.equal(statusText);
 		});
 
-		it('should update status without changing statusText', async () => {
-			const userBefore = await getUserByUsername(APP_USERNAME);
-
+		it('should clear statusText when status is updated without providing statusText', async () => {
 			await request
 				.post(apps(`/public/${app.id}/update-status`))
 				.set(credentials)
@@ -78,10 +76,9 @@ const APP_USERNAME = 'update-status-test.bot';
 
 			const appUser = await getUserByUsername(APP_USERNAME);
 
-			// We can't test the status value because the Presence service will override it with OFFLINE
-			// when the user doesn't have an active session/connection
-			// expect(appUser.status).to.equal(status);
-			expect(appUser.statusText).to.be.equal(userBefore.statusText);
+			// The test app defaults statusText to '' when not provided,
+			// so the presence engine correctly clears it
+			expect(appUser.statusText).to.be.equal('');
 		});
 	});
 });

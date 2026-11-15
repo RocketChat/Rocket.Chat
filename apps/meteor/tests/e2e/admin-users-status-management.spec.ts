@@ -36,7 +36,7 @@ test.describe.serial('Admin > Users', () => {
 		});
 
 		test('Login as a newly created user and verify its status is active', async () => {
-			await page.goto('/login');
+			await poLogin.goto('/login');
 			await test.step('should log in as the newly created user', async () => {
 				await poLogin.login(user.data.username, DEFAULT_USER_CREDENTIALS.password);
 			});
@@ -52,7 +52,7 @@ test.describe.serial('Admin > Users', () => {
 
 		test.beforeEach('Go to /admin/users', async ({ page }) => {
 			adminUsers = new AdminUsers(page);
-			await page.goto('/admin/users');
+			await adminUsers.goto();
 		});
 
 		test('After the first login, the user gets listed under the Active tab', async () => {

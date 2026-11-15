@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('VoIP_TeamCollab', async function () {
@@ -13,7 +13,6 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						public: true,
 						invalidValue: false,
-						alert: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Alert',
 						i18nDescription: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Description',
 					});
 

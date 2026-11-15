@@ -107,7 +107,7 @@ const modelsMock = {
 
 const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
 	'@rocket.chat/models': modelsMock,
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: {
 			get: (_key: string) => {
 				return undefined;
@@ -121,16 +121,16 @@ const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomM
 	},
 });
 
-const { requestDataDownload } = proxyquire.noCallThru().load('../../methods/requestDataDownload.ts', {
+const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-methods/platform/requestDataDownload.ts', {
 	'@rocket.chat/models': modelsMock,
-	'../../app/settings/server': {
+	'../../settings': {
 		settings: {
 			get: (_key: string) => {
 				return undefined;
 			},
 		},
 	},
-	'../lib/dataExport': {
+	'../../lib/dataExport': {
 		getPath: (fileId: string) => `/data-download/${fileId}`,
 	},
 	'meteor/meteor': {
@@ -149,21 +149,21 @@ const { requestDataDownload } = proxyquire.noCallThru().load('../../methods/requ
 
 const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDownloads.ts', {
 	'@rocket.chat/models': modelsMock,
-	'../../../app/file-upload/server': {
+	'../media/file-upload': {
 		FileUpload: {
 			copy: async (fileId: string, _options: any) => {
 				return `copied-${fileId}`;
 			},
 		},
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: {
 			get: (_key: string) => {
 				return undefined;
 			},
 		},
 	},
-	'../../../app/utils/server/getURL': {
+	'../utils/getURL': {
 		getURL: (path: string) => `https://example.com${path}`,
 	},
 	'../i18n': {

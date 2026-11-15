@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { DragEvent, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
@@ -44,7 +44,7 @@ export const useFileUploadDropTarget = (): readonly [
 		chat?.composer?.editing.get ?? (() => false),
 	);
 
-	const onFileDrop = useEffectEvent(async (files: File[]) => {
+	const onFileDrop = useStableCallback(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];

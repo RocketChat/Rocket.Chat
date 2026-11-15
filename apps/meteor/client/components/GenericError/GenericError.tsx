@@ -2,7 +2,7 @@ import { Box, States, StatesIcon, StatesTitle, StatesActions, StatesAction } fro
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from 'react-i18next';
 
-type GenericErrorProps = {
+export type GenericErrorProps = {
 	icon?: IconName;
 	title?: string;
 	buttonTitle?: string;

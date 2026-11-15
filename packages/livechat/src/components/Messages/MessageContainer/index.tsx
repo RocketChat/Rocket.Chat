@@ -5,7 +5,7 @@ import { memo } from 'preact/compat';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type MessageContainerProps = {
+export type MessageContainerProps = {
 	id?: string;
 	compact?: boolean;
 	reverse?: boolean;

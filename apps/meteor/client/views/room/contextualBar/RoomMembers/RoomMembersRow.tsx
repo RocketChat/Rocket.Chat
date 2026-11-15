@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { memo } from 'react';
 
 import RoomMembersItem from './RoomMembersItem';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersRowProps = {
+export type RoomMembersRowProps = {
 	user: Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'>;
 	data: {
 		onClickView: (e: MouseEvent<HTMLElement>) => void;
@@ -16,7 +16,7 @@ type RoomMembersRowProps = {
 	useRealName: boolean;
 };
 
-const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps): ReactElement => {
+const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps) => {
 	if (!user?._id) {
 		return <RoomMembersItem.Skeleton />;
 	}

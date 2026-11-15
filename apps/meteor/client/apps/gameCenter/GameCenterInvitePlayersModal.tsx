@@ -2,16 +2,14 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { sdk } from '../../lib/SDKClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { callWithErrorHandling } from '../../lib/utils/callWithErrorHandling';
 
 type Username = Exclude<IUser['username'], undefined>;
 
@@ -20,7 +18,7 @@ interface IGameCenterInvitePlayersModalProps {
 	onClose: () => void;
 }
 
-const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayersModalProps): ReactElement => {
+const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayersModalProps) => {
 	const { t } = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 	const { name } = game;
@@ -36,10 +34,12 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 			roomCoordinator.openRouteLink(group.t, { rid: group._id, name: group.name });
 
 			if (openedRoom === group._id) {
-				await callWithErrorHandling('sendMessage', {
-					_id: Random.id(),
-					rid: group._id,
-					msg: t('Apps_Game_Center_Play_Game_Together', { name }),
+				await sdk.rest.post('/v1/chat.sendMessage', {
+					message: {
+						_id: Random.id(),
+						rid: group._id,
+						msg: t('Apps_Game_Center_Play_Game_Together', { name }),
+					},
 				});
 			}
 			onClose();
@@ -51,8 +51,8 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 	return (
 		<>
 			<GenericModal onClose={onClose} onCancel={onClose} onConfirm={sendInvite} title={t('Apps_Game_Center_Invite_Friends')}>
-				<Box mbe={16}>{t('Invite_Users')}</Box>
-				<Box mbe={16} display='flex' justifyContent='stretch'>
+				<Box marginBlockEnd={16}>{t('Invite_Users')}</Box>
+				<Box marginBlockEnd={16} display='flex' justifyContent='stretch'>
 					<UserAutoCompleteMultiple value={users} onChange={setUsers} federated />
 				</Box>
 			</GenericModal>

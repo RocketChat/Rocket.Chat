@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`renders Default without crashing 1`] = `
+exports[`renders Default with stable structure 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -15,12 +15,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -53,13 +53,13 @@ exports[`renders Default without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r0:"
+                aria-controls="_r_6_"
                 aria-label="Search_Messages"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_Messages"
@@ -90,26 +90,998 @@ exports[`renders Default without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":r0:"
+              id="_r_6_"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+                class="rcx-box rcx-box--full rcx-css-1cb6i7s"
+                style="min-height: 0;"
               >
-                <div
-                  data-testid="virtuoso-scroller"
-                  data-virtuoso-scroller="true"
-                  style="height: 1px; outline: none; overflow-y: auto; position: relative; width: 378px;"
-                  tabindex="-1"
-                >
-                  <div
-                    data-viewport-type="element"
-                    style="height: 100%; position: absolute; top: 0px; width: 100%;"
+                <div>
+                  <ul
+                    data-testid="discussions-virtual-list"
+                    style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                   >
-                    <div
-                      data-testid="virtuoso-item-list"
-                      style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
-                    />
-                  </div>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-0"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 0
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-1"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 1
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-2"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 2
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-3"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 3
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-4"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 4
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-5"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 5
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-6"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 6
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-7"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 7
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-8"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 8
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <div
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
+                          data-drid="drid-9"
+                          tabindex="0"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                          >
+                            <figure
+                              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            >
+                              <img
+                                alt="Avatar"
+                                aria-hidden="true"
+                                class="rcx-avatar__element rcx-avatar__element--x36"
+                                data-username="user.name"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                title="user.name"
+                              />
+                            </figure>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-message-container"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-header"
+                            >
+                              <div
+                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__name"
+                                  title="user.name"
+                                >
+                                  user.name
+                                </span>
+                                <span
+                                  class="rcx-box rcx-box--full rcx-message-header__time"
+                                >
+                                  January 1st, 2024
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                            >
+                              <div>
+                                Discussion 9
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-message-block"
+                            >
+                              <div
+                                class="rcx-message-metrics__content-item"
+                              >
+                                <div
+                                  class="rcx-message-metrics__content-wrapper"
+                                >
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      5
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="rcx-message-metrics__item"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                                    >
+                                      
+                                    </i>
+                                    <div
+                                      class="rcx-message-metrics__item-label"
+                                    >
+                                      January 1st, 2024
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -129,7 +1101,7 @@ exports[`renders Default without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -155,11 +1127,11 @@ exports[`renders Default without crashing 1`] = `
 </body>
 `;
 
-exports[`renders Empty without crashing 1`] = `
+exports[`renders Empty with stable structure 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -170,12 +1142,12 @@ exports[`renders Empty without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -208,13 +1180,13 @@ exports[`renders Empty without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r2:"
+                aria-controls="_r_8_"
                 aria-label="Search_Messages"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_Messages"
@@ -245,7 +1217,7 @@ exports[`renders Empty without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":r2:"
+              id="_r_8_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"
@@ -283,7 +1255,7 @@ exports[`renders Empty without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -309,11 +1281,11 @@ exports[`renders Empty without crashing 1`] = `
 </body>
 `;
 
-exports[`renders Loading without crashing 1`] = `
+exports[`renders Loading with stable structure 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -324,12 +1296,12 @@ exports[`renders Loading without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -362,7 +1334,7 @@ exports[`renders Loading without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -427,7 +1399,7 @@ exports[`renders Loading without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div

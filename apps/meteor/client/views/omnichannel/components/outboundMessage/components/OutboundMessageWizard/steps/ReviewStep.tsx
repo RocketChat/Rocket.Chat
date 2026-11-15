@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import OutboundMessagePreview from '../../OutboundMessagePreview';
 
-type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
+export type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
 	onSend(): Promise<void>;
 };
 

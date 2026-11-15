@@ -22,7 +22,7 @@ const PrototypeContainer = () => {
 
 	return (
 		<Scrollable vertical>
-			<Box w='100%' h='100%'>
+			<Box width='100%' height='100%'>
 				<PrototypeRender
 					surface={surface}
 					blocks={blocks}

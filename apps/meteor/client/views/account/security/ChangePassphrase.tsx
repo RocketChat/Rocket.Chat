@@ -42,7 +42,7 @@ const defaultValues = {
 	confirmationPassphrase: '',
 };
 
-export const ChangePassphrase = (): JSX.Element => {
+export const ChangePassphrase = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -101,11 +101,11 @@ export const ChangePassphrase = (): JSX.Element => {
 			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
 			</Box>
-			<Box mbs={36} w='full'>
-				<Box is='h3' fontScale='h4' mbe={12}>
+			<Box marginBlockStart={36} width='full'>
+				<Box is='h3' fontScale='h4' marginBlockEnd={12}>
 					{t('Change_E2EE_password')}
 				</Box>
-				<FieldGroup w='full'>
+				<FieldGroup width='full'>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
 						<FieldRow>
@@ -192,7 +192,7 @@ export const ChangePassphrase = (): JSX.Element => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} mbs={12}>
+				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} marginBlockStart={12}>
 					{t('Save_changes')}
 				</Button>
 			</Box>

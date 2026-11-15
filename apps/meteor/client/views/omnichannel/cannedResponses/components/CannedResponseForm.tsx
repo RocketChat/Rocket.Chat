@@ -63,7 +63,7 @@ const CannedResponseForm = () => {
 				)}
 			</Field>
 			<Field>
-				<FieldLabel htmlFor={messageField} w='full' display='flex' flexDirection='row' justifyContent='space-between'>
+				<FieldLabel htmlFor={messageField} width='full' display='flex' flexDirection='row' justifyContent='space-between'>
 					{t('Message')}
 					{text !== '' && (
 						<Box className={clickable} color='info' onClick={() => setPreview(!preview)}>

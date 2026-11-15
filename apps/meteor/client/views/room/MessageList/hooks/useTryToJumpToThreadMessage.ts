@@ -3,7 +3,6 @@ import { useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { RoomManager } from '../../../../lib/RoomManager';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
@@ -11,6 +10,7 @@ import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 const useTryToJumpToThreadMessage = (): void => {
 	const messageJumpParam = useSearchParameter('msg');
+	const messageJumpContext = useSearchParameter('jumpContext');
 	const goToRoom = useGoToRoom();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
@@ -28,7 +28,7 @@ const useTryToJumpToThreadMessage = (): void => {
 	});
 
 	useEffect(() => {
-		if (!messageJumpParam) {
+		if (!messageJumpParam || messageJumpContext === 'jumpToUnread') {
 			return;
 		}
 
@@ -39,7 +39,6 @@ const useTryToJumpToThreadMessage = (): void => {
 		if (!isThreadMessage(message) && !isThreadMainMessage(message)) {
 			return;
 		}
-
 		if (tab === 'thread' && (context === message.tmid || context === message._id)) {
 			return;
 		}
@@ -49,14 +48,8 @@ const useTryToJumpToThreadMessage = (): void => {
 				routeParamsOverrides: { tab: 'thread', context: message.tmid || message._id },
 				replace: RoomManager.opened === message.rid,
 			});
-
-			if (message.tcount) {
-				await RoomHistoryManager.getSurroundingMessages(message);
-			} else if (!RoomHistoryManager.isLoaded(message.rid)) {
-				await RoomHistoryManager.getMore(message.rid);
-			}
 		})();
-	}, [messageJumpParam, message, goToRoom, tab, context]);
+	}, [messageJumpParam, message, goToRoom, tab, context, messageJumpContext]);
 };
 
 export default useTryToJumpToThreadMessage;

@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <a
+      class="rcx-box rcx-box--full rcx-css-fyntbe"
+      href="#"
+    >
+      Default
+    </a>
+  </div>
+</body>
+`;
+
+exports[`renders WithFontScale without crashing 1`] = `
+<body>
+  <div>
+    <a
+      class="rcx-box rcx-box--full rcx-css-15096h2"
+      href="#"
+    >
+      With font scale
+    </a>
+  </div>
+</body>
+`;

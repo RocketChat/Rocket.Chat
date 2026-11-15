@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLogout } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -13,13 +13,13 @@ import { useUserDropdownAppsActionButtons } from '../../../../hooks/useUserDropd
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
 
-	const statusItems = useStatusItems();
+	const statusItems = useStatusItems(user);
 	const accountItems = useAccountItems();
 	const appBoxItems = useUserDropdownAppsActionButtons();
 	const handleKeyboardShortcuts = useKeyboardShortcutsModalHandler();
 
 	const logout = useLogout();
-	const handleLogout = useEffectEvent(() => {
+	const handleLogout = useStableCallback(() => {
 		logout();
 	});
 

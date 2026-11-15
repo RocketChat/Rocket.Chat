@@ -1,11 +1,11 @@
 import { usePermission, useSetModal, useCurrentModal, useRouter, useRouteParameter, useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACPage from './AdminABACPage';
 import type { ABACTab } from './hooks/useABACTabPermissions';
 import { ABAC_TAB_ORDER, useABACTabPermissions } from './hooks/useABACTabPermissions';
+import { useIsExternalAttributeStore } from './hooks/useIsExternalAttributeStore';
 import ABACUpsellModal from '../../../components/ABAC/ABACUpsellModal/ABACUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -14,7 +14,7 @@ import SettingsProvider from '../../../providers/SettingsProvider';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
-const AdminABACRoute = (): ReactElement => {
+const AdminABACRoute = () => {
 	const { t } = useTranslation();
 	const canViewABACPage = usePermission('abac-management');
 	const { data: hasABAC = false } = useHasLicenseModule('abac');
@@ -22,8 +22,12 @@ const AdminABACRoute = (): ReactElement => {
 	const tab = useRouteParameter('tab');
 	const router = useRouter();
 	const tabPermissions = useABACTabPermissions();
-	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t]);
-	const isAllowedTab = (ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') && tabPermissions[tab as ABACTab];
+	const isExternalStore = useIsExternalAttributeStore();
+	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t] && !(t === 'room-attributes' && isExternalStore));
+	const isAllowedTab =
+		(ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') &&
+		tabPermissions[tab as ABACTab] &&
+		!(tab === 'room-attributes' && isExternalStore);
 
 	const ABACEnabledSetting = useSettingStructure('ABAC_Enabled');
 

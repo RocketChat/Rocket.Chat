@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import type { SuccessResult } from '../../../../app/api/server/definition';
+import type { SuccessResult } from '../../../../server/api/definition';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
@@ -664,11 +664,14 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
 
-			await closeOmnichannelRoom(expectedRoom._id);
-			await closeOmnichannelRoom(expectedRoom2._id);
-			await deleteVisitor(expectedVisitor.token);
-			await deleteVisitor(expectedVisitor2.token);
-			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
+			// close both rooms before removing visitors/departments (deleting a department with an open room fails)
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), closeOmnichannelRoom(expectedRoom2._id)]);
+			await Promise.all([
+				deleteVisitor(expectedVisitor.token),
+				deleteVisitor(expectedVisitor2.token),
+				deleteDepartment(department._id),
+				deleteDepartment(department2._id),
+			]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
 			const tag = await saveTags();
@@ -1168,6 +1171,105 @@ describe('LIVECHAT - rooms', () => {
 					.expect(400);
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
+			});
+		});
+	});
+
+	describe('livechat/rooms.delete', () => {
+		const createRoomForDeletion = async () => {
+			const visitor = await createVisitor(undefined, `delete-room-${faker.string.uuid()}`);
+			const room = await createLivechatRoom(visitor.token);
+
+			return { room, visitor };
+		};
+
+		it('should fail if user is not logged in', async () => {
+			await request
+				.post(api('livechat/rooms.delete'))
+				.send({ roomId: 'invalid-room-id' })
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
+				});
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('livechat/rooms.delete'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes("must have required property 'roomId'");
+				});
+		});
+
+		it('should fail if the livechat room is still open', async () => {
+			const { room, visitor } = await createRoomForDeletion();
+
+			await request
+				.post(api('livechat/rooms.delete'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should delete a closed livechat room', async () => {
+			const { room, visitor } = await createRoomForDeletion();
+
+			await closeOmnichannelRoom(room._id);
+
+			await request
+				.post(api('livechat/rooms.delete'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: room._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				});
+
+			await deleteVisitor(visitor.token);
+		});
+
+		describe('with no permission', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('remove-closed-livechat-room');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('remove-closed-livechat-room');
+			});
+
+			it('should fail if user does not have the remove-closed-livechat-room permission', async () => {
+				await request
+					.post(api('livechat/rooms.delete'))
+					.set(credentials)
+					.send({ roomId: 'invalid-room-id' })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					});
 			});
 		});
 	});
@@ -1688,10 +1790,12 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry).to.have.property('department', targetDepartment._id);
 				expect(inquiry).to.have.property('status', 'queued');
 
+				// the room ends queued (never taken), so close it as the visitor — room.closeByUser rejects a room that is not being served
+				await request.post(api('livechat/room.close')).send({ rid: newRoom._id, token: newVisitor.token }).expect(200);
+
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(targetDepartment._id),
-					closeOmnichannelRoom(newRoom._id),
 					deleteVisitor(newVisitor.token),
 					deleteUser(manager),
 					updateSetting('Livechat_waiting_queue', false),
@@ -2624,6 +2728,7 @@ describe('LIVECHAT - rooms', () => {
 		describe('with room', () => {
 			let visitor: ILivechatVisitor;
 			let room: IOmnichannelRoom;
+			const agentsToDelete: IUser[] = [];
 
 			before(async () => {
 				visitor = await createVisitor();
@@ -2633,6 +2738,7 @@ describe('LIVECHAT - rooms', () => {
 			after(async () => {
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
+				await Promise.all(agentsToDelete.map((agent) => deleteUser(agent)));
 			});
 
 			it('should return empty for a room without transfer history', async () => {
@@ -2647,11 +2753,13 @@ describe('LIVECHAT - rooms', () => {
 			});
 			it('should return the transfer history for a room', async () => {
 				const initialAgentAssignedToChat = await createUser();
+				agentsToDelete.push(initialAgentAssignedToChat);
 				const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 				await createAgent(initialAgentAssignedToChat.username);
 				await makeAgentAvailable(initialAgentCredentials);
 
 				const forwardChatToUser = await createUser();
+				agentsToDelete.push(forwardChatToUser);
 				const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
 				await createAgent(forwardChatToUser.username);
 				await makeAgentAvailable(forwardChatToUserCredentials);
@@ -2683,10 +2791,6 @@ describe('LIVECHAT - rooms', () => {
 				expect(body.history[0]).to.have.property('scope', 'agent');
 				expect(body.history[0]).to.have.property('comment', 'test comment');
 				expect(body.history[0]).to.have.property('transferredBy').that.is.an('object');
-
-				// cleanup
-				await deleteUser(initialAgentAssignedToChat);
-				await deleteUser(forwardChatToUser);
 			});
 		});
 	});

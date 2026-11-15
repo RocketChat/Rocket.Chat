@@ -24,7 +24,7 @@ export const SubscriptionCalloutLimits = () => {
 	return (
 		<>
 			{start_fair_policy && (
-				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')} m={8}>
+				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')} margin={8}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsReached'
 						count={start_fair_policy.length}
@@ -46,7 +46,7 @@ export const SubscriptionCalloutLimits = () => {
 			)}
 
 			{prevent_action && (
-				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} m={8}>
+				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} margin={8}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsExceeded'
 						count={prevent_action.length}
@@ -68,7 +68,7 @@ export const SubscriptionCalloutLimits = () => {
 			)}
 
 			{disable_modules && (
-				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')} m={8}>
+				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')} margin={8}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsExceeded'
 						count={disable_modules.length}
@@ -90,7 +90,7 @@ export const SubscriptionCalloutLimits = () => {
 			)}
 
 			{invalidate_license && (
-				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')} m={8}>
+				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')} margin={8}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsExceeded'
 						count={disable_modules.length}

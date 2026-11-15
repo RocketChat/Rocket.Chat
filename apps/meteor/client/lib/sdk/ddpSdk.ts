@@ -1,10 +1,9 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
-import { createMeteorBackedSdk } from './meteorBackedSdk';
+import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
+import { onEmailVerificationLink, onPageLoadLogin, setConnectionUserId } from '../../meteor/accounts';
 import { getRootUrl } from '../meteorRuntimeConfig';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from './storage';
 import { userIdStore } from '../user';
@@ -30,7 +29,8 @@ const applyEjsonEncoding = (sdk: DDPSDK): void => {
 };
 
 const startConnect = (sdk: DDPSDK): Promise<unknown> => {
-	if (connectPromise) return connectPromise;
+	// Only share an in-flight attempt; a settled promise from an earlier connection would turn a manual reconnect into a no-op.
+	if (connectPromise && sdk.connection.status === 'connecting') return connectPromise;
 	connectPromise = sdk.connection.connect().catch((err) => {
 		console.warn('[ddpSdk] connect failed', err);
 		// Allow a retry on the next call.
@@ -52,7 +52,17 @@ const waitForConnected = (sdk: DDPSDK): Promise<void> => {
 export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
-			instance = DDPSDK.create(computeDdpUrl());
+			// The stubbed Meteor stream never reconnects on its own, so keep retrying until the server
+			// is back (e.g. a restart) instead of giving up after DDPSDK's default single retry.
+			instance = DDPSDK.create(computeDdpUrl(), { retryCount: Infinity, retryTime: 1000 });
+			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
+			try {
+				instance.storage = createMeteorBackedStorage();
+			} catch (error) {
+				// DDPSDK.create may return a sealed/frozen instance under strict mode; failing
+				// to attach the storage hook must not abort SDK bootstrap.
+				console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
+			}
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
@@ -68,7 +78,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+export const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
 let inflightLogin: Promise<void> | undefined;
 
@@ -143,22 +153,41 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 			// latter dispatches a `logout` method which itself races against
 			// parallel re-auth flows in CI's parallel-shard environment and
 			// kicked otherwise-healthy tests out.
-			removeStoredItem(STORAGE_KEYS.USER_ID);
-			removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
-			removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
-			Meteor.connection.setUserId(null);
+			clearStoredCredentials();
 			return;
 		}
 		console.warn('[ddpSdk] loginWithToken failed', error);
 	}
 };
 
-const isAuthError = (error: unknown): boolean => {
+/**
+ * Drop the local session credentials without dispatching Meteor's `logout`
+ * method. Nulling the connection userId propagates through the
+ * Accounts.connection.userId() Tracker.autorun (see overrides/userAndUsers.ts)
+ * into the userIdStore, so `useUserId()` becomes undefined and the router falls
+ * through to LoginPage. We avoid `Meteor.logout()` on purpose: it dispatches a
+ * `logout` method that races parallel re-auth flows (fresh registration,
+ * Meteor's own resume) and has kicked otherwise-healthy sessions/tests out.
+ */
+export const clearStoredCredentials = (): void => {
+	removeStoredItem(STORAGE_KEYS.USER_ID);
+	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
+	setConnectionUserId(null);
+};
+
+export const isAuthError = (error: unknown): boolean => {
 	if (!error || typeof error !== 'object') return false;
-	const e = error as { error?: unknown; reason?: unknown };
+	const e = error as { error?: unknown; reason?: unknown; status?: unknown; statusCode?: unknown };
 	return (
 		e.error === 401 ||
 		e.error === 403 ||
+		// REST-shaped failures (e.g. sdk.rest.get('/v1/me'), userData stream
+		// `nosub`) surface the HTTP status instead of a DDP `error` code.
+		e.status === 401 ||
+		e.status === 403 ||
+		e.statusCode === 401 ||
+		e.statusCode === 403 ||
 		e.reason === 'User not found' ||
 		e.reason === 'Login token expired' ||
 		e.reason === 'You are not allowed to use this token'
@@ -296,10 +325,10 @@ if (typeof window !== 'undefined' && isSdkTransportEnabled()) {
 	// resolution (page load login). Register one bridge per event; AccountImpl's
 	// emitter fans out to whatever consumers attached via onEmailVerificationLink
 	// / onPageLoadLogin.
-	Accounts.onEmailVerificationLink((token: string) => {
+	onEmailVerificationLink((token: string) => {
 		sdk.account.emit('emailVerificationLink', token);
 	});
-	Accounts.onPageLoadLogin((loginAttempt: unknown) => {
+	onPageLoadLogin((loginAttempt: unknown) => {
 		sdk.account.emit('pageLoadLogin', loginAttempt);
 	});
 }

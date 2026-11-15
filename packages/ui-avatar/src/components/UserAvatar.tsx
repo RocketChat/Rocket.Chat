@@ -14,7 +14,7 @@ type UserIdProp = {
 	userId: string;
 	username?: never;
 };
-type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
+export type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 	etag?: string | null;
 	url?: string;
 	title?: string;

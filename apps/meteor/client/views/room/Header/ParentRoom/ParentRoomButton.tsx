@@ -1,7 +1,7 @@
 import { IconButton, Skeleton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-type ParentRoomButtonProps = Omit<ComponentProps<typeof IconButton>, 'icon'> & { loading: boolean };
+export type ParentRoomButtonProps = Omit<ComponentProps<typeof IconButton>, 'icon'> & { loading: boolean };
 
 const ParentRoomButton = ({ loading, ...props }: ParentRoomButtonProps) => {
 	if (loading) {

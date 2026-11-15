@@ -51,7 +51,7 @@ export const registerAccountRoute = createRouteGroup(
 
 registerAccountRoute('/preferences', {
 	name: 'preferences',
-	component: lazy(() => import('./preferences/AccountPreferencesPage')),
+	component: lazy(() => import('./preferences/AccountPreferencesRoute')),
 });
 
 registerAccountRoute('/profile', {
@@ -81,10 +81,10 @@ registerAccountRoute('/omnichannel', {
 
 registerAccountRoute('/feature-preview', {
 	name: 'feature-preview',
-	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
+	component: lazy(() => import('@rocket.chat/ui-account').then(({ FeaturePreviewPage }) => ({ default: FeaturePreviewPage }))),
 });
 
 registerAccountRoute('/accessibility-and-appearance', {
 	name: 'accessibility-and-appearance',
-	component: lazy(() => import('./accessibility/AccessibilityPage')),
+	component: lazy(() => import('@rocket.chat/ui-account').then(({ AccessibilityPage }) => ({ default: AccessibilityPage }))),
 });

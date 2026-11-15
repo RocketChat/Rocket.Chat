@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-const WebdavFilePickerGridItem = ({ ...props }): ReactElement => (
+const WebdavFilePickerGridItem = ({ ...props }) => (
 	<Box
-		borderRadius='x4'
+		borderRadius='medium'
 		width='33.33%'
 		display='flex'
 		flexDirection='column'

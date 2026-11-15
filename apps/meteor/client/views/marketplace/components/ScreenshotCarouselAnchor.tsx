@@ -1,19 +1,18 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import ScreenshotCarousel from './ScreenshotCarousel';
 
-type ScreenshotCarouselAnchorProps = {
+export type ScreenshotCarouselAnchorProps = {
 	screenshots: AppScreenshot[];
 };
 
 type voidFunction = () => void;
 
-const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps): ReactElement => {
+const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps) => {
 	const [viewCarousel, setViewCarousel] = useState(false);
 
 	const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -105,8 +104,8 @@ const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps
 					]}
 				/>
 
-				<Box display='flex' flexDirection='row' bg='tint' pi={16} pb={10} alignItems='center'>
-					<Icon name='image' size='x24' mie={8} />{' '}
+				<Box display='flex' flexDirection='row' backgroundColor='tint' paddingInline={16} paddingBlock={10} alignItems='center'>
+					<Icon name='image' size='x24' marginInlineEnd={8} />{' '}
 					<Box is='span' fontScale='p2m' color='default'>
 						{currentPreviewIndex + 1} of {screenshots.length}
 					</Box>

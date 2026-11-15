@@ -13,13 +13,15 @@ export type MessageAttachmentDefault = {
 	fields?: {
 		short?: boolean;
 		title: string;
-		value: string;
+		value: string | number | boolean;
 	}[];
 
 	// footer
 	// footer_icon
 
 	image_url?: string;
+	/** Accessibility alternative text for the image. Kept separate from `description` so it is not rendered as a visible caption. */
+	image_alt?: string;
 	image_dimensions?: {
 		width: number;
 		height: number;

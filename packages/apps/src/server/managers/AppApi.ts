@@ -5,7 +5,6 @@ import type { IApiEndpointInfo } from '@rocket.chat/apps-engine/definition/api/I
 
 import type { ProxiedApp } from '../ProxiedApp';
 import type { AppLogStorage } from '../storage';
-import type { AppAccessorManager } from './AppAccessorManager';
 
 export class AppApi {
 	public readonly computedPath: string;
@@ -41,7 +40,7 @@ export class AppApi {
 		this.implementedMethods = endpoint._availableMethods;
 	}
 
-	public async runExecutor(request: IApiRequest, _logStorage: AppLogStorage, _accessors: AppAccessorManager): Promise<IApiResponse> {
+	public async runExecutor(request: IApiRequest, _logStorage: AppLogStorage): Promise<IApiResponse> {
 		const { path } = this.endpoint;
 
 		const { method } = request;

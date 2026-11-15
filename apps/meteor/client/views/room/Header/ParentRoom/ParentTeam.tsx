@@ -10,7 +10,7 @@ import { useUserTeamsQuery } from '../../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
 
-type ParentTeamProps = {
+export type ParentTeamProps = {
 	room: IRoom;
 };
 

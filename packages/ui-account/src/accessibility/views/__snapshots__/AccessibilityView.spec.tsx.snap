@@ -1,0 +1,1935 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders DarkThemeCustomized without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-css-9qykgs"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1ajy6ye"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-y0zm3a"
+        >
+          <h1
+            class="rcx-box rcx-box--full rcx-css-19z81xy"
+          >
+            Accessibility & appearance
+          </h1>
+        </div>
+      </header>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
+        >
+          <div
+            class="os-size-observer"
+          >
+            <div
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1vwyls7"
+            >
+              <form
+                class="rcx-box rcx-box--full rcx-css-1xqc09s"
+                id="_r_0_"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-128ljxt"
+                >
+                  <p
+                    class="rcx-box rcx-box--full rcx-css-s108b"
+                  >
+                    Here you can activate a range of features to enhance your browsing experience.
+                  </p>
+                  <p
+                    id="_r_1_"
+                  >
+                    Learn more about our commitment with accessibility here:
+                  </p>
+                  <ul
+                    aria-labelledby="_r_1_"
+                  >
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/accessibility-statement"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Accessibility statement
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/glossary"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Glossary of simplified terms
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/accessibility-and-appearance"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Accessibility feature documentation
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-accordion"
+                >
+                  <section
+                    class="rcx-box rcx-box--full rcx-accordion-item"
+                  >
+                    <div
+                      aria-controls="_r_3_"
+                      aria-expanded="true"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <h2
+                        class="rcx-box rcx-box--full rcx-accordion-item__title"
+                        id="_r_2_"
+                      >
+                        Theme
+                      </h2>
+                      <span
+                        class="rcx-box rcx-box--full rcx-chevron--up rcx-chevron"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                        >
+                          
+                        </i>
+                      </span>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
+                      id="_r_3_"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-field"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Light
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Light
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_4_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_4_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_4_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          More accessible for individuals with visual impairments and a good choice for well-lit environments.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Dark
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Dark
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_5_-hint"
+                              aria-invalid="false"
+                              checked=""
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_5_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_5_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            High contrast
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              High contrast
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_6_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_6_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_6_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Match system
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Match system
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_7_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_7_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_7_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Automatically match the appearance of your system.
+                        </span>
+                      </div>
+                    </div>
+                  </section>
+                  <section
+                    class="rcx-box rcx-box--full rcx-accordion-item"
+                  >
+                    <div
+                      aria-controls="_r_9_"
+                      aria-expanded="false"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <h2
+                        class="rcx-box rcx-box--full rcx-accordion-item__title"
+                        id="_r_8_"
+                      >
+                        Adjustable layout
+                      </h2>
+                      <span
+                        class="rcx-box rcx-box--full rcx-chevron"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                        >
+                          
+                        </i>
+                      </span>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
+                      id="_r_9_"
+                    >
+                      <fieldset
+                        class="rcx-box rcx-box--full rcx-field-group"
+                        role="group"
+                      >
+                        <div
+                          class="rcx-field-group__item"
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          <legend>
+                            Adjustable layout
+                          </legend>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-vtsp67"
+                            id="react-aria-_r_a_-label"
+                          >
+                            Font size
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                            >
+                              <div
+                                aria-hidden="true"
+                                data-a11y-ignore="aria-hidden-focus"
+                                data-react-aria-prevent-focus="true"
+                                data-testid="hidden-select-container"
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                <label>
+                                  <select
+                                    name="fontSize"
+                                    tabindex="-1"
+                                  >
+                                    <option />
+                                    <option
+                                      value="87.5%"
+                                    >
+                                      87.5%
+                                    </option>
+                                    <option
+                                      value="100%"
+                                    >
+                                      100%
+                                    </option>
+                                    <option
+                                      value="112.5%"
+                                    >
+                                      112.5%
+                                    </option>
+                                    <option
+                                      value="125%"
+                                    >
+                                      125%
+                                    </option>
+                                    <option
+                                      value="150%"
+                                    >
+                                      150%
+                                    </option>
+                                  </select>
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              aria-describedby="react-aria-_r_a_-description"
+                              aria-expanded="false"
+                              aria-haspopup="listbox"
+                              aria-labelledby="react-aria-_r_i_ react-aria-_r_a_-label"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              type="button"
+                            >
+                              <span
+                                class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                                id="react-aria-_r_i_"
+                              >
+                                Default
+                              </span>
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                              >
+                                
+                              </i>
+                            </button>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description rcx-css-op9h3g"
+                            id="react-aria-_r_a_-description"
+                          >
+                            Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Mentions with @ symbol
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Mentions with @ symbol
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_j_-description"
+                                aria-invalid="false"
+                                checked=""
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_j_-label"
+                                name="mentionsWithSymbol"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description rcx-css-1ntdv01 rcx-css-op9h3g"
+                            id="react-aria-_r_j_-description"
+                          >
+                            Mentions notify and highlight messages for groups or specific users, facilitating targeted communication.
+
+The screen reader functionality is optimized when the "@" symbol is employed in the mention feature. This ensures that users relying on screen readers can easily interpret and engage with these mentions.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="clockMode"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            id="react-aria-_r_k_-label"
+                          >
+                            Time format
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                            >
+                              <div
+                                aria-hidden="true"
+                                data-a11y-ignore="aria-hidden-focus"
+                                data-react-aria-prevent-focus="true"
+                                data-testid="hidden-select-container"
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                <label>
+                                  <select
+                                    name="clockMode"
+                                    tabindex="-1"
+                                  >
+                                    <option />
+                                    <option
+                                      value="0"
+                                    >
+                                      0
+                                    </option>
+                                    <option
+                                      value="1"
+                                    >
+                                      1
+                                    </option>
+                                    <option
+                                      value="2"
+                                    >
+                                      2
+                                    </option>
+                                  </select>
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              aria-describedby=""
+                              aria-expanded="false"
+                              aria-haspopup="listbox"
+                              aria-labelledby="react-aria-_r_s_ react-aria-_r_k_-label"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              type="button"
+                            >
+                              <span
+                                class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                                id="react-aria-_r_s_"
+                              >
+                                24-hour clock
+                              </span>
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                              >
+                                
+                              </i>
+                            </button>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="hideUsernames"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Show usernames
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Show usernames
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_t_-description"
+                                aria-invalid="false"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_t_-label"
+                                name="hideUsernames"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description"
+                            id="react-aria-_r_t_-description"
+                          >
+                            Show or hide the username of message authors.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="hideRoles"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Show roles
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Show roles
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_u_-description"
+                                aria-invalid="false"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_u_-label"
+                                name="hideRoles"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description"
+                            id="react-aria-_r_u_-description"
+                          >
+                            Show or hide the user roles of message authors.
+                          </span>
+                        </div>
+                      </fieldset>
+                    </div>
+                  </section>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-css-9qykgs"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1ajy6ye"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-y0zm3a"
+        >
+          <h1
+            class="rcx-box rcx-box--full rcx-css-19z81xy"
+          >
+            Accessibility & appearance
+          </h1>
+        </div>
+      </header>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
+        >
+          <div
+            class="os-size-observer"
+          >
+            <div
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1vwyls7"
+            >
+              <form
+                class="rcx-box rcx-box--full rcx-css-1xqc09s"
+                id="_r_v_"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-128ljxt"
+                >
+                  <p
+                    class="rcx-box rcx-box--full rcx-css-s108b"
+                  >
+                    Here you can activate a range of features to enhance your browsing experience.
+                  </p>
+                  <p
+                    id="_r_10_"
+                  >
+                    Learn more about our commitment with accessibility here:
+                  </p>
+                  <ul
+                    aria-labelledby="_r_10_"
+                  >
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/accessibility-statement"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Accessibility statement
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/glossary"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Glossary of simplified terms
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/accessibility-and-appearance"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Accessibility feature documentation
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-accordion"
+                >
+                  <section
+                    class="rcx-box rcx-box--full rcx-accordion-item"
+                  >
+                    <div
+                      aria-controls="_r_12_"
+                      aria-expanded="true"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <h2
+                        class="rcx-box rcx-box--full rcx-accordion-item__title"
+                        id="_r_11_"
+                      >
+                        Theme
+                      </h2>
+                      <span
+                        class="rcx-box rcx-box--full rcx-chevron--up rcx-chevron"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                        >
+                          
+                        </i>
+                      </span>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
+                      id="_r_12_"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-field"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Light
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Light
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_13_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_13_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_13_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          More accessible for individuals with visual impairments and a good choice for well-lit environments.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Dark
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Dark
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_14_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_14_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_14_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            High contrast
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              High contrast
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_15_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_15_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_15_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Match system
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Match system
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_16_-hint"
+                              aria-invalid="false"
+                              checked=""
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_16_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_16_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Automatically match the appearance of your system.
+                        </span>
+                      </div>
+                    </div>
+                  </section>
+                  <section
+                    class="rcx-box rcx-box--full rcx-accordion-item"
+                  >
+                    <div
+                      aria-controls="_r_18_"
+                      aria-expanded="false"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <h2
+                        class="rcx-box rcx-box--full rcx-accordion-item__title"
+                        id="_r_17_"
+                      >
+                        Adjustable layout
+                      </h2>
+                      <span
+                        class="rcx-box rcx-box--full rcx-chevron"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                        >
+                          
+                        </i>
+                      </span>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
+                      id="_r_18_"
+                    >
+                      <fieldset
+                        class="rcx-box rcx-box--full rcx-field-group"
+                        role="group"
+                      >
+                        <div
+                          class="rcx-field-group__item"
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          <legend>
+                            Adjustable layout
+                          </legend>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-vtsp67"
+                            id="react-aria-_r_19_-label"
+                          >
+                            Font size
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                            >
+                              <div
+                                aria-hidden="true"
+                                data-a11y-ignore="aria-hidden-focus"
+                                data-react-aria-prevent-focus="true"
+                                data-testid="hidden-select-container"
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                <label>
+                                  <select
+                                    name="fontSize"
+                                    tabindex="-1"
+                                  >
+                                    <option />
+                                    <option
+                                      value="87.5%"
+                                    >
+                                      87.5%
+                                    </option>
+                                    <option
+                                      value="100%"
+                                    >
+                                      100%
+                                    </option>
+                                    <option
+                                      value="112.5%"
+                                    >
+                                      112.5%
+                                    </option>
+                                    <option
+                                      value="125%"
+                                    >
+                                      125%
+                                    </option>
+                                    <option
+                                      value="150%"
+                                    >
+                                      150%
+                                    </option>
+                                  </select>
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              aria-describedby="react-aria-_r_19_-description"
+                              aria-expanded="false"
+                              aria-haspopup="listbox"
+                              aria-labelledby="react-aria-_r_1h_ react-aria-_r_19_-label"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              type="button"
+                            >
+                              <span
+                                class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                                id="react-aria-_r_1h_"
+                              >
+                                Default
+                              </span>
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                              >
+                                
+                              </i>
+                            </button>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description rcx-css-op9h3g"
+                            id="react-aria-_r_19_-description"
+                          >
+                            Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Mentions with @ symbol
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Mentions with @ symbol
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_1i_-description"
+                                aria-invalid="false"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_1i_-label"
+                                name="mentionsWithSymbol"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description rcx-css-1ntdv01 rcx-css-op9h3g"
+                            id="react-aria-_r_1i_-description"
+                          >
+                            Mentions notify and highlight messages for groups or specific users, facilitating targeted communication.
+
+The screen reader functionality is optimized when the "@" symbol is employed in the mention feature. This ensures that users relying on screen readers can easily interpret and engage with these mentions.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="clockMode"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            id="react-aria-_r_1j_-label"
+                          >
+                            Time format
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                            >
+                              <div
+                                aria-hidden="true"
+                                data-a11y-ignore="aria-hidden-focus"
+                                data-react-aria-prevent-focus="true"
+                                data-testid="hidden-select-container"
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                <label>
+                                  <select
+                                    name="clockMode"
+                                    tabindex="-1"
+                                  >
+                                    <option />
+                                    <option
+                                      value="0"
+                                    >
+                                      0
+                                    </option>
+                                    <option
+                                      value="1"
+                                    >
+                                      1
+                                    </option>
+                                    <option
+                                      value="2"
+                                    >
+                                      2
+                                    </option>
+                                  </select>
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              aria-describedby=""
+                              aria-expanded="false"
+                              aria-haspopup="listbox"
+                              aria-labelledby="react-aria-_r_1r_ react-aria-_r_1j_-label"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              type="button"
+                            >
+                              <span
+                                class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                                id="react-aria-_r_1r_"
+                              >
+                                Default
+                              </span>
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                              >
+                                
+                              </i>
+                            </button>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="hideUsernames"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Show usernames
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Show usernames
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_1s_-description"
+                                aria-invalid="false"
+                                checked=""
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_1s_-label"
+                                name="hideUsernames"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description"
+                            id="react-aria-_r_1s_-description"
+                          >
+                            Show or hide the username of message authors.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="hideRoles"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Show roles
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Show roles
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_1t_-description"
+                                aria-invalid="false"
+                                checked=""
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_1t_-label"
+                                name="hideRoles"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description"
+                            id="react-aria-_r_1t_-description"
+                          >
+                            Show or hide the user roles of message authors.
+                          </span>
+                        </div>
+                      </fieldset>
+                    </div>
+                  </section>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`renders RolesDisabled without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-css-9qykgs"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1ajy6ye"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-y0zm3a"
+        >
+          <h1
+            class="rcx-box rcx-box--full rcx-css-19z81xy"
+          >
+            Accessibility & appearance
+          </h1>
+        </div>
+      </header>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
+        >
+          <div
+            class="os-size-observer"
+          >
+            <div
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1vwyls7"
+            >
+              <form
+                class="rcx-box rcx-box--full rcx-css-1xqc09s"
+                id="_r_1u_"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-128ljxt"
+                >
+                  <p
+                    class="rcx-box rcx-box--full rcx-css-s108b"
+                  >
+                    Here you can activate a range of features to enhance your browsing experience.
+                  </p>
+                  <p
+                    id="_r_1v_"
+                  >
+                    Learn more about our commitment with accessibility here:
+                  </p>
+                  <ul
+                    aria-labelledby="_r_1v_"
+                  >
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/accessibility-statement"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Accessibility statement
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/glossary"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Glossary of simplified terms
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="rcx-box rcx-box--full"
+                        href="https://go.rocket.chat/i/accessibility-and-appearance"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Accessibility feature documentation
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-accordion"
+                >
+                  <section
+                    class="rcx-box rcx-box--full rcx-accordion-item"
+                  >
+                    <div
+                      aria-controls="_r_21_"
+                      aria-expanded="true"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <h2
+                        class="rcx-box rcx-box--full rcx-accordion-item__title"
+                        id="_r_20_"
+                      >
+                        Theme
+                      </h2>
+                      <span
+                        class="rcx-box rcx-box--full rcx-chevron--up rcx-chevron"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                        >
+                          
+                        </i>
+                      </span>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
+                      id="_r_21_"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-field"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Light
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Light
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_22_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_22_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_22_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          More accessible for individuals with visual impairments and a good choice for well-lit environments.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Dark
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Dark
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_23_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_23_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_23_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            High contrast
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              High contrast
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_24_-hint"
+                              aria-invalid="false"
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_24_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_24_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.
+                        </span>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-field rcx-css-12ek000"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__row"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+                          >
+                            Match system
+                          </span>
+                          <label
+                            class="rcx-box rcx-box--full rcx-radio-button"
+                          >
+                            <div
+                              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                            >
+                              Match system
+                            </div>
+                            <input
+                              aria-describedby="react-aria-_r_25_-hint"
+                              aria-invalid="false"
+                              checked=""
+                              class="rcx-box rcx-box--full rcx-radio-button__input"
+                              id="react-aria-_r_25_-label"
+                              name="themeAppearence"
+                              type="radio"
+                            />
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-radio-button__fake"
+                            />
+                          </label>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                          id="react-aria-_r_25_-hint"
+                          style="white-space: break-spaces;"
+                        >
+                          Automatically match the appearance of your system.
+                        </span>
+                      </div>
+                    </div>
+                  </section>
+                  <section
+                    class="rcx-box rcx-box--full rcx-accordion-item"
+                  >
+                    <div
+                      aria-controls="_r_27_"
+                      aria-expanded="false"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <h2
+                        class="rcx-box rcx-box--full rcx-accordion-item__title"
+                        id="_r_26_"
+                      >
+                        Adjustable layout
+                      </h2>
+                      <span
+                        class="rcx-box rcx-box--full rcx-chevron"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                        >
+                          
+                        </i>
+                      </span>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
+                      id="_r_27_"
+                    >
+                      <fieldset
+                        class="rcx-box rcx-box--full rcx-field-group"
+                        role="group"
+                      >
+                        <div
+                          class="rcx-field-group__item"
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          <legend>
+                            Adjustable layout
+                          </legend>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-vtsp67"
+                            id="react-aria-_r_28_-label"
+                          >
+                            Font size
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                            >
+                              <div
+                                aria-hidden="true"
+                                data-a11y-ignore="aria-hidden-focus"
+                                data-react-aria-prevent-focus="true"
+                                data-testid="hidden-select-container"
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                <label>
+                                  <select
+                                    name="fontSize"
+                                    tabindex="-1"
+                                  >
+                                    <option />
+                                    <option
+                                      value="87.5%"
+                                    >
+                                      87.5%
+                                    </option>
+                                    <option
+                                      value="100%"
+                                    >
+                                      100%
+                                    </option>
+                                    <option
+                                      value="112.5%"
+                                    >
+                                      112.5%
+                                    </option>
+                                    <option
+                                      value="125%"
+                                    >
+                                      125%
+                                    </option>
+                                    <option
+                                      value="150%"
+                                    >
+                                      150%
+                                    </option>
+                                  </select>
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              aria-describedby="react-aria-_r_28_-description"
+                              aria-expanded="false"
+                              aria-haspopup="listbox"
+                              aria-labelledby="react-aria-_r_2g_ react-aria-_r_28_-label"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              type="button"
+                            >
+                              <span
+                                class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                                id="react-aria-_r_2g_"
+                              >
+                                Default
+                              </span>
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                              >
+                                
+                              </i>
+                            </button>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description rcx-css-op9h3g"
+                            id="react-aria-_r_28_-description"
+                          >
+                            Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Mentions with @ symbol
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Mentions with @ symbol
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_2h_-description"
+                                aria-invalid="false"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_2h_-label"
+                                name="mentionsWithSymbol"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description rcx-css-1ntdv01 rcx-css-op9h3g"
+                            id="react-aria-_r_2h_-description"
+                          >
+                            Mentions notify and highlight messages for groups or specific users, facilitating targeted communication.
+
+The screen reader functionality is optimized when the "@" symbol is employed in the mention feature. This ensures that users relying on screen readers can easily interpret and engage with these mentions.
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="clockMode"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            id="react-aria-_r_2i_-label"
+                          >
+                            Time format
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                            >
+                              <div
+                                aria-hidden="true"
+                                data-a11y-ignore="aria-hidden-focus"
+                                data-react-aria-prevent-focus="true"
+                                data-testid="hidden-select-container"
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                <label>
+                                  <select
+                                    name="clockMode"
+                                    tabindex="-1"
+                                  >
+                                    <option />
+                                    <option
+                                      value="0"
+                                    >
+                                      0
+                                    </option>
+                                    <option
+                                      value="1"
+                                    >
+                                      1
+                                    </option>
+                                    <option
+                                      value="2"
+                                    >
+                                      2
+                                    </option>
+                                  </select>
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              aria-describedby=""
+                              aria-expanded="false"
+                              aria-haspopup="listbox"
+                              aria-labelledby="react-aria-_r_2q_ react-aria-_r_2i_-label"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              type="button"
+                            >
+                              <span
+                                class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                                id="react-aria-_r_2q_"
+                              >
+                                Default
+                              </span>
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                              >
+                                
+                              </i>
+                            </button>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          id="hideUsernames"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__row"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                            >
+                              Show usernames
+                            </span>
+                            <label
+                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                            >
+                              <div
+                                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                              >
+                                Show usernames
+                              </div>
+                              <input
+                                aria-describedby="react-aria-_r_2r_-description"
+                                aria-invalid="false"
+                                checked=""
+                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                id="react-aria-_r_2r_-label"
+                                name="hideUsernames"
+                                type="checkbox"
+                              />
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                              />
+                            </label>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-field__description"
+                            id="react-aria-_r_2r_-description"
+                          >
+                            Show or hide the username of message authors.
+                          </span>
+                        </div>
+                      </fieldset>
+                    </div>
+                  </section>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;

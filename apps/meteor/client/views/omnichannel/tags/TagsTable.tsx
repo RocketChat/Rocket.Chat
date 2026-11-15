@@ -1,5 +1,5 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableRow,
@@ -10,6 +10,7 @@ import {
 	GenericTableLoadingRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import { useMemo, useState } from 'react';
 
 import { useRemoveTag } from './useRemoveTag';
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 import { links } from '../../../lib/links';
 
 const TagsTable = () => {
@@ -28,8 +28,8 @@ const TagsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
-	const onRowClick = useEffectEvent((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/tags/new'));
+	const onRowClick = useStableCallback((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/tags/new'));
 	const handleDeleteTag = useRemoveTag();
 
 	const query = useDebouncedValue(
@@ -70,7 +70,7 @@ const TagsTable = () => {
 			>
 				{t('Description')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60' />
+			<GenericTableHeaderCell key='remove' width='x60' />
 		</>
 	);
 

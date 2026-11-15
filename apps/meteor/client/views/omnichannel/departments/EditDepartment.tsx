@@ -29,12 +29,12 @@ import { useTranslation } from 'react-i18next';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
 import type { EditDepartmentFormData } from './definitions';
+import { useRoomsList } from './useRoomsList';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useRoomsList } from '../../../hooks/useRoomsList';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
@@ -149,7 +149,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 				</PageHeader>
 				<PageScrollableContentWithShadow>
 					<FieldGroup
-						w='full'
+						width='full'
 						alignSelf='center'
 						maxWidth='x600'
 						id={formId}
@@ -171,7 +171,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<TextInput
 									id={nameField}
 									flexGrow={1}
-									error={errors.name?.message as string}
+									error={errors.name?.message}
 									placeholder={t('Name')}
 									{...register('name', { required: t('Required_field', { field: t('Name') }) })}
 								/>
@@ -201,8 +201,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<TextInput
 									id={emailField}
-									error={errors.email?.message as string}
-									addon={<Icon name='mail' size='x20' />}
+									error={errors.email?.message}
+									endAddon={<Icon name='mail' size='x20' />}
 									placeholder={t('Email')}
 									{...register('email', {
 										required: t('Required_field', { field: t('Email') }),
@@ -299,7 +299,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<Field>
 									<FieldLabel htmlFor={departmentsAllowedToForwardFieldId}>{t('List_of_departments_for_forward')}</FieldLabel>
 									<FieldRow>
-										<Box w='100%'>
+										<Box width='100%'>
 											<Controller
 												control={control}
 												name='departmentsAllowedToForward'
@@ -311,7 +311,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 														excludeId={id ?? ''}
 														value={value}
 														maxWidth='100%'
-														w='100%'
+														width='100%'
 														flexGrow={1}
 														onChange={onChange}
 													/>
@@ -357,7 +357,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 													disabled={!!initialValues.unit}
 													haveNone
 													id={unitFieldId}
-													error={errors.unit?.message as string}
+													error={errors.unit?.message}
 													aria-describedby={`${unitFieldId}-error`}
 													value={value}
 													onChange={onChange}
@@ -417,9 +417,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
-						<Divider mb={16} />
+						<Divider marginBlock={16} />
 						<Field>
-							<FieldLabel id={agentsLabelId} mb={4}>
+							<FieldLabel id={agentsLabelId} marginBlock={4}>
 								{t('Agents')}
 							</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>

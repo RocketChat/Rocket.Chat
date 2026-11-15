@@ -11,7 +11,7 @@ jest.mock('../../../components/GenericUpsellModal/hooks', () => ({ useUpsellActi
 jest.mock('./EngagementDashboardPage', () => () => null);
 jest.mock('../../../components/PageSkeleton', () => () => null);
 jest.mock('../../notAuthorized/NotAuthorizedPage', () => () => null);
-jest.mock('../../../../app/utils/client/getURL', () => ({ getURL: (path: string) => path }));
+jest.mock('../../../../client/lib/getURL', () => ({ getURL: (path: string) => path }));
 
 const buildWrapper = (router: Partial<RouterContextValue>, tab?: string) => {
 	const builder = mockAppRoot()

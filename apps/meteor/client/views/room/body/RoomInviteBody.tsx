@@ -3,7 +3,7 @@ import { Box, Button, Chip, States, StatesActions, StatesIcon, StatesLink, State
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
-type RoomInviteBodyProps = {
+export type RoomInviteBodyProps = {
 	isLoading?: boolean;
 	inviter: IInviteSubscription['inviter'];
 	infoLink?: {
@@ -19,12 +19,12 @@ const RoomInviteBody = ({ inviter, infoLink, isLoading, onAccept, onReject }: Ro
 	const { name, username } = inviter;
 
 	return (
-		<Box m='auto'>
+		<Box margin='auto'>
 			<States>
 				<StatesIcon name='mail' />
 				<StatesTitle>{t('Message_request')}</StatesTitle>
 				<StatesSubtitle>
-					<Box mbe={8}>{t('You_have_been_invited_to_have_a_conversation_with')}</Box>
+					<Box marginBlockEnd={8}>{t('You_have_been_invited_to_have_a_conversation_with')}</Box>
 					<Chip>
 						<UserAvatar username={username} size='x16' /> {name || username}
 					</Chip>

@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -10,6 +10,7 @@ import {
 	GenericTableCell,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useMemo, useState, useEffect } from 'react';
 
 import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../lib/links';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
@@ -56,8 +56,8 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		reload.current = refetch;
 	}, [reload, refetch]);
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/sla-policies/new'));
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
+	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
 	const headers = (
 		<>
@@ -82,7 +82,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Estimated_wait_time')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
+			<GenericTableHeaderCell key='remove' width='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>

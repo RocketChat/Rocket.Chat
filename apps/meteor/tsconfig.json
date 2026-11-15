@@ -22,7 +22,11 @@
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
-			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
+			/* No .meteor/local/types/packages.d.ts fallback: its `export =` module
+			   declarations take over the module identity under TS7 and discard the
+			   ambient merges from @types/meteor and definition/externals. Everything
+			   it declared is covered by @types/meteor + definition/externals. */
+			"meteor/*": ["./node_modules/@types/meteor/*"],
 			"swiper/modules/index.mjs": ["./node_modules/swiper/types/modules/index.d.ts"],
 			"swiper/swiper-react.mjs": ["./node_modules/swiper/swiper-react.d.ts"],
 		},
@@ -41,7 +45,9 @@
 		"./imports/client/**",
 		"**/dist/**",
 		"./public/**",
-		// "./ee/server/services/**"
+		// Node-side build tooling that resolves packages through `exports`, which this app config does not.
+		"./vite/vite.config.mts",
+		"./vite/postcss-plugins.d.ts",
 	],
 	"ts-node": {
 		"files": false,

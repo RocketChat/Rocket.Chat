@@ -7,7 +7,7 @@ import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u' | 'abacAttributes'>,
-): ComponentProps<typeof Icon> | ReactElement | null => {
+): ComponentProps<typeof Icon> | ReactElement<any> | null => {
 	if (room.abacAttributes) {
 		if (room.teamMain) {
 			return { name: 'team-shield' };

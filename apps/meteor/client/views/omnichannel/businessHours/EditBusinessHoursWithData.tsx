@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import EditBusinessHours from './EditBusinessHours';
 import PageSkeleton from '../../../components/PageSkeleton';
 
-const EditBusinessHoursWidthData = ({ id, type }: { id?: ILivechatBusinessHour['_id']; type: LivechatBusinessHourTypes }) => {
+export type EditBusinessHoursWidthDataProps = { id?: ILivechatBusinessHour['_id']; type: LivechatBusinessHourTypes };
+
+const EditBusinessHoursWidthData = ({ id, type }: EditBusinessHoursWidthDataProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const getBusinessHour = useEndpoint('GET', '/v1/livechat/business-hour');

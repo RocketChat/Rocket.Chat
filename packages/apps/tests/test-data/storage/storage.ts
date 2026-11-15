@@ -5,129 +5,106 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IMarketplaceInfo } from '../../../src/server/marketplace';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { AppMetadataStorage } from '../../../src/server/storage';
-
-const Datastore = require('@seald-io/nedb') as typeof import('@seald-io/nedb').default;
+import { AppInstallationSource } from '../../../src/server/storage/IAppStorageItem';
 
 export class TestsAppStorage extends AppMetadataStorage {
-	private db: InstanceType<typeof Datastore>;
+	private db = new Map<string, IAppStorageItem>();
 
-	private static instance: TestsAppStorage;
-
-	public static getInstance(): TestsAppStorage {
-		if (!TestsAppStorage.instance) {
-			TestsAppStorage.instance = new TestsAppStorage();
-		}
-
-		return TestsAppStorage.instance;
-	}
-
-	private constructor() {
-		super('nedb');
-		this.db = new Datastore({ filename: 'tests/test-data/dbs/apps.nedb', autoload: true });
-		this.db.ensureIndex({ fieldName: 'id', unique: true });
+	constructor() {
+		super('in-memory');
 	}
 
 	public create(item: IAppStorageItem): Promise<IAppStorageItem> {
-		return new Promise((resolve, reject) => {
-			item.createdAt = new Date();
-			item.updatedAt = new Date();
+		for (const [id, value] of this.db) {
+			if (id === item.id || item.info.nameSlug === value.info.nameSlug) {
+				return Promise.reject(new Error('App already exists.'));
+			}
+		}
 
-			this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] }, (err, doc: IAppStorageItem) => {
-				if (err) {
-					reject(err);
-				} else if (doc) {
-					reject(new Error('App already exists.'));
-				} else {
-					this.db.insert(item, (err2, doc2: IAppStorageItem) => {
-						if (err2) {
-							reject(err2);
-						} else {
-							resolve(doc2);
-						}
-					});
-				}
-			});
-		});
+		const stored = { ...item, _id: item._id ?? item.id, createdAt: new Date(), updatedAt: new Date() };
+		this.db.set(stored.id, stored);
+		return Promise.resolve(stored);
 	}
 
-	public retrieveOne(id: string): Promise<IAppStorageItem> {
-		return new Promise((resolve, reject) => {
-			this.db.findOne({ id }, (err, doc: IAppStorageItem) => {
-				if (err) {
-					reject(err);
-				} else if (doc) {
-					resolve(doc);
-				} else {
-					reject(new Error(`No App found by the id: ${id}`));
-				}
-			});
-		});
+	public retrieveOne(id: string): Promise<IAppStorageItem | null> {
+		return Promise.resolve(this.db.get(id) ?? null);
 	}
 
 	public retrieveAll(): Promise<Map<string, IAppStorageItem>> {
-		return new Promise((resolve, reject) => {
-			this.db.find({}, (err: Error, docs: Array<IAppStorageItem>) => {
-				if (err) {
-					reject(err);
-				} else {
-					const items = new Map<string, IAppStorageItem>();
-
-					docs.forEach((i) => items.set(i.id, i));
-
-					resolve(items);
-				}
-			});
-		});
+		return Promise.resolve(new Map(this.db));
 	}
 
 	public retrieveAllPrivate(): Promise<Map<string, IAppStorageItem>> {
-		return new Promise((resolve, reject) => {
-			this.db.find({ installationSource: 'private' }, (err: Error, docs: Array<IAppStorageItem>) => {
-				if (err) {
-					reject(err);
-				} else {
-					const items = new Map<string, IAppStorageItem>();
+		const items = new Map<string, IAppStorageItem>();
+		for (const [id, item] of this.db) {
+			if (item.installationSource === AppInstallationSource.PRIVATE) {
+				items.set(id, item);
+			}
+		}
+		return Promise.resolve(items);
+	}
 
-					docs.forEach((i) => items.set(i.id, i));
-
-					resolve(items);
-				}
-			});
-		});
+	public clear(): void {
+		this.db.clear();
 	}
 
 	public remove(id: string): Promise<{ success: boolean }> {
-		return new Promise((resolve, reject) => {
-			this.db.remove({ id }, (err) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve({ success: true });
-				}
-			});
-		});
+		this.db.delete(id);
+		return Promise.resolve({ success: true });
 	}
 
 	public updatePartialAndReturnDocument(
 		item: Partial<IAppStorageItem>,
-		options?: { unsetPermissionsGranted?: boolean },
+		_options?: { unsetPermissionsGranted?: boolean },
 	): Promise<IAppStorageItem> {
-		throw new Error('Method not implemented.');
+		const lookupId = item.id ?? item._id;
+		if (!lookupId) {
+			return Promise.reject(new Error('Cannot update: item has no id.'));
+		}
+
+		const existing = this.db.get(lookupId);
+		if (!existing) {
+			return Promise.reject(new Error(`App not found: ${lookupId}`));
+		}
+
+		const updated = { ...existing, ...item, updatedAt: new Date() };
+		this.db.set(updated.id, updated);
+		return Promise.resolve(updated);
 	}
 
-	public updateStatus(_id: string, status: AppStatus): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	public updateStatus(id: string, status: AppStatus): Promise<boolean> {
+		const existing = this.db.get(id);
+		if (!existing) {
+			return Promise.resolve(false);
+		}
+		this.db.set(id, { ...existing, status, updatedAt: new Date() });
+		return Promise.resolve(true);
 	}
 
-	public updateSetting(_id: string, setting: ISetting): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	public updateSetting(id: string, setting: ISetting): Promise<boolean> {
+		const existing = this.db.get(id);
+		if (!existing) {
+			return Promise.resolve(false);
+		}
+		this.db.set(id, { ...existing, settings: { ...existing.settings, [setting.id]: setting }, updatedAt: new Date() });
+		return Promise.resolve(true);
 	}
 
-	public updateAppInfo(_id: string, info: IAppInfo): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	public updateAppInfo(id: string, info: IAppInfo): Promise<boolean> {
+		const existing = this.db.get(id);
+		if (!existing) {
+			return Promise.resolve(false);
+		}
+		this.db.set(id, { ...existing, info, updatedAt: new Date() });
+		return Promise.resolve(true);
 	}
 
-	public updateMarketplaceInfo(_id: string, marketplaceInfo: IMarketplaceInfo[]): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	public updateMarketplaceInfo(id: string, marketplaceInfo: IMarketplaceInfo[]): Promise<boolean> {
+		const existing = this.db.get(id);
+		if (!existing) {
+			return Promise.resolve(false);
+		}
+		this.db.set(id, { ...existing, marketplaceInfo, updatedAt: new Date() });
+		return Promise.resolve(true);
 	}
 }

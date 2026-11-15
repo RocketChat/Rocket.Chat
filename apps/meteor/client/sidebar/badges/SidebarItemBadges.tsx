@@ -6,7 +6,7 @@ import InvitationBadge from '../../components/InvitationBadge';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type SidebarItemBadgesProps = {
+export type SidebarItemBadgesProps = {
 	room: SubscriptionWithRoom;
 	roomTitle?: string;
 };
@@ -18,7 +18,7 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 		<>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
-			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
+			{isInviteSubscription(room) && <InvitationBadge marginBlockStart={2} invitationDate={room.ts} />}
 		</>
 	);
 };

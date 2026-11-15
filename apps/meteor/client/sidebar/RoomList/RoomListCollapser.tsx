@@ -1,37 +1,62 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, KeyboardEvent, MouseEventHandler, ReactNode } from 'react';
+import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
+import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import UserRoomCategoryGroupMenu from './UserRoomCategoryGroupMenu';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
+import { usePreventPropagation } from '../../hooks/usePreventPropagation';
+import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
+import CategoryMenu from '../categories/CategoryMenu';
+import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListCollapserProps = {
-	groupTitle: string;
-	/** Visible section title (translated for built-in groups, raw name for user categories). */
-	displayTitle: ReactNode;
-	/** Plain-text title used for aria-labels. */
-	ariaTitle: string;
-	collapsedGroups: string[];
+	group: SidebarRoomListGroup;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
+	onMoveUp: () => void;
+	onMoveDown: () => void;
 	onClick: MouseEventHandler<HTMLElement>;
 	onKeyDown: (e: KeyboardEvent) => void;
-	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
 } & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
-const RoomListCollapser = ({
-	groupTitle,
-	displayTitle,
-	ariaTitle,
-	unreadCount: unreadGroupCount,
-	collapsedGroups,
-	...props
-}: RoomListCollapserProps) => {
-	const { t } = useTranslation();
 
-	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
+const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
+	const { t } = useTranslation();
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
+	const preventPropagation = usePreventPropagation();
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
+	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
+
+	const title = group.translateTitle ? t(group.title) : group.title;
+	const renderMenu = () => {
+		if (!menuVisibility) {
+			return <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />;
+		}
+
+		if (group.userRoomCategory) {
+			return <UserRoomCategoryGroupMenu categoryName={group.userRoomCategory.name} />;
+		}
+
+		return (
+			<CategoryMenu
+				category={group.category}
+				groupKey={group.key}
+				showUnreads={group.showUnreads}
+				keepUnreadsOnTop={group.keepUnreadsOnTop}
+				canMoveUp={canMoveUp}
+				canMoveDown={canMoveDown}
+				onMoveUp={onMoveUp}
+				onMoveDown={onMoveDown}
+			/>
+		);
+	};
 
 	return (
-		<SidebarV2CollapseGroup
-			title={displayTitle as any}
-			expanded={!collapsedGroups.includes(groupTitle)}
+		<SidebarCollapseGroup
+			title={title}
+			role='listitem'
+			empty={group.empty}
+			expanded={!group.collapsed}
 			badge={
 				showUnread ? (
 					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
@@ -39,9 +64,14 @@ const RoomListCollapser = ({
 					</Badge>
 				) : undefined
 			}
-			aria-label={
-				!collapsedGroups.includes(groupTitle) ? t('Collapse_group', { group: ariaTitle }) : t('Expand_group', { group: ariaTitle })
+			onFocus={mountNow}
+			onPointerEnter={requestMount}
+			menu={
+				isEnterprise || group.userRoomCategory ? (
+					<SidebarCollapseGroupMenu onClick={preventPropagation}>{renderMenu()}</SidebarCollapseGroupMenu>
+				) : undefined
 			}
+			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
 			{...props}
 		/>
 	);

@@ -4,6 +4,13 @@ import fsPromise from 'node:fs/promises';
 import * as core from '@actions/core';
 
 export async function createNpmFile() {
+	// With trusted publishing (OIDC) there is no token, and a bogus auth line in .npmrc
+	// takes precedence over the OIDC exchange, so leave the file alone.
+	if (!process.env.NPM_TOKEN) {
+		core.info('No NPM_TOKEN provided, relying on the registry authentication already in place');
+		return;
+	}
+
 	const userNpmrcPath = `${process.env.HOME}/.npmrc`;
 
 	if (fs.existsSync(userNpmrcPath)) {

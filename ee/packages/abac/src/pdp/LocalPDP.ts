@@ -1,9 +1,10 @@
+import { LDAPEnterprise } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import type { IPolicyDecisionPoint } from './types';
+import type { IPolicyDecisionPoint, ReevaluationUser } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	async isAvailable(): Promise<boolean> {
@@ -50,7 +51,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		return Users.find(query, { projection: { __rooms: 0 } }).toArray();
 	}
 
-	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {
+	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]> {
 		const roomIds = user.__rooms;
 
 		// No attributes: no rooms :(
@@ -60,7 +61,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 					_id: { $in: roomIds },
 					abacAttributes: { $exists: true, $ne: [] },
 				},
-				{ projection: { _id: 1 } },
+				{ projection: { _id: 1, name: 1 } },
 			).toArray();
 		}
 
@@ -69,7 +70,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 			$or: buildRoomNonCompliantConditionsFromSubject(_next),
 		};
 
-		return Rooms.find(query, { projection: { _id: 1 } }).toArray();
+		return Rooms.find(query, { projection: { _id: 1, name: 1 } }).toArray();
 	}
 
 	async evaluateUserRooms(
@@ -79,6 +80,10 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
 		throw new Error('evaluateUserRooms is not implemented for LocalPDP');
+	}
+
+	async reevaluateUsers(users: ReevaluationUser[]): Promise<void> {
+		await LDAPEnterprise.syncUsersAbacAttributesByIds(users.map((user) => user._id));
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {

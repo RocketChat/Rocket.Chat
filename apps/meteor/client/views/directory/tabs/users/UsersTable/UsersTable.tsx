@@ -9,18 +9,22 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import UsersTableRow from './UsersTableRow';
 import FilterByText from '../../../../../components/FilterByText';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
-const UsersTable = ({ workspace = 'local' }): ReactElement => {
+export type UsersTableProps = {
+	workspace?: 'external' | 'local';
+};
+
+const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 

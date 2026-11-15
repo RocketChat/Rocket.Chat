@@ -1,6 +1,6 @@
 import type { ITeam, RocketChatRecordDeleted, TeamType } from '@rocket.chat/core-typings';
-import type { FindPaginated, ITeamModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, DeleteResult, Document, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { FindPaginated, ITeamModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, DeleteResult, Document, Filter, IndexDescription, UpdateResult, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -21,7 +21,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByNames<P extends Document>(
 		names: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
 		if (options === undefined) {
 			return this.col.find({ name: { $in: names } });
@@ -29,38 +29,28 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.col.find({ name: { $in: names } }, options);
 	}
 
-	findByIds(ids: Array<string>, query?: Filter<ITeam>): FindCursor<ITeam>;
-
-	findByIds(ids: Array<string>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
-
-	findByIds<P extends Document>(
+	findByIds<P extends Document = ITeam, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		ids: Array<string>,
-		options: FindOptions<P extends ITeam ? ITeam : P>,
+		options?: O,
 		query?: Filter<ITeam>,
-	): FindCursor<P>;
-
-	findByIds<P extends Document>(
-		ids: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
-		query?: Filter<ITeam>,
-	): FindCursor<P> | FindCursor<ITeam> {
+	): FindCursor<DocumentWithProjection<P, O>> {
 		if (options === undefined) {
-			return this.find({ ...query, _id: { $in: ids } });
+			return this.find<P, O>({ ...query, _id: { $in: ids } });
 		}
 
-		return this.find({ ...query, _id: { $in: ids } }, options);
+		return this.find<P, O>({ ...query, _id: { $in: ids } }, options);
 	}
 
-	findByIdsPaginated(
+	findByIdsPaginated<T extends Document = ITeam, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		ids: Array<string>,
-		options?: undefined | FindOptions<ITeam>,
+		options?: O,
 		query?: Filter<ITeam>,
-	): FindPaginated<FindCursor<ITeam>> {
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		if (options === undefined) {
-			return this.findPaginated({ ...query, _id: { $in: ids } });
+			return this.findPaginated<T, O>({ ...query, _id: { $in: ids } });
 		}
 
-		return this.findPaginated({ ...query, _id: { $in: ids } }, options);
+		return this.findPaginated<T, O>({ ...query, _id: { $in: ids } }, options);
 	}
 
 	findByIdsAndType(ids: Array<string>, type: TeamType): FindCursor<ITeam>;
@@ -76,7 +66,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
 		type: TeamType,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
 		if (options === undefined) {
 			return this.col.find({ _id: { $in: ids }, type });
@@ -92,7 +82,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByType<P extends Document>(
 		type: number,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<ITeam> | FindCursor<P> {
 		if (options === undefined) {
 			return this.col.find({ type }, options);
@@ -113,7 +103,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
 		teamIds: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
 		if (options === undefined) {
 			return this.col.find({
@@ -156,7 +146,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findOneByName<P extends Document>(
 		name: string | RegExp,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null> {
 		if (options === undefined) {
 			return this.col.findOne({ name });
@@ -172,7 +162,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findOneByMainRoomId<P extends Document>(
 		roomId: string,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null> {
 		return options ? this.col.findOne({ roomId }, options) : this.col.findOne({ roomId });
 	}

@@ -1,6 +1,6 @@
 import type { Serialized, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint, usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +32,7 @@ export type RepliesFormRef = {
 	submit: () => Promise<RepliesFormSubmitPayload>;
 };
 
-type RepliesFormProps = {
+export type RepliesFormProps = {
 	defaultValues?: Partial<RepliesFormData>;
 	renderActions?(props: { isSubmitting: boolean }): ReactNode;
 	onSubmit: (data: RepliesFormSubmitPayload) => void;
@@ -88,7 +88,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 		return () => clearErrors('departmentId');
 	}, [clearErrors, isErrorDepartment, trigger]);
 
-	const submit = useEffectEvent(async ({ agentId, departmentId }: RepliesFormData) => {
+	const submit = useStableCallback(async ({ agentId, departmentId }: RepliesFormData) => {
 		try {
 			const agent = agents?.find((agent) => agent.agentId === agentId);
 
@@ -118,7 +118,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	return (
 		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
+				<FieldGroup justifyContent='start' paddingInline={2}>
 					<DepartmentField
 						control={control}
 						onlyMyDepartments={!canAssignAllDepartments}
@@ -139,7 +139,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end'>
+				<Box marginBlockStart={24} display='flex' justifyContent='end'>
 					<Button type='submit' primary loading={isSubmitting}>
 						{t('Submit')}
 					</Button>

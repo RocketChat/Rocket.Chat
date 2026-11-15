@@ -1,17 +1,17 @@
 import { Team } from '@rocket.chat/core-services';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { settings } from '../../app/settings/server';
+import { canAccessRoomAsync, roomAccessAttributes } from './authorization';
+import { settings } from '../settings';
+import { hasPermissionAsync, hasAllPermissionAsync } from './authorization/hasPermission';
+import { roomCoordinator } from './rooms/roomCoordinator';
 import { trim } from '../../lib/utils/stringUtils';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
-import { roomCoordinator } from './rooms/roomCoordinator';
 
 export class Spotlight {
 	async fetchRooms(userId, rooms) {
-		if (!settings.get('Store_Last_Message') || (await hasPermissionAsync(userId, 'preview-c-room'))) {
+		if (!settings.get('Store_Last_Message') || (userId && (await hasPermissionAsync(userId, 'preview-c-room')))) {
 			return rooms;
 		}
 
@@ -39,6 +39,7 @@ export class Spotlight {
 			sort: {
 				name: 1,
 			},
+			readPreference: readSecondaryPreferred(Rooms.col.s.db),
 		};
 
 		if (userId == null) {
@@ -55,12 +56,15 @@ export class Spotlight {
 
 		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
-		const roomIds = (
-			await SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
+		const [subscriptions, exactRoom] = await Promise.all([
+			SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
 				projection: { rid: 1 },
-			}).toArray()
-		).map((s) => s.rid);
-		const exactRoom = await Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
+				readPreference: roomOptions.readPreference,
+			}).toArray(),
+			Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms),
+		]);
+
+		const roomIds = subscriptions.map((s) => s.rid);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
@@ -187,7 +191,7 @@ export class Spotlight {
 			return users;
 		}
 
-		const canListOutsiders = await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']);
+		const canListOutsiders = !!userId && (await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']));
 		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];
@@ -226,6 +230,10 @@ export class Spotlight {
 		};
 
 		// Exact match for username only
+		// TODO: these exact-match branches push the user without filtering against `usernames`
+		// (the exclusion list), so an exact username query bypasses the exclusion that the
+		// findByActiveUsersExcept paths below honor. Evaluate filtering exactMatch against
+		// `usernames` here so the exclusion applies uniformly.
 		if (rid && canListInsiders) {
 			const exactMatch = await Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
 				projection: options.projection,

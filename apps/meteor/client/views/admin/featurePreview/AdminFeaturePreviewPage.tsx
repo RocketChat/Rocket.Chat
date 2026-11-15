@@ -13,20 +13,26 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useDefaultSettingFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
+import {
+	useDefaultSettingFeaturePreviewList,
+	Page,
+	PageHeader,
+	PageScrollableContentWithShadow,
+	PageFooter,
+	useFeaturePreviewEnableQuery,
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
 import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
 
 const AdminFeaturePreviewPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features } = useDefaultSettingFeaturePreviewList();
@@ -75,7 +81,7 @@ const AdminFeaturePreviewPage = () => {
 		<Page>
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<Box>
 						<Margins block={24}>
 							<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>
@@ -86,7 +92,7 @@ const AdminFeaturePreviewPage = () => {
 					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (
-							<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+							<AccordionItem defaultExpanded={index === 0} key={group} title={t(group)}>
 								<FieldGroup>
 									{features.map((feature) => (
 										<Fragment key={feature.name}>
@@ -101,9 +107,9 @@ const AdminFeaturePreviewPage = () => {
 														disabled={feature.disabled || !allowFeaturePreviewSetting.value}
 													/>
 												</FieldRow>
-												{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
+												{feature.description && <FieldHint marginBlockStart={12}>{t(feature.description)}</FieldHint>}
 											</Field>
-											{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
+											{feature.imageUrl && <Box is='img' width='100%' height='auto' marginBlockStart={16} src={feature.imageUrl} alt='' />}
 										</Fragment>
 									))}
 								</FieldGroup>

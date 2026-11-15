@@ -8,9 +8,12 @@ inputs:
   CR_PAT:
     required: true
     description: 'GitHub Container Registry Personal Access Token'
-  deno-version:
-    required: true
-    description: 'Deno version'
+  DOCKER_USER:
+    required: false
+    description: 'DockerHub username (required for FIPS builds to pull private base image)'
+  DOCKER_PASS:
+    required: false
+    description: 'DockerHub password (required for FIPS builds to pull private base image)'
   arch:
     required: false
     description: 'Architecture'
@@ -28,7 +31,7 @@ inputs:
     default: 'true'
   type:
     required: false
-    description: 'production or coverage'
+    description: 'production, coverage, or fips'
     default: 'coverage'
 
 runs:
@@ -37,17 +40,25 @@ runs:
   steps:
     - name: Login to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
       with:
         registry: ghcr.io
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
 
+    - name: Login to DockerHub
+      # FIPS base image (rocketchat/dhi-node) lives in a private DockerHub repo and requires auth to pull.
+      if: inputs.type == 'fips' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop')
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+      with:
+        username: ${{ inputs.DOCKER_USER }}
+        password: ${{ inputs.DOCKER_PASS }}
+
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
-      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
-        name: build-${{ inputs.type }}
+        name: build-${{ inputs.type == 'fips' && ((github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production') || inputs.type }}
         path: /tmp/build
 
     - name: Unpack meteor build
@@ -60,7 +71,7 @@ runs:
 
     - name: Set up Docker
       if: inputs.setup-docker == 'true'
-      uses: docker/setup-docker-action@e43656e248c0bd0647d3f5c195d116aacf6fcaf4 # v4.7.0
+      uses: docker/setup-docker-action@2bf61fb9464cc67f0cbdeabed6aa0380accd1c70 # v5.5.0
       with:
         daemon-config: |
           {
@@ -70,10 +81,36 @@ runs:
             }
           }
 
+    # Microservice images build from a pruned, self-contained context (out/<service>)
+    # produced by `turbo prune`, instead of a hand-maintained list of COPY lines.
+    # The rocketchat (Meteor) image is a prebuilt bundle and is staged separately above.
+    - name: Stage service build context
+      if: inputs.service != 'rocketchat'
+      shell: bash
+      env:
+        INPUT_SERVICE: ${{ inputs.service }}
+      run: |
+        set -o xtrace
+
+        # The Docker SERVICE arg (folder under ee/apps) lives in the compose build args;
+        # the compose service name (INPUT_SERVICE) can differ (e.g. ddp-streamer-service).
+        SERVICE_DIR=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].build.args.SERVICE')
+        PKG_NAME=$(node -p "require('./ee/apps/${SERVICE_DIR}/package.json').name")
+        TURBO_VERSION=$(node -p "require('./package.json').devDependencies.turbo")
+
+        rm -rf "out/${SERVICE_DIR}"
+
+        # `turbo prune` derives the exact workspace dependency closure for the service — no
+        # hand-maintained list. --use-gitignore=false also captures the gitignored build output
+        # we need (dist/, generated definition/), at the cost of dragging in node_modules/.turbo,
+        # which we strip below; `yarn workspaces focus --production` rebuilds node_modules in-image.
+        npx -y "turbo@${TURBO_VERSION}" prune "$PKG_NAME" --skip-infer --use-gitignore=false --out-dir "out/${SERVICE_DIR}"
+
+        find "out/${SERVICE_DIR}" \( -name node_modules -o -name .turbo \) -type d -prune -exec rm -rf {} +
+
     - name: Build Docker images
       shell: bash
       env:
-        DENO_VERSION: ${{ inputs.deno-version }}
         INPUT_ARCH: ${{ inputs.arch }}
         INPUT_SERVICE: ${{ inputs.service }}
         INPUT_PUBLISH_IMAGE: ${{ inputs.publish-image }}
@@ -85,6 +122,10 @@ runs:
         GITHUB_REF: ${{ github.ref }}
       run: |
         set -o xtrace
+        compose_fips_override=''
+        if [[ "$INPUT_TYPE" == 'fips' ]]; then
+          compose_fips_override='-f docker-compose-ci.fips.yml'
+        fi
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
@@ -109,10 +150,10 @@ runs:
         fi
 
         # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
 
         docker buildx bake \
-          -f docker-compose-ci.yml \
+          -f docker-compose-ci.yml $compose_fips_override \
           ${LOAD_OR_PUSH} \
           --allow=fs.read=/tmp/build \
           --set "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}" \
@@ -133,6 +174,8 @@ runs:
           SERVICE_SUFFIX=''
           if [[ "$INPUT_SERVICE" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
             SERVICE_SUFFIX='-cov'
+          elif [[ "$INPUT_TYPE" == 'fips' ]]; then
+            SERVICE_SUFFIX='-fips'
           fi
 
           mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
@@ -160,9 +203,13 @@ runs:
         TYPE: ${{ inputs.type }}
       run: |
         set -o xtrace
+        compose_fips_override=''
+        if [[ "$TYPE" == 'fips' ]]; then
+          compose_fips_override='-f docker-compose-ci.fips.yml'
+        fi
 
         # Get image name from docker-compose-ci.yml
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
+        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images
@@ -175,13 +222,13 @@ runs:
 
     - name: Upload Docker image artifact
       if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
         path: /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar
         retention-days: 1
 
-    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: inputs.publish-image == 'true'
       with:
         name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}

@@ -47,6 +47,6 @@ export class HomeOmnichannel extends HomeChannel {
 	}
 
 	get btnContactInfo(): Locator {
-		return this.page.getByRole('button', { name: 'Contact Information' });
+		return this.page.getByRole('button', { name: 'Contact information' });
 	}
 }

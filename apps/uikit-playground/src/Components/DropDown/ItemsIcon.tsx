@@ -1,6 +1,8 @@
 import { Icon } from '@rocket.chat/fuselage';
 
-const ItemsIcon = ({ layer, lastNode, hover }: { layer: number; lastNode: boolean; hover: boolean }) => {
+export type ItemsIconProps = { layer: number; lastNode: boolean; hover: boolean };
+
+const ItemsIcon = ({ layer, lastNode, hover }: ItemsIconProps) => {
 	const selectIcon = (layer: number, hover: boolean) => {
 		if (layer === 1) {
 			return <Icon name='folder' size='x12' color={hover ? '#fff' : '#1d74f5'} />;

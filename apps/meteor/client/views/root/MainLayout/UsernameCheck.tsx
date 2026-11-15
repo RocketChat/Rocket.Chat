@@ -1,13 +1,21 @@
 import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import HomeSkeleton from '../../home/HomeSkeleton';
 
-const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
+export type UsernameCheckProps = {
+	children: ReactNode;
+	/**
+	 * Shown while the user is being resolved. Required, because the right shape depends on whether the route
+	 * renders inside the navigation chrome, and only the caller knows that.
+	 */
+	loadingElement: ReactNode;
+};
+
+const UsernameCheck = ({ children, loadingElement }: UsernameCheckProps) => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 
@@ -29,7 +37,7 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	}, [userData?.user, userId, allowAnonymousRead]);
 
 	if (isLoading) {
-		return <HomeSkeleton />;
+		return loadingElement;
 	}
 
 	if (shouldRegisterUsername) {

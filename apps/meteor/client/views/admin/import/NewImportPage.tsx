@@ -16,10 +16,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
+import type { ChangeEvent, DragEvent, Key, SyntheticEvent } from 'react';
 import { useState, useMemo, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,7 +41,7 @@ function NewImportPage() {
 		refetchOnWindowFocus: false,
 	});
 
-	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name as TranslationKey)] as const) || [], [importers, t]);
+	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name)] as const) || [], [importers, t]);
 
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
@@ -146,7 +145,7 @@ function NewImportPage() {
 
 	const [fileUrl, setFileUrl] = useSafely(useState(''));
 
-	const handleFileUrlChange = (event: FormEvent<HTMLInputElement>) => {
+	const handleFileUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setFileUrl(event.currentTarget.value);
 	};
 
@@ -170,7 +169,7 @@ function NewImportPage() {
 
 	const [filePath, setFilePath] = useSafely(useState(''));
 
-	const handleFilePathChange = (event: FormEvent<HTMLInputElement>) => {
+	const handleFilePathChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setFilePath(event.currentTarget.value);
 	};
 
@@ -237,9 +236,7 @@ function NewImportPage() {
 							</FieldRow>
 							{importer && (
 								<FieldHint>
-									{importer.key === 'csv'
-										? t('Importer_From_Description_CSV')
-										: t('Importer_From_Description', { from: t(importer.name as TranslationKey) })}
+									{importer.key === 'csv' ? t('Importer_From_Description_CSV') : t('Importer_From_Description', { from: t(importer.name) })}
 								</FieldHint>
 							)}
 						</Field>

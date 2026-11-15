@@ -1,0 +1,213 @@
+name: Patch pipeline
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: patch-pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: read
+  packages: write
+
+env:
+  BASE_BRANCH: develop
+  REGISTRY: ghcr.io
+
+jobs:
+  test-compose-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.BASE_BRANCH }}
+
+      - name: Prepare base branch
+        id: base
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA=$(git rev-parse HEAD)
+          NODE_VERSION=$(jq -r '.volta.node' package.json)
+          echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "node-version=$NODE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ steps.base.outputs.node-version }}
+          cache-modules: true
+
+      - name: Configure Git
+        shell: bash
+        run: |
+          git config user.name "Patch Pipeline"
+          git config user.email "actions@github.com"
+          corepack enable
+
+      - name: Apply and test patches sequentially
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+
+          MANIFEST=/tmp/patch-manifest.json
+          APPLIED=/tmp/applied-prs.txt
+          echo '[]' > "$MANIFEST"
+          : > "$APPLIED"
+
+          record_result() {
+            jq \
+              --argjson pr "$1" \
+              --arg status "$2" \
+              --arg reason "$3" \
+              '. += [{pr: $pr, status: $status, reason: $reason}]' \
+              "$MANIFEST" > "$MANIFEST.tmp"
+            mv "$MANIFEST.tmp" "$MANIFEST"
+          }
+
+          gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --label patch \
+            --limit 100 \
+            --json number \
+            --jq 'sort_by(.number) | .[].number' > /tmp/patch-prs.txt
+
+          git checkout -B patched-build "${{ steps.base.outputs.sha }}"
+
+          while IFS= read -r PR; do
+            [ -z "$PR" ] && continue
+
+            BEFORE_PATCH=$(git rev-parse HEAD)
+            PATCH_FILE="/tmp/pr-$PR.patch"
+            TEST_FILE="/tmp/pr-$PR-tests.json"
+
+            if ! gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" > "$PATCH_FILE"; then
+              record_result "$PR" skipped "diff-download-failed"
+              continue
+            fi
+
+            if ! git apply --3way --index "$PATCH_FILE"; then
+              git reset --hard "$BEFORE_PATCH"
+              git clean -fd
+              record_result "$PR" skipped "patch-conflict"
+              continue
+            fi
+
+            if ! jq -e '.tests | type == "array" and length > 0 and all(.[]; type == "string" and length > 0)' .patch-ci.json > /dev/null 2>&1; then
+              git reset --hard "$BEFORE_PATCH"
+              git clean -fd
+              record_result "$PR" skipped "invalid-or-missing-patch-ci"
+              continue
+            fi
+
+            cp .patch-ci.json "$TEST_FILE"
+            PATCH_PASSED=true
+
+            if ! yarn install --immutable; then
+              PATCH_PASSED=false
+            fi
+
+            if [ "$PATCH_PASSED" = true ] && ! yarn turbo run build --filter=@rocket.chat/meteor...; then
+              PATCH_PASSED=false
+            fi
+
+            if [ "$PATCH_PASSED" = true ]; then
+              while IFS= read -r APPLIED_PR; do
+                [ -z "$APPLIED_PR" ] && continue
+                while IFS= read -r TEST_COMMAND; do
+                  if ! bash -lc "$TEST_COMMAND"; then
+                    PATCH_PASSED=false
+                    break 2
+                  fi
+                done < <(jq -r '.tests[]' "/tmp/pr-$APPLIED_PR-tests.json")
+              done < "$APPLIED"
+            fi
+
+            if [ "$PATCH_PASSED" = true ]; then
+              while IFS= read -r TEST_COMMAND; do
+                if ! bash -lc "$TEST_COMMAND"; then
+                  PATCH_PASSED=false
+                  break
+                fi
+              done < <(jq -r '.tests[]' "$TEST_FILE")
+            fi
+
+            if [ "$PATCH_PASSED" = true ]; then
+              git restore --worktree .
+              git rm -f .patch-ci.json
+
+              if git diff --cached --quiet; then
+                git reset --hard "$BEFORE_PATCH"
+                record_result "$PR" skipped "empty-patch"
+                continue
+              fi
+
+              git commit -m "Apply patch PR #$PR"
+              echo "$PR" >> "$APPLIED"
+              record_result "$PR" applied "tests-passed"
+            else
+              git reset --hard "$BEFORE_PATCH"
+              git clean -fd
+              record_result "$PR" skipped "tests-failed"
+            fi
+          done < /tmp/patch-prs.txt
+
+          cp "$MANIFEST" patch-manifest.json
+
+      - name: Upload patch manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patch-manifest
+          path: patch-manifest.json
+          if-no-files-found: error
+
+      - name: Install Meteor
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v meteor > /dev/null 2>&1 || curl -fsSL https://install.meteor.com | /bin/sh
+
+      - name: Build Rocket.Chat bundle
+        shell: bash
+        env:
+          METEOR_PROFILE: 1000
+          BABEL_ENV: production
+        run: |
+          set -euo pipefail
+          yarn workspace @rocket.chat/meteor build:ci
+
+      - name: Prepare image name
+        shell: bash
+        run: |
+          echo "IMAGE_NAME=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Same Dockerfile as upstream CI (docker-compose-ci.yml → Dockerfile.alpine).
+      # Dockerfile.debian is unused there and currently breaks on bullseye EOL apt 404s.
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: /tmp/dist
+          file: ${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine
+          target: release-standard
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:patched
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:patched-${{ github.run_number }}

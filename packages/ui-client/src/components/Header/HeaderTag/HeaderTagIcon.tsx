@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef, ReactElement } from 'react';
 import { isValidElement } from 'react';
 
 type HeaderIconProps = {
-	icon: ReactElement | Pick<ComponentPropsWithoutRef<typeof Icon>, 'name' | 'color'> | null;
+	icon: ReactElement<any> | Pick<ComponentPropsWithoutRef<typeof Icon>, 'name' | 'color'> | null;
 };
 
 const HeaderTagIcon = ({ icon }: HeaderIconProps) => {
@@ -16,7 +16,7 @@ const HeaderTagIcon = ({ icon }: HeaderIconProps) => {
 			{icon}
 		</Box>
 	) : (
-		<Icon size='x12' mie={4} {...icon} />
+		<Icon size='x12' marginInlineEnd={4} {...icon} />
 	);
 };
 

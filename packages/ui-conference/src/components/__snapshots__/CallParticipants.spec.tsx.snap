@@ -1,0 +1,269 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CallParticipants renders AllShown without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1mhouud"
+    >
+      <div
+        aria-label="3 people in the call"
+        class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
+        style="gap: 6px;"
+        title="3 people in the call"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="ada"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="ada"
+            />
+          </figure>
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="grace"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="grace"
+            />
+          </figure>
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="alan"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="alan"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+        >
+          joined
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallParticipants renders AvatarsDisabled without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1mhouud"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+      >
+        7 joined
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1mhouud"
+    >
+      <div
+        aria-label="7 people in the call"
+        class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
+        style="gap: 6px;"
+        title="7 people in the call"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x24"
+              data-username="ada"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="ada"
+            />
+          </figure>
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x24"
+              data-username="grace"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="grace"
+            />
+          </figure>
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x24"
+              data-username="alan"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="alan"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+        >
+          + 4 joined
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallParticipants renders NoUsernames without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1mhouud"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+      >
+        4 joined
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallParticipants renders SinglePerson without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1mhouud"
+    >
+      <div
+        aria-label="1 person in the call"
+        class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
+        style="gap: 6px;"
+        title="1 person in the call"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="ada"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="ada"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+        >
+          joined
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallParticipants renders WithOverflow without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1mhouud"
+    >
+      <div
+        aria-label="12 people in the call"
+        class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
+        style="gap: 6px;"
+        title="12 people in the call"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="ada"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="ada"
+            />
+          </figure>
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="grace"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="grace"
+            />
+          </figure>
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+          >
+            <img
+              alt="Avatar"
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x18"
+              data-username="alan"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+              title="alan"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+        >
+          + 9 joined
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
