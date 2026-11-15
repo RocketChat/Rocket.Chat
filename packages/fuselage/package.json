@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage",
-	"version": "1.0.0-rc.1",
+	"version": "1.0.0",
 	"description": "Rocket.Chat's React Components Library",
 	"keywords": [
 		"react",
@@ -30,7 +30,7 @@
 		"/index.js"
 	],
 	"scripts": {
-		"build": "rm -rf dist && vite build --mode development && vite build --mode production && tsc -p tsconfig.build.json --emitDeclarationOnly",
+		"build": "rm -rf dist && vite build --mode development && vite build --mode production && node scripts/check-dist-env.mjs && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"build-storybook": "NODE_ENV=production storybook build",
 		"lint": "yarn run -T oxlint && yarn run stylelint",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.scss'",
@@ -64,6 +64,8 @@
 		"@storybook/addon-docs": "~10.6.5",
 		"@storybook/react": "~10.6.5",
 		"@storybook/react-vite": "~10.6.5",
+		"@tamagui/vite-plugin": "3.0.18",
+		"@tamagui/web": "3.0.18",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
 		"@testing-library/user-event": "~14.6.7",
@@ -77,6 +79,7 @@
 		"cssnano": "~9.0.4",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",
+		"magic-string": "~0.30.21",
 		"normalize.css": "^8.0.1",
 		"postcss": "8.5.26",
 		"postcss-scss": "~4.0.9",
@@ -94,8 +97,8 @@
 		"vite": "~8.2.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
-		"@rocket.chat/icons": "0.52.0-rc.0",
+		"@rocket.chat/fuselage-hooks": "0.44.0",
+		"@rocket.chat/icons": "0.52.0",
 		"react": "*",
 		"react-dom": "*",
 		"react-virtuoso": "*"

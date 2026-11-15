@@ -21,7 +21,13 @@
 		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@rocket.chat/random": "workspace:^",
+		"@rocket.chat/sha256": "workspace:^",
+		"bcrypt": "^6.0.0"
+	},
 	"devDependencies": {
+		"@types/bcrypt": "^6.0.0",
 		"typescript": "~7.0.2"
 	},
 	"volta": {

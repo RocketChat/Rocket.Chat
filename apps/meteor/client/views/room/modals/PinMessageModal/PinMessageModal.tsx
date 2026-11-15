@@ -1,8 +1,9 @@
 import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings';
 import { Box, Text } from '@rocket.chat/fuselage';
 import { useUserDisplayName, GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
@@ -10,7 +11,7 @@ import AttachmentProvider from '../../../../providers/AttachmentProvider';
 export type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
 
 const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const displayName = useUserDisplayName(message.u);
 	const avatarUrl = getUserAvatarPath(message.u.username);

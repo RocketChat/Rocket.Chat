@@ -75,7 +75,7 @@ export class AppConsole implements ILogger {
 	}
 
 	private addEntry(severity: LogMessageSeverity, caller: string, ...items: Array<any>): void {
-		const i = items.map((v) => {
+		const i = items.map((v): unknown => {
 			if (v instanceof Error) {
 				return JSON.stringify(v, Object.getOwnPropertyNames(v));
 			}

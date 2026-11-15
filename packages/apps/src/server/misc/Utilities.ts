@@ -1,11 +1,11 @@
-import cloneDeep = require('lodash.clonedeep');
+import cloneDeep from 'lodash.clonedeep';
 
 export class Utilities {
 	public static deepClone<T>(item: T): T {
 		return cloneDeep(item);
 	}
 
-	public static deepFreeze<T>(item: any): T {
+	public static deepFreeze<T extends object>(item: T): T {
 		Object.freeze(item);
 
 		Object.getOwnPropertyNames(item).forEach((prop: string) => {
@@ -22,7 +22,7 @@ export class Utilities {
 		return item;
 	}
 
-	public static deepCloneAndFreeze<T>(item: T): T {
+	public static deepCloneAndFreeze<T extends object>(item: T): T {
 		return Utilities.deepFreeze(Utilities.deepClone(item));
 	}
 

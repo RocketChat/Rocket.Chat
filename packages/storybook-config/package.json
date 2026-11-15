@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/storybook-config",
-	"version": "1.0.0-rc.1",
+	"version": "1.0.0",
 	"private": true,
 	"type": "module",
 	"exports": {
@@ -57,8 +57,8 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "1.0.0-rc.1",
-		"@rocket.chat/icons": "0.52.0-rc.0",
+		"@rocket.chat/fuselage": "1.0.0",
+		"@rocket.chat/icons": "0.52.0",
 		"@storybook/react": "*",
 		"react": "*"
 	},

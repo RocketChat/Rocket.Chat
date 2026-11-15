@@ -3,6 +3,7 @@ import { Skeleton, Box, Accordion, Stack } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import HistoryItem from './HistoryItem';
+import ContentColumn from '../../../../../components/ContentColumn';
 
 export type HistoryContentProps = { data: Serialized<IIntegrationHistory>[]; isLoading: boolean };
 
@@ -33,13 +34,13 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 	}
 
 	return (
-		<Box width='full' maxWidth='x600' marginInline='auto'>
+		<ContentColumn>
 			<Accordion key='content'>
 				{data.map((current) => (
 					<HistoryItem data={current} key={current._id} />
 				))}
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

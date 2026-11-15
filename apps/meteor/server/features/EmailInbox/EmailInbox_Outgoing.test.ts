@@ -1,8 +1,7 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel, IMessagesModel, IRoomsModel, IUploadsModel, IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -64,11 +63,11 @@ const resetStubs = () => {
 
 describe('EmailInbox_Outgoing', () => {
 	before(() => {
-		registerModel('IMessagesModel', models.Messages as unknown as IMessagesModel);
-		registerModel('IUploadsModel', models.Uploads as unknown as IUploadsModel);
-		registerModel('ILivechatRoomsModel', models.LivechatRooms as unknown as ILivechatRoomsModel);
-		registerModel('IRoomsModel', models.Rooms as unknown as IRoomsModel);
-		registerModel('IUsersModel', models.Users as unknown as IUsersModel);
+		mockModel('Messages', models.Messages);
+		mockModel('Uploads', models.Uploads);
+		mockModel('LivechatRooms', models.LivechatRooms);
+		mockModel('Rooms', models.Rooms);
+		mockModel('Users', models.Users);
 	});
 
 	describe('reply by email', () => {

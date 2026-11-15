@@ -1,9 +1,10 @@
 import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
@@ -12,7 +13,7 @@ import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 // TODO: review inner logic
 function ImportHistoryPage() {
 	const queryClient = useQueryClient();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const downloadPendingFiles = useEndpoint('POST', '/v1/downloadPendingFiles');

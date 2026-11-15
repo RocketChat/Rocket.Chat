@@ -1,4 +1,5 @@
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { AbacService } from './index';
 
@@ -8,20 +9,6 @@ const mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId = jest.fn();
 const mockUsersFindOne = jest.fn();
 const mockUsersFindOneById = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn().mockResolvedValue(undefined);
-
-jest.mock('@rocket.chat/models', () => ({
-	Subscriptions: {
-		findOneByRoomIdAndUserId: (...args: any[]) => mockSubscriptionsFindOneByRoomIdAndUserId(...args),
-		setAbacLastTimeCheckedByUserIdAndRoomId: (...args: any[]) => mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId(...args),
-	},
-	Users: {
-		findOne: (...args: any[]) => mockUsersFindOne(...args),
-		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
-	},
-	ServerEvents: {
-		createAuditServerEvent: jest.fn().mockResolvedValue(undefined),
-	},
-}));
 
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {
@@ -38,6 +25,20 @@ jest.mock('@rocket.chat/core-services', () => ({
 }));
 
 describe('AbacService.canAccessObject (unit)', () => {
+	beforeAll(() => {
+		mockModel('Subscriptions', {
+			findOneByRoomIdAndUserId: (...args: any[]) => mockSubscriptionsFindOneByRoomIdAndUserId(...args),
+			setAbacLastTimeCheckedByUserIdAndRoomId: (...args: any[]) => mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId(...args),
+		});
+		mockModel('Users', {
+			findOne: (...args: any[]) => mockUsersFindOne(...args),
+			findOneById: (...args: any[]) => mockUsersFindOneById(...args),
+		});
+		mockModel('ServerEvents', {
+			createAuditServerEvent: jest.fn().mockResolvedValue(undefined),
+		});
+	});
+
 	let service: AbacService;
 
 	const baseRoom = {

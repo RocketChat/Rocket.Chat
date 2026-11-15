@@ -14,6 +14,7 @@ export default function handleOnEnable(request: RequestContext): Promise<boolean
 		});
 	}
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- Function.prototype.call returns any because strictBindCallApply is off in this package; the value is the app's onEnable result
 	return app.onEnable.call(
 		wrapAppForRequest(app, request),
 		AppAccessorsInstance.getEnvironmentRead(),

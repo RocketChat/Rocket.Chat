@@ -8,9 +8,7 @@ export type MessageToolbarWrapperProps = HTMLAttributes<HTMLDivElement> &
 function MessageToolbarWrapper({ className, visible, ...props }: MessageToolbarWrapperProps) {
 	return (
 		<div
-			className={['rcx-box rcx-box--full rcx-message-toolbar__wrapper', visible && 'rcx-message-toolbar__wrapper--visible', className]
-				.filter(Boolean)
-				.join(' ')}
+			className={['rcx-message-toolbar__wrapper', visible && 'rcx-message-toolbar__wrapper--visible', className].filter(Boolean).join(' ')}
 			{...props}
 		/>
 	);

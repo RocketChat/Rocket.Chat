@@ -1,9 +1,10 @@
 import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useMergedRefsV2, useIsVisible } from '@rocket.chat/ui-client';
-import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
@@ -34,7 +35,7 @@ const isFocusable = (element: Element): element is Element & Pick<HTMLOrSVGEleme
 	'focus' in element && typeof element.focus === 'function';
 
 const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: EmojiPickerProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const ref = useRef<Element | null>(reference);
 	const virtuosoRef = useRef<VirtuosoHandle>(null);

@@ -15,15 +15,11 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 
 test('shows the local time of a UTC+0 user without printing a stray "0"', () => {
 	const { Default } = composeStories(stories);
-	const { container } = render(<Default utcOffset={0} />);
+	render(<Default utcOffset={0} />);
 
 	expect(screen.getByText('Local_Time')).toBeInTheDocument();
 	expect(screen.getByText(/\(UTC \+0\)/)).toBeInTheDocument();
-
-	const strayZeroTextNodes = [...container.querySelectorAll('*')]
-		.flatMap((element) => [...element.childNodes])
-		.filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === '0');
-	expect(strayZeroTextNodes).toHaveLength(0);
+	expect(screen.queryByText('0')).not.toBeInTheDocument();
 });
 
 test('shows the local time of a user in a fractional offset time zone', () => {

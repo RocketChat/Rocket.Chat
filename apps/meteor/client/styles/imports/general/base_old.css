@@ -81,12 +81,6 @@
 	height: 2rem;
 }
 
-.rcx-message {
-	&.highlight {
-		animation: highlight 6s;
-	}
-}
-
 .page-loading {
 	position: absolute;
 	inset: 0;
@@ -179,10 +173,6 @@ code {
 			border-radius: 0 0 2px 2px;
 		}
 	}
-}
-
-.new-room-highlight a {
-	animation: highlight 6s infinite;
 }
 
 .room-not-found {

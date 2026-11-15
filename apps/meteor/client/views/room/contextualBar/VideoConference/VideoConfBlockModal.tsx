@@ -1,10 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onConfirm: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const workspaceUrl = useSetting('Site_Url');
 
 	const confirmButtonContent = (

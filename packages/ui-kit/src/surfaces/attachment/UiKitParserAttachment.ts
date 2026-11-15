@@ -1,5 +1,5 @@
-import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock';
-import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock.js';
+import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 
 /** Layout blocks an attachment accepts; every attachment renderer must allow exactly these. */
 export const attachmentSurfaceLayoutBlockTypes = [

@@ -59,7 +59,6 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
  * Usually you'll perfer to use `-Input` (e.g. <LinkTo kind='Forms/TextInput' story='Default'>`TextInput`</LinkTo>)
  * components over this one because it works as a construction block for them.
  */
-// oxlint-disable-next-line complexity
 function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
 	ref,
 	className,
@@ -80,7 +79,7 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	let defaultAddon = endAddon;
 
 	useLayoutEffect(() => {
-		if (innerRef.current && innerRef.current.setCustomValidity) {
+		if (innerRef.current?.setCustomValidity) {
 			innerRef.current.setCustomValidity(error || '');
 		}
 	}, [error]);
@@ -94,18 +93,23 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 		defaultAddon = <Icon name='clock' size='x20' onClick={handleAddonClick} />;
 	}
 
+	const is = (type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input';
+	const cols = (type === 'textarea' && 1) || (type === 'select' && 0) || 0;
+	const htmlSize = (type === 'textarea' && undefined) || (type === 'select' && 1) || 1;
+	const inputType = type === 'textarea' || type === 'select' ? undefined : type;
+
 	if (!defaultAddon && !startAddon) {
 		return (
 			<Input
-				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
+				is={is}
 				className={className}
-				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
+				cols={cols}
 				hidden={hidden}
 				invisible={invisible}
 				multiple={multiple}
 				ref={mergedRef}
-				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
-				type={type === 'textarea' || type === 'select' ? undefined : type}
+				htmlSize={htmlSize}
+				type={inputType}
 				rcx-input-box--multiple={multiple}
 				rcx-input-box--placeholder-visible={placeholderVisible}
 				rcx-input-box--type={type}
@@ -119,12 +123,12 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 		<InputBoxWrapper className={className} hidden={hidden} invisible={invisible} rcx-input-box__wrapper--end-addon-flush={endAddonFlush}>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input
-				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
-				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
+				is={is}
+				cols={cols}
 				multiple={multiple}
 				ref={mergedRef}
-				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
-				type={type === 'textarea' || type === 'select' ? undefined : type}
+				htmlSize={htmlSize}
+				type={inputType}
 				rcx-input-box--multiple={multiple}
 				rcx-input-box--placeholder-visible={placeholderVisible}
 				rcx-input-box--type={type}

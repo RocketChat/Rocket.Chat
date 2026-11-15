@@ -56,7 +56,7 @@ function MultiSelect({
 	error,
 	disabled,
 	anchor: Anchor = MultiSelectAnchor,
-	onChange = () => {},
+	onChange = () => undefined,
 	getLabel = ([, label] = ['', '']) => label,
 	getValue = ([value]) => value,
 	placeholder,
@@ -105,7 +105,7 @@ function MultiSelect({
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(index, filteredOptions, internalChanged);
 
-	useEffect(reset, [filter]);
+	useEffect(reset, [filter, reset]);
 
 	const innerRef = useRef<HTMLElement>(null);
 	const anchorRef = useMergedRefs(ref, innerRef);

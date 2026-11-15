@@ -1,14 +1,15 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
+import ItemMeta from '../../Item/ItemMeta';
 
 export type MessageSystemTimestampProps = {
 	children: ReactNode;
 	title?: string;
-} & HTMLAttributes<HTMLSpanElement>;
+} & Omit<HTMLAttributes<HTMLSpanElement>, 'is'>;
 
 const MessageSystemTimestamp = ({ className, ...props }: MessageSystemTimestampProps) => (
-	<span {...props} className={cx('rcx-box rcx-box--full rcx-message-system__time', className)} />
+	<ItemMeta is='span' {...props} className={cx('rcx-message-system__time', className)} />
 );
 
 export default MessageSystemTimestamp;

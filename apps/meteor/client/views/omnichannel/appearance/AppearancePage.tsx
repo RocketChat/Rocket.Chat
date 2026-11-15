@@ -1,5 +1,5 @@
 import type { ISetting, Serialized } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -8,6 +8,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppearanceForm from './AppearanceForm';
+import ContentColumn from '../../../components/ContentColumn';
 
 type LivechatAppearanceSettings = {
 	Livechat_title: string;
@@ -82,13 +83,13 @@ const AppearancePage = ({ settings }: AppearancePageProps) => {
 		<Page>
 			<PageHeader title={t('Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' width='full' alignSelf='center'>
+				<ContentColumn>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<AppearanceForm />
 						</form>
 					</FormProvider>
-				</Box>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>

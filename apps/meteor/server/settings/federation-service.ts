@@ -163,6 +163,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 				modules: ['federation'],
 				i18nLabel: 'Enabled',
 				invalidValue: false,
+				alert: 'XMPP_Server_Enabled_Alert',
 			});
 
 			const enableQuery = { _id: 'XMPP_Server_Enabled', value: true };

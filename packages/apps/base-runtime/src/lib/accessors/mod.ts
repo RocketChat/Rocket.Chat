@@ -169,7 +169,7 @@ export class AppAccessors {
 
 			const apiExtend: IApiExtend = {
 				async provideApi(api: IApi) {
-					const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints')!;
+					const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints');
 
 					api.endpoints.forEach((endpoint) => {
 						endpoint._availableMethods = httpMethods.filter((method) => typeof endpoint[method] === 'function');

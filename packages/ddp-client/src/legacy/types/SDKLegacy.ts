@@ -1,6 +1,7 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
+import type { Subscription } from '../../types/Subscription';
 import type { StreamerCallbackArgs } from '../../types/streams';
 
 export interface APILegacy {
@@ -63,10 +64,10 @@ export interface DPPLegacy {
 	unsubscribe(subscription: unknown): Promise<unknown>;
 	unsubscribeAll(): Promise<unknown>;
 
-	subscribeRoom(rid: string, ...args: any[]): Promise<unknown>;
-	subscribeNotifyAll(): Promise<unknown>;
-	subscribeLoggedNotify(): Promise<unknown>;
-	subscribeNotifyUser(): Promise<unknown>;
+	subscribeRoom(rid: string, ...args: any[]): Promise<Subscription[]>;
+	subscribeNotifyAll(): Promise<Subscription[]>;
+	subscribeLoggedNotify(): Promise<Subscription[]>;
+	subscribeNotifyUser(): Promise<Subscription[]>;
 
 	url: string;
 

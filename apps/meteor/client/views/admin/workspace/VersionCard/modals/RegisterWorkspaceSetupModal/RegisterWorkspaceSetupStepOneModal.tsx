@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	CheckBox,
@@ -83,11 +82,9 @@ const RegisterWorkspaceSetupStepOneModal = ({
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box>
+				<Stack gap='x16'>
 					<Stack gap='x8'>
-						<Box is='p' fontSize='p2' withRichContent>
-							{t('RegisterWorkspace_Setup_Subtitle')}
-						</Box>
+						<Text is='p'>{t('RegisterWorkspace_Setup_Subtitle')}</Text>
 						<Field>
 							<FieldLabel htmlFor={emailField}>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
 							<FieldRow>
@@ -100,19 +97,21 @@ const RegisterWorkspaceSetupStepOneModal = ({
 							</FieldRow>
 						</Field>
 					</Stack>
-					<Box marginBlock={16} fontSize='c1'>
-						<Box is='p'>
+					<Text fontScale='c1'>
+						<Text is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>
-						</Box>
-						<Box is='p'>{t('RegisterWorkspace_Setup_Have_Account_Subtitle')}</Box>
-						<Box is='p' paddingBlockStart={16}>
+						</Text>
+						<Text is='p'>{t('RegisterWorkspace_Setup_Have_Account_Subtitle')}</Text>
+					</Text>
+					<Text fontScale='c1'>
+						<Text is='p'>
 							<strong>{t('RegisterWorkspace_Setup_No_Account_Title')}</strong>
-						</Box>
-						<Box is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Box>
-					</Box>
+						</Text>
+						<Text is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Text>
+					</Text>
 					<Field>
 						<FieldRow>
-							<Box display='flex' alignItems='center' minWidth={0}>
+							<Stack direction='row' align='center'>
 								<FieldLabel htmlFor={termsField}>
 									<Text is='span' fontScale='c1'>
 										<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
@@ -122,10 +121,10 @@ const RegisterWorkspaceSetupStepOneModal = ({
 									</Text>
 								</FieldLabel>
 								<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
-							</Box>
+							</Stack>
 						</FieldRow>
 					</Field>
-				</Box>
+				</Stack>
 			</ModalContent>
 			<ModalFooter>
 				<ButtonGroup align='end'>
