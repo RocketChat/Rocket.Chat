@@ -63,7 +63,14 @@ export class GridFSStore extends UploadFS.Store {
 			if (options?.end) {
 				options.end += 1;
 			}
-			return mongoStore.openDownloadStream(fileId as unknown as ObjectId, options);
+			const rs = mongoStore.openDownloadStream(fileId as unknown as ObjectId, options);
+			// The driver keeps the cursor of a destroyed download stream open, and with it the session and the chunks it already fetched.
+			rs.once('close', () => {
+				if (!rs.readableEnded) {
+					void rs.abort();
+				}
+			});
+			return rs;
 		};
 
 		this.getWriteStream = async function (fileId: string, file: IUpload, _options?: any) {
