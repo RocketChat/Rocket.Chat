@@ -3,20 +3,26 @@
 
 const MODELS_PACKAGE = '@rocket.chat/models';
 
-const GENERIC_METHODS = new Set([
-	'find',
-	'findOne',
-	'findPaginated',
-	'update',
-	'updateOne',
-	'updateMany',
-	'findOneAndUpdate',
-	'findOneAndDelete',
-	'deleteOne',
-	'deleteMany',
-	'countDocuments',
-	'aggregate',
-	'trashFind',
+// The kind of named method that replaces each generic one, and what the caller may still pass to it
+const READ = 'findOneBy<Field>(value, { projection, sort })';
+const WRITE = 'set<Field>ById(_id, value, { session })';
+const DELETE = 'removeBy<Field>(value, { session })';
+const COUNT = 'countBy<Field>(value)';
+
+const ALTERNATIVES = new Map([
+	['find', 'findBy<Field>(value, { projection, sort, limit })'],
+	['findOne', READ],
+	['findPaginated', 'findPaginatedBy<Field>(value, { projection, sort, skip, limit })'],
+	['aggregate', 'get<Result>By<Field>(value)'],
+	['trashFind', 'trashFindBy<Field>(value, { projection })'],
+	['update', WRITE],
+	['updateOne', WRITE],
+	['updateMany', 'set<Field>By<Selector>(selector, value, { session })'],
+	['findOneAndUpdate', 'set<Field>ByIdAndReturn(_id, value, { session })'],
+	['deleteOne', DELETE],
+	['deleteMany', DELETE],
+	['findOneAndDelete', DELETE],
+	['countDocuments', COUNT],
 ]);
 
 const propertyName = (member) => {
@@ -38,11 +44,19 @@ export default {
 		type: 'problem',
 		docs: {
 			description: 'Disallow generic collection methods on models from @rocket.chat/models outside a model',
+			url: 'https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/database-access.md',
 		},
 		schema: [],
 		messages: {
-			method: "Don't call '{{model}}.{{method}}()' outside a model. Add a named method to the model instead (docs/database-access.md).",
-			col: "Don't use '{{model}}.col' outside a model. Add a named method to the model instead (docs/database-access.md).",
+			method:
+				"'{{model}}.{{method}}()' takes a filter or update document, which belongs inside the model. " +
+				'Call a named method on {{model}} instead, e.g. {{model}}.{{alternative}}. ' +
+				'If none fits, declare one on its interface in packages/model-typings and implement it in packages/models, ' +
+				'named after what it selects or changes, not after this caller. See docs/database-access.md.',
+			col:
+				"'{{model}}.col' is the raw driver collection and bypasses the model's safeguards (_updatedAt, string _ids). " +
+				'Call a named method on {{model}} instead. ' +
+				"If none fits, add one in packages/models built on BaseRaw's methods. See docs/database-access.md.",
 		},
 	},
 	create(context) {
@@ -78,9 +92,10 @@ export default {
 					context.report({ node, messageId: 'col', data: { model } });
 					return;
 				}
-				if (!GENERIC_METHODS.has(method)) return;
+				const alternative = ALTERNATIVES.get(method);
+				if (!alternative) return;
 				if (node.parent.type === 'CallExpression' && node.parent.callee === node) {
-					context.report({ node, messageId: 'method', data: { model, method } });
+					context.report({ node, messageId: 'method', data: { model, method, alternative } });
 				}
 			},
 		};
