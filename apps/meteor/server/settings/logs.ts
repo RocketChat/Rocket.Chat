@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createLogSettings = () =>
 	settingsRegistry.addGroup('Logs', async function () {

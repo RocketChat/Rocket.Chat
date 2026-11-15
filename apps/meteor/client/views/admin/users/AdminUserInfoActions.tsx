@@ -1,12 +1,10 @@
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import { GenericMenu, UserInfoAction } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction, AdminUserInfoActionsProps } from './hooks/useAdminUserInfoActions';
 import { useAdminUserInfoActions } from './hooks/useAdminUserInfoActions';
-import { UserInfoAction } from '../../../components/UserInfo';
 
 const AdminUserInfoActions = ({
 	username,
@@ -17,7 +15,7 @@ const AdminUserInfoActions = ({
 	tab,
 	onChange,
 	onReload,
-}: AdminUserInfoActionsProps): ReactElement => {
+}: AdminUserInfoActionsProps) => {
 	const { t } = useTranslation();
 	const { actions: actionsDefinition, menuActions: menuOptions } = useAdminUserInfoActions({
 		username,
@@ -38,17 +36,16 @@ const AdminUserInfoActions = ({
 		return (
 			<GenericMenu
 				key='menu'
-				button={<IconButton icon='kebab' secondary />}
+				button={<IconButton icon='kebab' variant='secondary' />}
 				title={t('More')}
 				sections={menuOptions}
 				placement='bottom-end'
-				small={false}
 			/>
 		);
 	}, [t, menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon = 'kebab', onClick, disabled }]: [string, AdminUserAction]): ReactElement => (
+		const mapAction = ([key, { content, title, icon = 'kebab', onClick, disabled }]: [string, AdminUserAction]) => (
 			<UserInfoAction key={key} title={title} label={content} onClick={onClick} disabled={disabled} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

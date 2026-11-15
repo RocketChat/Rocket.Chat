@@ -1,2 +1,0 @@
-import './appleOauthRegisterService';
-import './loginHandler';

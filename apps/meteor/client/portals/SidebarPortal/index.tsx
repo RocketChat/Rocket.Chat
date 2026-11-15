@@ -4,7 +4,9 @@ import type { ReactNode } from 'react';
 import SidebarPortalV1 from './SidebarPortal';
 import SidebarPortalV2 from './SidebarPortalV2';
 
-const SidebarPortal = ({ children }: { children: ReactNode }) => {
+export type SidebarPortalProps = { children: ReactNode };
+
+const SidebarPortal = ({ children }: SidebarPortalProps) => {
 	return (
 		<FeaturePreview feature='secondarySidebar'>
 			<FeaturePreviewOff>

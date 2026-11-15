@@ -1,5 +1,4 @@
-import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Box, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
-type UsersTabProps = {
+export type UsersTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 
-const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
+const UsersTab = ({ form: { control } }: UsersTabProps) => {
 	const { t } = useTranslation();
 
 	const { field: usersField, fieldState: usersFieldState } = useController({
@@ -28,19 +27,21 @@ const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
 	});
 
 	return (
-		<Field flexShrink={1}>
-			<FieldLabel>{t('Users')}</FieldLabel>
-			<FieldRow>
-				<UserAutoCompleteMultiple
-					error={usersFieldState.error?.message}
-					value={usersField.value}
-					onChange={usersField.onChange}
-					placeholder={t('Username_Placeholder')}
-				/>
-			</FieldRow>
-			{usersFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Users') })}</FieldError>}
-			{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
-		</Field>
+		<Box width='full'>
+			<Field>
+				<FieldLabel>{t('Users')}</FieldLabel>
+				<FieldRow>
+					<UserAutoCompleteMultiple
+						error={usersFieldState.error?.message}
+						value={usersField.value}
+						onChange={usersField.onChange}
+						placeholder={t('Username_Placeholder')}
+					/>
+				</FieldRow>
+				{usersFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Users') })}</FieldError>}
+				{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
+			</Field>
+		</Box>
 	);
 };
 

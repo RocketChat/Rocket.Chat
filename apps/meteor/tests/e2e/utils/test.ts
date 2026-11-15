@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* oxlint-disable react-hooks/rules-of-hooks */
 import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -26,7 +26,6 @@ export type BaseTest = {
 	makeAxeBuilder: () => AxeBuilder;
 };
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		collectIstanbulCoverage: (coverageJSON: string) => void;
 		__coverage__: Record<string, unknown>;

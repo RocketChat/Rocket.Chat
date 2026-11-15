@@ -1,0 +1,151 @@
+{
+  "button": {
+    "light": {
+      "backgroundPrimaryDefault": { "value": "{colors.b500}" },
+      "backgroundPrimaryHover": { "value": "{colors.b600}" },
+      "backgroundPrimaryPress": { "value": "{colors.b700}" },
+      "backgroundPrimaryFocus": { "value": "{colors.b500}" },
+      "backgroundPrimaryKeyfocus": { "value": "{colors.b500}" },
+      "backgroundPrimaryDisabled": { "value": "{colors.b200}" },
+      "fontOnPrimary": { "value": "{colors.white}" },
+      "fontOnPrimaryDisabled": { "value": "{colors.white}" },
+
+      "backgroundSecondaryDefault": { "value": "{colors.n400}" },
+      "backgroundSecondaryHover": { "value": "{colors.n500}" },
+      "backgroundSecondaryPress": { "value": "{colors.n600}" },
+      "backgroundSecondaryFocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryKeyfocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryDisabled": { "value": "{colors.n300}" },
+      "fontOnSecondary": { "value": "{colors.n900}" },
+      "fontOnSecondaryDisabled": { "value": "{colors.n500}" },
+
+      "backgroundSecondaryDangerDefault": { "value": "{colors.n400}" },
+      "backgroundSecondaryDangerHover": { "value": "{colors.n500}" },
+      "backgroundSecondaryDangerPress": { "value": "{colors.n600}" },
+      "backgroundSecondaryDangerFocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryDangerKeyfocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryDangerDisabled": { "value": "{colors.n300}" },
+      "fontOnSecondaryDanger": { "value": "{colors.r700}" },
+      "onSecondaryDangerDisabled": { "value": "{colors.r300}" },
+
+      "backgroundDangerDefault": { "value": "{colors.r500}" },
+      "backgroundDangerHover": { "value": "{colors.r600}" },
+      "backgroundDangerPress": { "value": "{colors.r700}" },
+      "backgroundDangerFocus": { "value": "{colors.r500}" },
+      "backgroundDangerKeyfocus": { "value": "{colors.r500}" },
+      "backgroundDangerDisabled": { "value": "{colors.r200}" },
+      "fontOnDanger": { "value": "{colors.white}" },
+      "fontOnDangerDisabled": { "value": "{colors.white}" },
+
+      "backgroundSuccessDefault": { "value": "{colors.g800}" },
+      "backgroundSuccessHover": { "value": "{colors.g900}" },
+      "backgroundSuccessPress": { "value": "{colors.g1000}" },
+      "backgroundSuccessFocus": { "value": "{colors.g800}" },
+      "backgroundSuccessKeyfocus": { "value": "{colors.g800}" },
+      "backgroundSuccessDisabled": { "value": "{colors.g200}" },
+      "fontOnSuccess": { "value": "{colors.white}" },
+      "fontOnSuccessDisabled": { "value": "{colors.white}" }
+    },
+    "high-contrast": {
+      "backgroundPrimaryDefault": { "value": "{colors.b700}" },
+      "backgroundPrimaryHover": { "value": "{colors.b800}" },
+      "backgroundPrimaryPress": { "value": "{colors.b900}" },
+      "backgroundPrimaryFocus": { "value": "{colors.b700}" },
+      "backgroundPrimaryKeyfocus": { "value": "{colors.b700}" },
+      "backgroundPrimaryDisabled": { "value": "{colors.b200}" },
+      "fontOnPrimary": { "value": "{colors.white}" },
+      "fontOnPrimaryDisabled": { "value": "{colors.white}" },
+
+      "backgroundSecondaryDefault": { "value": "{colors.n400}" },
+      "backgroundSecondaryHover": { "value": "{colors.n500}" },
+      "backgroundSecondaryPress": { "value": "{colors.n600}" },
+      "backgroundSecondaryFocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryKeyfocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryDisabled": { "value": "{colors.n300}" },
+      "fontOnSecondary": { "value": "{colors.n900}" },
+      "fontOnSecondaryDisabled": { "value": "{colors.n500}" },
+
+      "backgroundSecondaryDangerDefault": { "value": "{colors.n400}" },
+      "backgroundSecondaryDangerHover": { "value": "{colors.n500}" },
+      "backgroundSecondaryDangerPress": { "value": "{colors.n600}" },
+      "backgroundSecondaryDangerFocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryDangerKeyfocus": { "value": "{colors.n400}" },
+      "backgroundSecondaryDangerDisabled": { "value": "{colors.n300}" },
+      "fontOnSecondaryDanger": { "value": "{colors.r900}" },
+      "onSecondaryDangerDisabled": { "value": "{colors.r300}" },
+
+      "backgroundDangerDefault": { "value": "{colors.r800}" },
+      "backgroundDangerHover": { "value": "{colors.r900}" },
+      "backgroundDangerPress": { "value": "{colors.r900}" },
+      "backgroundDangerFocus": { "value": "{colors.r800}" },
+      "backgroundDangerKeyfocus": { "value": "{colors.r800}" },
+      "backgroundDangerDisabled": { "value": "{colors.r200}" },
+      "fontOnDanger": { "value": "{colors.white}" },
+      "fontOnDangerDisabled": { "value": "{colors.white}" },
+
+      "backgroundSuccessDefault": { "value": "{colors.g500}" },
+      "backgroundSuccessHover": { "value": "{colors.g600}" },
+      "backgroundSuccessPress": { "value": "{colors.g700}" },
+      "backgroundSuccessFocus": { "value": "{colors.g500}" },
+      "backgroundSuccessKeyfocus": { "value": "{colors.g500}" },
+      "backgroundSuccessDisabled": { "value": "{colors.g200}" },
+      "fontOnSuccess": { "value": "{colors.n900}" },
+      "fontOnSuccessDisabled": { "value": "{colors.white}" }
+    },
+    "dark": {
+      "backgroundPrimaryDefault": { "value": "#095AD2", "type": "color" },
+      "backgroundPrimaryHover": { "value": "#10529E", "type": "color" },
+      "backgroundPrimaryPress": { "value": "#01336B", "type": "color" },
+      "backgroundPrimaryFocus": { "value": "#095AD2", "type": "color" },
+      "backgroundPrimaryKeyfocus": { "value": "#095AD2", "type": "color" },
+      "backgroundPrimaryDisabled": { "value": "#012247", "type": "color" },
+      "fontOnPrimary": { "value": "#FFFFFF", "type": "color" },
+      "fontOnPrimaryDisabled": { "value": "#6C727A", "type": "color" },
+
+      "backgroundSecondaryDefault": { "value": "#353B45", "type": "color" },
+      "backgroundSecondaryHover": { "value": "#404754", "type": "color" },
+      "backgroundSecondaryPress": { "value": "#4C5362", "type": "color" },
+      "backgroundSecondaryFocus": { "value": "#353B45", "type": "color" },
+      "backgroundSecondaryKeyfocus": { "value": "#353B45", "type": "color" },
+      "backgroundSecondaryDisabled": { "value": "#353B45", "type": "color" },
+      "fontOnSecondary": { "value": "#E4E7EA", "type": "color" },
+      "fontOnSecondaryDisabled": { "value": "#6C727A", "type": "color" },
+
+      "backgroundSecondaryDangerDefault": {
+        "value": "#353B45",
+        "type": "color"
+      },
+      "backgroundSecondaryDangerHover": { "value": "#404754", "type": "color" },
+      "backgroundSecondaryDangerPress": { "value": "#4C5362", "type": "color" },
+      "backgroundSecondaryDangerFocus": { "value": "#353B45", "type": "color" },
+      "backgroundSecondaryDangerKeyfocus": {
+        "value": "#353B45",
+        "type": "color"
+      },
+      "backgroundSecondaryDangerDisabled": {
+        "value": "#353B45",
+        "type": "color"
+      },
+      "fontOnSecondaryDanger": { "value": "#FFC1C9", "type": "color" },
+      "onSecondaryDangerDisabled": { "value": "#6B0513", "type": "color" },
+
+      "backgroundDangerDefault": { "value": "#BB3E4E", "type": "color" },
+      "backgroundDangerHover": { "value": "#95323F", "type": "color" },
+      "backgroundDangerPress": { "value": "#822C37", "type": "color" },
+      "backgroundDangerFocus": { "value": "#BB3E4E", "type": "color" },
+      "backgroundDangerKeyfocus": { "value": "#BB3E4E", "type": "color" },
+      "backgroundDangerDisabled": { "value": "#3D2126", "type": "color" },
+      "fontOnDanger": { "value": "#FFFFFF", "type": "color" },
+      "fontOnDangerDisabled": { "value": "#757575", "type": "color" },
+
+      "backgroundSuccessDefault": { "value": "#1D7256", "type": "color" },
+      "backgroundSuccessHover": { "value": "#175943", "type": "color" },
+      "backgroundSuccessPress": { "value": "#134937", "type": "color" },
+      "backgroundSuccessFocus": { "value": "#1D7256", "type": "color" },
+      "backgroundSuccessKeyfocus": { "value": "#1D7256", "type": "color" },
+      "backgroundSuccessDisabled": { "value": "#1E4B40", "type": "color" },
+      "fontOnSuccess": { "value": "#FFFFFF", "type": "color" },
+      "fontOnSuccessDisabled": { "value": "#757575", "type": "color" }
+    }
+  }
+}

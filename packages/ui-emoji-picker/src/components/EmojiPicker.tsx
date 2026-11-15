@@ -1,0 +1,259 @@
+import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefsV2, useIsVisible } from '@rocket.chat/ui-client';
+import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
+
+import CategoriesResult from './CategoriesResult';
+import EmojiPickerCategoryHeader from './EmojiPickerCategoryHeader';
+import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
+import EmojiPickerContainer from './EmojiPickerContainer';
+import EmojiPickerDropdown from './EmojiPickerDropDown';
+import EmojiPickerHeader from './EmojiPickerHeader';
+import EmojiPickerListArea from './EmojiPickerListArea';
+import EmojiPickerPreview from './EmojiPickerPreview';
+import EmojiPickerPreviewArea from './EmojiPickerPreviewArea';
+import SearchingResult from './SearchingResult';
+import ToneSelector from './ToneSelector';
+import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
+import { usePreviewEmoji, useEmojiPickerData } from '../contexts/EmojiPickerContext';
+import { useEmojiRegistry } from '../contexts/EmojiRegistryContext';
+import { getCategoriesList, getEmojisBySearchTerm } from '../lib/emoji';
+import type { EmojiItem } from '../lib/types';
+
+export type EmojiPickerProps = {
+	reference: Element;
+	onClose: () => void;
+	onPickEmoji: (emoji: string) => void;
+	onAddCustomEmoji: () => void;
+};
+
+const isFocusable = (element: Element): element is Element & Pick<HTMLOrSVGElement, 'focus'> =>
+	'focus' in element && typeof element.focus === 'function';
+
+const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: EmojiPickerProps) => {
+	const t = useTranslation();
+
+	const ref = useRef<Element | null>(reference);
+	const virtuosoRef = useRef<VirtuosoHandle>(null);
+	const emojiContainerRef = useRef<HTMLDivElement>(null);
+
+	const [isVisibleRef, isInputVisible] = useIsVisible();
+	const textInputRef = useRef<HTMLInputElement>(undefined);
+
+	const mergedTextInputRef = useMergedRefsV2(isVisibleRef, textInputRef);
+
+	const emojiRegistry = useEmojiRegistry();
+	const emojiCategories = getCategoriesList(emojiRegistry);
+
+	const canManageEmoji = usePermission('manage-emoji');
+
+	const [searching, setSearching] = useState(false);
+	const [searchTerm, setSearchTerm] = useState('');
+	const [searchResults, setSearchResults] = useState<EmojiItem[]>([]);
+
+	const { emojiToPreview, handleRemovePreview } = usePreviewEmoji();
+	const {
+		recentEmojis,
+		setCurrentCategory,
+		addRecentEmoji,
+		setRecentEmojis,
+		actualTone,
+		currentCategory,
+		categoriesIndexes,
+		emojiListByCategory,
+		customItemsLimit,
+		setActualTone,
+		setCustomItemsLimit,
+	} = useEmojiPickerData();
+
+	useEffect(() => () => handleRemovePreview(), [handleRemovePreview]);
+
+	const scrollCategories = useMediaQuery('(width < 340px)');
+
+	useOutsideClick([emojiContainerRef], onClose);
+
+	useLayoutEffect(() => {
+		if (!reference) {
+			return;
+		}
+
+		const resizeObserver = new ResizeObserver(() => {
+			const anchorRect = reference.getBoundingClientRect();
+			if (anchorRect.width === 0 && anchorRect.height === 0) {
+				// The element is hidden, skip it
+				ref.current = null;
+				return;
+			}
+
+			ref.current = reference;
+		});
+
+		resizeObserver.observe(reference);
+
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, [reference]);
+
+	useEffect(() => {
+		if (textInputRef.current && isInputVisible) {
+			textInputRef.current.focus();
+		}
+	}, [isInputVisible]);
+
+	const handleSelectEmoji = (event: MouseEvent<HTMLElement>) => {
+		event.stopPropagation();
+
+		const _emoji = event.currentTarget.dataset?.emoji;
+
+		if (!_emoji) {
+			return;
+		}
+
+		let tone = '';
+
+		// Custom emoji should overwrite native emoji with the same name
+		// Custom emoji with name `:point_right:` should overwrite every tone
+		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
+		if (emojiRegistry.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
+			for (const emojiPackage in emojiRegistry.packages) {
+				if (Object.hasOwn(emojiRegistry.packages, emojiPackage)) {
+					if (actualTone > 0 && Object.hasOwn(emojiRegistry.packages[emojiPackage].toneList, _emoji)) {
+						tone = `_tone${actualTone}`;
+					}
+				}
+			}
+		}
+
+		setSearchTerm('');
+
+		onPickEmoji(_emoji + tone);
+		addRecentEmoji(_emoji + tone);
+		onClose();
+	};
+
+	useEffect(() => {
+		setCurrentCategory('recent');
+	}, [setCurrentCategory]);
+
+	const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+		setSearchTerm(e.target.value);
+		setCurrentCategory('');
+		setSearching(e.target.value !== '');
+
+		const emojisResult = getEmojisBySearchTerm(emojiRegistry, e.target.value, actualTone, recentEmojis, setRecentEmojis);
+
+		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
+			setCurrentCategory('no-results');
+		}
+		setSearchResults(emojisResult as EmojiItem[]);
+	};
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Escape') {
+			onClose();
+
+			// Escape hands the focus back to what opened the picker, while it is still on the page.
+			if (reference.isConnected && isFocusable(reference)) {
+				reference.focus();
+			}
+		}
+	};
+
+	const handleLoadMore = () => {
+		setCustomItemsLimit(customItemsLimit + 90);
+	};
+
+	const handleScroll = (range: ListRange) => {
+		const { startIndex } = range;
+
+		const category = categoriesIndexes.find(
+			(category, index) => category.index <= startIndex + 1 && categoriesIndexes[index + 1]?.index >= startIndex,
+		);
+
+		if (!category) {
+			return;
+		}
+
+		setCurrentCategory(category.key);
+	};
+
+	const handleGoToCategory = (category: string) => {
+		setSearching(false);
+		const { index } = categoriesIndexes.find((item) => item.key === category) || {};
+
+		if (index === undefined) {
+			return;
+		}
+
+		virtuosoRef.current?.scrollToIndex({ index: index > 0 ? index + 1 : 0 });
+	};
+
+	const handleGoToAddCustom = () => {
+		onAddCustomEmoji();
+		onClose();
+	};
+
+	return (
+		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement | null>} ref={emojiContainerRef}>
+			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
+				<EmojiPickerHeader>
+					<TextInput
+						// FIXME: remove autoFocus prop when rewriting the emojiPicker dropdown
+						autoFocus
+						ref={mergedTextInputRef}
+						value={searchTerm}
+						onChange={handleSearch}
+						endAddon={<Icon name='magnifier' size='x20' />}
+						placeholder={t('Search')}
+						aria-label={t('Search')}
+					/>
+				</EmojiPickerHeader>
+				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
+					{emojiCategories.map((category) => (
+						<EmojiPickerCategoryItem
+							key={category.key}
+							category={category}
+							active={category.key === currentCategory}
+							handleGoToCategory={() => handleGoToCategory(category.key)}
+						/>
+					))}
+				</EmojiPickerCategoryHeader>
+				<Box paddingBlock='x12'>
+					<Divider flush />
+				</Box>
+				<EmojiPickerListArea role='tabpanel'>
+					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
+					{!searching && (
+						<CategoriesResult
+							ref={virtuosoRef}
+							items={emojiListByCategory}
+							customItemsLimit={customItemsLimit}
+							handleLoadMore={handleLoadMore}
+							handleSelectEmoji={handleSelectEmoji}
+							handleScroll={handleScroll}
+						/>
+					)}
+				</EmojiPickerListArea>
+				<EmojiPickerPreviewArea>
+					<div>
+						{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
+						{canManageEmoji && emojiToPreview === null && (
+							<Button size='small' onClick={handleGoToAddCustom}>
+								{t('Add_emoji')}
+							</Button>
+						)}
+					</div>
+					<ToneSelectorWrapper caption={t('Skin_tone')}>
+						<ToneSelector tone={actualTone} setTone={setActualTone} />
+					</ToneSelectorWrapper>
+				</EmojiPickerPreviewArea>
+			</EmojiPickerContainer>
+		</EmojiPickerDropdown>
+	);
+};
+
+export default EmojiPicker;

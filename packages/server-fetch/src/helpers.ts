@@ -1,5 +1,5 @@
-import { lookup } from 'dns';
-import net from 'net';
+import { lookup } from 'node:dns';
+import net from 'node:net';
 
 import { domainPattern, ipv4Ranges, ipv4WithPortPattern, ipv6Ranges } from './constants';
 
@@ -93,7 +93,7 @@ export const normalizeHostForAllowlistMatch = (hostOrIp: string): string => {
 export const parseIpv4WithPort = (input: string): { ip: string; port?: string } | null => {
 	const match = input.match(ipv4WithPortPattern);
 	if (match) {
-		return { ip: match[1]!, port: match[2] };
+		return { ip: match[1], port: match[2] };
 	}
 	return null;
 };

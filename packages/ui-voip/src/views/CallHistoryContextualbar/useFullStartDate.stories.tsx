@@ -8,7 +8,6 @@ const FullStartDate = ({ date }: { date: Date }) => {
 };
 
 const meta = {
-	title: 'V2/Views/CallHistoryContextualbar/useFullStartDate',
 	component: FullStartDate,
 } satisfies Meta<typeof FullStartDate>;
 

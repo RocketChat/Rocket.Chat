@@ -1,0 +1,43 @@
+import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/shallow';
+
+import type { RoomRoles } from './useRoomRolesQuery';
+import { useRoomRolesQuery } from './useRoomRolesQuery';
+import type { UserRoles } from './useUserRolesQuery';
+import { useUserRolesQuery } from './useUserRolesQuery';
+import { Roles } from '../stores';
+
+type UseUserRolesByScopeOptions = {
+	enabled?: boolean;
+	// Views of a single user pass the roles from that user's record, so what they show is current when they open.
+	userRoleIds?: IRole['_id'][];
+};
+
+export const useUserRolesByScope = (
+	userId: IUser['_id'] | undefined,
+	roomId: IRoom['_id'],
+	{ enabled = true, userRoleIds: ownUserRoleIds }: UseUserRolesByScopeOptions = {},
+): { workspaceRoles: string[]; roomRoles: string[] } => {
+	const { data: cachedUserRoleIds } = useUserRolesQuery({
+		select: useCallback((records: UserRoles[]) => records.find((record) => record.uid === userId)?.roles ?? [], [userId]),
+		enabled: enabled && !!userId && !ownUserRoleIds,
+	});
+
+	const { data: roomRoleIds } = useRoomRolesQuery(roomId, {
+		select: useCallback((records: RoomRoles[]) => records.find((record) => record.u._id === userId)?.roles ?? [], [userId]),
+		enabled: enabled && !!userId,
+		...(ownUserRoleIds && { refetchOnMount: 'always' as const }),
+	});
+
+	const userRoleIds = ownUserRoleIds ?? cachedUserRoleIds;
+
+	// roles without a description are not shown, matching what the role endpoints return
+	const belongsTo = (roleIds: IRole['_id'][] | undefined) => (record: IRole) => !!record.description && !!roleIds?.includes(record._id);
+	const label = ({ description }: IRole) => description;
+
+	const workspaceRoles = Roles.use(useShallow((state) => state.filter(belongsTo(userRoleIds)).map(label)));
+	const roomRoles = Roles.use(useShallow((state) => state.filter(belongsTo(roomRoleIds)).map(label)));
+
+	return { workspaceRoles, roomRoles };
+};

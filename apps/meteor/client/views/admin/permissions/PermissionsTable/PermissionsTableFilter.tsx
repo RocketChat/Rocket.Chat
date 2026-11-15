@@ -1,11 +1,10 @@
-import { TextInput } from '@rocket.chat/fuselage';
-import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { FormEvent, ReactElement } from 'react';
+import { useStableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
-const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }): ReactElement => {
-	const { t } = useTranslation();
+import FilterByText from '../../../../components/FilterByText';
+
+const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 500);
 
@@ -13,11 +12,11 @@ const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: stri
 		onChange(debouncedFilter);
 	}, [debouncedFilter, onChange]);
 
-	const handleFilter = useEffectEvent(({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => {
+	const handleFilter = useStableCallback(({ currentTarget: { value } }: ChangeEvent<HTMLInputElement>) => {
 		setFilter(value);
 	});
 
-	return <TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} flexGrow={0} />;
+	return <FilterByText value={filter} onChange={handleFilter} />;
 };
 
 export default PermissionsTableFilter;

@@ -1,9 +1,8 @@
-import { AccordionItem, Tag } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Tag } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ToggleSwitch } from '@rocket.chat/fuselage-forms';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const PreferencesConversationTranscript = () => {
 	const t = useTranslation();
@@ -22,13 +21,11 @@ const PreferencesConversationTranscript = () => {
 				<Field>
 					<FieldRow>
 						<FieldLabel>
-							{t('Omnichannel_transcript_pdf')}
-							{!hasLicense && (
-								<Tag mi={4} variant='featured'>
-									{t('Premium')}
-								</Tag>
-							)}
-							{!canSendTranscriptPDF && hasLicense && <Tag mi={4}>{t('No_permission')}</Tag>}
+							<Box is='span' display='flex' gap={4} paddingInlineEnd={4}>
+								{t('Omnichannel_transcript_pdf')}
+								{!hasLicense && <Tag variant='featured'>{t('Premium')}</Tag>}
+								{!canSendTranscriptPDF && hasLicense && <Tag>{t('No_permission')}</Tag>}
+							</Box>
 						</FieldLabel>
 						<Controller
 							control={control}
@@ -41,8 +38,10 @@ const PreferencesConversationTranscript = () => {
 				<Field>
 					<FieldRow>
 						<FieldLabel>
-							{t('Omnichannel_transcript_email')}
-							{!canSendTranscriptEmailPermission && <Tag mi={4}>{t('No_permission')}</Tag>}
+							<Box is='span' display='flex' gap={4} paddingInlineEnd={4}>
+								{t('Omnichannel_transcript_email')}
+								{!canSendTranscriptEmailPermission && <Tag>{t('No_permission')}</Tag>}
+							</Box>
 						</FieldLabel>
 						<Controller
 							control={control}

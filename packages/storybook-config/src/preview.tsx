@@ -1,12 +1,9 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import type { Parameters, Decorator } from '@storybook/react';
-import { themes } from '@storybook/theming';
-import { useDarkMode } from 'storybook-dark-mode';
+import { useSyncExternalStore } from 'react';
 
-import manifest from '../package.json';
-import DocsContainer from './DocsContainer';
-import logo from './logo.svg';
+import DocsContainer from './DocsContainer.js';
+import { resolveThemeMode, subscribeToSystemColorScheme, type ThemeMode } from './theme.js';
 
 import '@rocket.chat/fuselage/dist/fuselage.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -28,32 +25,24 @@ export const parameters: Parameters = {
 	docs: {
 		container: DocsContainer,
 	},
-	darkMode: {
-		dark: {
-			...themes.dark,
-			appBg: surface.surface.dark.sidebar,
-			appContentBg: surface.surface.dark.light,
-			appPreviewBg: 'transparent',
-			barBg: surface.surface.dark.light,
-			brandTitle: manifest.name,
-			brandImage: logo,
-		},
-		light: {
-			...themes.normal,
-			appPreviewBg: 'transparent',
-			brandTitle: manifest.name,
-			brandImage: logo,
-		},
-	},
 };
 
+/** The Fuselage palette in effect for the theme global, kept in sync with the OS color scheme when it is set to match the system. */
+export const useThemeMode = (themeGlobal: unknown): ThemeMode =>
+	useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(themeGlobal));
+
 export const decorators: Decorator[] = [
-	(Story) => {
-		const dark = useDarkMode();
+	function PaletteDecorator(Story, { globals }) {
+		const mode = useThemeMode(globals.theme);
 
 		return (
 			<>
-				<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
+				<style>{`
+					body {
+						background-color: var(--rcx-color-surface-light);
+					}
+				`}</style>
+				<PaletteStyleTag theme={mode} />
 				<Story />
 			</>
 		);

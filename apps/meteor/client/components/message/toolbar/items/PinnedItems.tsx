@@ -2,7 +2,7 @@ import type { IRoom, ISubscription, IMessage } from '@rocket.chat/core-typings';
 
 import JumpToMessageAction from './actions/JumpToMessageAction';
 
-type PinnedItemsProps = {
+export type PinnedItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

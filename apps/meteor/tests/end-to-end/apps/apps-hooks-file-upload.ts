@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
@@ -10,7 +11,7 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[Apps Hooks - File Upload]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('IPreFileUpload', () => {
 		let room: IRoom;

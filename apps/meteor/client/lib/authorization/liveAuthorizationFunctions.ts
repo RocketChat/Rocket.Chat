@@ -1,0 +1,21 @@
+import type { AuthorizationDeps } from './createAuthorizationFunctions';
+import { createAuthorizationFunctions } from './createAuthorizationFunctions';
+import { PermissionsCachedStore } from '../../cachedStores';
+import { Permissions, Roles, Subscriptions, Users } from '../../stores';
+import { userIdStore } from '../user';
+
+// Bind the pure factory to live zustand store accessors. Each accessor reads
+// fresh state on every call, so non-React callers (services, lib code, startup
+// scripts) keep their previous "always reflects the current store" contract
+// without going through Meteor's Tracker. React consumers should use the
+// AuthorizationContext instead, which injects React-reactive snapshots.
+const liveDeps: AuthorizationDeps = {
+	getCurrentUserId: () => userIdStore.getState(),
+	getUserRoles: (userId) => Users.use.getState().get(userId)?.roles,
+	getPermission: (permissionId) => Permissions.use.getState().get(permissionId),
+	getRoleScope: (roleId) => Roles.use.getState().get(roleId)?.scope,
+	getSubscriptionRoles: (rid) => Subscriptions.use.getState().find((s) => s.rid === rid)?.roles ?? [],
+	isReady: () => PermissionsCachedStore.useReady.getState(),
+};
+
+export const liveAuthorizationFunctions = createAuthorizationFunctions(liveDeps);

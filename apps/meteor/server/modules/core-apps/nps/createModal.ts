@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../lib/i18n';
+import { settings } from '../../../settings';
 
 type ModalParams = {
 	id: string;

@@ -1,4 +1,5 @@
 import { Users } from './fixtures/userStates';
+import { AdminSettings } from './page-objects';
 import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
@@ -8,10 +9,10 @@ test.describe.serial('settings-persistence-on-ui-navigation', () => {
 	test.beforeAll(({ api }) => setSettingValueById(api, 'Hide_System_Messages', []));
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/admin/settings/Message');
+		await new AdminSettings(page).gotoSection('Message');
 
 		// Intercept the API call and delay its response
-		await page.route('/api/v1/method.call/saveSettings', async (route) => {
+		await page.route('/api/v1/settings', async (route) => {
 			const response = await route.fetch();
 			await new Promise((resolve) => setTimeout(resolve, 2000)); // Delay the response by 2 seconds
 			return route.fulfill({
@@ -31,9 +32,7 @@ test.describe.serial('settings-persistence-on-ui-navigation', () => {
 		await settingInput.pressSequentially('User joined');
 		await settingInput.press('Enter');
 
-		const responsePromise = page.waitForResponse(
-			(response) => response.url().includes('/api/v1/method.call/saveSettings') && response.status() === 200,
-		);
+		const responsePromise = page.waitForResponse((response) => response.url().includes('/api/v1/settings') && response.status() === 200);
 
 		await page.getByRole('button', { name: 'Save changes' }).click();
 		await page.getByRole('button', { name: 'Back' }).click();

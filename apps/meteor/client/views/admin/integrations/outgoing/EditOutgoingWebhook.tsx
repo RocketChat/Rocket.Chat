@@ -61,7 +61,7 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 
 const OUTGOING_TYPE = 'webhook-outgoing';
 
-type EditOutgoingWebhookProps = {
+export type EditOutgoingWebhookProps = {
 	webhookData?: Serialized<IOutgoingIntegration>;
 };
 
@@ -132,7 +132,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 						<Button onClick={() => router.navigate(`/admin/integrations/history/outgoing/${webhookData._id}`)}>{t('History')}</Button>
 					)}
 					{webhookData?._id && (
-						<Button danger onClick={handleDeleteIntegration}>
+						<Button variant='danger' onClick={handleDeleteIntegration}>
 							{t('Delete')}
 						</Button>
 					)}
@@ -158,7 +158,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
 					</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

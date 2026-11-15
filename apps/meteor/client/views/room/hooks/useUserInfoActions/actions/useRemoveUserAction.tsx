@@ -1,7 +1,7 @@
 import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { escapeHTML } from '@rocket.chat/tools';
 import { GenericModal } from '@rocket.chat/ui-client';
 import {
 	usePermission,
@@ -9,6 +9,7 @@ import {
 	useToastMessageDispatch,
 	useTranslation,
 	useUser,
+	useUserId,
 	useUserRoom,
 	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
@@ -38,6 +39,7 @@ export const useRemoveUserAction = (
 	const t = useTranslation();
 	const queryClient = useQueryClient();
 	const currentUser = useUser();
+	const ownUserId = useUserId();
 	const subscription = useUserSubscription(rid);
 
 	const { _id: uid } = user;
@@ -51,7 +53,7 @@ export const useRemoveUserAction = (
 		? !isFederationBlocked && Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 		: hasPermissionToRemove;
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal(null));
+	const closeModal = useStableCallback(() => setModal(null));
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const { roomCanRemove } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
@@ -71,7 +73,7 @@ export const useRemoveUserAction = (
 	const removeFromRoomEndpoint = room.t === 'p' ? '/v1/groups.kick' : '/v1/channels.kick';
 	const { mutateAsync: removeFromRoom } = useEndpointMutation('POST', removeFromRoomEndpoint, {
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_s', roomName) });
+			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_s', { roomName }) });
 			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.members(room._id, room.t) });
 		},
 		onSettled: () => {
@@ -80,7 +82,7 @@ export const useRemoveUserAction = (
 		},
 	});
 
-	const removeUserOptionAction = useEffectEvent(() => {
+	const removeUserOptionAction = useStableCallback(() => {
 		const handleRemoveFromTeam = async (rooms: Record<string, Serialized<IRoom>>) => {
 			if (room.teamId) {
 				const roomKeys = Object.keys(rooms);
@@ -110,7 +112,7 @@ export const useRemoveUserAction = (
 				onCancel={closeModal}
 				onConfirm={(): Promise<void> => handleRemoveFromRoom(rid, uid)}
 			>
-				{t('The_user_will_be_removed_from_s', roomName)}
+				{t('The_user_will_be_removed_from_s', { roomName })}
 			</GenericModal>,
 		);
 	});
@@ -128,7 +130,7 @@ export const useRemoveUserAction = (
 	}, [invited, room?.teamMain, t]);
 
 	const removeUserOption = useMemo(() => {
-		if (!roomCanRemove || !userCanRemove) {
+		if (!roomCanRemove || !userCanRemove || uid === ownUserId) {
 			return undefined;
 		}
 
@@ -139,7 +141,7 @@ export const useRemoveUserAction = (
 			type: 'moderation' as const,
 			variant: 'danger' as const,
 		};
-	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content]);
+	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content, uid, ownUserId]);
 
 	return removeUserOption;
 };

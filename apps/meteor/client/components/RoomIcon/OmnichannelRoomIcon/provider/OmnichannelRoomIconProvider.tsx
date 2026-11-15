@@ -8,7 +8,7 @@ import OmnichannelRoomIconManager from '../lib/OmnichannelRoomIconManager';
 
 let icons = Array.from(OmnichannelRoomIconManager.icons.values());
 
-type OmnichannelRoomIconProviderProps = {
+export type OmnichannelRoomIconProviderProps = {
 	children?: ReactNode;
 };
 

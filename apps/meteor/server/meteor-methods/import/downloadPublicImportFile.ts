@@ -1,0 +1,103 @@
+import fs from 'node:fs';
+import type { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+
+import { Import, ClientSafeError } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
+import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
+import { Importers } from '../../lib/import';
+import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
+
+async function getHttpFileStream(fileUrl: string): Promise<Readable> {
+	const response = await fetch(fileUrl, {
+		ignoreSsrfValidation: false,
+		allowList: settings.get<string>('SSRF_Allowlist'),
+	});
+
+	const body = response.body as Readable;
+	if (!response.ok) {
+		body.destroy();
+		throw new Error(`Unexpected response status ${response.status}`);
+	}
+
+	return body;
+}
+
+function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void {
+	const readStream = fs.createReadStream(filePath);
+	readStream.pipe(writeStream);
+}
+
+export const executeDownloadPublicImportFile = async (userId: IUser['_id'], fileUrl: string, importerKey: string): Promise<void> => {
+	const importer = Importers.get(importerKey);
+	const isUrl = fileUrl.startsWith('http');
+	if (!importer) {
+		throw new ClientSafeError(
+			'error-importer-not-defined',
+			`The importer (${importerKey}) has no import class defined.`,
+			'downloadImportFile',
+		);
+	}
+	// Check if it's a valid url or path before creating a new import record
+	if (!isUrl && !fs.existsSync(fileUrl)) {
+		throw new ClientSafeError('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
+	}
+
+	const operation = await Import.newOperation(userId, importer.name, importer.key);
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
+
+	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
+	const date = new Date();
+	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
+	const newFileName = `${dateStr}_${userId}_${oldFileName}`;
+
+	// Store the file name on the imports collection
+	await instance.startFileUpload(newFileName);
+	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
+
+	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
+	let errorProgressUpdate: Promise<unknown> | undefined;
+	const markImportAsFailed = (): Promise<unknown> => {
+		errorProgressUpdate ??= instance.updateProgress(ProgressStep.ERROR).catch((error) => {
+			SystemLogger.error({ msg: 'Failed to update import progress to ERROR', err: error });
+		});
+		return errorProgressUpdate;
+	};
+
+	writeStream.on('error', () => {
+		void markImportAsFailed();
+	});
+
+	let readStream: Readable | undefined;
+	if (isUrl) {
+		try {
+			readStream = await getHttpFileStream(fileUrl);
+		} catch (error) {
+			writeStream.destroy();
+			await markImportAsFailed();
+			throw error;
+		}
+	}
+
+	writeStream.on('finish', () => {
+		void instance.updateProgress(ProgressStep.FILE_LOADED);
+	});
+
+	if (readStream) {
+		void pipeline(readStream, writeStream).catch(() => markImportAsFailed());
+		return;
+	}
+
+	// If the url is actually a folder path on the current machine, skip moving it to the file store
+	if (fs.statSync(fileUrl).isDirectory()) {
+		await instance.updateRecord({ file: fileUrl });
+		await instance.updateProgress(ProgressStep.FILE_LOADED);
+		return;
+	}
+
+	copyLocalFile(fileUrl, writeStream);
+};

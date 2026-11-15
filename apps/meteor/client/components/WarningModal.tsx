@@ -9,10 +9,10 @@ import {
 	ModalIcon,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type WarningModalProps = {
+export type WarningModalProps = {
 	text: ReactNode;
 	confirmText: ReactNode;
 	cancelText?: ReactNode;
@@ -21,22 +21,22 @@ type WarningModalProps = {
 	close: () => void;
 };
 
-const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps): ReactElement => {
+const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps) => {
 	const { t } = useTranslation();
 	return (
 		<Modal open {...props}>
 			<ModalHeader>
-				<ModalIcon color='danger' name='modal-warning' />
+				<ModalIcon variant='danger' name='modal-warning' />
 				<ModalTitle>{t('Are_you_sure')}</ModalTitle>
 				<ModalClose onClick={close} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{text}</ModalContent>
+			<ModalContent>{text}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={cancel || close}>
+					<Button variant='secondary' onClick={cancel || close}>
 						{cancelText || t('Cancel')}
 					</Button>
-					<Button danger onClick={confirm}>
+					<Button variant='danger' onClick={confirm}>
 						{confirmText}
 					</Button>
 				</ModalFooterControllers>

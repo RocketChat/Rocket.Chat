@@ -1,9 +1,8 @@
 import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
-import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 
 import ModConsoleUserActions from './ModConsoleUserActions';
 import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import UserColumn from '../helpers/UserColumn';
 
 export type ModConsoleUserRowProps = {
@@ -12,7 +11,7 @@ export type ModConsoleUserRowProps = {
 	isDesktopOrLarger: boolean;
 };
 
-const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps): JSX.Element => {
+const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps) => {
 	const { reportedUser, count, ts } = report;
 	const { _id, name, createdAt, emails } = reportedUser;
 	const username = reportedUser.username ? normalizeUsername(reportedUser.username) : undefined;
@@ -21,13 +20,13 @@ const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConso
 
 	return (
 		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<UserColumn name={name} username={username} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{formatDateAndTime(createdAt)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{emails?.[0].address}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{count}</GenericTableCell>
+			<GenericTableCell truncate>{formatDateAndTime(createdAt)}</GenericTableCell>
+			<GenericTableCell truncate>{emails?.[0].address}</GenericTableCell>
+			<GenericTableCell truncate>{formatDateAndTime(ts)}</GenericTableCell>
+			<GenericTableCell truncate>{count}</GenericTableCell>
 			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
 				<ModConsoleUserActions report={report} onClick={onClick} />
 			</GenericTableCell>

@@ -24,6 +24,9 @@ export default [
 		},
 		resolve: {
 			extensions: ['.ts', '.js', '.pegjs'],
+			extensionAlias: {
+				'.js': ['.ts', '.js'],
+			},
 		},
 		mode: 'production',
 		experiments: {

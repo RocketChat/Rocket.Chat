@@ -1,18 +1,16 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import { GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AuditFiltersDisplay from './AuditFiltersDisplay';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type AuditLogEntryProps = { value: IAuditLog };
+export type AuditLogEntryProps = { value: IAuditLog };
 
-const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntryProps): ReactElement => {
+const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntryProps) => {
 	const formatDateAndTime = useFormatDateAndTime();
 	const { t } = useTranslation();
 
@@ -26,30 +24,30 @@ const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntry
 
 	return (
 		<GenericTableRow key={_id} tabIndex={0} role='link'>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
 					<Box display='flex' withTruncatedText marginInline={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2m' withTruncatedText color='default'>
+							<Text fontScale='p2m' truncate color='default'>
 								{name || username}
-							</Box>
+							</Text>
 							{name && (
-								<Box fontScale='p2' color='hint' withTruncatedText>
+								<Text fontScale='p2' color='hint' truncate>
 									{' '}
 									{`@${username}`}{' '}
-								</Box>
+								</Text>
 							)}
 						</Box>
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell fontScale='p2m' color='hint' withTruncatedText>
+			<GenericTableCell strong color='hint' truncate>
 				{type === 'room_member_list' ? t('Room_members_list') : msg}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{when}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{results}</GenericTableCell>
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+			<GenericTableCell truncate>{when}</GenericTableCell>
+			<GenericTableCell truncate>{results}</GenericTableCell>
+			<GenericTableCell color='hint' truncate>
 				<AuditFiltersDisplay users={users} room={room} startDate={startDate} endDate={endDate} filters={filters} />
 			</GenericTableCell>
 		</GenericTableRow>

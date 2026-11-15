@@ -1,5 +1,5 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -11,21 +11,21 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
+import { useItemListNavigation } from '../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
-type OutlookEventsListProps = {
+export type OutlookEventsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };
 
-const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
+const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => {
 	const t = useTranslation();
 	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
@@ -39,6 +39,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
+	const listNavigationRef = useItemListNavigation();
+	const eventsListRef = useMergedRefs(ref, listNavigationRef);
 
 	const calendarEvents = calendarListResult.data;
 	const total = calendarEvents?.length || 0;
@@ -52,8 +54,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 				<ContextualbarTitle>{t('Outlook_calendar')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} color='default'>
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={ref}>
+			<ContextualbarContent flush>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={eventsListRef}>
 					{calendarListResult.isPending && <Throbber size='x12' />}
 					{calendarListResult.isError && (
 						<States>
@@ -78,7 +80,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 								totalCount={total}
 								overscan={25}
 								data={calendarEvents}
-								itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
+								itemContent={(_index, calendarData) => <OutlookEventItem {...calendarData} />}
 							/>
 						</VirtualizedScrollbars>
 					)}
@@ -94,9 +96,9 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 					)}
 				</ButtonGroup>
 				{hasOutlookMethods && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
+							<Button variant='primary' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 								{authEnabled ? t('Sync') : t('Log_in_to_sync')}
 							</Button>
 						</ButtonGroup>

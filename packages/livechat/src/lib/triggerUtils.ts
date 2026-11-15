@@ -1,10 +1,10 @@
 import type { ILivechatAgent, ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../api';
+import { processUnread } from './main';
 import type { Agent } from '../definitions/agents';
 import { upsert } from '../helpers/upsert';
 import store from '../store';
-import { processUnread } from './main';
 
 type AgentPromise = { username: string } | Serialized<ILivechatAgent> | null;
 
@@ -75,7 +75,7 @@ export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<A
 };
 
 export const upsertMessage = async (message: Record<string, unknown>) => {
-	await store.setState({
+	store.setState({
 		messages: upsert(
 			store.state.messages,
 			message,
@@ -89,12 +89,12 @@ export const upsertMessage = async (message: Record<string, unknown>) => {
 
 export const removeMessage = async (messageId: string) => {
 	const { messages } = store.state;
-	await store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
+	store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
 };
 
 export const removeTriggerMessage = async (messageId: string) => {
 	const { renderedTriggers } = store.state;
-	await store.setState({ renderedTriggers: renderedTriggers.filter(({ _id }) => _id !== messageId) });
+	store.setState({ renderedTriggers: renderedTriggers.filter(({ _id }) => _id !== messageId) });
 };
 
 export const hasTriggerCondition = (conditionName: ILivechatTriggerType) => (trigger: ILivechatTrigger) => {

@@ -1,5 +1,4 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSettings } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +13,7 @@ export const useSettingsGroups = (filter: string): ISetting[] => {
 		}
 
 		const getMatchableStrings = (setting: ISetting): string[] =>
-			[setting.i18nLabel && t(setting.i18nLabel as TranslationKey), t(setting._id as TranslationKey), setting._id].filter(Boolean);
+			[setting.i18nLabel && t(setting.i18nLabel), t(setting._id), setting._id].filter(Boolean);
 
 		try {
 			const filterRegex = new RegExp(filter, 'i');
@@ -39,6 +38,6 @@ export const useSettingsGroups = (filter: string): ISetting[] => {
 
 		return settings
 			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
-			.sort((a, b) => t((a.i18nLabel || a._id) as TranslationKey).localeCompare(t((b.i18nLabel || b._id) as TranslationKey)));
+			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
 	}, [settings, filterPredicate, t]);
 };

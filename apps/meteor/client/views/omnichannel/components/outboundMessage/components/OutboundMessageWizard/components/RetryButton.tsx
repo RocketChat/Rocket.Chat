@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
-import { IconButton } from '@rocket.chat/fuselage';
+import { IconButton, useStyle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type RetryButtonProps = {
+export type RetryButtonProps = {
 	loading: boolean;
 	onClick(): void;
 };
@@ -17,18 +17,16 @@ const btnStyle = css`
 
 const RetryButton = ({ loading, onClick }: RetryButtonProps) => {
 	const { t } = useTranslation();
+	const btnClassName = useStyle(btnStyle);
 
 	return (
 		<IconButton
-			mini
-			danger
-			secondary
-			className={btnStyle}
+			size='mini'
+			variant='secondary-danger'
+			className={[btnClassName, loading && 'rcx-button--loading'].filter(Boolean).join(' ')}
 			disabled={loading}
-			rcx-button--loading={loading}
 			icon={loading ? 'loading' : 'reload'}
 			title={loading ? t('Loading...') : t('Retry')}
-			mis={4}
 			onClick={() => onClick()}
 		/>
 	);

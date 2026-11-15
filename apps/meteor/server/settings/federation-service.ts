@@ -1,6 +1,8 @@
 import { generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
+import { Random } from '@rocket.chat/random';
+import { XMPP_SERVER_DEFAULTS } from '@rocket.chat/xmpp-server';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createFederationServiceSettings = async (): Promise<void> => {
 	await settingsRegistry.addGroup('Federation', async function () {
@@ -115,6 +117,123 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,
+		});
+
+		await this.section('XMPP', async function () {
+			await this.add('Federation_XMPP_Enabled', false, {
+				type: 'boolean',
+				enterprise: true,
+				modules: ['federation'],
+				i18nLabel: 'Enabled',
+				invalidValue: false,
+				enableQuery: { _id: 'Federation_Service_Enabled', value: true },
+			});
+
+			await this.add('Federation_XMPP_Bridge_URL', '', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
+			});
+
+			await this.add('Federation_XMPP_Bridge_HS_Token', '', {
+				type: 'password',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
+			});
+
+			await this.add('Federation_XMPP_Bridge_AS_Token', '', {
+				type: 'password',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
+			});
+		});
+
+		// Native XMPP server (independent from the XMPP-via-Matrix bridge above)
+		await this.section('XMPP_Server', async function () {
+			await this.add('XMPP_Server_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['federation'],
+				i18nLabel: 'Enabled',
+				invalidValue: false,
+			});
+
+			const enableQuery = { _id: 'XMPP_Server_Enabled', value: true };
+
+			await this.add('XMPP_Server_Domain', '', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				alert: 'XMPP_Server_Domain_Alert',
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_Port', XMPP_SERVER_DEFAULTS.port, {
+				type: 'int',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: XMPP_SERVER_DEFAULTS.port,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_TLS_Certificate', '', {
+				type: 'string',
+				multiline: true,
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				secret: true,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_TLS_Key', '', {
+				type: 'string',
+				enterprise: true,
+				multiline: true,
+				modules: ['federation'],
+				invalidValue: '',
+				secret: true,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_MUC_Subdomain', XMPP_SERVER_DEFAULTS.mucSubdomain, {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: XMPP_SERVER_DEFAULTS.mucSubdomain,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_Domain_Allow_List', '', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_Presence_Enabled', true, {
+				type: 'boolean',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: false,
+				enableQuery,
+			});
+
+			// Not enterprise: an invalidValue would replace the secret when the license lapses and orphan every derived id
+			await this.add('XMPP_Server_Message_Id_Secret', Random.secret(), {
+				type: 'string',
+				secret: true,
+				hidden: true,
+			});
 		});
 	});
 };

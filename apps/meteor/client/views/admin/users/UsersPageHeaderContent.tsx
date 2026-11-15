@@ -7,7 +7,7 @@ import type { SeatCapProps } from './useSeatsCap';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 
-type UsersPageHeaderContentProps = {
+export type UsersPageHeaderContentProps = {
 	isSeatsCapExceeded: boolean;
 	seatsCap?: Omit<SeatCapProps, 'reload'>;
 };
@@ -50,7 +50,7 @@ const UsersPageHeaderContent = ({ isSeatsCapExceeded, seatsCap }: UsersPageHeade
 				)}
 
 				{isSeatsCapExceeded && (
-					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
+					<Button variant='primary' role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>
 				)}

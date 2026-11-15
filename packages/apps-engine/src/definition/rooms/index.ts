@@ -26,3 +26,4 @@ export type * from './IRoomUserJoinedContext';
 export type * from './IPreRoomUserLeave';
 export type * from './IPostRoomUserLeave';
 export type * from './IRoomUserLeaveContext';
+export type * from './IGetMessagesOptions';

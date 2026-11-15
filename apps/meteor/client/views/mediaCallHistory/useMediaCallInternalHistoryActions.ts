@@ -1,20 +1,11 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { useWidgetExternalControls, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
+import { useWidgetExternalControls, usePeekMediaSessionState, type CallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
-export type InternalCallHistoryContact = {
-	_id: string;
-	name?: string;
-	username: string;
-	displayName?: string;
-	voiceCallExtension?: string;
-	avatarUrl?: string;
-};
-
 type UseMediaCallInternalHistoryActionsBaseOptions = {
-	contact: InternalCallHistoryContact;
+	contact: CallHistoryInternalContact;
 	messageId?: string;
 	openRoomId?: string;
 	messageRoomId?: string;
@@ -34,7 +25,7 @@ export const useMediaCallInternalHistoryActions = ({
 
 	const getAvatarUrl = useUserAvatarPath();
 
-	const voiceCall = useEffectEvent(() => {
+	const voiceCall = useStableCallback(() => {
 		if (state !== 'available') {
 			return;
 		}
@@ -50,7 +41,7 @@ export const useMediaCallInternalHistoryActions = ({
 
 	const goToDirectMessage = useGoToDirectMessage({ username: contact.username }, openRoomId ?? '');
 
-	const jumpToMessage = useEffectEvent(() => {
+	const jumpToMessage = useStableCallback(() => {
 		const rid = messageRoomId || openRoomId;
 		if (!messageId || !rid) {
 			return;
@@ -65,7 +56,7 @@ export const useMediaCallInternalHistoryActions = ({
 		});
 	});
 
-	const userInfo = useEffectEvent(() => {
+	const userInfo = useStableCallback(() => {
 		if (!openUserInfo) {
 			return;
 		}

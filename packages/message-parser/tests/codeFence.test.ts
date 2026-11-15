@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { paragraph, plain, codeLine, code } from './helpers';
+import { paragraph, plain, codeLine, code } from './helpers.js';
+import { parse } from '../src/index.js';
 
 const multiply = <T>(a: number, element: T): Array<T> => Array.from({ length: a }, () => element);
 
@@ -66,6 +66,26 @@ code
 **code**
 \`\`\``,
 		[code([codeLine(plain(`# code`)), codeLine(plain(`**code**`))])],
+	],
+	// lines ending in inline code (trailing backtick) must not break the fence
+	[
+		`\`\`\`
+- **Node**: \`22.22.3\`
+- **Apps-Engine**: \`1.64.0\`
+\`\`\``,
+		[code([codeLine(plain('- **Node**: `22.22.3`')), codeLine(plain('- **Apps-Engine**: `1.64.0`'))])],
+	],
+	[
+		`\`\`\`
+foo\`
+\`\`\``,
+		[code([codeLine(plain('foo`'))])],
+	],
+	[
+		`\`\`\`
+foo\`\`
+\`\`\``,
+		[code([codeLine(plain('foo``'))])],
 	],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);

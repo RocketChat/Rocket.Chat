@@ -1,5 +1,18 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
-import { AutoComplete, Option, Avatar, Field, FieldRow, FieldDescription, FieldError, StatusBullet, Box } from '@rocket.chat/fuselage';
+import { UserStatus } from '@rocket.chat/core-typings';
+import {
+	AutoComplete,
+	Avatar,
+	Field,
+	FieldRow,
+	FieldDescription,
+	FieldError,
+	ItemContent,
+	ItemIcon,
+	ItemTitle,
+	Option,
+	StatusBullet,
+} from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +26,7 @@ export type PeerAutocompleteOptions = {
 	avatarUrl?: string;
 };
 
-type PeerAutocompleteProps = {
+export type PeerAutocompleteProps = {
 	options: PeerAutocompleteOptions[];
 	onChangeValue: (value: string | string[]) => void;
 	onChangeFilter: (filter: string) => void;
@@ -22,6 +35,14 @@ type PeerAutocompleteProps = {
 	error?: string;
 };
 
+const STATUS_LABEL_KEYS = {
+	[UserStatus.ONLINE]: 'Online',
+	[UserStatus.AWAY]: 'Away',
+	[UserStatus.BUSY]: 'Busy',
+	[UserStatus.OFFLINE]: 'Offline',
+	[UserStatus.DISABLED]: 'Disabled',
+} as const;
+
 const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilter, error }: PeerAutocompleteProps) => {
 	const { t } = useTranslation();
 
@@ -29,7 +50,7 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 	const fieldErrorId = useId();
 
 	return (
-		<Field mb={-2}>
+		<Field>
 			<FieldRow>
 				<AutoComplete
 					aria-labelledby={fieldDescriptionId}
@@ -43,21 +64,20 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 					value={value}
 					renderItem={({ value, label, ...props }) => {
 						if (isFirstPeerAutocompleteOption(value)) {
-							return <Option key={value} label={label} icon='phone-out' {...props} />;
+							return <Option {...props} label={label} icon='phone-out' iconLabel={t('Call')} />;
 						}
+
 						const thisOption = options.find((option) => option.value === value);
+
 						return (
-							<Option
-								key={value}
-								label={
-									<Box display='flex' flexDirection='row' alignItems='center'>
-										<StatusBullet status={thisOption?.status} />
-										<Box mis={4}>{label}</Box>
-									</Box>
-								}
-								avatar={<Avatar size='x20' url={thisOption?.avatarUrl || ''} />}
-								{...props}
-							/>
+							<Option {...props} avatar={<Avatar size={ITEM_MEDIA_SIZE.condensed} url={thisOption?.avatarUrl || ''} />}>
+								<ItemIcon label={thisOption?.status && t(STATUS_LABEL_KEYS[thisOption.status])}>
+									<StatusBullet status={thisOption?.status} />
+								</ItemIcon>
+								<ItemContent>
+									<ItemTitle>{label}</ItemTitle>
+								</ItemContent>
+							</Option>
 						);
 					}}
 					renderSelected={() => null}

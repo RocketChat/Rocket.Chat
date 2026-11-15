@@ -1,21 +1,19 @@
 import { HeaderTag, HeaderTagIcon } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
-type FederatedRoomOriginServerProps = {
+export type FederatedRoomOriginServerProps = {
 	room: IRoomWithFederationOriginalName;
 };
 
-const FederatedRoomOriginServer = ({ room }: FederatedRoomOriginServerProps): ReactElement | null => {
+const FederatedRoomOriginServer = ({ room }: FederatedRoomOriginServerProps) => {
 	const originServerName = useMemo(() => room.federationOriginalName?.split(':')[1], [room.federationOriginalName]);
 	if (!originServerName) {
 		return null;
 	}
 	return (
-		<HeaderTag data-qa='federated-origin-server-name'>
-			<HeaderTagIcon icon={{ name: 'globe' }} />
+		<HeaderTag data-qa='federated-origin-server-name' icon={<HeaderTagIcon icon={{ name: 'globe' }} />}>
 			{originServerName}
 		</HeaderTag>
 	);

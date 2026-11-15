@@ -1,80 +1,94 @@
-import type { Meta } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
 import { accessoryImage } from '../../../../.storybook/helpers';
 
 export default {
-	title: 'UiKit/Message/Context block',
 	parameters: {
 		layout: 'centered',
 	},
 	decorators: [(storyFn) => <div style={{ width: '100vw', maxWidth: 500 }}>{storyFn()}</div>],
 } satisfies Meta;
 
-export const PlainText = () =>
-	renderMessageBlocks([
-		{
-			type: 'context',
-			elements: [
+export const PlainText: StoryObj = {
+	name: 'plain_text',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'plain_text',
-					text: 'Author: Manuel Puig',
-					emoji: true,
+					type: 'context',
+					elements: [
+						{
+							type: 'plain_text',
+							text: 'Author: Manuel Puig',
+							emoji: true,
+						},
+					],
 				},
-			],
-		},
-	]);
-PlainText.storyName = 'plain_text';
+			])}
+		</>
+	),
+};
 
-export const Mrkdwn = () =>
-	renderMessageBlocks([
-		{
-			type: 'context',
-			elements: [
+export const Mrkdwn: StoryObj = {
+	name: 'mrkdwn',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'image',
-					imageUrl: accessoryImage,
-					altText: 'Photo by Julian Schultz on Unsplash',
+					type: 'context',
+					elements: [
+						{
+							type: 'image',
+							imageUrl: accessoryImage,
+							altText: 'Photo by Julian Schultz on Unsplash',
+						},
+						{
+							type: 'mrkdwn',
+							text: '*Julian Schultz* has approved this message.',
+						},
+					],
 				},
-				{
-					type: 'mrkdwn',
-					text: '*Julian Schultz* has approved this message.',
-				},
-			],
-		},
-	]);
-Mrkdwn.storyName = 'mrkdwn';
+			])}
+		</>
+	),
+};
 
-export const TextAndImages = () =>
-	renderMessageBlocks([
-		{
-			type: 'context',
-			elements: [
+export const TextAndImages: StoryObj = {
+	name: 'text and images',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'mrkdwn',
-					text: '*This* is :smile: markdown',
+					type: 'context',
+					elements: [
+						{
+							type: 'mrkdwn',
+							text: '*This* is :smile: markdown',
+						},
+						{
+							type: 'image',
+							imageUrl: accessoryImage,
+							altText: 'Photo by Julian Schultz on Unsplash',
+						},
+						{
+							type: 'image',
+							imageUrl: accessoryImage,
+							altText: 'Photo by Julian Schultz on Unsplash',
+						},
+						{
+							type: 'image',
+							imageUrl: accessoryImage,
+							altText: 'Photo by Julian Schultz on Unsplash',
+						},
+						{
+							type: 'plain_text',
+							text: 'Author: Manuel Puig',
+							emoji: true,
+						},
+					],
 				},
-				{
-					type: 'image',
-					imageUrl: accessoryImage,
-					altText: 'Photo by Julian Schultz on Unsplash',
-				},
-				{
-					type: 'image',
-					imageUrl: accessoryImage,
-					altText: 'Photo by Julian Schultz on Unsplash',
-				},
-				{
-					type: 'image',
-					imageUrl: accessoryImage,
-					altText: 'Photo by Julian Schultz on Unsplash',
-				},
-				{
-					type: 'plain_text',
-					text: 'Author: Manuel Puig',
-					emoji: true,
-				},
-			],
-		},
-	]);
-TextAndImages.storyName = 'text and images';
+			])}
+		</>
+	),
+};

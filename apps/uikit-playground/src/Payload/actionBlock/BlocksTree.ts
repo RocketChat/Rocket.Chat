@@ -13,10 +13,13 @@ import {
 	actionWithSingleStaticSelect,
 	actionWithMultiStaticSelect,
 	actionWithDatePicker,
+	actionWithDateTimePicker,
 	actionWithLinearScale,
 } from './action';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
+import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { divider } from './divider';
+import { header } from './header';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import {
@@ -26,7 +29,14 @@ import {
 	inputWithMultiStaticSelect,
 	inputWithDatePicker,
 	inputWithLinearSelect,
+	inputWithNumberInput,
+	inputWithEmailInput,
+	inputWithUrlInput,
+	inputWithDateTimePicker,
+	inputWithConversationsSelect,
+	inputWithMultiConversationsSelect,
 } from './input';
+import { markdown } from './markdown';
 import { previewPlain, previewWithImage, previewWithUrl, previewWithImageAndUrl } from './preview';
 import {
 	sectionWithPlainText,
@@ -42,7 +52,12 @@ import {
 	sectionWithImage,
 	sectionWithMenu,
 	sectionWithdatePicker,
+	sectionWithRadioButtons,
+	sectionWithCheckbox,
+	sectionWithUsersSelect,
 } from './section';
+import { table } from './table';
+import { video } from './video';
 import { actionWithCheckbox } from '../action/checkbox';
 import { actionWithRadioButton } from '../action/radioButton';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -115,6 +130,10 @@ const BlocksTree: Item = [
 			{
 				label: 'time Picker',
 				payload: actionWithTimePicker,
+			},
+			{
+				label: 'date time Picker',
+				payload: actionWithDateTimePicker,
 			},
 			{
 				label: 'linear scale',
@@ -199,6 +218,18 @@ const BlocksTree: Item = [
 				label: 'date Picker',
 				payload: sectionWithdatePicker,
 			},
+			{
+				label: 'radio buttons',
+				payload: sectionWithRadioButtons,
+			},
+			{
+				label: 'checkbox',
+				payload: sectionWithCheckbox,
+			},
+			{
+				label: 'users select',
+				payload: sectionWithUsersSelect,
+			},
 		],
 	},
 	{
@@ -271,6 +302,84 @@ const BlocksTree: Item = [
 			{
 				label: 'linear scale',
 				payload: inputWithLinearSelect,
+			},
+			{
+				label: 'number',
+				payload: inputWithNumberInput,
+			},
+			{
+				label: 'email',
+				payload: inputWithEmailInput,
+			},
+			{
+				label: 'url',
+				payload: inputWithUrlInput,
+			},
+			{
+				label: 'date time Picker',
+				payload: inputWithDateTimePicker,
+			},
+			{
+				label: 'conversations select',
+				branches: [
+					{
+						label: 'single',
+						payload: inputWithConversationsSelect,
+					},
+					{
+						label: 'multi',
+						payload: inputWithMultiConversationsSelect,
+					},
+				],
+			},
+		],
+	},
+	{
+		label: 'header',
+		branches: [
+			{
+				label: 'Plain',
+				payload: header,
+			},
+		],
+	},
+	{
+		label: 'markdown',
+		branches: [
+			{
+				label: 'Release notes',
+				payload: markdown,
+			},
+		],
+	},
+	{
+		label: 'table',
+		branches: [
+			{
+				label: 'Service uptime',
+				payload: table,
+			},
+		],
+	},
+	{
+		label: 'video',
+		branches: [
+			{
+				label: 'Embedded video',
+				payload: video,
+			},
+		],
+	},
+	{
+		label: 'context_actions',
+		branches: [
+			{
+				label: 'Icon buttons',
+				payload: contextActions,
+			},
+			{
+				label: 'Feedback buttons',
+				payload: contextActionsWithFeedback,
 			},
 		],
 	},

@@ -1,7 +1,7 @@
 import DateRangePicker from './DateRangePicker';
-import FilterByText from '../../../../components/FilterByText';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 
-type ModerationFilterProps = {
+export type ModerationFilterProps = {
 	text: string;
 	setText: (text: string) => void;
 	setDateRange: (dateRange: { start: string; end: string }) => void;
@@ -9,9 +9,12 @@ type ModerationFilterProps = {
 
 const ModerationFilter = ({ text, setText, setDateRange }: ModerationFilterProps) => {
 	return (
-		<FilterByText shouldAutoFocus value={text} onChange={(event) => setText(event.target.value)}>
-			<DateRangePicker onChange={setDateRange} />
-		</FilterByText>
+		<FilterBar>
+			<FilterBarSearch shouldAutoFocus value={text} onChange={(event) => setText(event.target.value)} />
+			<FilterBarFilters>
+				<DateRangePicker onChange={setDateRange} />
+			</FilterBarFilters>
+		</FilterBar>
 	);
 };
 

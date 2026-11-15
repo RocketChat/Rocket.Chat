@@ -1,11 +1,12 @@
-import { Tabs, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Button } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 
 import DepartmentsTable from './DepartmentsTable';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import NewDepartment from './NewDepartment';
+import { PageTabs } from '../../../components/PageTabs';
 
 const DepartmentsPage = () => {
 	const t = useTranslation();
@@ -14,17 +15,7 @@ const DepartmentsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const handleTabClick = useEffectEvent((tab: undefined | 'archived') =>
-		departmentsRoute.push(
-			tab
-				? {
-						context: tab,
-					}
-				: {},
-		),
-	);
-
-	const onAddNew = useEffectEvent(() =>
+	const onAddNew = useStableCallback(() =>
 		departmentsRoute.push({
 			context: 'new',
 		}),
@@ -44,14 +35,14 @@ const DepartmentsPage = () => {
 				<PageHeader title={t('Departments')}>
 					<Button onClick={onAddNew}>{t('Create_department')}</Button>
 				</PageHeader>
-				<Tabs>
-					<Tabs.Item key='departments' selected={!context} onClick={() => handleTabClick(undefined)}>
-						{t('All')}
-					</Tabs.Item>
-					<Tabs.Item key='archived' selected={context === 'archived'} onClick={() => handleTabClick('archived')}>
-						{t('Archived')}
-					</Tabs.Item>
-				</Tabs>
+				<PageTabs
+					items={[
+						{ id: '', label: t('All') },
+						{ id: 'archived', label: t('Archived') },
+					]}
+					selected={context || ''}
+					onSelect={(context) => departmentsRoute.push(context ? { context } : {})}
+				/>
 				<PageContent>
 					<DepartmentsTable archived={context === 'archived'} />
 				</PageContent>

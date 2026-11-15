@@ -6,7 +6,7 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-type AuditModalTextProps = ComponentPropsWithoutRef<typeof Box>;
+export type AuditModalTextProps = ComponentPropsWithoutRef<typeof Box>;
 
 const AuditModalText = (props: AuditModalTextProps) => <Box fontScale='p2' color='default' className={wordBreak} {...props} />;
 

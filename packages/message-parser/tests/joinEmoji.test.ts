@@ -1,4 +1,4 @@
-import { plain, emoji, reducePlainTexts } from '../src/utils';
+import { plain, emoji, reducePlainTexts } from '../src/utils.js';
 
 describe('joinEmoji behavior through reducePlainTexts', () => {
 	it('keeps emoji when alone', () => {

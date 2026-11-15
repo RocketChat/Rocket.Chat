@@ -6,9 +6,9 @@ import type { MessageParser } from '..';
 import { createClassName } from '../../../../helpers/createClassName';
 import { Button } from '../../../Button';
 import Block from '../Block';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
-type ActionsBlockProps = uikit.ActionsBlock & {
+export type ActionsBlockProps = uikit.ActionsBlock & {
 	parser: MessageParser;
 };
 

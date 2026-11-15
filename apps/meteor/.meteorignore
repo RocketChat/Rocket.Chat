@@ -1,4 +1,5 @@
-ee/server/services
 coverage
 data
 dist
+vite
+client/**/*.css

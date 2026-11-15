@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 import type { INPSService, NPSVotePayload, NPSCreatePayload } from '@rocket.chat/core-services';
 import { ServiceClassInternal, Banner, NPS, Settings } from '@rocket.chat/core-services';

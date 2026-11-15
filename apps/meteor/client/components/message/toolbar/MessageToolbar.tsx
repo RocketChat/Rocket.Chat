@@ -3,7 +3,7 @@ import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ElementType, ReactElement } from 'react';
+import type { ComponentProps, ElementType } from 'react';
 import { memo, useRef } from 'react';
 
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
@@ -19,7 +19,7 @@ import StarredItems from './items/StarredItems';
 import ThreadsItems from './items/ThreadsItems';
 import VideoconfItems from './items/VideoconfItems';
 import VideoconfThreadsItems from './items/VideoconfThreadsItems';
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -43,7 +43,12 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 
 const itemsByContext: Record<
 	MessageActionContext,
-	ElementType<{ message: IMessage; room: IRoom; subscription: ISubscription | undefined }>
+	ElementType<{
+		message: IMessage;
+		room: IRoom;
+		subscription: ISubscription | undefined;
+		onChangeMenuVisibility?: (visible: boolean) => void;
+	}>
 > = {
 	'message': DefaultItems,
 	'message-mobile': MobileItems,
@@ -58,7 +63,7 @@ const itemsByContext: Record<
 	'search': SearchItems,
 };
 
-type MessageToolbarProps = {
+export type MessageToolbarProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: MessageActionContext;
 	room: IRoom;
@@ -66,14 +71,7 @@ type MessageToolbarProps = {
 	onChangeMenuVisibility: (visible: boolean) => void;
 } & ComponentProps<typeof FuselageMessageToolbar>;
 
-const MessageToolbar = ({
-	message,
-	messageContext,
-	room,
-	subscription,
-	onChangeMenuVisibility,
-	...props
-}: MessageToolbarProps): ReactElement | null => {
+const MessageToolbar = ({ message, messageContext, room, subscription, onChangeMenuVisibility, ...props }: MessageToolbarProps) => {
 	const t = useTranslation();
 
 	const toolbarRef = useRef(null);
@@ -85,7 +83,7 @@ const MessageToolbar = ({
 
 	return (
 		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
-			<MessageToolbarItems message={message} room={room} subscription={subscription} />
+			<MessageToolbarItems message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<MessageToolbarStarsActionMenu message={message} context={context} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<MessageToolbarActionMenu
 				message={message}

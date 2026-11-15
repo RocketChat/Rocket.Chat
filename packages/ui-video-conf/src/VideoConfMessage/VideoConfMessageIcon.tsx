@@ -1,7 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-type VideoConfMessageIconProps = {
+export type VideoConfMessageIconProps = {
 	variant?: keyof typeof styles;
 };
 
@@ -23,16 +22,17 @@ const styles = {
 	},
 } as const;
 
-const VideoConfMessageIcon = ({ variant = 'ended' }: VideoConfMessageIconProps): ReactElement => (
+const VideoConfMessageIcon = ({ variant = 'ended' }: VideoConfMessageIconProps) => (
 	<Box
 		size='x28'
 		alignItems='center'
 		justifyContent='center'
 		display='flex'
-		borderRadius='x4'
+		borderRadius='medium'
 		backgroundColor={styles[variant].backgroundColor}
+		color={styles[variant].color}
 	>
-		<Icon size='x20' name={styles[variant].icon} color={styles[variant].color} />
+		<Icon size='x20' name={styles[variant].icon} />
 	</Box>
 );
 

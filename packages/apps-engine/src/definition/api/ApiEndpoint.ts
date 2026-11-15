@@ -9,7 +9,7 @@ export abstract class ApiEndpoint implements IApiEndpoint {
 	 * The last part of the api URL. Example: https://{your-server-address}/api/apps/public/{your-app-id}/{path}
 	 * or https://{your-server-address}/api/apps/private/{your-app-id}/{private-hash}/{path}
 	 */
-	public path: string;
+	public path!: string;
 
 	constructor(public app: IApp) {}
 

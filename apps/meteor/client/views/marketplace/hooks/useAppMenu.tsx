@@ -1,6 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
 	useEndpoint,
@@ -10,7 +11,7 @@ import {
 	usePermission,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactNode } from 'react';
+import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 import { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
@@ -21,8 +22,6 @@ import { useMarketplaceActions } from './useMarketplaceActions';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import WarningModal from '../../../components/WarningModal';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import type { AddonActionType } from '../AppsList/AddonRequiredModal';
 import AddonRequiredModal from '../AppsList/AddonRequiredModal';
 import IframeModal from '../IframeModal';
@@ -43,6 +42,19 @@ export type AppMenuOption = {
 type AppMenuSections = {
 	items: AppMenuOption[];
 }[];
+
+type AppMenuOptionLabelProps = {
+	icon?: ComponentProps<typeof Icon>['name'];
+	color?: ComponentProps<typeof Box>['color'];
+	children: ReactNode;
+};
+
+const AppMenuOptionLabel = ({ icon, color, children }: AppMenuOptionLabelProps) => (
+	<Box display='flex' alignItems='center' gap={4} color={color}>
+		{icon && <Icon name={icon} size='x16' />}
+		{children}
+	</Box>
+);
 
 export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const t = useTranslation();
@@ -68,14 +80,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
 	const buttonLabel = button?.label.replace(' ', '_') as
-		| 'Update'
-		| 'Install'
-		| 'Subscribe'
-		| 'See_Pricing'
-		| 'Try_now'
-		| 'Buy'
-		| 'Request'
-		| 'Requested';
+		'Update' | 'Install' | 'Subscribe' | 'See_Pricing' | 'Try_now' | 'Buy' | 'Request' | 'Requested';
 	const action = button?.action || '';
 
 	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
@@ -340,12 +345,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				isAdminUser && {
 					id: 'subscribe',
 					section: 0,
-					content: (
-						<>
-							<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
-							{t('Subscription')}
-						</>
-					),
+					content: <AppMenuOptionLabel icon={incompatibleIconName(app, 'subscribe')}>{t('Subscription')}</AppMenuOptionLabel>,
 					onClick: handleSubscription,
 				},
 		];
@@ -357,10 +357,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					section: 0,
 					disabled: requestedEndUser,
 					content: (
-						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
-							{t(buttonLabel)}
-						</>
+						<AppMenuOptionLabel icon={isAdminUser ? incompatibleIconName(app, 'install') : undefined}>{t(buttonLabel)}</AppMenuOptionLabel>
 					),
 					onClick: handleAcquireApp,
 				},
@@ -386,12 +383,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				app.installed && {
 					id: 'viewLogs',
 					section: 0,
-					content: (
-						<>
-							<Icon name='desktop-text' size='x16' mie={4} />
-							{t('View_Logs')}
-						</>
-					),
+					content: <AppMenuOptionLabel icon='desktop-text'>{t('View_Logs')}</AppMenuOptionLabel>,
 					onClick: handleViewLogs,
 				},
 			isAdminUser &&
@@ -399,12 +391,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				!isAppDetailsPage && {
 					id: 'update',
 					section: 0,
-					content: (
-						<>
-							<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
-							{t('Update')}
-						</>
-					),
+					content: <AppMenuOptionLabel icon={incompatibleIconName(app, 'update')}>{t('Update')}</AppMenuOptionLabel>,
 					onClick: handleUpdate,
 				},
 			app.installed &&
@@ -413,10 +400,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'disable',
 					section: 0,
 					content: (
-						<Box color='status-font-on-warning'>
-							<Icon name='ban' size='x16' mie={4} />
+						<AppMenuOptionLabel icon='ban' color='status-font-on-warning'>
 							{t('Disable')}
-						</Box>
+						</AppMenuOptionLabel>
 					),
 					onClick: handleDisable,
 				},
@@ -424,12 +410,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				id: 'enable',
 				section: 0,
 				disabled: doesItReachedTheLimit,
-				content: (
-					<>
-						<Icon name='check' size='x16' marginInlineEnd='x4' />
-						{t('Enable')}
-					</>
-				),
+				content: <AppMenuOptionLabel icon='check'>{t('Enable')}</AppMenuOptionLabel>,
 				onClick: handleEnable,
 			},
 			app.installed &&
@@ -437,10 +418,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'uninstall',
 					section: 1,
 					content: (
-						<Box color='status-font-on-danger'>
-							<Icon name='trash' size='x16' mie={4} />
+						<AppMenuOptionLabel icon='trash' color='status-font-on-danger'>
 							{t('Uninstall')}
-						</Box>
+						</AppMenuOptionLabel>
 					),
 					onClick: handleUninstall,
 				},

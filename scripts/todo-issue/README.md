@@ -12,6 +12,7 @@ When code is pushed to `develop`, the script diffs the changes and:
 - **Closes** the issue when a `TODO` is removed
 - **Updates** the issue title when a `TODO` is edited (detected via similarity matching)
 - **References** an existing issue when a duplicate `TODO` is added (adds a comment instead of creating a duplicate)
+- **Groups** TODOs with the same -- or a similar -- title, into a single new issue or as references to an existing one
 
 Every issue created by the script receives the `todo` label, which is also used to efficiently query only relevant issues.
 
@@ -205,6 +206,8 @@ When a TODO is both added and deleted in the same diff:
 
 When a new TODO matches an existing open issue, a reference comment is added to the issue instead of creating a duplicate.
 
+New TODOs are compared against each other by the same rules, so duplicates added in the same run become a single issue listing every location.
+
 ## Rate limiting
 
 The script reads `x-ratelimit-remaining` and `x-ratelimit-reset` from GitHub API response headers and automatically waits when approaching the limit.
@@ -219,6 +222,7 @@ scripts/todo-issue/
     ├── index.ts        # Entry point, config loading, diff resolution, orchestration
     ├── types.ts        # Shared interfaces (Config, TodoItem, GitHubIssue, MatchResult)
     ├── diff.ts         # Diff parsing (parse-diff), TODO extraction, body/label parsing
+    ├── grouping.ts     # Cluster new TODOs by exact and similar titles
     ├── matcher.ts      # Match found TODOs against existing issues
     ├── similarity.ts   # Levenshtein distance and similarity check
     └── github.ts       # GitHub API (REST + GraphQL), rate limiting, issue CRUD

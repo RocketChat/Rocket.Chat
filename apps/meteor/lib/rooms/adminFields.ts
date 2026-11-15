@@ -25,9 +25,11 @@ export const adminFields: Partial<Record<keyof IRoom, 1>> = {
 	teamMain: 1,
 	announcement: 1,
 	description: 1,
+	customFields: 1,
 	broadcast: 1,
 	uids: 1,
 	avatarETag: 1,
 	federated: 1,
+	xmppFederation: 1,
 	abacAttributes: 1,
 } as const;

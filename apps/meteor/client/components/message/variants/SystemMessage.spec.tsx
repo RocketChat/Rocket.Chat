@@ -6,13 +6,6 @@ import { render, screen } from '@testing-library/react';
 
 import SystemMessage from './SystemMessage';
 
-jest.mock('../../../../app/ui-utils/client', () => {
-	const actual = jest.requireActual('../../../../app/ui-utils/lib/MessageTypes');
-	return {
-		MessageTypes: actual.MessageTypes,
-	};
-});
-
 jest.mock('../content/Attachments', () => ({
 	default: () => <div>attachments</div>,
 }));
@@ -67,6 +60,17 @@ describe('SystemMessage', () => {
 
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
 		expect(screen.queryByText('changed room description to: &amp; test &amp;')).not.toBeInTheDocument();
+	});
+
+	it('should show a placeholder instead of failing when the message cannot be rendered', () => {
+		jest.spyOn(console, 'error').mockImplementation(() => undefined);
+		const message = { ...createBaseMessage('test'), actionLinks: [null] } as unknown as IMessage;
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByText('Message_could_not_be_displayed')).toBeInTheDocument();
+		expect(screen.getByRole('listitem')).toBeInTheDocument();
+		expect(screen.getByText('changed room description to: test')).toBeInTheDocument();
 	});
 
 	it('should not inject html', () => {

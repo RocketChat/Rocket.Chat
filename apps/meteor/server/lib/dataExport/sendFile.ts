@@ -1,10 +1,9 @@
-import { mkdir, mkdtemp } from 'fs/promises';
-import { tmpdir } from 'os';
-import path, { join } from 'path';
+import { mkdir, mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path, { join } from 'node:path';
 
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { getURL } from '../../../app/utils/server/getURL';
 import { i18n } from '../i18n';
 import { copyFileUpload } from './copyFileUpload';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
@@ -13,6 +12,7 @@ import { getRoomData } from './getRoomData';
 import { makeZipFile } from './makeZipFile';
 import { sendEmail } from './sendEmail';
 import { uploadZipFile } from './uploadZipFile';
+import { getURL } from '../utils/getURL';
 
 type ExportFile = {
 	rid: string;

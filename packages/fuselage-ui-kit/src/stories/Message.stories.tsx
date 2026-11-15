@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	Message,
 	MessageLeftContainer,
@@ -16,20 +16,19 @@ import {
 	Avatar,
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
+type StoryArgs = { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> };
+
 export default {
-	title: 'Surfaces/Message',
 	argTypes: {
 		blocks: { control: 'object' },
 	},
-};
-
-const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
-	const story = ({ blocks, errors }: { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> }) => (
+	render: ({ blocks, errors }) => (
 		<Message clickable>
 			<MessageLeftContainer>
 				<Avatar
@@ -79,15 +78,21 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 				</MessageToolbar>
 			</MessageToolbarWrapper>
 		</Message>
-	);
-	story.args = {
-		blocks,
-	};
+	),
+} satisfies Meta<StoryArgs>;
 
-	return story;
-};
+const createStory = (blocks: readonly UiKit.LayoutBlock[]): StoryObj<StoryArgs> => ({
+	args: {
+		blocks,
+		errors: {},
+	},
+});
 
 export const Divider = createStory(payloads.divider);
+
+export const Header = createStory(payloads.header);
+
+export const Markdown = createStory(payloads.markdown);
 
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
@@ -102,6 +107,8 @@ export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAc
 export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
+
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
@@ -133,3 +140,11 @@ export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUr
 export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
 export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);
+
+export const ContextActions = createStory(payloads.contextActions);
+
+export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);

@@ -1,14 +1,16 @@
 import type { IRole } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from '../lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
 import { userIdStore } from '../lib/user';
 import { Roles } from '../stores';
 
 onLoggedIn(async () => {
+	// the endpoint projects _updatedAt away; stamp the sync time locally
 	const { roles } = await sdk.rest.get('/v1/roles.list');
 	// if a role is checked before this collection is populated, it will return undefined
-	Roles.state.replaceAll(roles);
+	const _updatedAt = new Date();
+	Roles.state.replaceAll(roles.map((role) => ({ ...role, _updatedAt })));
 });
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';

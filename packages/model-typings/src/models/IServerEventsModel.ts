@@ -9,11 +9,12 @@ export interface IServerEventsModel extends IBaseModel<IServerEvent> {
 	findLastSuccessfulAttemptByUsername(username: string): Promise<IServerEvent | null>;
 	countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number>;
 	countFailedAttemptsByIpSince(ip: string, since: Date): Promise<number>;
-	countFailedAttemptsByIp(ip: string): Promise<number>;
-	countFailedAttemptsByUsername(username: string): Promise<number>;
 	createAuditServerEvent<K extends keyof IServerEvents, E extends IServerEvents[K]>(
 		key: K,
 		data: ExtractDataToParams<E>,
 		actor: IAuditServerActor,
+	): Promise<void>;
+	createAuditServerEvents<K extends keyof IServerEvents>(
+		events: Array<{ key: K; data: ExtractDataToParams<IServerEvents[K]>; actor: IAuditServerActor }>,
 	): Promise<void>;
 }

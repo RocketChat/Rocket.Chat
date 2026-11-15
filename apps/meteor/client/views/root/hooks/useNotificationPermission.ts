@@ -1,9 +1,9 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { notificationManager } from '../../../lib/notificationManager';
 
 export const useNotificationPermission = () => {
-	const requestPermission = useEffectEvent(async () => {
+	const requestPermission = useStableCallback(async () => {
 		const response = await Notification.requestPermission();
 		notificationManager.allowed = response === 'granted';
 		notificationManager.emit('change');

@@ -17,7 +17,7 @@ import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../../admin/subscription/hooks/useCheckoutUrl';
 import { PRICING_LINK } from '../../../admin/subscription/utils/links';
 
-type PrivateAppInstallModalProps = {
+export type PrivateAppInstallModalProps = {
 	onClose: () => void;
 	onProceed: () => void;
 };
@@ -43,11 +43,11 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 			</ModalHeader>
 
 			<ModalContent>
-				<Box mbe={28}>{t('Private_app_install_modal_content')}</Box>
+				<Box marginBlockEnd='x24'>{t('Private_app_install_modal_content')}</Box>
 				{t('Upgrade_subscription_to_enable_private_apps')}
 			</ModalContent>
 
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>
 						{t('Compare_plans')}
@@ -55,7 +55,7 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={onProceed}>{t('Upload_anyway')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
+					<Button onClick={goToManageSubscriptionPage} variant='primary'>
 						{t('Upgrade')}
 					</Button>
 				</ModalFooterControllers>

@@ -6,7 +6,9 @@ import SidePanelTeams from './SidePanelTeams';
 import { withErrorBoundary } from '../../../../components/withErrorBoundary';
 import { useSidePanelFilter } from '../../contexts/RoomsNavigationContext';
 
-const SidePanelRooms = ({ parentRid }: { parentRid: string }) => {
+export type SidePanelRoomsProps = { parentRid: string };
+
+const SidePanelRooms = ({ parentRid }: SidePanelRoomsProps) => {
 	const [currentTab] = useSidePanelFilter();
 	const subscription = useUserSubscription(parentRid);
 

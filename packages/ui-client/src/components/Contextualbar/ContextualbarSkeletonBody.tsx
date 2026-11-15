@@ -1,20 +1,19 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Box, ContextualbarHeader, Skeleton } from '@rocket.chat/fuselage';
 
-import ContextualbarHeader from './ContextualbarHeader';
-
-const ContextualbarSkeletonBody = (): ReactElement => (
+const ContextualbarSkeletonBody = () => (
 	<>
 		<ContextualbarHeader>
 			<Skeleton width='100%' />
 		</ContextualbarHeader>
-		<Box p={24}>
-			<Skeleton mbe={4} width='x32' height='x32' variant='rect' />
-			{Array(5)
-				.fill(5)
-				.map((_, index) => (
-					<Skeleton key={index} />
-				))}
+		<Box padding={24} display='flex' flexDirection='column' gap={4}>
+			<Skeleton width='x32' height='x32' variant='rect' />
+			<Box>
+				{Array(5)
+					.fill(5)
+					.map((_, index) => (
+						<Skeleton key={index} />
+					))}
+			</Box>
 		</Box>
 	</>
 );

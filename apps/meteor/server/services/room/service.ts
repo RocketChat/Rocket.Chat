@@ -1,4 +1,4 @@
-import { ServiceClassInternal, Authorization, Message, MeteorError, FederationMatrix } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Authorization, Message, ClientSafeError, FederationMatrix } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import {
 	type AtLeast,
@@ -8,39 +8,39 @@ import {
 	type ISubscription,
 	isOmnichannelRoom,
 	isRoomWithJoinCode,
+	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
-import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
-import { saveRoomName } from '../../../app/channel-settings/server';
-import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
-import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
-import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { readThread } from '../../lib/messaging/threads/functions';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
-} from '../../../app/lib/server/lib/notifyListener';
-import { readThread } from '../../../app/threads/server/functions';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
-import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
-import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+} from '../../lib/notifyListener';
 import { readMessages } from '../../lib/readMessages';
+import { performAcceptRoomInvite } from '../../lib/rooms/acceptRoomInvite';
+import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { performUserBan } from '../../lib/rooms/banUserFromRoom';
+import { createRoom } from '../../lib/rooms/createRoom'; // TODO remove this import
+import { executeUnbanUserFromRoom } from '../../lib/rooms/executeUnbanUserFromRoom';
+import { removeUserFromRoom, performUserRemoval } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { addRoomLeader } from '../../methods/addRoomLeader';
-import { addRoomModerator } from '../../methods/addRoomModerator';
-import { addRoomOwner } from '../../methods/addRoomOwner';
-import { createDirectMessage } from '../../methods/createDirectMessage';
-import { removeRoomLeader } from '../../methods/removeRoomLeader';
-import { removeRoomModerator } from '../../methods/removeRoomModerator';
-import { removeRoomOwner } from '../../methods/removeRoomOwner';
+import { saveRoomName } from '../../lib/rooms/settings';
+import { saveRoomTopic } from '../../lib/rooms/settings/saveRoomTopic';
+import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
+import { getValidRoomName } from '../../lib/utils/lib/getValidRoomName';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
+import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
+import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';
+import { addRoomOwner } from '../../meteor-methods/rooms/addRoomOwner';
+import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
+import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
+import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -74,7 +74,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return true;
 	}
 
-	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
+	async create(uid: string, params: ICreateRoomParams): Promise<IRoom & { skippedMembers?: string[] }> {
 		const { type, name, members = [], readOnly, extraData, options } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
@@ -88,7 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options);
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -131,7 +131,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async removeUserFromRoom(
 		roomId: string,
 		user: IUser,
-		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 	): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
@@ -153,12 +153,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async revokeInvite(room: IRoom, user: IUser): Promise<void> {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-		if (subscription?.status !== 'INVITED') {
+		const subscription = await Subscriptions.removeInvitedByRoomIdAndUserId(room._id, user._id);
+		if (!subscription) {
 			return;
 		}
 
-		await Subscriptions.removeById(subscription._id);
 		void notifyOnSubscriptionChanged(subscription, 'removed');
 	}
 
@@ -184,15 +183,15 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	 */
 	async join({ room, user, joinCode }: { room: IRoom; user: IUser; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
-			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
 		if (isOmnichannelRoom(room) && !room.open) {
-			throw new MeteorError('room-closed', 'Room is closed', { method: 'joinRoom' });
+			throw new ClientSafeError('room-closed', 'Room is closed', { method: 'joinRoom' });
 		}
 
 		if (!(await Authorization.canAccessRoom(room, user))) {
-			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
 		if (
@@ -200,12 +199,12 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			!isUserNativeFederated(user) &&
 			!(await FederationMatrix.canUserAccessFederation(user))
 		) {
-			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
+			throw new ClientSafeError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 
 		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
 			if (!joinCode) {
-				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });
+				throw new ClientSafeError('error-code-required', 'Code required', { method: 'joinRoom' });
 			}
 
 			const isCorrectJoinCode = !!(await Rooms.findOneByJoinCodeAndId(joinCode, room._id, {
@@ -213,7 +212,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			}));
 
 			if (!isCorrectJoinCode) {
-				throw new MeteorError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
+				throw new ClientSafeError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
 			}
 		}
 
@@ -327,7 +326,8 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, ...(inviter.name && { name: inviter.name }) } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
-			...(room.t === 'd' && inviter && { fname: inviter.name, name: inviter.username }),
+			// `name` is optional for users, so fall back to the username like `getNameForDMs` does
+			...(room.t === 'd' && inviter && { fname: inviter.name || inviter.username, name: inviter.username }),
 		});
 
 		if (insertedId) {

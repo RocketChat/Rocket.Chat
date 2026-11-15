@@ -52,29 +52,76 @@ export function onInvalidFeature(this: LicenseManager, feature: LicenseModule, c
 	};
 }
 
+type ToggledFeatureCleanup = () => Promise<void> | void;
+
+/**
+ * Runs `up` whenever the feature becomes available and `down` whenever it stops being available.
+ * `up` may return a cleanup, which runs after `down` when the feature is disabled.
+ */
 export function onToggledFeature(
 	this: LicenseManager,
 	feature: LicenseModule,
-	{ up, down }: { up?: () => Promise<void> | void; down?: () => Promise<void> | void },
+	{
+		up,
+		down,
+	}: {
+		up?: () => Promise<ToggledFeatureCleanup | void> | ToggledFeatureCleanup | void;
+		down?: () => Promise<void> | void;
+	},
 ): () => void {
 	let enabled = hasModule.call(this, feature);
+	let pendingCleanup: Promise<ToggledFeatureCleanup | void> | undefined;
+
+	const enable = () => {
+		pendingCleanup = Promise.resolve(up?.());
+	};
+
+	const disable = () => {
+		const cleanup = pendingCleanup;
+		pendingCleanup = undefined;
+		// A rejected `up` was already reported when it ran; there is nothing to clean up after it.
+		const runCleanup = () =>
+			cleanup?.then(
+				(fn) => fn?.(),
+				() => undefined,
+			);
+
+		let downResult: Promise<void> | void;
+		try {
+			downResult = down?.();
+		} catch (error) {
+			void runCleanup();
+			throw error;
+		}
+
+		// Not `finally`: a rejected cleanup would replace the rejection of `down`.
+		void Promise.resolve(downResult).then(
+			() => {
+				void runCleanup();
+			},
+			(error) => {
+				void runCleanup();
+				throw error;
+			},
+		);
+	};
 
 	const offValidFeature = onValidFeature.bind(this)(feature, () => {
 		if (!enabled) {
-			void up?.();
+			enable();
 			enabled = true;
 		}
 	});
 
 	const offInvalidFeature = onInvalidFeature.bind(this)(feature, () => {
 		if (enabled) {
-			void down?.();
 			enabled = false;
+			disable();
 		}
 	});
 
 	if (enabled) {
-		void up?.();
+		enable();
 	}
 
 	return (): void => {

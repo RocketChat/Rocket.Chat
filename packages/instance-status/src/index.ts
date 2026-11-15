@@ -1,11 +1,12 @@
+import { randomUUID } from 'node:crypto';
+
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
-import { v4 as uuidv4 } from 'uuid';
 
 export const defaultPingInterval = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10;
 export const indexExpire = (parseInt(String(process.env.MULTIPLE_INSTANCES_EXPIRE)) || Math.ceil((defaultPingInterval * 3) / 60)) * 60;
 
-const ID = uuidv4();
+const ID = randomUUID();
 const id = (): IInstanceStatus['_id'] => ID;
 
 const currentInstance = {
@@ -34,7 +35,7 @@ let createIndexes = async () => {
 		.catch(() => [])
 		.then((result) =>
 			result.some((index) => {
-				if (index.key && index.key._updatedAt === 1) {
+				if (index.key?._updatedAt === 1) {
 					if (index.expireAfterSeconds !== indexExpire && index.name) {
 						void InstanceStatusModel.col.dropIndex(index.name);
 						return false;

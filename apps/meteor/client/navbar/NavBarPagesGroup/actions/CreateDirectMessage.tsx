@@ -3,11 +3,6 @@ import {
 	Box,
 	Modal,
 	Button,
-	FieldGroup,
-	Field,
-	FieldRow,
-	FieldError,
-	FieldHint,
 	ModalHeader,
 	ModalTitle,
 	ModalClose,
@@ -15,6 +10,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
@@ -23,13 +19,13 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-type CreateDirectMessageProps = { onClose: () => void };
+export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
-const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
+const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const xmppEnabled = useSetting('XMPP_Server_Enabled', false);
 	const createDMFormId = useId();
-	const membersFieldId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
@@ -44,8 +40,9 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
-		onSuccess: ({ room: { rid } }) => {
-			goToRoom(rid);
+		onSuccess: ({ room }) => {
+			goToRoom(room.rid);
+			void onSuccess?.(room.rid);
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -68,10 +65,10 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
-						<Box htmlFor={membersFieldId}>{t('Direct_message_creation_description')}</Box>
+						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='users'
@@ -90,28 +87,22 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 										value={value}
 										onBlur={onBlur}
 										federated
-										id={membersFieldId}
-										aria-describedby={`${membersFieldId}-hint ${membersFieldId}-error`}
+										xmpp={xmppEnabled}
 										aria-required='true'
-										aria-invalid={Boolean(errors.users)}
-										aria-label={t('Direct_message_creation_description')}
+										error={errors.users?.message}
 									/>
 								)}
 							/>
 						</FieldRow>
-						{errors.users && (
-							<FieldError aria-live='assertive' id={`${membersFieldId}-error`}>
-								{errors.users.message}
-							</FieldError>
-						)}
-						<FieldHint id={`${membersFieldId}-hint`}>{t('Direct_message_creation_description_hint')}</FieldHint>
+						{errors.users && <FieldError>{errors.users.message}</FieldError>}
+						<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
 					</Field>
 				</FieldGroup>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} type='submit' variant='primary'>
 						{t('Create')}
 					</Button>
 				</ModalFooterControllers>

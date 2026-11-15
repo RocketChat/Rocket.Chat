@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageComposerFileItemProps } from './MessageComposerFileItem';
-import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
+import { getMimeType } from '../../../../../lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
@@ -39,13 +39,13 @@ const MessageComposerGenericFile = ({
 
 		setModal(
 			<FileUploadModal
-				onSubmit={(name, description) => {
-					onEdit(upload.id, name, description);
+				onSubmit={(name, altText) => {
+					onEdit(upload.id, name, altText);
 					setModal(null);
 					chat?.composer?.focus();
 				}}
 				fileName={upload.file.name}
-				fileDescription={upload.description}
+				fileAltText={upload.altText}
 				file={upload.file}
 				onClose={() => setModal(null)}
 			/>,
@@ -60,7 +60,7 @@ const MessageComposerGenericFile = ({
 		isLoading && !isActive ? (
 			<MessageComposerFileLoader />
 		) : (
-			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
+			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} size='mini' icon='cross' />
 		);
 
 	if (upload.error) {
@@ -86,7 +86,7 @@ const MessageComposerGenericFile = ({
 			fileTitle={upload.file.name}
 			fileSubtitle={`${fileSize} - ${fileExtension}`}
 			previewUrl={shouldPreview ? previewUrl : undefined}
-			alt={upload.description}
+			alt={upload.altText}
 			fileFormat={getFileExtension(upload.file.name)}
 			showPreview={shouldPreview}
 			actionIcon={actionIcon}

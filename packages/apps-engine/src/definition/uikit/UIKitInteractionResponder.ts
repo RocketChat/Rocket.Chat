@@ -3,7 +3,6 @@ import { UIKitInteractionType } from './IUIKitInteractionType';
 import type { IUIKitSurface } from './IUIKitSurface';
 import type { IUIKitBaseIncomingInteraction } from './UIKitIncomingInteractionTypes';
 import { formatContextualBarInteraction, formatModalInteraction } from './UIKitInteractionPayloadFormatter';
-import type { Omit } from '../../lib/utils';
 import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 
 export type IUIKitModalViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;
@@ -25,7 +24,7 @@ export class UIKitInteractionResponder {
 	}
 
 	public openModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
@@ -34,7 +33,7 @@ export class UIKitInteractionResponder {
 	}
 
 	public updateModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
@@ -43,7 +42,7 @@ export class UIKitInteractionResponder {
 	}
 
 	public openContextualBarViewResponse(viewData: IUIKitContextualBarViewParam): IUIKitContextualBarResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
@@ -52,7 +51,7 @@ export class UIKitInteractionResponder {
 	}
 
 	public updateContextualBarViewResponse(viewData: IUIKitContextualBarViewParam): IUIKitContextualBarResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
@@ -61,7 +60,7 @@ export class UIKitInteractionResponder {
 	}
 
 	public viewErrorResponse(errorInteraction: IUIKitErrorInteractionParam): IUIKitErrorResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			appId,

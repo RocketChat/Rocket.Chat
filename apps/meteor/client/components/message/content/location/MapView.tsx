@@ -5,7 +5,7 @@ import MapViewFallback from './MapViewFallback';
 import MapViewImage from './MapViewImage';
 import { useAsyncImage } from './hooks/useAsyncImage';
 
-type MapViewProps = {
+export type MapViewProps = {
 	latitude: number;
 	longitude: number;
 };

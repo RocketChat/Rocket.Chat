@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
-import { AppClientOrchestratorInstance } from '../apps/orchestrator';
 import { AppsContext } from '../contexts/AppsContext';
+import { AppClientOrchestratorInstance } from '../lib/apps/orchestrator';
 
-type AppsProviderProps = {
+export type AppsProviderProps = {
 	children: ReactNode;
 };
 

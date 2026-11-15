@@ -1,8 +1,17 @@
-import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Box, InputBox } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
-import type { ReactElement, ComponentProps, SetStateAction, FormEvent } from 'react';
+import { endOfDay } from 'date-fns/endOfDay';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { endOfWeek } from 'date-fns/endOfWeek';
+import { parseISO } from 'date-fns/parseISO';
+import { startOfDay } from 'date-fns/startOfDay';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
+import { subWeeks } from 'date-fns/subWeeks';
+import type { ComponentProps, SetStateAction, ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -117,24 +126,24 @@ const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange 
 	}
 };
 
-type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange'> & {
+export type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange'> & {
 	value?: DateRange;
 	onChange?: (dateRange: DateRange) => void;
 };
 
 const minDate = (a: Date, b: Date) => (a.getTime() < b.getTime() ? a : b);
 
-const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): ReactElement => {
-	const dispatch = useEffectEvent((action: DateRangeAction): void => {
+const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps) => {
+	const dispatch = useStableCallback((action: DateRangeAction): void => {
 		const newRange = dateRangeReducer(value ?? { start: undefined, end: undefined }, action);
 		onChange?.(newRange);
 	});
 
-	const handleChangeStart = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleChangeStart = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		dispatch({ newStart: currentTarget.value });
 	});
 
-	const handleChangeEnd = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleChangeEnd = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		dispatch({ newEnd: currentTarget.value });
 	});
 
@@ -191,12 +200,10 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	);
 
 	return (
-		<Box marginInline={-4} alignItems='center' {...props}>
-			<Margins inline={4}>
-				<InputBox type='date' value={startDate} max={maxStartDate} flexGrow={1} height={20} onChange={handleChangeStart} />
-				<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} flexGrow={1} height={20} onChange={handleChangeEnd} />
-				<GenericMenu title={t('Date_range_presets')} items={presets} small />
-			</Margins>
+		<Box display='flex' gap={8} alignItems='center' {...props}>
+			<InputBox type='date' value={startDate} max={maxStartDate} onChange={handleChangeStart} />
+			<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} onChange={handleChangeEnd} />
+			<GenericMenu title={t('Date_range_presets')} items={presets} size='small' />
 		</Box>
 	);
 };

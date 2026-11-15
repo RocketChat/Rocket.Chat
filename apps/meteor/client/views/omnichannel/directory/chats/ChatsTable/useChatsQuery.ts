@@ -1,5 +1,7 @@
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import { parse, endOfDay, startOfDay } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { parse } from 'date-fns/parse';
+import { startOfDay } from 'date-fns/startOfDay';
 import { useCallback } from 'react';
 
 import type { ChatsFiltersQuery } from '../../contexts/ChatsContext';
@@ -31,8 +33,6 @@ export const useChatsQuery = () => {
 		(
 			{ guest, servedBy, department, status, from, to, tags, units, ...customFields }: ChatsFiltersQuery,
 			[column, direction]: [string, 'asc' | 'desc'],
-			current: number,
-			itemsPerPage: 25 | 50 | 100,
 		) => {
 			const query: CurrentChatQuery = {
 				...(guest && { roomName: guest }),
@@ -40,8 +40,6 @@ export const useChatsQuery = () => {
 					[column]: sortDir(direction),
 					ts: column === 'ts' ? sortDir(direction) : undefined,
 				}),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			};
 
 			if (from || to) {

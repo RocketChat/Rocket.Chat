@@ -1,0 +1,39 @@
+{
+  "breakpoints": {
+    "xs": {
+      "minViewportWidth": { "value": null, "type": "dimension", "unit": "px" },
+      "columns": { "value": 4, "type": "number" },
+      "gutterWidth": { "value": 16, "type": "dimension", "unit": "px" }
+    },
+    "sm": {
+      "minViewportWidth": { "value": 600, "type": "dimension", "unit": "px" },
+      "columns": { "value": 8, "type": "number" },
+      "gutterWidth": { "value": 16, "type": "dimension", "unit": "px" }
+    },
+    "md": {
+      "minViewportWidth": { "value": 768, "type": "dimension", "unit": "px" },
+      "columns": { "value": 8, "type": "number" },
+      "gutterWidth": { "value": 24, "type": "dimension", "unit": "px" }
+    },
+    "lg": {
+      "minViewportWidth": { "value": 1024, "type": "dimension", "unit": "px" },
+      "columns": { "value": 12, "type": "number" },
+      "gutterWidth": { "value": 24, "type": "dimension", "unit": "px" }
+    },
+    "xl": {
+      "minViewportWidth": { "value": 1280, "type": "dimension", "unit": "px" },
+      "columns": { "value": 12, "type": "number" },
+      "gutterWidth": { "value": 24, "type": "dimension", "unit": "px" }
+    },
+    "xxl": {
+      "minViewportWidth": { "value": 1600, "type": "dimension", "unit": "px" },
+      "columns": { "value": 12, "type": "number" },
+      "gutterWidth": { "value": 24, "type": "dimension", "unit": "px" }
+    },
+    "xxxl": {
+      "minViewportWidth": { "value": 1920, "type": "dimension", "unit": "px" },
+      "columns": { "value": 12, "type": "number" },
+      "gutterWidth": { "value": 24, "type": "dimension", "unit": "px" }
+    }
+  }
+}

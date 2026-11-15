@@ -1,0 +1,65 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
+import { Imports } from '@rocket.chat/models';
+
+import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
+import { Importers } from '../../lib/import';
+import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+
+export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
+	const operation = await Imports.findLastImport();
+	if (!operation) {
+		throw new ClientSafeError('error-operation-not-found', 'Import Operation Not Found', 'getImportFileData');
+	}
+
+	const { importerKey } = operation;
+
+	const importer = Importers.get(importerKey);
+	if (!importer) {
+		throw new ClientSafeError(
+			'error-importer-not-defined',
+			`The importer (${importerKey}) has no import class defined.`,
+			'getImportFileData',
+		);
+	}
+
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
+
+	const waitingSteps: IImportProgress['step'][] = [
+		ProgressStep.DOWNLOADING_FILE,
+		ProgressStep.PREPARING_CHANNELS,
+		ProgressStep.PREPARING_MESSAGES,
+		ProgressStep.PREPARING_USERS,
+		ProgressStep.PREPARING_CONTACTS,
+		ProgressStep.PREPARING_STARTED,
+	];
+
+	if (waitingSteps.indexOf(instance.progress.step) >= 0) {
+		if (instance.importRecord?.valid) {
+			return { waiting: true };
+		}
+		throw new ClientSafeError('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
+	}
+
+	const readySteps: IImportProgress['step'][] = [
+		ProgressStep.USER_SELECTION,
+		ProgressStep.DONE,
+		ProgressStep.CANCELLED,
+		ProgressStep.ERROR,
+	];
+
+	if (readySteps.indexOf(instance.progress.step) >= 0) {
+		return instance.buildSelection();
+	}
+
+	const fileName = instance.importRecord.file;
+	if (fileName) {
+		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		await instance.prepareUsingLocalFile(fullFilePath);
+	}
+
+	return instance.buildSelection();
+};

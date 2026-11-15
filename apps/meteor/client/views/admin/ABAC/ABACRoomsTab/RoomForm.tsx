@@ -1,21 +1,21 @@
-import { Box, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, ContextualbarFooter } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { GenericModal, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { Box, Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import type { Dispatch, SetStateAction } from 'react';
 import { useId } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import RoomFormAttributeFields from './RoomFormAttributeFields';
 import RoomFormAutocomplete from './RoomFormAutocomplete';
 import RoomFormAutocompleteDummy from './RoomFormAutocompleteDummy';
 
-type RoomFormProps = {
+export type RoomFormProps = {
 	onClose: () => void;
 	onSave: (data: RoomFormData) => void;
 	roomInfo?: { rid: string; name: string };
+	hasAttributeChanges?: boolean;
 	setSelectedRoomLabel: Dispatch<SetStateAction<string>>;
+	redacted?: boolean;
 };
 
 export type RoomFormData = {
@@ -23,7 +23,7 @@ export type RoomFormData = {
 	attributes: { key: string; values: string[] }[];
 };
 
-const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormProps) => {
+const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setSelectedRoomLabel, redacted = false }: RoomFormProps) => {
 	const {
 		control,
 		handleSubmit,
@@ -39,42 +39,11 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 		control,
 	});
 
-	const setModal = useSetModal();
-
-	const updateAction = useEffectEvent(async (action: () => void) => {
-		setModal(
-			<GenericModal
-				variant='info'
-				icon={null}
-				title={t('ABAC_Update_room_confirmation_modal_title')}
-				annotation={t('ABAC_Update_room_confirmation_modal_annotation')}
-				confirmText={t('Save_changes')}
-				onConfirm={() => {
-					action();
-					setModal(null);
-				}}
-				onCancel={() => setModal(null)}
-			>
-				<Trans
-					i18nKey='ABAC_Update_room_content'
-					values={{ roomName: roomInfo?.name }}
-					components={{ bold: <Box is='span' fontWeight='bold' /> }}
-				/>
-			</GenericModal>,
-		);
-	});
-
-	const handleSave = useEffectEvent(() => {
-		if (roomInfo) {
-			updateAction(handleSubmit(onSave));
-		} else {
-			handleSubmit(onSave)();
-		}
-	});
+	const canSubmit = roomInfo ? hasAttributeChanges : isDirty;
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} id={formId}>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(onSave)} id={formId}>
 				<Field>
 					<FieldLabel id={nameField} required>
 						{t('ABAC_Room_to_be_managed')}
@@ -110,10 +79,16 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 						</FieldError>
 					)}
 				</Field>
-				<RoomFormAttributeFields fields={fields} remove={remove} />
+				{redacted && (
+					<Box marginBlockEnd={16}>
+						<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
+							{t('ABAC_Attributes_Redacted_Description')}
+						</Callout>
+					</Box>
+				)}
+				<RoomFormAttributeFields fields={fields} remove={remove} disabled={redacted} />
 				<Button
-					w='full'
-					disabled={fields.length >= 10}
+					disabled={redacted || fields.length >= 10}
 					onClick={() => {
 						append({ key: '', values: [] });
 					}}
@@ -124,8 +99,8 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={!isValid || !isDirty} primary>
-						{t('Save')}
+					<Button type='submit' form={formId} disabled={redacted || !isValid || !canSubmit} variant='primary'>
+						{roomInfo ? t('ABAC_Review_changes') : t('Save')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>

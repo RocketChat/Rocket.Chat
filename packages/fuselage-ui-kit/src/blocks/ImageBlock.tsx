@@ -1,6 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useEffect, useState } from 'react';
 
 import { Image } from './ImageBlock.styles';
@@ -15,6 +14,8 @@ const fetchImageState = (img: HTMLImageElement) => {
 			loading: true,
 			width: maxSize,
 			height: (maxSize * 9) / 21,
+			naturalWidth: 0,
+			naturalHeight: 0,
 		};
 	}
 
@@ -27,17 +28,19 @@ const fetchImageState = (img: HTMLImageElement) => {
 		loading: false,
 		width: naturalWidth * scaleRatio,
 		height: naturalHeight * scaleRatio,
+		naturalWidth,
+		naturalHeight,
 	};
 };
 
-type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
+export type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
 
-const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps): ReactElement => {
+const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 	const surface = useSurfaceType();
 
 	const alignment = surface === 'banner' || surface === 'message' ? 'flex-start' : 'center';
 
-	const [{ loading, width, height }, setState] = useState(() => {
+	const [{ loading, width, height, naturalWidth, naturalHeight }, setState] = useState(() => {
 		const img = document.createElement('img');
 		img.src = block.imageUrl;
 		return fetchImageState(img);
@@ -63,18 +66,29 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps): Rea
 		};
 	}, [block.imageUrl]);
 
+	// In a message, a landscape image fills the message block like link previews and attachments do; portrait ones keep the height limit.
+	const fluid = surface === 'message' && !loading && naturalWidth >= naturalHeight;
+
 	return (
 		<Box className={className} display='flex' flexDirection='column' flexWrap='nowrap' alignItems={alignment}>
-			<Box overflow='hidden' width={width}>
+			<Box overflow='hidden' width={fluid ? '100%' : width}>
 				{block.title && (
 					<Box fontScale='c1' color='hint' withTruncatedText marginBlockEnd={4}>
 						{surfaceRenderer.renderTextObject(block.title, 0, UiKit.BlockContext.NONE)}
 					</Box>
 				)}
 				{loading ? (
-					<Skeleton variant='rect' width={width} height={height} />
+					<Box display='flex' borderRadius='large' overflow='hidden'>
+						<Skeleton variant='rect' width={width} height={height} />
+					</Box>
 				) : (
-					<Image imageUrl={block.imageUrl} width={width} height={height} aria-label={block.altText} />
+					<Image
+						imageUrl={block.imageUrl}
+						width={fluid ? naturalWidth : width}
+						height={fluid ? naturalHeight : height}
+						fluid={fluid}
+						aria-label={block.altText}
+					/>
 				)}
 			</Box>
 		</Box>

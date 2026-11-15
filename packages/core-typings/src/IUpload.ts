@@ -1,8 +1,8 @@
 import type { EncryptedContent } from './IMessage';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
-export interface IUpload {
-	_id: string;
+export interface IUpload extends IRocketChatRecord {
 	typeGroup?: string;
 	description?: string;
 	type?: string;
@@ -23,6 +23,7 @@ export interface IUpload {
 			width: number;
 			height: number;
 		};
+		pages?: number;
 	};
 	store?: string;
 	path?: string;
@@ -45,9 +46,6 @@ export interface IUpload {
 		path: string;
 	};
 	googleCloudStorage?: {
-		path: string;
-	};
-	Webdav?: {
 		path: string;
 	};
 	content?: EncryptedContent;

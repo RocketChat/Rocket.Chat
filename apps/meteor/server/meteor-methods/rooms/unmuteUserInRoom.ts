@@ -1,0 +1,79 @@
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { callbacks } from '../../lib/callbacks';
+import { notifyOnRoomChangedById } from '../../lib/notifyListener';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+
+declare module '@rocket.chat/ddp-client' {
+	interface ServerMethods {
+		unmuteUserInRoom(data: { rid: IRoom['_id']; username: string }): boolean;
+	}
+}
+
+export const unmuteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']; username: string }): Promise<boolean> => {
+	if (!fromId || !(await hasPermissionAsync(fromId, 'mute-user', data.rid))) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+			method: 'unmuteUserInRoom',
+		});
+	}
+
+	const room = await Rooms.findOneById(data.rid);
+
+	if (!room) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			method: 'unmuteUserInRoom',
+		});
+	}
+
+	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.MUTE, fromId))) {
+		throw new ClientSafeError('error-invalid-room-type', `${room.t} is not a valid room type`, {
+			method: 'unmuteUserInRoom',
+			type: room.t,
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
+		projection: { _id: 1 },
+	});
+
+	if (!subscription) {
+		throw new ClientSafeError('error-user-not-in-room', 'User is not in this room', {
+			method: 'unmuteUserInRoom',
+		});
+	}
+
+	const unmutedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+	if (!unmutedUser?.username) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user to unmute', {
+			method: 'unmuteUserInRoom',
+		});
+	}
+
+	const fromUser = await Users.findOneById(fromId);
+	if (!fromUser) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'unmuteUserInRoom',
+		});
+	}
+
+	await callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
+
+	if (room.ro) {
+		await Rooms.unmuteReadOnlyUsernameByRoomId(data.rid, unmutedUser.username);
+	} else {
+		await Rooms.unmuteMutedUsernameByRoomId(data.rid, unmutedUser.username);
+	}
+
+	await Message.saveSystemMessage('user-unmuted', data.rid, unmutedUser.username, fromUser);
+
+	setImmediate(() => {
+		void callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
+		void notifyOnRoomChangedById(data.rid);
+	});
+
+	return true;
+};

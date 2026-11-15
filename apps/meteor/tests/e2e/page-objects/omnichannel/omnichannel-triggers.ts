@@ -1,9 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
 
 type TriggerConditions = 'Visitor page URL' | 'Visitor time on site' | 'Chat opened by the visitor' | 'After guest registration';
 
@@ -19,21 +18,21 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 		return this.root.getByRole('textbox', { name: 'Description', exact: true });
 	}
 
-	private get conditionLabel(): Locator {
-		return this.root.getByText('Condition', { exact: true });
+	private get conditionSelect(): Locator {
+		return this.root.getByRole('combobox', { name: 'Condition', exact: true });
 	}
 
-	private get senderLabel(): Locator {
-		return this.root.getByText('Sender', { exact: true });
+	private get senderSelect(): Locator {
+		return this.root.getByRole('combobox', { name: 'Sender', exact: true });
 	}
 
 	private async selectCondition(condition: string) {
-		await this.conditionLabel.click();
+		await this.conditionSelect.click();
 		await this.listbox.selectOption(condition);
 	}
 
 	private async selectSender(sender: 'queue' | 'custom') {
-		await this.senderLabel.click();
+		await this.senderSelect.click();
 		await this.listbox.selectOption(sender);
 	}
 
@@ -79,21 +78,16 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelTriggersTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Livechat Triggers' }));
-	}
-}
-
 export class OmnichannelTriggers extends OmnichannelAdmin {
-	readonly editTrigger: OmnichannelEditTriggerFlexTab;
+	protected readonly route = OmnichannelSectionsHref.triggers;
 
-	readonly table: OmnichannelTriggersTable;
+	protected readonly title = 'Livechat triggers';
+
+	readonly editTrigger: OmnichannelEditTriggerFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.editTrigger = new OmnichannelEditTriggerFlexTab(page);
-		this.table = new OmnichannelTriggersTable(page);
 	}
 
 	async removeTrigger(name: string) {

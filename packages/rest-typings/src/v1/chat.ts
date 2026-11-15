@@ -1,10 +1,34 @@
 import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
+type ChatSendMessageFields = Partial<
+	Pick<
+		IMessage,
+		| '_id'
+		| 'rid'
+		| 'tmid'
+		| 'tshow'
+		| 'msg'
+		| 'alias'
+		| 'emoji'
+		| 'avatar'
+		| 'attachments'
+		| 'blocks'
+		| 'customFields'
+		| 'location'
+		| 'groupable'
+		| 't'
+		| 'e2e'
+		| 'e2eMentions'
+		| 'content'
+	>
+> & { parseUrls?: boolean; text?: string };
+
 type ChatSendMessage = {
-	message: Partial<IMessage>;
+	message: ChatSendMessageFields;
 	previewUrls?: string[];
 };
 
@@ -56,10 +80,56 @@ const chatSendMessageSchema = {
 					type: 'array',
 					items: {
 						type: 'object',
+						allOf: [
+							{
+								if: { properties: { type: { enum: ['actions', 'context'] } }, required: ['type'] },
+								then: { properties: { elements: { type: 'array', items: { type: 'object' } } }, required: ['elements'] },
+							},
+							{
+								if: { properties: { type: { const: 'section' } }, required: ['type'] },
+								then: { properties: { fields: { type: 'array', items: { type: 'object' } } } },
+							},
+							{
+								if: { properties: { type: { const: 'input' } }, required: ['type'] },
+								then: { properties: { element: { type: 'object' } }, required: ['element'] },
+							},
+						],
 					},
 					nullable: true,
 				},
 				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				location: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+					nullable: true,
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				groupable: {
+					type: 'boolean',
+					nullable: true,
+				},
+				t: {
+					type: 'string',
+					nullable: true,
+				},
+				e2e: {
+					type: 'string',
+					nullable: true,
+				},
+				e2eMentions: {
+					type: 'object',
+					nullable: true,
+				},
+				content: {
 					type: 'object',
 					nullable: true,
 				},
@@ -79,16 +149,20 @@ const chatSendMessageSchema = {
 
 export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
+export const chatSendMessageFieldNames: readonly string[] = Object.keys(chatSendMessageSchema.properties.message.properties);
+
 type ChatGetMessage = {
 	msgId: IMessage['_id'];
 };
 
 const ChatGetMessageSchema = {
 	type: 'object',
+	description: 'Fetch a single message by its `msgId`.',
 	properties: {
 		msgId: {
 			type: 'string',
 			minLength: 1,
+			description: 'The message id.',
 		},
 	},
 	required: ['msgId'],
@@ -96,6 +170,31 @@ const ChatGetMessageSchema = {
 };
 
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
+
+type ChatGetMessages = {
+	messageIds: IMessage['_id'][];
+};
+
+const ChatGetMessagesSchema = {
+	type: 'object',
+	description: 'Fetch several messages at once, possibly spanning different rooms.',
+	properties: {
+		messageIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+				minLength: 1,
+			},
+			minItems: 1,
+			maxItems: 100,
+			description: 'The message ids to fetch.',
+		},
+	},
+	required: ['messageIds'],
+	additionalProperties: false,
+};
+
+export const isChatGetMessagesProps = ajv.compile<ChatGetMessages>(ChatGetMessagesSchema);
 
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
@@ -112,12 +211,7 @@ const ChatGetDiscussionsSchema = {
 		text: {
 			type: 'string',
 		},
-		offset: {
-			type: 'number',
-		},
-		count: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
@@ -150,7 +244,6 @@ type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
 	type?: 'unread' | 'following';
 	text?: string;
-	fields?: string;
 }>;
 
 const ChatGetThreadsListSchema = {
@@ -168,23 +261,8 @@ const ChatGetThreadsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -218,11 +296,16 @@ const ChatSyncThreadsListSchema = {
 
 export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatSyncThreadsListSchema);
 
-type ChatDelete = {
-	msgId: IMessage['_id'];
-	roomId: IRoom['_id'];
-	asUser?: boolean;
-};
+type ChatDelete =
+	| {
+			msgId: IMessage['_id'];
+			roomId: IRoom['_id'];
+			asUser?: boolean;
+	  }
+	| {
+			fileId: string;
+			asUser?: boolean;
+	  };
 
 const ChatDeleteSchema = {
 	type: 'object',
@@ -233,12 +316,15 @@ const ChatDeleteSchema = {
 		roomId: {
 			type: 'string',
 		},
+		fileId: {
+			type: 'string',
+		},
 		asUser: {
 			type: 'boolean',
 			nullable: true,
 		},
 	},
-	required: ['msgId', 'roomId'],
+	anyOf: [{ required: ['msgId', 'roomId'] }, { required: ['fileId'] }],
 	additionalProperties: false,
 };
 
@@ -337,14 +423,7 @@ const ChatSearchSchema = {
 		searchText: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId', 'searchText'],
 	additionalProperties: false,
@@ -510,14 +589,7 @@ const GetStarredMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -543,14 +615,7 @@ const GetPinnedMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -576,14 +641,7 @@ const GetMentionedMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -598,6 +656,7 @@ export const isChatGetMentionedMessagesProps = ajvQuery.compile<GetMentionedMess
 type ChatSyncMessages = {
 	roomId: IRoom['_id'];
 	lastUpdate?: string;
+	fromTs?: string;
 	count?: number;
 	next?: string;
 	previous?: string;
@@ -613,6 +672,10 @@ const ChatSyncMessagesSchema = {
 		lastUpdate: {
 			type: 'string',
 			nullable: true,
+		},
+		fromTs: {
+			type: 'string',
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
@@ -654,14 +717,7 @@ const ChatSyncThreadMessagesSchema = {
 			type: 'string',
 			format: 'iso-date-time',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -675,6 +731,7 @@ export const isChatSyncThreadMessagesProps = ajvQuery.compile<ChatSyncThreadMess
 
 type ChatGetThreadMessages = PaginatedRequest<{
 	tmid: string;
+	aroundId?: string;
 }>;
 
 const ChatGetThreadMessagesSchema = {
@@ -684,14 +741,12 @@ const ChatGetThreadMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
+		aroundId: {
+			type: 'string',
+			minLength: 1,
 			nullable: true,
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -720,14 +775,7 @@ const ChatGetDeletedMessagesSchema = {
 			minLength: 1,
 			format: 'iso-date-time',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -763,6 +811,8 @@ const ChatPostMessageSchema = {
 	oneOf: [
 		{
 			type: 'object',
+			description:
+				'Post a message to a room by its id. Provide `roomId`; optionally provide `text` or attachments, and `tmid` to reply in a thread.',
 			properties: {
 				roomId: {
 					oneOf: [
@@ -774,22 +824,27 @@ const ChatPostMessageSchema = {
 							},
 						},
 					],
+					description: 'The room id (or array of room ids) to post to.',
 				},
 				text: {
 					type: 'string',
 					nullable: true,
+					description: 'The text content of the message.',
 				},
 				alias: {
 					type: 'string',
 					nullable: true,
+					description: "A name to display as the message author instead of the sender's username.",
 				},
 				emoji: {
 					type: 'string',
 					nullable: true,
+					description: 'Emoji to display as the message avatar (e.g. ":smile:").',
 				},
 				avatar: {
 					type: 'string',
 					nullable: true,
+					description: 'URL of an image to display as the message avatar.',
 				},
 				attachments: {
 					type: 'array',
@@ -797,16 +852,20 @@ const ChatPostMessageSchema = {
 						type: 'object',
 					},
 					nullable: true,
+					description: 'Rich-content attachments for the message.',
 				},
 				tmid: {
 					type: 'string',
+					description: 'Thread parent message id. Only valid together with `roomId`.',
 				},
 				customFields: {
 					type: 'object',
 					nullable: true,
+					description: 'Custom fields to store on the message.',
 				},
 				parseUrls: {
 					type: 'boolean',
+					description: 'Whether URLs in the message should be parsed for previews.',
 				},
 			},
 			required: ['roomId'],
@@ -814,6 +873,8 @@ const ChatPostMessageSchema = {
 		},
 		{
 			type: 'object',
+			description:
+				'Post a message to a channel by its name (e.g. "#general"). Provide `channel`; optionally provide `text` or attachments.',
 			properties: {
 				channel: {
 					oneOf: [
@@ -825,22 +886,27 @@ const ChatPostMessageSchema = {
 							},
 						},
 					],
+					description: 'The channel name (e.g. "general" or "#general") to post to.',
 				},
 				text: {
 					type: 'string',
 					nullable: true,
+					description: 'The text content of the message.',
 				},
 				alias: {
 					type: 'string',
 					nullable: true,
+					description: "A name to display as the message author instead of the sender's username.",
 				},
 				emoji: {
 					type: 'string',
 					nullable: true,
+					description: 'Emoji to display as the message avatar (e.g. ":smile:").',
 				},
 				avatar: {
 					type: 'string',
 					nullable: true,
+					description: 'URL of an image to display as the message avatar.',
 				},
 				attachments: {
 					type: 'array',
@@ -848,13 +914,16 @@ const ChatPostMessageSchema = {
 						type: 'object',
 					},
 					nullable: true,
+					description: 'Rich-content attachments for the message.',
 				},
 				customFields: {
 					type: 'object',
 					nullable: true,
+					description: 'Custom fields to store on the message.',
 				},
 				parseUrls: {
 					type: 'boolean',
+					description: 'Whether URLs in the message should be parsed for previews.',
 				},
 			},
 			required: ['channel'],
@@ -886,69 +955,78 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
+// Public mirror of the implementation-derived routes (apps/meteor/server/api/v1/chat.ts,
+// `ExtractRoutesFromAPI<typeof chatEndpoints>`). Kept identical so the two declarations merge
+// without TS2320, and so SDK/external consumers that don't compile apps/meteor keep these routes.
 export type ChatEndpoints = {
-	'/v1/chat.sendMessage': {
-		POST: (params: ChatSendMessage) => {
-			message: IMessage;
-		};
+	'/v1/chat.pinMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => { message: IMessage };
 	};
-	'/v1/chat.getMessage': {
-		GET: (params: ChatGetMessage) => {
-			message: IMessage;
-		};
+	'/v1/chat.unPinMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => void;
 	};
-	'/v1/chat.reportMessage': {
-		POST: (params: ChatReportMessage) => void;
+	'/v1/chat.readThread': {
+		POST: (params: { tmid: IMessage['_id'] }) => void;
 	};
-	'/v1/chat.getDiscussions': {
-		GET: (params: ChatGetDiscussions) => {
-			messages: IMessage[];
-			total: number;
-		};
+	'/v1/chat.update': {
+		POST: (params: ChatUpdate) => { message: IMessage };
 	};
-	'/v1/chat.getThreadsList': {
-		GET: (params: ChatGetThreadsList) => {
-			threads: IThreadMainMessage[];
-			total: number;
-		};
+	'/v1/chat.starMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => void;
 	};
-	'/v1/chat.syncThreadsList': {
-		GET: (params: ChatSyncThreadsList) => {
-			threads: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
-		};
+	'/v1/chat.unStarMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => void;
 	};
-	'/v1/chat.delete': {
-		POST: (params: ChatDelete) => {
-			_id: string;
-			ts: string;
-			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
-		};
+	'/v1/chat.followMessage': {
+		POST: (params: { mid: string }) => void;
+	};
+	'/v1/chat.unfollowMessage': {
+		POST: (params: { mid: string }) => void;
 	};
 	'/v1/chat.react': {
 		POST: (params: ChatReact) => void;
 	};
-	'/v1/chat.ignoreUser': {
-		GET: (params: ChatIgnoreUser) => void;
+	'/v1/chat.reportMessage': {
+		POST: (params: ChatReportMessage) => void;
 	};
-	'/v1/chat.search': {
-		GET: (params: ChatSearch) => {
-			messages: IMessage[];
+	'/v1/chat.delete': {
+		POST: (params: ChatDelete) => {
+			_id?: string;
+			ts?: string;
+			message?: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
 	};
-	'/v1/chat.update': {
-		POST: (params: ChatUpdate) => {
+	'/v1/chat.syncMessages': {
+		GET: (params: ChatSyncMessages) => {
+			result: {
+				updated: IMessage[];
+				deleted: { _id: string; _deletedAt: string }[];
+				cursor?: { next: string | null; previous: string | null };
+			};
+		};
+	};
+	'/v1/chat.getMessage': {
+		GET: (params: ChatGetMessage) => { message: IMessage };
+	};
+	'/v1/chat.postMessage': {
+		POST: (params: ChatPostMessage) => {
+			ts: number;
+			channel: string;
 			message: IMessage;
 		};
 	};
-	'/v1/chat.getMessageReadReceipts': {
-		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
+	'/v1/chat.search': {
+		GET: (params: ChatSearch) => { messages: IMessage[] };
 	};
-	'/v1/chat.getStarredMessages': {
-		GET: (params: GetStarredMessages) => {
-			messages: IMessage[];
+	'/v1/chat.sendMessage': {
+		POST: (params: ChatSendMessage) => { message: IMessage };
+	};
+	'/v1/chat.ignoreUser': {
+		GET: (params: ChatIgnoreUser) => void;
+	};
+	'/v1/chat.getDeletedMessages': {
+		GET: (params: ChatGetDeletedMessages) => {
+			messages: Pick<IMessage, '_id'>[];
 			count: number;
 			offset: number;
 			total: number;
@@ -962,39 +1040,17 @@ export type ChatEndpoints = {
 			total: number;
 		};
 	};
-	'/v1/chat.getMentionedMessages': {
-		GET: (params: GetMentionedMessages) => {
-			messages: IMessage[];
+	'/v1/chat.getThreadsList': {
+		GET: (params: ChatGetThreadsList) => {
+			threads: IThreadMainMessage[];
 			count: number;
 			offset: number;
 			total: number;
 		};
 	};
-	'/v1/chat.syncMessages': {
-		GET: (params: ChatSyncMessages) => {
-			result: {
-				updated: IMessage[];
-				deleted: { _id: IMessage['_id']; _deletedAt: string }[];
-				cursor: {
-					next: string | null;
-					previous: string | null;
-				};
-			};
-		};
-	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
-		};
-	};
-	'/v1/chat.syncThreadMessages': {
-		GET: (params: ChatSyncThreadMessages) => {
-			messages: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
+	'/v1/chat.syncThreadsList': {
+		GET: (params: ChatSyncThreadsList) => {
+			threads: { update: IMessage[]; remove: IMessage[] };
 		};
 	};
 	'/v1/chat.getThreadMessages': {
@@ -1005,15 +1061,41 @@ export type ChatEndpoints = {
 			total: number;
 		};
 	};
-	'/v1/chat.getDeletedMessages': {
-		GET: (params: ChatGetDeletedMessages) => {
+	'/v1/chat.syncThreadMessages': {
+		GET: (params: ChatSyncThreadMessages) => {
+			messages: { update: IMessage[]; remove: IMessage[] };
+		};
+	};
+	'/v1/chat.getMentionedMessages': {
+		GET: (params: GetMentionedMessages) => {
 			messages: IMessage[];
 			count: number;
 			offset: number;
 			total: number;
 		};
 	};
+	'/v1/chat.getStarredMessages': {
+		GET: (params: GetStarredMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.getDiscussions': {
+		GET: (params: ChatGetDiscussions) => {
+			messages: IMessage[];
+			total: number;
+		};
+	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
+	};
+	'/v1/chat.getMessages': {
+		POST: (params: ChatGetMessages) => { messages: IMessage[] };
+	};
+	// Not migrated to the validated API builder; declared only here, so no impl augmentation collides.
+	'/v1/chat.getMessageReadReceipts': {
+		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
 	};
 };

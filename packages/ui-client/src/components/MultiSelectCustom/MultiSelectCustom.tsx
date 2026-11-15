@@ -2,7 +2,7 @@ import type { Button } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import { useButtonPattern, useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconNames } from '@rocket.chat/icons';
-import type { ComponentPropsWithoutRef, FormEvent, RefObject } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
@@ -80,10 +80,10 @@ export const MultiSelectCustom = ({
 	useOutsideClick([target], onClose);
 
 	const onSelect = useCallback(
-		(selectedOption: OptionProp, e?: FormEvent<HTMLElement>): void => {
+		(selectedOption: OptionProp, e?: ChangeEvent<HTMLElement>): void => {
 			e?.stopPropagation();
 
-			if (selectedOption.hasOwnProperty('checked')) {
+			if (Object.hasOwn(selectedOption, 'checked')) {
 				selectedOption.checked = !selectedOption.checked;
 
 				if (selectedOption.checked) {
@@ -98,7 +98,7 @@ export const MultiSelectCustom = ({
 		[selectedOptions, setSelectedOptions],
 	);
 
-	const selectedOptionsCount = dropdownOptions.filter((option) => option.hasOwnProperty('checked') && option.checked).length;
+	const selectedOptionsCount = dropdownOptions.filter((option) => Object.hasOwn(option, 'checked') && option.checked).length;
 	const buttonProps = useButtonPattern(() => toggleCollapsed(!collapsed));
 
 	return (

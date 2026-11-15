@@ -1,5 +1,5 @@
 import type { IOutboundProviderTemplate } from '@rocket.chat/core-typings';
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 
 import type { ComponentType, TemplateParameterMetadata, TemplateParameter } from '../types/template';
 

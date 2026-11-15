@@ -1,10 +1,10 @@
-import { api, Team, MeteorError } from '@rocket.chat/core-services';
+import { api, Team, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { MentionsServer } from '../../../../app/mentions/server/Mentions';
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../lib/i18n';
+import { MentionsServer } from '../../../lib/messaging/mentions/Mentions';
+import { settings } from '../../../settings';
 
 class MentionQueries {
 	async getUsers(usernames: string[]): Promise<{ type: 'team' | 'user'; _id: string; username?: string; name?: string }[]> {
@@ -79,7 +79,7 @@ export const mentionServer = new MentionsServer({
 		});
 
 		// Also throw to stop propagation of 'sendMessage'.
-		throw new MeteorError('error-action-not-allowed', msg, {
+		throw new ClientSafeError('error-action-not-allowed', msg, {
 			method: 'filterATAllTag',
 			action: msg,
 		});

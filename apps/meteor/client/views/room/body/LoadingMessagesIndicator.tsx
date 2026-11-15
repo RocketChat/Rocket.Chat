@@ -1,7 +1,9 @@
-import type { ReactElement } from 'react';
+import { Text, Throbber } from '@rocket.chat/fuselage';
 
-import LoadingIndicator from '../../../components/LoadingIndicator';
-
-const LoadingMessagesIndicator = (): ReactElement => <LoadingIndicator />;
+const LoadingMessagesIndicator = () => (
+	<Text color='default'>
+		<Throbber inheritColor />
+	</Text>
+);
 
 export default LoadingMessagesIndicator;

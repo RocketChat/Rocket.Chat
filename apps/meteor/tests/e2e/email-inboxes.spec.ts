@@ -14,7 +14,7 @@ test.describe.serial('email-inboxes', () => {
 	test.beforeEach(async ({ page }) => {
 		poAdminEmailInboxes = new AdminEmailInboxes(page);
 
-		await page.goto('/admin/email-inboxes');
+		await poAdminEmailInboxes.goto();
 	});
 
 	test('expect create an email inbox', async () => {
@@ -25,13 +25,13 @@ test.describe.serial('email-inboxes', () => {
 
 		// SMTP
 		await poAdminEmailInboxes.inputSmtpServer.type(faker.internet.domainName());
-		await poAdminEmailInboxes.inputSmtpUsername.type(faker.internet.userName());
+		await poAdminEmailInboxes.inputSmtpUsername.type(faker.internet.username());
 		await poAdminEmailInboxes.inputSmtpPassword.type(faker.internet.password());
 		await poAdminEmailInboxes.inputSmtpSecure.click();
 
 		// IMAP
 		await poAdminEmailInboxes.inputImapServer.type(faker.internet.domainName());
-		await poAdminEmailInboxes.inputImapUsername.type(faker.internet.userName());
+		await poAdminEmailInboxes.inputImapUsername.type(faker.internet.username());
 		await poAdminEmailInboxes.inputImapPassword.type(faker.internet.password());
 		await poAdminEmailInboxes.inputImapSecure.click();
 

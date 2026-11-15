@@ -34,8 +34,7 @@ test.describe.serial('OC - Livechat', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 
-		await page.goto('/');
-		await page.locator('#main-content').waitFor();
+		await poHomeOmnichannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -88,14 +87,16 @@ test.describe.serial('OC - Livechat', () => {
 			await poLiveChat.page.reload();
 			await expect(poLiveChat.unreadMessagesBadge(2)).toBeVisible();
 		});
-	});
 
-	test('OC - Livechat - Send message to agent after reload', async () => {
-		await test.step('expect unread counter to be empty after user sends a message', async () => {
+		await test.step('expect unread counter to be empty after user sends a message after reload', async () => {
+			const message = 'this_a_test_message_from_user_after_reload';
+
 			await poLiveChat.openAnyLiveChat();
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+			await poLiveChat.onlineAgentMessage.fill(message);
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			expect(await poLiveChat.unreadMessagesBadge(0).all()).toHaveLength(0);
+			await expect(poLiveChat.txtChatMessage(message)).toBeVisible();
+			await expect(poLiveChat.unreadMessagesBadge(2)).toHaveCount(0);
+			await expect(poLiveChat.unreadMessagesBadge(1)).toHaveCount(0);
 		});
 	});
 
@@ -274,7 +275,7 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
-		await poLiveChat.page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test.afterAll(async () => {
@@ -331,7 +332,7 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
-		await poLiveChat.page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

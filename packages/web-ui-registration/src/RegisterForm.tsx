@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import {
 	FieldGroup,
 	TextInput,
@@ -12,10 +12,9 @@ import {
 	TextAreaInput,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -23,6 +22,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import { EMAIL_PATTERN } from './lib/emailPattern';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -33,7 +33,9 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
-export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export type RegisterFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 	const { t } = useTranslation();
 
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
@@ -138,10 +140,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit(handleRegister)}
 		>
-			<Form.Header>
-				<Form.Title id={formLabelId}>{t('registration.component.form.createAnAccount')}</Form.Title>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle id={formLabelId}>{t('registration.component.form.createAnAccount')}</FormTitle>
+			</FormHeader>
+			<FormContainer>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required={requireNameForRegister} htmlFor={nameId}>
@@ -175,7 +177,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								{...register('email', {
 									required: t('Required_field', { field: t('registration.component.form.email') }),
 									pattern: {
-										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										value: EMAIL_PATTERN,
 										message: t('registration.component.form.invalidEmail'),
 									},
 								})}
@@ -296,10 +298,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
-			</Form.Container>
-			<Form.Footer>
+			</FormContainer>
+			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isPending} primary>
+					<Button type='submit' loading={registerUser.isPending} variant='primary'>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>
@@ -310,7 +312,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 				>
 					<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
 				</ActionLink>
-			</Form.Footer>
+			</FormFooter>
 		</Form>
 	);
 };

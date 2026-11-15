@@ -7,7 +7,7 @@ import 'overlayscrollbars/styles/overlayscrollbars.css';
 
 export const getScrollbarsOptions = (overflowX?: boolean) =>
 	({
-		scrollbars: { autoHide: 'move' },
+		scrollbars: { autoHide: 'move', autoHideDelay: 800 },
 		overflow: { x: overflowX ? 'scroll' : 'hidden' },
 	}) as const;
 

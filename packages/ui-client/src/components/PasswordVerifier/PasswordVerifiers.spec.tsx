@@ -8,7 +8,7 @@ afterEach(() => {
 	jest.restoreAllMocks();
 });
 
-it('should render no policy if its disabled ', () => {
+it('should render no policy if its disabled', () => {
 	render(<PasswordVerifier password='' />, {
 		wrapper: mockAppRoot().withSetting('Accounts_Password_Policy_Enabled', false).build(),
 	});

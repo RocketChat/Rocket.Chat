@@ -1,23 +1,30 @@
-import { IconButton } from '@rocket.chat/fuselage';
+import { IconButton, type IconButtonProps } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement, ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 
-type VideoConfControllerProps = {
+export type VideoConfControllerProps = {
 	icon: IconName;
 	active?: boolean;
 	secondary?: boolean;
 	disabled?: boolean;
-	small?: boolean;
-} & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
+	size?: IconButtonProps['size'];
+} & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation' | 'color'>;
 
-const VideoConfController = ({ icon, active, secondary, disabled, small = true, ...props }: VideoConfControllerProps): ReactElement => (
+const getVariant = ({ active, secondary, disabled }: Pick<VideoConfControllerProps, 'active' | 'secondary' | 'disabled'>) => {
+	if (active) {
+		return 'primary';
+	}
+
+	return secondary || disabled ? 'secondary' : undefined;
+};
+
+const VideoConfController = ({ icon, active, secondary, disabled, size = 'small', ...props }: VideoConfControllerProps) => (
 	<IconButton
 		aria-live='assertive'
-		small={small}
+		size={size}
 		icon={icon}
-		info={active}
+		variant={getVariant({ active, secondary, disabled })}
 		disabled={disabled}
-		secondary={secondary || active || disabled}
 		{...props}
 	/>
 );

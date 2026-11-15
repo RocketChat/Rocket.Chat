@@ -1,4 +1,5 @@
 import type { ILivechatDepartment } from './ILivechatDepartment';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export enum LivechatBusinessHourTypes {
 	DEFAULT = 'default',
@@ -29,14 +30,13 @@ export interface IBusinessHourTimezone {
 	utc: string;
 }
 
-export interface ILivechatBusinessHour {
-	_id: string;
+export interface ILivechatBusinessHour extends IRocketChatRecord {
 	name: string;
 	active: boolean;
 	type: LivechatBusinessHourTypes;
 	timezone: IBusinessHourTimezone;
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];
-	_updatedAt?: Date;
-	departments?: ILivechatDepartment[];
+	/** Populated on the fly by the business-hours endpoints; never persisted with the record. */
+	departments?: Pick<ILivechatDepartment, '_id' | 'name'>[];
 }

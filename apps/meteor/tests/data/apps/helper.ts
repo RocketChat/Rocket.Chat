@@ -1,3 +1,4 @@
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { App } from '@rocket.chat/core-typings';
 
 import { request, credentials } from '../api-data';
@@ -39,16 +40,14 @@ export const installTestApp = () =>
 			});
 	});
 
-export const installLocalTestPackage = (path: string) =>
+export const installLocalTestPackage = (path: string, permissions?: IPermission[]) =>
 	new Promise<App>((resolve, reject) => {
-		void request
-			.post(apps())
-			.set(credentials)
-			.attach('app', path)
-			.end((err, res) => {
-				if (err) {
-					return reject(err);
-				}
-				return resolve(res.body.app);
-			});
+		const req = request.post(apps()).set(credentials).attach('app', path);
+
+		void (permissions ? req.field('permissions', JSON.stringify(permissions)) : req).end((err, res) => {
+			if (err) {
+				return reject(err);
+			}
+			return resolve(res.body.app);
+		});
 	});

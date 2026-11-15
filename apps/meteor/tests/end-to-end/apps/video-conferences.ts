@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
@@ -11,7 +12,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;
 	let roomId: string | undefined;
@@ -247,11 +248,7 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat', async function () {
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
-
+			it('should start a call successfully when using a provider that supports persistent chat', async () => {
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 
@@ -271,11 +268,7 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async function () {
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
-
+			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async () => {
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', false);
 
@@ -295,11 +288,7 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat with discussions disabled', async function () {
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
-
+			it('should start a call successfully when using a provider that supports persistent chat with discussions disabled', async () => {
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 				await updateSetting('Discussion_enabled', false);
@@ -365,6 +354,88 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body).to.have.a.property('providerName').equal('test');
 						const userId = credentials['X-User-Id'];
 						expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}/${userId}/mic`);
+					});
+			});
+		});
+
+		describe('[/video-conference.join] anonymous access', () => {
+			let publicRoomId: string;
+			let callId: string | undefined;
+			let regularUser: Awaited<ReturnType<typeof createUser>>;
+			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+
+				const roomRes = await createRoom({ type: 'c', name: `videoconf-anon-test-room-${Date.now()}` });
+				publicRoomId = roomRes.body.channel._id;
+
+				const startRes = await request.post(api('video-conference.start')).set(credentials).send({ roomId: publicRoomId });
+				callId = startRes.body.data.callId;
+
+				regularUser = await createUser({ roles: ['user'], active: true });
+				regularUserCredentials = await login(regularUser.username, password);
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'c', roomId: publicRoomId }),
+					deleteUser(regularUser),
+					updateSetting('Accounts_AllowAnonymousRead', false),
+				]),
+			);
+
+			it('should allow an unauthenticated user to join when Accounts_AllowAnonymousRead is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				await request
+					.post(api('video-conference.join'))
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('providerName', 'test');
+					});
+			});
+
+			it('should allow an authenticated user to join when Accounts_AllowAnonymousRead is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('providerName', 'test');
+					});
+			});
+
+			it('should allow an authenticated user to join when Accounts_AllowAnonymousRead is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('providerName', 'test');
+					});
+			});
+
+			it('should reject an unauthenticated user when Accounts_AllowAnonymousRead is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				await request
+					.post(api('video-conference.join'))
+					.send({ callId })
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -474,11 +545,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should load the video conference data successfully', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should load the video conference data successfully', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -527,11 +594,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should include a discussion room id on the response', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should include a discussion room id on the response', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -551,11 +614,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room using the configured name', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should have created the discussion room using the configured name', async () => {
 					await request
 						.get(api('rooms.info'))
 						.set(credentials)
@@ -575,11 +634,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created a subscription with open = false', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should have created a subscription with open = false', async () => {
 					await request
 						.get(api('subscriptions.getOne'))
 						.set(credentials)
@@ -598,6 +653,111 @@ describe('Apps - Video Conferences', () => {
 								.that.satisfies((msg: string) => msg.includes('Chat History'));
 							expect(res.body.subscription).to.have.a.property('open', false);
 							expect(res.body.subscription).to.have.a.property('alert', false);
+						});
+				});
+			});
+
+			describe('[Persistent Chat provider with the persistent chat feature enabled and encryption forced on private rooms]', () => {
+				let callId: string | undefined;
+
+				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('Discussion_enabled', true);
+					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+					await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
+					});
+
+					callId = res.body.data?.callId;
+				});
+
+				after(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Force_Encryption_For_Private_Rooms', false)]);
+				});
+
+				it('should start the call and treat persistent chat as disabled', async () => {
+					expect(callId).to.be.a('string');
+
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.have.a.property('rid').equal(roomId);
+							// the call must be fully started, since persistent chat is skipped instead of attempted
+							expect(res.body).to.have.a.property('url').that.is.a('string');
+							expect(res.body).to.have.a.property('status').equal(1);
+							expect(res.body).to.have.a.property('messages').that.is.an('object');
+							expect(res.body.messages).to.have.a.property('started').that.is.a('string');
+							// even with VideoConf_Enable_Persistent_Chat on, enforcing encryption disables persistent chat
+							expect(res.body).to.not.have.a.property('discussionRid');
+						});
+				});
+			});
+
+			describe('[Persistent Chat provider with the persistent chat feature enabled and encryption forced but E2EE off]', () => {
+				let callId: string | undefined;
+				let discussionRid: string | undefined;
+
+				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('Discussion_enabled', true);
+					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+					// the encryption policy only takes effect while E2EE is enabled, so persistent chat must keep working
+					await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
+					});
+
+					callId = res.body.data?.callId;
+				});
+
+				after(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await Promise.all([
+						updateSetting('E2E_Force_Encryption_For_Private_Rooms', false),
+						...(discussionRid ? [deleteRoom({ type: 'p', roomId: discussionRid })] : []),
+					]);
+				});
+
+				it('should still create the persistent chat discussion', async () => {
+					expect(callId).to.be.a('string');
+
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							discussionRid = res.body.discussionRid;
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.have.a.property('discussionRid').that.is.a('string');
 						});
 				});
 			});
@@ -624,11 +784,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should include a discussion room id on the response', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should include a discussion room id on the response', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -648,11 +804,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room using the configured name', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should have created the discussion room using the configured name', async () => {
 					await request
 						.get(api('rooms.info'))
 						.set(credentials)
@@ -726,11 +878,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should not include a discussion room id on the response', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should not include a discussion room id on the response', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -882,11 +1030,7 @@ describe('Apps - Video Conferences', () => {
 					callId4 = res4.body.data.callId;
 				});
 
-				it('should load the list of video conferences sorted by new', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should load the list of video conferences sorted by new', async () => {
 					await request
 						.get(api('video-conference.list'))
 						.set(credentials)

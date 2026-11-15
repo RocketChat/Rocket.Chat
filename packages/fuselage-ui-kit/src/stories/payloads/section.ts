@@ -171,3 +171,23 @@ export const sectionWithDatePickerAccessory: readonly UiKit.LayoutBlock[] = [
 		},
 	},
 ] as const;
+
+export const sectionWithRadioButtonAccessory: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'section',
+		text: {
+			type: 'mrkdwn',
+			text: 'Which plan should we use?',
+		},
+		accessory: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			actionId: 'plan',
+			type: 'radio_button',
+			options: [
+				{ text: { type: 'plain_text', text: 'Starter' }, value: 'starter' },
+				{ text: { type: 'plain_text', text: 'Pro' }, value: 'pro' },
+			],
+		},
+	},
+] as const;

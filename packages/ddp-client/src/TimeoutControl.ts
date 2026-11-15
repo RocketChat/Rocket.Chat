@@ -3,11 +3,10 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { Connection } from './Connection';
 import type { DDPClient } from './types/DDPClient';
 
-export interface TimeoutControlEvents
-	extends Emitter<{
-		timeout: void;
-		heartbeat: void;
-	}> {
+export interface TimeoutControlEvents extends Emitter<{
+	timeout: void;
+	heartbeat: void;
+}> {
 	reset(): void;
 	stop(): void;
 	readonly timeout: number;
@@ -64,7 +63,8 @@ export class TimeoutControl
 		});
 
 		timeoutControl.on('timeout', () => {
-			connection.close();
+			// Drop only the socket: connection.close() marks the connection as 'closed', which disables the retry logic.
+			connection.ws?.close();
 		});
 
 		ddp.onMessage(() => timeoutControl.reset());

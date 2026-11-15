@@ -15,7 +15,9 @@ import EditableLabel from '../../ScreenThumbnail/EditableLabel/EditableLabel';
 import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../../ScreenThumbnail/Thumbnail';
 
-const ProjectsThumbnail = ({ id, name: _name, date, blocks }: { id: string; name: string; date: string; blocks: ILayoutBlock[] }) => {
+export type ProjectsThumbnailProps = { id: string; name: string; date: string; blocks: ILayoutBlock[] };
+
+const ProjectsThumbnail = ({ id, name: _name, date, blocks }: ProjectsThumbnailProps) => {
 	const [name, setName] = useState<string>(_name);
 	const navigate = useNavigate();
 	const { dispatch } = useContext(context);
@@ -61,7 +63,7 @@ const ProjectsThumbnail = ({ id, name: _name, date, blocks }: { id: string; name
 				onBlur={nameSaveHandler}
 				labelProps={{ fontScale: 'h5' }}
 			/>
-			<ScreenThumbnailWrapper onClick={activeProjectHandler} width='200px' height='260px' padding='30px'>
+			<ScreenThumbnailWrapper onClick={activeProjectHandler} width='200px' height='260px' padding='32px'>
 				<Thumbnail of={<RenderPayload blocks={blocks} />} />
 				<Box onClick={(e) => e.stopPropagation()}></Box>
 			</ScreenThumbnailWrapper>

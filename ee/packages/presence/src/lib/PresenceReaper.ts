@@ -1,8 +1,11 @@
 import { setInterval } from 'node:timers';
 
 import type { IUserSession } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { UsersSessions } from '@rocket.chat/models';
 import type { AnyBulkWriteOperation } from 'mongodb';
+
+const logger = new Logger('PresenceReaper');
 
 type ReaperPlan = {
 	userId: string;
@@ -48,7 +51,7 @@ export class PresenceReaper {
 
 		// Run every 1 minute
 		this.intervalId = setInterval(() => {
-			this.run().catch((err) => console.error('[PresenceReaper] Error:', err));
+			this.run().catch((err) => logger.error({ msg: 'Error running presence reaper', err }));
 		}, 60 * 1000);
 	}
 

@@ -10,7 +10,7 @@ import AutoCompleteAgent from '../../../../AutoCompleteDepartmentAgent';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-type AgentFieldProps = ComponentProps<typeof Field> & {
+export type AgentFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RepliesFormData>;
 	agents: Serialized<ILivechatDepartmentAgents>[];
 	canAssignAgent?: boolean;
@@ -52,7 +52,7 @@ const AgentField = ({ control, agents, canAssignAgent, disabled = false, isLoadi
 				/>
 			</FieldRow>
 			{agentFieldError && (
-				<FieldError aria-live='assertive' id={`${agentFieldId}-error`} display='flex' alignItems='center'>
+				<FieldError aria-live='assertive' id={`${agentFieldId}-error`}>
 					{agentFieldError.message}
 				</FieldError>
 			)}

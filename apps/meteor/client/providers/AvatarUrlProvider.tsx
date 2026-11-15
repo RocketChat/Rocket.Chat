@@ -2,10 +2,10 @@ import { AvatarUrlContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/client/getURL';
+import { getURL } from '../lib/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-type AvatarUrlProviderProps = {
+export type AvatarUrlProviderProps = {
 	children?: ReactNode;
 };
 

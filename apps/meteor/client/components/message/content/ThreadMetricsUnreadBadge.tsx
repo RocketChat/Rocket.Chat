@@ -3,7 +3,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 
-const getBadgeVariantAndTitle = (
+export const getBadgeVariantAndTitle = (
 	unread: boolean,
 	mention: boolean,
 	all: boolean,
@@ -23,7 +23,9 @@ const getBadgeVariantAndTitle = (
 	return ['primary', 'Unread'];
 };
 
-const ThreadMetricsUnreadBadge = ({ unread, mention, all }: { unread: boolean; mention: boolean; all: boolean }) => {
+export type ThreadMetricsUnreadBadgeProps = { unread: boolean; mention: boolean; all: boolean };
+
+const ThreadMetricsUnreadBadge = ({ unread, mention, all }: ThreadMetricsUnreadBadgeProps) => {
 	const t = useTranslation();
 	const result = getBadgeVariantAndTitle(unread, mention, all);
 

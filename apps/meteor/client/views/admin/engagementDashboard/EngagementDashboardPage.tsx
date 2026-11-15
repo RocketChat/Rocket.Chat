@@ -1,19 +1,19 @@
-import { Box, Select, Tabs } from '@rocket.chat/fuselage';
+import { Box, Select } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelsTab from './channels/ChannelsTab';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
+import { PageTabs } from '../../../components/PageTabs';
 
-type EngagementDashboardPageProps = {
+export type EngagementDashboardPageProps = {
 	tab: 'users' | 'messages' | 'channels';
 	onSelectTab?: (tab: 'users' | 'messages' | 'channels') => void;
 };
 
-const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps): ReactElement => {
+const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps) => {
 	const { t } = useTranslation();
 
 	const timezoneOptions = useMemo<[timezone: 'utc' | 'local', label: string][]>(
@@ -27,11 +27,6 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 	const [timezoneId, setTimezoneId] = useState<'utc' | 'local'>('utc');
 	const handleTimezoneChange = (timezoneId: string): void => setTimezoneId(timezoneId as 'utc' | 'local');
 
-	const handleTabClick = useCallback(
-		(tab: 'users' | 'messages' | 'channels'): undefined | (() => void) => (onSelectTab ? (): void => onSelectTab(tab) : undefined),
-		[onSelectTab],
-	);
-
 	return (
 		<Page background='tint'>
 			<PageHeader title={t('Engagement')}>
@@ -42,19 +37,17 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 					aria-label={t('Default_Timezone_For_Reporting')}
 				/>
 			</PageHeader>
-			<Tabs>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
-					{t('Users')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>
-					{t('Messages')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
-					{t('Channels')}
-				</Tabs.Item>
-			</Tabs>
+			<PageTabs
+				items={[
+					{ id: 'users', label: t('Users') },
+					{ id: 'messages', label: t('Messages') },
+					{ id: 'channels', label: t('Channels') },
+				]}
+				selected={tab}
+				onSelect={(tab) => onSelectTab?.(tab)}
+			/>
 			<PageScrollableContent padding={0}>
-				<Box m={24}>
+				<Box margin={24}>
 					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
 						(tab === 'messages' && <MessagesTab timezone={timezoneId} />) ||
 						(tab === 'channels' && <ChannelsTab />)}

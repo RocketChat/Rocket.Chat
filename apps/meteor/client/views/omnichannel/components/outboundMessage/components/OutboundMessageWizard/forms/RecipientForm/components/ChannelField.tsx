@@ -1,5 +1,5 @@
 import type { Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import type { ComponentProps } from 'react';
 import type { Control } from 'react-hook-form';
@@ -13,7 +13,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RecipientFormData } from '../RecipientForm';
 
-type ProviderFieldProps = ComponentProps<typeof Field> & {
+export type ProviderFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	disabled?: boolean;
@@ -55,13 +55,13 @@ const ProviderField = ({
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={channelFieldId}>
+			<FieldLabel required htmlFor={channelFieldId}>
 				{t('Channel')}
 			</FieldLabel>
 			<FieldRow>
 				<AutoCompleteOutboundProvider
 					contact={contact}
-					aria-labelledby={channelFieldId}
+					id={channelFieldId}
 					aria-invalid={!!providerFieldError}
 					aria-describedby={cxp(channelFieldId, {
 						error: !!providerFieldError,
@@ -75,9 +75,11 @@ const ProviderField = ({
 				/>
 			</FieldRow>
 			{providerFieldError && (
-				<FieldError aria-live='assertive' id={`${channelFieldId}-error`} display='flex' alignItems='center'>
-					{providerFieldError.message}
-					{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+				<FieldError aria-live='assertive' id={`${channelFieldId}-error`}>
+					<Box display='flex' alignItems='center' gap={4}>
+						{providerFieldError.message}
+						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+					</Box>
 				</FieldError>
 			)}
 			{providerLastChat && (

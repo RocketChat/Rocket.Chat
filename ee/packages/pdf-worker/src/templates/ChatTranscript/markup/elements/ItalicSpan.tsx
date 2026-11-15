@@ -20,7 +20,7 @@ type MessageBlock =
 	| MessageParser.MarkupExcluding<MessageParser.Italic>
 	| MessageParser.InlineCode;
 
-type ItalicSpanProps = {
+export type ItalicSpanProps = {
 	children: MessageBlock[];
 };
 

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useTagsList } from '../hooks/useTagsList';
 
-type AutoCompleteTagsMultipleProps = Omit<
+export type AutoCompleteTagsMultipleProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {
@@ -47,9 +47,6 @@ const AutoCompleteTagsMultiple = ({
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
 			options={tagsOptions}
-			width='100%'
-			flexShrink={0}
-			flexGrow={0}
 			placeholder={placeholder ?? t('Select_an_option')}
 			endReached={() => fetchNextPage()}
 		/>

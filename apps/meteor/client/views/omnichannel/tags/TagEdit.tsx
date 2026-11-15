@@ -23,8 +23,8 @@ type TagEditPayload = {
 	departments: { label: string; value: string }[];
 };
 
-type TagEditProps = {
-	tagData?: ILivechatTag;
+export type TagEditProps = {
+	tagData?: Serialized<ILivechatTag>;
 	currentDepartments?: Serialized<ILivechatDepartment>[];
 	onClose: () => void;
 };
@@ -131,14 +131,14 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
+							<Button icon='trash' variant='danger' onClick={() => handleDeleteTag(_id)}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

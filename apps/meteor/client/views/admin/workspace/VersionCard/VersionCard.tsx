@@ -1,11 +1,11 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
-import { Box, Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon } from '@rocket.chat/fuselage';
+import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon, Text } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
-import { ExternalLink, useLicense, useLicenseName } from '@rocket.chat/ui-client';
+import { ExternalLink, links, useLicense, useLicenseName } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -18,17 +18,16 @@ import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
-import { links } from '../../../../lib/links';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 
 const SUPPORT_EXTERNAL_LINK = links.go.versionSupport;
 const RELEASES_EXTERNAL_LINK = links.go.updateProduct;
 
-type VersionCardProps = {
+export type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;
 };
 
-const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
+const VersionCard = ({ serverInfo }: VersionCardProps) => {
 	const breakpoints = useBreakpoints();
 	const isExtraLargeOrBigger = breakpoints.includes('xl');
 
@@ -195,9 +194,9 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
 				</CardHeader>
 
-				<Box color='secondary-info'>
+				<Text color='secondary-info'>
 					<Icon name='rocketchat' size={16} /> {licenseName.data}
-				</Box>
+				</Text>
 			</CardCol>
 
 			<CardBody flexDirection='column'>

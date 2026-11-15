@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../stores';
 
@@ -71,11 +71,12 @@ export const useReplyInDMAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'communication',
 		action() {
+			const { msg: _, ...searchParameters } = router.getSearchParameters();
 			roomCoordinator.openRouteLink(
 				'd',
 				{ name: message.u.username },
 				{
-					...router.getSearchParameters(),
+					...searchParameters,
 					reply: message._id,
 				},
 			);

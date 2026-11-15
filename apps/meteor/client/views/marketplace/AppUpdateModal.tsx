@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type AppUpdateModalProps = {
+export type AppUpdateModalProps = {
 	confirm: () => void;
 	cancel: () => void;
 };
@@ -34,17 +34,17 @@ const AppUpdateModal = ({ confirm, cancel, ...props }: AppUpdateModalProps) => {
 	return (
 		<Modal {...props}>
 			<ModalHeader>
-				<ModalIcon color='status-font-on-danger' name='info-circled' />
+				<ModalIcon variant='danger' name='info-circled' />
 				<ModalTitle>{t('Apps_Manual_Update_Modal_Title')}</ModalTitle>
 				<ModalClose onClick={handleCloseButtonClick} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
+			<ModalContent>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={handleCancelButtonClick}>
+					<Button variant='secondary' onClick={handleCancelButtonClick}>
 						{t('No')}
 					</Button>
-					<Button danger onClick={handleConfirmButtonClick}>
+					<Button variant='danger' onClick={handleConfirmButtonClick}>
 						{t('Yes')}
 					</Button>
 				</ModalFooterControllers>

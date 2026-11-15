@@ -2,7 +2,7 @@ import { Chip, ButtonGroup } from '@rocket.chat/fuselage';
 
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
-type TagListProps = {
+export type TagListProps = {
 	categories: (CategoryDropdownItem & { checked: true })[];
 	onClick: CategoryDropDownListProps['onSelected'];
 };

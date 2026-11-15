@@ -1,0 +1,132 @@
+# Rocket.Chat federating over XMPP with Openfire. Driven by tests/scripts/run-e2e-stack.sh;
+# see docs/operations.md#the-openfire-stack.
+
+x-service-build: &service-build
+  dockerfile: ${XMPP_STACK_REPO_ROOT:-}/ee/apps/Dockerfile
+  target: release-standard
+
+x-service-env: &service-env
+  MONGO_URL: mongodb://mongo:27017/rocketchat?replicaSet=rs0
+  TRANSPORTER: nats://nats:4222
+
+services:
+  certs:
+    image: alpine/openssl:3.5.8
+    entrypoint: ['sh', '/certs/generate.sh']
+    volumes:
+      - ./docker-compose/certs:/certs
+
+  mongo:
+    image: mongo:8.0
+    entrypoint: |
+      bash -c
+        "mongod --replSet rs0 --bind_ip_all &
+          until mongosh --quiet --eval \"db.adminCommand('ping')\"; do
+            sleep 1;
+          done;
+          mongosh --quiet --eval \"try { rs.status() } catch { rs.initiate({_id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }]}) }\";
+        wait"
+
+  nats:
+    image: nats:2.6-alpine
+
+  rocketchat:
+    build:
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/rocketchat
+      dockerfile: ${XMPP_STACK_REPO_ROOT:-}/apps/meteor/.docker/Dockerfile.alpine
+      target: release-standard
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/rocket.chat:${XMPP_STACK_TAG:-local}
+    # the certificate is issued per stack, so it reaches the settings at start instead of through this file
+    entrypoint:
+      - sh
+      - -c
+      - |
+        export OVERWRITE_SETTING_XMPP_Server_TLS_Certificate="$$(cat /certs/rocketchat.pem)"
+        export OVERWRITE_SETTING_XMPP_Server_TLS_Key="$$(cat /certs/rocketchat-key.pem)"
+        exec node main.js
+    environment:
+      <<: *service-env
+      # the license is checked against this host, so it need not be where Rocket.Chat is reached
+      ROOT_URL: ${XMPP_STACK_ROOT_URL:-http://rc.host}
+      PORT: 3000
+      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE:?set ENTERPRISE_LICENSE, a license with the federation module}
+      TEST_MODE: 'true'
+      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
+      OVERWRITE_SETTING_XMPP_Server_Enabled: 'true'
+      OVERWRITE_SETTING_XMPP_Server_Domain: rc.test
+    volumes:
+      - ./docker-compose/certs/generated:/certs:ro
+    ports:
+      - ${XMPP_STACK_RC_PORT:-3000}:3000
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_started
+      nats:
+        condition: service_started
+
+  authorization-service:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/authorization-service
+      args:
+        SERVICE: authorization-service
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/authorization-service:${XMPP_STACK_TAG:-local}
+    environment: *service-env
+    depends_on: [mongo, nats]
+
+  presence-service:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/presence-service
+      args:
+        SERVICE: presence-service
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/presence-service:${XMPP_STACK_TAG:-local}
+    environment: *service-env
+    depends_on: [mongo, nats]
+
+  xmpp-server-service:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/xmpp-server-service
+      args:
+        SERVICE: xmpp-server-service
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/xmpp-server-service:${XMPP_STACK_TAG:-local}
+    environment:
+      <<: *service-env
+      LOG_LEVEL: ${XMPP_STACK_LOG_LEVEL:-info}
+      NODE_EXTRA_CA_CERTS: /certs/ca.pem
+    volumes:
+      - ./docker-compose/certs/generated:/certs:ro
+    ports:
+      - ${XMPP_STACK_SERVICE_PORT:-3039}:3000
+    networks:
+      default:
+        aliases: [rc.test, conference.rc.test]
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_started
+      nats:
+        condition: service_started
+
+  openfire:
+    image: ghcr.io/igniterealtime/openfire:v5.1.2
+    platform: linux/amd64
+    entrypoint: ['/stack/entrypoint.sh']
+    volumes:
+      - ./docker-compose/openfire:/stack:ro
+      - ./docker-compose/certs/generated:/certs:ro
+    ports:
+      - ${XMPP_STACK_OPENFIRE_C2S_PORT:-5222}:5222
+      - ${XMPP_STACK_OPENFIRE_ADMIN_PORT:-9090}:9090
+    networks:
+      default:
+        aliases: [openfire.test, conference.openfire.test]
+    depends_on:
+      certs:
+        condition: service_completed_successfully

@@ -1,6 +1,6 @@
 import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
 import { useController, type Control } from 'react-hook-form';
@@ -11,7 +11,7 @@ import AutoCompleteContact from '../../../../../../AutoCompleteContact';
 import RetryButton from '../../../components/RetryButton';
 import type { RecipientFormData } from '../RecipientForm';
 
-type ContactFieldProps = ComponentProps<typeof Field> & {
+export type ContactFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	isError: boolean;
 	isFetching: boolean;
@@ -38,12 +38,12 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		},
 	});
 
-	const renderContactOption = useEffectEvent<RenderFnType>(({ label, ...props }, { phones }) => {
+	const renderContactOption = useStableCallback<RenderFnType>(({ label, ...props }, { phones }) => {
 		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
 
 		return (
-			<Option {...props} avatar={<UserAvatar title={label} username={label} size='x20' />}>
-				<Box is={OptionContent} mie='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
+			<Option {...props} avatar={<UserAvatar title={label} username={label} size={ITEM_MEDIA_SIZE.condensed} />}>
+				<Box is={OptionContent} marginInlineEnd='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
 					{label}
 				</Box>
 				{phones?.length ? (
@@ -57,12 +57,12 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={contactFieldId}>
+			<FieldLabel required htmlFor={contactFieldId}>
 				{t('Contact')}
 			</FieldLabel>
 			<FieldRow>
 				<AutoCompleteContact
-					aria-labelledby={contactFieldId}
+					id={contactFieldId}
 					aria-describedby={contactFieldError && `${contactFieldId}-error`}
 					aria-invalid={!!contactFieldError}
 					placeholder={t('Select_recipient')}
@@ -73,9 +73,11 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 				/>
 			</FieldRow>
 			{contactFieldError && (
-				<FieldError aria-live='assertive' id={`${contactFieldId}-error`} display='flex' alignItems='center'>
-					{contactFieldError.message}
-					{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+				<FieldError aria-live='assertive' id={`${contactFieldId}-error`}>
+					<Box display='flex' alignItems='center' gap={4}>
+						{contactFieldError.message}
+						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+					</Box>
 				</FieldError>
 			)}
 		</Field>

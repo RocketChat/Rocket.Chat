@@ -1,13 +1,14 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Device, DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
-import { useEffect, useState, useMemo } from 'react';
+import { useMediaDevices } from '@rocket.chat/ui-media';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+import { useState, useMemo } from 'react';
 
 import { isSetSinkIdAvailable } from './lib/isSetSinkIdAvailable';
 
-type DeviceProviderProps = {
+export type DeviceProviderProps = {
 	children?: ReactNode | undefined;
 };
 
@@ -26,9 +27,10 @@ const defaultDevices = {
 	},
 };
 
-const devicesQueryKey = ['media-devices-list'];
+// Invalidated by the permission prompt, since Safari does not announce the grant.
+const permissionStatusQueryKey = ['media-devices-list', 'permission-status'];
 
-export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
+export const DeviceProvider = ({ children }: DeviceProviderProps) => {
 	const [enabled] = useState(typeof isSecureContext && isSecureContext);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device | undefined>(undefined);
 	const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState<Device | undefined>(undefined);
@@ -40,7 +42,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		setSelectedAudioInputDevice(device);
 	};
 
-	const setAudioOutputDevice = useEffectEvent(
+	const setAudioOutputDevice = useStableCallback(
 		({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }): void => {
 			if (!isSetSinkIdAvailable()) {
 				throw new Error('setSinkId is not available in this browser');
@@ -53,52 +55,41 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		},
 	);
 
-	const queryClient = useQueryClient();
+	const { devices } = useMediaDevices();
 
-	const { data } = useQuery({
-		queryKey: devicesQueryKey,
-		enabled,
-		queryFn: async () => {
-			const devices = await navigator.mediaDevices?.enumerateDevices();
-			if (!devices || devices.length === 0) {
-				return defaultDevices;
-			}
+	const data = useMemo(() => {
+		if (devices.length === 0) {
+			return defaultDevices;
+		}
 
-			const mappedDevices: Device[] = devices.map((device) => ({
-				id: device.deviceId,
-				label: device.label,
-				type: device.kind,
-			}));
+		const mappedDevices: Device[] = devices.map((device) => ({
+			id: device.deviceId,
+			label: device.label,
+			type: device.kind,
+		}));
 
-			const filteredInput = mappedDevices.filter((device) => device.type === 'audioinput');
+		const filteredInput = mappedDevices.filter((device) => device.type === 'audioinput');
 
-			const filteredOutput = mappedDevices.filter((device) => device.type === 'audiooutput');
+		const filteredOutput = mappedDevices.filter((device) => device.type === 'audiooutput');
 
-			const audioInput = filteredInput.length > 0 ? filteredInput : [defaultDevices.defaultAudioInputDevice];
-			const audioOutput = filteredOutput.length > 0 ? filteredOutput : [defaultDevices.defaultAudioOutputDevice];
+		const audioInput = filteredInput.length > 0 ? filteredInput : [defaultDevices.defaultAudioInputDevice];
+		const audioOutput = filteredOutput.length > 0 ? filteredOutput : [defaultDevices.defaultAudioOutputDevice];
 
-			return {
-				audioInput,
-				audioOutput,
-				defaultAudioOutputDevice: audioOutput[0],
-				defaultAudioInputDevice: audioInput[0],
-			};
-		},
-		initialData: defaultDevices,
-		placeholderData: keepPreviousData,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
-		refetchOnMount: true,
-		staleTime: 0,
-	});
+		return {
+			audioInput,
+			audioOutput,
+			defaultAudioOutputDevice: audioOutput[0],
+			defaultAudioInputDevice: audioInput[0],
+		};
+	}, [devices]);
 
 	const { data: permissionStatus } = useQuery({
-		queryKey: [...devicesQueryKey, 'permission-status'],
+		queryKey: permissionStatusQueryKey,
 		queryFn: async () => {
 			if (!navigator.permissions) {
 				return;
 			}
-			const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+			const result = await navigator.permissions.query({ name: 'microphone' });
 			return result;
 		},
 		initialData: undefined,
@@ -107,37 +98,6 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		refetchOnReconnect: false,
 		refetchOnMount: true,
 	});
-
-	useEffect(() => {
-		if (!permissionStatus) {
-			return;
-		}
-		const invalidateQueries = (): void => {
-			queryClient.invalidateQueries({ queryKey: devicesQueryKey });
-		};
-
-		permissionStatus.addEventListener('change', invalidateQueries);
-
-		return (): void => {
-			permissionStatus.removeEventListener('change', invalidateQueries);
-		};
-	}, [permissionStatus, queryClient]);
-
-	useEffect(() => {
-		if (!enabled || !navigator.mediaDevices) {
-			return;
-		}
-
-		const invalidateQuery = (): void => {
-			queryClient.invalidateQueries({ queryKey: devicesQueryKey, exact: true });
-		};
-
-		navigator.mediaDevices.addEventListener('devicechange', invalidateQuery);
-
-		return (): void => {
-			navigator.mediaDevices.removeEventListener('devicechange', invalidateQuery);
-		};
-	}, [enabled, queryClient]);
 
 	const contextValue = useMemo((): DeviceContextValue => {
 		if (!enabled) {

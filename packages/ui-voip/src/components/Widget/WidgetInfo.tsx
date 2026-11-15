@@ -7,7 +7,7 @@ type Slot = {
 	icon?: IconNames;
 };
 
-type WidgetInfoProps = {
+export type WidgetInfoProps = {
 	slots?: Slot[];
 	variant?: 'default' | 'card-content';
 };
@@ -22,9 +22,9 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 			display='flex'
 			flexDirection='row'
 			justifyContent={variant === 'card-content' ? 'center' : 'space-between'}
-			mi={12}
-			mbs={4}
-			mbe={variant === 'card-content' ? 0 : 4}
+			marginInline={12}
+			marginBlockStart={4}
+			marginBlockEnd={variant === 'card-content' ? 0 : 4}
 		>
 			{slots.map((slot) => (
 				<Box
@@ -32,8 +32,12 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 					color={slot.type === 'warning' ? 'status-font-on-warning' : undefined}
 					fontScale={variant === 'card-content' ? 'c1' : 'p2'}
 					key={slot.text}
+					display='flex'
+					alignItems='flex-start'
+					columnGap={4}
 				>
-					{slot.icon && <Icon name={slot.icon} mbe={4} />} {slot.text}
+					{slot.icon && <Icon name={slot.icon} />}
+					{slot.text}
 				</Box>
 			))}
 		</Box>

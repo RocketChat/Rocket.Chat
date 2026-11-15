@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { paragraph, plain, mentionUser, mentionChannel } from './helpers';
+import { paragraph, plain, mentionUser, mentionChannel } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	['@guilherme.gazzo', [paragraph([mentionUser('guilherme.gazzo')])]],

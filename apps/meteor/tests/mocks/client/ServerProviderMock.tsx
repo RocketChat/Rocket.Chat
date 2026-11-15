@@ -56,27 +56,24 @@ const uploadToEndpoint = async () => {
 	throw new Error('not implemented');
 }; // to be implemented
 const getStream = () => () => () => undefined; // to be implemented
+const getStreamAll = () => () => () => undefined; // to be implemented
 const callEndpoint = () => {
 	throw new Error('not implemented');
 }; // to be implemented
 const writeStream = () => undefined; // to be implemented
 
 const contextValue: ServerContextValue = {
-	connected: true,
-	status: 'connected',
-	retryCount: 0,
 	info: undefined,
 	absoluteUrl,
 	// callMethod,
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
-	reconnect: () => undefined,
-	disconnect: () => undefined,
+	getStreamAll,
 	writeStream,
 };
 
-type ServerProviderMockProps = {
+export type ServerProviderMockProps = {
 	children?: ReactNode;
 	callEndpoint?: ContextType<typeof ServerContext>['callEndpoint'];
 };

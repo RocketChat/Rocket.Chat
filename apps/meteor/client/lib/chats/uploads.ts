@@ -6,11 +6,11 @@ import fileSize from 'filesize';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload, type Upload } from './Upload';
-import { USER_ACTIVITIES, UserAction } from '../../../app/ui/client/lib/UserAction';
-import { fileUploadIsValidContentType } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { i18n } from '../../../app/utils/lib/i18n';
+import { i18n } from '../../../lib/i18n';
+import { sdk } from '../SDKClient';
+import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { settings } from '../settings';
+import { fileUploadIsValidContentType } from '../utils/restrictions';
 
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
@@ -63,7 +63,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		}
 	};
 
-	editUploadDescription = (uploadId: Upload['id'], description: string) => {
+	editUploadAltText = (uploadId: Upload['id'], altText: string) => {
 		this.set(
 			this.uploads.map((upload) => {
 				if (upload.id !== uploadId) {
@@ -72,9 +72,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 				return {
 					...upload,
-					description,
+					altText,
 					...(isEncryptedUpload(upload) && {
-						metadataForEncryption: { ...upload.metadataForEncryption, description },
+						metadataForEncryption: { ...upload.metadataForEncryption, altText },
 					}),
 				};
 			}),
@@ -185,7 +185,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 							return;
 						}
 
-						if (xhr.status === 400) {
+						if (xhr.status === 400 || xhr.status === 403) {
 							const error = JSON.parse(xhr.responseText);
 							this.updateUpload(id, { percentage: 0, error: new Error(error.error) });
 							return;

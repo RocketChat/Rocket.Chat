@@ -497,3 +497,41 @@ describe('License.removeLicense', () => {
 		expect(licenseManager.hasValidLicense()).toBe(false);
 	});
 });
+
+describe('Offline license', () => {
+	it('should not report an offline license when no license is applied', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		expect(licenseManager.hasOfflineLicense()).toBe(false);
+	});
+
+	it('should not report an offline license for a standard license', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const license = await new MockedLicenseBuilder();
+
+		await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+		expect(licenseManager.hasOfflineLicense()).toBe(false);
+	});
+
+	it('should report an offline license when the license has the offline flag', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const license = await new MockedLicenseBuilder().withOffline();
+
+		await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+		expect(licenseManager.hasOfflineLicense()).toBe(true);
+	});
+
+	it('should stop reporting an offline license once the license is removed', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const license = await new MockedLicenseBuilder().withOffline();
+
+		await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+		expect(licenseManager.hasOfflineLicense()).toBe(true);
+
+		licenseManager.remove();
+		expect(licenseManager.hasOfflineLicense()).toBe(false);
+	});
+});

@@ -1,7 +1,7 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type AppsLogsFilterOptionsProps = {
+export type AppsLogsFilterOptionsProps = {
 	onExpandAll: () => void;
 	onCollapseAll: () => void;
 };
@@ -24,7 +24,7 @@ const AppsLogsFilterOptions = ({ onExpandAll, onCollapseAll, ...props }: AppsLog
 		},
 	];
 
-	return <GenericMenu large title={t('Options')} items={items} {...props} />;
+	return <GenericMenu size='large' title={t('Options')} items={items} {...props} />;
 };
 
 export default AppsLogsFilterOptions;

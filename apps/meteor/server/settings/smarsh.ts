@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const smarshIntervalValuesToCronMap: Record<string, string> = {
 	every_30_seconds: '*/30 * * * * *',

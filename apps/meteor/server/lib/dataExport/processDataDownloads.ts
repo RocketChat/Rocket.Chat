@@ -1,14 +1,13 @@
-import { createWriteStream } from 'fs';
-import { access, mkdir, rm, writeFile } from 'fs/promises';
+import { randomUUID } from 'node:crypto';
+import { createWriteStream } from 'node:fs';
+import { access, mkdir, rm, writeFile } from 'node:fs/promises';
 
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/tools';
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { settings } from '../../../app/settings/server';
-import { getURL } from '../../../app/utils/server/getURL';
+import { settings } from '../../settings';
 import { joinPath } from '../fileUtils';
 import { i18n } from '../i18n';
 import { copyFileUpload } from './copyFileUpload';
@@ -18,6 +17,8 @@ import { getRoomData } from './getRoomData';
 import { makeZipFile } from './makeZipFile';
 import { sendEmail } from './sendEmail';
 import { uploadZipFile } from './uploadZipFile';
+import { FileUpload } from '../media/file-upload';
+import { getURL } from '../utils/getURL';
 
 const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
@@ -79,15 +80,16 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 
 		stream.write('<!DOCTYPE html>\n');
 		stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
+		stream.write(`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:;">\n`);
 		for (const [key, value] of Object.entries(dataToSave)) {
-			stream.write(`<p><strong>${key}</strong>:`);
+			stream.write(`<p><strong>${escapeHTML(key)}</strong>:`);
 			if (typeof value === 'string') {
-				stream.write(value);
+				stream.write(escapeHTML(value));
 			} else if (Array.isArray(value)) {
 				stream.write('<br/>');
 
 				for (const item of value) {
-					stream.write(`${item}<br/>`);
+					stream.write(`${escapeHTML(String(item))}<br/>`);
 				}
 			}
 
@@ -200,7 +202,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 			}
 		}
 
-		const generatedFileName = uuidv4();
+		const generatedFileName = randomUUID();
 		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {

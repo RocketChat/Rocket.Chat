@@ -32,7 +32,7 @@ export const sendMessageAction = async (_: string, action: ILivechatSendMessageA
 	}
 
 	if (agent && '_id' in agent) {
-		await store.setState({ agent });
+		store.setState({ agent });
 		parentCall('callback', 'assign-agent', normalizeAgent(agent));
 	}
 
@@ -98,7 +98,7 @@ export const sendMessageExternalServiceAction = async (
 		);
 
 		if (agent && '_id' in agent) {
-			await store.setState({ agent });
+			store.setState({ agent });
 			parentCall('callback', 'assign-agent', normalizeAgent(agent));
 		}
 

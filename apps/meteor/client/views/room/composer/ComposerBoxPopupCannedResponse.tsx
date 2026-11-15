@@ -1,6 +1,6 @@
-import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import { ItemContent, ItemDescription, ItemTitle } from '@rocket.chat/fuselage';
 
-type ComposerBoxPopupCannedResponseProps = {
+export type ComposerBoxPopupCannedResponseProps = {
 	_id: string;
 	text: string;
 	shortcut: string;
@@ -8,12 +8,12 @@ type ComposerBoxPopupCannedResponseProps = {
 
 function ComposerBoxPopupCannedResponse({ shortcut, text }: ComposerBoxPopupCannedResponseProps) {
 	return (
-		<>
-			<OptionColumn>
-				<strong>{shortcut}</strong>
-			</OptionColumn>
-			<OptionContent>{text}</OptionContent>
-		</>
+		<ItemContent>
+			<ItemTitle>
+				{shortcut}
+				<ItemDescription inline>{text}</ItemDescription>
+			</ItemTitle>
+		</ItemContent>
 	);
 }
 

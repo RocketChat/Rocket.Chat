@@ -1,6 +1,7 @@
-import type { IUserSettings } from '@rocket.chat/core-typings';
+import type { IUserPhoneNumber, IUserSettings } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
+import { phonesSchema } from './phonesSchema';
 
 export type UsersUpdateParamsPOST = {
 	userId: string;
@@ -10,6 +11,8 @@ export type UsersUpdateParamsPOST = {
 		password?: string;
 		username?: string;
 		active?: boolean;
+		presenceDisabledByAdmin?: boolean;
+		statusVisibilityDeniedByAdmin?: string[];
 		bio?: string;
 		nickname?: string;
 		statusText?: string;
@@ -22,7 +25,8 @@ export type UsersUpdateParamsPOST = {
 		settings?: IUserSettings;
 		language?: string;
 		status?: string;
-		freeSwitchExtension?: string;
+		sipExtension?: string;
+		phones?: IUserPhoneNumber[];
 	};
 	confirmRelinquish?: boolean;
 };
@@ -72,6 +76,15 @@ const UsersUpdateParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				presenceDisabledByAdmin: {
+					type: 'boolean',
+					nullable: true,
+				},
+				statusVisibilityDeniedByAdmin: {
+					type: 'array',
+					items: { type: 'string' },
+					nullable: true,
+				},
 				roles: {
 					type: 'array',
 					items: {
@@ -103,10 +116,11 @@ const UsersUpdateParamsPostSchema = {
 					type: 'string',
 					nullable: true,
 				},
-				freeSwitchExtension: {
+				sipExtension: {
 					type: 'string',
 					nullable: true,
 				},
+				phones: phonesSchema,
 			},
 			required: [],
 			additionalProperties: false,

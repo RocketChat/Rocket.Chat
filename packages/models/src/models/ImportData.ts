@@ -1,13 +1,12 @@
 import type {
 	IImportChannelRecord,
-	IImportMessageRecord,
 	IImportRecord,
 	IImportUserRecord,
 	IImportContactRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -18,18 +17,6 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 
 	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { dataType: 1 } }];
-	}
-
-	getAllUsers(): FindCursor<IImportUserRecord> {
-		return this.find({ dataType: 'user' }) as FindCursor<IImportUserRecord>;
-	}
-
-	getAllMessages(): FindCursor<IImportMessageRecord> {
-		return this.find({ dataType: 'message' }) as FindCursor<IImportMessageRecord>;
-	}
-
-	getAllChannels(): FindCursor<IImportChannelRecord> {
-		return this.find({ dataType: 'channel' }) as FindCursor<IImportChannelRecord>;
 	}
 
 	getAllUsersForSelection(): Promise<Array<IImportUserRecord>> {

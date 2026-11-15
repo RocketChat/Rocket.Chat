@@ -1,19 +1,19 @@
 import { useAbsoluteUrl, useAssetPath } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { callDesktopBridge } from '../../../lib/utils/callDesktopBridge';
+
 export const useDesktopFavicon = () => {
 	const absoluteUrl = useAbsoluteUrl();
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
-		window.RocketChatDesktop?.setUrlResolver((relativePath?: string) => absoluteUrl(relativePath ?? '/'));
+		callDesktopBridge((desktop) => desktop.setUrlResolver((relativePath?: string) => absoluteUrl(relativePath ?? '/')));
 	}, [absoluteUrl]);
 
 	const faviconUrl = useAssetPath('favicon');
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
 		if (!faviconUrl) return;
-		window.RocketChatDesktop?.setFavicon(faviconUrl);
+		callDesktopBridge((desktop) => desktop.setFavicon(faviconUrl));
 	}, [faviconUrl]);
 };

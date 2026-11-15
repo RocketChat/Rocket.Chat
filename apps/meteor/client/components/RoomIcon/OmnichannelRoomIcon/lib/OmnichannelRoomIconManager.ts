@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import DOMPurify from 'dompurify';
 
-import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../../../lib/SDKClient';
 
 const OmnichannelRoomIconManager = new (class extends Emitter {
 	icons = new Map<string, string>();

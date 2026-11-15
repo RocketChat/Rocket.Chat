@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import CardSlotContainer from '../CardSlot';
 
-type CardSlotStopSharingProps = {
+export type CardSlotStopSharingProps = {
 	onClick: () => void;
 	showOnHover?: boolean;
 };
@@ -12,7 +12,7 @@ const CardSlotStopSharing = ({ onClick, showOnHover = false }: CardSlotStopShari
 	const { t } = useTranslation();
 	return (
 		<CardSlotContainer position='middle' variant='transparent' showOnHover={showOnHover} margin={0}>
-			<Button danger small icon='desktop-cross' onClick={onClick}>
+			<Button variant='danger' size='small' icon='desktop-cross' onClick={onClick}>
 				{t('Stop_sharing')}
 			</Button>
 		</CardSlotContainer>

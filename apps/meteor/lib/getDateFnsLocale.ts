@@ -1,5 +1,5 @@
 import type { Locale } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale/en-US';
 
 type LocaleLoader = () => Promise<Locale>;
 

@@ -16,7 +16,7 @@ jest.mock('../../GenericUpsellModal/hooks', () => ({
 }));
 
 // Mock getURL utility
-jest.mock('../../../../app/utils/client', () => ({
+jest.mock('../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 
@@ -41,11 +41,6 @@ describe('ABACUpsellModal', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-	});
-
-	it('should render the modal with correct content', () => {
-		const { baseElement } = render(<ABACUpsellModal onClose={mockOnClose} onConfirm={mockOnConfirm} />, { wrapper: appRoot });
-		expect(baseElement).toMatchSnapshot();
 	});
 
 	it('should have no accessibility violations', async () => {

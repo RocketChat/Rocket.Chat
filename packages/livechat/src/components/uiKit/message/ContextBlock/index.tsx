@@ -4,9 +4,9 @@ import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
 import Block from '../Block';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
-type ContextBlockProps = uikit.ContextBlock & {
+export type ContextBlockProps = uikit.ContextBlock & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 

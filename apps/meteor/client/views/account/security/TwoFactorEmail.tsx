@@ -1,6 +1,6 @@
-import { Box, Field, FieldLabel, FieldRow, Margins, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, FormEvent } from 'react';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +27,7 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	});
 
 	const handleEnable = useCallback(
-		async (e: FormEvent<HTMLInputElement>) => {
+		async (e: ChangeEvent<HTMLInputElement>) => {
 			if (e.currentTarget.checked) {
 				await enable2faAction();
 			} else {
@@ -38,15 +38,13 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
-			<Margins blockEnd={8}>
-				<Field>
-					<FieldRow>
-						<FieldLabel htmlFor={emailId}>{t('Two-factor_authentication_email')}</FieldLabel>
-						<ToggleSwitch id={emailId} checked={isEnabled} onChange={handleEnable} />
-					</FieldRow>
-				</Field>
-			</Margins>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlockStart={16} paddingBlockEnd={8} {...props}>
+			<Field>
+				<FieldRow>
+					<FieldLabel htmlFor={emailId}>{t('Two-factor_authentication_email')}</FieldLabel>
+					<ToggleSwitch id={emailId} checked={isEnabled} onChange={handleEnable} />
+				</FieldRow>
+			</Field>
 		</Box>
 	);
 };

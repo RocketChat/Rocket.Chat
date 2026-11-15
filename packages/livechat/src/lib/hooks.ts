@@ -202,7 +202,7 @@ const api = {
 
 	clearWidgetData: async () => {
 		const { minimized, visible, undocked, expanded, businessUnit, ...initial } = initialState();
-		await store.setState(initial);
+		store.setState(initial);
 	},
 
 	setAgent: (agent: StoreState['defaultAgent']) => {
@@ -355,10 +355,6 @@ class Hooks {
 	private _started: boolean;
 
 	constructor() {
-		if (instance) {
-			throw new Error('Hooks already has an instance.');
-		}
-
 		this._started = false;
 	}
 

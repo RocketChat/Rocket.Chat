@@ -12,7 +12,7 @@ const contextValue = {
 	dispatch: dispatchToastMessage,
 };
 
-type ToastMessageInnerProviderProps = {
+export type ToastMessageInnerProviderProps = {
 	children?: ReactNode;
 };
 
@@ -74,11 +74,11 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 	return <ToastMessagesContext.Provider value={contextValue}>{children}</ToastMessagesContext.Provider>;
 };
 
-type ToastMessagesProviderProps = {
+export type ToastMessagesProviderProps = {
 	children?: ReactNode;
 };
 
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 const ToastMessagesProvider = ({ children }: ToastMessagesProviderProps) => (
 	<ToastBarProvider>
 		<ToastMessageInnerProvider>{children}</ToastMessageInnerProvider>

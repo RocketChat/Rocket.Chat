@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -6,15 +8,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Avatars, Uploads } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:media-service');
-
-export interface IRemoteFileReference {
-	name: string;
-	size: number;
-	type: string;
-	mxcUri: string;
-	serverName: string;
-	mediaId: string;
-}
 
 export class MatrixMediaService {
 	static generateMXCUri(fileId: string, serverName: string): string {
@@ -86,6 +79,42 @@ export class MatrixMediaService {
 		}
 	}
 
+	static async uploadFromAppService(params: {
+		buffer: Buffer;
+		fileName: string;
+		mimeType: string;
+		userId: string;
+	}): Promise<{ mediaId: string; mxcUri: string }> {
+		try {
+			const serverName = federationSDK.getConfig('serverName');
+			const mediaId = crypto.randomUUID().replace(/-/g, ''); // TODO maybe change to @rocket.chat/random ?
+			const mxcUri = this.generateMXCUri(mediaId, serverName);
+
+			await Upload.uploadFile({
+				userId: params.userId,
+				buffer: params.buffer,
+				details: {
+					name: params.fileName,
+					size: params.buffer.length,
+					type: params.mimeType,
+					rid: '',
+					userId: params.userId,
+				},
+				federation: {
+					mxcUri,
+					mrid: '',
+					serverName,
+					mediaId,
+				},
+			});
+
+			return { mediaId, mxcUri };
+		} catch (err) {
+			logger.error({ msg: 'Error uploading file from app service', err });
+			throw err;
+		}
+	}
+
 	static async downloadAndStoreRemoteFile(mxcUri: string, matrixRoomId: string, metadata: IUploadDetails): Promise<string> {
 		try {
 			const parts = this.parseMXCUri(mxcUri);
@@ -96,6 +125,11 @@ export class MatrixMediaService {
 
 			const uploadAlreadyExists = await Uploads.findByFederationMediaIdAndServerName(parts.mediaId, parts.serverName);
 			if (uploadAlreadyExists) {
+				// App-service uploads are stored before any room is known (empty rid/mrid);
+				// backfill the association now that a message ties the file to a room.
+				if (!uploadAlreadyExists.rid && metadata.rid) {
+					await Uploads.setFederationRoomInfo(uploadAlreadyExists._id, metadata.rid, matrixRoomId);
+				}
 				return uploadAlreadyExists._id;
 			}
 

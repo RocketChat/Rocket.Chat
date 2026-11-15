@@ -1,14 +1,16 @@
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import type { BusinessHoursFormData } from '../businessHours/BusinessHoursForm';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
-const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
+export type BusinessHoursMultipleProps = { className?: ComponentProps<typeof Field>['className'] };
+
+const BusinessHoursMultiple = ({ className }: BusinessHoursMultipleProps) => {
 	const { t } = useTranslation();
 	const {
 		control,

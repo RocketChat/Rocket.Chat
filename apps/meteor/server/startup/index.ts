@@ -1,8 +1,6 @@
 import './appcache';
 import './callbacks';
-import { startCronJobs } from './cron';
-import './initialData';
-import './serverRunning';
+import { ensureMessagesTextIndex } from './ensureMessagesTextIndex';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';
 import './presenceTroubleshoot';
@@ -17,7 +15,10 @@ export const startup = async () => {
 
 	await generateFederationKeys();
 
-	setImmediate(() => startCronJobs());
+	// NOTE: cron jobs are started from main.ts after startRocketChat(), so jobs
+	// that contact Rocket.Chat Cloud on boot (e.g. the usage report) run only
+	// after the license — including the offline flag — has been applied.
+	setImmediate(() => ensureMessagesTextIndex());
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
 		require('./localServices');

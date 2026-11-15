@@ -1,6 +1,6 @@
 import type { ChangelogFunctions } from '@changesets/types';
 
-import { getCommitInfo } from './getGitHubInfo';
+import { getCommitInfo } from './getGitHubInfo.js';
 
 const changelogFunctions: ChangelogFunctions = {
 	getReleaseLine: async (changeset, _type, options) => {

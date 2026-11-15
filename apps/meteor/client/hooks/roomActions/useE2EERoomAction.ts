@@ -1,5 +1,5 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import { useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
@@ -46,7 +46,7 @@ export const useE2EERoomAction = () => {
 
 	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
-	const action = useEffectEvent(async () => {
+	const action = useStableCallback(async () => {
 		if (enabledOnRoom) {
 			imperativeModal.open({
 				component: BaseDisableE2EEModal,
@@ -100,7 +100,7 @@ export const useE2EERoomAction = () => {
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
 			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
-			order: 13,
+			order: 14,
 			action,
 			type: 'organization',
 			...(federated && {

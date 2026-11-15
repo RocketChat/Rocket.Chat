@@ -1,11 +1,10 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId, useMemo } from 'react';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-
-type SlaPoliciesSelectProps = {
+export type SlaPoliciesSelectProps = {
 	value: string;
 	label: string;
 	options: Serialized<IOmnichannelServiceLevelAgreements[]>;
@@ -23,9 +22,9 @@ export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPolici
 
 	return (
 		<Field>
-			<FieldLabel id={fieldId}>{label}</FieldLabel>
+			<FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
 			<FieldRow>
-				<Select aria-labelledby={fieldId} value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
+				<Select id={fieldId} value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
 			</FieldRow>
 		</Field>
 	);

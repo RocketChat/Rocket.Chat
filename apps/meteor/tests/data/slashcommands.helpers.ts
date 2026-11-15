@@ -1,7 +1,7 @@
-import { credentials, methodCall, request } from './api-data';
+import { api, credentials, request } from './api-data';
 
 /**
- * Executes an app slash command via a POST request to the slashCommand method.
+ * Executes an app slash command via a POST request to commands.run.
  *
  * @param cmd - The slashcommand name to execute
  * @param rid - The room ID where the command will be executed
@@ -11,25 +11,9 @@ import { credentials, methodCall, request } from './api-data';
  * @returns Promise resolving to the API response
  */
 export const executeAppSlashCommand = (cmd: string, rid: string, params = '', triggerId = 'triggerId') =>
-	request
-		.post(methodCall('slashCommand'))
-		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				id: 'id',
-				msg: 'method',
-				method: 'slashCommand',
-				params: [
-					{
-						cmd,
-						params,
-						triggerId,
-						msg: {
-							rid,
-							_id: 'message_id',
-							msg: `/${cmd} ${params}`.trim(),
-						},
-					},
-				],
-			}),
-		});
+	request.post(api('commands.run')).set(credentials).send({
+		command: cmd,
+		params,
+		roomId: rid,
+		triggerId,
+	});

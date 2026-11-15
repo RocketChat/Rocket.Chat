@@ -1,5 +1,5 @@
 import type { IAuditLog, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import type { Dispatch, SetStateAction } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import OmnichannelTab from './tabs/OmnichannelTab';
 import RoomsTab from './tabs/RoomsTab';
 import UsersTab from './tabs/UsersTab';
 
-type AuditFormProps = {
+export type AuditFormProps = {
 	type: IAuditLog['fields']['type'];
 	onSubmit?: (payload: { type: IAuditLog['fields']['type'] } & AuditFields) => void;
 	setSelectedRoom: Dispatch<SetStateAction<IRoom | undefined>>;
@@ -38,40 +38,44 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(submit)}>
-			<Box display='flex' flexDirection='row' justifyContent='stretch' marginInline={-4}>
-				<Field flexShrink={1} marginInline={4}>
-					<FieldLabel>{t('Message')}</FieldLabel>
-					<FieldRow>
-						<TextInput placeholder={t('Search')} {...register('msg')} />
-					</FieldRow>
-				</Field>
-				<Field flexShrink={1} marginInline={4}>
-					<FieldLabel>{t('Date')}</FieldLabel>
-					<FieldRow>
-						<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} display='flex' flexGrow={1} />
-						{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Date') })}</FieldError>}
-						{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
-					</FieldRow>
-				</Field>
-			</Box>
-			<Box display='flex' flexDirection='row' alignItems='flex-start'>
+		<Box is='form' onSubmit={handleSubmit(submit)} display='flex' flexDirection='column' gap={4}>
+			<Stack direction='row' gap={8}>
+				<Box width='full'>
+					<Field>
+						<FieldLabel>{t('Message')}</FieldLabel>
+						<FieldRow>
+							<TextInput placeholder={t('Search')} {...register('msg')} />
+						</FieldRow>
+					</Field>
+				</Box>
+				<Box width='full'>
+					<Field>
+						<FieldLabel>{t('Date')}</FieldLabel>
+						<FieldRow>
+							<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} flexGrow={1} />
+							{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Date') })}</FieldError>}
+							{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
+						</FieldRow>
+					</Field>
+				</Box>
+			</Stack>
+			<Stack direction='row' align='start' gap={8}>
 				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<Box flexShrink={0} mbs={28} mis={8}>
+				<Box flexShrink={0} marginBlockStart='x24'>
 					<ButtonGroup align='end'>
-						<Button secondary onClick={() => window.print()}>
+						<Button variant='secondary' onClick={() => window.print()}>
 							{t('Export')} {t('PDF')}
 						</Button>
-						<Button primary type='submit'>
+						<Button variant='primary' type='submit'>
 							{t('Apply')}
 						</Button>
 					</ButtonGroup>
 				</Box>
-			</Box>
-		</form>
+			</Stack>
+		</Box>
 	);
 };
 

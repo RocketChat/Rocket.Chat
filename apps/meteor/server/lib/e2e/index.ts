@@ -1,0 +1,14 @@
+import { api } from '@rocket.chat/core-services';
+
+import { callbacks } from '../callbacks';
+
+import './beforeCreateRoom';
+
+callbacks.add(
+	'afterJoinRoom',
+	(_user, room) => {
+		void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
+	},
+	callbacks.priority.MEDIUM,
+	'e2e',
+);

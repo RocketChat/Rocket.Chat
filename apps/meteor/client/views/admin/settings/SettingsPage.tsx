@@ -1,16 +1,15 @@
 import { Icon, SearchInput, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageBlockWithBorder } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageBlockWithBorder, GenericNoResults } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
-import GenericNoResults from '../../../components/GenericNoResults';
 
-const SettingsPage = (): ReactElement => {
+const SettingsPage = () => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => setFilter(e.currentTarget.value), []);
@@ -21,10 +20,10 @@ const SettingsPage = (): ReactElement => {
 		<Page background='tint'>
 			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
-				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
+				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} endAddon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
-			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
+			<PageScrollableContentWithShadow padding={0} marginInline={24} marginBlockEnd={16}>
 				<CardGrid
 					breakpoints={{
 						xs: 4,
@@ -32,7 +31,6 @@ const SettingsPage = (): ReactElement => {
 						md: 4,
 						lg: 6,
 						xl: 4,
-						p: 8,
 					}}
 				>
 					{!!groups.length &&

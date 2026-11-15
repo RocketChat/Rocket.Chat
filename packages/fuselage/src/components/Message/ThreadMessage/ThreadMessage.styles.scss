@@ -1,0 +1,56 @@
+@use '../../../styles/lengths.scss';
+@use '../../../styles/colors.scss';
+@use '../../../styles/typography.scss' as *;
+@use '../../../styles/mixins/size.scss';
+
+.rcx-message-thread {
+	@include use-font-scale(c1);
+	@include use-with-truncated-text();
+	color: colors.font(info);
+
+	&__content {
+		gap: lengths.margin(8);
+	}
+
+	&__container {
+		@include use-with-truncated-text();
+		display: flex;
+
+		width: 100%;
+	}
+
+	&__row {
+		// Same gap as the message row, so the preview text starts on the message text column.
+		--rcx-item-gap: #{lengths.margin(8)};
+	}
+
+	&__message {
+		color: colors.font(default);
+		@include use-with-truncated-text();
+	}
+
+	&__origin {
+		@include use-with-truncated-text();
+
+		&--system {
+			color: colors.font(default);
+
+			&::first-letter {
+				text-transform: uppercase;
+			}
+		}
+	}
+
+	&__emoji {
+		display: inline-block;
+
+		margin-inline: lengths.margin(2);
+
+		background-size: contain;
+
+		font-size: lengths.size(12);
+		line-height: lengths.size(8);
+
+		@include size.square(lengths.size(12));
+	}
+}

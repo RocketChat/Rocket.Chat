@@ -1,4 +1,4 @@
-import { Authorization, MeteorError } from '@rocket.chat/core-services';
+import { Authorization, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { i18n } from '../../../lib/i18n';
@@ -31,7 +31,7 @@ export class BeforeSavePreventMention {
 		const action = i18n.t('Notify_all_in_this_room', { lng: user.language });
 
 		// Also throw to stop propagation of 'sendMessage'.
-		throw new MeteorError('error-action-not-allowed', `Notify ${mention} in this room not allowed`, {
+		throw new ClientSafeError('error-action-not-allowed', `Notify ${mention} in this room not allowed`, {
 			action,
 		});
 	}

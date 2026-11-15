@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { canonicalizeTimezone } from '@rocket.chat/tools';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -30,7 +30,7 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
 });
 
-type EditBusinessHoursProps = {
+export type EditBusinessHoursProps = {
 	businessHourData?: Serialized<ILivechatBusinessHour>;
 	type: LivechatBusinessHourTypes;
 };
@@ -52,7 +52,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 		formState: { isDirty },
 	} = methods;
 
-	const handleSave = useEffectEvent(async ({ departments, ...data }: BusinessHoursFormData) => {
+	const handleSave = useStableCallback(async ({ departments, ...data }: BusinessHoursFormData) => {
 		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
 		try {
@@ -86,14 +86,14 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={() => router.navigate('/omnichannel/businessHours')}>{t('Back')}</Button>}
 					{type === 'custom' && businessHourData?._id && (
-						<Button danger onClick={() => handleRemove(businessHourData?._id, type)}>
+						<Button variant='danger' onClick={() => handleRemove(businessHourData?._id, type)}>
 							{t('Delete')}
 						</Button>
 					)}
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' w='full' alignSelf='center'>
+				<Box maxWidth='600px' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<BusinessHoursForm type={type} />
@@ -104,7 +104,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

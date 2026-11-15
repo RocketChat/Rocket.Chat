@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type ExternalLinkProps = {
+export type ExternalLinkProps = {
 	to: string;
 } & ComponentPropsWithoutRef<typeof Box>;
 

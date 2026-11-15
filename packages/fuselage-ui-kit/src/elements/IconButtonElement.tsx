@@ -1,13 +1,13 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
-import type { MouseEventHandler, ReactElement } from 'react';
+import * as UiKit from '@rocket.chat/ui-kit';
+import type { MouseEventHandler } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
+export type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
 
-const IconButtonElement = ({ block, context }: IconButtonElementProps): ReactElement => {
+const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 
 	const { url, value, label, icon } = block;
@@ -17,16 +17,18 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps): ReactEle
 		void action({ target: e.currentTarget });
 	};
 
-	if (url) {
-		return <IconButton small is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} label={label} />;
+	if (url && UiKit.isSafeUrl(url)) {
+		return (
+			<IconButton size='small' is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} title={label} />
+		);
 	}
 
 	return (
 		<IconButton
 			icon={iconName}
 			color={variant === 'default' ? 'default' : 'danger'}
-			small
-			label={label}
+			size='small'
+			title={label}
 			disabled={loading}
 			value={value}
 			onClick={handleClick}

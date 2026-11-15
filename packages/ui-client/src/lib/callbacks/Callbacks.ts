@@ -1,4 +1,3 @@
-import type { Logger } from '@rocket.chat/logger';
 import { Random } from '@rocket.chat/random';
 
 const compareByRanking =
@@ -34,8 +33,6 @@ export class Callbacks<
 	},
 	THook extends string = keyof TChainedCallbackSignatures & keyof TEventLikeCallbackSignatures & string,
 > {
-	private logger: Logger | undefined = undefined;
-
 	private trackCallback: CallbackTracker<THook> | undefined = undefined;
 
 	private trackHook: HookTracker<THook> | undefined = undefined;
@@ -47,10 +44,6 @@ export class Callbacks<
 	private asyncRunners = new Map<THook, (item: unknown, constant?: unknown) => unknown>();
 
 	readonly priority = CallbackPriority;
-
-	setLogger(logger: Logger): void {
-		this.logger = logger;
-	}
 
 	setMetricsTrackers({ trackCallback, trackHook }: { trackCallback?: CallbackTracker<THook>; trackHook?: HookTracker<THook> }): void {
 		this.trackCallback = trackCallback;
@@ -67,8 +60,6 @@ export class Callbacks<
 		const wrapCallback =
 			(callback: Callback<THook>) =>
 			async (item: unknown, constant?: unknown): Promise<unknown> => {
-				this.logger?.debug({ msg: 'Executing callback for hook', callbackId: callback.id, hook: callback.hook });
-
 				return (await this.runOne(callback, item, constant)) ?? item;
 			};
 
@@ -231,8 +222,8 @@ export class Callbacks<
 
 		return {
 			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
-			remove: (id) => callbacks.remove(hook as any, id),
-			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+			remove: (id) => callbacks.remove(hook, id),
+			run: (item, constant) => callbacks.run<I, C, R>(hook, item, constant),
 		};
 	}
 }

@@ -2,7 +2,7 @@
 
 const BASE_64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-const BASE_64_VALS = Object.create(null);
+const BASE_64_VALS: Record<string, number> = Object.create(null);
 
 const getChar = (val: number) => BASE_64_CHARS.charAt(val);
 const getVal = (ch: string) => (ch === '=' ? -1 : BASE_64_VALS[ch]);

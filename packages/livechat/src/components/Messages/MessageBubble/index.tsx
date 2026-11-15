@@ -2,10 +2,10 @@ import type { ComponentChildren } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type MessageBubbleProps = {
+export type MessageBubbleProps = {
 	inverse?: boolean;
 	nude?: boolean;
 	quoted?: boolean;

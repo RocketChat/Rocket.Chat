@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { lazy } from 'react';
 
 import BoldSpan from './BoldSpan';
@@ -19,11 +18,11 @@ import UserMentionElement from '../mentions/UserMentionElement';
 
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
-type InlineElementsProps = {
+export type InlineElementsProps = {
 	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];
 };
 
-const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
+const InlineElements = ({ children }: InlineElementsProps) => (
 	<>
 		{children.map((child, index) => {
 			switch (child.type) {

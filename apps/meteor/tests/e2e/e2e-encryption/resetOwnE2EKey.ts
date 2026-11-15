@@ -8,10 +8,6 @@ type Credentials = {
 	email?: string;
 };
 
-const resetOwnE2EKeyMethod = {
-	message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-};
-
 export const resetOwnE2EKey = async (credentials: Credentials) => {
 	const request = await baseRequest.newContext();
 
@@ -19,8 +15,8 @@ export const resetOwnE2EKey = async (credentials: Credentials) => {
 		const loginResponse = await request.post(`${BASE_API_URL}/login`, { data: credentials });
 		const { data } = await loginResponse.json();
 
-		return await request.post(`${BASE_API_URL}/method.call/e2e.resetOwnE2EKey`, {
-			data: resetOwnE2EKeyMethod,
+		return await request.post(`${BASE_API_URL}/users.resetE2EKey`, {
+			data: { userId: data.userId },
 			headers: {
 				'X-Auth-Token': data.authToken,
 				'X-User-Id': data.userId,

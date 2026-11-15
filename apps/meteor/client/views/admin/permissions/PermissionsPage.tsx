@@ -1,8 +1,7 @@
-import { Margins, Tabs, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Margins, Button } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,13 +9,17 @@ import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import PermissionsContextBar from './PermissionsContextBar';
 import PermissionsTable from './PermissionsTable';
 import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
+import { PageTabs } from '../../../components/PageTabs';
 
-const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement => {
+export type PermissionsPageProps = { isEnterprise: boolean };
+
+const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const canViewPermission = usePermission('access-permissions');
 	const canViewSettingPermission = usePermission('access-setting-permissions');
 	const defaultType = canViewPermission ? 'permissions' : 'settings';
+	// TODO: evaluate switching to the other tab when the selected tab's permission is revoked mid-session
 	const [type, setType] = useState(defaultType);
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
@@ -24,21 +27,7 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 	const paginationData = usePagination();
 	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, paginationData.itemsPerPage, paginationData.current);
 
-	const handlePermissionsTab = useEffectEvent(() => {
-		if (type === 'permissions') {
-			return;
-		}
-		setType('permissions');
-	});
-
-	const handleSettingsTab = useEffectEvent(() => {
-		if (type === 'settings') {
-			return;
-		}
-		setType('settings');
-	});
-
-	const handleAdd = useEffectEvent(() => {
+	const handleAdd = useStableCallback(() => {
 		if (!isEnterprise) {
 			setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
 			return;
@@ -52,25 +41,19 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Permissions')}>
-					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
+					<Button variant='primary' onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
 						{t('New_role')}
 					</Button>
 				</PageHeader>
-				<Margins blockEnd={16}>
-					<Tabs>
-						<Tabs.Item
-							selected={type === 'permissions'}
-							onClick={canViewPermission ? handlePermissionsTab : undefined}
-							disabled={!canViewPermission}
-						>
-							{t('Permissions')}
-						</Tabs.Item>
-						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
-							{t('Settings')}
-						</Tabs.Item>
-					</Tabs>
-				</Margins>
-				<PageContent mb='neg-x8'>
+				<PageTabs
+					items={[
+						{ id: 'permissions', label: t('Permissions'), disabled: !canViewPermission },
+						{ id: 'settings', label: t('Settings'), disabled: !canViewSettingPermission },
+					]}
+					selected={type}
+					onSelect={setType}
+				/>
+				<PageContent marginBlockStart={8} marginBlockEnd='neg-x8'>
 					<Margins block={8}>
 						<PermissionsTable
 							roleList={roleList}

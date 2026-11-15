@@ -10,7 +10,7 @@ const settingContextValue: ContextType<typeof SettingsContext> = {
 };
 
 const createSettingContextValue = ({ settings }: { settings?: Record<string, ISetting['value']> }): ContextType<typeof SettingsContext> => {
-	const cache = new Map<string, ISetting['value']>();
+	const cache = new Map<string, ISetting>();
 
 	return {
 		...settingContextValue,
@@ -19,16 +19,18 @@ const createSettingContextValue = ({ settings }: { settings?: Record<string, ISe
 				() => () => undefined,
 				() => {
 					if (cache.has(_id)) {
-						return cache.get(_id) as any;
+						return cache.get(_id);
 					}
 					cache.set(_id, { value: settings[_id] } as any);
-					return cache.get(_id) as any;
+					return cache.get(_id);
 				},
 			],
 		}),
 	};
 };
 
-export const MockedSettingsContext = ({ settings, children }: { children: ReactNode; settings?: Record<string, ISetting['value']> }) => {
+export type MockedSettingsContextProps = { children: ReactNode; settings?: Record<string, ISetting['value']> };
+
+export const MockedSettingsContext = ({ settings, children }: MockedSettingsContextProps) => {
 	return <SettingsContext.Provider value={createSettingContextValue({ settings })}>{children}</SettingsContext.Provider>;
 };

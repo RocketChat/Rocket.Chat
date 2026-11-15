@@ -5,7 +5,9 @@ import { useMemo } from 'react';
 
 import { useReloadOnError } from './hooks/useReloadOnError';
 import { userAgentMIMETypeFallback } from '../../../../../lib/utils/userAgentMIMETypeFallback';
+import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
+import MessageContentBody from '../../../MessageContentBody';
 
 const VideoAttachment = ({
 	id,
@@ -13,6 +15,8 @@ const VideoAttachment = ({
 	video_url: url,
 	video_type: type,
 	video_size: size,
+	description,
+	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
@@ -23,9 +27,10 @@ const VideoAttachment = ({
 
 	return (
 		<>
+			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed} attachmentId={id}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-					<Box is='video' controls preload='metadata' ref={mediaRef}>
+					<Box is='video' controls preload='metadata' ref={mediaRef} position='relative'>
 						<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />
 					</Box>
 				</MessageGenericPreview>

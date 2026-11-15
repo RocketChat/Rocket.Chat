@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type InfoPanelProps = {
+export type InfoPanelProps = {
 	children?: ReactNode;
 };
 
 const InfoPanel = ({ children }: InfoPanelProps) => (
-	<Box flexGrow={1} mb='neg-x24'>
+	<Box flexGrow={1} marginBlock='neg-x24'>
 		{children}
 	</Box>
 );

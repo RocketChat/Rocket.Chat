@@ -1,10 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { KeyboardEvent, MouseEvent, RefCallback } from 'react';
+import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 import type { useFormatDate } from '../../../hooks/useFormatDate';
-import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import type { useFormatTime } from '../../../hooks/useFormatTime';
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -19,6 +18,11 @@ export type MessageListContextValue = {
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
 	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
+	/** Role labels of the authors of messages in room `rid`; absent when the list does not resolve them. */
+	userRoles?: {
+		rid: string;
+		get: (uid: string) => { workspaceRoles: string[]; roomRoles: string[] };
+	};
 	showRealName: boolean;
 	showUsername: boolean;
 	highlights?: {
@@ -42,7 +46,6 @@ export type MessageListContextValue = {
 	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
-	messageListRef?: RefCallback<HTMLElement | undefined>;
 };
 
 export const messageListContextDefaultValue: MessageListContextValue = {
@@ -73,7 +76,6 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	formatDateAndTime: () => '',
 	formatTime: () => '',
 	formatDate: () => '',
-	messageListRef: undefined,
 };
 
 export const MessageListContext = createContext<MessageListContextValue>(messageListContextDefaultValue);
@@ -87,6 +89,10 @@ export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (..
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
+export const useMessageListUserRoles = (uid: string, rid: string) => {
+	const { userRoles } = useContext(MessageListContext);
+	return userRoles?.rid === rid ? userRoles.get(uid) : undefined;
+};
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
@@ -97,8 +103,6 @@ export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
 	useContext(MessageListContext).useUserHasReacted(message);
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
-
-export const useMessageListRef = (): MessageListContextValue['messageListRef'] => useContext(MessageListContext).messageListRef;
 
 export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
 

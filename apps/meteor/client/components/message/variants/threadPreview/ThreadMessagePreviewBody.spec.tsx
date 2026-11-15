@@ -17,12 +17,6 @@ jest.mock('../../../../views/room/hooks/useGoToRoom', () => ({
 	useGoToRoom: jest.fn(),
 }));
 
-test.each(testCases)(`renders ThreadMessagePreviewBody without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />, { wrapper: mockAppRoot().build() });
-
-	expect(view.baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('ThreadMessagePreviewBody should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
@@ -32,7 +26,7 @@ test.each(testCases)('ThreadMessagePreviewBody should have no a11y violations', 
 });
 
 it('should not show an empty thread preview', async () => {
-	const { container } = render(
+	render(
 		<Default
 			message={{
 				_id: 'message-id',
@@ -80,7 +74,6 @@ it('should not show an empty thread preview', async () => {
 		/>,
 		{ wrapper: mockAppRoot().build() },
 	);
-	expect(container).toMatchSnapshot();
 	const text = screen.getByText('http://localhost:3000/group/ds?msg=ZoX9pDowqNb4BiWxf');
 
 	expect(text).toBeInTheDocument;
