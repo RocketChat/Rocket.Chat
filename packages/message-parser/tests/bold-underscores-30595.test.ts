@@ -8,12 +8,23 @@
  *
  * Fix (one-line change to `src/grammar.pegjs`, Italic alt 1):
  *   Before: value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
- *   After:  value:$(AlphaNumericChar (AlphaNumericChar / [.\-] AlphaNumericChar)* [\x5F] [\x5F]?)
+ *   After:  value:$(AlphaNumericChar MarkChar* (AlphaNumericChar MarkChar* / [.] AlphaNumericChar / [\-] DecimalNumberChar)* [\x5F] [\x5F]?)
  *             { return plain(value); }
  *
  * The fix extends the intra-word underscore guard from ASCII-only [a-zA-Z0-9]
- * to any Unicode letter/digit (AlphaNumericChar), and allows `.` or `-`
- * separators only when sandwiched between two alphanumeric characters.
+ * to any Unicode letter/digit (AlphaNumericChar), optionally followed by
+ * combining marks (MarkChar*), and tightens separator matching:
+ *   - `.` separator: followed by any AlphaNumericChar (letter or digit)
+ *   - `-` separator: followed ONLY by a decimal digit (DecimalNumberChar),
+ *     so hyphenated words like `foo-bar` do NOT suppress italic.
+ *
+ * PR review fixes applied (see Sections G–I):
+ *   - Finding 1: `foo-bar_italic_` now correctly produces italic (hyphen+letter
+ *     is not a version separator).
+ *   - Finding 2: `cafe\u0301_1.2_x` now correctly treats all underscores as
+ *     plain (combining acute accent is a MarkChar, consumed after the base `e`).
+ *   - Finding 3: `*_ОЛ_1.2_2_00_ЭС_*` produces italic(ОЛ)+plain(rest) —
+ *     correct behavior; not a grammar bug.
  *
  * Known limitation: when a version-like token (e.g. `v1.0`, `2.5`, `1-2`)
  * is immediately followed by `_` with no space, the guard fires and the `_`
@@ -241,6 +252,185 @@ describe('known limitation: unspaced italic after version-like tokens', () => {
 				bold([
 					plain('2.5 '),
 					italic([plain('italic text')]),
+				]),
+			]),
+		]);
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Section G: PR review finding 1 — hyphen+letter must NOT suppress italic
+// ---------------------------------------------------------------------------
+
+/**
+ * PR review Finding 1 (Cubic AI):
+ *
+ * The previous guard `AlphaNumericChar (AlphaNumericChar / [.\-] AlphaNumericChar)*`
+ * treated `-` as a universal version separator, so `foo-bar_italic_` suppressed
+ * the `_italic_` italic span.
+ *
+ * Fix: narrow the `-` alternative to `[\-] DecimalNumberChar`. Hyphen is now
+ * only a version separator when followed by a decimal digit (e.g. `v2-3`),
+ * not when followed by a letter (e.g. `foo-bar`).
+ *
+ * Trace for `foo-bar_italic_`:
+ *   Guard: "f"=AlphaNum, "oo"=AlphaNum. Next: "-b" — [\-] requires
+ *   DecimalNumberChar after it; "b" is a letter, not a digit. FAILS.
+ *   ()*  stops at "foo". After "foo", next char is "-", not "_". Guard FAILS.
+ *   BoldPlainRun takes "foo-bar" (stops at "_"). "_italic_" → italic. ✓
+ *
+ * Trace for *v2-3_4_5* (must remain plain — existing test in Section A):
+ *   Guard: "v"=AlphaNum, "2"=AlphaNum, "-3"=[\-]DecimalNum ✓, "_"=[\x5F] ✓.
+ *   Guard fires → plain("v2-3_"). Then "4_" → plain. All plain. ✓
+ */
+describe('PR review finding 1 — hyphen+letter must not suppress italic', () => {
+	it('*foo-bar_italic_* — guard does NOT fire; _italic_ is italic', () => {
+		// Before fix: guard matched "foo-bar_" (hyphen was universal separator)
+		// and produced plain("foo-bar_italic_"). After fix: guard stops at "foo"
+		// because "-b" fails [\-]DecimalNumberChar. BoldPlainRun takes "foo-bar";
+		// "_italic_" becomes italic.
+		expect(parse('*foo-bar_italic_*', { emoticons: false })).toEqual([
+			paragraph([
+				bold([
+					plain('foo-bar'),
+					italic([plain('italic')]),
+				]),
+			]),
+		]);
+	});
+
+	it('*foo-bar_text here_* — guard does NOT fire; _text here_ is italic', () => {
+		// Same reasoning: hyphen+letter ("b") is not a version separator.
+		// BoldPlainRun takes "foo-bar"; "_text here_" → italic.
+		expect(parse('*foo-bar_text here_*', { emoticons: false })).toEqual([
+			paragraph([
+				bold([
+					plain('foo-bar'),
+					italic([plain('text here')]),
+				]),
+			]),
+		]);
+	});
+
+	it('*v2-3_4_5* — guard still fires (hyphen+digit is a version separator)', () => {
+		// "-3" = [\-]DecimalNumberChar ✓. Guard fires for "v2-3_".
+		// All underscores become plain. This is the existing Section A behavior.
+		expect(parse('*v2-3_4_5*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('v2-3_4_5')])]),
+		]);
+	});
+
+	it('*step1-2_note* — guard fires (digit follows hyphen)', () => {
+		// "step1" = AlphaNum+. "-2" = [\-]DecimalNum ✓. "_" = [\x5F] ✓.
+		// Guard fires → plain("step1-2_note").
+		expect(parse('*step1-2_note*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('step1-2_note')])]),
+		]);
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Section H: PR review finding 2 — combining marks (U+0301 and similar)
+// ---------------------------------------------------------------------------
+
+/**
+ * PR review Finding 2 (CodeRabbit):
+ *
+ * Input `*cafe\u0301_1.2_2_00_x*` — the U+0301 COMBINING ACUTE ACCENT
+ * follows the base character `e` to form `é` in NFD normalization. AlphaChar
+ * does not include combining marks (Unicode category Mn), so the original
+ * guard stopped at "cafe" and `_1.2_` became italic.
+ *
+ * Fix: add `MarkChar*` after each `AlphaNumericChar` position in the guard.
+ * MarkChar covers all standard Unicode combining mark ranges including
+ * \u0300-\u036F (Latin combining diacritics). Zero-or-more allows ordinary
+ * letters (without combining marks) to match as before.
+ *
+ * Trace for `cafe\u0301_1.2_2_00_x`:
+ *   "c"=AlphaNum, MarkChar*=0, "a"=AlphaNum, MarkChar*=0,
+ *   "f"=AlphaNum, MarkChar*=0, "e"=AlphaNum, MarkChar*=U+0301 ✓.
+ *   "_"=[\x5F] ✓. Guard fires → plain("cafe\u0301_").
+ *   "1.2_": "1"=AlphaNum, ".2"=[.]AlphaNum ✓, "_" ✓ → plain("1.2_").
+ *   "2_": plain. "00_": plain. "x": BoldPlainRun. All merged → plain. ✓
+ *
+ * Note: precomposed `é` (U+00E9) is in AlphaChar and always worked correctly.
+ * This fix specifically addresses decomposed (NFD) representations.
+ */
+describe('PR review finding 2 — combining marks after alphanumeric', () => {
+	it('*cafe\\u0301_1.2_2_00_x* — combining acute accent; all underscores plain', () => {
+		// NFD form of "café": base "e" + U+0301. After fix, MarkChar* consumes
+		// U+0301 as part of the leading alphanumeric cluster. Guard fires.
+		expect(parse('*cafe\u0301_1.2_2_00_x*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('cafe\u0301_1.2_2_00_x')])]),
+		]);
+	});
+
+	it('*caf\u00e9_1.2_2_00_x* — precomposed é (U+00E9) still works', () => {
+		// U+00E9 is in AlphaChar; this case worked before and must still work.
+		expect(parse('*caf\u00e9_1.2_2_00_x*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('caf\u00e9_1.2_2_00_x')])]),
+		]);
+	});
+
+	it('*caf\u00e9_text_* — precomposed é immediately before underscore', () => {
+		// Guard: "c","a","f"=AlphaNum, "\u00e9"=AlphaNum (in AlphaChar), "_" ✓.
+		// Returns plain("café_text_").
+		expect(parse('*caf\u00e9_text_*', { emoticons: false })).toEqual([
+			paragraph([bold([plain('caf\u00e9_text_')])]),
+		]);
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Section I: PR review finding 3 — leading underscore in bold (documented)
+// ---------------------------------------------------------------------------
+
+/**
+ * PR review Finding 3 (CodeRabbit):
+ *
+ * Input `*_ОЛ_1.2_2_00_ЭС_*` — reviewer noted "the underscore after ОЛ
+ * is consumed as an italic delimiter."
+ *
+ * Investigation result: this IS correct grammar behavior, not a regression.
+ *
+ * Trace:
+ *   - Cursor starts inside bold at "_".
+ *   - Guard (Italic alt 1) requires AlphaNumericChar first. "_" fails. Guard FAILS.
+ *   - Italic alt 5: `[\x5F] ItalicContent [\x5F]` tries "_ОЛ_". ItalicPlainRun
+ *     matches "ОЛ" (stops at "_"). Close "_". Succeeds → italic("ОЛ").
+ *   - Remaining "1.2_2_00_ЭС_*": guard fires for each segment → all plain.
+ *   - Result: BOLD[italic("ОЛ"), plain("1.2_2_00_ЭС_")].
+ *
+ * The leading `_ОЛ_` is a valid italic span. The fix for issue #30595 does
+ * not affect inputs that BEGIN with `_` inside bold — those always were and
+ * remain italic. No grammar change is needed.
+ *
+ * This test documents ACTUAL behavior. The assertion reflects what the parser
+ * produces, not an aspirational output.
+ */
+describe('PR review finding 3 — leading underscore in bold (correct behavior)', () => {
+	it('*_ОЛ_1.2_2_00_ЭС_* — _ОЛ_ is italic; remaining underscores are plain', () => {
+		// "_ОЛ_" is a valid italic span at the start of bold content.
+		// The issue #30595 fix ensures "1.2_2_00_ЭС_" is all plain (guard fires
+		// for each segment). This is correct and expected behavior.
+		expect(parse('*_ОЛ_1.2_2_00_ЭС_*', { emoticons: false })).toEqual([
+			paragraph([
+				bold([
+					italic([plain('ОЛ')]),
+					plain('1.2_2_00_ЭС_'),
+				]),
+			]),
+		]);
+	});
+
+	it('*_italic_ word* — leading italic inside bold is preserved', () => {
+		// Confirms the general case: leading _…_ inside bold → italic.
+		// No regression from the #30595 fix.
+		expect(parse('*_italic_ word*', { emoticons: false })).toEqual([
+			paragraph([
+				bold([
+					italic([plain('italic')]),
+					plain(' word'),
 				]),
 			]),
 		]);
