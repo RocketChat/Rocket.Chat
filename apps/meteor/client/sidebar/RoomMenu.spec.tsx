@@ -1,7 +1,7 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
@@ -36,7 +36,11 @@ const defaultProps = {
 const buildBase = () =>
 	mockAppRoot()
 		.withTranslations('en', 'core', {
+			Archive: 'Archive',
 			Hide: 'Hide',
+			Archive_room: 'Archive room',
+			Archive_Channel_Description: '“{{roomName}}” moves to the Archived group.',
+			Unarchive: 'Unarchive',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
 			Favorites: 'Favorites',
@@ -77,12 +81,12 @@ it('should display Hide, Mark Unread, Leave and Favorite toggle for regular room
 	expect(screen.queryByRole('menuitem', { name: 'Move to' })).not.toBeInTheDocument();
 });
 
-it('should display Hide, Mark Unread, Leave and Move to for regular rooms with enterprise', async () => {
+it('should display Archive, Mark Unread, Leave and Move to for regular rooms with enterprise', async () => {
 	render(<RoomMenu {...defaultProps} />, enterpriseRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 
-	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Archive' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Move to' })).toBeInTheDocument();
@@ -141,6 +145,50 @@ it('should display only mark unread and favorite for omnichannel rooms', async (
 	await userEvent.click(menu as HTMLElement);
 
 	expect(await screen.findAllByRole('menuitem')).toHaveLength(2);
-	expect(screen.queryByRole('menuitem', { name: 'Hide' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
 	expect(screen.queryByRole('menuitem', { name: 'Leave' })).not.toBeInTheDocument();
+});
+
+describe('the archive', () => {
+	const setUserArchived = jest.fn(async () => ({ success: true }));
+
+	beforeEach(() => {
+		setUserArchived.mockClear();
+	});
+
+	const renderWith = (subscription: Record<string, unknown>) =>
+		render(<RoomMenu {...defaultProps} name='general' />, {
+			wrapper: buildBase()
+				.withJohnDoe()
+				.withQueryClient(buildEnterpriseQueryClient())
+				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', ...subscription }))
+				.withEndpoint('POST', '/v1/subscriptions.setUserArchived', setUserArchived as any)
+				.build(),
+		});
+
+	it('archives the room from its menu once the user confirms what that means', async () => {
+		renderWith({});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Archive' }));
+
+		const dialog = await screen.findByRole('dialog', { name: 'Archive room' });
+		expect(dialog).toHaveTextContent('“general” moves to the Archived group.');
+		expect(setUserArchived).not.toHaveBeenCalled();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
+
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: true }));
+	});
+
+	it('offers to unarchive an archived room instead', async () => {
+		renderWith({ userArchived: true });
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+
+		expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Unarchive' }));
+
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: false }));
+	});
 });

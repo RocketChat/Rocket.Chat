@@ -145,6 +145,7 @@ export interface StreamerEvents {
 							| 'autoTranslateLanguage'
 							| 'disableNotifications'
 							| 'hideUnreadStatus'
+							| 'userArchived'
 							| 'hideMentionStatus'
 							| 'muteGroupMentions'
 							| 'ignored'

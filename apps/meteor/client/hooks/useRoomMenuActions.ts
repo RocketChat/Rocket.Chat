@@ -7,8 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
-import { useHideRoomAction } from './useHideRoomAction';
+import { useRoomArchiveMenuItem } from './useRoomArchiveMenuItem';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
+
+export type RoomMenuSection = {
+	title: string;
+	items: GenericMenuItemProps[];
+};
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -28,7 +33,7 @@ export const useRoomMenuActions = ({
 	cl,
 	roomOpen,
 	hideDefaultOptions,
-}: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
+}: RoomMenuActionsProps): RoomMenuSection[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 
@@ -47,7 +52,7 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
+	const archiveItem = useRoomArchiveMenuItem({ rid, type, name, redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -59,12 +64,7 @@ export const useRoomMenuActions = ({
 		() =>
 			!hideDefaultOptions
 				? ([
-						!isOmnichannelRoom && {
-							id: 'hideRoom',
-							icon: 'eye-off',
-							content: t('Hide'),
-							onClick: handleHide,
-						},
+						!isOmnichannelRoom && archiveItem,
 						{
 							id: 'toggleRead',
 							icon: 'flag',
@@ -88,7 +88,7 @@ export const useRoomMenuActions = ({
 		[
 			hideDefaultOptions,
 			t,
-			handleHide,
+			archiveItem,
 			isUnread,
 			handleToggleRead,
 			canFavorite,

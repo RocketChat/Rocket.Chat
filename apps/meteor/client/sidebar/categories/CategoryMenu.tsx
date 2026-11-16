@@ -3,6 +3,7 @@ import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@
 import { useStableCallback, useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +15,7 @@ import {
 	useActivityFilterHidesUnreadsItem,
 	useActivityFilterItems,
 } from './hooks/useActivityFilterItems';
+import { useArchiveRoomsItems } from './hooks/useArchiveRoomsItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
@@ -22,6 +24,10 @@ import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreate
 type CategoryMenuProps = {
 	category?: ISidebarCategory;
 	groupKey: string;
+	/** The group as its header names it. */
+	groupTitle: string;
+	/** Every room of the group, the ones the collapse or the filter leaves out included. */
+	rooms: SubscriptionWithRoom[];
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
 	activityFilterHours?: number;
@@ -37,6 +43,8 @@ type CategoryMenuProps = {
 const CategoryMenu = ({
 	category,
 	groupKey,
+	groupTitle,
+	rooms,
 	showUnreads,
 	keepUnreadsOnTop,
 	activityFilterHours,
@@ -152,8 +160,16 @@ const CategoryMenu = ({
 		...(activityFilterHidesUnreads ? [ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID] : []),
 	];
 	const activityFilterDisabledKeys = hidesUnreadsItem.disabled ? [ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID] : [];
+	const archiveItems = useArchiveRoomsItems({ groupKey, groupTitle, rooms, onOpen: close });
 
-	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...activityFilterItems, ...unreadItems];
+	const allItems = [
+		...orderItems,
+		...(category ? manageItems : []),
+		...createItems,
+		...activityFilterItems,
+		...archiveItems,
+		...unreadItems,
+	];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 
 	const handleAction = useHandleMenuAction(allItems);
@@ -224,6 +240,11 @@ const CategoryMenu = ({
 								</MenuSection>
 							</MenuSubmenuTrigger>
 						)}
+						{archiveItems.map((item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuItem {...item} />
+							</MenuItem>
+						))}
 					</>
 				</MenuSection>,
 				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>

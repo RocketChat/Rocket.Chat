@@ -34,6 +34,7 @@ export const subscriptionFields = {
 	autoTranslateLanguage: 1,
 	disableNotifications: 1,
 	hideUnreadStatus: 1,
+	userArchived: 1,
 	hideMentionStatus: 1,
 	muteGroupMentions: 1,
 	ignored: 1,

@@ -430,4 +430,87 @@ describe('[Subscriptions]', () => {
 			expect(res.body).to.have.property('error');
 		});
 	});
+
+	describe('[/subscriptions.setUserArchived]', () => {
+		let testChannel: IRoom;
+		let otherChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `archive.test.${Date.now()}` })).body.channel;
+			otherChannel = (await createRoom({ type: 'c', name: `archive.other.${Date.now()}` })).body.channel;
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), deleteRoom({ type: 'c', roomId: otherChannel._id })]));
+
+		const getSubscription = async (roomId: string) => {
+			const res = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId }).expect(200);
+			return res.body.subscription;
+		};
+
+		it('should archive the rooms for the user', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomIds: [testChannel._id, otherChannel._id], archived: true })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(await getSubscription(testChannel._id)).to.have.property('userArchived', true);
+			expect(await getSubscription(otherChannel._id)).to.have.property('userArchived', true);
+		});
+
+		it('should unarchive one of them, leaving the other archived', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomIds: [testChannel._id], archived: false })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(await getSubscription(testChannel._id)).to.not.have.property('userArchived');
+			expect(await getSubscription(otherChannel._id)).to.have.property('userArchived', true);
+		});
+
+		it('should fail on rooms the user is not subscribed to', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomIds: ['foobar123-somechannel'], archived: true })
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'error-invalid-subscription');
+		});
+
+		it('should fail without the archived flag', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomIds: [testChannel._id] })
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+		});
+
+		it('should fail on an empty list', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomIds: [], archived: true })
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+		});
+
+		it('should fail if not logged in', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.send({ roomIds: [testChannel._id], archived: true })
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+		});
+	});
 });
