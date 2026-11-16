@@ -354,13 +354,15 @@ export class MockedAppRootBuilder {
 			if (innerStreamName === String(streamName)) {
 				ref.controller = {
 					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {
-						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, ...args);
+						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, args);
 					},
 					has: (eventName: string) => this.events.has(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys),
 				};
 
 				return <K extends StreamKeys<N>>(eventName: K, callback: StreamerCallback<N, K>) =>
-					this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, callback);
+					this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, (args: StreamerCallbackArgs<N, K>) =>
+						callback(...args),
+					);
 			}
 
 			return innerFn(innerStreamName);
