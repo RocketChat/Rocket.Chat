@@ -16,6 +16,8 @@ const NOT_SOURCE = /\.(spec|stories)\.tsx?$|\.d\.ts$/;
 const COMMENTS_AND_STRINGS = /\/\*[\s\S]*?\*\/|\/\/.*$|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"/gm;
 // A default or namespace import binds a module under any local name (`import LegacyBox from '../Box'`)
 const MODULE_IMPORT = /^\s*import\s+(?!type\s)(?:\*\s*as\s+\w+|\w+)\s*(?:,\s*\{[^}]*\})?\s*from\s*['"]([^'"]+)['"]/gm;
+// A namespace import of a barrel reaches them as members (`Fuselage.Box`)
+const NAMESPACE_IMPORT = /^\s*import\s+\*\s*as\s+(\w+)\s+from\b/gm;
 
 const usage = (folder) => {
 	const found = new Set();
@@ -24,6 +26,8 @@ const usage = (folder) => {
 		for (const [, from] of source.matchAll(MODULE_IMPORT)) if (NAMES.includes(from.split('/').at(-1))) found.add(from.split('/').at(-1));
 		const text = source.replace(COMMENTS_AND_STRINGS, '');
 		for (const name of NAMES) if (new RegExp(`(?<![\\w.])${name}(?![\\w])`).test(text)) found.add(name);
+		for (const [, namespace] of source.matchAll(NAMESPACE_IMPORT))
+			for (const name of NAMES) if (new RegExp(`(?<![\\w.])${namespace}\\.${name}(?![\\w])`).test(text)) found.add(name);
 	}
 	return [...found];
 };
