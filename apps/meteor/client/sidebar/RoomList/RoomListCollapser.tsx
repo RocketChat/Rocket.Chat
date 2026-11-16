@@ -1,6 +1,6 @@
 import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
 import { useDeferredMenuMount, useIsEnterprise } from '@rocket.chat/ui-client';
-import type { HTMLAttributes, KeyboardEvent } from 'react';
+import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
@@ -26,15 +26,6 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const preventPropagation = usePreventPropagation();
 
 	const title = group.translateTitle ? t(group.title) : group.title;
-
-	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
-			return;
-		}
-
-		event.preventDefault();
-		onClick();
-	};
 
 	return (
 		<SidebarCollapseGroup
@@ -72,8 +63,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
 			onFocus={mountNow}
 			onPointerEnter={requestMount}
-			onClick={onClick}
-			onKeyDown={toggleOnEnterOrSpace}
+			onToggle={onClick}
 			{...props}
 		/>
 	);

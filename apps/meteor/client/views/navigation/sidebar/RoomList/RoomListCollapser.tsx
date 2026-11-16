@@ -1,6 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Badge, SidebarCollapseGroup } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, KeyboardEvent } from 'react';
+import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
@@ -28,15 +28,6 @@ const RoomListCollapser = ({
 	const title = t(groupTitle);
 	const expanded = !collapsedGroups.includes(group);
 
-	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
-			return;
-		}
-
-		event.preventDefault();
-		onClick();
-	};
-
 	return (
 		<SidebarCollapseGroup
 			title={title}
@@ -49,8 +40,7 @@ const RoomListCollapser = ({
 				) : undefined
 			}
 			aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })}
-			onClick={onClick}
-			onKeyDown={toggleOnEnterOrSpace}
+			onToggle={onClick}
 			{...props}
 		/>
 	);
