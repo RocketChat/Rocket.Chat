@@ -13,6 +13,7 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
 		onDragEnter: (event: DragEvent<Element>) => void;
+		onDragLeave: (event: DragEvent<Element>) => void;
 	},
 	fileUploadOverlayProps: {
 		visible: boolean;

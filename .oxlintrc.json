@@ -251,6 +251,20 @@
 			}
 		},
 		{
+			"files": ["packages/apps/**/*.ts"],
+			"rules": {
+				"typescript/only-throw-error": ["warn", { "allow": ["JsonRpcError", "ErrorObject"] }]
+			}
+		},
+		{
+			"files": ["packages/apps/**/*.test.ts"],
+			"rules": {
+				"testing-library/no-await-sync-queries": "off",
+				"testing-library/no-debugging-utils": "off",
+				"testing-library/prefer-explicit-assert": "off"
+			}
+		},
+		{
 			"files": ["packages/apps-engine/tests/**/*", "packages/apps/tests/**/*"],
 			"rules": {
 				"testing-library/no-await-sync-queries": "off",
@@ -413,24 +427,6 @@
 			"files": ["**/*.stories.{ts,tsx,js,jsx,mjs,cjs}"],
 			"rules": {
 				"storybook/no-renderer-packages": "off"
-			}
-		},
-		{
-			"files": ["packages/fuselage/src/**/*.{ts,tsx}"],
-			"rules": {
-				"react/display-name": "warn",
-				"react-js/jsx-key": [
-					"warn",
-					{
-						"checkFragmentShorthand": true,
-						"checkKeyMustBeforeSpread": true,
-						"warnOnDuplicates": true
-					}
-				],
-				"react/no-children-prop": "warn",
-				"react/no-multi-comp": "warn",
-				"no-empty-function": "warn",
-				"react/exhaustive-deps": "warn"
 			}
 		},
 		{

@@ -5,10 +5,11 @@ import { render } from '../../../testing';
 
 it('renders without crashing', () => {
 	render(
-		<MessageStatusIndicator>
+		<MessageStatusIndicator data-testid='indicator'>
 			<MessageStatusIndicatorItem name='star' />
 		</MessageStatusIndicator>,
 	);
+	expect(screen.getByTestId('indicator')).toHaveClass('rcx-message-status-indicator');
 });
 
 it('names a titled status for assistive technology and hides an untitled one', () => {

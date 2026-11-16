@@ -33,8 +33,8 @@ export type MediaPlayerContextValue = {
 	currentTime: number;
 	duration: number;
 	playbackRate: number;
-	/** Loads (only if a different track) and plays the given track in the shared element. */
-	play: (track: PersistentAudioTrack) => void;
+	/** Loads (only if a different track, starting at `startTime` seconds) and plays the given track in the shared element. */
+	play: (track: PersistentAudioTrack, startTime?: number) => void;
 	/** Toggles play/pause for the active track. No-op when no track is active. */
 	toggle: () => void;
 	/** Seeks the active track to `time` seconds. */

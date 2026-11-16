@@ -1,11 +1,12 @@
-import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import { ServiceConfiguration } from 'meteor/service-configuration';
+import type { LoginServiceConfiguration as LoginServiceConfigurationData } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration } from '@rocket.chat/models';
 
 import { logger } from './logger';
 import { settings } from '../../settings/cached';
+import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../notifyListener';
 
 export async function updateCasServices(): Promise<void> {
-	const data: Partial<LoginServiceConfiguration> = {
+	const data: Partial<LoginServiceConfigurationData> = {
 		// These will pe passed to 'node-cas' as options
 		enabled: settings.get('CAS_enabled'),
 		base_url: settings.get('CAS_base_url'),
@@ -22,9 +23,13 @@ export async function updateCasServices(): Promise<void> {
 	// Either register or deregister the CAS login service based upon its configuration
 	if (data.enabled) {
 		logger.info('Enabling CAS login service');
-		await ServiceConfiguration.configurations.upsertAsync({ service: 'cas' }, { $set: data });
+		await LoginServiceConfiguration.createOrUpdateService('cas', data);
+		void notifyOnLoginServiceConfigurationChangedByService('cas');
 	} else {
 		logger.info('Disabling CAS login service');
-		await ServiceConfiguration.configurations.removeAsync({ service: 'cas' });
+		const service = await LoginServiceConfiguration.removeByService('cas');
+		if (service) {
+			void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+		}
 	}
 }

@@ -35,6 +35,7 @@ export default async function handleListener(request: RequestContext): Promise<D
 
 	try {
 		const args = parseArgs({ AppAccessorsInstance }, evtInterface, params);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- Function.prototype.apply returns any because strictBindCallApply is off in this package; the value is the app's event handler result
 		return await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(wrapAppForRequest(app, request), args);
 	} catch (e) {
 		if (e instanceof JsonRpcError) {

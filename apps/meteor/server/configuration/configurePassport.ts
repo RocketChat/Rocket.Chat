@@ -88,7 +88,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 	});
 
 	passport.deserializeUser(async (id, done) => {
-		const user = await Users.findOneById(id as string, { projection: { __rooms: 0 } });
+		const user = await Users.findOneById(id as string);
 		// we don’t actually use this user later
 		done(null, user);
 	});

@@ -1,3 +1,4 @@
+import nameToCharacterMapping from '@rocket.chat/icons';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentType } from 'react';
@@ -73,8 +74,8 @@ describe('[SelectLegacy Component] keyboard', () => {
 
 	it('should stay open after Space opens it', async () => {
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-		const { container } = render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
-		const isOpen = () => container.querySelector('.rcx-icon--name-chevron-up') !== null;
+		render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		const isOpen = () => screen.queryByText(nameToCharacterMapping['chevron-up']) !== null;
 
 		screen.getByRole('button').focus();
 		await user.keyboard('[Space>]');

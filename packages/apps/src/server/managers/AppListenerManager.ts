@@ -259,7 +259,7 @@ export interface IListenerExecutor {
 export class AppListenerManager {
 	private listeners: Map<string, Array<string>>;
 
-	private defaultHandlers = new Map<string, any>();
+	private defaultHandlers = new Map<string, IUIKitResponse>();
 
 	/**
 	 * Locked events are those who are listed in an app's
@@ -972,12 +972,12 @@ export class AppListenerManager {
 		const { actionId, user, triggerId } = data;
 
 		switch (data.type) {
-			case UIKitIncomingInteractionType.BLOCK: {
+			case 'blockAction': {
 				const method = 'executeBlockActionHandler';
 				const { value, blockId } = data.payload as { value: string; blockId: string };
 
 				return app
-					.call(method, {
+					.call<IUIKitResponse>(method, {
 						appId,
 						actionId,
 						blockId,
@@ -990,12 +990,12 @@ export class AppListenerManager {
 					})
 					.catch(handleError(method));
 			}
-			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
+			case 'viewSubmit': {
 				const method = 'executeViewSubmitHandler';
 				const { view } = data.payload as { view: IUIKitSurface };
 
 				return app
-					.call(method, {
+					.call<IUIKitResponse>(method, {
 						appId,
 						actionId,
 						view,
@@ -1005,12 +1005,12 @@ export class AppListenerManager {
 					})
 					.catch(handleError(method));
 			}
-			case UIKitIncomingInteractionType.VIEW_CLOSED: {
+			case 'viewClosed': {
 				const method = 'executeViewClosedHandler';
 				const { view, isCleared } = data.payload as { view: IUIKitSurface; isCleared: boolean };
 
 				return app
-					.call(method, {
+					.call<IUIKitResponse>(method, {
 						appId,
 						actionId,
 						view,
@@ -1025,7 +1025,7 @@ export class AppListenerManager {
 
 				if (isUIKitIncomingInteractionActionButtonMessageBox(data)) {
 					return app
-						.call(method, {
+						.call<IUIKitResponse>(method, {
 							appId,
 							actionId,
 							buttonContext: UIActionButtonContext.MESSAGE_BOX_ACTION,
@@ -1039,7 +1039,7 @@ export class AppListenerManager {
 				}
 
 				return app
-					.call(method, {
+					.call<IUIKitResponse>(method, {
 						appId,
 						actionId,
 						triggerId,
@@ -1056,7 +1056,7 @@ export class AppListenerManager {
 	private async executeUIKitLivechatInteraction(data: IUIKitLivechatIncomingInteraction): Promise<IUIKitResponse> {
 		const { appId, type } = data;
 
-		const method = ((interactionType: string) => {
+		const method = ((interactionType: UIKitIncomingInteractionType) => {
 			switch (interactionType) {
 				case UIKitIncomingInteractionType.BLOCK:
 					return AppMethod.UIKIT_LIVECHAT_BLOCK_ACTION;
@@ -1090,7 +1090,7 @@ export class AppListenerManager {
 			}
 		})(type, data);
 
-		return app.call(method, interactionData);
+		return app.call<IUIKitResponse>(method, interactionData);
 	}
 
 	// Livechat
