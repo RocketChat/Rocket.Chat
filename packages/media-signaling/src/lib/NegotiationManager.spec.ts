@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import { NegotiationManager } from './NegotiationManager.js';
-import { SDP } from './services/webrtc/sdp.js';
 import type { IClientMediaCall, IWebRTCProcessor, NegotiationManagerEvents, WebRTCProcessorEvents } from '../definition/index.js';
+import { SDP } from './services/webrtc/sdp.js';
 
 const localSdp = [
 	'v=0',
@@ -86,7 +86,12 @@ it('should tag the main media and the screen share of the local SDP with the str
 it('should send the local SDP only after ICE gathering finishes', async () => {
 	const processor = createProcessor();
 	let finishGathering: () => void = () => undefined;
-	processor.waitForIceGathering.mockImplementationOnce(() => new Promise<void>((resolve) => (finishGathering = resolve)));
+	processor.waitForIceGathering.mockImplementationOnce(
+		() =>
+			new Promise<void>((resolve) => {
+				finishGathering = resolve;
+			}),
+	);
 	const { manager, localSdps } = createManager('caller', processor);
 
 	await manager.addNegotiation('n1');
@@ -125,7 +130,10 @@ it('should drop the local offer of the polite side without an error when a remot
 	const processor = createProcessor();
 	let resolveOffer: () => void = () => undefined;
 	processor.createOffer.mockImplementationOnce(
-		() => new Promise((resolve) => (resolveOffer = () => resolve({ type: 'offer', sdp: localSdp }))),
+		() =>
+			new Promise((resolve) => {
+				resolveOffer = () => resolve({ type: 'offer', sdp: localSdp });
+			}),
 	);
 	const { manager, localSdps, errors } = createManager('callee', processor);
 
