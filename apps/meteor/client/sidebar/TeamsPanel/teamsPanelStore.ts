@@ -16,6 +16,7 @@ type TeamsPanelState = {
 	moveTeam: (currentKeys: string[], key: string, direction: 'up' | 'down') => void;
 	setTeamUnreads: (key: string, option: keyof TeamUnreadOptions, value: boolean) => void;
 	toggleTeam: (key: string) => void;
+	expandTeam: (key: string) => void;
 };
 
 export const teamsPanelStore = create<TeamsPanelState>()(
@@ -45,6 +46,7 @@ export const teamsPanelStore = create<TeamsPanelState>()(
 				set(({ expandedTeams }) => ({
 					expandedTeams: expandedTeams.includes(key) ? expandedTeams.filter((item) => item !== key) : [...expandedTeams, key],
 				})),
+			expandTeam: (key) => set((state) => (state.expandedTeams.includes(key) ? state : { expandedTeams: [...state.expandedTeams, key] })),
 		}),
 		{
 			name: 'sidebarRail.teamsPanel',
