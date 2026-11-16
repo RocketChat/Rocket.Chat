@@ -3,7 +3,7 @@ import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, RefObject, SetStateAction } from 'react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
@@ -25,7 +25,10 @@ import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
+import { getDistanceFromBottom } from './lib/getDistanceFromBottom';
 import { isMessageNewDay } from './lib/isMessageNewDay';
+
+const AT_BOTTOM_THRESHOLD_PX = 60;
 
 export type MessageListProps = {
 	rid: IRoom['_id'];
@@ -38,6 +41,7 @@ export type MessageListProps = {
 	hasMoreNextMessages: boolean;
 	shouldJumpToBottom: boolean;
 	isAtBottom: MutableRefObject<boolean>;
+	scrollerRef: RefObject<HTMLElement | null>;
 	isJumpingToMessage: boolean;
 	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	setUnreadCount: Dispatch<SetStateAction<number>>;
@@ -61,6 +65,7 @@ export const MessageList = function MessageList({
 	shouldJumpToBottom,
 	setShouldJumpToBottom,
 	isAtBottom,
+	scrollerRef,
 	isJumpingToMessage,
 	setIsJumpingToMessage,
 	setUnreadCount,
@@ -122,24 +127,22 @@ export const MessageList = function MessageList({
 				isPrepend.current = true;
 			}
 
-			const scrollSize = virtualizerRef.current?.scrollSize ?? 0;
-			const viewportSize = virtualizerRef.current?.viewportSize ?? 0;
-
 			if (hasMoreNextMessages) {
 				isAtBottom.current = false;
 				return;
 			}
 
-			if (scrollSize >= viewportSize) {
-				isAtBottom.current = true;
+			const virtualizer = virtualizerRef.current;
+			if (!virtualizer) {
+				return;
 			}
 
-			isAtBottom.current = offset - scrollSize + viewportSize >= -60;
+			isAtBottom.current = getDistanceFromBottom(scrollerRef.current, virtualizer, offset) <= AT_BOTTOM_THRESHOLD_PX;
 			if (shouldJumpToBottom && isAtBottom.current) {
 				setShouldJumpToBottom(false);
 			}
 		},
-		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
+		[isAtBottom, scrollerRef, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
 	);
 
 	const isRoomInitialized = useRef<boolean>(false);

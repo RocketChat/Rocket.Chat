@@ -7152,6 +7152,130 @@ describe('[Users]', () => {
 		});
 	});
 
+	describe('resetting account security', () => {
+		const createdUsers: TestUser<IUser>[] = [];
+		let caller: TestUser<IUser>;
+		let callerCredentials: Credentials;
+
+		const createLoggedInUser = async (options: { verified?: boolean } = { verified: true }) => {
+			const user = await createUser({ username: Random.id(), email: `${Random.id()}@example.com`, ...options });
+			createdUsers.push(user);
+			return { user, userCredentials: await login(user.username, password) };
+		};
+
+		const createUserWithTotp = async () => {
+			const { user, userCredentials } = await createLoggedInUser();
+			const { body } = await request.post(api('users.enableTotp')).set(userCredentials).send({}).expect(200);
+			await request
+				.post(api('users.validateTotp'))
+				.set(userCredentials)
+				.send({ code: speakeasy.totp({ secret: body.secret, encoding: 'base32' }) })
+				.expect(200);
+			return { user, userCredentials };
+		};
+
+		const isLoggedIn = async (userCredentials: Credentials) => (await request.get(api('me')).set(userCredentials)).status === 200;
+
+		before(async () => {
+			({ user: caller, userCredentials: callerCredentials } = await createLoggedInUser());
+		});
+
+		after(async () => {
+			await Promise.all(createdUsers.map((user) => deleteUserIfExists(user)));
+		});
+
+		describe('[/users.resetTOTP]', () => {
+			it('should refuse a user without the permission to reset another user', async () => {
+				const { user, userCredentials } = await createUserWithTotp();
+
+				await request.post(api('users.resetTOTP')).set(callerCredentials).send({ userId: user._id }).expect(403);
+
+				expect(await isLoggedIn(userCredentials)).to.be.true;
+			});
+
+			it('should reset another user and end the sessions of that user', async () => {
+				const { user, userCredentials } = await createUserWithTotp();
+
+				await request.post(api('users.resetTOTP')).set(credentials).send({ userId: user._id }).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+
+			it('should reset the caller and end the sessions of the caller', async () => {
+				const { userCredentials } = await createUserWithTotp();
+
+				await request.post(api('users.resetTOTP')).set(userCredentials).send({}).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+
+			it('should refuse an unknown user', async () => {
+				const { body } = await request.post(api('users.resetTOTP')).set(credentials).send({ userId: 'unknown-user' }).expect(400);
+
+				expect(body).to.have.property('errorType', 'error-invalid-user');
+			});
+
+			describe('when two-factor authentication is off', () => {
+				before(() => updateSetting('Accounts_TwoFactorAuthentication_Enabled', false));
+
+				after(() => updateSetting('Accounts_TwoFactorAuthentication_Enabled', true));
+
+				it('should refuse to reset another user', async () => {
+					const { body } = await request.post(api('users.resetTOTP')).set(credentials).send({ userId: caller._id }).expect(400);
+
+					expect(body).to.have.property('errorType', 'error-two-factor-not-enabled');
+					expect(await isLoggedIn(callerCredentials)).to.be.true;
+				});
+			});
+		});
+
+		describe('[/users.resetE2EKey]', () => {
+			it('should refuse a user without the permission to reset another user', async () => {
+				const { user, userCredentials } = await createLoggedInUser();
+
+				await request.post(api('users.resetE2EKey')).set(callerCredentials).send({ userId: user._id }).expect(403);
+
+				expect(await isLoggedIn(userCredentials)).to.be.true;
+			});
+
+			it('should reset another user and end the sessions of that user', async () => {
+				const { user, userCredentials } = await createLoggedInUser();
+
+				await request.post(api('users.resetE2EKey')).set(credentials).send({ userId: user._id }).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+
+			it('should reset the caller and end the sessions of the caller', async () => {
+				const { userCredentials } = await createLoggedInUser();
+
+				await request.post(api('users.resetE2EKey')).set(userCredentials).send({}).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+		});
+
+		describe('[/users.2fa.enableEmail]', () => {
+			it('should refuse a user with an unverified email', async () => {
+				const { userCredentials } = await createLoggedInUser({ verified: false });
+
+				const { body } = await request.post(api('users.2fa.enableEmail')).set(userCredentials).expect(400);
+
+				expect(body).to.have.property('errorType', 'error-invalid-user');
+			});
+
+			it('should end the other sessions of the user and keep the current one', async () => {
+				const { user, userCredentials } = await createLoggedInUser();
+				const otherSession = await login(user.username, password);
+
+				await request.post(api('users.2fa.enableEmail')).set(userCredentials).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.true;
+				expect(await isLoggedIn(otherSession)).to.be.false;
+			});
+		});
+	});
+
 	describe('[/users.2fa.enableEmail]', () => {
 		it('should return 401 when not authenticated', async () => {
 			await request

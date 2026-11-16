@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useLanguage } from '@rocket.chat/ui-contexts';
+import { useSetting, useLanguage } from '@rocket.chat/ui-contexts';
 import { intlFormat } from 'date-fns/intlFormat';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFormattedRelativeTime } from './useFormattedRelativeTime';
 import { getCronAdvancedTimerFromPrecisionSetting } from '../../lib/getCronAdvancedTimerFromPrecisionSetting';
@@ -86,7 +87,7 @@ export const usePruneWarningMessage = (room: IRoom) => {
 
 	const cronPrecision = useSetting<CronPrecisionSetting>('RetentionPolicy_Precision', '0');
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const enableAdvancedCronTimer = useSetting('RetentionPolicy_Advanced_Precision', false);
 	const advancedCronTimer = useSetting('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *');

@@ -14,32 +14,31 @@ import {
 	GenericNoResults,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../../components/FilterByText';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const [filter, setFilter] = useState('');
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
 
-	const query = useDebouncedValue(
-		useMemo(
-			() => ({
-				text: filter,
-				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			}),
-			[filter, sortBy, sortDirection],
-		),
-		500,
+	const params = useMemo(
+		() => ({
+			text: filter,
+			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+		}),
+		[filter, sortBy, sortDirection],
 	);
+	const query = useDebouncedValue(params, 500);
 
 	const queryKey = ['/v1/livechat/sla', query];
 	const {
@@ -51,7 +50,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	} = usePagination({ resetKey: queryKey });
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = usePaginatedQuery({
+	const { data, isSuccess, isLoading, isFetching, refetch } = usePaginatedQuery({
 		query: {
 			queryKey,
 			queryFn: (page) => getSlaData({ ...query, ...page }),
@@ -113,6 +112,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
+			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
 			{isSuccess && data?.sla.length === 0 && queryHasChanged && <GenericNoResults />}
 			{isSuccess && data?.sla.length === 0 && !queryHasChanged && (
 				<GenericNoResults
@@ -127,7 +127,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			)}
 			{isSuccess && data?.sla.length > 0 && (
 				<>
-					<GenericTable columns={columns} aria-label={t('SLA_Policies')}>
+					<GenericTable columns={columns} aria-label={t('SLA_Policies')} aria-busy={params !== query || isFetching}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.sla.map(({ _id, name, description, dueTimeInMinutes }) => (

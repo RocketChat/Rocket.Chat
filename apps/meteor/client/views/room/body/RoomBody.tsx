@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout, useMergedRefsV2 } from '@rocket.chat/ui-client';
-import { useRole, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRole, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
@@ -44,7 +45,7 @@ const RoomBody = () => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
 	const user = useUser();
@@ -120,7 +121,9 @@ const RoomBody = () => {
 		);
 	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages, room._id]);
 
-	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
+	const scrollerRef = useRef<HTMLDivElement | null>(null);
+
+	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef, scrollerRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -219,6 +222,7 @@ const RoomBody = () => {
 												shouldJumpToBottom={shouldJumpToBottom}
 												setShouldJumpToBottom={setShouldJumpToBottom}
 												isAtBottom={isAtBottom}
+												scrollerRef={scrollerRef}
 												isJumpingToMessage={isJumpingToMessage}
 												setIsJumpingToMessage={setIsJumpingToMessage}
 												canPreview={canPreview}

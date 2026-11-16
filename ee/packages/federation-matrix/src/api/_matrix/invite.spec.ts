@@ -1,18 +1,12 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { getMatrixInviteRoutes } from './invite';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	FederationMatrix: {
 		canUserAccessFederation: jest.fn(),
-	},
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findOneByUsername: jest.fn(),
 	},
 }));
 
@@ -32,7 +26,7 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 const mockVerifyRequestSignature = federationSDK.verifyRequestSignature as jest.MockedFunction<typeof federationSDK.verifyRequestSignature>;
 const mockGetConfig = federationSDK.getConfig as jest.MockedFunction<typeof federationSDK.getConfig>;
 const mockProcessInvite = federationSDK.processInvite as jest.MockedFunction<typeof federationSDK.processInvite>;
-const mockFindOneByUsername = Users.findOneByUsername as jest.MockedFunction<typeof Users.findOneByUsername>;
+const mockFindOneByUsername = jest.fn();
 const mockCanUserAccessFederation = FederationMatrix.canUserAccessFederation as jest.MockedFunction<
 	typeof FederationMatrix.canUserAccessFederation
 >;
@@ -68,6 +62,10 @@ const sendInvite = async (event: unknown) =>
 		});
 
 describe('PUT /_matrix/federation/v2/invite/:roomId/:eventId', () => {
+	beforeAll(() => {
+		mockModel('Users', { findOneByUsername: mockFindOneByUsername });
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 

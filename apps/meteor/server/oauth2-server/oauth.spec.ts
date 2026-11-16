@@ -1,17 +1,14 @@
 import { createHash } from 'node:crypto';
 
-import { OAuthApps, OAuthAccessTokens, OAuthAuthCodes, Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import request from 'supertest';
 
 import { OAuth2Server } from './oauth';
 
-jest.mock('@rocket.chat/models', () => ({
-	OAuthApps: { findOneActiveByClientId: jest.fn(), findOneActiveByClientIdAndClientSecret: jest.fn() },
-	OAuthAuthCodes: { upsertByAuthCode: jest.fn(), findOneByAuthCode: jest.fn(), deleteOne: jest.fn() },
-	OAuthAccessTokens: { insertOne: jest.fn() },
-	OAuthRefreshTokens: {},
-	Users: { findOne: jest.fn(), updateOne: jest.fn() },
-}));
+const oAuthAppsModel = { findOneActiveByClientId: jest.fn(), findOneActiveByClientIdAndClientSecret: jest.fn() };
+const oAuthAuthCodesModel = { upsertByAuthCode: jest.fn(), findOneByAuthCode: jest.fn(), deleteOne: jest.fn() };
+const oAuthAccessTokensModel = { insertOne: jest.fn() };
+const usersModel = { findOne: jest.fn(), updateOne: jest.fn() };
 
 const client = {
 	clientId: 'client-id',
@@ -58,15 +55,22 @@ const exchange = (fields: Record<string, string>) =>
 		.send({ grant_type: 'authorization_code', code: 'auth-code', client_id: client.clientId, redirect_uri: client.redirectUri, ...fields });
 
 describe('OAuth2Server', () => {
+	beforeAll(() => {
+		mockModel('OAuthApps', oAuthAppsModel);
+		mockModel('OAuthAuthCodes', oAuthAuthCodesModel);
+		mockModel('OAuthAccessTokens', oAuthAccessTokensModel);
+		mockModel('Users', usersModel);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
-		jest.mocked(OAuthApps.findOneActiveByClientId).mockResolvedValue(client as never);
-		jest
-			.mocked(OAuthApps.findOneActiveByClientIdAndClientSecret)
-			.mockImplementation(async (_clientId, clientSecret) => (clientSecret === client.clientSecret ? client : null) as never);
-		jest.mocked(Users.findOne).mockResolvedValue({ _id: 'user-id' } as never);
-		jest.mocked(OAuthAuthCodes.deleteOne).mockResolvedValue({ acknowledged: true, deletedCount: 1 });
-		jest.mocked(OAuthAccessTokens.insertOne).mockResolvedValue({ acknowledged: true, insertedId: 'token-id' });
+		oAuthAppsModel.findOneActiveByClientId.mockResolvedValue(client as never);
+		oAuthAppsModel.findOneActiveByClientIdAndClientSecret.mockImplementation(
+			async (_clientId, clientSecret) => (clientSecret === client.clientSecret ? client : null) as never,
+		);
+		usersModel.findOne.mockResolvedValue({ _id: 'user-id' } as never);
+		oAuthAuthCodesModel.deleteOne.mockResolvedValue({ acknowledged: true, deletedCount: 1 });
+		oAuthAccessTokensModel.insertOne.mockResolvedValue({ acknowledged: true, insertedId: 'token-id' });
 	});
 
 	describe('POST /oauth/authorize', () => {
@@ -80,7 +84,7 @@ describe('OAuth2Server', () => {
 			expect(response.status).toBe(302);
 			const location = new URL(response.headers.location);
 			expect(location.searchParams.get('state')).toBe('client-state');
-			expect(OAuthAuthCodes.upsertByAuthCode).toHaveBeenCalledWith(
+			expect(oAuthAuthCodesModel.upsertByAuthCode).toHaveBeenCalledWith(
 				location.searchParams.get('code'),
 				expect.objectContaining({ clientId: client.clientId, userId: 'user-id', codeChallenge, codeChallengeMethod: 'S256' }),
 			);
@@ -90,7 +94,7 @@ describe('OAuth2Server', () => {
 			const response = await approve(authorizeQuery);
 
 			expect(response.status).toBe(302);
-			expect(OAuthAuthCodes.upsertByAuthCode).toHaveBeenCalledWith(
+			expect(oAuthAuthCodesModel.upsertByAuthCode).toHaveBeenCalledWith(
 				expect.any(String),
 				expect.not.objectContaining({ codeChallenge: expect.anything() }),
 			);
@@ -105,13 +109,13 @@ describe('OAuth2Server', () => {
 
 			expect(response.status).toBe(400);
 			expect(response.body).toMatchObject({ error: 'invalid_request' });
-			expect(OAuthAuthCodes.upsertByAuthCode).not.toHaveBeenCalled();
+			expect(oAuthAuthCodesModel.upsertByAuthCode).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('POST /oauth/token', () => {
 		it('issues a token when the verifier matches the stored challenge', async () => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
 			const response = await exchange({ client_secret: client.clientSecret, code_verifier: codeVerifier });
 
@@ -120,51 +124,51 @@ describe('OAuth2Server', () => {
 		});
 
 		it('rejects a verifier that does not match the stored challenge', async () => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
 			const response = await exchange({ client_secret: client.clientSecret, code_verifier: 'other-'.repeat(8) });
 
 			expect(response.status).toBe(400);
 			expect(response.body).toMatchObject({ error: 'invalid_grant' });
-			expect(OAuthAccessTokens.insertOne).not.toHaveBeenCalled();
-			expect(OAuthAuthCodes.deleteOne).toHaveBeenCalledWith({ authCode: 'auth-code' });
+			expect(oAuthAccessTokensModel.insertOne).not.toHaveBeenCalled();
+			expect(oAuthAuthCodesModel.deleteOne).toHaveBeenCalledWith({ authCode: 'auth-code' });
 		});
 
 		it('rejects a code issued with a challenge when the request carries no verifier', async () => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
 			const response = await exchange({ client_secret: client.clientSecret });
 
 			expect(response.status).toBe(400);
-			expect(OAuthAccessTokens.insertOne).not.toHaveBeenCalled();
+			expect(oAuthAccessTokensModel.insertOne).not.toHaveBeenCalled();
 		});
 
 		// Without this, anyone holding a confidential client's code could redeem it with a verifier of their own choosing.
 		it('requires the client secret even when the request carries a PKCE verifier', async () => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
 			const response = await exchange({ code_verifier: codeVerifier });
 
 			expect(response.status).toBe(400);
 			expect(response.body).toEqual({ error: 'invalid_request', error_description: 'Missing parameter: `client_secret`' });
-			expect(OAuthAuthCodes.findOneByAuthCode).not.toHaveBeenCalled();
+			expect(oAuthAuthCodesModel.findOneByAuthCode).not.toHaveBeenCalled();
 		});
 
 		it.each([
 			['a malformed Basic header', (test: request.Test) => test.set('Authorization', 'Basic !!!')],
 			['Basic credentials with an empty secret', (test: request.Test) => test.auth(client.clientId, '')],
 		])('does not take %s for the client secret', async (_case, withHeader) => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
 			const response = await withHeader(exchange({ code_verifier: codeVerifier }));
 
 			expect(response.status).toBe(400);
 			expect(response.body).toEqual({ error: 'invalid_request', error_description: 'Missing parameter: `client_secret`' });
-			expect(OAuthAccessTokens.insertOne).not.toHaveBeenCalled();
+			expect(oAuthAccessTokensModel.insertOne).not.toHaveBeenCalled();
 		});
 
 		it('accepts the client secret through HTTP Basic authentication', async () => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
 			const response = await exchange({ code_verifier: codeVerifier }).auth(client.clientId, client.clientSecret);
 
@@ -172,7 +176,7 @@ describe('OAuth2Server', () => {
 		});
 
 		it('keeps issuing tokens to clients that do not use PKCE', async () => {
-			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode() as never);
+			oAuthAuthCodesModel.findOneByAuthCode.mockResolvedValue(storedCode() as never);
 
 			const response = await exchange({ client_secret: client.clientSecret });
 

@@ -1,8 +1,8 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -142,9 +142,7 @@ async function saveUserProfile(
 
 			passwordPolicy.validate(settings.newPassword);
 
-			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
-				logout: false,
-			});
+			await Users.setPasswordHash(this.userId, await hashPassword(settings.newPassword));
 
 			if (user.requirePasswordChange) {
 				await Users.unsetRequirePasswordChange(user._id);
@@ -161,7 +159,7 @@ async function saveUserProfile(
 			try {
 				await Users.removeNonLoginTokensExcept(this.userId, this.token);
 			} catch (e) {
-				Accounts._clearAllLoginTokens(this.userId);
+				await Users.unsetLoginTokens(this.userId);
 			}
 		}
 	}

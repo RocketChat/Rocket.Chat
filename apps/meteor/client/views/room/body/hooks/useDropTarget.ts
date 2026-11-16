@@ -9,6 +9,7 @@ const hasURLToUpload = (dataTransfer: DataTransfer): boolean =>
 export const useDropTarget = (): {
 	triggerProps: {
 		onDragEnter: (event: DragEvent<Element>) => void;
+		onDragLeave: (event: DragEvent<Element>) => void;
 	};
 	overlayProps: {
 		visible: boolean;
@@ -27,11 +28,22 @@ export const useDropTarget = (): {
 		setVisible(true);
 	}, []);
 
+	const onDragLeave = useCallback((event: DragEvent) => {
+		event.stopPropagation();
+
+		const { relatedTarget } = event;
+		if (!(relatedTarget instanceof Node) || event.currentTarget.contains(relatedTarget)) {
+			return;
+		}
+
+		setVisible(false);
+	}, []);
+
 	const onDismiss = useCallback(() => {
 		setVisible(false);
 	}, []);
 
-	const triggerProps = useMemo(() => ({ onDragEnter }), [onDragEnter]);
+	const triggerProps = useMemo(() => ({ onDragEnter, onDragLeave }), [onDragEnter, onDragLeave]);
 	const overlayProps = useMemo(() => ({ visible, onDismiss }), [visible, onDismiss]);
 
 	return {

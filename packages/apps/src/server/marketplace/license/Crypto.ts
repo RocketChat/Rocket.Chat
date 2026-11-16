@@ -14,10 +14,14 @@ export class Crypto {
 
 		const decoded = publicDecrypt(publicKeySetting.value, Buffer.from(content, 'base64'));
 
-		let license;
+		let license: unknown;
 		try {
 			license = JSON.parse(decoded.toString());
 		} catch {
+			throw new Error('Invalid license provided');
+		}
+
+		if (typeof license !== 'object' || license === null || Array.isArray(license)) {
 			throw new Error('Invalid license provided');
 		}
 

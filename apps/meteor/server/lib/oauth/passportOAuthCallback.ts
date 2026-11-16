@@ -4,20 +4,13 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LoginCodes } from '@rocket.chat/models';
 import type { Request, Response } from 'express';
-import { Accounts } from 'meteor/accounts-base';
 
 import { doesUserRequire2FA } from './twoFactorAuth';
+import { issueLoginToken } from '../auth/issueLoginToken';
 
 const logger = new Logger('OAuth');
 
 type LaunchStyle = 'popup' | 'redirect' | undefined;
-
-const createLoginToken = async (userId: string) => {
-	const stampedToken = Accounts._generateStampedLoginToken();
-	await Accounts._insertLoginToken(userId, stampedToken);
-
-	return stampedToken.token;
-};
 
 const sendPopupMessage = (res: Response, payload: unknown) => {
 	const nonce = crypto.randomBytes(16).toString('base64');
@@ -46,7 +39,7 @@ const handlePopupStyleOAuth = async (res: Response, oAuthUser: IUser, loginClien
 		return;
 	}
 
-	const token = await createLoginToken(oAuthUser._id);
+	const { token } = await issueLoginToken(oAuthUser._id);
 
 	if (loginClient) {
 		sendPopupMessage(res, {

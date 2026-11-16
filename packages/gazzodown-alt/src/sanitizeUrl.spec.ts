@@ -1,4 +1,4 @@
-import { sanitizeUrl } from './sanitizeUrl';
+import { sanitizeUrl } from './sanitizeUrl.js';
 
 describe('allowed schemes', () => {
 	it.each([

@@ -1,6 +1,7 @@
 import { Authorization, ClientSafeError, User } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Accounts } from 'meteor/accounts-base';
+
+import { issueLoginToken } from '../../lib/auth/issueLoginToken';
 
 declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
@@ -19,8 +20,7 @@ export async function generateAccessToken(userId: string, secret: string, caller
 		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 
-	const token = Accounts._generateStampedLoginToken();
-	await Accounts._insertLoginToken(userId, token);
+	const token = await issueLoginToken(userId);
 
 	await User.ensureLoginTokensLimit(userId);
 

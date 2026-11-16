@@ -48,5 +48,5 @@ export function assertAppAvailable(v: unknown): asserts v is App {
 export function assertHandlerFunction(v: unknown): asserts v is Function {
 	if (v instanceof Function) return;
 
-	throw JsonRpcError.internalError({ err: `Expected handler function, got ${v}`, code: Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING });
+	throw JsonRpcError.internalError({ err: `Expected handler function, got ${typeof v}`, code: Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING });
 }

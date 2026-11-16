@@ -333,6 +333,4 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		const subscriptions = Array.from(this.client.subscriptions.keys());
 		return Promise.all(subscriptions.map((subscription) => this.client.unsubscribe(subscription)));
 	}
-
-	protected static override defaultOptions = { retryCount: 3, retryTime: 10000 };
 }

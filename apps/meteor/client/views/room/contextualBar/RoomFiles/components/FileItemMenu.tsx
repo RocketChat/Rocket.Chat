@@ -3,8 +3,9 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Text } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { memo, useEffect, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { download, downloadAs } from '../../../../../lib/download';
 import { getURL } from '../../../../../lib/getURL';
@@ -29,7 +30,7 @@ if ('serviceWorker' in navigator) {
 }
 
 const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const userId = useUserId();
 	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, fileData, userId);
 	const canDownloadFile = !fileData.encryption || 'serviceWorker' in navigator;

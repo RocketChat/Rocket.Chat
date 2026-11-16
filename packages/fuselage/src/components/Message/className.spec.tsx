@@ -37,76 +37,78 @@ import ThreadMessageOrigin from './ThreadMessage/ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessage/ThreadMessageRow';
 import { render } from '../../testing';
 
-const cases: [string, ReactElement, string][] = [
-	['MessageBlock', <MessageBlock data-testid='part' className='custom' />, 'rcx-message-block'],
-	['MessageContainer', <MessageContainer data-testid='part' className='custom' />, 'rcx-item__content'],
-	['MessageContainerFixed', <MessageContainerFixed data-testid='part' className='custom' />, 'rcx-message-container--fixed'],
-	['MessageHeader', <MessageHeader data-testid='part' className='custom' />, 'rcx-message-header'],
-	['MessageLeftContainer', <MessageLeftContainer data-testid='part' className='custom' />, 'rcx-message-container--left'],
-	['MessageName', <MessageName data-testid='part' className='custom' />, 'rcx-message-header__name'],
-	['MessageNameContainer', <MessageNameContainer data-testid='part' className='custom' />, 'rcx-message-header__name-container'],
-	['MessageRole', <MessageRole data-testid='part' className='custom' />, 'rcx-tag'],
-	['MessageRoles', <MessageRoles data-testid='part' className='custom' />, 'rcx-message-header__roles'],
-	['MessageTimestamp', <MessageTimestamp data-testid='part' className='custom' />, 'rcx-message-header__time'],
-	['MessageUsername', <MessageUsername data-testid='part' className='custom' />, 'rcx-message-header__username'],
-	['MessageDivider', <MessageDivider data-testid='part' className='custom' unreadLabel='New' />, 'rcx-message-divider--unread'],
-	['MessageGenericPreview', <MessageGenericPreview data-testid='part' className='custom' />, 'rcx-message-generic-preview'],
+const cases: [string, () => ReactElement, string][] = [
+	['MessageBlock', () => <MessageBlock data-testid='part' className='custom' />, 'rcx-message-block'],
+	['MessageContainer', () => <MessageContainer data-testid='part' className='custom' />, 'rcx-item__content'],
+	['MessageContainerFixed', () => <MessageContainerFixed data-testid='part' className='custom' />, 'rcx-message-container--fixed'],
+	['MessageHeader', () => <MessageHeader data-testid='part' className='custom' />, 'rcx-message-header'],
+	['MessageLeftContainer', () => <MessageLeftContainer data-testid='part' className='custom' />, 'rcx-message-container--left'],
+	['MessageName', () => <MessageName data-testid='part' className='custom' />, 'rcx-message-header__name'],
+	['MessageNameContainer', () => <MessageNameContainer data-testid='part' className='custom' />, 'rcx-message-header__name-container'],
+	['MessageRole', () => <MessageRole data-testid='part' className='custom' />, 'rcx-tag'],
+	['MessageRoles', () => <MessageRoles data-testid='part' className='custom' />, 'rcx-message-header__roles'],
+	['MessageTimestamp', () => <MessageTimestamp data-testid='part' className='custom' />, 'rcx-message-header__time'],
+	['MessageUsername', () => <MessageUsername data-testid='part' className='custom' />, 'rcx-message-header__username'],
+	['MessageDivider', () => <MessageDivider data-testid='part' className='custom' unreadLabel='New' />, 'rcx-message-divider--unread'],
+	['MessageGenericPreview', () => <MessageGenericPreview data-testid='part' className='custom' />, 'rcx-message-generic-preview'],
 	[
 		'MessageGenericPreviewThumb',
-		<MessageGenericPreviewThumb data-testid='part' className='custom' />,
+		() => <MessageGenericPreviewThumb data-testid='part' className='custom' />,
 		'rcx-message-generic-preview__thumb',
 	],
 	[
 		'MessageGenericPreviewTitle',
-		<MessageGenericPreviewTitle data-testid='part' className='custom' />,
+		() => <MessageGenericPreviewTitle data-testid='part' className='custom' />,
 		'rcx-message-generic-preview__title',
 	],
-	['MessageMetrics', <MessageMetrics data-testid='part' className='custom' />, 'rcx-message-metrics__content-wrapper'],
-	['MessageMetricsItemLabel', <MessageMetricsItemLabel data-testid='part' className='custom' />, 'rcx-message-metrics__item-label'],
-	['MessageReactions', <MessageReactions data-testid='part' className='custom' />, 'rcx-message-reactions__container'],
-	['MessageStatusIndicator', <MessageStatusIndicator data-testid='part' className='custom' />, 'rcx-message-status-indicator'],
+	['MessageMetrics', () => <MessageMetrics data-testid='part' className='custom' />, 'rcx-message-metrics__content-wrapper'],
+	['MessageMetricsItemLabel', () => <MessageMetricsItemLabel data-testid='part' className='custom' />, 'rcx-message-metrics__item-label'],
+	['MessageReactions', () => <MessageReactions data-testid='part' className='custom' />, 'rcx-message-reactions__container'],
+	['MessageStatusIndicator', () => <MessageStatusIndicator data-testid='part' className='custom' />, 'rcx-message-status-indicator'],
 	[
 		'MessageStatusIndicatorItem',
-		<MessageStatusIndicatorItem data-testid='part' className='custom' name='star' />,
+		() => <MessageStatusIndicatorItem data-testid='part' className='custom' name='star' />,
 		'rcx-message-status-indicator__item',
 	],
-	['MessageSystem', <MessageSystem data-testid='part' className='custom' />, 'rcx-message-system'],
-	['MessageSystemBlock', <MessageSystemBlock data-testid='part' className='custom' />, 'rcx-message-system__block'],
-	['MessageSystemBody', <MessageSystemBody data-testid='part' className='custom' />, 'rcx-message-system__body'],
-	['MessageSystemContainer', <MessageSystemContainer data-testid='part' className='custom' />, 'rcx-message-system__container'],
-	['MessageSystemName', <MessageSystemName data-testid='part' className='custom' />, 'rcx-message-system__name'],
+	['MessageSystem', () => <MessageSystem data-testid='part' className='custom' />, 'rcx-message-system'],
+	['MessageSystemBlock', () => <MessageSystemBlock data-testid='part' className='custom' />, 'rcx-message-system__block'],
+	['MessageSystemBody', () => <MessageSystemBody data-testid='part' className='custom' />, 'rcx-message-system__body'],
+	['MessageSystemContainer', () => <MessageSystemContainer data-testid='part' className='custom' />, 'rcx-message-system__container'],
+	['MessageSystemName', () => <MessageSystemName data-testid='part' className='custom' />, 'rcx-message-system__name'],
 	[
 		'MessageSystemTimestamp',
-		<MessageSystemTimestamp data-testid='part' className='custom'>
-			12:00
-		</MessageSystemTimestamp>,
+		() => (
+			<MessageSystemTimestamp data-testid='part' className='custom'>
+				12:00
+			</MessageSystemTimestamp>
+		),
 		'rcx-message-system__time',
 	],
-	['ThreadMessage', <ThreadMessage data-testid='part' className='custom' />, 'rcx-message-thread'],
-	['ThreadMessageBody', <ThreadMessageBody data-testid='part' className='custom' />, 'rcx-message-thread__message'],
-	['ThreadMessageContainer', <ThreadMessageContainer data-testid='part' className='custom' />, 'rcx-message-thread__container'],
+	['ThreadMessage', () => <ThreadMessage data-testid='part' className='custom' />, 'rcx-message-thread'],
+	['ThreadMessageBody', () => <ThreadMessageBody data-testid='part' className='custom' />, 'rcx-message-thread__message'],
+	['ThreadMessageContainer', () => <ThreadMessageContainer data-testid='part' className='custom' />, 'rcx-message-thread__container'],
 	[
 		'MessageGenericPreviewDescription',
-		<MessageGenericPreviewDescription data-testid='part' className='custom' />,
+		() => <MessageGenericPreviewDescription data-testid='part' className='custom' />,
 		'rcx-message-generic-preview__description',
 	],
 	[
 		'MessageGenericPreviewFooter',
-		<MessageGenericPreviewFooter data-testid='part' className='custom' />,
+		() => <MessageGenericPreviewFooter data-testid='part' className='custom' />,
 		'rcx-message-generic-preview__footer',
 	],
 	[
 		'MessageStatusPrivateIndicator',
-		<MessageStatusPrivateIndicator data-testid='part' className='custom' />,
+		() => <MessageStatusPrivateIndicator data-testid='part' className='custom' />,
 		'rcx-message-status-indicator__item',
 	],
-	['ThreadMessageOrigin', <ThreadMessageOrigin data-testid='part' className='custom' />, 'rcx-message-thread__origin'],
-	['ThreadMessageRow', <ThreadMessageRow data-testid='part' className='custom' />, 'rcx-message-thread__row'],
+	['ThreadMessageOrigin', () => <ThreadMessageOrigin data-testid='part' className='custom' />, 'rcx-message-thread__origin'],
+	['ThreadMessageRow', () => <ThreadMessageRow data-testid='part' className='custom' />, 'rcx-message-thread__row'],
 ];
 
 describe('consumer className on Message parts', () => {
 	it.each(cases)('%s keeps its own class next to the consumer one', (_name, element, ownClass) => {
-		render(element);
+		render(element());
 
 		expect(screen.getByTestId('part')).toHaveClass(ownClass, 'custom');
 	});

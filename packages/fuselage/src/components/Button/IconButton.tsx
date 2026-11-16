@@ -69,12 +69,12 @@ function IconButton({
 	const variant = variantProp === 'primary' ? 'secondary-info' : (variantProp ?? '');
 
 	const kindAndVariantProps = useMemo(() => {
-		const variantProp = {} as any;
+		const variantProp: Record<string, boolean> = {};
 		if (variant) {
-			variantProp[`${getVariantClass(variant)}`] = true;
+			variantProp[String(getVariantClass(variant))] = true;
 		}
 		if (pressed) {
-			variantProp[`${getPressedClass(variant)}`] = true;
+			variantProp[String(getPressedClass(variant))] = true;
 		}
 		return variantProp;
 	}, [variant, pressed]);

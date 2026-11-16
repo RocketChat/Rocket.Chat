@@ -10,14 +10,15 @@ import {
 	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import BusinessHoursRow from './BusinessHoursRow';
 import FilterByText from '../../../components/FilterByText';
 
 const BusinessHoursTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 
 	const query = useDebouncedValue(

@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, ContextualbarSection, Select } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, ContextualbarSection, Select } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -20,6 +20,7 @@ import { Virtuoso } from 'react-virtuoso';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../../components/FilterBar';
+import ListViewport from '../../../../../components/ListViewport';
 import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
@@ -99,7 +100,7 @@ const CannedResponseList = ({
 			<ContextualbarContent flush ref={ref}>
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
-					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={cannedListRef}>
+					<ListViewport ref={cannedListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ width: inlineSize }}
@@ -119,7 +120,7 @@ const CannedResponseList = ({
 								)}
 							/>
 						</VirtualizedScrollbars>
-					</Box>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 			{canCreateCannedResponse && (

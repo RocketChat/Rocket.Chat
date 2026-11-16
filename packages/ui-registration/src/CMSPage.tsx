@@ -1,0 +1,44 @@
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import {
+	LayoutLogoImage,
+	VerticalWizardLayout,
+	VerticalWizardLayoutFooter,
+	VerticalWizardLayoutForm,
+	VerticalWizardLayoutTitle,
+} from '@rocket.chat/layout';
+import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { LoginPoweredBy } from './components/LoginPoweredBy';
+
+export type CMSPageProps = {
+	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
+};
+
+const CMSPage = ({ page }: CMSPageProps) => {
+	const { t } = useTranslation();
+	const pageContent = useSetting(page, '');
+
+	const customLogo = useAssetWithDarkModePath('logo');
+	const customBackground = useAssetWithDarkModePath('background');
+
+	const dangerousContent = useMemo(() => ({ __html: pageContent }), [pageContent]);
+
+	return (
+		<VerticalWizardLayout background={customBackground} logo={customLogo ? <LayoutLogoImage src={customLogo} alt='Logo' /> : undefined}>
+			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
+			<VerticalWizardLayoutForm>
+				<Box padding={32}>
+					<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} style={{ float: 'right' }} />
+					<Box withRichContent dangerouslySetInnerHTML={dangerousContent} />
+				</Box>
+			</VerticalWizardLayoutForm>
+			<VerticalWizardLayoutFooter>
+				<LoginPoweredBy />
+			</VerticalWizardLayoutFooter>
+		</VerticalWizardLayout>
+	);
+};
+
+export default CMSPage;

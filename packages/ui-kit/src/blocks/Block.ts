@@ -1,5 +1,5 @@
-import type { BlockElement } from './BlockElement';
-import type { LayoutBlock } from './LayoutBlock';
-import type { TextObject } from './TextObject';
+import type { BlockElement } from './BlockElement.js';
+import type { LayoutBlock } from './LayoutBlock.js';
+import type { TextObject } from './TextObject.js';
 
 export type Block = TextObject | BlockElement | LayoutBlock;

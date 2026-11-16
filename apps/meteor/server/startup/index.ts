@@ -4,6 +4,7 @@ import { ensureMessagesTextIndex } from './ensureMessagesTextIndex';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';
 import './presenceTroubleshoot';
+import './disconnectGracePeriod';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';

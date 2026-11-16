@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -30,7 +31,6 @@ const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
 			methods: sandbox.stub(),
 		},
 	},
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/federation-matrix': { validateFederatedUsername: validateFederatedUsernameMock },
 	'../../lib/RateLimiter': { RateLimiterClass: { limitMethod: sandbox.stub() } },
 	'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionMock },
@@ -47,6 +47,11 @@ const me = { _id: 'me', username: 'me' };
 const other = { _id: 'other', username: 'Other' };
 
 describe('createDirectMessage', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+		mockModel('Rooms', modelsMock.Rooms);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 		modelsMock.Users.findOneById.resolves(me);

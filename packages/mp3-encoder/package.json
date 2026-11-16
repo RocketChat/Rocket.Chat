@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mp3-encoder",
-	"version": "0.31.27-rc.0",
+	"version": "0.31.27",
 	"description": "A LAME encoder to be used in web workers",
 	"type": "module",
 	"keywords": [
