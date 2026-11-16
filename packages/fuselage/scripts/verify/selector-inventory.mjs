@@ -52,7 +52,7 @@ const grepRows = () => {
 };
 
 const COMMENT_LINE = /^\s*(\/\/|\/\*|\*)/;
-const DOM_LOOKUP = /\b(?:querySelector(?:All)?|closest|matches)\(/;
+const DOM_LOOKUP = /\b(?:querySelector(?:All)?|closest|matches)(?:<[^>]*>)?\(/;
 
 const hits = [];
 for (const row of grepRows().split('\n').filter(Boolean)) {
