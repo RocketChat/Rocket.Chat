@@ -1,5 +1,5 @@
 // Fixtures break these rules on purpose, to prove the helpers catch it.
-/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/anchor-is-valid, jsx-a11y/interactive-supports-focus, react/no-multi-comp */
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/anchor-is-valid, jsx-a11y/interactive-supports-focus */
 import { render } from '@testing-library/react';
 import { createRef, useState } from 'react';
 import { fn } from 'storybook/test';
