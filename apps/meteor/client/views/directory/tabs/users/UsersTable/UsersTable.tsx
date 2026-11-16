@@ -97,6 +97,11 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 		count: itemsPerPage,
 	});
 
+	if(data?.result.length > 0)
+	{
+		data?.result = data?.result.sort((a, b) => (a.name < b.name) ? -1 : 1);
+	}
+
 	const handleClick = useCallback(
 		(username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => {
 			if (!username) return;
