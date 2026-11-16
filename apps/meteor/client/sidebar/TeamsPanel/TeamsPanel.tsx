@@ -1,7 +1,8 @@
-import { Box, IconButton, SidepanelHeader, SidepanelHeaderActions, SidepanelHeaderTitle } from '@rocket.chat/fuselage';
-import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
+import { Box, IconButton, SidepanelHeader, SidepanelHeaderActions, SidepanelHeaderTitle, SidepanelSearch } from '@rocket.chat/fuselage';
+import { GenericNoResults, useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { usePermission, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import type { ChangeEvent, KeyboardEvent } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TeamsListWrapper from './TeamsListWrapper';
@@ -24,10 +25,23 @@ const TeamsPanel = () => {
 	const canCreateTeam = usePermission('create-team');
 	const createTeam = useCreateRoomModal(CreateTeamModal);
 
+	const searchId = useId();
+	const searchButtonRef = useRef<HTMLButtonElement>(null);
+	const [searchOpen, setSearchOpen] = useState(false);
+	const [filterText, setFilterText] = useState('');
+	const filtering = Boolean(filterText.trim());
+
+	const closeSearch = () => {
+		setSearchOpen(false);
+		setFilterText('');
+		searchButtonRef.current?.focus();
+	};
+
 	const allTeams = useTeamSubscriptions();
 	const expandedTeams = teamsPanelStore((state) => state.expandedTeams);
 	const toggleTeam = teamsPanelStore((state) => state.toggleTeam);
-	const teams = useTeamsList({ teams: allTeams, expandedTeams });
+	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText });
+	const hasTeams = allTeams.length > 0;
 
 	const formatTime = useShortTimeAgo();
 	const sidebarViewMode = useUserPreference<RoomListItemViewMode>('sidebarViewMode') || 'extended';
@@ -58,18 +72,48 @@ const TeamsPanel = () => {
 					{t('Teams')}
 				</SidepanelHeaderTitle>
 				<SidepanelHeaderActions>
+					{hasTeams && (
+						<IconButton
+							ref={searchButtonRef}
+							icon='magnifier'
+							size='small'
+							title={t('Search')}
+							aria-label={t('Teams_panel_search')}
+							aria-expanded={searchOpen}
+							aria-controls={searchId}
+							pressed={searchOpen}
+							onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
+						/>
+					)}
 					{canCreateTeam && <IconButton icon='pencil-box' size='small' title={t('Teams_New_Title')} onClick={createTeam} />}
 				</SidepanelHeaderActions>
 			</SidepanelHeader>
-			{teams.length === 0 ? (
-				<TeamsPanelEmpty />
-			) : (
+			{hasTeams && searchOpen && (
+				<SidepanelSearch
+					variant='rooms-list'
+					id={searchId}
+					small={sidebarViewMode === 'condensed'}
+					autoFocus
+					value={filterText}
+					onChange={(event: ChangeEvent<HTMLInputElement>) => setFilterText(event.currentTarget.value)}
+					onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
+						if (event.key === 'Escape') {
+							closeSearch();
+						}
+					}}
+					placeholder={t('Teams_panel_search')}
+					aria-label={t('Teams_panel_search')}
+				/>
+			)}
+			{!hasTeams && <TeamsPanelEmpty />}
+			{hasTeams && teams.length === 0 && <GenericNoResults />}
+			{teams.length > 0 && (
 				<Box position='relative' overflow='hidden' height='full' ref={ref}>
 					<SidebarVirtualList
 						groups={virtualGroups}
 						as={TeamsListWrapper}
 						getItemKey={(item) => item._id}
-						renderGroup={(team) => <TeamsPanelCollapser team={team} onToggle={() => toggleTeam(team.key)} />}
+						renderGroup={(team) => <TeamsPanelCollapser team={team} onToggle={() => !filtering && toggleTeam(team.key)} />}
 						renderItem={(item, _itemIndex, _team, _teamIndex, rowIndex) => (
 							<RoomListRowWrapper data-index={rowIndex}>
 								<RoomListRow data={itemData} item={item} />

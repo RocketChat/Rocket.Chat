@@ -55,21 +55,41 @@ export const useTeamSubscriptions = (): TeamSubscriptions[] => {
 	}, [subscriptions]);
 };
 
-export const useTeamsList = ({ teams, expandedTeams }: { teams: TeamSubscriptions[]; expandedTeams: string[] }): SidebarTeam[] =>
-	useMemo(
-		() =>
-			teams.map(({ key, title, main, rooms }) => {
-				const allRooms = [main, ...rooms];
-				const expanded = expandedTeams.includes(key);
+const matchesFilter = (room: { fname?: string; name?: string }, text: string) =>
+	[room.fname, room.name].some((name) => name?.toLowerCase().includes(text));
 
-				return {
+export const useTeamsList = ({
+	teams,
+	expandedTeams,
+	filterText = '',
+}: {
+	teams: TeamSubscriptions[];
+	expandedTeams: string[];
+	filterText?: string;
+}): SidebarTeam[] =>
+	useMemo(() => {
+		const text = filterText.trim().toLowerCase();
+
+		return teams.flatMap(({ key, title, main, rooms }) => {
+			const allRooms = [main, ...rooms];
+
+			if (text) {
+				const matchingRooms = matchesFilter(main, text) ? allRooms : rooms.filter((room) => matchesFilter(room, text));
+
+				return matchingRooms.length ? [{ key, title, main, rooms: matchingRooms, expanded: true, unreadInfo: emptyUnreadInfo() }] : [];
+			}
+
+			const expanded = expandedTeams.includes(key);
+
+			return [
+				{
 					key,
 					title,
 					main,
 					rooms: expanded ? allRooms : [],
 					expanded,
 					unreadInfo: expanded ? emptyUnreadInfo() : buildUnreadInfo(allRooms),
-				};
-			}),
-		[teams, expandedTeams],
-	);
+				},
+			];
+		});
+	}, [teams, expandedTeams, filterText]);
