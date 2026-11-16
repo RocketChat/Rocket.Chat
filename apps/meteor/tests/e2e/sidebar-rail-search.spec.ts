@@ -107,6 +107,7 @@ test.describe.serial('sidebar rail: Inbox search', () => {
 					await sidebar.inputSearchRooms.fill(searchTerm);
 					await expect(sidebar.getCategoryCollapser(category)).toBeVisible();
 					await expect(sidebar.getSidebarItemByName(matchingChannel)).toBeVisible();
+					await expect.poll(() => sidebar.getCategoryOrder()).toHaveLength(2);
 					orderWhileFiltering = await sidebar.getCategoryOrder();
 				});
 
