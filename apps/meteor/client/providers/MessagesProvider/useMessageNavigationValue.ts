@@ -23,6 +23,16 @@ export const useMessageNavigationValue = (): MessageNavigationContextValue => {
 				void goToRoom(rid);
 			},
 			openThread: ({ rid, tmid, messageId }) => goToThread({ rid, tmid, msg: messageId }),
+			replyInThread: (message) => {
+				const routeName = router.getRouteName();
+
+				if (routeName) {
+					router.navigate({
+						name: routeName,
+						params: { ...router.getRouteParameters(), tab: 'thread', context: message.tmid || message._id },
+					});
+				}
+			},
 			jumpToMessage: (message) => setMessageJumpQueryStringParameter(message._id),
 			getPermalink: (messageId) => getPermaLink(messageId),
 			openDirectMessage: (username) => {

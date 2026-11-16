@@ -32,3 +32,4 @@ export {
 	type QuoteAttachmentProps as MessageQuoteAttachmentProps,
 } from './content/attachments/QuoteAttachment';
 export { useReloadOnError as useMediaReloadOnError } from './content/attachments/file/hooks/useReloadOnError';
+export { default as MessageToolbarHolder, type MessageToolbarHolderProps } from './MessageToolbarHolder';

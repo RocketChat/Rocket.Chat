@@ -163,6 +163,7 @@ const EmojiPickerStoryProvider = ({ tone, children }: EmojiPickerStoryProviderPr
 		handlePreview: (emoji, name) => setEmojiToPreview({ emoji, name }),
 		handleRemovePreview: () => setEmojiToPreview(null),
 		addRecentEmoji: (emoji) => setRecentEmojis((recent) => [emoji, ...recent.filter((item) => item !== emoji)]),
+		addFrequentEmoji: () => undefined,
 		emojiListByCategory,
 		recentEmojis,
 		setRecentEmojis,

@@ -1,12 +1,17 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { LayoutContext } from '@rocket.chat/ui-contexts';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useContext } from 'react';
 import type { ReactNode } from 'react';
 
 import AuditMessageList from './AuditMessageList';
-import { createFakeMessage } from '../../../../tests/mocks/data';
+import { createFakeMessage, createFakeRoom } from '../../../../tests/mocks/data';
+import RoomMessage from '../../../components/message/variants/RoomMessage';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
+import { Rooms } from '../../../stores';
+import { RoomContext } from '../../../views/room/contexts/RoomContext';
 
 jest.mock('../../../../rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({ roomCoordinator: { isLivechatRoom: () => false } }));
@@ -160,4 +165,50 @@ it('shows the attachments of an audited message without a toolbar (message-attac
 
 	expect(screen.getByRole('img', { name: 'The image' })).toBeInTheDocument();
 	expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+});
+
+describe('the toolbar of a message', () => {
+	const room = createFakeRoom({ _id: 'audited-room', t: 'c' });
+
+	beforeAll(() => {
+		window.DISABLE_ANIMATION = true;
+		global.IntersectionObserver = class {
+			observe = jest.fn();
+
+			disconnect = jest.fn();
+		} as never;
+	});
+
+	beforeEach(() => {
+		Rooms.state.store(room);
+	});
+
+	afterEach(() => {
+		Rooms.state.replaceAll([]);
+	});
+
+	it('shows none in the audit, on hover or on focus, while a place that allows interaction shows one (message-toolbar R26)', async () => {
+		const interactive = audited({ _id: 'interactive', rid: room._id, msg: 'in the room' });
+		const read = audited({ _id: 'audited', rid: room._id, msg: 'in the audit' });
+
+		render(
+			<>
+				<RoomContext.Provider value={{ rid: room._id, room, subscribed: true }}>
+					<MessagesProvider room={room}>
+						<RoomMessage message={interactive} sequential={false} unread={false} mention={false} all={false} showUserAvatar />
+					</MessagesProvider>
+				</RoomContext.Provider>
+				<AuditMessageList messages={[read]} />
+			</>,
+			{ wrapper: mockAppRoot().withJohnDoe().build() },
+		);
+
+		const audit = screen.getByRole('listitem', { name: /in the audit/ });
+		await userEvent.hover(audit);
+		act(() => audit.focus());
+
+		const toolbars = await screen.findAllByRole('toolbar', { name: 'Message_actions' });
+		expect(toolbars).toHaveLength(1);
+		expect(within(screen.getByRole('listitem', { name: /in the room/ })).getByRole('toolbar')).toBe(toolbars[0]);
+	});
 });

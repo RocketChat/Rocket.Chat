@@ -59,3 +59,9 @@ it('exports the attachments (message-attachments R12)', () => {
 		expect(pkg).toHaveProperty(name);
 	}
 });
+
+it('exports the toolbar holder and the toolbar context (message-toolbar R27)', () => {
+	for (const name of ['MessageToolbarHolder', 'MessageToolbarContext', 'messageToolbarDefaultValue', 'useMessageToolbar']) {
+		expect(pkg).toHaveProperty(name);
+	}
+});

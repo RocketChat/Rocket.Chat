@@ -1,14 +1,16 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
 import RoomMessage from './RoomMessage';
-import { createFakeRoom } from '../../../../tests/mocks/data';
+import ThreadMessage from './ThreadMessage';
+import { createFakeRoom, createFakeSubscription } from '../../../../tests/mocks/data';
 import { MessagesProvider } from '../../../providers/MessagesProvider';
 import MessageListProvider from '../../../views/room/MessageList/providers/MessageListProvider';
 import { ChatContext } from '../../../views/room/contexts/ChatContext';
+import { selectedMessageStore } from '../../../views/room/providers/SelectedMessageStore';
 
 const room = createFakeRoom({ t: 'c' });
 
@@ -164,4 +166,115 @@ it('sends the message of an action button of an attachment through the open chat
 	await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
 
 	await waitFor(() => expect(sendMessage).toHaveBeenCalledWith({ text: '/retry 42' }));
+});
+
+describe('the toolbar', () => {
+	const subscription = createFakeSubscription({ rid: room._id, t: 'c' });
+	const conversationChat = {
+		data: { findRoom: async () => room, findSubscription: async () => subscription, canDeleteMessage: async () => true },
+	} as never;
+
+	beforeAll(() => {
+		window.DISABLE_ANIMATION = true;
+		global.IntersectionObserver = class {
+			observe = jest.fn();
+
+			disconnect = jest.fn();
+		} as never;
+	});
+
+	const toolbarWrapper = () =>
+		mockAppRoot()
+			.withJohnDoe()
+			.withSetting('Threads_enabled', true)
+			.wrap((children: ReactNode) => <ChatContext.Provider value={conversationChat}>{children}</ChatContext.Provider>)
+			.build();
+
+	const inPlace = (children: ReactNode) => (
+		<MessagesProvider room={room} subscription={subscription}>
+			{children}
+		</MessagesProvider>
+	);
+
+	const inlineButtons = async () =>
+		within(await screen.findByRole('toolbar', { name: 'Message_actions' }))
+			.getAllByRole('button')
+			.map((button) => button.getAttribute('aria-label') ?? button.getAttribute('title'));
+
+	it("shows the package's toolbar for a message of the room, for the place it is shown in (message-toolbar R25)", async () => {
+		render(inPlace(<RoomMessage message={message} {...messageProps} />), { wrapper: toolbarWrapper() });
+
+		expect(await inlineButtons()).toEqual(['Add_Reaction', 'Quote', 'Reply_in_thread', 'Forward_message', 'More']);
+	});
+
+	it('shows the toolbar of the place the message is given (message-toolbar R25)', async () => {
+		render(inPlace(<RoomMessage message={message} context='pinned' {...messageProps} />), { wrapper: toolbarWrapper() });
+
+		expect(await inlineButtons()).toEqual(['Jump_to_message', 'More']);
+	});
+
+	it("shows the package's toolbar for the message of a thread (message-toolbar R25)", async () => {
+		render(inPlace(<ThreadMessage message={{ ...message, tmid: 'threadId' }} sequential={false} unread={false} showUserAvatar />), {
+			wrapper: toolbarWrapper(),
+		});
+
+		expect(await inlineButtons()).toEqual(['Add_Reaction', 'Quote', 'Forward_message', 'Jump_to_message', 'More']);
+	});
+
+	it('shows the toolbar of a call in a thread (message-toolbar R25)', async () => {
+		render(
+			inPlace(
+				<ThreadMessage
+					message={{ ...message, tmid: 'threadId', t: 'videoconf' } as never}
+					sequential={false}
+					unread={false}
+					showUserAvatar
+				/>,
+			),
+			{ wrapper: toolbarWrapper() },
+		);
+
+		expect(await inlineButtons()).toEqual(['Add_Reaction', 'Jump_to_message', 'More']);
+	});
+
+	it.each<[string, Partial<IMessage>]>([
+		['a private message', { private: true }],
+		['an end-to-end encrypted message that is still pending', { t: 'e2e', e2e: 'pending' }],
+	])('shows no toolbar on %s (message-toolbar R25)', async (_name, overrides) => {
+		const { rerender } = render(inPlace(<RoomMessage message={message} {...messageProps} />), { wrapper: toolbarWrapper() });
+		expect(await screen.findByRole('toolbar', { name: 'Message_actions' })).toBeInTheDocument();
+
+		rerender(inPlace(<RoomMessage message={{ ...message, ...overrides }} {...messageProps} />));
+
+		expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+	});
+
+	it('shows no toolbar while messages are being selected (message-toolbar R25)', async () => {
+		render(inPlace(<RoomMessage message={message} {...messageProps} />), { wrapper: toolbarWrapper() });
+		expect(await screen.findByRole('toolbar', { name: 'Message_actions' })).toBeInTheDocument();
+
+		act(() => selectedMessageStore.setIsSelecting(true));
+
+		expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+		act(() => selectedMessageStore.setIsSelecting(false));
+	});
+
+	it('shows no toolbar where interaction is off (message-toolbar R26)', async () => {
+		render(
+			<>
+				<MessagesProvider room={room} subscription={subscription}>
+					<RoomMessage message={{ ...message, _id: 'interactive' }} {...messageProps} />
+				</MessagesProvider>
+				<MessagesProvider room={room} subscription={subscription} allowsInteraction={false}>
+					<RoomMessage message={{ ...message, _id: 'read-only' }} {...messageProps} />
+				</MessagesProvider>
+			</>,
+			{ wrapper: toolbarWrapper() },
+		);
+		expect(await screen.findByRole('toolbar', { name: 'Message_actions' })).toBeInTheDocument();
+
+		expect(screen.getAllByRole('toolbar')).toHaveLength(1);
+		// oxlint-disable-next-line testing-library/no-node-access
+		expect(screen.getByRole('toolbar')).toBe(within(document.getElementById('interactive') as HTMLElement).getByRole('toolbar'));
+	});
 });

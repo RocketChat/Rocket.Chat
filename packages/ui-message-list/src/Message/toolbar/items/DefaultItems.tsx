@@ -9,14 +9,13 @@ export type DefaultItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
-	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const DefaultItems = ({ message, room, subscription, onChangeMenuVisibility }: DefaultItemsProps) => {
+const DefaultItems = ({ message, room, subscription }: DefaultItemsProps) => {
 	return (
 		<>
-			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
-			<QuoteMessageAction message={message} subscription={subscription} />
+			<ReactionMessageAction message={message} room={room} subscription={subscription} />
+			<QuoteMessageAction message={message} room={room} subscription={subscription} />
 			<ReplyInThreadMessageAction message={message} room={room} subscription={subscription} />
 			<ForwardMessageAction message={message} room={room} />
 		</>

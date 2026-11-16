@@ -38,7 +38,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 
 	useUpdateCustomEmoji();
 
-	const addFrequentEmojis = useCallback(
+	const addFrequentEmoji = useCallback(
 		(emoji: string) => {
 			const empty: [string, number][] = frequentEmojis.some(([emojiName]) => emojiName === emoji) ? [] : [[emoji, 0]];
 
@@ -58,7 +58,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 
 	const addRecentEmoji = useCallback(
 		(_emoji: string) => {
-			addFrequentEmojis(_emoji);
+			addFrequentEmoji(_emoji);
 
 			const recent = recentEmojis || [];
 			const pos = recent.indexOf(_emoji);
@@ -75,7 +75,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 			setRecentEmojis([...recent]);
 			emoji.packages.base.emojisByCategory.recent = recent;
 		},
-		[recentEmojis, setRecentEmojis, addFrequentEmojis],
+		[recentEmojis, setRecentEmojis, addFrequentEmoji],
 	);
 
 	const customEmojiRoute = useRoute('emoji-custom');
@@ -127,6 +127,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 			handlePreview,
 			handleRemovePreview,
 			addRecentEmoji,
+			addFrequentEmoji,
 			emojiListByCategory,
 			recentEmojis,
 			setRecentEmojis,
@@ -145,6 +146,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 			close,
 			emojiToPreview,
 			addRecentEmoji,
+			addFrequentEmoji,
 			emojiListByCategory,
 			categoriesIndexes,
 			recentEmojis,

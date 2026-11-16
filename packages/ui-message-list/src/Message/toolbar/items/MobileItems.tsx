@@ -10,14 +10,13 @@ export type MobileItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
-	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const MobileItems = ({ message, room, subscription, onChangeMenuVisibility }: MobileItemsProps) => {
+const MobileItems = ({ message, room, subscription }: MobileItemsProps) => {
 	return (
 		<>
-			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
-			<QuoteMessageAction message={message} subscription={subscription} />
+			<ReactionMessageAction message={message} room={room} subscription={subscription} />
+			<QuoteMessageAction message={message} room={room} subscription={subscription} />
 			<ReplyInThreadMessageAction message={message} room={room} subscription={subscription} />
 			<ForwardMessageAction message={message} room={room} />
 			<JumpToMessageAction id='jump-to-message' message={message} />

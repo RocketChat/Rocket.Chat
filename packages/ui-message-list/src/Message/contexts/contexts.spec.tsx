@@ -72,7 +72,7 @@ it('turns presentation off and allows interaction by default (R2)', () => {
 
 it('keeps app-acting capabilities inert by default (R3)', async () => {
 	const { hasReacted, canDelete, toggleReaction, followThread } = messageInteractionsDefaultValue;
-	const { getPermalink, openExternalLink, openRoom } = messageNavigationDefaultValue;
+	const { getPermalink, openExternalLink, openRoom, replyInThread } = messageNavigationDefaultValue;
 	const open = jest.spyOn(window, 'open').mockImplementation(() => null);
 
 	expect(hasReacted(message, ':tada:')).toBe(false);
@@ -80,6 +80,7 @@ it('keeps app-acting capabilities inert by default (R3)', async () => {
 	expect(toggleReaction(message, ':tada:')).toBeUndefined();
 	expect(followThread(message)).toBeUndefined();
 	expect(openRoom('rid')).toBeUndefined();
+	expect(replyInThread(message)).toBeUndefined();
 	await expect(getPermalink('mid')).resolves.toBe('#mid');
 
 	openExternalLink('https://example.com');
@@ -139,4 +140,13 @@ it('reads and toggles the selection store (R7)', () => {
 
 	expect(result.current).toMatchObject({ selecting: true, selected: true });
 	expect(store.getSelected()).toEqual(['mid']);
+});
+
+it('offers no menu entry and no quick reaction, and counts none, by default (R1)', () => {
+	const { useMenuActions, useAiActions, useQuickReactions, useCountQuickReaction } = messageToolbarDefaultValue;
+
+	expect(useMenuActions(message, {} as never)).toEqual([]);
+	expect(useAiActions(message, {} as never)).toEqual([]);
+	expect(useQuickReactions()).toEqual([]);
+	expect(useCountQuickReaction()('smile')).toBeUndefined();
 });

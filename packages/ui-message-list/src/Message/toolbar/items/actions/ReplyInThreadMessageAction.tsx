@@ -1,14 +1,9 @@
-import {
-	type IMessage,
-	type ISubscription,
-	type IRoom,
-	isOmnichannelRoom,
-	isRoomFederated,
-	isRoomNativeFederated,
-} from '@rocket.chat/core-typings';
-import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
+import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useMessageNavigation } from '../../../contexts/MessageNavigationContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ReplyInThreadMessageActionProps = {
@@ -18,15 +13,15 @@ export type ReplyInThreadMessageActionProps = {
 };
 
 const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThreadMessageActionProps) => {
-	const router = useRouter();
+	const { replyInThread } = useMessageNavigation();
 	const threadsEnabled = useSetting('Threads_enabled', true);
 	const { t } = useTranslation();
 
 	if (!threadsEnabled || isOmnichannelRoom(room) || !subscription) {
 		return null;
 	}
-	const isFederated = room && isRoomFederated(room);
-	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
+
+	const isFederationBlocked = isRoomFederated(room) && !isRoomNativeFederated(room);
 
 	if (isFederationBlocked) {
 		return null;
@@ -39,18 +34,7 @@ const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThre
 			title={t('Reply_in_thread')}
 			onClick={(event) => {
 				event.stopPropagation();
-				const routeName = router.getRouteName();
-
-				if (routeName) {
-					router.navigate({
-						name: routeName,
-						params: {
-							...router.getRouteParameters(),
-							tab: 'thread',
-							context: message.tmid || message._id,
-						},
-					});
-				}
+				replyInThread(message);
 			}}
 		/>
 	);
