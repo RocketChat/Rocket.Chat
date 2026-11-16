@@ -5,7 +5,7 @@ import { ItemGroup, type ItemGroupProps } from '../Item';
 import { SidebarGroupTitle } from './SidebarGroupTitle';
 import { useCollapse } from './hooks/useCollapse';
 
-type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
+type SidebarCollapseGroupProps = Omit<HTMLAttributes<HTMLDivElement>, 'onToggle'> &
 	RefAttributes<HTMLDivElement> & {
 		expanded?: boolean;
 		defaultExpanded?: boolean;
@@ -14,6 +14,7 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		empty?: boolean;
 		badge?: ReactNode;
 		menu?: ReactNode;
+		onToggle?: (expanded: boolean) => void;
 	} & Pick<ItemGroupProps, 'dragging'>;
 
 export function SidebarCollapseGroup({
@@ -26,6 +27,7 @@ export function SidebarCollapseGroup({
 	menu,
 	title,
 	empty,
+	onToggle,
 	role = 'group',
 	dragging,
 	className,
@@ -35,6 +37,7 @@ export function SidebarCollapseGroup({
 		expanded: propExpanded,
 		defaultExpanded,
 		tabIndex,
+		onToggle,
 	});
 
 	const labelledBy = props['aria-label'] ? undefined : titleId;

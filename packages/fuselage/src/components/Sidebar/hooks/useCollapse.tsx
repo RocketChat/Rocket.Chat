@@ -9,27 +9,37 @@ export const useCollapse = ({
 	disabled,
 	noncollapsible,
 	tabIndex = 0,
+	onToggle,
 }: {
 	expanded?: boolean;
 	defaultExpanded?: boolean;
 	disabled?: boolean;
 	noncollapsible?: boolean;
 	tabIndex?: number;
+	onToggle?: (expanded: boolean) => void;
 }) => {
 	const [stateExpanded, toggleStateExpanded] = useToggle(defaultExpanded);
-	const expanded = hasPropExpanded(propExpanded) ? propExpanded : stateExpanded;
+	const controlled = hasPropExpanded(propExpanded);
+	const expanded = controlled ? propExpanded : stateExpanded;
 
 	const panelExpanded = noncollapsible || expanded;
 
 	const titleId = useId();
 	const panelId = useId();
 
+	const toggle = () => {
+		if (!controlled) {
+			toggleStateExpanded();
+		}
+		onToggle?.(!expanded);
+	};
+
 	const handleClick = (e: MouseEvent<HTMLElement>) => {
 		if (disabled) {
 			return;
 		}
 		e.currentTarget?.blur();
-		toggleStateExpanded();
+		toggle();
 	};
 
 	const handleKeyDown: KeyboardEventHandler = (event) => {
@@ -44,7 +54,7 @@ export const useCollapse = ({
 				return;
 			}
 
-			toggleStateExpanded();
+			toggle();
 		}
 	};
 
