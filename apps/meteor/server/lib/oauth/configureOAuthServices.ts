@@ -36,18 +36,23 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
-					const user = await Accounts.updateOrCreateUserFromExternalService(
-						config.provider,
-						{
-							accessToken,
-							refreshToken,
-							name: profile.displayName,
-							...restProfile,
-							..._json,
-							email: profile?.emails?.[0]?.value,
-						},
-						{},
-					);
+					let user;
+					try {
+						user = await Accounts.updateOrCreateUserFromExternalService(
+							config.provider,
+							{
+								accessToken,
+								refreshToken,
+								name: profile.displayName,
+								...restProfile,
+								..._json,
+								email: profile?.emails?.[0]?.value,
+							},
+							{},
+						);
+					} catch (error) {
+						return done(error);
+					}
 
 					if (!user?.userId || typeof user?.userId !== 'string') {
 						return done(new Error('User not found'));
