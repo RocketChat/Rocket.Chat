@@ -134,7 +134,7 @@ describe('OAuth2Server', () => {
 			const consentPage = await request(app).get(`/oauth/authorize?${authorizeQuery}`);
 			const approval = await approve(authorizeQuery);
 
-			expect(consentPage.headers.location).toBeUndefined();
+			expect(consentPage.status).toBe(404);
 			const location = new URL(approval.headers.location);
 			expect(`${location.origin}${location.pathname}`).toBe(client.redirectUri);
 		});
