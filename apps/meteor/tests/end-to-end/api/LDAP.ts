@@ -466,4 +466,94 @@ const waitForLdapConnection = () =>
 			expect(avatarChannels.map(({ max }) => max)).to.deep.equal(ldapAvatarRgb);
 		});
 	});
+
+	describe('with the group filter enabled', () => {
+		const groupMember = 'alan.bean';
+		const nonMember = 'neil.armstrong';
+		const syncedMember = 'buzz.aldrin';
+		const syncedNonMember = 'james.irwin';
+		const groupFilterSettings: Setting[] = [
+			{ _id: 'LDAP_BaseDN', value: 'dc=space,dc=air' },
+			{ _id: 'LDAP_Group_Filter_Enable', value: true },
+			{ _id: 'LDAP_Group_Filter_ObjectClass', value: 'groupOfNames' },
+			{ _id: 'LDAP_Group_Filter_Group_Id_Attribute', value: 'cn' },
+			{ _id: 'LDAP_Group_Filter_Group_Member_Attribute', value: 'member' },
+			{ _id: 'LDAP_Group_Filter_Group_Member_Format', value: '#{userdn}' },
+			{ _id: 'LDAP_Group_Filter_Group_Name', value: 'astronauts' },
+		];
+		let originalGroupFilterSettings: Setting[] = [];
+
+		const deleteGroupFilterUsers = () =>
+			Promise.all(
+				[groupMember, nonMember, syncedMember, syncedNonMember].map((username) =>
+					request.post(api('users.delete')).set(credentials).send({ username }),
+				),
+			);
+
+		before(async () => {
+			originalGroupFilterSettings = await Promise.all(
+				groupFilterSettings.map(async ({ _id }) => ({ _id, value: await getSettingValueById(_id) })),
+			);
+			await deleteGroupFilterUsers();
+			await Promise.all(groupFilterSettings.map(({ _id, value }) => updateSetting(_id, value)));
+			await waitForLdapConnection();
+		});
+
+		after(async () => {
+			await deleteGroupFilterUsers();
+			await Promise.all(originalGroupFilterSettings.map(({ _id, value }) => updateSetting(_id, value)));
+			await waitForLdapConnection();
+		});
+
+		it('should log in a member of the group', async () => {
+			const res = await request
+				.post(api('login'))
+				.send({ user: groupMember, password: 'ldappassword' })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('status', 'success');
+			expect(res.body.data.me).to.have.property('username', groupMember);
+		});
+
+		it('should refuse a user who is not a member of the group', async () => {
+			const res = await request
+				.post(api('login'))
+				.send({ user: nonMember, password: 'ldappassword' })
+				.expect('Content-Type', 'application/json')
+				.expect(401);
+
+			expect(res.body).to.have.property('error', 'Unauthorized');
+			await request.get(api('users.info')).set(credentials).query({ username: nonMember }).expect(400);
+		});
+
+		describe('when LDAP sync runs', () => {
+			const syncSettings: Setting[] = [
+				{ _id: 'LDAP_User_Search_Filter', value: `(|(uid=${syncedMember})(uid=${syncedNonMember}))` },
+				{ _id: 'LDAP_Background_Sync', value: true },
+				{ _id: 'LDAP_Background_Sync_Import_New_Users', value: true },
+				{ _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: false },
+			];
+			let originalSyncSettings: Setting[] = [];
+
+			before(async () => {
+				originalSyncSettings = await Promise.all(syncSettings.map(async ({ _id }) => ({ _id, value: await getSettingValueById(_id) })));
+				await Promise.all(syncSettings.map(({ _id, value }) => updateSetting(_id, value)));
+				await waitForLdapConnection();
+			});
+
+			after(async () => {
+				await Promise.all(originalSyncSettings.map(({ _id, value }) => updateSetting(_id, value)));
+			});
+
+			it('should import only the members of the group', async () => {
+				await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+				const res = await request.get(api('users.info')).set(credentials).query({ username: syncedMember }).expect(200);
+
+				expect(res.body.user).to.include({ username: syncedMember, name: 'Buzz Aldrin' });
+				await request.get(api('users.info')).set(credentials).query({ username: syncedNonMember }).expect(400);
+			});
+		});
+	});
 });
