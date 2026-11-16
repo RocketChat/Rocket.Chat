@@ -1,6 +1,5 @@
 {
 	"rcx-item": [
-		"apps/meteor/client/hooks/useItemListDrag.ts: : (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);",
 		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
 		"packages/fuselage/src/components/Option/Option.styles.scss: &--align-top.rcx-item {",
 		"packages/fuselage/src/components/Option/Option.styles.scss: &:focus-within &__menu-wrapper:not(.rcx-item__actions) {",
