@@ -50,8 +50,9 @@ slashCommands.add({
 						lng,
 					}),
 				});
+				return;
 			}
-			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject ? roomObject._id : '', user._id, { projection: { _id: 1 } }))) {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: i18n.t('error-logged-user-not-in-room', {
 						interpolation: { escapeValue: false },
@@ -61,7 +62,7 @@ slashCommands.add({
 				});
 				return;
 			}
-			rid = roomObject?._id || message.rid;
+			rid = roomObject._id;
 		}
 		try {
 			await hideRoomMethod(userId, rid);
