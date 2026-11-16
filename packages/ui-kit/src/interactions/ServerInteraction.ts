@@ -1,8 +1,8 @@
 import typia from 'typia';
 
-import type { BannerView } from '../surfaces/banner';
-import type { ContextualBarView } from '../surfaces/contextualBar';
-import type { ModalView } from '../surfaces/modal';
+import type { BannerView } from '../surfaces/banner/index.js';
+import type { ContextualBarView } from '../surfaces/contextualBar/index.js';
+import type { ModalView } from '../surfaces/modal/index.js';
 
 type OpenModalServerInteraction = {
 	type: 'modal.open';

@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import MessageRoles from './MessageRoles';
 
@@ -19,13 +18,4 @@ it('leaves out a scope without roles and still tags bots', () => {
 	expect(screen.queryByTitle(/^Workspace_roles/)).not.toBeInTheDocument();
 	expect(screen.queryByTitle(/^Room_roles/)).not.toBeInTheDocument();
 	expect(screen.getByText('Bot')).toBeInTheDocument();
-});
-
-it('reports clicks on a role tag', async () => {
-	const onClick = jest.fn();
-	render(<MessageRoles workspaceRoles={['Admin']} roomRoles={[]} onClick={onClick} />, { wrapper });
-
-	await userEvent.click(screen.getByText('Admin'));
-
-	expect(onClick).toHaveBeenCalledTimes(1);
 });

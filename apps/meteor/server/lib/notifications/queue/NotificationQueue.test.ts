@@ -1,7 +1,6 @@
 import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
-import type { INotificationQueueModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -26,7 +25,7 @@ const queueItem = (id: string) => ({ _id: id, uid: 'user1', rid: 'room1', mid: '
 
 describe('NotificationQueue worker', () => {
 	before(() => {
-		registerModel('INotificationQueueModel', notificationQueueModelStub as unknown as INotificationQueueModel);
+		mockModel('NotificationQueue', notificationQueueModelStub);
 	});
 
 	beforeEach(() => {

@@ -1,5 +1,5 @@
-import { Lame } from './Lame';
-import type { LameGlobalFlags } from './LameGlobalFlags';
+import { Lame } from './Lame.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
 
 export class Mp3Encoder {
 	private readonly lame: Lame;

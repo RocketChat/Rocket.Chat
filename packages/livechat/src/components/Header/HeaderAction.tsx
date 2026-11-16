@@ -1,6 +1,6 @@
 import type { ComponentChildren } from 'preact';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 
 export type HeaderActionProps = {

@@ -3,20 +3,10 @@
 @use '../../../styles/typography.scss' as *;
 
 .rcx-message-metrics {
-	&__content,
-	&__content-item {
-		display: flex;
-
-		margin-block: lengths.margin(4);
-
-		& + & {
-			margin-inline-start: lengths.margin(4);
-		}
-	}
-
 	&__content-wrapper {
 		display: flex;
 
+		margin-block: lengths.margin(4);
 		margin-inline: lengths.margin(-4);
 	}
 
@@ -34,30 +24,11 @@
 		&-label {
 			margin-inline-start: lengths.margin(4);
 		}
-
-		&__follow {
-			position: relative;
-
-			overflow: visible;
-		}
-
-		&__follow-badge {
-			position: absolute;
-			top: 0;
-			right: 0;
-
-			transform: translate(40%, -40%);
-		}
 	}
 
 	&__avatar-row {
 		display: flex;
-		flex-direction: row;
 
-		margin-inline: lengths.margin(-2);
-
-		&__content {
-			margin-inline: lengths.margin(2);
-		}
+		gap: lengths.margin(4);
 	}
 }

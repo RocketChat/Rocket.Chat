@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { createClassName } from '../../../helpers/createClassName';
 import type { MessageBubbleProps } from '../MessageBubble';
 import { MessageBubble } from '../MessageBubble';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 export type VideoAttachmentProps = {
 	url: string;

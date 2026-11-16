@@ -47,16 +47,6 @@ const createPendingFileImporter = (httpMock: ReturnType<typeof createMockHttpMod
 		'node:http': httpMock,
 		'node:https': httpMock,
 		'@rocket.chat/core-services': { api: { broadcast: sinon.stub() } },
-		'@rocket.chat/models': {
-			Messages: {
-				countAllImportedMessagesWithFilesToDownload: sinon.stub().resolves(0),
-				findAllImportedMessagesWithFilesToDownload: sinon.stub().returns([]),
-				setImportFileRocketChatAttachment: sinon.stub().resolves(),
-			},
-			Users: {
-				findOneById: sinon.stub().resolves(null),
-			},
-		},
 		'@rocket.chat/random': { Random: { id: () => 'random-id' } },
 		'../../media/file-upload': { FileUpload: { getStore: sinon.stub(), getPath: sinon.stub() } },
 		'../../../meteor-methods/messages/sendFileMessage': { parseFileIntoMessageAttachments: sinon.stub() },

@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IPermission, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Permissions } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
@@ -30,7 +30,9 @@ export const permissionsGetMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async 'permissions/get'(updatedAt?: Date) {
-		check(updatedAt, Match.Maybe(Date));
+		if (updatedAt != null && !(updatedAt instanceof Date)) {
+			throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', { method: 'permissions/get' });
+		}
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
 

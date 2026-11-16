@@ -14,10 +14,11 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
@@ -46,7 +47,7 @@ export type UnitEditProps = {
 };
 
 const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete, onClose }: UnitEditProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const saveUnit = useEndpoint('POST', '/v1/livechat/units');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();

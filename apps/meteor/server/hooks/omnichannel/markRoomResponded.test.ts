@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import moment from 'moment';
 import proxyquire from 'proxyquire';
@@ -26,12 +27,17 @@ const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
 const { markRoomResponded } = proxyquire.noCallThru().load('./markRoomResponded.ts', {
 	'../../lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
 	'../../lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
-	'@rocket.chat/models': models,
 	'../../settings': { settings: settingsGetMock },
 	'../../lib/omnichannel/isMessageFromBot': isMessageFromBotMock,
 });
 
 describe('markRoomResponded', () => {
+	before(() => {
+		mockModel('LivechatContacts', models.LivechatContacts);
+		mockModel('LivechatInquiry', models.LivechatInquiry);
+		mockModel('LivechatRooms', models.LivechatRooms);
+	});
+
 	beforeEach(() => {
 		models.LivechatContacts.isContactActiveOnPeriod.reset();
 		models.LivechatContacts.markContactActiveForPeriod.reset();

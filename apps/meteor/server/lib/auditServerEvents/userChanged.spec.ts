@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { IAuditServerUserActor, IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { UpdaterImpl } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { UserChangedAuditStore } from './userChanged';
 import { createFakeUser } from '../../../tests/mocks/data';
@@ -34,15 +35,6 @@ const createEmailsField = (address?: string, verified = true) => {
 		],
 	};
 };
-
-jest.mock('@rocket.chat/models', () => {
-	return {
-		UpdaterImpl: jest.requireActual('@rocket.chat/models').UpdaterImpl,
-		ServerEvents: {
-			createAuditServerEvent: (...args: any) => args,
-		},
-	};
-});
 
 const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e2e' | 'oauth'> => {
 	return {
@@ -108,6 +100,12 @@ const getObfuscatedServices = (email2faState: { enabled: boolean; changedAt: Dat
 };
 
 describe('userChanged audit module', () => {
+	beforeAll(() => {
+		mockModel('ServerEvents', {
+			createAuditServerEvent: (...args: any) => args,
+		});
+	});
+
 	it('should build event with only name and username fields', async () => {
 		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
 

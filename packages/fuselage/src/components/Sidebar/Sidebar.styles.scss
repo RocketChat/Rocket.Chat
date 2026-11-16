@@ -216,7 +216,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 				@include clickable;
 				@include focus-state($shadow: false);
 
-				&.hover,
 				&:hover {
 					background-color: colors.surface(tint);
 				}
@@ -234,7 +233,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			}
 
 			&:focus-visible,
-			&.hover,
 			&:hover {
 				.rcx-sidebar-accordion-item__chevron {
 					visibility: visible;

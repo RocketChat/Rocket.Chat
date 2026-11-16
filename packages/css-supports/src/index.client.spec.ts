@@ -27,7 +27,7 @@ describe('with no CSS.supports to delegate to', () => {
 	it('should report every query as unsupported', async () => {
 		expect(window.CSS).toBeUndefined();
 
-		const { cssSupports } = await import('./index');
+		const { cssSupports } = await import('./index.js');
 
 		expect(cssSupports('display:flex')).toBe(false);
 	});
@@ -38,7 +38,7 @@ describe('with CSS.supports available', () => {
 		const supports = jest.fn((value: string) => value === 'display:flex');
 		stubCSSSupports(supports);
 
-		const { cssSupports } = await import('./index');
+		const { cssSupports } = await import('./index.js');
 
 		expect(cssSupports('display:flex')).toBe(true);
 		expect(cssSupports('display:grid')).toBe(false);
@@ -50,7 +50,7 @@ describe('with CSS.supports available', () => {
 		const supports = jest.fn(() => true);
 		stubCSSSupports(supports);
 
-		const { cssSupports } = await import('./index');
+		const { cssSupports } = await import('./index.js');
 
 		cssSupports('display:flex');
 		cssSupports('display:flex');

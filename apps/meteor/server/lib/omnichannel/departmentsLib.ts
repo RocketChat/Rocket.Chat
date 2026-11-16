@@ -3,7 +3,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
-import { check, Match } from 'meteor/check';
 
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
@@ -59,30 +58,6 @@ export async function saveDepartment(
 			method: 'livechat:saveDepartment',
 		});
 	}
-
-	// TODO: Use AJV or Zod for validation (or the lib we are using rn)
-	const defaultValidations: Record<string, Match.Matcher<any> | BooleanConstructor | StringConstructor> = {
-		enabled: Boolean,
-		name: String,
-		description: Match.Optional(String),
-		showOnRegistration: Boolean,
-		email: String,
-		showOnOfflineForm: Boolean,
-		requestTagBeforeClosingChat: Match.Optional(Boolean),
-		chatClosingTags: Match.Optional([String]),
-		fallbackForwardDepartment: Match.Optional(String),
-		departmentsAllowedToForward: Match.Optional([String]),
-		allowReceiveForwardOffline: Match.Optional(Boolean),
-	};
-
-	// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-	Object.keys(departmentData).forEach((field) => {
-		if (!defaultValidations.hasOwnProperty(field)) {
-			defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-		}
-	});
-
-	check(departmentData, defaultValidations);
 
 	const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 	if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {

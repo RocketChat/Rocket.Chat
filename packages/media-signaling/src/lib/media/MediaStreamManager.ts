@@ -1,9 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { MediaStreamWrapper } from './MediaStreamWrapper';
-import type { IMediaSignalLogger } from '../../definition';
-import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager';
-import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification';
+import { MediaStreamWrapper } from './MediaStreamWrapper.js';
+import type { IMediaSignalLogger } from '../../definition/index.js';
+import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager.js';
+import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification.js';
 
 export class MediaStreamManager implements IMediaStreamManager {
 	public readonly emitter: Emitter<MediaStreamManagerEvents>;

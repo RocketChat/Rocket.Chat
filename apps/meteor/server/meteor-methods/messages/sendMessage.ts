@@ -3,7 +3,6 @@ import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
-import { check } from 'meteor/check';
 import moment from 'moment';
 
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
@@ -84,8 +83,6 @@ export async function executeSendMessage(
 	if (!rid) {
 		throw new Error("The 'rid' property on the message object is missing.");
 	}
-
-	check(rid, String);
 
 	try {
 		const room = await canSendMessageAsync(rid, user);

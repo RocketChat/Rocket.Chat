@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import fc from 'fast-check';
 
-import { anchorsOf, mountBareTokens, mountSource, mountTokens, textOf } from './testUtils';
+import { anchorsOf, mountBareTokens, mountSource, mountTokens, textOf } from './testUtils.js';
 
 const plain = (value: string): MessageParser.Plain => ({ type: 'PLAIN_TEXT', value });
 

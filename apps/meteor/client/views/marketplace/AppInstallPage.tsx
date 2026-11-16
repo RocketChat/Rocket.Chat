@@ -1,14 +1,15 @@
 import { Box, Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
-import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useInstallApp } from './hooks/useInstallApp';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 
 const AppInstallPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const { control, setValue, watch } = useForm<{ file: File }>();

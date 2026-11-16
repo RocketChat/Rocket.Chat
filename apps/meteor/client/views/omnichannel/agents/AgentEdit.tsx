@@ -10,10 +10,11 @@ import {
 	ContextualbarTitle,
 	UserInfoAvatar,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
@@ -35,7 +36,7 @@ export type AgentEditProps = {
 };
 
 const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 

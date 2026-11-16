@@ -74,6 +74,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 			</div>
 		);
 	}),
+	useMergedRefsV2: jest.requireActual('@rocket.chat/ui-client').useMergedRefsV2,
 }));
 
 jest.mock('../hooks/useThreadMessagesQuery', () => ({
@@ -138,6 +139,16 @@ const createThreadMessage = (index: number): IThreadMessage => {
 };
 
 describe('ThreadMessageList', () => {
+	beforeEach(() => {
+		jest.spyOn(Element.prototype, 'scrollHeight', 'get').mockReturnValue(mockVirtualizerHandle.scrollSize);
+		jest.spyOn(Element.prototype, 'clientHeight', 'get').mockReturnValue(mockVirtualizerHandle.viewportSize);
+		jest.spyOn(Element.prototype, 'scrollTop', 'get').mockReturnValue(mockVirtualizerHandle.scrollOffset);
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
 	it('fetches the previous page after a pointer interaction with the overlay scrollbar', async () => {
 		const user = userEvent.setup();
 		const fetchPreviousPage = jest.fn().mockResolvedValue(undefined);

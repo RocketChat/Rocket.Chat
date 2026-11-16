@@ -1,7 +1,7 @@
 import type { Ref, JSX as JSXInternal } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
 export type TextInputProps = {

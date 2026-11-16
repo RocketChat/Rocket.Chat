@@ -194,5 +194,3 @@ export const getExtraConfigInfo = makeFunction(
 		room?: IOmnichannelRoom;
 	}> => options,
 );
-
-export const onCheckRoomParams = makeFunction((params: any) => params);

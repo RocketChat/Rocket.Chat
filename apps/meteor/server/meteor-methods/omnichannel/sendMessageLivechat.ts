@@ -1,7 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import type { ILivechatMessage } from '../../lib/omnichannel/localTypes';
 import { sendMessage } from '../../lib/omnichannel/messages';
@@ -21,9 +20,6 @@ export const sendMessageLivechat = async ({
 	message: { token, _id, rid, msg, file, files, attachments },
 	agent,
 }: ISendMessageLivechat): Promise<boolean> => {
-	check(token, String);
-	check(rid, String);
-
 	// No projection: the guest is forwarded into the message-sending pipeline, which expects a full visitor.
 	const guest = await LivechatVisitors.getVisitorByToken(token);
 

@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+
 import type { IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Visibility } from 'matrix-js-sdk';
@@ -87,8 +89,8 @@ const PRESENCE_SETTING = 'Federation_Service_EDU_Process_Presence';
 					(room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId,
 				) as IRoomNativeFederated | null;
 
-				expect(rcRoom).toBeTruthy();
-				federatedRoomId = rcRoom!._id;
+				assert(rcRoom);
+				federatedRoomId = rcRoom._id;
 			},
 			{ retries: 10, delayMs: 2000 },
 		);

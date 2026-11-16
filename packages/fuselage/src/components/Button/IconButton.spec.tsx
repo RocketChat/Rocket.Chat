@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react';
-import { screen } from '@testing-library/react';
+import { isInaccessible, screen } from '@testing-library/react';
 
 import { render } from '../../testing';
 import { Badge } from '../Badge';
@@ -13,12 +13,15 @@ describe('[IconButton Component]', () => {
 	describe('Story renders without crashing', () => {
 		it('_IconButtonWithBadge', () => {
 			render(<_IconButtonWithBadge />);
+			expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toHaveClass('rcx-button--with-badge');
 		});
 		it('_IconButtonAvatarWithBadge', () => {
 			render(<_IconButtonAvatarWithBadge />);
+			expect(screen.getByRole('button', { name: 'profile, 2 unread messages' })).toHaveClass('rcx-button--with-badge');
 		});
 		it('_IconButtonWithDot', () => {
 			render(<_IconButtonWithDot />);
+			expect(screen.getByRole('button', { name: 'balloon, unread messages' })).toHaveClass('rcx-button--with-badge');
 		});
 	});
 
@@ -59,34 +62,41 @@ describe('[IconButton Component]', () => {
 		expect(screen.getByRole('button')).toHaveClass('rcx-button--large-square');
 	});
 
-	it('should display the badge', () => {
-		render(<IconButton icon='balloon' aria-label='balloon' badge={<Badge>2</Badge>} />);
-		screen.getByText('2');
-	});
-
-	it('should not render a badge when there is none', () => {
-		const { container } = render(<IconButton icon='balloon' aria-label='balloon' />);
-		expect(container.querySelector('.rcx-button__badge')).not.toBeInTheDocument();
-		expect(container.querySelector('.rcx-button--with-badge')).not.toBeInTheDocument();
-	});
-
-	it('should hide the badge from assistive technology', () => {
-		const { container } = render(<IconButton icon='balloon' aria-label='balloon, 2 unread messages' badge={<Badge>2</Badge>} />);
-		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
-		expect(container.querySelector('.rcx-button__badge')).toHaveAttribute('aria-hidden', 'true');
-	});
-
-	it('should pin the badge to the bottom end corner', () => {
-		const { container } = render(<IconButton icon='balloon' aria-label='balloon' badgePosition='bottom-end' badge={<Badge>2</Badge>} />);
-		expect(container.querySelector('.rcx-button__badge')).toHaveClass('rcx-button__badge--bottom-end');
-	});
-
 	it('should render a button of type button by default', () => {
 		render(<IconButton icon='balloon' aria-label='balloon' />);
 		expect(screen.getByRole('button', { name: 'balloon' })).toHaveAttribute('type', 'button');
 	});
 
 	it('should render a link without a type when is is a', () => {
+		render(<IconButton is='a' href='/somewhere' icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('link', { name: 'balloon' })).not.toHaveAttribute('type');
+	});
+
+	it('should display the badge', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' badge={<Badge>2</Badge>} />);
+		expect(screen.getByText('2')).toBeInTheDocument();
+	});
+
+	it('should not render a badge when there is none', () => {
+		const { container } = render(<IconButton icon='balloon' aria-label='balloon' />);
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- an absent badge has no role, label or text to query by
+		expect(container.querySelector('.rcx-button__badge')).not.toBeInTheDocument();
+		expect(screen.getByRole('button')).not.toHaveClass('rcx-button--with-badge');
+	});
+
+	it('should hide the badge from assistive technology', () => {
+		render(<IconButton icon='balloon' aria-label='balloon, 2 unread messages' badge={<Badge>2</Badge>} />);
+		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
+		expect(isInaccessible(screen.getByText('2'))).toBe(true);
+	});
+
+	it('should pin the badge to the bottom end corner', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' badgePosition='bottom-end' badge={<Badge>2</Badge>} />);
+		// oxlint-disable-next-line testing-library/no-node-access -- the badge wrapper has no role, label or text of its own
+		expect(screen.getByText('2').closest('.rcx-button__badge')).toHaveClass('rcx-button__badge--bottom-end');
+	});
+
+	it('should not open an internal link in a new tab', () => {
 		render(<IconButton is='a' href='/somewhere' icon='balloon' aria-label='balloon' />);
 		const link = screen.getByRole('link', { name: 'balloon' });
 		expect(link).not.toHaveAttribute('type');

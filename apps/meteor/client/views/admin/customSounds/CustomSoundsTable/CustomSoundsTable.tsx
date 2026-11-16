@@ -6,14 +6,15 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
@@ -24,10 +25,8 @@ export type CustomSoundsTableProps = {
 };
 
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const [text, setText] = useState('');
 
 	const query = useDebouncedValue(
@@ -35,19 +34,33 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const queryKey = ['custom-sounds', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
-		queryKey: ['custom-sounds', query],
-		queryFn: async () => getSounds(query),
-		refetchOnMount: false,
+	const { data, refetch, isLoading, isError, isSuccess } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getSounds({ ...query, ...page }),
+			refetchOnMount: false,
+		},
+		itemsKey: 'sounds',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	useEffect(() => {

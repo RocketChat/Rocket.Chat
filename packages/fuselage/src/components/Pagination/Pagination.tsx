@@ -1,6 +1,7 @@
 import type { Dispatch, HTMLAttributes, SetStateAction } from 'react';
 import { useId, useMemo } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import { Chevron } from '../Chevron';
 
 export type ItemsPerPage = 25 | 50 | 100;
@@ -32,6 +33,7 @@ const Pagination = ({
 	onSetItemsPerPage,
 	onSetCurrent,
 	divider,
+	className,
 	...props
 }: PaginationProps) => {
 	const paginationResultLabelId = useId();
@@ -72,7 +74,7 @@ const Pagination = ({
 
 	return (
 		<nav
-			className={['rcx-box rcx-box--full rcx-pagination', divider && 'rcx-pagination--divider'].filter(Boolean).join(' ')}
+			className={cx('rcx-box rcx-box--full rcx-pagination', divider && 'rcx-pagination--divider', className)}
 			aria-label='Pagination Navigation'
 			{...props}
 		>

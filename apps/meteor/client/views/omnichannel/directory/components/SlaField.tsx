@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from './FormSkeleton';
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';

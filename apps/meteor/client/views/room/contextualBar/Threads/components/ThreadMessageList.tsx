@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
-import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
+import { clientCallbacks, CustomVirtuaScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
@@ -13,11 +13,11 @@ import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
 import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
-import { useMergedRefsV2 } from '../../../../../hooks/useMergedRefsV2';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
+import { getDistanceFromBottom } from '../../../MessageList/lib/getDistanceFromBottom';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
@@ -28,6 +28,8 @@ import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId'
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
+
+const AT_BOTTOM_THRESHOLD_PX = 20;
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
@@ -182,7 +184,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		};
 	}, []);
 
-	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef, interactionRef);
+	const scrollerRef = useRef<HTMLDivElement | null>(null);
+
+	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef, interactionRef, scrollerRef);
 
 	const lastScrollSizeRef = useRef(0);
 
@@ -397,10 +401,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							if (hasNextPage) {
 								isAtBottom.current = false;
 							} else {
-								if (handle.scrollSize >= handle.viewportSize) {
-									isAtBottom.current = true;
-								}
-								isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
+								isAtBottom.current = getDistanceFromBottom(scrollerRef.current, handle, offset) <= AT_BOTTOM_THRESHOLD_PX;
 							}
 
 							if (hasNextPage && !isJumpingToMessageRef.current && offset - handle.scrollSize + handle.viewportSize >= -200) {

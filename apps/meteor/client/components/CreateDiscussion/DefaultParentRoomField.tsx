@@ -1,9 +1,10 @@
 import { Skeleton, Callout } from '@rocket.chat/fuselage';
 import { TextInput } from '@rocket.chat/fuselage-forms';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
@@ -12,7 +13,7 @@ export type DefaultParentRoomFieldProps = {
 } & Omit<ComponentPropsWithoutRef<typeof TextInput>, 'defaultValue' | 'disabled'>;
 
 const DefaultParentRoomField = ({ defaultParentRoom, ...props }: DefaultParentRoomFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const query = useMemo(
 		() => ({

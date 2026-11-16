@@ -1,8 +1,8 @@
-export type * from './new';
-export type * from './notification';
-export type * from './registered';
-export type * from './rejected-call-request';
-export type * from './remote-sdp';
-export type * from './request-offer';
+export type * from './new.js';
+export type * from './notification.js';
+export type * from './registered.js';
+export type * from './rejected-call-request.js';
+export type * from './remote-sdp.js';
+export type * from './request-offer.js';
 
-export type * from './MediaSignal';
+export type * from './MediaSignal.js';

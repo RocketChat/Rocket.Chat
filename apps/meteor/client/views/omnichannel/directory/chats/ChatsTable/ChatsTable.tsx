@@ -1,4 +1,5 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -31,18 +32,26 @@ const ChatsTable = () => {
 
 	const chatsQuery = useChatsQuery();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'ts'>('ts', 'desc');
 
-	const query = useMemo(
-		() => chatsQuery(filters, [sortBy, sortDirection], current, itemsPerPage),
-		[itemsPerPage, filters, sortBy, sortDirection, current, chatsQuery],
+	const query = useDebouncedValue(
+		useMemo(() => chatsQuery(filters, [sortBy, sortDirection]), [filters, sortBy, sortDirection, chatsQuery]),
+		500,
 	);
 
-	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query);
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: [query],
+	});
+	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = [
 		'auto',

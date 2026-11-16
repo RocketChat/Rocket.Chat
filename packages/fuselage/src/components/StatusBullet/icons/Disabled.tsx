@@ -1,3 +1,4 @@
+import { prependClassName } from '../../../helpers/prependClassName';
 import type { StatusBulletProps } from '../StatusBullet';
 
 const Disabled = ({ size, className, ...props }: StatusBulletProps) => (
@@ -7,7 +8,10 @@ const Disabled = ({ size, className, ...props }: StatusBulletProps) => (
 		height='24'
 		viewBox='0 0 24 24'
 		aria-hidden='true'
-		className={`rcx-status-bullet rcx-status-bullet--disabled ${className} ${size === 'small' ? 'rcx-status-bullet--small' : ''}`}
+		className={prependClassName(
+			className,
+			`rcx-status-bullet rcx-status-bullet--disabled${size === 'small' ? ' rcx-status-bullet--small' : ''}`,
+		)}
 		xmlns='http://www.w3.org/2000/svg'
 	>
 		<path

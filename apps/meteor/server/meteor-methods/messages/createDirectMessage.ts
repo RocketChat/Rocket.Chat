@@ -4,7 +4,6 @@ import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
 import { normalizeBareJid } from '@rocket.chat/tools';
-import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
@@ -17,8 +16,11 @@ export async function createDirectMessage(
 	userId: IUser['_id'] | null,
 	excludeSelf = false,
 ): Promise<Omit<ICreatedRoom, '_id' | 'inserted'>> {
-	check(usernames, [String]);
-	check(userId, String);
+	if (!usernames.every((username): username is string => typeof username === 'string')) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'createDirectMessage',
+		});
+	}
 
 	if (!userId) {
 		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {

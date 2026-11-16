@@ -65,51 +65,73 @@ function disconnectedStatus(claimType: ClaimUpdate['type'], isServiceUser: boole
 	}
 }
 
-/**
- * Resolves a claim update against the user's current state using the priority system.
- * Returns the DB fields to set/unset, or null if the claim is rejected.
- */
-function resolveIntent(
-	user: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId' | 'previousState'>,
-	claimUpdate: ClaimUpdate,
-): { set: Record<string, unknown> & { statusDefault?: UserStatus }; unset: string[] } | null {
+type PresenceUser = Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId' | 'previousState'>;
+type NewState = Extract<ClaimUpdate, { type: 'setActive' }>['newState'];
+type Intent = { set: Record<string, unknown> & { statusDefault?: UserStatus }; unset: string[] } | null;
+
+function resolveEndActive(user: PresenceUser, statusId?: string): Intent {
+	if (statusId) {
+		const matchesActive = user.statusId === statusId;
+		const matchesStash = user.previousState?.statusId === statusId;
+		// stashed claim ended: drop it, keep displaying the still-active claim
+		if (matchesStash && !matchesActive) {
+			return { set: {}, unset: ['previousState'] };
+		}
+		if (!matchesActive && !matchesStash) {
+			return null;
+		}
+	}
+	if (user.previousState && !isExpired(user.previousState.statusExpiresAt)) {
+		const prev = user.previousState;
+		return {
+			set: {
+				statusDefault: prev.statusDefault,
+				statusSource: prev.statusSource,
+				...(prev.statusText != null && { statusText: prev.statusText }),
+				...(prev.statusExpiresAt && { statusExpiresAt: prev.statusExpiresAt }),
+				...(prev.statusId && { statusId: prev.statusId }),
+			},
+			unset: fieldsToUnset(prev, prev.statusId ? ['previousState'] : ['previousState', 'statusId']),
+		};
+	}
+	return RESET_TO_ONLINE;
+}
+
+function stashLowerPriority(user: PresenceUser, newState: NewState): Intent {
+	const { statusId } = newState;
+	const previousState = {
+		statusDefault: newState.statusDefault,
+		statusSource: newState.statusSource,
+		...(newState.statusText != null && { statusText: newState.statusText }),
+		...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
+		...(statusId && { statusId }),
+	};
+
+	// lower priority -> save as previous if slot available
+	if (!user.previousState || isExpired(user.previousState.statusExpiresAt)) {
+		return {
+			set: { previousState },
+			unset: [],
+		};
+	}
+
+	if (
+		newState.statusSource &&
+		user.previousState.statusSource &&
+		PRIORITY[newState.statusSource] <= PRIORITY[user.previousState.statusSource]
+	) {
+		return {
+			set: { previousState },
+			unset: [],
+		};
+	}
+
+	// rejected - can't store
+	return null;
+}
+
+function resolveSetActive(user: PresenceUser, newState: NewState): Intent {
 	const currentStatusDefault = user.statusDefault ?? UserStatus.ONLINE;
-
-	if (claimUpdate.type === 'clearActive') {
-		return RESET_TO_ONLINE;
-	}
-
-	if (claimUpdate.type === 'endActive') {
-		const { statusId } = claimUpdate;
-		if (statusId) {
-			const matchesActive = user.statusId === statusId;
-			const matchesStash = user.previousState?.statusId === statusId;
-			// stashed claim ended: drop it, keep displaying the still-active claim
-			if (matchesStash && !matchesActive) {
-				return { set: {}, unset: ['previousState'] };
-			}
-			if (!matchesActive && !matchesStash) {
-				return null;
-			}
-		}
-		if (user.previousState && !isExpired(user.previousState.statusExpiresAt)) {
-			const prev = user.previousState;
-			return {
-				set: {
-					statusDefault: prev.statusDefault,
-					statusSource: prev.statusSource,
-					...(prev.statusText != null && { statusText: prev.statusText }),
-					...(prev.statusExpiresAt && { statusExpiresAt: prev.statusExpiresAt }),
-					...(prev.statusId && { statusId: prev.statusId }),
-				},
-				unset: fieldsToUnset(prev, prev.statusId ? ['previousState'] : ['previousState', 'statusId']),
-			};
-		}
-		return RESET_TO_ONLINE;
-	}
-
-	// type === 'setActive'
-	const { newState } = claimUpdate;
 	const { statusId } = newState;
 
 	// offline users can only have their status changed by manual sources
@@ -154,35 +176,22 @@ function resolveIntent(
 		};
 	}
 
-	const previousState = {
-		statusDefault: newState.statusDefault,
-		statusSource: newState.statusSource,
-		...(newState.statusText != null && { statusText: newState.statusText }),
-		...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
-		...(statusId && { statusId }),
-	};
+	return stashLowerPriority(user, newState);
+}
 
-	// lower priority -> save as previous if slot available
-	if (!user.previousState || isExpired(user.previousState.statusExpiresAt)) {
-		return {
-			set: { previousState },
-			unset: [],
-		};
+/**
+ * Resolves a claim update against the user's current state using the priority system.
+ * Returns the DB fields to set/unset, or null if the claim is rejected.
+ */
+function resolveIntent(user: PresenceUser, claimUpdate: ClaimUpdate): Intent {
+	switch (claimUpdate.type) {
+		case 'clearActive':
+			return RESET_TO_ONLINE;
+		case 'endActive':
+			return resolveEndActive(user, claimUpdate.statusId);
+		case 'setActive':
+			return resolveSetActive(user, claimUpdate.newState);
 	}
-
-	if (
-		newState.statusSource &&
-		user.previousState.statusSource &&
-		PRIORITY[newState.statusSource] <= PRIORITY[user.previousState.statusSource]
-	) {
-		return {
-			set: { previousState },
-			unset: [],
-		};
-	}
-
-	// rejected - can't store
-	return null;
 }
 
 /**

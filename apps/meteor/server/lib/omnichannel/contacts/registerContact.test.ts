@@ -1,46 +1,45 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
-	'Users': {
+	Users: {
 		findOneAgentById: sinon.stub(),
 		findOneByUsername: sinon.stub(),
 	},
-	'LivechatContacts': {
-		findOneById: sinon.stub(),
-		insertOne: sinon.stub(),
-		upsertContact: sinon.stub(),
-		updateContact: sinon.stub(),
-		findContactMatchingVisitor: sinon.stub(),
-	},
-	'LivechatRooms': {
+	LivechatRooms: {
 		findNewestByVisitorIdOrToken: sinon.stub(),
 		setContactIdByVisitorIdOrToken: sinon.stub(),
 		findByVisitorId: sinon.stub(),
 	},
-	'LivechatVisitors': {
+	LivechatVisitors: {
 		findOneById: sinon.stub(),
 		updateById: sinon.stub(),
 		updateOne: sinon.stub(),
 		getVisitorByToken: sinon.stub(),
 		findOneGuestByEmailAddress: sinon.stub(),
 	},
-	'LivechatCustomField': {
+	LivechatCustomField: {
 		findByScope: sinon.stub(),
 	},
-	'@global': true,
 };
 
 const { registerContact } = proxyquire.noCallThru().load('./registerContact', {
 	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
 });
 
 describe('registerContact', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('LivechatVisitors', modelsMock.LivechatVisitors);
+		mockModel('LivechatCustomField', modelsMock.LivechatCustomField);
+	});
+
 	beforeEach(() => {
 		modelsMock.Users.findOneByUsername.reset();
 		modelsMock.LivechatVisitors.getVisitorByToken.reset();

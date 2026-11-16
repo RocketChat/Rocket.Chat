@@ -1,4 +1,4 @@
-import { isCursorNotFoundError, isDuplicateKeyError } from './mongoErrors';
+import { isCursorNotFoundError, isDuplicateKeyError } from './mongoErrors.js';
 
 const MongoErrorCode = {
 	CursorNotFound: 43,

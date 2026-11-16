@@ -3,7 +3,6 @@ import { User, ClientSafeError } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
@@ -39,19 +38,6 @@ Accounts.config({
  * we are removing the status here because meteor send 'offline'
  */
 Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)(getBaseUserFields(true)));
-
-// Override Meteor's _expireTokens to ensure the correct login expiration is used.
-// If loginExpirationInDays is not set (e.g., startup was disrupted before settings watcher fired),
-// read the setting directly from MongoDB before proceeding with token cleanup.
-// This prevents tokens from being incorrectly deleted using Meteor's 90-day default.
-const { _expireTokens } = Accounts;
-Accounts._expireTokens = async function (oldestValidDate, userId) {
-	if (!Accounts._options.loginExpirationInDays) {
-		const loginExpiration = await Settings.getValueById('Accounts_LoginExpiration');
-		Accounts._options.loginExpirationInDays = getLoginExpirationInDays(loginExpiration);
-	}
-	return _expireTokens.call(Accounts, oldestValidDate, userId);
-};
 
 settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
 	Accounts._options.loginExpirationInDays = getLoginExpirationInDays(settings.get('Accounts_LoginExpiration'));
@@ -273,11 +259,11 @@ const { insertUserDoc } = Accounts;
 Accounts.insertUserDoc = async function (options, user) {
 	const globalRoles = new Set();
 
-	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
+	if (Array.isArray(options.globalRoles) && options.globalRoles.every((role) => typeof role === 'string')) {
 		options.globalRoles.map((role) => globalRoles.add(role));
 	}
 
-	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
+	if (Array.isArray(user.globalRoles) && user.globalRoles.every((role) => typeof role === 'string')) {
 		user.globalRoles.map((role) => globalRoles.add(role));
 	}
 

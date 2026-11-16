@@ -623,6 +623,19 @@ jobs:
         run: |
           ./actionlint -color
 
+  lockfile:
+    name: 🔎 Code Check - Lockfile Duplicates
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+
+      - name: Check that no lockfile entry can be deduplicated
+        run: yarn dedupe --check
 
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
@@ -1015,7 +1028,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1072,6 +1085,10 @@ jobs:
           fi
 
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.lockfile.result }}' != 'success' ]]; then
             exit 1
           fi
 

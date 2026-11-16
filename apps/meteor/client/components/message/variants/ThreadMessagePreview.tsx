@@ -3,7 +3,7 @@ import {
 	Skeleton,
 	ThreadMessage,
 	ThreadMessageRow,
-	ThreadMessageLeftContainer,
+	MessageLeftContainer,
 	ThreadMessageIconThread,
 	ThreadMessageContainer,
 	ThreadMessageOrigin,
@@ -84,9 +84,9 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 		>
 			{!sequential && (
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin system={!!messageType}>
 							{parentMessage.isSuccess && !messageType && (
@@ -112,7 +112,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 				</ThreadMessageRow>
 			)}
 			<ThreadMessageRow>
-				<ThreadMessageLeftContainer>
+				<MessageLeftContainer>
 					{!isSelecting && showUserAvatar && (
 						<MessageAvatar
 							emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
@@ -121,7 +121,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 						/>
 					)}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
-				</ThreadMessageLeftContainer>
+				</MessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
 						{(message as { ignored?: boolean }).ignored ? (

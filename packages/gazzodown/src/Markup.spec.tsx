@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { Suspense } from 'react';
 
 import { MarkupInteractionContext } from '.';
@@ -282,11 +282,11 @@ it('renders a code block with language', async () => {
 	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
-	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
+	expect(within(screen.getByRole('region')).getByRole('code')).toHaveClass('language-javascript');
 });
 
 it('renders a Katex block', async () => {
-	const { container } = render(
+	render(
 		<Suspense fallback={null}>
 			<Markup
 				tokens={[
@@ -299,11 +299,7 @@ it('renders a Katex block', async () => {
 		</Suspense>,
 	);
 
-	// workaround for jest-dom's inability to handle MathML
-	await waitFor(() => expect(container.querySelector('math')).toBeTruthy());
-	container.querySelector('math')?.remove();
-
-	expect(screen.getByRole('math', { name: 'x^2 + y^2 = z^2' })).toBeInTheDocument();
+	expect(await screen.findByLabelText('x^2 + y^2 = z^2')).toHaveAttribute('role', 'math');
 });
 
 it('renders a line break', () => {

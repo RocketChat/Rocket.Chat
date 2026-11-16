@@ -24,47 +24,47 @@ export class UIKitInteractionResponder {
 	}
 
 	public openModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
-			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_OPEN }),
+			...formatModalInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.MODAL_OPEN }),
 		};
 	}
 
 	public updateModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
-			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_UPDATE }),
+			...formatModalInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.MODAL_UPDATE }),
 		};
 	}
 
 	public openContextualBarViewResponse(viewData: IUIKitContextualBarViewParam): IUIKitContextualBarResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
-			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN }),
+			...formatContextualBarInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN }),
 		};
 	}
 
 	public updateContextualBarViewResponse(viewData: IUIKitContextualBarViewParam): IUIKitContextualBarResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
-			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
+			...formatContextualBarInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
 		};
 	}
 
 	public viewErrorResponse(errorInteraction: IUIKitErrorInteractionParam): IUIKitErrorResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			appId,
-			triggerId: triggerId!,
+			triggerId,
 			success: false,
 			type: UIKitInteractionType.ERRORS,
 			viewId: errorInteraction.viewId,
