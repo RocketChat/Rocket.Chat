@@ -47,7 +47,7 @@ yarn workspace @rocket.chat/ui-message-list sdlc:check   # specs, plans, ADRs an
 - Computing row indexes by hand instead of going through the row model.
 - Importing from `apps/meteor`, or calling endpoints, stores or the router from components,
   instead of using a context capability.
-- Adding rows to `keepMounted` for UI state.
+- Adding rows to `keepMounted` for UI state: only rows with a live browser resource (a player, an iframe) stay mounted, and the row the list itself holds in view while it holds it.
 - Testing scroll behavior in jsdom; it belongs in Storybook play tests.
 
 When an agent makes the same mistake twice in this package, the correction goes here and the

@@ -29,7 +29,7 @@ Package checks:
 - Conformance: components reach the app only through context capabilities; nothing imports
   from `apps/meteor`.
 - Correctness: scroll behavior goes through the row model and the scroller, never `scrollTop`
-  writes or hand-computed row indexes; `keepMounted` holds no UI-state rows.
+  writes or hand-computed row indexes; `keepMounted` holds only rows that hold a live browser resource, and the one row the list itself holds in view while it holds it; no row is kept for selection, highlight or editing.
 - Behavior that scrolls or measures is proven by a Storybook play test, not jsdom.
 
 ## Severity

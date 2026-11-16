@@ -80,3 +80,17 @@ it('exports the variants and their parts (message-variants R51)', () => {
 		expect(pkg).toHaveProperty(name);
 	}
 });
+
+it('exports the list, its overlays and its helpers (R77)', () => {
+	for (const name of [
+		'MessageList',
+		'MessageListDateBubble',
+		'MessageListNewMessagesButton',
+		'MessageListJumpToLatestButton',
+		'useIsMessageHighlighted',
+		'hasLiveEmbed',
+		'isSequentialMessage',
+	]) {
+		expect(pkg).toHaveProperty(name);
+	}
+});
