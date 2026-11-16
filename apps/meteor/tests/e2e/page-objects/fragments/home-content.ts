@@ -300,7 +300,7 @@ export class HomeContent {
 	}
 
 	get lastThreadMessagePreviewText(): Locator {
-		return this.page.locator('div.messages-box .messages-list [role=link]').last();
+		return this.page.locator('div.messages-box [role=list] [role=link]').last();
 	}
 
 	get lastThreadMessageFileDescription(): Locator {

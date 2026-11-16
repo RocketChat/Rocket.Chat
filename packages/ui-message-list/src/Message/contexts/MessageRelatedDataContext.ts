@@ -5,6 +5,15 @@ export type MessageQueryResult<TData> = { data: TData | undefined; isLoading: bo
 
 export type MessageConversation = { room: IRoom | undefined; subscription: ISubscription | undefined };
 
+export type MessageConversationOptions<TSelected> = {
+	enabled: boolean;
+	/**
+	 * What the reader takes from the conversation. The reader renders again only when this changes, so it must return what it
+	 * read (a field, or a part of the conversation) and not a value built anew on each call.
+	 */
+	select?: (conversation: MessageConversation) => TSelected;
+};
+
 export type MessageByIdOptions = {
 	enabled: boolean;
 	/** Changes when what the caller reads from the message changed, so a copy fetched before is not reused. */
@@ -24,7 +33,10 @@ export type MessageRelatedDataContextValue = {
 	useUserRoles: (uid: IUser['_id'], rid: IRoom['_id'], options: { enabled: boolean }) => { workspaceRoles: string[]; roomRoles: string[] };
 	useParentMessage: (tmid: IMessage['_id']) => MessageQueryResult<IMessage>;
 	useMessageById: (messageId: IMessage['_id'], options?: MessageByIdOptions) => MessageQueryResult<IMessage>;
-	useConversation: (message: IMessage, options: { enabled: boolean }) => MessageQueryResult<MessageConversation>;
+	useConversation: <TSelected = MessageConversation>(
+		message: IMessage,
+		options: MessageConversationOptions<TSelected>,
+	) => MessageQueryResult<TSelected>;
 	/** Whether a collapsible part of a message is collapsed, remembered across mounts by `key`. */
 	useCollapsedState: (key: string, initiallyCollapsed: boolean) => [isCollapsed: boolean, toggle: () => void];
 };

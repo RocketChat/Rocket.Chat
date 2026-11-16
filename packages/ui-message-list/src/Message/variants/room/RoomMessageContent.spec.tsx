@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 
 import RoomMessageContent from './RoomMessageContent';
 import { mockMessageProviders } from '../../../../tests/utils/mockMessageProviders';
+import type { MessageRelatedDataContextValue } from '../../contexts/MessageRelatedDataContext';
 
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
 	observe: jest.fn(),
@@ -51,14 +52,15 @@ describe('the thread metrics', () => {
 
 describe('the broadcast reply', () => {
 	const message = createFakeMessage({ msg: 'announcement', u: { _id: 'author', username: 'author' } });
-	const conversation = (broadcast: boolean) => () => ({
-		data: {
-			room: undefined,
-			subscription: { _id: 'subscription', rid: 'room', t: 'c', ...(broadcast && { broadcast: true }) } as ISubscription,
-		},
-		isLoading: false,
-		isError: false,
-	});
+	const conversation =
+		(broadcast: boolean): MessageRelatedDataContextValue['useConversation'] =>
+		(_message, { select }) => {
+			const data = {
+				room: undefined,
+				subscription: { _id: 'subscription', rid: 'room', t: 'c', ...(broadcast && { broadcast: true }) } as ISubscription,
+			};
+			return { data: (select ? select(data) : data) as never, isLoading: false, isError: false };
+		};
 
 	it('is offered for a message of someone else in a broadcast room the viewer is subscribed to (R38)', () => {
 		render(<RoomMessageContent {...props} message={message} />, {

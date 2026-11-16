@@ -367,6 +367,60 @@ describe('going to the latest', () => {
 		expect(host()).toHaveAttribute('data-anchor', 'none');
 	});
 
+	describe('a message the consumer says is not an arrival', () => {
+		const isReply = (message: IMessage) => message.tmid !== undefined;
+		const countsAsArrival = (message: IMessage) => !isReply(message);
+		const ownReply = createFakeMessage({ _id: 'f', ts: day(16, 12), u: alice, tmid: 'a' });
+		const otherReply = createFakeMessage({ _id: 'g', ts: day(16, 13), u: bob, tmid: 'a' });
+		const newMessagesButton = () => screen.getByText('New messages').closest('[data-visible]');
+
+		const readingAway = (props: Partial<MessageListProps<IMessage>>) => {
+			const ref = createRef<MessageListHandle>();
+			const view = render(
+				<List ref={ref} isOwnMessage={isOwnMessage} {...props}>
+					<MessageListNewMessagesButton />
+				</List>,
+				{ wrapper },
+			);
+			act(() => ref.current?.scrollToTop());
+			return {
+				arrive: (...arrived: IMessage[]) =>
+					view.rerender(
+						<List ref={ref} isOwnMessage={isOwnMessage} {...props} messages={[...messages, ...arrived]}>
+							<MessageListNewMessagesButton />
+						</List>,
+					),
+			};
+		};
+
+		it('raises "New messages" for a message of someone else that arrives while the viewer reads away (R21)', () => {
+			readingAway({ countsAsArrival }).arrive(other);
+
+			expect(newMessagesButton()).toHaveAttribute('data-visible', 'true');
+		});
+
+		it("does not take the list to the bottom for the viewer's own message that is not an arrival (R19)", () => {
+			readingAway({ countsAsArrival }).arrive(ownReply);
+
+			expect(host()).toHaveAttribute('data-anchor', 'none');
+			expect(newMessagesButton()).toHaveAttribute('data-visible', 'false');
+		});
+
+		it('raises no "New messages" for a message of someone else that is not an arrival (R22)', () => {
+			readingAway({ countsAsArrival }).arrive(otherReply);
+
+			expect(newMessagesButton()).toHaveAttribute('data-visible', 'false');
+		});
+
+		it('takes the next arrival for an arrival after one that was not (R21, R22)', () => {
+			const { arrive } = readingAway({ countsAsArrival });
+			arrive(otherReply);
+			arrive(otherReply, other);
+
+			expect(newMessagesButton()).toHaveAttribute('data-visible', 'true');
+		});
+	});
+
 	it('asks for the latest page when told to scroll to the bottom of an older window (R20)', () => {
 		const onJumpToLatest = jest.fn();
 		const ref = createRef<MessageListHandle>();

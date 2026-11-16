@@ -170,7 +170,8 @@ const applyAnchor = (state: MessageListScrollState, { force = false } = {}): Mes
 const checkPaging = (state: MessageListScrollState): MessageListScrollResult => {
 	const { phase, anchor, loading, measurement, rows } = state;
 
-	if (phase !== 'idle' || anchor.type === 'message' || loading || !measurement) {
+	// A list hidden behind a panel has no viewport to fill, so it must not page: it would load the whole conversation unseen
+	if (phase !== 'idle' || anchor.type === 'message' || loading || !measurement || measurement.geometry.clientHeight === 0) {
 		return { state, commands: [] };
 	}
 

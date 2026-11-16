@@ -38,6 +38,7 @@
 - The overlays are children. Leave out the ones a list does not need; a thread shows only the date.
 - `header` shows once no older messages remain. A thread passes its main message as the first message instead, so a jump to it is an ordinary jump.
 - The `ref` handle scrolls to the bottom, the top or a message, and returns the latest visibility for callers that ask instead of listening. Scrolling to the bottom of an older window first asks `onJumpToLatest` for the latest page.
+- `isOwnMessage` and `countsAsArrival` say what the viewer wrote and which appended messages count as arrivals: one that does not (a thread reply, in a room) takes the list nowhere and raises no "New messages".
 - The list decides nothing about what is unread: pass `firstUnreadMessageId` for the divider and the jump, and leave `restoredPosition` out when unread messages must open the list at the bottom.
 
 ## Feeding it
@@ -49,6 +50,19 @@
 In the app, wrap the list, or any message component, in `MessagesProvider` with the conversation's room and subscription; read-only places pass `allowsInteraction={false}`.
 
 The load callbacks must settle once the new page is in `messages`, or once loading failed. The list loads one page at a time and checks again after each change, so a callback that never settles stops paging.
+
+## The room
+
+`views/room/body/RoomMessageList` feeds the list from the room: `useRoomMessageListData` (the history manager, the first unread id, the saved position), `useRoomJumpTarget` (the `msg` parameter) and `RoomMessageRow` (a variant per message type). The spec is [room-message-list](../../packages/ui-message-list/docs/specs/room-message-list.md); what to know when changing it:
+
+- **The read state is the room's.** `RoomBody` answers the read-state manager from the list's handle (`getVisibility()`), counts the unread messages above the top message at a 300 ms pace and keeps `useUserScrollIntent` on the messages area, because a wheel or a key at the bottom scrolls nothing and the list reports nothing. The room omits `restoredPosition` while an unread message is listed.
+- **A row reads what it shows about its message itself.** `RoomMessageRow` takes its markers as one number from a store of the room's subscription that the list holds (a change of another subscription reaches no row), and the `renderMessage` it is drawn through does not change, so a message arriving renders only itself. Do not pass the subscription object to a row.
+- **The viewer's own message** takes the room back to its latest messages through the handle's `scrollToBottom()`, called when the room stream delivers it (`useScrollToBottomOnOwnMessage`): with newer messages remaining, the list cannot tell it from a message inside its rows.
+- **Select all** counts the rows that are rendered: each registers while it is mounted and not selected.
+- **Paging waits for the viewer.** The room passes `deferPagingUntilInput`: no page loads before the viewer's first input in the list, nor after a jump replaces the window, as `develop`'s room did. A list hidden behind a panel does not page; the viewer's input asks again for a first page that failed.
+- **Space at the ends.** The room passes 21px as `startSpacing`, and 10px as `endSpacing`, 34px while newer messages remain: the 24px `develop` kept below the list then is part of its last row, so the list's box, where it draws "Jump to recent messages", is not shortened.
+- **What the room draws over the list.** `RoomBody` measures the upload progress and the unread banner with a callback ref (`useElementHeight`) and passes their height as `overlayTopInset`, so the floating date rests below them.
+- **Specs** run the real list through the package's seam by path (`jest.mock('@rocket.chat/ui-message-list/dist/MessageList/MessageListVirtualizer', ...)` with `MessageListRows`); a `virtua` mock does not reach the package's copy.
 
 ## Rules that keep it correct
 

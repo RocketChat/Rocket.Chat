@@ -46,6 +46,7 @@ export type UseMessageListScrollerOptions<TMessage extends IMessage> = {
 	deferPagingUntilInput?: boolean;
 	overlayTopInset?: number;
 	isOwnMessage: (message: TMessage) => boolean;
+	countsAsArrival: (message: TMessage) => boolean;
 	targetMessageId: string | undefined;
 	restoredPosition: MessageListPosition | undefined;
 	onLoadOlderMessages: (() => Promise<unknown> | void) | undefined;
@@ -79,6 +80,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 	deferPagingUntilInput = false,
 	overlayTopInset = 0,
 	isOwnMessage,
+	countsAsArrival,
 	targetMessageId,
 	restoredPosition,
 	onLoadOlderMessages,
@@ -393,6 +395,10 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		}
 		const last = renderedRows.findLast((row) => row.kind === 'message');
 		if (last?.kind !== 'message' || renderedKeysRef.current.includes(last.key)) {
+			return undefined;
+		}
+		if (!countsAsArrival(last.message)) {
+			awaitingNewerPageRef.current = false;
 			return undefined;
 		}
 		if (isOwnMessage(last.message)) {

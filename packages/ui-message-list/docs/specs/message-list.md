@@ -57,7 +57,7 @@ renders each message. The list draws the rows around the messages (the older and
 day and unread dividers), decides how each change of the data and each input of the viewer moves the scroll position, loads pages
 as the viewer approaches an edge, jumps to any message and highlights it, and reports what is visible and where it was left. The
 floating date, "New messages" and "Jump to recent messages" are parts a consumer composes as children. Its keyboard model is the
-composite list of `docs/frontend/list-keyboard-navigation.md`. Nothing in `apps/meteor` uses it in this branch.
+composite list of `docs/frontend/list-keyboard-navigation.md`. The room draws its messages with it (`room-message-list`); the thread's list follows.
 
 ## Motivation
 
@@ -131,16 +131,18 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 **Own messages and "New messages"**
 
 - **R19** A message at the end that `isOwnMessage` says is the viewer's, including a copy the consumer marks as optimistic,
-  MUST take the list to the bottom, from wherever the viewer is reading (B3).
+  MUST take the list to the bottom, from wherever the viewer is reading, unless `countsAsArrival` says it is not an arrival (B3; R21).
 - **R20** When the list shows an older window (`hasNewerMessages`) and is taken to the bottom (by the handle's `scrollToBottom()`, which
   the consumer calls for the viewer's own message, or by "Jump to recent messages"), it MUST first call `onJumpToLatest`, and MUST go to
   the bottom once the latest page is among the messages. Until then, and if `onJumpToLatest` is not given, the viewer's position MUST
   NOT change by itself (B3).
 - **R21** `MessageListNewMessagesButton` MUST be visible (`data-visible` true, `aria-hidden` false) when a message that is not the
-  viewer's is appended at the end while the viewer is away from the bottom, `hasNewerMessages` is false and no newer page is
-  loading; and hidden (`data-visible` false, `aria-hidden` true, its button out of the tab order) otherwise (B4).
+  viewer's is appended at the end while the viewer is away from the bottom, `hasNewerMessages` is false, no newer page is
+  loading and `countsAsArrival` (every message by default) says it is an arrival; and hidden (`data-visible` false, `aria-hidden` true,
+  its button out of the tab order) otherwise. A message that is not an arrival is neither the viewer's nor new: it takes the list nowhere
+  and raises nothing (B4; `room-message-list` R43, where a thread reply is not one, as on `develop`).
 - **R22** The button MUST NOT show for a message that arrives while the viewer is at the bottom, for the viewer's own message,
-  for a page of newer messages the list asked for, or for an edit, a deletion or a reaction (B4).
+  for a message that is not an arrival, for a page of newer messages the list asked for, or for an edit, a deletion or a reaction (B4).
 - **R23** The button MUST hide as soon as the list reaches the bottom, by any means. Activating it MUST scroll the list to the
   bottom and then call its `onClick` (B4).
 - **R24** `MessageListJumpToLatestButton` MUST be visible while `hasNewerMessages` is true and hidden otherwise. Activating it
@@ -183,6 +185,11 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   `deferPagingUntilInput` the check waits for the viewer's first input (R82).
 - **R35** A loader that rejects MUST settle like one that resolves, and the list MUST NOT retry by itself; the next scroll or
   change of the messages checks again (B5).
+- **R81** While the viewport has no size, as when the list is hidden behind a panel, the list MUST NOT load a page, so a hidden room does
+  not load its whole history; when the viewport gets a size, the list MUST place itself again (R29) and check for a page once it has,
+  so a room that was hidden when its first page arrived loads what a short page leaves, never from the top it stood at while hidden,
+  and from then on as R34 says (`develop`'s room does not page while hidden behind the contextual bar; found while replacing it in
+  `room-message-list`; review round 1: the check ran the moment the viewport got its size, from the top, before the list had landed).
 
 **Data changes**
 
@@ -428,8 +435,8 @@ stands in for is hidden by an attribute set on it, so scrolling draws no row. Th
 - The states of a message row (B20) and the row's part of selection (B18): `message-variants`.
 - Message content, attachments and the toolbar: `message-capabilities`, `message-attachments`, `message-toolbar`.
 - ~~Padding at the ends of the list~~: offered since review round 1 (R83). The space `develop`'s room keeps under the list while newer
-  messages remain (`.wrapper.has-more-next`, 24px below the scroll container) is outside the list: the consumer shrinks the viewport,
-  which R16 follows.
+  messages remain (`.wrapper.has-more-next`, 24px below the scroll container) is the room's to give, as more `endSpacing`
+  (`room-message-list` R57); a consumer that shrinks the viewport instead also shrinks the box the overlay parts are drawn in.
 - Anchors other than the bottom, a message or nothing, and any change to the keyboard model.
 - Replacing the app's copy of the item-list keyboard hook: it serves the sidebar and the other lists (Q4).
 

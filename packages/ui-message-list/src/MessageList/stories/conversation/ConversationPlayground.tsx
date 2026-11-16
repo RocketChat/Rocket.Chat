@@ -34,7 +34,7 @@ const isOwnMessage = (message: IMessage) => message.u._id === VIEWER._id;
 
 const room = createFakeRoom({ _id: 'room', t: 'c', name: 'general' });
 const subscription = createFakeSubscription({ rid: 'room', u: VIEWER });
-const conversation = { data: { room, subscription }, isLoading: false, isError: false };
+const conversation = { room, subscription };
 
 const toolbar: MessageToolbarContextValue = {
 	...messageToolbarDefaultValue,
@@ -69,7 +69,11 @@ const ConversationPlayground = ({ layout, size = 120, isSelecting = false, displ
 			...messageRelatedDataDefaultValue,
 			useParentMessage: findMessage,
 			useMessageById: findMessage,
-			useConversation: () => conversation,
+			useConversation: (_message, { select }) => ({
+				data: (select ? select(conversation) : conversation) as never,
+				isLoading: false,
+				isError: false,
+			}),
 		};
 	}, [source.history]);
 

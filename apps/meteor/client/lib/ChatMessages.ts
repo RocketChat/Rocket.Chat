@@ -25,9 +25,17 @@ export class ChatMessages implements ChatAPI {
 
 	public composer: ComposerAPI | undefined;
 
+	private readonly composerListeners = new Set<() => void>();
+
+	public subscribeToComposer = (onChange: () => void): (() => void) => {
+		this.composerListeners.add(onChange);
+		return () => this.composerListeners.delete(onChange);
+	};
+
 	public setComposerAPI = (composer?: ComposerAPI): void => {
 		this.composer?.release();
 		this.composer = composer;
+		this.composerListeners.forEach((onChange) => onChange());
 	};
 
 	public data: DataAPI;

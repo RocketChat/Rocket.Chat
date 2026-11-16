@@ -29,6 +29,7 @@ import {
 	isCmdOrCtrlPressed,
 } from './messageBoxHelpers';
 import { handleRichTextSelectionWrapping } from './wrapSelection';
+import { useAutoLinkDomains } from '../../../../hooks/useAutoLinkDomains';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
@@ -38,7 +39,6 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getContentEndOffset, getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
-import { useAutoLinkDomains } from '../../MessageList/hooks/useAutoLinkDomains';
 import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
