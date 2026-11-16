@@ -109,11 +109,20 @@ describe('sendMessage', () => {
 			title_link: '/file-upload/file-id/document.pdf',
 		} as MessageAttachment;
 
+		const fileMetadata = {
+			_id: 'file-id',
+			name: 'document.pdf',
+			type: 'application/pdf',
+			format: 'pdf',
+			size: 1024,
+		};
+
 		const originalMessage = createFakeMessage({
 			_id: messageId,
 			rid: 'room-id',
 			t: 'e2e',
 			attachments: [quoteAttachment, fileAttachment],
+			file: fileMetadata,
 		});
 
 		const editedMessage = createFakeMessage({
@@ -134,8 +143,9 @@ describe('sendMessage', () => {
 		expect(mockedOnClientBeforeSendMessage).toHaveBeenCalledWith(
 			expect.objectContaining({
 				attachments: [fileAttachment],
+				file: fileMetadata,
 			}),
-		);
+);
 	});
 
 	it('should clear the composer once the message is committed, before the optimistic insert and the request', async () => {
