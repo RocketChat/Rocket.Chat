@@ -10,7 +10,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
-import { MongoErrorCode, hasMongoErrorCode } from '@rocket.chat/tools';
 import AdmZip from 'adm-zip';
 import type { MatchKeysAndValues } from 'mongodb';
 
@@ -410,9 +409,5 @@ export class Importer {
 		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages, selectionContacts);
 
 		return results;
-	}
-
-	protected isCursorNotFoundError(error: unknown): boolean {
-		return hasMongoErrorCode(error, MongoErrorCode.CursorNotFound);
 	}
 }
