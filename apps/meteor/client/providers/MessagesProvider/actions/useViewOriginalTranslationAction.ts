@@ -4,9 +4,9 @@ import { useMemo } from 'react';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { AutoTranslate } from '../../../lib/autotranslate';
+import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../lib/autotranslate/hasTranslationLanguage';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Messages } from '../../../stores';
-import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../views/room/MessageList/lib/autoTranslate';
 
 export const useViewOriginalTranslationAction = (
 	message: IMessage & { autoTranslateShowInverse?: boolean },

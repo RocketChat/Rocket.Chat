@@ -9,7 +9,7 @@ const mockDispatchToastMessage = jest.fn();
 const mockForAttachmentDownload = jest.fn();
 const mockRegisterDownloadForUid = jest.fn();
 
-jest.mock('./hooks/useOpenEncryptedPdf', () => ({
+jest.mock('../../../../../providers/MessagesProvider/useOpenEncryptedPdf', () => ({
 	useOpenEncryptedPdf: () => mockOpenEncryptedPdf,
 }));
 

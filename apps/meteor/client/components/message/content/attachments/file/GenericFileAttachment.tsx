@@ -11,9 +11,9 @@ import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOpenEncryptedPdf } from './hooks/useOpenEncryptedPdf';
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
+import { useOpenEncryptedPdf } from '../../../../../providers/MessagesProvider/useOpenEncryptedPdf';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';

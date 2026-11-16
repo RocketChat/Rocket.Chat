@@ -23,9 +23,9 @@ import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
-import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
+import { isMessageNewDay } from '../../../../lib/utils/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
+import MessageListErrorBoundary from '../../body/MessageListErrorBoundary';
 import { useRoomSubscription } from '../../contexts/RoomContext';
 
 // TODO: Refactor this component to isolate the data from the visual

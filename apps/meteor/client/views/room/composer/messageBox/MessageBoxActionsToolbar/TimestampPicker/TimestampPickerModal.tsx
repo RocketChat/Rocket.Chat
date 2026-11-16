@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -8,9 +7,10 @@ import FormatSelector from './FormatSelector';
 import Preview from './Preview';
 import TimePicker from './TimePicker';
 import TimezoneSelector from './TimezoneSelector';
-import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
-import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
-import type { TimezoneKey, TimestampFormat } from '../../../../../../../lib/utils/timestamp/types';
+import TimestampPickerFields from './layout/TimestampPickerFields';
+import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
+import { dateToISOString, generateTimestampMarkup } from '../../../../../../lib/utils/timestamp/conversion';
+import type { TimezoneKey, TimestampFormat } from '../../../../../../lib/utils/timestamp/types';
 
 type TimestampForm = {
 	date: Date;
@@ -63,13 +63,13 @@ export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps
 			confirmText={t('Add')}
 			confirmDisabled={!isValid}
 		>
-			<Box display='flex' flexDirection='column'>
+			<TimestampPickerFields>
 				<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
 				<Controller name='date' control={control} render={({ field }) => <DatePicker {...field} />} />
 				<Controller name='date' control={control} render={({ field }) => <TimePicker {...field} />} />
 				<Controller name='format' control={control} render={({ field }) => <FormatSelector {...field} />} />
 				<Controller name='timezone' control={control} render={({ field }) => <TimezoneSelector {...field} />} />
-			</Box>
+			</TimestampPickerFields>
 		</GenericModal>
 	);
 };

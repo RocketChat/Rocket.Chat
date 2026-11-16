@@ -1,4 +1,4 @@
-import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import { format } from 'date-fns/format';
 import type { ChangeEvent } from 'react';
 import { useId } from 'react';
@@ -23,14 +23,12 @@ const TimePicker = ({ value, onChange }: TimePickerProps) => {
 	const timeValue = value && !isNaN(value.getTime()) ? format(value, 'HH:mm') : '';
 
 	return (
-		<Box marginBlock='x16'>
-			<Field>
-				<FieldLabel htmlFor={fieldId}>{t('Time')}</FieldLabel>
-				<FieldRow>
-					<InputBox id={fieldId} type='time' value={timeValue} onChange={handleTimeChange} />
-				</FieldRow>
-			</Field>
-		</Box>
+		<Field>
+			<FieldLabel htmlFor={fieldId}>{t('Time')}</FieldLabel>
+			<FieldRow>
+				<InputBox id={fieldId} type='time' value={timeValue} onChange={handleTimeChange} />
+			</FieldRow>
+		</Field>
 	);
 };
 

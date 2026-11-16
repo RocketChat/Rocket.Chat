@@ -6,6 +6,7 @@ import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -18,7 +19,6 @@ import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
-import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 export type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;

@@ -7,9 +7,9 @@ import { useMessageComposerIsArchived } from './useMessageComposerIsArchived';
 import { useMessageComposerIsBlocked } from './useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './useMessageComposerIsReadOnly';
 import { useAirGappedRestriction } from '../../../../hooks/useAirGappedRestriction';
-import { useIsSelecting } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
 import { useIsRoomAbacLocked } from '../../hooks/useIsRoomAbacLocked';
+import { useIsSelecting } from '../../providers/SelectedMessagesContext';
 import type { ComposerState } from '../lib/composerState';
 import { resolveComposerState } from '../lib/composerState';
 

@@ -21,8 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ListViewport from '../../../../../components/ListViewport';
-import { isMessageNewDay } from '../../../../room/MessageList/lib/isMessageNewDay';
-import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageSequential';
+import { isMessageNewDay } from '../../../../../lib/utils/isMessageNewDay';
+import { isMessageSequential } from '../../../../../lib/utils/isMessageSequential';
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
 import { useHistoryMessageList } from '../../../contactHistory/MessageList/useHistoryMessageList';
 

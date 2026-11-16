@@ -13,19 +13,19 @@ import { MessageListItem } from './MessageListItem';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
+import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
 import { useMessages } from './hooks/useMessages';
 import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
-import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 import { RoomManager } from '../../../lib/RoomManager';
+import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
+import { isMessageSequential } from '../../../lib/utils/isMessageSequential';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
 import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
-import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
-import { isMessageNewDay } from './lib/isMessageNewDay';
 
 export type MessageListProps = {
 	rid: IRoom['_id'];
