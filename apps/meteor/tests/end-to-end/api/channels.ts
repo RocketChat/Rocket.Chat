@@ -4414,9 +4414,9 @@ describe('[Channels]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.have.lengthOf(3);
-					expect(res.body).to.have.property('count', 3);
-					expect(res.body).to.have.property('total', 3);
+					expect(res.body.messages).to.have.lengthOf(4);
+					expect(res.body).to.have.property('count', 4);
+					expect(res.body).to.have.property('total', 4);
 					res.body.messages.forEach((message: any) => {
 						expect(message).to.not.have.property('pinned', true);
 					});

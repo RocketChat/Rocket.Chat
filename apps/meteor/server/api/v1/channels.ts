@@ -78,6 +78,7 @@ import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
+import { parsePinned } from '../lib/parsePinned';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -510,17 +511,6 @@ API.v1.get(
 
 		const parseIds = (ids: string | undefined, field: string) =>
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
-
-		const parsePinned = (pinned: string | boolean | undefined) => {
-			const lower = String(pinned).toLowerCase();
-			if (lower === 'true') {
-				return { pinned: true };
-			}
-			if (lower === 'false') {
-				return { pinned: { $ne: true } };
-			}
-			return {};
-		};
 
 		const ourQuery = {
 			rid: findResult._id,
