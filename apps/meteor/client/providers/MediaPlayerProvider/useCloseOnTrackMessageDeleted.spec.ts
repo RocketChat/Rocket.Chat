@@ -81,12 +81,16 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		expect(close).not.toHaveBeenCalled();
 	});
 
-	it('stops watching the previous track once the track changes', () => {
+	it('follows the new track once the track changes', () => {
 		const { notifyRoom, close, rerender } = renderWithStreams(buildTrack());
 
 		rerender({ track: buildTrack({ id: 'mid2:url', rid: 'room2', mid: 'mid2' }) });
 		notifyRoom.controller?.emit('room1/deleteMessage', [{ _id: 'mid1' }]);
 
 		expect(close).not.toHaveBeenCalled();
+
+		notifyRoom.controller?.emit('room2/deleteMessage', [{ _id: 'mid2' }]);
+
+		expect(close).toHaveBeenCalledTimes(1);
 	});
 });

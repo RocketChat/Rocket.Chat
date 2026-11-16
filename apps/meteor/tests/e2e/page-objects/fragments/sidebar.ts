@@ -43,7 +43,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get inputNowPlayingProgress(): Locator {
-		return this.root.getByRole('slider', { name: 'Audio Playback Range' });
+		return this.root.getByRole('slider', { name: 'Audio Playback Range', exact: true });
 	}
 
 	get btnNowPlayingPause(): Locator {

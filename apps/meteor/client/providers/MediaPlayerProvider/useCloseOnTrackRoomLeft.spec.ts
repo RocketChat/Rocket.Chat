@@ -49,12 +49,16 @@ describe('useCloseOnTrackRoomLeft', () => {
 		expect(close).not.toHaveBeenCalled();
 	});
 
-	it('stops watching the previous room once the track changes', () => {
+	it('follows the new room once the track changes', () => {
 		const { notifyUser, close, rerender } = renderWithStream(buildTrack());
 
 		rerender({ track: buildTrack({ id: 'mid2:url', rid: 'room2', mid: 'mid2' }) });
 		notifyUser.controller?.emit('user1/subscriptions-changed', ['removed', subscription('room1')]);
 
 		expect(close).not.toHaveBeenCalled();
+
+		notifyUser.controller?.emit('user1/subscriptions-changed', ['removed', subscription('room2')]);
+
+		expect(close).toHaveBeenCalledTimes(1);
 	});
 });
