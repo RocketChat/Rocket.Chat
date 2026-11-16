@@ -1,4 +1,3 @@
-
 import { isQuoteAttachment, type IMessage } from '@rocket.chat/core-typings';
 import { t } from '../../../../lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';

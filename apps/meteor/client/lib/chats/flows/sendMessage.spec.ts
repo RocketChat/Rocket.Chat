@@ -145,7 +145,7 @@ describe('sendMessage', () => {
 				attachments: [fileAttachment],
 				file: fileMetadata,
 			}),
-);
+		);
 	});
 
 	it('should clear the composer once the message is committed, before the optimistic insert and the request', async () => {
