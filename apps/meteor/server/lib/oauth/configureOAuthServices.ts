@@ -5,7 +5,7 @@ import type { Profile, DoneCallback } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
-import { passportOAuthCallback } from './passportOAuthCallback';
+import { passportOAuthCallback, passportOAuthErrorCallback } from './passportOAuthCallback';
 import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { oAuthRouter } from '../../configuration/configurePassport';
 import type { ICachedSettings } from '../../settings/CachedSettings';
@@ -90,8 +90,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		oAuthRouter.get(
 			`/_oauth/${config.provider}`,
 			allowPassportOAuthMiddleware(config.provider),
-			passport.authenticate(config.provider, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
+			passport.authenticate(config.provider, { failureRedirect: `${siteUrl}/login`, failWithError: true, keepSessionInfo: true }),
 			passportOAuthCallback(siteUrl),
+			passportOAuthErrorCallback(siteUrl),
 		);
 	});
 };
