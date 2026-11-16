@@ -3,12 +3,12 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import type { ICredentialTokensModel, ISamlUsedAssertionsModel, IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { SAMLUtils } from './Utils';
 import { getURLWithoutSettings } from '../../../../../lib/getURL';
 import { serviceProviderOptions } from '../../../../../tests/mocks/server/lib/saml/data';
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const HOME_URL = 'http://localhost:3000/';
 const IDP_LOGOUT_URL = 'https://idp.example/logout/redirect';
@@ -46,7 +46,7 @@ class SAMLServiceProvider {
 	generateServiceProviderMetadata = generateServiceProviderMetadata;
 }
 
-const { SAML } = proxyquire.noCallThru().load('./SAML', {
+const { SAML } = loadWithMocks('./SAML', {
 	'meteor/accounts-base': { Accounts: {} },
 	'meteor/meteor': { Meteor: {} },
 	'./ServiceProvider': { SAMLServiceProvider },
