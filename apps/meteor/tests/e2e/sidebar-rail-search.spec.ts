@@ -111,20 +111,22 @@ test.describe.serial('sidebar rail: Inbox search', () => {
 					orderWhileFiltering = await sidebar.getCategoryOrder();
 				});
 
-				await test.step('dragging the category header leaves the order as it was', async () => {
-					const otherGroup = orderWhileFiltering.find((name) => name !== category);
-					expect(otherGroup).toBeDefined();
+				await test.step('drag the second group header above the first, then a room onto the category', async () => {
+					const [first, second] = orderWhileFiltering;
 
-					await sidebar.dragCategoryAbove(category, otherGroup as string);
-
-					await expect.poll(() => sidebar.getCategoryOrder()).toEqual(orderWhileFiltering);
-				});
-
-				await test.step('dragging a room onto the category moves it there', async () => {
+					await sidebar.dragCategoryAbove(second, first);
 					await sidebar.dragRoomToCategory(matchingChannel, category);
 
+					await expect.poll(() => sidebar.getCategoryOrder()).toEqual([category]);
+				});
+
+				await test.step('the room is in the category, and the categories kept their order', async () => {
 					await poHomeChannel.gotoChannel(matchingChannel);
 					expect(await poHomeChannel.content.header.checkRoomBelongsToGroup(`Remove from ${category}`, true)).toBe(true);
+
+					await expect
+						.poll(async () => (await sidebar.getCategoryOrder()).filter((name) => orderWhileFiltering.includes(name)))
+						.toEqual(orderWhileFiltering);
 				});
 			});
 		});
