@@ -17,7 +17,6 @@ function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGr
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/exchange.testConnection');
 	const exchangeEnabled = useSetting('Outlook_Calendar_Enabled', false);
-	const serverMode = useSetting('Exchange_Mode') === 'server';
 
 	const editableSettings = useEditableSettings(useMemo(() => ({ group: _id }), [_id]));
 
@@ -39,7 +38,7 @@ function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGr
 			onClickBack={onClickBack}
 			{...group}
 			headerButtons={
-				<Button disabled={!exchangeEnabled || !serverMode || changed} onClick={handleTestConnectionButtonClick}>
+				<Button disabled={!exchangeEnabled || changed} onClick={handleTestConnectionButtonClick}>
 					{t('Test_Connection')}
 				</Button>
 			}

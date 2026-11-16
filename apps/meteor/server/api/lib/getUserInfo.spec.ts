@@ -117,10 +117,7 @@ describe('getUserInfo', () => {
 	describe('outlook calendar settings', () => {
 		beforeEach(() => {
 			settings.set('Outlook_Calendar_Enabled', true);
-			settings.set('Outlook_Calendar_Exchange_Url', 'https://outlook.office365.com/');
 			settings.set('Outlook_Calendar_Outlook_Url', 'https://outlook.office365.com/owa/#calendar/view/month');
-			settings.set('Outlook_Calendar_Url_Mapping', JSON.stringify({}));
-			user.emails = [{ address: 'test@example.com', verified: true }];
 		});
 
 		it('should return empty calendar settings if Outlook is disabled', async () => {
@@ -129,72 +126,11 @@ describe('getUserInfo', () => {
 			expect(userInfo.settings?.calendar).toEqual({});
 		});
 
-		it('should return calendar settings with Outlook enabled and default URLs', async () => {
+		it('should return the Outlook URL when the integration is enabled', async () => {
 			const userInfo = await getUserInfo(user);
 			expect(userInfo.settings?.calendar?.outlook).toEqual({
 				Enabled: true,
-				Exchange_Url: 'https://outlook.office365.com/',
 				Outlook_Url: 'https://outlook.office365.com/owa/#calendar/view/month',
-			});
-		});
-
-		it('should return calendar settings with Outlook enabled and domain mapping', async () => {
-			settings.set(
-				'Outlook_Calendar_Url_Mapping',
-				JSON.stringify({
-					'example.com': { Exchange_Url: 'https://custom.exchange.com/', Outlook_Url: 'https://custom.outlook.com/' },
-				}),
-			);
-			const userInfo = await getUserInfo(user);
-			expect(userInfo.settings?.calendar).toEqual({
-				outlook: {
-					Enabled: true,
-					Exchange_Url: 'https://custom.exchange.com/',
-					Outlook_Url: 'https://custom.outlook.com/',
-				},
-			});
-		});
-
-		it('should return calendar settings with outlook disabled but enabled for specific domain', async () => {
-			settings.set('Outlook_Calendar_Enabled', false);
-			settings.set(
-				'Outlook_Calendar_Url_Mapping',
-				JSON.stringify({
-					'specific.com': { Enabled: true, Exchange_Url: 'https://specific.exchange.com/', Outlook_Url: 'https://specific.outlook.com/' },
-				}),
-			);
-			user.emails = [{ address: 'me@specific.com', verified: true }];
-			const userInfo = await getUserInfo(user);
-			expect(userInfo.settings?.calendar).toEqual({
-				outlook: {
-					Enabled: true,
-					Exchange_Url: 'https://specific.exchange.com/',
-					Outlook_Url: 'https://specific.outlook.com/',
-				},
-			});
-		});
-
-		it('should return calendar settings with Outlook enabled and default mapping for unknown domain', async () => {
-			user.emails = [{ address: 'unknown@example.com', verified: true }];
-			const userInfo = await getUserInfo(user);
-			expect(userInfo.settings?.calendar).toEqual({
-				outlook: {
-					Enabled: true,
-					Exchange_Url: 'https://outlook.office365.com/',
-					Outlook_Url: 'https://outlook.office365.com/owa/#calendar/view/month',
-				},
-			});
-		});
-
-		it('should handle invalid JSON in Outlook_Calendar_Url_Mapping', async () => {
-			settings.set('Outlook_Calendar_Url_Mapping', 'invalid json');
-			const userInfo = await getUserInfo(user);
-			expect(userInfo.settings?.calendar).toEqual({
-				outlook: {
-					Enabled: true,
-					Exchange_Url: 'https://outlook.office365.com/',
-					Outlook_Url: 'https://outlook.office365.com/owa/#calendar/view/month',
-				},
 			});
 		});
 	});

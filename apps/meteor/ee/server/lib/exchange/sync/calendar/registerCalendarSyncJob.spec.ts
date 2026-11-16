@@ -35,7 +35,6 @@ describe('configureCalendarSyncJob', () => {
 	const settingsOf = (over: Record<string, unknown> = {}) => {
 		const values: Record<string, unknown> = {
 			Outlook_Calendar_Enabled: true,
-			Exchange_Mode: 'server',
 			Exchange_Calendar_Sync_Interval: 1,
 			...over,
 		};
@@ -84,11 +83,8 @@ describe('configureCalendarSyncJob', () => {
 		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, `0 */${DEFAULT_INTERVAL_HOURS} * * *`, expect.any(Function), { renewLock: true });
 	});
 
-	it.each([
-		['the integration is off', { Outlook_Calendar_Enabled: false }],
-		['the mode is legacy', { Exchange_Mode: 'legacy' }],
-	])('does not schedule when %s', async (_label, over) => {
-		settingsOf(over);
+	it('does not schedule when the integration is off', async () => {
+		settingsOf({ Outlook_Calendar_Enabled: false });
 
 		await configureCalendarSyncJob();
 
@@ -118,16 +114,13 @@ describe('registerCalendarSyncJob', () => {
 		removeAll.mockResolvedValue(undefined);
 		whenSyncsIdle.mockResolvedValue(undefined);
 		findAllUserIds.mockResolvedValue([]);
-		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'server' })[key]);
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true })[key]);
 	});
 
 	it('watches the settings that decide whether the job exists at all', () => {
 		registerCalendarSyncJob();
 
-		expect(watchMultiple).toHaveBeenCalledWith(
-			['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'],
-			expect.any(Function),
-		);
+		expect(watchMultiple).toHaveBeenCalledWith(['Outlook_Calendar_Enabled', 'Exchange_Calendar_Sync_Interval'], expect.any(Function));
 	});
 
 	it('reconfigures the job when a watched setting changes', async () => {
@@ -164,7 +157,7 @@ describe('registerCalendarSyncJob', () => {
 		await watchMultiple.mock.calls[0][1]();
 		await flush();
 
-		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'legacy' })[key]);
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: false })[key]);
 
 		await watchMultiple.mock.calls[0][1]();
 		await flush();
@@ -183,7 +176,7 @@ describe('registerCalendarSyncJob', () => {
 		await notify();
 		await flush();
 
-		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'legacy' })[key]);
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: false })[key]);
 
 		await notify();
 		await flush();
@@ -200,7 +193,7 @@ describe('registerCalendarSyncJob', () => {
 
 		removeAll.mockRejectedValueOnce(new Error('mongo is down'));
 
-		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'legacy' })[key]);
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: false })[key]);
 
 		await notify();
 		await flush();

@@ -3,14 +3,13 @@ import { Box, Button, Palette, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 export type OutlookSettingItemProps = {
-	id: string;
 	title: string;
 	subTitle: string;
 	enabled: boolean;
 	handleEnable: (value: boolean) => void;
 };
 
-const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
+const OutlookSettingItem = ({ title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
 	const { t } = useTranslation();
 
 	const hovered = css`
@@ -35,16 +34,9 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 				<Text fontScale='p2'>{subTitle}</Text>
 			</Box>
 			<Box>
-				{id === 'authentication' && (
-					<Button size='small' onClick={() => handleEnable(!enabled)}>
-						{t('Disable')}
-					</Button>
-				)}
-				{id !== 'authentication' && (
-					<Button variant={!enabled ? 'primary' : undefined} size='small' onClick={() => handleEnable(!enabled)}>
-						{enabled ? t('Disable') : t('Enable')}
-					</Button>
-				)}
+				<Button variant={!enabled ? 'primary' : undefined} size='small' onClick={() => handleEnable(!enabled)}>
+					{enabled ? t('Disable') : t('Enable')}
+				</Button>
 			</Box>
 		</Box>
 	);

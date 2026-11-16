@@ -142,16 +142,16 @@ Two mechanisms handle it. Stored events carry `seriesMasterId`, so a removal mat
 
 One consequence worth recording because it is not obvious: converting a single event into a recurring one **keeps its id** and turns that item into the series master. The row already stored under that id stops being an event in its own right the moment the occurrences appear, so the series prune clears it along with the occurrences the re-expansion dropped.
 
-- ### The legacy desktop integration is untouched
+- ### The legacy desktop integration was removed in 10.0
 
-The existing client-to-server integration keeps working exactly as before, and the two are kept from colliding by an explicit mode setting rather than by convention. In server mode the Exchange URL is withheld from `getUserInfo`, which leaves a fresh desktop setup with no sync target. That alone is not enough, because a client configured before the switch has it cached, so the server also refuses the writes.
+Until 10.0 the two integrations coexisted, kept from colliding by an explicit `Exchange_Mode` setting rather than by convention: in server mode the Exchange URL was withheld from `getUserInfo`, which left a fresh desktop setup with no sync target, and because a client configured before the switch had it cached, the server also refused the writes. OS2S-51 removed the per-user integration and with it the mode, `Outlook_Calendar_Exchange_Url`, `Outlook_Calendar_Url_Mapping`, the `Exchange_Url` that `getUserInfo` served the desktop app, and the sign-in flow in the web client. Server sync is the only mode, so `Outlook_Calendar_Enabled` alone now says whether the server owns the calendar.
 
-Those refusals split along what the question actually is, which is why there are two errors rather than one:
+Two things the desktop app left behind were decided rather than dropped:
 
-- **`create` with an `externalId`, and `import`, are refused while `Exchange_Mode` is `server`**, with `error-calendar-managed-by-server-sync`. There is no stored event to inspect at that point, and the question is whether the workspace still accepts an import at all.
-- **`update` and `delete` are refused for any event whose `source` is `'outlook'`**, with `error-calendar-event-owned-by-outlook-sync`, and with no reference to the setting. The sync re-sets every field it owns and re-reads the whole window on its next run, so an edit would silently revert and a deletion would come straight back. Gating that on the setting left a hole: turn the mode off, edit, turn it back on, and the change is lost with no feedback.
+- **`calendar-events.import` outlives the desktop app.** It upserts by `externalId` for the calling user and is what any outside import would use, so it stays as a generic import, with the refusals the mode used to drive now keyed on the integration: `import`, and `create` with an `externalId`, are refused with `error-calendar-managed-by-server-sync` while `Outlook_Calendar_Enabled` is on, because then the sync owns the calendar and an import could only duplicate or shadow what it writes. There is no stored event to inspect at that point, and the question is whether the workspace still accepts an import at all. With the integration off the workspace accepts imports as it always did.
+- **Events the desktop app had imported are left alone.** They carry an `externalId` and no `source`, which is also what an import through the endpoint produces, so no migration can tell them apart from something a user put there on purpose. They read as the user's own events: editable, deletable and listed like any other. The desktop imported the current day's events, so at most the day of the upgrade can show one of them beside its server-synced twin, and past events are kept by design anyway.
 
-An event the desktop imported carries an `externalId` and no `source`, so it stays fully editable, as does a user's own manually created event. This is pre-existent.
+The refusal on stored events is unchanged: **`update` and `delete` are refused for any event whose `source` is `'outlook'`**, with `error-calendar-event-owned-by-outlook-sync`, and with no reference to any setting. The sync re-sets every field it owns and re-reads the whole window on its next run, so an edit would silently revert and a deletion would come straight back. Gating that on a setting would leave a hole: turn the integration off, edit, turn it back on, and the change is lost with no feedback.
 
 - ### Contacts sync is per folder, and local contacts are first class
 

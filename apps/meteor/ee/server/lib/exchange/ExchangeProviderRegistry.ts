@@ -15,7 +15,6 @@ import { getCalendarSyncWindowDays } from '../../../lib/exchange/calendarSyncSch
 
 const WATCHED_SETTINGS = [
 	'Outlook_Calendar_Enabled',
-	'Exchange_Mode',
 	'Exchange_Sync_Provider',
 	'Exchange_Graph_Tenant_Id',
 	'Exchange_Graph_Client_Id',
@@ -33,7 +32,7 @@ const WATCHED_SETTINGS = [
 let current: IExchangeProvider | undefined;
 
 const buildExchangeProvider = (): IExchangeProvider | undefined => {
-	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
+	if (!settings.get<boolean>('Outlook_Calendar_Enabled')) {
 		return undefined;
 	}
 

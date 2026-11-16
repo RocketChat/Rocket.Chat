@@ -23,7 +23,6 @@ jest.mock('./runContactSync', () => ({ runContactSync: (...args: unknown[]) => r
 const settingsOf = (over: Record<string, unknown> = {}) => {
 	const values: Record<string, unknown> = {
 		Outlook_Calendar_Enabled: true,
-		Exchange_Mode: 'server',
 		Exchange_Contacts_Sync_Enabled: true,
 		...over,
 	};
@@ -75,7 +74,6 @@ describe('configureContactSyncJob', () => {
 	describe('what has to be on for it to be scheduled', () => {
 		it.each([
 			['the feature is off', { Outlook_Calendar_Enabled: false }],
-			['the server does not own the sync', { Exchange_Mode: 'legacy' }],
 			['contact sync is off on its own', { Exchange_Contacts_Sync_Enabled: false }],
 		])('schedules nothing while %s', async (_case, over) => {
 			settingsOf(over);
@@ -113,10 +111,7 @@ describe('registerContactSyncJob', () => {
 	it('watches the settings that decide whether the job exists at all', () => {
 		registerContactSyncJob();
 
-		expect(watchMultiple).toHaveBeenCalledWith(
-			['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'],
-			expect.any(Function),
-		);
+		expect(watchMultiple).toHaveBeenCalledWith(['Outlook_Calendar_Enabled', 'Exchange_Contacts_Sync_Enabled'], expect.any(Function));
 	});
 
 	it('does not re-add the job when the cleanup lands while a reconfiguration is in flight', async () => {

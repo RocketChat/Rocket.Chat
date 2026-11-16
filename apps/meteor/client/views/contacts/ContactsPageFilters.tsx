@@ -17,9 +17,8 @@ const ContactsPageFilters = ({ onChangeText, onCreate, placeholder, searchText, 
 	const { t } = useTranslation();
 	const syncContacts = useContactsSync();
 	const isExchangeIntegrationEnabled = useSetting('Outlook_Calendar_Enabled', false);
-	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
 	const isContactSyncEnabled = useSetting('Exchange_Contacts_Sync_Enabled', false);
-	const canSync = isExchangeIntegrationEnabled && isServerManaged && isContactSyncEnabled;
+	const canSync = isExchangeIntegrationEnabled && isContactSyncEnabled;
 
 	return (
 		<FilterByText placeholder={placeholder} value={searchText} onChange={(event) => onChangeText(event.currentTarget.value)}>
