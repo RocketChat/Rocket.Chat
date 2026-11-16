@@ -10,13 +10,14 @@ import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
 	content: string;
-	variant: 'inline' | 'inlineWithoutBreaks' | 'document';
+	variant: 'inline' | 'inlineWithoutBreaks' | 'document' | 'documentTextOnly';
 	preserveHtml: boolean;
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
 } & ComponentProps<typeof Box>;
 
 const documentRenderer = new marked.Renderer();
+const documentTextOnlyRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
 
@@ -42,6 +43,7 @@ const listItemMarked = (text: string): string => {
 	return `<li>${cleanText}</li>`;
 };
 const horizontalRuleMarked = (): string => '';
+const textOnlyMarked = (_href: string | null, _title: string | null, text: string): string => text;
 const codeMarked = (code: string, language: string | undefined, _isEscaped: boolean): string => {
 	if (language) {
 		return `<pre><code class="language-${language}">${code} </code></pre>`;
@@ -56,6 +58,12 @@ documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
 documentRenderer.code = codeMarked;
 documentRenderer.codespan = codespanMarked;
+
+documentTextOnlyRenderer.link = textOnlyMarked;
+documentTextOnlyRenderer.image = textOnlyMarked;
+documentTextOnlyRenderer.listitem = listItemMarked;
+documentTextOnlyRenderer.code = codeMarked;
+documentTextOnlyRenderer.codespan = codespanMarked;
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
@@ -80,6 +88,42 @@ const options = {
 	...defaultOptions,
 	breaks: true,
 	renderer: documentRenderer,
+};
+
+const documentTextOnlyOptions = {
+	...options,
+	renderer: documentTextOnlyRenderer,
+};
+
+// formatted text and nothing else: no element or attribute that can load a resource or lead anywhere
+const textOnlySanitizeOptions = {
+	ALLOWED_TAGS: [
+		'p',
+		'br',
+		'strong',
+		'em',
+		'del',
+		'code',
+		'pre',
+		'blockquote',
+		'ul',
+		'ol',
+		'li',
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'h5',
+		'h6',
+		'hr',
+		'table',
+		'thead',
+		'tbody',
+		'tr',
+		'th',
+		'td',
+	],
+	ALLOWED_ATTR: ['start', 'align'],
 };
 
 const inlineOptions = {
@@ -164,6 +208,9 @@ const MarkdownTextInner = ({
 		case 'inlineWithoutBreaks':
 			markedOptions = inlineWithoutBreaksOptions;
 			break;
+		case 'documentTextOnly':
+			markedOptions = documentTextOnlyOptions;
+			break;
 		case 'document':
 		default:
 			markedOptions = options;
@@ -187,9 +234,11 @@ const MarkdownTextInner = ({
 			}
 		})();
 
-		const sanitizedHtml = preserveHtml
-			? html
-			: html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
+		const sanitizeOptions =
+			variant === 'documentTextOnly'
+				? textOnlySanitizeOptions
+				: { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) };
+		const sanitizedHtml = preserveHtml ? html : html && sanitizer(html, sanitizeOptions);
 
 		// Replace internal link tokens with contextualized translations
 		if (sanitizedHtml && typeof sanitizedHtml === 'string') {
