@@ -198,10 +198,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			margin-inline-end: auto;
 		}
 
-		&__bar.rcx-item-group-header {
-			padding-block: lengths.padding(8);
-		}
-
 		&__panel--expanded {
 			padding-block: lengths.padding(none);
 		}
