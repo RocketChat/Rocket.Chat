@@ -71,6 +71,16 @@ const withStubs = <T>(subject: string, subjectStubs: Map<string, unknown>, place
 	}
 };
 
+// The module under test keeps its stubs for what it requires after it loads, like a `require` inside a function.
+const keepStubs = (subjectModule: NodeJS.Module, stubbed: Map<string, unknown>, placeholders: Map<string, string>): void => {
+	const requireReal = subjectModule.require.bind(subjectModule);
+	subjectModule.require = ((request: string) => {
+		const target = placeholders.get(request) ?? request;
+		const resolved = resolveFrom(target, subjectModule);
+		return resolved !== undefined && stubbed.has(resolved) ? stubbed.get(resolved) : requireReal(target);
+	}) as NodeJS.Module['require'];
+};
+
 const placeholderFor = (specifier: string): string => {
 	const path = join(placeholderDir, `${encodeURIComponent(specifier)}.cjs`);
 	mkdirSync(placeholderDir, { recursive: true });
@@ -117,6 +127,7 @@ export const loadWithMocks = <T = any>(path: string, stubs: Stubs, { callThru = 
 	const load = () => {
 		const mocks: ReturnType<typeof mock.module>[] = [];
 		const subjectStubs = new Map<string, unknown>();
+		const keptStubs = new Map<string, unknown>();
 		try {
 			for (const [specifier, stub] of Object.entries(stubs)) {
 				let resolved: string;
@@ -143,7 +154,12 @@ export const loadWithMocks = <T = any>(path: string, stubs: Stubs, { callThru = 
 					}
 				}
 
-				if (exists && !(isStubObject(stub) && stub['@global'] === true)) {
+				const isGlobal = isStubObject(stub) && stub['@global'] === true;
+				if (!isGlobal) {
+					keptStubs.set(resolved, stub);
+				}
+
+				if (exists && !isGlobal) {
 					subjectStubs.set(resolved, stub);
 					continue;
 				}
@@ -152,7 +168,12 @@ export const loadWithMocks = <T = any>(path: string, stubs: Stubs, { callThru = 
 			}
 
 			delete requireFromCaller.cache[subject];
-			return withStubs(subject, subjectStubs, placeholders, () => requireFromCaller(subject));
+			const loaded = withStubs(subject, subjectStubs, placeholders, () => requireFromCaller(subject));
+			const subjectModule = requireFromCaller.cache[subject];
+			if (subjectModule) {
+				keepStubs(subjectModule, keptStubs, placeholders);
+			}
+			return loaded;
 		} finally {
 			for (const moduleMock of mocks) {
 				moduleMock.restore();
