@@ -1226,13 +1226,14 @@ describe('Apps - Video Conferences', () => {
 					expect(await callUser(guest._id)).to.have.property('ringingAt');
 				});
 
-				it('should fail to ring when the user does not have the videoconf-ring-users permission', async () => {
-					await updatePermission('videoconf-ring-users', ['admin']);
-					try {
+				describe('without the videoconf-ring-users permission', () => {
+					before(() => updatePermission('videoconf-ring-users', ['admin']));
+
+					after(() => updatePermission('videoconf-ring-users', ['admin', 'owner', 'moderator', 'user']));
+
+					it('should fail to ring', async () => {
 						await request.post(api('video-conference.ring')).set(memberCredentials).send({ callId, userId: guest._id }).expect(403);
-					} finally {
-						await updatePermission('videoconf-ring-users', ['admin', 'owner', 'moderator', 'user']);
-					}
+					});
 				});
 
 				it('should fail to ring when the user cannot access the call', async () => {

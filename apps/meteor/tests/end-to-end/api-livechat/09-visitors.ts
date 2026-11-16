@@ -1834,16 +1834,17 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.rooms.map(({ _id }: IOmnichannelRoom) => _id)).to.deep.equal([openRoom._id]);
 		});
 
-		it('should fail if user doesnt have view-livechat-manager permission', async () => {
-			await updatePermission('view-livechat-manager', []);
-			try {
+		describe('without the view-livechat-manager permission', () => {
+			before(() => updatePermission('view-livechat-manager', []));
+
+			after(() => updatePermission('view-livechat-manager', ['admin']));
+
+			it('should fail if user doesnt have view-livechat-manager permission', async () => {
 				await request
 					.get(api(`livechat/visitor/${roomVisitor.token}/room`))
 					.set(credentials)
 					.expect(403);
-			} finally {
-				await updatePermission('view-livechat-manager', ['admin']);
-			}
+			});
 		});
 	});
 });

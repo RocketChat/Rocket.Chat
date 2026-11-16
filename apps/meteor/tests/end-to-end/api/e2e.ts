@@ -187,13 +187,14 @@ describe('[E2E]', () => {
 			});
 		});
 
-		it('should list nobody while E2E encryption is disabled', async () => {
-			await updateSetting('E2E_Enable', false);
-			try {
+		describe('while E2E encryption is disabled', () => {
+			before(() => updateSetting('E2E_Enable', false));
+
+			after(() => updateSetting('E2E_Enable', true));
+
+			it('should list nobody', async () => {
 				expect(await usersWaitingForKey(ownerCredentials)).to.deep.equal({});
-			} finally {
-				await updateSetting('E2E_Enable', true);
-			}
+			});
 		});
 	});
 
