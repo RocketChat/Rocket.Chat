@@ -110,6 +110,26 @@ describe('useOpenEncryptedPdf', () => {
 		});
 	});
 
+	describe('files that are downloaded', () => {
+		it('should register and request each download under its own id (message-attachments R18)', async () => {
+			const { result } = renderHook(() => useOpenEncryptedPdf(), { wrapper: mockAppRoot().build() });
+			const tooLarge = 20 * 1024 * 1024;
+
+			await act(async () => {
+				await result.current('/file-decrypt/a.pdf', 'A', tooLarge, format, mockOpenDocumentViewer);
+				await result.current('/file-decrypt/b.pdf', 'B', tooLarge, format, mockOpenDocumentViewer);
+			});
+
+			const [[firstId, , firstTitle], [secondId, , secondTitle]] = mockRegisterDownloadForUid.mock.calls;
+			expect(firstId).not.toBe(secondId);
+			expect([firstTitle, secondTitle]).toEqual(['A', 'B']);
+			expect(mockForAttachmentDownload.mock.calls.map(([id, link]) => [id, link])).toEqual([
+				[firstId, '/file-decrypt/a.pdf'],
+				[secondId, '/file-decrypt/b.pdf'],
+			]);
+		});
+	});
+
 	describe('file size is within the limit', () => {
 		it('should fetch and open PDF', async () => {
 			mockFetch.mockResolvedValueOnce({
@@ -257,6 +277,86 @@ describe('useOpenEncryptedPdf', () => {
 				expect(mockRevokeObjectURL).toHaveBeenCalled();
 				expect(mockCreateObjectURL).toHaveBeenCalledTimes(2);
 			});
+		});
+
+		it('should keep the blob URL of a file while another file is opened (message-attachments R18)', async () => {
+			mockFetch.mockResolvedValue({ ok: true, blob: jest.fn().mockResolvedValue(testBlob) });
+			mockCreateObjectURL.mockReturnValueOnce('blob:first').mockReturnValueOnce('blob:second');
+
+			const { result } = renderHook(() => useOpenEncryptedPdf(), { wrapper: mockAppRoot().build() });
+
+			await act(async () => {
+				await result.current(link, title, allowedSize, format, mockOpenDocumentViewer);
+				await result.current('/file-decrypt/other.pdf', 'Other', allowedSize, format, mockOpenDocumentViewer);
+			});
+
+			expect(mockOpenDocumentViewer).toHaveBeenCalledWith('blob:first', format, title);
+			expect(mockOpenDocumentViewer).toHaveBeenCalledWith('blob:second', format, 'Other');
+			expect(mockRevokeObjectURL).not.toHaveBeenCalled();
+		});
+
+		it('should revoke every blob URL on unmount (message-attachments R18)', async () => {
+			mockFetch.mockResolvedValue({ ok: true, blob: jest.fn().mockResolvedValue(testBlob) });
+			mockCreateObjectURL.mockReturnValueOnce('blob:first').mockReturnValueOnce('blob:second');
+
+			const { result, unmount } = renderHook(() => useOpenEncryptedPdf(), { wrapper: mockAppRoot().build() });
+
+			await act(async () => {
+				await result.current(link, title, allowedSize, format, mockOpenDocumentViewer);
+				await result.current('/file-decrypt/other.pdf', 'Other', allowedSize, format, mockOpenDocumentViewer);
+			});
+			unmount();
+
+			expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:first');
+			expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:second');
+		});
+
+		it('should keep the blobs of the five most recently opened files only (message-attachments R18)', async () => {
+			mockFetch.mockResolvedValue({ ok: true, blob: jest.fn().mockResolvedValue(testBlob) });
+			let created = 0;
+			mockCreateObjectURL.mockImplementation(() => `blob:${++created}`);
+
+			const { result } = renderHook(() => useOpenEncryptedPdf(), { wrapper: mockAppRoot().build() });
+
+			await act(async () => {
+				// Seven files: the five opened last keep their blobs, the first two are released.
+				for (let index = 1; index <= 7; index++) {
+					await result.current(`/file-decrypt/${index}.pdf`, `File ${index}`, allowedSize, format, mockOpenDocumentViewer);
+				}
+			});
+
+			expect(mockRevokeObjectURL.mock.calls.map(([url]) => url)).toEqual(['blob:1', 'blob:2']);
+		});
+
+		it('should count an opened file again as the most recent one (message-attachments R18)', async () => {
+			mockFetch.mockResolvedValue({ ok: true, blob: jest.fn().mockResolvedValue(testBlob) });
+			let created = 0;
+			mockCreateObjectURL.mockImplementation(() => `blob:${++created}`);
+
+			const { result } = renderHook(() => useOpenEncryptedPdf(), { wrapper: mockAppRoot().build() });
+
+			await act(async () => {
+				for (let index = 1; index <= 5; index++) {
+					await result.current(`/file-decrypt/${index}.pdf`, `File ${index}`, allowedSize, format, mockOpenDocumentViewer);
+				}
+				await result.current('/file-decrypt/1.pdf', 'File 1', allowedSize, format, mockOpenDocumentViewer);
+				await result.current('/file-decrypt/new.pdf', 'New', allowedSize, format, mockOpenDocumentViewer);
+			});
+
+			expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:2');
+			expect(mockRevokeObjectURL).not.toHaveBeenCalledWith('blob:6');
+		});
+
+		it('should not keep a finished request to abort it later (message-attachments R18)', async () => {
+			mockFetch.mockResolvedValue({ ok: true, blob: jest.fn().mockResolvedValue(testBlob) });
+			const { result, unmount } = renderHook(() => useOpenEncryptedPdf(), { wrapper: mockAppRoot().build() });
+
+			await act(async () => {
+				await result.current(link, title, allowedSize, format, mockOpenDocumentViewer);
+			});
+			unmount();
+
+			expect(mockAbort).not.toHaveBeenCalled();
 		});
 
 		it('should revoke blob URL on component unmount', async () => {

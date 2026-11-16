@@ -2,10 +2,10 @@ import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { MessageQuoteAttachment as QuoteAttachment } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';
 import { useChat } from '../../contexts/ChatContext';
 

@@ -18,11 +18,10 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useFormatTime, useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { MessageContentBody } from '@rocket.chat/ui-message-list';
+import { MessageAttachments, MessageContentBody } from '@rocket.chat/ui-message-list';
 import { useTranslation } from 'react-i18next';
 
 import ReportReasonCollapsible from './ReportReasonCollapsible';
-import Attachments from '../../../../components/message/content/Attachments';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
@@ -82,7 +81,7 @@ const ContextMessage = ({
 						<MessageRole>{room.name || room.fname || 'DM'}</MessageRole>
 					</MessageHeader>
 					<MessageBody>
-						{!!quotes?.length && <Attachments attachments={quotes} />}
+						{!!quotes?.length && <MessageAttachments attachments={quotes} />}
 						{!message.blocks?.length && !!message.md?.length ? (
 							<>
 								{(!isEncryptedMessage || message.e2e === 'done') && (
@@ -96,7 +95,7 @@ const ContextMessage = ({
 							)
 						)}
 
-						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+						{!!attachments && <MessageAttachments id={message.files?.[0]?._id} attachments={attachments} />}
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					</MessageBody>
 					<ReportReasonCollapsible>

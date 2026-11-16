@@ -4,6 +4,7 @@ import {
 	MessageContentContext,
 	MessageDisplayContext,
 	MessageInteractionsContext,
+	MessageMediaContext,
 	MessageNavigationContext,
 	MessageRelatedDataContext,
 	MessageRenderersContext,
@@ -17,6 +18,7 @@ import UiKitMessageBlock from './renderers/UiKitMessageBlock';
 import { useMessageContentValue } from './useMessageContentValue';
 import { useMessageDisplayValue } from './useMessageDisplayValue';
 import { useMessageInteractionsValue } from './useMessageInteractionsValue';
+import { useMessageMediaValue } from './useMessageMediaValue';
 import { useMessageNavigationValue } from './useMessageNavigationValue';
 import { useMessageRelatedDataValue } from './useMessageRelatedDataValue';
 import Emoji from '../../components/Emoji';
@@ -59,6 +61,7 @@ const MessagesProvider = ({
 	const interactions = useMessageInteractionsValue(chat, subscription);
 	const relatedData = useMessageRelatedDataValue(chat);
 	const content = useMessageContentValue(display, subscription);
+	const media = useMessageMediaValue();
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
@@ -68,7 +71,9 @@ const MessagesProvider = ({
 						<MessageRenderersContext.Provider value={renderers}>
 							<MessageRelatedDataContext.Provider value={relatedData}>
 								<MessageContentContext.Provider value={content}>
-									<MessageSelectionContext.Provider value={selection}>{children}</MessageSelectionContext.Provider>
+									<MessageMediaContext.Provider value={media}>
+										<MessageSelectionContext.Provider value={selection}>{children}</MessageSelectionContext.Provider>
+									</MessageMediaContext.Provider>
 								</MessageContentContext.Provider>
 							</MessageRelatedDataContext.Provider>
 						</MessageRenderersContext.Provider>

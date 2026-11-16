@@ -53,3 +53,9 @@ it('exports the content parts under their prefixed names (R25)', () => {
 		expect(pkg).toHaveProperty(name);
 	}
 });
+
+it('exports the attachments (message-attachments R12)', () => {
+	for (const name of ['MessageAttachments', 'MessageQuoteAttachment', 'MessageMapView', 'useMediaReloadOnError']) {
+		expect(pkg).toHaveProperty(name);
+	}
+});

@@ -108,3 +108,60 @@ it.each([
 		expect(screen.queryByRole('button', { name: 'View_thread' }) !== null).toBe(shown);
 	},
 );
+
+const attachmentsWrapper = (chatValue: unknown) =>
+	mockAppRoot()
+		.withJohnDoe()
+		.withUserPreference('autoImageLoad', true)
+		.wrap((children: ReactNode) => (
+			<ChatContext.Provider value={chatValue as never}>
+				<MessageListProvider>{children}</MessageListProvider>
+			</ChatContext.Provider>
+		))
+		.build();
+
+it('shows the attachments of a message with the package parts under the list provider (message-attachments R21)', () => {
+	render(
+		<RoomMessage
+			message={{
+				...message,
+				attachments: [
+					{
+						type: 'file',
+						title: 'diagram.png',
+						title_link: '/file-upload/id/diagram.png',
+						image_url: '/file-upload/id/diagram.png',
+						image_alt: 'A diagram',
+					},
+					{ title: 'Pipeline', text: 'All checks passed.' },
+				] as IMessage['attachments'],
+			}}
+			{...messageProps}
+		/>,
+		{ wrapper: attachmentsWrapper(chat) },
+	);
+
+	expect(screen.getByRole('img', { name: 'A diagram' })).toBeInTheDocument();
+	expect(screen.getByText('All checks passed.')).toBeInTheDocument();
+});
+
+it('sends the message of an action button of an attachment through the open chat (message-attachments R21)', async () => {
+	const sendMessage = jest.fn().mockResolvedValue(undefined);
+
+	render(
+		<RoomMessage
+			message={{
+				...message,
+				attachments: [
+					{ actions: [{ type: 'button', text: 'Retry', msg: '/retry 42', msg_in_chat_window: true }] },
+				] as IMessage['attachments'],
+			}}
+			{...messageProps}
+		/>,
+		{ wrapper: attachmentsWrapper({ flows: { sendMessage } }) },
+	);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+
+	await waitFor(() => expect(sendMessage).toHaveBeenCalledWith({ text: '/retry 42' }));
+});

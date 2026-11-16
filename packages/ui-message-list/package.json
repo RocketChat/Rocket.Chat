@@ -26,6 +26,7 @@
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "workspace:~",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
@@ -60,6 +61,7 @@
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
