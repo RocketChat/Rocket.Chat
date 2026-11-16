@@ -7,10 +7,6 @@ on:
         required: true
         type: string
 
-    secrets:
-      NPM_TOKEN:
-        required: false
-
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
@@ -50,7 +46,6 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
         if: steps.changes.outputs.affected == 'true'

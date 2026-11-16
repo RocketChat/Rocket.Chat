@@ -676,8 +676,6 @@ jobs:
     uses: ./.github/workflows/ci-size-report.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-unit:
     name: 🔨 Test Unit
