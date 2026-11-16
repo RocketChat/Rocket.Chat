@@ -97,6 +97,7 @@ function setup() {
 		mockModel('Users', users);
 		jest.doMock('../../../database/utils', () => ({ client: { startSession } }));
 		jest.doMock('../../../settings/cached', () => ({ settings }));
+		jest.doMock('../../../settings', () => ({ settings }));
 		jest.doMock('../../callbacks', () => ({ callbacks: { run: runCallback } }));
 		jest.doMock('../../notifyListener', () => ({ notifyOnUserChange: notify }));
 		jest.doMock('@rocket.chat/license', () => ({ License: { hasModule } }));
@@ -601,6 +602,22 @@ describe('CustomOAuthStrategy', () => {
 				expect(user).toEqual(before);
 			},
 		);
+
+		it('rejects a mapped username that fails the username validation setting', () => {
+			env.createStrategy({ usernameField: 'login' }, 'github');
+			const user = makeUser({ services: { github: { id: 'id', username: 'alice@example.com' } } });
+			expect(() => env.accounts.validateNewUser.mock.calls[0][0](user)).toThrow(
+				expect.objectContaining({ error: 'error-invalid-username' }),
+			);
+		});
+
+		it('accepts a mapped username that the username validation setting allows', () => {
+			env.settingValues.set('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.@]+');
+			env.createStrategy({ usernameField: 'login' }, 'github');
+			const user = makeUser({ services: { github: { id: 'id', username: 'alice@example.com' } } });
+			expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+			expect(user.username).toBe('alice@example.com');
+		});
 
 		it('preserves account fields when mappings are not configured', () => {
 			env.createStrategy({}, 'github');
