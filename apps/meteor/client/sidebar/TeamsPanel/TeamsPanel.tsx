@@ -40,7 +40,10 @@ const TeamsPanel = () => {
 	const allTeams = useTeamSubscriptions();
 	const expandedTeams = teamsPanelStore((state) => state.expandedTeams);
 	const toggleTeam = teamsPanelStore((state) => state.toggleTeam);
-	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText });
+	const teamsUnreads = teamsPanelStore((state) => state.teamsUnreads);
+	const moveTeam = teamsPanelStore((state) => state.moveTeam);
+	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText, teamsUnreads });
+	const teamKeys = useMemo(() => allTeams.map(({ key }) => key), [allTeams]);
 	const hasTeams = allTeams.length > 0;
 
 	const formatTime = useShortTimeAgo();
@@ -113,7 +116,16 @@ const TeamsPanel = () => {
 						groups={virtualGroups}
 						as={TeamsListWrapper}
 						getItemKey={(item) => item._id}
-						renderGroup={(team) => <TeamsPanelCollapser team={team} onToggle={() => !filtering && toggleTeam(team.key)} />}
+						renderGroup={(team) => (
+							<TeamsPanelCollapser
+								team={team}
+								canMoveUp={!filtering && teamKeys.indexOf(team.key) > 0}
+								canMoveDown={!filtering && teamKeys.indexOf(team.key) < teamKeys.length - 1}
+								onMoveUp={() => moveTeam(teamKeys, team.key, 'up')}
+								onMoveDown={() => moveTeam(teamKeys, team.key, 'down')}
+								onToggle={() => !filtering && toggleTeam(team.key)}
+							/>
+						)}
 						renderItem={(item, _itemIndex, _team, _teamIndex, rowIndex) => (
 							<RoomListRowWrapper data-index={rowIndex}>
 								<RoomListRow data={itemData} item={item} />
