@@ -124,6 +124,8 @@ const textOnlySanitizeOptions = {
 		'td',
 	],
 	ALLOWED_ATTR: ['start', 'align'],
+	ALLOW_DATA_ATTR: false,
+	ALLOW_ARIA_ATTR: false,
 };
 
 const inlineOptions = {

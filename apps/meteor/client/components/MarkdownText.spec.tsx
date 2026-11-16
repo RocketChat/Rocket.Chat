@@ -503,7 +503,7 @@ describe('documentTextOnly variant', () => {
 
 		expect(screen.queryByRole('img')).not.toBeInTheDocument();
 		expect(screen.queryByRole('link')).not.toBeInTheDocument();
-		expect(screen.getByText(new RegExp(expected))).toBeInTheDocument();
+		expect(screen.getByText(expected, { exact: false })).toBeInTheDocument();
 	});
 
 	it('should keep text formatting', () => {
@@ -528,6 +528,16 @@ describe('documentTextOnly variant', () => {
 
 		expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
 		expect(screen.getByRole('listitem')).toHaveTextContent('deploy');
+	});
+
+	it('should not let a code block language add attributes', () => {
+		render(<MarkdownText content={'```js" data-tooltip="Sign in again" aria-hidden="true\nsecret\n```'} variant='documentTextOnly' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const code = screen.getByText('secret');
+		expect(code).not.toHaveAttribute('data-tooltip');
+		expect(code).not.toHaveAttribute('aria-hidden');
 	});
 
 	it('should keep html tags as text', () => {
@@ -680,5 +690,24 @@ describe('emoji parsing', () => {
 		const emojiElement = container.querySelector('.emoji');
 		expect(emojiElement).toBeInTheDocument();
 		expect(emojiElement).toHaveTextContent('😄');
+	});
+
+	it('should render emoji as plain text in documentTextOnly variant', () => {
+		emoji.packages.custom = {
+			emojiCategories: [],
+			emojisByCategory: {},
+			toneList: {},
+			render: (text: string) =>
+				text.replace(/:parrot:/g, '<span class="emoji" style="background-image:url(https://example.test/parrot.png)">:parrot:</span>'),
+			renderPicker: () => undefined,
+		};
+
+		render(<MarkdownText content='Approved :smile: :parrot:' variant='documentTextOnly' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.getByText('Approved 😄 :parrot:')).toBeInTheDocument();
+
+		delete emoji.packages.custom;
 	});
 });

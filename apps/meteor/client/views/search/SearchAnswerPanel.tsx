@@ -75,7 +75,7 @@ const SearchAnswerPanel = ({
 		);
 	} else if (answer) {
 		// the answer is untrusted model output, so it renders as text only
-		content = <MarkdownText variant='documentTextOnly' content={answer} fontScale='p2' />;
+		content = <MarkdownText variant='documentTextOnly' content={answer} parseEmoji fontScale='p2' />;
 	} else {
 		content = (
 			<Text color='hint' fontScale='p2'>

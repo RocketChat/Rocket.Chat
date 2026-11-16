@@ -79,6 +79,20 @@ export const Document: Story = {
 	},
 };
 
+export const DocumentTextOnly: Story = {
+	args: {
+		content: outdent`
+		# Title
+
+		**Bold** and _italic_ text with [a link](https://rocket.chat), https://rocket.chat and an ![image](https://rocket.chat/images/logo/logo.svg).
+
+		- List item 1
+		- List item 2
+		`,
+		variant: 'documentTextOnly',
+	},
+};
+
 export const Inline: Story = {
 	args: {
 		content: outdent`
