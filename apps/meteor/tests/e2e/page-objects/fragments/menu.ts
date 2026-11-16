@@ -17,6 +17,10 @@ export abstract class Menu {
 		return this.root.getByRole('menuitem', { name: itemName, exact: true });
 	}
 
+	getCheckboxItem(itemName: string) {
+		return this.root.getByRole('menuitemcheckbox', { name: itemName, exact: true });
+	}
+
 	async selectMenuItem(itemName: string, submenuTrigger = false) {
 		await this.getMenuItem(itemName).click();
 		if (!submenuTrigger) {
