@@ -27,8 +27,8 @@ const incidents = subscription({ rid: 'ops-incidents', name: 'incidents', fname:
 const general = subscription({ rid: 'general', name: 'general', fname: 'general' });
 const roomOfTeamNotJoined = subscription({ rid: 'orphan', name: 'orphan', fname: 'Orphan', teamId: 'other' });
 
-const renderTeamsList = (expandedTeams: string[]) =>
-	renderHook(() => useTeamsList({ teams: useTeamSubscriptions(), expandedTeams }), {
+const renderTeamsList = (expandedTeams: string[], filterText?: string) =>
+	renderHook(() => useTeamsList({ teams: useTeamSubscriptions(), expandedTeams, filterText }), {
 		wrapper: mockAppRoot()
 			.withSubscriptions([operations, backend, general, engineering, incidents, roomOfTeamNotJoined])
 			.withUserPreference('sidebarSortby', 'activity')
@@ -53,5 +53,14 @@ describe('useTeamsList', () => {
 		expect(eng.unreadInfo).toMatchObject({ unread: 0, userMentions: 0 });
 		expect(ops.rooms).toEqual([]);
 		expect(ops.unreadInfo).toMatchObject({ unread: 3, userMentions: 1 });
+	});
+
+	it('should keep every room of a team that matches the filter by name, and only the matching rooms of the other teams', () => {
+		const { result } = renderTeamsList([], 'EN');
+
+		expect(result.current.map(({ key, expanded, rooms }) => ({ key, expanded, rooms: rooms.map(({ rid }) => rid) }))).toEqual([
+			{ key: 'eng', expanded: true, rooms: ['eng-main', 'eng-backend'] },
+			{ key: 'ops', expanded: true, rooms: ['ops-incidents'] },
+		]);
 	});
 });

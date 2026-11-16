@@ -6764,6 +6764,7 @@
   "Teams_New_Title": "Create team",
   "Teams_panel_empty_description": "Teams group related channels under one name. Join a team or create one to see it here with its rooms.",
   "Teams_panel_empty_title": "You're not in any team yet",
+  "Teams_panel_search": "Search teams and rooms",
   "Teams_Private_Team": "Private team",
   "Teams_Public_Team": "Public team",
   "Teams_removing__username__from_team": "You are removing {{username}} from this team",
