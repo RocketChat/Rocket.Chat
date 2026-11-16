@@ -37,7 +37,9 @@ const newestPageIds = idsOf(allReplies.slice(TOTAL - PAGE_SIZE));
 
 type GetThreadMessagesParams = { tmid: string; offset?: number; count?: number; aroundId?: string; sort?: string };
 
-const setup = ({ serverLimit = Infinity }: { serverLimit?: number } = {}) => {
+const readThread = jest.fn(() => null);
+
+const setup = ({ serverLimit = Infinity, extra = [] }: { serverLimit?: number; extra?: Serialized<IMessage>[] } = {}) => {
 	const getThreadMessages = jest.fn(({ offset = 0, count = PAGE_SIZE, aroundId }: GetThreadMessagesParams) => {
 		const effectiveCount = Math.min(count, serverLimit);
 
@@ -51,13 +53,13 @@ const setup = ({ serverLimit = Infinity }: { serverLimit?: number } = {}) => {
 		const end = TOTAL - offset;
 		const start = Math.max(0, end - effectiveCount);
 
-		return { messages: allReplies.slice(start, end), count: effectiveCount, offset, total: TOTAL };
+		return { messages: [...allReplies.slice(start, end), ...extra], count: effectiveCount, offset, total: TOTAL };
 	});
 
 	const wrapper = mockAppRoot()
 		.withJohnDoe()
 		.withEndpoint('GET', '/v1/chat.getThreadMessages', getThreadMessages)
-		.withEndpoint('POST', '/v1/chat.readThread', () => null)
+		.withEndpoint('POST', '/v1/chat.readThread', readThread)
 		.build();
 
 	const { result } = renderHook(() => useThreadMessagesQuery(TMID), { wrapper });
@@ -67,6 +69,8 @@ const setup = ({ serverLimit = Infinity }: { serverLimit?: number } = {}) => {
 
 const waitForLoaded = async (result: { current: ReturnType<typeof useThreadMessagesQuery> }) =>
 	waitFor(() => expect(result.current.isLoading).toBe(false));
+
+beforeEach(() => readThread.mockClear());
 
 describe('useThreadMessagesQuery', () => {
 	it('reports no unloaded newer messages after the initial load', async () => {
@@ -89,6 +93,41 @@ describe('useThreadMessagesQuery', () => {
 		});
 
 		await waitFor(() => expect(result.current.hasNextPage).toBe(true));
+		expect(idsOf(result.current.data?.messages ?? [])).toEqual(idsOf(allReplies.slice(0, PAGE_SIZE)));
+	});
+
+	it('lists only the visible messages of its own thread, the main message never (R24, R37)', async () => {
+		const stray = [
+			{ ...createSerializedReply(900), _id: 'of-another-thread', tmid: 'another-thread' },
+			{ ...createSerializedReply(901), _id: 'of-the-channel', tmid: undefined },
+			{ ...createSerializedReply(902), _id: 'hidden', _hidden: true },
+			{ ...createSerializedReply(903), _id: TMID, tmid: TMID },
+		] as unknown as Serialized<IMessage>[];
+		const { result } = setup({ extra: stray });
+
+		await waitForLoaded(result);
+
+		expect(idsOf(result.current.data?.messages ?? [])).toEqual(newestPageIds);
+	});
+
+	it('marks the thread as read when the first page loads (R42)', async () => {
+		const { result } = setup();
+
+		await waitForLoaded(result);
+
+		expect(readThread).toHaveBeenCalledWith({ tmid: TMID });
+	});
+
+	it('loads the earliest replies around the main message, so no older reply remains (R28)', async () => {
+		const { result, getThreadMessages } = setup();
+		await waitForLoaded(result);
+
+		await act(async () => {
+			await result.current.loadMessageAround(TMID);
+		});
+
+		await waitFor(() => expect(result.current.hasPreviousPage).toBe(false));
+		expect(getThreadMessages).toHaveBeenLastCalledWith(expect.objectContaining({ tmid: TMID, aroundId: TMID }));
 		expect(idsOf(result.current.data?.messages ?? [])).toEqual(idsOf(allReplies.slice(0, PAGE_SIZE)));
 	});
 
@@ -129,6 +168,28 @@ describe('useThreadMessagesQuery', () => {
 
 			await waitFor(() => expect(result.current.hasNextPage).toBe(false));
 			expect(idsOf(result.current.data?.messages ?? [])).toEqual(newestPageIds);
+		});
+
+		it('resolves and clears the replies when the latest page fails to load (R35)', async () => {
+			const { result, getThreadMessages } = setup();
+			await waitForLoaded(result);
+			await act(async () => {
+				await result.current.loadMessageAround('reply-10');
+			});
+			await waitFor(() => expect(result.current.hasNextPage).toBe(true));
+
+			getThreadMessages.mockImplementation(() => {
+				throw new Error('offline');
+			});
+			let settled = false;
+			await act(async () => {
+				await result.current.jumpToRecent();
+				settled = true;
+			});
+
+			expect(settled).toBe(true);
+			await waitFor(() => expect(result.current.data).toBeUndefined());
+			expect(result.current.hasNextPage).toBe(false);
 		});
 	});
 

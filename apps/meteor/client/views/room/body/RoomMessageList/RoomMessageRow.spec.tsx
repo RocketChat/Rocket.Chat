@@ -4,10 +4,10 @@ import { ThreadMessage } from '@rocket.chat/ui-message-list';
 import { act, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { MessageMarkers } from './MessageMarkers';
 import RoomMessageRow from './RoomMessageRow';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../../../tests/mocks/data';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';
+import { MessageMarkers } from '../../../../providers/MessagesProvider/MessageMarkers';
 import { roomMessageSelection } from '../../../../providers/MessagesProvider/messageSelectionFromStore';
 import { Subscriptions } from '../../../../stores';
 import { selectedMessageStore } from '../../providers/SelectedMessageStore';

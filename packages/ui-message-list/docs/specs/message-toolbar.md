@@ -161,10 +161,9 @@ messages render the package's holder; the app keeps no copy of the toolbar.
 
 Notes for later branches:
 
-- The app's menu entries call the app's own hooks, not the interactions context, so `pin`, `star`, `unstar`, `unpin`,
-  `markUnread`, `translate` and `showOriginal` of the interactions context have no reader in the package. They are
-  carried out by the app and proven (message-capabilities R28). Branch 06 or 09 decides whether the menu entries move
-  onto the interactions context, so the package reads them, or the unused capabilities are removed.
+- The app's menu entries call the app's own hooks, not the interactions context, so the capabilities of that context that nothing in
+  the package read (pin, unpin, star, unstar, mark unread, translate, show original, edit, can delete, request deletion, report,
+  reaction list, read receipts and start a discussion) were removed (`thread-message-list` R53).
 - The emoji picker's context changes on every preview, so `MessagesProvider` renders again while a picker is hovered;
   its values keep their identity, so nothing below renders again.
 - A quick reaction no longer previews in an open emoji picker when hovered, as it did when it was drawn by the picker's
@@ -174,8 +173,7 @@ Notes for later branches:
 
 - ~~The message variants~~ (done by [message-variants](message-variants.md)), the list, scrolling and virtualization: later capabilities.
 - The hover and focus styling of the toolbar, which belongs to Fuselage.
-- Reading the `pin`, `star`, `unstar`, `unpin`, `markUnread`, `translate` and `showOriginal` capabilities of the
-  interactions context: the menu entries use the app's own action hooks (see R24).
+- Reading the capabilities of the interactions context that the menu entries do not use: they are gone (`thread-message-list` R53).
 
 ## Known defects
 

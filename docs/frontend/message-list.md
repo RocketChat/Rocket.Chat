@@ -44,7 +44,7 @@
 ## Feeding it
 
 - **A store of loaded messages** (the room): pass the window the store holds, the flags of the history manager, and promises from its loaders. A jump to an unloaded message loads the messages around it; set `targetMessageId` and the list jumps once they arrive.
-- **A React Query infinite query** (a thread): `fetchPreviousPage` and `fetchNextPage` are the loaders, `isFetchingPreviousPage` and `isFetchingNextPage` the flags.
+- **A React Query infinite query** (a thread, `ThreadMessageList` in `apps/meteor/client/views/room/contextualBar/Threads/components`): `fetchPreviousPage` and `fetchNextPage` are the loaders, `isFetchingPreviousPage` and `isFetchingNextPage` the flags. The thread gives the list no message while its first page loads, puts its main message in front of the replies once no older reply remains, passes `bottomThreshold` 20, `groupsThreadReplies` false and `deferPagingUntilInput`, composes only the date, keeps no position and provides no selection.
 - **A read-only list** (an audit, a search result): pass the messages and nothing else; no loaders, no own messages, no position.
 
 In the app, wrap the list, or any message component, in `MessagesProvider` with the conversation's room and subscription; read-only places pass `allowsInteraction={false}`.

@@ -47,6 +47,17 @@ export const Thread: Story = {
 	args: { layout: 'thread' },
 };
 
+/** thread-message-list R51: a long unbroken word wraps inside the width of the list. */
+export const ThreadLongWord: Story = {
+	args: { layout: 'thread', hasLongWord: true },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		await expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
+		await expect(within(viewport).getByText(/unbrokenunbroken/)).toBeVisible();
+	},
+};
+
 /** B18: selection mode puts a checkbox on every message. */
 export const SelectionMode: Story = {
 	args: { isSelecting: true },

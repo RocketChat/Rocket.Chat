@@ -97,7 +97,7 @@ The consumer gives the list:
 - how to tell the viewer's own messages, including their optimistic copies;
 - a saved position to restore, and the list must be keyed by conversation for it to take effect; whether unread messages override it is the consumer's decision, which it makes by not passing the position;
 - optionally, how near the bottom counts as the bottom (`bottomThreshold`);
-- optionally, that no page loads before the viewer's first input in the list (`deferPagingUntilInput`), as in a room;
+- optionally, that no page loads before the viewer's first input in the list (`deferPagingUntilInput`), as in a room and a thread;
 - optionally, space above the first row and below the last one (`startSpacing`, `endSpacing`), which the list counts as part of those rows, so it rests at the bottom with the space in view;
 - optionally, how far down from the top of the list the consumer draws over it, such as a banner (`overlayTopInset`): the floating date rests below that line and measures the day dividers from it;
 - a renderer for each message row and, optionally, a header.

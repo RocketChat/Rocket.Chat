@@ -11,11 +11,11 @@ import type { Ref } from 'react';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MessageMarkers } from './MessageMarkers';
 import RoomMessageRow from './RoomMessageRow';
 import { useRoomMessageListData } from './useRoomMessageListData';
 import { useScrollToBottomOnOwnMessage } from './useScrollToBottomOnOwnMessage';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';
+import { MessageMarkers } from '../../../../providers/MessagesProvider/MessageMarkers';
 import { roomMessageSelection } from '../../../../providers/MessagesProvider/messageSelectionFromStore';
 import { useChat } from '../../contexts/ChatContext';
 import type { RetentionPolicy } from '../../hooks/useRetentionPolicy';

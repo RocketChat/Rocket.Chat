@@ -134,8 +134,8 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   MUST take the list to the bottom, from wherever the viewer is reading, unless `countsAsArrival` says it is not an arrival (B3; R21).
 - **R20** When the list shows an older window (`hasNewerMessages`) and is taken to the bottom (by the handle's `scrollToBottom()`, which
   the consumer calls for the viewer's own message, or by "Jump to recent messages"), it MUST first call `onJumpToLatest`, and MUST go to
-  the bottom once the latest page is among the messages. Until then, and if `onJumpToLatest` is not given, the viewer's position MUST
-  NOT change by itself (B3).
+  the bottom once the latest page is among the messages. Until then, if `onJumpToLatest` is not given, and after it rejects, the viewer's
+  position MUST NOT change by itself (B3).
 - **R21** `MessageListNewMessagesButton` MUST be visible (`data-visible` true, `aria-hidden` false) when a message that is not the
   viewer's is appended at the end while the viewer is away from the bottom, `hasNewerMessages` is false, no newer page is
   loading and `countsAsArrival` (every message by default) says it is an arrival; and hidden (`data-visible` false, `aria-hidden` true,
@@ -425,7 +425,7 @@ stands in for is hidden by an attribute set on it, so scrolling draws no row. Th
 ## Out of scope
 
 - The room and the thread feeding the list (the `?msg=` parameter and the other room's jump, the read state, "Select all"
-  selecting, the room store's position, the history manager, the thread's queries) and the deletion of their lists: branches 08 and 09. This spec states what the list does for any source, and what it gives them.
+  selecting, the room store's position, the history manager, the thread's queries) and the deletion of their lists: [room-message-list](room-message-list.md) and [thread-message-list](thread-message-list.md). This spec states what the list does for any source, and what it gives them.
 - The part of intent Q1's six behaviours that is not the list's. A thread's system messages out of the room's selection is
   `message-variants` R24 and R25 (branch 02, fix 5), with the "Select all" wiring of 08 and the thread of 09. The composer's
   auto-link domains (branch 02, fix 6) is the composer's hook, which 08 must move out of the directory it deletes, with its spec.
@@ -450,15 +450,12 @@ A message at the end is recognised as the viewer's own only when it is the last 
 else's in the same update does not take a list that reads away to the bottom, and raises "New messages" instead (R19). Pinned by the
 skipped test "goes to the bottom for an own message followed by another one in the same update (R19)" in `MessageList.spec.tsx`.
 
-### D3 A failed jump to the latest page leaves the list waiting for it
-
-A rejected `onJumpToLatest` leaves the list waiting for the latest page (a missing one no longer does: the list stops waiting at once): it holds nothing, and goes to the bottom later without the
-viewer asking, when the messages next stop having a newer page (R20). Pinned by the skipped test "does not go to the bottom by itself
-after a failed jump to the latest page (R20)" in `MessageList.spec.tsx`.
-
 D2 was dropped before it was recorded: a page of newer messages ending in the viewer's own message cannot be taken for an own message,
 because a page added before the newer loader is classified as a change inside the rows, not as an append (R31 is proven by a test that
 passes).
+
+D3 (a rejected `onJumpToLatest` left the list waiting for the latest page) was fixed with the thread's list (branch 09, R20) and its
+number is not reused.
 
 Not recorded as defects, because the list is changed instead of carrying them:
 

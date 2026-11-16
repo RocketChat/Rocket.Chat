@@ -17,7 +17,6 @@ export type ComposerMessageProps = {
 	subscription?: ISubscription;
 	tshow?: boolean;
 	previewUrls?: string[];
-	onResize?: () => void;
 	onEscape?: () => void;
 	actions: ComposerActions;
 	onNavigateToNextMessage?: () => void;

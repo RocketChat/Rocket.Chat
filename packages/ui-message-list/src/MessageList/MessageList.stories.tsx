@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from 'storybook/test';
 
-import MessageListPlayground from './stories/MessageListPlayground';
+import MessageListPlayground, { MAIN_MESSAGE_ID } from './stories/MessageListPlayground';
 import TwoRoomsPlayground from './stories/TwoRoomsPlayground';
 import {
 	distanceFromBottom,
@@ -546,6 +546,25 @@ export const HeaderReplacesTheLoader: Story = {
 
 		await userScrollTo(canvasElement, 0);
 		await waitFor(() => canvasElement.querySelector('[data-qa="start-of-conversation"]') !== null);
+	},
+};
+
+/** thread-message-list R11: the main message takes the older loader's place without moving what is on screen. */
+export const ThreadMainMessageReplacesLoader: Story = {
+	args: { isThread: true, hasHeader: false, hasMainMessage: true, history: { size: 40 }, source: { pageSize: 20, latency: 'manual' } },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		await userScrollTo(canvasElement, 0);
+		await expect(messageRow(canvasElement, MAIN_MESSAGE_ID)).toBeNull();
+		const reading = firstVisibleMessage(canvasElement);
+
+		await settleAllLoads(canvasElement);
+		await waitForListSettled(canvasElement);
+
+		await expect(Math.abs(messageOffset(canvasElement, reading.id) - reading.top)).toBeLessThanOrEqual(1);
+
+		await userScrollTo(canvasElement, 0);
+		await waitFor(() => messageRow(canvasElement, MAIN_MESSAGE_ID) !== null);
 	},
 };
 

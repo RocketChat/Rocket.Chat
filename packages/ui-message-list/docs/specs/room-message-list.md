@@ -12,7 +12,7 @@ code:
     apps/meteor/client/views/room/body/hooks/useElementHeight.ts,
     apps/meteor/client/views/room/body/RoomMessageList/RoomMessageList.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/RoomMessageRow.tsx,
-    apps/meteor/client/views/room/body/RoomMessageList/MessageMarkers.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessageMarkers.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/useRoomMessageListData.ts,
     apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.ts,
     apps/meteor/client/views/room/body/hooks/useRetryFirstPage.ts,
@@ -218,7 +218,7 @@ of the end of the latest messages (message-list R17, R80).
   around a target and the latest page MUST count as the initial load while nothing is loaded and as an older load otherwise, so no
   page starts while another loads (message-list R4, R32).
 - **R42** The room's `onJumpToLatest` MUST clear the room's window before it loads the first page, so the list sees the latest messages
-  at once and a failed load leaves it at the bottom of an empty window, not waiting (message-list D3; Q5).
+  at once and a failed load leaves it at the bottom of an empty window, not waiting (Q5).
 - **R43** A message at the end of the list written by the viewer, including one the viewer sends from an older window, MUST take the
   list to the latest messages (B3; message-list R19, R20). The room MUST decide it by comparing the author with the viewer, and a
   thread reply MUST NOT count as the viewer's own message, as on `develop`, whether or not it shows in the room (Q3, answered). A reply
@@ -320,13 +320,13 @@ it reports it, and keeps `useUserScrollIntent` on the messages area, whose input
 input; `RoomBody` measures what it draws over the top of the list and gives the list its height.
 The room store keeps the position the list reports; the history manager keeps no scroll. `MessagesProvider` keeps one related-data
 value over a store of the place's room and subscription, which a reader reads through `select`. What the thread still imports of the
-old list stays for branch 09 (Q9). Coarse enough to survive a rename; the reasons are in the intent and the plan.
+old list stayed for `thread-message-list`, which has deleted it (Q9). Coarse enough to survive a rename; the reasons are in the intent and the plan.
 
 ## Out of scope
 
-- The list's behaviour for any source: [message-list](message-list.md). Its defects D1 and D3 stay recorded there.
-- The thread's list and the cleanup: branch 09 (`BubbleDate`, `useDateScroll`, the app's copy of the navigation hook, the thread's
-  kept-mounted and keep-at-bottom hooks, the loading indicator and the highlight store's rename).
+- The list's behaviour for any source: [message-list](message-list.md). Its defect D1 stays recorded there.
+- The thread's list and the cleanup: [thread-message-list](thread-message-list.md) (`BubbleDate`, `useDateScroll`, the app's copy of the
+  navigation hook, the thread's kept-mounted and keep-at-bottom hooks, the loading indicator and the highlight store's rename).
 - The read-state manager's rules and the banner's look (R23).
 - The rendering of a message row: [message-variants](message-variants.md).
 - The e2e suites; the manual check of the scope stands in for them (one page-object selector, Q7).
@@ -356,7 +356,7 @@ answered at the spec gate by the orchestrator, for the user.
   R82); an empty list can neither commit new messages nor scroll. After a failed first page only the first input asks again, so later
   inputs meet a dead end, and (b) holds: the room retries on every input (R59), and a page the list asks for in that moment is the
   same load (R39).
-- **Q5** ~~Whether the room can meet message-list D3.~~ Answered: it cannot, as analysed (R42). D3 stays pinned in `message-list`; a
+- **Q5** ~~Whether the room can meet message-list D3.~~ Answered: it cannot, as analysed (R42). D3 stayed pinned in `message-list` until branch 09 fixed it for every list; a
   meteor spec rejects `getMore` after the clear.
 - **Q6** ~~"Select all" scrolls instantly where `develop` scrolls smoothly.~~ Answered: (a), accepted, listed under the differences.
 - **Q7** ~~The e2e page object's `.messages-list` selector.~~ Answered: (a), changed to the list's `role=list`; every use of
@@ -402,7 +402,7 @@ list's last row, and a viewer away from the end of the list sees rows in that ba
 ## References
 
 - [Intent](../intents/room-message-list.md); [message-list](message-list.md) R9, R13, R17, R19 to R21, R32, R41 to R49, R54 to R62, R69
-  to R72, R80 to R83, D3; [message-variants](message-variants.md) R10, R24 to R26, R40, R47, R49; ADR 0001.
+  to R72, R80 to R83; [message-variants](message-variants.md) R10, R24 to R26, R40, R47, R49; ADR 0001.
 - `develop`: #42756 (`7a6bb7e0842`, `ed58fe604fe`, `b3986884c7d`, `3daeeb52a35`, `0c0763dca80`, `c903f8edb3a`, `323cfe908d8`,
   `c124604a77b`), #43308, #43471, #43627.
 - Reference tag `message-list-ref`, commit `59f6fe6f2a5`: `RoomMessageList`, `RoomMessageRow`, `useRoomMessageListData`,
