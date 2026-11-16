@@ -654,11 +654,22 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		const parseIds = (ids: string | undefined, field: string) =>
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
+		const parsePinned = (pinned: string | boolean | undefined) => {
+			const lower = String(pinned).toLowerCase();
+			if (lower === 'true') {
+				return { pinned: true };
+			}
+			if (lower === 'false') {
+				return { pinned: { $ne: true } };
+			}
+			return {};
+		};
+
 		const ourQuery = {
 			rid: room._id,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
-			...(pinned?.toLowerCase() === 'true' && { pinned: true }),
+			...parsePinned(pinned),
 			_hidden: { $ne: true },
 		};
 		const sortObj = sort || { ts: -1 };

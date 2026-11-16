@@ -824,6 +824,27 @@ describe('[Direct Messages]', () => {
 				});
 		});
 
+		it('should return unpinned messages when pinned is false', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					pinned: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(3);
+					expect(res.body).to.have.property('count', 3);
+					expect(res.body).to.have.property('total', 3);
+					res.body.messages.forEach((message: any) => {
+						expect(message).to.not.have.property('pinned', true);
+					});
+				});
+		});
+
 		describe('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
 			before(async () => {
 				await updateSetting('Message_KeepHistory', true);
