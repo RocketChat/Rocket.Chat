@@ -123,7 +123,10 @@ it('should answer a remote offer that arrives during a negotiation once that neg
 	await manager.addNegotiation('n2', remoteOffer);
 	await flush();
 
-	expect(localSdps.map(({ negotiationId }) => negotiationId)).toEqual(['n1', 'n2']);
+	expect(localSdps.map(({ negotiationId, sdp }) => [negotiationId, sdp.type])).toEqual([
+		['n1', 'answer'],
+		['n2', 'answer'],
+	]);
 });
 
 it('should drop the local offer of the polite side without an error when a remote offer interrupts it', async () => {
