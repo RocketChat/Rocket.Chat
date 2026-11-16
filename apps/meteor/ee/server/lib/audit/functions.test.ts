@@ -3,10 +3,11 @@ import { before, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } = proxyquire.noCallThru().load('./functions', {
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+
+const { auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } = loadWithMocks('./functions', {
 	'@rocket.chat/core-services': { ClientSafeError },
 	'../../../../server/lib/authorization/hasPermission': { hasPermissionAsync: sinon.stub().resolves(true) },
 	'../../../../server/lib/callbacks': { callbacks: { run: sinon.stub() } },

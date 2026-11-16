@@ -36,7 +36,7 @@ describe('normalizeMessagesForUser', () => {
 		expect(message.reactions[':smile:'].names).to.deep.equal(['Alice Real']);
 	});
 
-	for (const useRealName of [true, false]) {
+	[true, false].forEach((useRealName) => {
 		it(`should return only the public identity of the message author (real names: ${useRealName})`, async () => {
 			settingsGet.withArgs('UI_Use_Real_Name').returns(useRealName);
 
@@ -47,7 +47,7 @@ describe('normalizeMessagesForUser', () => {
 
 			expect(message.u).to.deep.equal({ _id: 'u', username: 'alice', name: useRealName ? 'Alice Real' : 'Alice' });
 		});
-	}
+	});
 
 	it('should not fail on a reaction that has no list of usernames', async () => {
 		const [message] = await normalizeMessagesForUser(

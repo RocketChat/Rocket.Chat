@@ -197,14 +197,11 @@ describe('InstanceService encryption warning', () => {
 	const originalSecret = process.env.MOLECULER_ENCRYPTION_SECRET;
 
 	const load = (transporter: unknown) =>
-		proxyquire
-			.noPreserveCache()
-			.noCallThru()
-			.load('./service', {
-				...serviceMocks,
-				'./getTransporter': { getTransporter: () => transporter },
-				'../../../../server/lib/logger/system': { SystemLogger: { warn, error: sinon.stub() } },
-			}).InstanceService;
+		loadWithMocks('./service', {
+			...serviceMocks,
+			'./getTransporter': { getTransporter: () => transporter },
+			'../../../../server/lib/logger/system': { SystemLogger: { warn, error: sinon.stub() } },
+		}).InstanceService;
 
 	afterEach(() => {
 		warn.reset();
