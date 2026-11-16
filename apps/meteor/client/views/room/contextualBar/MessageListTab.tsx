@@ -12,21 +12,21 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { RoomMessage, SystemMessage } from '@rocket.chat/ui-message-list';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import RoomMessage from '../../../components/message/variants/RoomMessage';
-import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useMessageRowListNavigation } from '../../../hooks/useMessageRowListNavigation';
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
-import MessageListProvider from '../MessageList/providers/MessageListProvider';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
+import { roomMessageSelection } from '../../../providers/MessagesProvider/messageSelectionFromStore';
 import MessageListErrorBoundary from '../body/MessageListErrorBoundary';
-import { useRoomSubscription } from '../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 
 export type MessageListTabProps = {
 	iconName: IconName;
@@ -39,13 +39,13 @@ export type MessageListTabProps = {
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps) => {
 	const formatDate = useFormatDate();
 	const messageListRef = useMessageRowListNavigation();
-	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const { closeTab } = useRoomToolbox();
 	const handleTabBarCloseButtonClick = useCallback(() => {
 		closeTab();
 	}, [closeTab]);
 
+	const room = useRoom();
 	const subscription = useRoomSubscription();
 
 	return (
@@ -67,7 +67,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
-								<MessageListProvider>
+								<MessagesProvider room={room} subscription={subscription} selection={roomMessageSelection}>
 									<Box
 										is='section'
 										ref={messageListRef}
@@ -99,7 +99,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 															{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
 															{system ? (
-																<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+																<SystemMessage message={message} />
 															) : (
 																<RoomMessage
 																	message={message}
@@ -108,7 +108,6 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 																	mention={mention}
 																	all={all}
 																	context={context}
-																	showUserAvatar={showUserAvatar}
 																/>
 															)}
 														</>
@@ -117,7 +116,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 											/>
 										</VirtualizedScrollbars>
 									</Box>
-								</MessageListProvider>
+								</MessagesProvider>
 							</MessageListErrorBoundary>
 						)}
 					</>

@@ -3,6 +3,7 @@ import type { MessageRenderersContextValue, MessageSelectionStore } from '@rocke
 import {
 	MessageContentContext,
 	MessageDisplayContext,
+	MessageEditingContext,
 	MessageInteractionsContext,
 	MessageMediaContext,
 	MessageNavigationContext,
@@ -12,17 +13,20 @@ import {
 	MessageToolbarContext,
 } from '@rocket.chat/ui-message-list';
 import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 
 import MessageMarkup from './renderers/MessageMarkup';
 import MessagePreviewMarkup from './renderers/MessagePreviewMarkup';
 import UiKitMessageBlock from './renderers/UiKitMessageBlock';
 import { useMessageContentValue } from './useMessageContentValue';
 import { useMessageDisplayValue } from './useMessageDisplayValue';
+import { useMessageEditingValue } from './useMessageEditingValue';
 import { useMessageInteractionsValue } from './useMessageInteractionsValue';
 import { useMessageMediaValue } from './useMessageMediaValue';
 import { useMessageNavigationValue } from './useMessageNavigationValue';
 import { useMessageRelatedDataValue } from './useMessageRelatedDataValue';
 import { useMessageToolbarValue } from './useMessageToolbarValue';
+import { useRolesByUser } from './useRolesByUser';
 import Emoji from '../../components/Emoji';
 import { useChat } from '../../views/room/contexts/ChatContext';
 import AttachmentProvider from '../AttachmentProvider';
@@ -61,10 +65,13 @@ const MessagesProvider = ({
 	const display = useMessageDisplayValue({ room, subscription, allowsInteraction });
 	const navigation = useMessageNavigationValue();
 	const interactions = useMessageInteractionsValue(chat, subscription);
-	const relatedData = useMessageRelatedDataValue(chat);
+	const placeUserRoles = useRolesByUser(room?._id ?? '', !!room && display.showRoles);
+	const place = useMemo(() => ({ room, subscription }), [room, subscription]);
+	const relatedData = useMessageRelatedDataValue(place, placeUserRoles);
 	const content = useMessageContentValue(display, subscription);
 	const media = useMessageMediaValue();
 	const toolbar = useMessageToolbarValue(display, chat);
+	const editing = useMessageEditingValue(allowsInteraction);
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
@@ -76,7 +83,9 @@ const MessagesProvider = ({
 								<MessageContentContext.Provider value={content}>
 									<MessageMediaContext.Provider value={media}>
 										<MessageToolbarContext.Provider value={toolbar}>
-											<MessageSelectionContext.Provider value={selection}>{children}</MessageSelectionContext.Provider>
+											<MessageSelectionContext.Provider value={selection}>
+												<MessageEditingContext.Provider value={editing}>{children}</MessageEditingContext.Provider>
+											</MessageSelectionContext.Provider>
 										</MessageToolbarContext.Provider>
 									</MessageMediaContext.Provider>
 								</MessageContentContext.Provider>

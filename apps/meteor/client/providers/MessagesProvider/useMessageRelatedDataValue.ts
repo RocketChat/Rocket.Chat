@@ -1,13 +1,13 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { MessageRelatedDataContextValue } from '@rocket.chat/ui-message-list';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useParentMessage } from './useParentMessage';
+import type { PlaceUserRoles } from './useRolesByUser';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { RoomManager, getCollapsibleEventKey, useOpenedRoom } from '../../lib/RoomManager';
-import type { ChatAPI } from '../../lib/chats/ChatAPI';
 import { messagesQueryKeys } from '../../lib/queryKeys';
 import { Rooms, Subscriptions } from '../../stores';
 import { useGetMessageByID } from '../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
@@ -37,10 +37,34 @@ const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, 
 	return [toggled !== initiallyCollapsed, togglePersisted];
 };
 
+export type MessagePlace = { room?: IRoom; subscription?: ISubscription };
+
+/** The room and the subscription of a message: the place's own when it is the place's room, else the client's stores', with no request. */
+const useConversation = ({ room, subscription }: MessagePlace, message: IMessage, enabled: boolean) => {
+	const inPlace = !!room && room._id === message.rid;
+	const roomOfMessage = Rooms.use((state) => (enabled && !inPlace ? state.get(message.rid) : undefined));
+	const subscriptionOfMessage = Subscriptions.use((state) =>
+		enabled && !inPlace ? state.find((record) => record.rid === message.rid) : undefined,
+	);
+
+	return useMemo(() => {
+		if (!enabled) {
+			return { data: undefined, isLoading: false, isError: false };
+		}
+
+		return {
+			data: inPlace ? { room, subscription } : { room: roomOfMessage, subscription: subscriptionOfMessage },
+			isLoading: false,
+			isError: false,
+		};
+	}, [enabled, inPlace, room, subscription, roomOfMessage, subscriptionOfMessage]);
+};
+
 /** Data messages show about other things, read from the client's stores first and fetched when missing. */
-export const useMessageRelatedDataValue = (chat: ChatAPI | undefined): MessageRelatedDataContextValue =>
+export const useMessageRelatedDataValue = (place: MessagePlace, placeUserRoles?: PlaceUserRoles): MessageRelatedDataContextValue =>
 	useMemo(
 		() => ({
+			usePlaceUserRoles: (uid, rid) => (placeUserRoles?.rid === rid ? placeUserRoles.get(uid) : undefined),
 			useUserRoles: (uid, rid, { enabled }) => useUserRolesByScope(uid, rid, { enabled }),
 			useParentMessage: (tmid) => {
 				const { data, isLoading, isError } = useParentMessage(tmid);
@@ -56,23 +80,8 @@ export const useMessageRelatedDataValue = (chat: ChatAPI | undefined): MessageRe
 				});
 				return { data, isLoading, isError };
 			},
-			useConversation: (message: IMessage, { enabled }) => {
-				const { data, isLoading, isError } = useQuery({
-					queryKey: ['messages', message._id, 'conversation'],
-					queryFn: async () => {
-						if (chat) {
-							return { room: await chat.data.findRoom(), subscription: await chat.data.findSubscription() };
-						}
-						return {
-							room: Rooms.state.get(message.rid),
-							subscription: Subscriptions.state.find((record) => record.rid === message.rid),
-						};
-					},
-					enabled,
-				});
-				return { data, isLoading, isError };
-			},
+			useConversation: (message, { enabled }) => useConversation(place, message, enabled),
 			useCollapsedState,
 		}),
-		[chat],
+		[place, placeUserRoles],
 	);

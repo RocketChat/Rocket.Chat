@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import ClassificationBanner from './ClassificationBanner';
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
-import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomInvite from './RoomInvite';
 import MediaCallRoom from './body/MediaCallRoom';
 import RoomBody from './body/RoomBody';
@@ -48,54 +47,52 @@ const Room = () => {
 
 	return (
 		<ChatProvider>
-			<MessageHighlightProvider>
-				<FocusScope>
-					<DateListProvider>
-						<RoomLayout
-							data-qa-rc-room={room._id}
-							aria-label={roomLabel}
-							classificationBanner={<ClassificationBanner />}
-							header={<Header room={room} />}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<MediaCallRoom>
-										<RoomBody />
-									</MediaCallRoom>
-								)
-							}
-							aside={
-								(toolbox.tab?.tabComponent && (
-									<ReportableErrorBoundary
-										fallbackRender={({ error, componentStack }) => (
-											<GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />
-										)}
-									>
-										<SelectedMessagesProvider>
-											<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
-										</SelectedMessagesProvider>
-									</ReportableErrorBoundary>
-								)) ||
-								(contextualBarView && (
-									// TODO: improve fallback handling
-									<ReportableErrorBoundary
-										fallbackRender={({ error, componentStack }) => (
-											<GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />
-										)}
-									>
-										<SelectedMessagesProvider>
-											<Suspense fallback={<ContextualbarSkeleton />}>
-												<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
-											</Suspense>
-										</SelectedMessagesProvider>
-									</ReportableErrorBoundary>
-								))
-							}
-						/>
-					</DateListProvider>
-				</FocusScope>
-			</MessageHighlightProvider>
+			<FocusScope>
+				<DateListProvider>
+					<RoomLayout
+						data-qa-rc-room={room._id}
+						aria-label={roomLabel}
+						classificationBanner={<ClassificationBanner />}
+						header={<Header room={room} />}
+						body={
+							shouldDisplayE2EESetup ? (
+								<RoomE2EESetup />
+							) : (
+								<MediaCallRoom>
+									<RoomBody />
+								</MediaCallRoom>
+							)
+						}
+						aside={
+							(toolbox.tab?.tabComponent && (
+								<ReportableErrorBoundary
+									fallbackRender={({ error, componentStack }) => (
+										<GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />
+									)}
+								>
+									<SelectedMessagesProvider>
+										<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
+									</SelectedMessagesProvider>
+								</ReportableErrorBoundary>
+							)) ||
+							(contextualBarView && (
+								// TODO: improve fallback handling
+								<ReportableErrorBoundary
+									fallbackRender={({ error, componentStack }) => (
+										<GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />
+									)}
+								>
+									<SelectedMessagesProvider>
+										<Suspense fallback={<ContextualbarSkeleton />}>
+											<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
+										</Suspense>
+									</SelectedMessagesProvider>
+								</ReportableErrorBoundary>
+							))
+						}
+					/>
+				</DateListProvider>
+			</FocusScope>
 		</ChatProvider>
 	);
 };

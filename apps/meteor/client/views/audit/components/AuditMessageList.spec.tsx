@@ -5,9 +5,9 @@ import AuditMessageList from './AuditMessageList';
 import { createFakeMessage } from '../../../../tests/mocks/data';
 
 jest.mock('../../../../rocketchat.info', () => ({ Info: {} }));
-jest.mock('../../../components/message/variants/RoomMessage', () => ({
-	__esModule: true,
-	default: () => {
+jest.mock('@rocket.chat/ui-message-list', () => ({
+	...jest.requireActual('@rocket.chat/ui-message-list'),
+	RoomMessage: () => {
 		const MessageContextsProbe = jest.requireActual('../../../../tests/mocks/client/MessageContextsProbe').default;
 		return <MessageContextsProbe />;
 	},

@@ -19,11 +19,10 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useFormatTime, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserCard } from '@rocket.chat/ui-contexts';
-import { MessageAttachments, MessageContentBody } from '@rocket.chat/ui-message-list';
+import { MessageAttachments, MessageContentBody, StatusIndicators } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import StatusIndicators from '../../../../components/message/StatusIndicators';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';

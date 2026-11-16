@@ -1,9 +1,8 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
+import { SystemMessage, ThreadMessage } from '@rocket.chat/ui-message-list';
 import { useTranslation } from 'react-i18next';
 
-import SystemMessage from '../../../../../components/message/variants/SystemMessage';
-import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../../../lib/utils/isMessageNewDay';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
@@ -14,19 +13,11 @@ type ThreadMessageProps = {
 	previous: IThreadMessage | IThreadMainMessage;
 	sequential: boolean;
 	shouldShowAsSequential: boolean;
-	showUserAvatar: boolean;
 	firstUnread: boolean;
 	system: boolean;
 };
 
-export const ThreadMessageItem = ({
-	message,
-	previous,
-	shouldShowAsSequential,
-	showUserAvatar,
-	firstUnread,
-	system,
-}: ThreadMessageProps) => {
+export const ThreadMessageItem = ({ message, previous, shouldShowAsSequential, firstUnread, system }: ThreadMessageProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 	const ref = useDateRef();
@@ -62,15 +53,9 @@ export const ThreadMessageItem = ({
 				</Box>
 			)}
 			{system ? (
-				<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+				<SystemMessage message={message} />
 			) : (
-				<ThreadMessage
-					message={message}
-					sequential={shouldShowAsSequential}
-					unread={firstUnread}
-					showUserAvatar={showUserAvatar}
-					ignoredUser={ignoredUser}
-				/>
+				<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} ignoredUser={ignoredUser} />
 			)}
 		</>
 	);

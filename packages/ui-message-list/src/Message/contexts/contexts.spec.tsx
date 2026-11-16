@@ -150,3 +150,8 @@ it('offers no menu entry and no quick reaction, and counts none, by default (R1)
 	expect(useQuickReactions()).toEqual([]);
 	expect(useCountQuickReaction()('smile')).toBeUndefined();
 });
+
+it('has no roles resolved by the place by default, so a header resolves them itself (message-variants R49)', () => {
+	expect(messageRelatedDataDefaultValue.usePlaceUserRoles('uid', 'rid')).toBeUndefined();
+	expect(messageRelatedDataDefaultValue.useUserRoles('uid', 'rid', { enabled: true })).toEqual({ workspaceRoles: [], roomRoles: [] });
+});

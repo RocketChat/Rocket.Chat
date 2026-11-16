@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { LayoutContext } from '@rocket.chat/ui-contexts';
+import { RoomMessage } from '@rocket.chat/ui-message-list';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useContext } from 'react';
@@ -8,7 +9,6 @@ import type { ReactNode } from 'react';
 
 import AuditMessageList from './AuditMessageList';
 import { createFakeMessage, createFakeRoom } from '../../../../tests/mocks/data';
-import RoomMessage from '../../../components/message/variants/RoomMessage';
 import { MessagesProvider } from '../../../providers/MessagesProvider';
 import { Rooms } from '../../../stores';
 import { RoomContext } from '../../../views/room/contexts/RoomContext';
@@ -195,7 +195,7 @@ describe('the toolbar of a message', () => {
 			<>
 				<RoomContext.Provider value={{ rid: room._id, room, subscribed: true }}>
 					<MessagesProvider room={room}>
-						<RoomMessage message={interactive} sequential={false} unread={false} mention={false} all={false} showUserAvatar />
+						<RoomMessage message={interactive} sequential={false} unread={false} mention={false} all={false} />
 					</MessagesProvider>
 				</RoomContext.Provider>
 				<AuditMessageList messages={[read]} />
@@ -210,5 +210,50 @@ describe('the toolbar of a message', () => {
 		const toolbars = await screen.findAllByRole('toolbar', { name: 'Message_actions' });
 		expect(toolbars).toHaveLength(1);
 		expect(within(screen.getByRole('listitem', { name: /in the room/ })).getByRole('toolbar')).toBe(toolbars[0]);
+	});
+});
+
+describe('the display settings of the viewer (message-variants R44)', () => {
+	const read = audited({
+		_id: 'read',
+		msg: 'look https://rocket.chat',
+		ts: new Date('2021-10-27T10:00:00.000Z'),
+		unread: false,
+		urls: [{ url: 'https://rocket.chat', meta: { ogTitle: 'Rocket.Chat home' } }],
+	} as Partial<IMessage>);
+
+	it('shows the time, the username next to the real name, the read receipt and the URL previews, and no toolbar (R44)', () => {
+		render(<AuditMessageList messages={[read]} />, {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('UI_Use_Real_Name', true)
+				.withSetting('Message_Read_Receipt_Enabled', true)
+				.withSetting('API_Embed', true)
+				.build(),
+		});
+
+		const row = screen.getByRole('listitem', { name: /look/ });
+		expect(within(row).getByText('Author')).toBeInTheDocument();
+		expect(within(row).getByText('@author')).toBeInTheDocument();
+		expect(row.querySelector('.rcx-message-header__time')?.textContent).not.toBe('');
+		expect(within(row).getByRole('status', { name: 'Message_viewed' })).toBeInTheDocument();
+		expect(within(row).getByText('Rocket.Chat home')).toBeInTheDocument();
+		expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+	});
+
+	it('leaves the username out when the viewer hides usernames (R44)', () => {
+		render(<AuditMessageList messages={[read]} />, {
+			wrapper: mockAppRoot().withJohnDoe().withSetting('UI_Use_Real_Name', true).withUserPreference('hideUsernames', true).build(),
+		});
+
+		expect(screen.queryByText('@author')).not.toBeInTheDocument();
+	});
+
+	it('shows no avatar when the viewer turned avatars off (R44, R46)', () => {
+		render(<AuditMessageList messages={[read]} />, {
+			wrapper: mockAppRoot().withJohnDoe().withUserPreference('displayAvatars', false).build(),
+		});
+
+		expect(screen.queryByRole('figure')).not.toBeInTheDocument();
 	});
 });

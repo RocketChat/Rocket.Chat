@@ -44,3 +44,14 @@ it("applies the viewer's attachment preferences to a message of the contact hist
 
 	expect(screen.queryByRole('img', { name: 'A photo' })).not.toBeInTheDocument();
 });
+
+it('draws the status indicators of a message of the contact history with the package (message-variants R45)', () => {
+	render(<ContactHistoryMessage message={{ ...message, pinned: true }} sequential={false} isNewDay={false} showUserAvatar />, {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.wrap((children: ReactNode) => <MessagesProvider allowsInteraction={false}>{children}</MessagesProvider>)
+			.build(),
+	});
+
+	expect(screen.getByTitle('Message_has_been_pinned')).toBeInTheDocument();
+});

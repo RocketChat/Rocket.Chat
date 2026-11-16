@@ -1,13 +1,11 @@
 import { isThreadMessage, type IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
+import { RoomMessage, SystemMessage, ThreadMessagePreview, useMessageDisplay } from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
-import RoomMessage from '../../../components/message/variants/RoomMessage';
-import SystemMessage from '../../../components/message/variants/SystemMessage';
-import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
+import { useRegisterRenderedMessage } from './hooks/useRegisterRenderedMessage';
 import { useDateRef } from '../providers/DateListProvider';
 
 const dividerClassName = css`
@@ -20,7 +18,6 @@ export type MessageListItemProps = {
 	showUnreadDivider: boolean;
 
 	sequential: boolean;
-	showUserAvatar: boolean;
 	visible: boolean;
 	unread: boolean;
 	mention: boolean;
@@ -34,7 +31,6 @@ export const MessageListItem = memo(function MessageListItem({
 	newDay,
 	showUnreadDivider,
 	sequential,
-	showUserAvatar,
 	visible,
 	unread,
 	mention,
@@ -43,7 +39,9 @@ export const MessageListItem = memo(function MessageListItem({
 	system,
 }: MessageListItemProps) {
 	const { t } = useTranslation();
-	const formatDate = useMessageListFormatDate();
+	const { formatDate } = useMessageDisplay();
+
+	useRegisterRenderedMessage(message._id);
 
 	const ref = useDateRef();
 
@@ -77,7 +75,6 @@ export const MessageListItem = memo(function MessageListItem({
 			{visible && (
 				<RoomMessage
 					message={message}
-					showUserAvatar={showUserAvatar}
 					sequential={shouldShowAsSequential}
 					unread={unread}
 					mention={mention}
@@ -94,11 +91,10 @@ export const MessageListItem = memo(function MessageListItem({
 						data-sequential={sequential}
 						sequential={shouldShowAsSequential}
 						message={message}
-						showUserAvatar={showUserAvatar}
 					/>
 				</div>
 			)}
-			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
+			{system && <SystemMessage message={message} />}
 		</>
 	);
 });

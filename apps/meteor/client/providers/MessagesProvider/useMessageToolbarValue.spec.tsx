@@ -22,7 +22,7 @@ import MessagesProvider from './MessagesProvider';
 import { useMessageToolbarValue } from './useMessageToolbarValue';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
-import { Messages } from '../../stores';
+import { Messages, Rooms, Subscriptions } from '../../stores';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { RoomContext } from '../../views/room/contexts/RoomContext';
 
@@ -97,8 +97,11 @@ const renderToolbar = (
 	message: IMessage,
 	context?: Context,
 	{ withPicker = true, inRoom = room }: { withPicker?: boolean; inRoom?: IRoom } = {},
-) =>
-	render(<MessageToolbarHolder message={message} context={context} />, {
+) => {
+	Rooms.state.store(inRoom);
+	Subscriptions.state.store({ ...subscription, rid: inRoom._id } as never);
+
+	return render(<MessageToolbarHolder message={message} context={context} />, {
 		wrapper: root
 			.wrap((children: ReactNode) => (
 				<EmojiPickerContext.Provider value={withPicker ? picker : undefined}>
@@ -113,6 +116,7 @@ const renderToolbar = (
 			))
 			.build(),
 	});
+};
 
 const openMenu = async (root: ReturnType<typeof everything>, message: IMessage, context?: Context, inRoom = room) => {
 	renderToolbar(root, message, context, { inRoom });
