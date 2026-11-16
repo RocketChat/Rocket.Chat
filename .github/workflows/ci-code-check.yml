@@ -107,6 +107,10 @@ jobs:
         if: matrix.check == 'lint'
         run: node scripts/scan-raw-layout.mjs --max 1024 "$RUNNER_TEMP/raw-layout-findings.json"
 
+      - name: Browser reach in screens
+        if: matrix.check == 'lint'
+        run: node scripts/scan-view-isolation.mjs --max 174 "$RUNNER_TEMP/view-isolation-findings.json"
+
       - name: Spacing scale
         if: matrix.check == 'lint'
         run: yarn lint:spacing

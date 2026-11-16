@@ -1,6 +1,7 @@
 import { useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+// oxlint-disable-next-line no-restricted-imports -- moves to ui-contexts, see docs/proposals/view-isolation-migration.md phase 0
 import { getConnectionSessionId } from '../../../../meteor/connection';
 
 export const useForceLogout = (userId: string) => {
