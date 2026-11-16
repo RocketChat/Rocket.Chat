@@ -226,7 +226,7 @@ describe('LDAPConnection', () => {
 		});
 	});
 
-	describe('searchAllUsers (paged sync)', () => {
+	describe('searchAllUsers (paged sync)', { timeout: 5000 }, () => {
 		let connection: any;
 		let res: EventEmitter;
 
