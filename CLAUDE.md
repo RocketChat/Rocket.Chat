@@ -81,3 +81,4 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
+  - [view-isolation-migration.md](docs/proposals/view-isolation-migration.md) — what still ties the views to Meteor and the browser, and the phases to apply the view isolation rules
