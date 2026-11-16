@@ -1,4 +1,4 @@
-import { isCursorNotFoundError, isDuplicateKeyError } from './mongoErrors.js';
+import { isCursorNotFoundMongoError, isDuplicateKeyMongoError } from './mongoErrors.js';
 
 const MongoErrorCode = {
 	CursorNotFound: 43,
@@ -8,7 +8,7 @@ const MongoErrorCode = {
 
 const mongoError = (code: unknown, extra: Record<string, unknown> = {}) => Object.assign(new Error('mongo error'), { code, ...extra });
 
-describe('isCursorNotFoundError', () => {
+describe('isCursorNotFoundMongoError', () => {
 	test.each([
 		['matching code', mongoError(MongoErrorCode.CursorNotFound), true],
 		['plain object with matching code', { code: MongoErrorCode.CursorNotFound }, true],
@@ -19,11 +19,11 @@ describe('isCursorNotFoundError', () => {
 		['undefined', undefined, false],
 		['number', MongoErrorCode.CursorNotFound, false],
 	])('%s', (_case, error, expected) => {
-		expect(isCursorNotFoundError(error)).toBe(expected);
+		expect(isCursorNotFoundMongoError(error)).toBe(expected);
 	});
 });
 
-describe('isDuplicateKeyError', () => {
+describe('isDuplicateKeyMongoError', () => {
 	test.each([
 		['single write', mongoError(MongoErrorCode.DuplicateKey), true],
 		['single write with another code', mongoError(MongoErrorCode.CursorNotFound), false],
@@ -50,6 +50,6 @@ describe('isDuplicateKeyError', () => {
 		['message mentioning E11000 without a code', new Error('E11000 duplicate key error collection'), false],
 		['null', null, false],
 	])('%s', (_case, error, expected) => {
-		expect(isDuplicateKeyError(error)).toBe(expected);
+		expect(isDuplicateKeyMongoError(error)).toBe(expected);
 	});
 });

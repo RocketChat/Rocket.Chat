@@ -1,7 +1,7 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
-import { isDuplicateKeyError } from '@rocket.chat/tools';
+import { isDuplicateKeyMongoError } from '@rocket.chat/tools';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { settings } from '../../../server/settings';
@@ -48,7 +48,7 @@ export async function archiveOldReadReceipts(): Promise<void> {
 			} catch (error: unknown) {
 				// If we get duplicate key errors, some receipts were already archived, which is fine
 				// We'll continue to mark messages and delete from hot storage
-				if (!isDuplicateKeyError(error)) {
+				if (!isDuplicateKeyMongoError(error)) {
 					throw error;
 				}
 

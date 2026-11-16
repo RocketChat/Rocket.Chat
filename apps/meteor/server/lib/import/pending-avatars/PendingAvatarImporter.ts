@@ -1,6 +1,6 @@
 import type { IImporterShortSelection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { isCursorNotFoundError } from '@rocket.chat/tools';
+import { isCursorNotFoundMongoError } from '@rocket.chat/tools';
 
 import { Importer, ProgressStep } from '..';
 import { setAvatarFromServiceWithValidation } from '../../users/setUserAvatar';
@@ -61,7 +61,7 @@ export class PendingAvatarImporter extends Importer {
 			}
 		} catch (error) {
 			// If the cursor expired, restart the method
-			if (isCursorNotFoundError(error)) {
+			if (isCursorNotFoundMongoError(error)) {
 				this.logger.info('CursorNotFound');
 				return this.startImport(importSelection);
 			}

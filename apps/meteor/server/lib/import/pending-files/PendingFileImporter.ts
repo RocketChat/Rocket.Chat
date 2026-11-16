@@ -5,7 +5,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IImport, MessageAttachment, IUpload, IImporterShortSelection } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { isCursorNotFoundError } from '@rocket.chat/tools';
+import { isCursorNotFoundMongoError } from '@rocket.chat/tools';
 
 import { Importer, ProgressStep } from '..';
 import { parseFileIntoMessageAttachments } from '../../../meteor-methods/messages/sendFileMessage';
@@ -150,7 +150,7 @@ export class PendingFileImporter extends Importer {
 			void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
 		} catch (error) {
 			// If the cursor expired, restart the method
-			if (isCursorNotFoundError(error)) {
+			if (isCursorNotFoundMongoError(error)) {
 				this.logger.info('CursorNotFound');
 				return this.startImport(importSelection);
 			}

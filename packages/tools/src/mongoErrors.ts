@@ -7,7 +7,7 @@ const MongoErrorCode = {
 const hasCode = (error: object, code: number): boolean => 'code' in error && error.code === code;
 
 // A bulk write carries the code of its first write error only, so it counts as a duplicate when every write error is one.
-export const isDuplicateKeyError = (error: unknown): boolean => {
+export const isDuplicateKeyMongoError = (error: unknown): boolean => {
 	if (typeof error !== 'object' || error === null) {
 		return false;
 	}
@@ -21,5 +21,5 @@ export const isDuplicateKeyError = (error: unknown): boolean => {
 	return hasCode(error, MongoErrorCode.DuplicateKey);
 };
 
-export const isCursorNotFoundError = (error: unknown): boolean =>
+export const isCursorNotFoundMongoError = (error: unknown): boolean =>
 	typeof error === 'object' && error !== null && hasCode(error, MongoErrorCode.CursorNotFound);

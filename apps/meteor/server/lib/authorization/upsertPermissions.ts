@@ -1,6 +1,6 @@
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
-import { isDuplicateKeyError } from '@rocket.chat/tools';
+import { isDuplicateKeyMongoError } from '@rocket.chat/tools';
 
 import { permissions } from './constant/permissions';
 import { getSettingPermissionId, CONSTANTS } from '../../../lib/authorization';
@@ -81,7 +81,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			try {
 				await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
-				if (!isDuplicateKeyError(e)) {
+				if (!isDuplicateKeyMongoError(e)) {
 					await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 				}
 			}
