@@ -3,10 +3,10 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import type { IRolesModel, IRoomsModel, IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { SAMLUtils } from './Utils';
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 import type { ISAMLUser } from '../definition/ISAMLUser';
 
 const NEW_USER_ID = 'new-user-id';
@@ -36,7 +36,7 @@ const matchesQuery = (user: StoredUser, query: Record<string, any>) =>
 		return user.services?.saml?.[path.replace('services.saml.', '')] === expected;
 	});
 
-const { SAML } = proxyquire.noCallThru().load('./SAML', {
+const { SAML } = loadWithMocks('./SAML', {
 	'meteor/accounts-base': {
 		Accounts: { insertUserDoc },
 	},

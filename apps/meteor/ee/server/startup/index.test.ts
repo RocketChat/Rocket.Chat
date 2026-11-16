@@ -1,30 +1,28 @@
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const warn = sinon.stub();
 
 const stub = (name: string) => ({ [name]: true });
 
-const { registerEEBroker } = proxyquire
-	.noPreserveCache()
-	.noCallThru()
-	.load('./index', {
-		'../hooks/auth/callback': stub('hooks'),
-		'./audit': stub('audit'),
-		'./deviceManagement': stub('deviceManagement'),
-		'./engagementDashboard': stub('engagementDashboard'),
-		'./maxRoomsPerGuest': stub('maxRoomsPerGuest'),
-		'./services': stub('services'),
-		'./readReceiptsArchive': stub('readReceiptsArchive'),
-		'./mcp': stub('mcp'),
-		'./presence': stub('presence'),
-		'@rocket.chat/core-services': { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } },
-		'@rocket.chat/network-broker': { startBroker: sinon.stub() },
-		'../../../server/lib/logger/system': { SystemLogger: { warn } },
-	}) as { registerEEBroker: () => Promise<void> };
+const { registerEEBroker } = loadWithMocks('./index', {
+	'../hooks/auth/callback': stub('hooks'),
+	'./audit': stub('audit'),
+	'./deviceManagement': stub('deviceManagement'),
+	'./engagementDashboard': stub('engagementDashboard'),
+	'./maxRoomsPerGuest': stub('maxRoomsPerGuest'),
+	'./services': stub('services'),
+	'./readReceiptsArchive': stub('readReceiptsArchive'),
+	'./mcp': stub('mcp'),
+	'./presence': stub('presence'),
+	'@rocket.chat/core-services': { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } },
+	'@rocket.chat/network-broker': { startBroker: sinon.stub() },
+	'../../../server/lib/logger/system': { SystemLogger: { warn } },
+}) as { registerEEBroker: () => Promise<void> };
 
 describe('registerEEBroker encryption warning', () => {
 	const env = { ...process.env };
