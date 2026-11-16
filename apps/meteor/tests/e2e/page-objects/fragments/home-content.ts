@@ -95,6 +95,14 @@ export class HomeContent {
 		return this.lastUserMessage.getByRole('link', { name: 'Download' });
 	}
 
+	get btnPlayAudio(): Locator {
+		return this.messageListItems.getByRole('button', { name: 'Play', exact: true });
+	}
+
+	get btnLastUserMessagePlay(): Locator {
+		return this.lastUserMessage.getByRole('button', { name: 'Play', exact: true });
+	}
+
 	nthMessage(index: number): Locator {
 		return this.messageListItems.nth(index);
 	}

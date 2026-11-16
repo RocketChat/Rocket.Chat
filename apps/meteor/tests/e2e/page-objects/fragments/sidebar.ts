@@ -42,6 +42,14 @@ export class RoomSidebar extends Sidebar {
 		this.menuMoveTo = new MenuMoveTo(page);
 	}
 
+	get inputNowPlayingProgress(): Locator {
+		return this.root.getByRole('slider', { name: 'Audio Playback Range' });
+	}
+
+	get btnNowPlayingPause(): Locator {
+		return this.root.getByRole('button', { name: 'Pause', exact: true });
+	}
+
 	get teamCollabFilters(): Locator {
 		return this.root.getByRole('tablist', { name: 'Team collaboration filters' });
 	}

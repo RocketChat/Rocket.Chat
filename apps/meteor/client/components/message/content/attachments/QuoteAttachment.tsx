@@ -16,6 +16,7 @@ import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
 import AttachmentMessageLink from './structure/AttachmentMessageLink';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
+import { getMessageIdFromPermalink } from '../../../../lib/utils/getMessageIdFromPermalink';
 
 // TODO: remove this team collaboration
 const quoteStyles = css`
@@ -67,7 +68,14 @@ export const QuoteAttachment = ({ attachment, source, path }: QuoteAttachmentPro
 							<Attachments
 								attachments={attachment.attachments}
 								id={attachment.attachments[0]?.title_link}
-								source={source && { rid: source.rid, mid: source.mid, name: attachment.author_name }}
+								source={
+									source && {
+										rid: source.rid,
+										mid: source.mid,
+										name: attachment.author_name,
+										originMid: getMessageIdFromPermalink(attachment.message_link),
+									}
+								}
 								keyPrefix={path}
 							/>
 						</AttachmentInner>
