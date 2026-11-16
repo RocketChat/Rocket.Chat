@@ -18,10 +18,10 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useFormatTime, useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import { MessageContentBody } from '@rocket.chat/ui-message-list';
 import { useTranslation } from 'react-i18next';
 
 import ReportReasonCollapsible from './ReportReasonCollapsible';
-import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';

@@ -14,6 +14,7 @@ import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
+import { MessageContentFallback } from '@rocket.chat/ui-message-list';
 import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -25,7 +26,6 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/providers/SelectedMessagesContext';
-import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListAuthorUsername, useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
 import SystemMessageBody from './system/SystemMessageBody';

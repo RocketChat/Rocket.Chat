@@ -4,13 +4,13 @@ import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useMessageDisplay } from '@rocket.chat/ui-message-list';
 import type { UIEvent, ReactNode } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
 import { normalizeUsername } from '../../lib/utils/normalizeUsername';
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 export type GazzodownTextProps = {
@@ -28,7 +28,7 @@ export type GazzodownTextProps = {
 const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
 	const [userLanguage] = useLocalStorage('userLanguage', 'en');
 
-	const highlights = useMessageListHighlights();
+	const { highlights, showRealName: useRealName } = useMessageDisplay();
 	const { openUserCard, openUserInfo } = useUserCard();
 
 	const highlightRegex = useMemo(() => {
@@ -54,7 +54,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 	const useEmoji = useUserPreference<boolean>('useEmojis', true);
-	const useRealName = useMessageListShowRealName();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
 

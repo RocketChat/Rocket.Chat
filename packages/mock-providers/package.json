@@ -24,6 +24,7 @@
 	},
 	"devDependencies": {
 		"@faker-js/faker": "~10.5.0",
+		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/mongo-adapter": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",

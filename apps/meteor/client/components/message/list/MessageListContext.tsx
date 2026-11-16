@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
-import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
@@ -15,8 +14,6 @@ export type MessageListContextValue = {
 	useShowStarred: ({ message }: { message: IMessage }) => boolean;
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
-	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
-	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
 	/** Role labels of the authors of messages in room `rid`; absent when the list does not resolve them. */
 	userRoles?: {
@@ -30,14 +27,8 @@ export type MessageListContextValue = {
 		regex: RegExp;
 		urlRegex: RegExp;
 	}[];
-	katex?: {
-		dollarSyntaxEnabled: boolean;
-		parenthesisSyntaxEnabled: boolean;
-	};
 	autoTranslateLanguage?: string;
-	showColors: boolean;
 	jumpToMessageParam?: string;
-	username: string | undefined;
 	apiEmbedEnabled: boolean;
 	readReceipts: {
 		enabled: boolean;
@@ -56,17 +47,13 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	},
 	useShowStarred: () => false,
 	useShowFollowing: () => false,
-	useUserHasReacted: () => (): boolean => false,
 	useMessageDateFormatter:
 		() =>
 		(date: Date): string =>
 			date.toString(),
-	useOpenEmojiPicker: () => (): void => undefined,
 	showRoles: false,
 	showRealName: false,
 	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
-	showColors: false,
-	username: undefined,
 	apiEmbedEnabled: false,
 	readReceipts: {
 		enabled: false,
@@ -98,15 +85,6 @@ export const useMessageListAuthorUsername: MessageListContextValue['getAuthorUse
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;
-
-export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
-	useContext(MessageListContext).useUserHasReacted(message);
-export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
-	useContext(MessageListContext).useOpenEmojiPicker(...args);
-
-export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
-
-export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
 
 export const useMessageListReadReceipts = (): MessageListContextValue['readReceipts'] => useContext(MessageListContext).readReceipts;
 

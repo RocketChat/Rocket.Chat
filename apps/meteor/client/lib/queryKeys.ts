@@ -215,6 +215,9 @@ export const videoConferenceQueryKeys = {
 export const messagesQueryKeys = {
 	all: ['messages'] as const,
 	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
+	/** A copy of a message fetched for a reader of one `revision` of it, kept apart from the copies other readers fetched. */
+	messageRevision: (messageId: IMessage['_id'], revision: readonly unknown[]) =>
+		[...messagesQueryKeys.message(messageId), 'revision', ...revision] as const,
 };
 
 export const managedPresenceQueryKeys = {

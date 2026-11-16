@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { VirtuosoMockContext } from 'react-virtuoso';
 
 import ThreadList from './ThreadList';
@@ -8,6 +9,9 @@ import { createFakeRoom } from '../../../../../tests/mocks/data';
 const fakeRoom = createFakeRoom({ t: 'c' });
 
 jest.mock('./components/ThreadListItem', () => <></>);
+jest.mock('../../../../providers/MessagesProvider', () => ({
+	MessagesProvider: ({ children }: { children: ReactNode }) => children,
+}));
 jest.mock('../../contexts/RoomContext', () => ({
 	useRoom: () => fakeRoom,
 	useRoomSubscription: () => fakeRoom,

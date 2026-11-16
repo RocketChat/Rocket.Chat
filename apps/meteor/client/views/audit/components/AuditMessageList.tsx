@@ -8,6 +8,7 @@ import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
 
 export type AuditMessageListProps = {
 	messages: IMessage[];
@@ -18,7 +19,7 @@ const AuditMessageList = ({ messages }: AuditMessageListProps) => {
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	return (
-		<>
+		<MessagesProvider allowsInteraction={false}>
 			{messages.map((message, index, { [index - 1]: previous }) => {
 				const newDay = isMessageNewDay(message, previous);
 				const system = MessageTypes.isSystemMessage(message);
@@ -43,7 +44,7 @@ const AuditMessageList = ({ messages }: AuditMessageListProps) => {
 					</Fragment>
 				);
 			})}
-		</>
+		</MessagesProvider>
 	);
 };
 

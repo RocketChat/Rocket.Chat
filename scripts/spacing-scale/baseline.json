@@ -37,8 +37,6 @@
 	"apps/meteor/client/components/message/content/attachments/structure/AttachmentRow.tsx": 1,
 	"apps/meteor/client/components/message/content/attachments/structure/AttachmentThumb.tsx": 1,
 	"apps/meteor/client/components/message/content/location/MapViewFallback.tsx": 1,
-	"apps/meteor/client/components/message/content/MessageActions.tsx": 3,
-	"apps/meteor/client/components/message/content/urlPreviews/OEmbedPreviewContent.tsx": 1,
 	"apps/meteor/client/components/PhoneNumberFieldList/PhoneNumberFieldList.tsx": 2,
 	"apps/meteor/client/components/PhoneNumberFieldList/PhoneNumberFieldRow.tsx": 2,
 	"apps/meteor/client/components/PlanTag.tsx": 1,

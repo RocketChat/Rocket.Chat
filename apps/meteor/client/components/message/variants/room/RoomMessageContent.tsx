@@ -3,23 +3,26 @@ import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachm
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
+import {
+	MessageActionLinks,
+	MessageBroadcastMetrics,
+	MessageContentBody,
+	MessageDiscussionMetrics,
+	MessageLocation,
+	MessageReactionList,
+	MessageThreadMetrics,
+	MessageUrlPreviews,
+	useMessageContent,
+	useMessageDisplay,
+} from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
 import { useChat } from '../../../../views/room/contexts/ChatContext';
-import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
-import BroadcastMetrics from '../../content/BroadcastMetrics';
-import DiscussionMetrics from '../../content/DiscussionMetrics';
-import Location from '../../content/Location';
-import MessageActions from '../../content/MessageActions';
-import Reactions from '../../content/Reactions';
-import ThreadMetrics from '../../content/ThreadMetrics';
-import UrlPreviews from '../../content/UrlPreviews';
 import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
-import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 
@@ -39,9 +42,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const chat = useChat();
+	const { allowsInteraction } = useMessageDisplay();
 	const { t } = useTranslation();
 
-	const normalizedMessage = useNormalizedMessage(message);
+	const normalizedMessage = useMessageContent().useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
 	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
@@ -90,10 +94,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
+			{oembedEnabled && !!normalizedMessage.urls?.length && <MessageUrlPreviews urls={normalizedMessage.urls} />}
 
 			{normalizedMessage.actionLinks?.length && (
-				<MessageActions
+				<MessageActionLinks
 					message={normalizedMessage}
 					actions={normalizedMessage.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 						methodId,
@@ -103,14 +107,15 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				/>
 			)}
 
-			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && <Reactions message={normalizedMessage} />}
+			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && (
+				<MessageReactionList message={normalizedMessage} />
+			)}
 
-			{chat && isThreadMainMessage(normalizedMessage) && (
-				<ThreadMetrics
+			{chat && allowsInteraction && isThreadMainMessage(normalizedMessage) && (
+				<MessageThreadMetrics
+					message={normalizedMessage}
 					counter={normalizedMessage.tcount}
 					following={Boolean(uid && normalizedMessage?.replies?.indexOf(uid) > -1)}
-					mid={normalizedMessage._id}
-					rid={normalizedMessage.rid}
 					lm={normalizedMessage.tlm}
 					unread={unread}
 					mention={mention}
@@ -120,7 +125,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{isDiscussionMessage(normalizedMessage) && (
-				<DiscussionMetrics
+				<MessageDiscussionMetrics
 					count={normalizedMessage.dcount}
 					drid={normalizedMessage.drid}
 					lm={normalizedMessage.dlm}
@@ -128,10 +133,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				/>
 			)}
 
-			{normalizedMessage.location && <Location location={normalizedMessage.location} />}
+			{normalizedMessage.location && <MessageLocation location={normalizedMessage.location} />}
 
 			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
-				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
+				<MessageBroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
 			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}

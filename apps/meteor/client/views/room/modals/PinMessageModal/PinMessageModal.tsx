@@ -6,7 +6,7 @@ import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
-import AttachmentProvider from '../../../../providers/AttachmentProvider';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 
 export type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
 
@@ -31,9 +31,9 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 			<Box marginBlockEnd={16} is='p'>
 				{t('Are_you_sure_you_want_to_pin_this_message')}
 			</Box>
-			<AttachmentProvider>
+			<MessagesProvider allowsInteraction={false}>
 				<QuoteAttachment attachment={attachment} />
-			</AttachmentProvider>
+			</MessagesProvider>
 			<Box is='p' fontScale='c1' marginBlockStart={16}>
 				{t('Pinned_messages_are_visible_to_everyone')}
 			</Box>

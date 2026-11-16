@@ -1,9 +1,8 @@
 import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsItemIcon, MessageMetricsItemLabel } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTimeAgo } from '@rocket.chat/ui-client';
+import { MessageThreadMetricsParticipants } from '@rocket.chat/ui-message-list';
 import { useTranslation } from 'react-i18next';
-
-import ThreadMetricsParticipants from '../../../../../components/message/content/ThreadMetricsParticipants';
 
 type ThreadMetricsProps = {
 	lm: Date;
@@ -23,7 +22,7 @@ const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps) =>
 	return (
 		<MessageBlock ref={ref}>
 			<MessageMetrics>
-				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
+				{participants?.length > 0 && <MessageThreadMetricsParticipants participants={participants} />}
 				<MessageMetricsItem title={t('Last_message__date__', { date: format(lm) })}>
 					<MessageMetricsItemIcon name='thread' />
 					{isSmall ? (

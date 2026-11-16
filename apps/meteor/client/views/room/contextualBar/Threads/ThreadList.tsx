@@ -24,6 +24,7 @@ import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../compon
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 
@@ -145,48 +146,50 @@ const ThreadList = () => {
 					</FilterBarFilters>
 				</FilterBar>
 			</ContextualbarSection>
-			<ContextualbarContent flush ref={ref}>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
-				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
-				{error && (
-					<Box paddingInline={24}>
-						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</Box>
-				)}
-				{isSuccess && (
-					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
-						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
-						{items.length > 0 && (
-							<VirtualizedScrollbars>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
-									totalCount={itemCount}
-									endReached={() => fetchNextPage()}
-									overscan={25}
-									data={items}
-									itemContent={(_index, data: IThreadMainMessage) => (
-										<ThreadListItem
-											thread={data}
-											unread={subscription?.tunread ?? []}
-											unreadUser={subscription?.tunreadUser ?? []}
-											unreadGroup={subscription?.tunreadGroup ?? []}
-											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
-											onClick={handleThreadClick}
-										/>
-									)}
-								/>
-							</VirtualizedScrollbars>
-						)}
-					</Box>
-				)}
-			</ContextualbarContent>
+			<MessagesProvider room={room} subscription={subscription}>
+				<ContextualbarContent flush ref={ref}>
+					<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+					{isPending && (
+						<Box paddingInline={24} paddingBlock={12}>
+							<Throbber size='x12' />
+						</Box>
+					)}
+					{error && (
+						<Box paddingInline={24}>
+							<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
+						</Box>
+					)}
+					{isSuccess && (
+						<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
+							{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
+							{items.length > 0 && (
+								<VirtualizedScrollbars>
+									<Virtuoso
+										style={{
+											height: blockSize,
+											width: inlineSize,
+										}}
+										totalCount={itemCount}
+										endReached={() => fetchNextPage()}
+										overscan={25}
+										data={items}
+										itemContent={(_index, data: IThreadMainMessage) => (
+											<ThreadListItem
+												thread={data}
+												unread={subscription?.tunread ?? []}
+												unreadUser={subscription?.tunreadUser ?? []}
+												unreadGroup={subscription?.tunreadGroup ?? []}
+												hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
+												onClick={handleThreadClick}
+											/>
+										)}
+									/>
+								</VirtualizedScrollbars>
+							)}
+						</Box>
+					)}
+				</ContextualbarContent>
+			</MessagesProvider>
 		</ContextualbarDialog>
 	);
 };

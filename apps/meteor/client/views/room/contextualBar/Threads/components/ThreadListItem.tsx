@@ -43,7 +43,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 
 	return (
 		<ClickableThreadListMessage
-			_id={thread._id}
+			thread={thread}
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}
 			ts={thread.ts}
@@ -57,7 +57,6 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 			hasDraft={hasDraft}
 			data-id={thread._id}
 			msg={msg ?? ''}
-			rid={thread.rid}
 			onClick={handleListItemClick}
 			emoji={thread?.emoji}
 		/>

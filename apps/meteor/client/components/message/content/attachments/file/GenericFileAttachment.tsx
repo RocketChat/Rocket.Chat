@@ -7,6 +7,7 @@ import {
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { MessageContentBody } from '@rocket.chat/ui-message-list';
 import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,6 @@ import { forAttachmentDownload, registerDownloadForUid } from '../../../../../ho
 import { useOpenEncryptedPdf } from '../../../../../providers/MessagesProvider/useOpenEncryptedPdf';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;

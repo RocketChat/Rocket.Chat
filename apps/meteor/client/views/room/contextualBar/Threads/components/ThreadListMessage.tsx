@@ -13,17 +13,17 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTimeAgo } from '@rocket.chat/ui-client';
+import { MessageThreadMetricsFollow, MessageThreadMetricsUnreadBadge } from '@rocket.chat/ui-message-list';
 import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
-import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
-import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
 
 export type ThreadListMessageProps = {
-	_id: IMessage['_id'];
+	/** The thread's main message. */
+	thread: IMessage;
 	msg: ReactNode;
 	following: boolean;
 	username: IMessage['u']['username'];
@@ -31,7 +31,6 @@ export type ThreadListMessageProps = {
 	ts: IMessage['ts'];
 	replies: number;
 	participants: string[] | undefined;
-	rid: IMessage['rid'];
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
@@ -41,7 +40,7 @@ export type ThreadListMessageProps = {
 } & Omit<ComponentProps<typeof Box>, 'is'>;
 
 const ThreadListMessage = ({
-	_id,
+	thread,
 	msg,
 	following,
 	username,
@@ -50,7 +49,6 @@ const ThreadListMessage = ({
 	replies,
 	participants,
 	unread,
-	rid,
 	mention,
 	all,
 	tlm,
@@ -78,10 +76,10 @@ const ThreadListMessage = ({
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
 				</MessageContainer>
 				<MessageContainerFixed>
-					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
+					<MessageThreadMetricsFollow message={thread} following={following} mention={false} unread={false} all={false} />
 					{unread && (
 						<Box marginBlockStart={24}>
-							<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
+							<MessageThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
 						</Box>
 					)}
 				</MessageContainerFixed>
