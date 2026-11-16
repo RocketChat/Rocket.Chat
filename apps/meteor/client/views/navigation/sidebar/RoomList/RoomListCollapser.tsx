@@ -12,7 +12,7 @@ export type RoomListCollapserProps = {
 	collapsedGroups: string[];
 	onClick: () => void;
 	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown' | 'onToggle'>;
 
 const RoomListCollapser = ({
 	groupTitle,

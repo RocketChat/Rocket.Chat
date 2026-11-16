@@ -16,7 +16,7 @@ type RoomListCollapserProps = {
 	onMoveDown: () => void;
 	onClick: () => void;
 	dragging?: boolean;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown' | 'onToggle'>;
 
 const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, onClick, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();

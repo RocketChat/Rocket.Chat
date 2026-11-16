@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import {
@@ -197,6 +198,35 @@ export const Default: Story = {
 						</Box>
 					</SidebarFooterContent>
 				</SidebarFooter>
+			</Sidebar>
+		</Box>
+	),
+};
+
+const ControlledCollapseGroup = () => {
+	const [expanded, setExpanded] = useState(true);
+
+	return (
+		<SidebarCollapseGroup
+			title='Favorites'
+			expanded={expanded}
+			onToggle={(next) => {
+				action('toggle')(next);
+				setExpanded(next);
+			}}
+		>
+			{Array.from({ length: 4 }).map((_, i) => (
+				<GenericNoAvatarItem key={i} i={i} />
+			))}
+		</SidebarCollapseGroup>
+	);
+};
+
+export const Controlled: Story = {
+	render: () => (
+		<Box width='x280'>
+			<Sidebar>
+				<ControlledCollapseGroup />
 			</Sidebar>
 		</Box>
 	),
