@@ -21,7 +21,7 @@ import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 import { usePreviewEmoji, useEmojiPickerData } from '../contexts/EmojiPickerContext';
 import { useEmojiRegistry } from '../contexts/EmojiRegistryContext';
-import { getCategoriesList, getEmojisBySearchTerm } from '../lib/emoji';
+import { getCategoriesList, getCurrentCategory, getEmojisBySearchTerm } from '../lib/emoji';
 import type { EmojiItem } from '../lib/types';
 
 export type EmojiPickerProps = {
@@ -168,12 +168,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 		setCustomItemsLimit(customItemsLimit + 90);
 	};
 
-	const handleScroll = (range: ListRange) => {
-		const { startIndex } = range;
-
-		const category = categoriesIndexes.find(
-			(category, index) => category.index <= startIndex + 1 && categoriesIndexes[index + 1]?.index >= startIndex,
-		);
+	const handleScroll = ({ startIndex, endIndex }: ListRange) => {
+		const category = getCurrentCategory(categoriesIndexes, startIndex, endIndex);
 
 		if (!category) {
 			return;
@@ -190,6 +186,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 			return;
 		}
 
+		// a list short enough not to scroll reports no new range, so the click alone has to select the tab
+		setCurrentCategory(category);
 		virtuosoRef.current?.scrollToIndex({ index: index > 0 ? index + 1 : 0 });
 	};
 
