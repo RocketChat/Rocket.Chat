@@ -8,6 +8,8 @@ import { forwardRef } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import { createFakeMessage, createFakeRoom } from '../../../../../../tests/mocks/data';
+import { createBubbleDateStore } from '../../../BubbleDate/bubbleDateStore';
+import { selectedMessageStore } from '../../../providers/SelectedMessageStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 
 const room = createFakeRoom({ _id: 'room-id', t: 'c' });
@@ -18,6 +20,9 @@ const mockVirtualizerHandle = {
 	scrollSize: 1000,
 	viewportSize: 300,
 };
+const mockRenderedVList = { keepMounted: undefined as number[] | undefined };
+const mockHandleDateScroll = jest.fn();
+const mockBubbleDateStore = createBubbleDateStore();
 
 jest.mock('virtua', () => {
 	const { Children, forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
@@ -31,7 +36,7 @@ jest.mock('virtua', () => {
 					children,
 					onScroll,
 					shift: _shift,
-					keepMounted: _keepMounted,
+					keepMounted,
 					...props
 				}: {
 					children: ReactNode;
@@ -42,6 +47,7 @@ jest.mock('virtua', () => {
 				ref: any,
 			) => {
 				useImperativeHandle(ref, () => mockVirtualizerHandle);
+				mockRenderedVList.keepMounted = keepMounted;
 				return (
 					<div data-testid='thread-message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
 						{Children.map(children, (child) => (child ? <div>{child}</div> : child))}
@@ -84,7 +90,8 @@ jest.mock('../hooks/useThreadMessagesQuery', () => ({
 jest.mock('../../../hooks/useDateScroll', () => ({
 	useDateScroll: () => ({
 		bubbleRef: { current: null },
-		handleDateScroll: jest.fn(),
+		handleDateScroll: mockHandleDateScroll,
+		bubbleDateStore: mockBubbleDateStore,
 	}),
 }));
 
@@ -110,9 +117,21 @@ jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => (
 	setMessageJumpQueryStringParameter: jest.fn(),
 }));
 
-jest.mock('./ThreadMessageItem', () => ({
-	ThreadMessageItem: ({ message }: { message: IMessage }) => <div role='listitem'>{message._id}</div>,
-}));
+// Each row registers itself as selectable, as a system message does.
+jest.mock('./ThreadMessageItem', () => {
+	const { useIsSelectedMessage } = jest.requireActual('../../../providers/SelectedMessagesContext');
+	return {
+		ThreadMessageItem: ({ message }: { message: IMessage }) => {
+			useIsSelectedMessage(message._id);
+			return (
+				<>
+					<div role='listitem'>{message._id}</div>
+					<div data-testid='day-divider' data-time='20260102' />
+				</>
+			);
+		},
+	};
+});
 
 jest.mock('../../../BubbleDate', () => ({
 	BubbleDate: forwardRef(function BubbleDate(_, ref) {
@@ -240,4 +259,93 @@ describe('ThreadMessageList accessibility', () => {
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
+});
+
+describe('ThreadMessageList rows', () => {
+	const mainMessage = createFakeMessage<IThreadMainMessage>({
+		_id: 'thread-id',
+		rid: room._id,
+		msg: 'main message',
+		tcount: 2,
+		u: { _id: 'user-id', username: 'user', name: 'User' },
+	});
+
+	const withFile = { ...createThreadMessage(1), files: [{ _id: 'file-id', name: 'file.png', type: 'image/png', size: 1 }] };
+
+	beforeEach(() => {
+		(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+			data: { messages: [withFile, createThreadMessage(2)] },
+			isLoading: false,
+			fetchNextPage: jest.fn(),
+			hasNextPage: false,
+			isFetchingNextPage: false,
+			fetchPreviousPage: jest.fn(),
+			hasPreviousPage: true,
+			isFetchingPreviousPage: false,
+			loadMessageAround: jest.fn(),
+		});
+	});
+
+	const renderThreadMessageList = () =>
+		render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+			wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true).build(),
+		});
+
+	it('keeps mounted the row of a message with a file while the older loader is the first row', () => {
+		renderThreadMessageList();
+
+		expect(mockRenderedVList.keepMounted).toEqual([1]);
+	});
+
+	it('reports the message of the topmost row, not the one below it, while the older loader is the first row', () => {
+		mockVirtualizerHandle.findItemIndex.mockReturnValueOnce(1);
+
+		renderThreadMessageList();
+		fireEvent.scroll(screen.getByTestId('thread-message-list'));
+
+		expect(mockHandleDateScroll).toHaveBeenCalledWith(withFile, mockVirtualizerHandle.scrollOffset);
+	});
+});
+
+it('hides the inline day divider the floating date covers', () => {
+	(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+		data: { messages: [createThreadMessage(1)] },
+		isLoading: false,
+		fetchNextPage: jest.fn(),
+		hasNextPage: false,
+		isFetchingNextPage: false,
+		fetchPreviousPage: jest.fn(),
+		hasPreviousPage: false,
+		isFetchingPreviousPage: false,
+		loadMessageAround: jest.fn(),
+	});
+	mockBubbleDateStore.set((current) => ({ ...current, date: '2026-01-02T00:00:00.000Z', show: true, showDivider: false }));
+	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
+
+	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
+	});
+
+	expect(screen.getAllByTestId('day-divider')[0]).toHaveStyle({ opacity: 0 });
+});
+
+it("keeps the thread's messages out of the room's selection", () => {
+	(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+		data: { messages: [createThreadMessage(1)] },
+		isLoading: false,
+		fetchNextPage: jest.fn(),
+		hasNextPage: false,
+		isFetchingNextPage: false,
+		fetchPreviousPage: jest.fn(),
+		hasPreviousPage: false,
+		isFetchingPreviousPage: false,
+		loadMessageAround: jest.fn(),
+	});
+	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
+
+	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
+	});
+
+	expect(selectedMessageStore.availableMessagesCount()).toBe(0);
 });
