@@ -11,8 +11,12 @@ export class OmnichannelContactInfo extends FlexTab {
 		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
+	get textContactEmails(): Locator {
+		return this.root.getByRole('list', { name: 'Email' });
+	}
+
 	get infoContactEmail(): Locator {
-		return this.root.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
+		return this.textContactEmails.getByRole('listitem').first().locator('p');
 	}
 
 	get btnEdit(): Locator {
