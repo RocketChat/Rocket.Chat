@@ -17,7 +17,7 @@ const COMMENTS_AND_STRINGS = /\/\*[\s\S]*?\*\/|\/\/.*$|'(?:\\.|[^'\\\n])*'|"(?:\
 // A default or namespace import binds a module under any local name (`import LegacyBox from '../Box'`)
 const MODULE_IMPORT = /^\s*import\s+(?!type\s)(?:\*\s*as\s+\w+|\w+)\s*(?:,\s*\{[^}]*\})?\s*from\s*['"]([^'"]+)['"]/gm;
 // A namespace import of a barrel reaches them as members (`Fuselage.Box`)
-const NAMESPACE_IMPORT = /^\s*import\s+\*\s*as\s+(\w+)\s+from\b/gm;
+const NAMESPACE_IMPORT = /^\s*import\s+(?:type\s+)?\*\s*as\s+(\w+)\s+from\b/gm;
 
 const usage = (folder) => {
 	const found = new Set();
