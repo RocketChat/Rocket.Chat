@@ -333,6 +333,7 @@ test.describe('OC - Livechat API', () => {
 
 			test('OC - Livechat API - clearBusinessUnit', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(1);
 				await poLiveChat.page.evaluate((unitId) => window.RocketChat.livechat.setBusinessUnit(unitId), unit.data._id);
 				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(0);
 
@@ -407,6 +408,7 @@ test.describe('OC - Livechat API', () => {
 			expect(triggerResponse.status()).toBe(200);
 			const { triggers } = await (await api.get('/livechat/triggers')).json();
 			const trigger = triggers.find(({ name }: { name: string }) => name === triggerMessage);
+			expect(trigger).toBeDefined();
 
 			try {
 				await poLiveChat.goto();
@@ -429,9 +431,14 @@ test.describe('OC - Livechat API', () => {
 				(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
 				registerGuestVisitor,
 			);
-			await expect(page.frameLocator('#rocketchat-iframe').getByText('Start chat')).not.toBeVisible();
+			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
 
+			const visitorResponse = page.waitForResponse(
+				(response) => response.url().endsWith('/api/v1/livechat/visitor') && response.request().postDataJSON()?.visitor?.department === '',
+			);
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearDepartment());
+			await visitorResponse;
+
 			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
@@ -741,7 +748,7 @@ test.describe('OC - Livechat API', () => {
 				await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
-				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.listContactEmails).toContainText(
+				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.textContactEmails).toContainText(
 					`changed${registerGuestVisitor.email}`.toLowerCase(),
 				);
 			});
