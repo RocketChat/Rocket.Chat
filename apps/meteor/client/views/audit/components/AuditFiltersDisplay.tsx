@@ -21,7 +21,7 @@ const AuditFiltersDisplay = ({ users, room, startDate, endDate, filters }: Audit
 			<Text truncate>{users?.length ? users.map((user) => `@${user}`).join(' : ') : `#${room}`}</Text>
 			{startDate && endDate ? (
 				<Text truncate>
-					{formatDate(startDate)} {t('Date_to')} {formatDate(endDate)} {/* TODO: fix this translation */}
+					{t('Date_from__startDate__to__endDate__', { startDate: formatDate(startDate), endDate: formatDate(endDate) })}
 				</Text>
 			) : null}
 			{filters ? <Text truncate>{filters}</Text> : null}
