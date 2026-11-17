@@ -173,7 +173,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			if (isAbacError(e)) {
 				throw e;
 			}
-			throw new Error('error-team-creation');
+			throw new Error('error-team-creation', { cause: e });
 		}
 	}
 

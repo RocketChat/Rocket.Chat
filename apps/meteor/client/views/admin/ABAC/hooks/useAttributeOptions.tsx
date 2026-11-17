@@ -99,7 +99,9 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 			iconColor: 'danger',
 			icon: 'trash' as const,
 			content: <Text color='danger'>{t('Delete')}</Text>,
-			onClick: () => deleteAction(),
+			onClick: () => {
+				void deleteAction();
+			},
 		},
 	];
 };

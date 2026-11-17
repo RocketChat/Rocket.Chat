@@ -117,7 +117,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const openPermissionModal = useOpenAppPermissionsReviewModal({
 		app,
 		onCancel: closeModal,
-		onConfirm: (permissionsGranted) => installationSuccess(action, permissionsGranted),
+		onConfirm: (permissionsGranted) => {
+			void installationSuccess(action, permissionsGranted);
+		},
 	});
 
 	const appInstallationHandler = useAppInstallationHandler({
@@ -125,7 +127,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		isAppPurchased,
 		action,
 		onDismiss: closeModal,
-		onSuccess: installationSuccess,
+		onSuccess: (action, permissionsGranted) => {
+			void installationSuccess(action, permissionsGranted);
+		},
 		setIsPurchased: setPurchased,
 	});
 

@@ -7,7 +7,7 @@ import notifications from '../../notifications/core/lib/Notifications';
 import { triggerHandler } from '../lib/triggerHandler';
 
 export const clearIntegrationHistoryMethod = async (userId: string, integrationId: string): Promise<void> => {
-	let integration: IIntegration | null = null;
+	let integration: IIntegration | null;
 
 	if (await hasPermissionAsync(userId, 'manage-outgoing-integrations')) {
 		integration = await Integrations.findOneById<IIntegration>(integrationId);

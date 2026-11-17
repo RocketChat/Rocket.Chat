@@ -328,17 +328,10 @@ describe('links handling', () => {
 		expect(anchorElement.tagName).toBe('A');
 		expect(anchorElement).toHaveTextContent('Test Link');
 
-		if (expectedHref !== undefined) expect(anchorElement).toHaveAttribute('href', expectedHref);
-		else expect(anchorElement).not.toHaveAttribute('href');
-
-		if (expectedRel !== undefined) expect(anchorElement).toHaveAttribute('rel', expectedRel);
-		else expect(anchorElement).not.toHaveAttribute('rel');
-
-		if (expectedTarget !== undefined) expect(anchorElement).toHaveAttribute('target', expectedTarget);
-		else expect(anchorElement).not.toHaveAttribute('target');
-
-		if (expectedTitleAttribute !== undefined) expect(anchorElement).toHaveAttribute('title', expectedTitleAttribute);
-		else expect(anchorElement).not.toHaveAttribute('title');
+		expect(anchorElement.getAttribute('href') ?? undefined).toBe(expectedHref);
+		expect(anchorElement.getAttribute('rel') ?? undefined).toBe(expectedRel);
+		expect(anchorElement.getAttribute('target') ?? undefined).toBe(expectedTarget);
+		expect(anchorElement.getAttribute('title') ?? undefined).toBe(expectedTitleAttribute);
 	});
 
 	describe('multiple links', () => {
@@ -360,22 +353,14 @@ describe('links handling', () => {
 				expect(anchorElement).toHaveTextContent(text);
 				expect(anchorElement).toHaveAttribute('href', link);
 
-				if (scheme === 'mailto') {
-					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-					expect(anchorElement).toHaveAttribute('target', '_blank');
-					expect(anchorElement).toHaveAttribute('href', link);
-					expect(anchorElement).toHaveAttribute('title', link);
-					return;
-				}
+				const isMailto = scheme === 'mailto';
+				const external = isMailto || isExternal(link);
+				const externalTitle = isMailto ? link : '';
+				const expectedTitle = external ? externalTitle : title;
 
-				if (isExternal(link)) {
-					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-					expect(anchorElement).toHaveAttribute('target', '_blank');
-					expect(anchorElement).toHaveAttribute('title', '');
-					return;
-				}
-
-				expect(anchorElement).toHaveAttribute('title', title);
+				expect(anchorElement.getAttribute('rel') ?? undefined).toBe(external ? 'nofollow noopener noreferrer' : undefined);
+				expect(anchorElement.getAttribute('target') ?? undefined).toBe(external ? '_blank' : undefined);
+				expect(anchorElement).toHaveAttribute('title', expectedTitle);
 			});
 		});
 

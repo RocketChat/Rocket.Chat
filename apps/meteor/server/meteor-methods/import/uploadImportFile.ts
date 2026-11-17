@@ -39,18 +39,14 @@ export const executeUploadImportFile = async (
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	await new Promise<void>((resolve, reject) => {
-		try {
-			writeStream.on('end', () => {
-				resolve();
-			});
-			writeStream.on('error', (e: Error) => {
-				reject(e);
-			});
+		writeStream.on('end', () => {
+			resolve();
+		});
+		writeStream.on('error', (e: Error) => {
+			reject(e);
+		});
 
-			readStream.pipe(writeStream);
-		} catch (error) {
-			reject(error);
-		}
+		readStream.pipe(writeStream);
 	});
 
 	await instance.updateProgress(ProgressStep.FILE_LOADED);
