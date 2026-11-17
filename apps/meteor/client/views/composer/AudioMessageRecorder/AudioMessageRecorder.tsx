@@ -58,6 +58,8 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 		try {
 			await audioRecorder.start();
 			if (!isMountedRef.current) {
+				await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
+				chat?.composer?.setRecordingMode(false);
 				return;
 			}
 			chat?.action.performContinuously('recording');
@@ -94,6 +96,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	});
 
 	useEffect(() => {
+		isMountedRef.current = true;
 		handleRecord();
 
 		return () => {
