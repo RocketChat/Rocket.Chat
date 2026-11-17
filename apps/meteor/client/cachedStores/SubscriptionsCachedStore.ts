@@ -3,6 +3,7 @@ import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } fro
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
+import { normalizeId } from '../lib/cachedStores/normalizeId';
 import { Rooms, Subscriptions } from '../stores';
 
 class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
@@ -15,12 +16,19 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 	}
 
 	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
-		const room = Rooms.use.getState().find((r) => r._id === subscription.rid);
+		const rawRid = (subscription as unknown as { rid?: unknown }).rid;
+		const rid = rawRid != null ? normalizeId(rawRid) : subscription.rid;
+		const rawId = (subscription as unknown as { _id?: unknown })._id;
+		const _id = rawId != null ? normalizeId(rawId) : subscription._id;
+
+		const room = Rooms.use.getState().find((r) => r._id === rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
 		return {
 			...subscription,
+			_id,
+			rid,
 			...(() => {
 				const { name } = subscription;
 				const fname = subscription.fname || name;

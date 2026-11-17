@@ -8,6 +8,7 @@ import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
+import { normalizeId } from './normalizeId';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { hasPendingMethods } from '../../meteor/connection';
 import { sdk } from '../SDKClient';
@@ -18,7 +19,8 @@ import { getConfig } from '../utils/getConfig';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
-const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
+const hasId = <T>(record: T): record is T & { _id: string } =>
+	typeof record === 'object' && record !== null && '_id' in record && (record as { _id: unknown })._id != null;
 const hasUpdatedAt = <T>(record: T): record is T & { _updatedAt: Date } =>
 	typeof record === 'object' &&
 	record !== null &&
@@ -133,8 +135,12 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			return undefined;
 		}
 
+		const rawId = (record as { _id?: unknown })._id;
+		const normalizedId = rawId != null ? normalizeId(rawId) : rawId;
+
 		return {
 			...(record as unknown as T),
+			...(normalizedId !== undefined && { _id: normalizedId }),
 			...(hasUnserializedUpdatedAt(record) && {
 				_updatedAt: new Date(record._updatedAt),
 			}),
@@ -176,6 +182,16 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	protected mapRecord(record: U): T {
+		if (typeof record === 'object' && record !== null && '_id' in record) {
+			const rawId = (record as { _id: unknown })._id;
+			const normalizedId = normalizeId(rawId);
+			if (normalizedId !== rawId) {
+				return {
+					...record,
+					_id: normalizedId,
+				} as unknown as T;
+			}
+		}
 		return record as unknown as T;
 	}
 
@@ -222,7 +238,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		const newRecord = this.mapRecord(record);
 
 		if (action === 'removed') {
-			this.store.getState().delete(newRecord._id);
+			this.store.getState().delete(normalizeId(newRecord._id));
 		} else {
 			this.store.getState().store(newRecord);
 		}
@@ -285,7 +301,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.store.getState().delete(newRecord._id);
+						this.store.getState().delete(normalizeId(newRecord._id));
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}

@@ -3,6 +3,7 @@ import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } fro
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
+import { normalizeId } from '../lib/cachedStores/normalizeId';
 import { Rooms, Subscriptions } from '../stores';
 
 class RoomsCachedStore extends PrivateCachedStore<IRoom> {
@@ -17,6 +18,8 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	private merge(room: IRoom, sub: SubscriptionWithRoom): SubscriptionWithRoom {
 		return {
 			...sub,
+			_id: normalizeId(sub._id),
+			rid: normalizeId(sub.rid),
 			encrypted: room.encrypted,
 			description: room.description,
 			cl: room.cl,
