@@ -108,4 +108,84 @@ describe('CachedStore', () => {
 		expect(consoleError).toHaveBeenCalledWith(error);
 		consoleError.mockRestore();
 	});
+
+	it('normalizes non-string _id representations and prevents duplicate records when merging equivalent IDs', async () => {
+		const cachedStore = new TestCachedStore();
+		const hexId = '6a7fc7b8376b837b4b8aa6c3';
+		const base64Id = 'an/HuDdrg3tLiqbD';
+
+		// Store initial record with string _id
+		const initialRecord = { _id: hexId, rid: 'GENERAL', _updatedAt: new Date(10) };
+		cachedStore.store.getState().store(initialRecord);
+
+		// Incoming server record has EJSON binary buffer representation of the same ObjectId
+		const incomingRecord = {
+			_id: { buffer: { $binary: base64Id } } as unknown as string,
+			rid: 'GENERAL',
+			_updatedAt: new Date(20),
+		};
+		mockCall.mockResolvedValue([incomingRecord]);
+
+		await cachedStore.init();
+
+		const records = recordsOf(cachedStore);
+		expect(records).toHaveLength(1);
+		expect(records[0]._id).toBe(hexId);
+		expect(records[0]._updatedAt).toEqual(new Date(20));
+		expect(cachedStore.store.getState().has(hexId)).toBe(true);
+	});
+
+	it('deduplicates equivalent non-string and string records restored from persistent cache', async () => {
+		const cachedStore = new TestCachedStore();
+		const hexId = '6a7fc7b8376b837b4b8aa6c3';
+		const base64Id = 'an/HuDdrg3tLiqbD';
+
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'test-token');
+		mockGetItem.mockResolvedValue({
+			version: 19,
+			token: 'test-token',
+			records: [
+				{ _id: hexId, rid: 'GENERAL', _updatedAt: new Date(10) },
+				{ _id: { buffer: { $binary: base64Id } }, rid: 'GENERAL', _updatedAt: new Date(20) },
+			],
+			updatedAt: new Date(),
+		});
+
+		await cachedStore.init();
+
+		const records = recordsOf(cachedStore);
+		expect(records).toHaveLength(1);
+		expect(records[0]._id).toBe(hexId);
+		expect(records[0]._updatedAt).toEqual(new Date(20));
+	});
+
+	it('correctly retrieves and deletes records using non-string ID representations', () => {
+		const cachedStore = new TestCachedStore();
+		const hexId = '6a7fc7b8376b837b4b8aa6c3';
+		const record = { _id: hexId, rid: 'GENERAL', _updatedAt: new Date(1) };
+
+		cachedStore.store.getState().store(record);
+		expect(cachedStore.store.getState().has({ toHexString: () => hexId } as unknown as string)).toBe(true);
+		expect(cachedStore.store.getState().get({ toHexString: () => hexId } as unknown as string)).toEqual(record);
+
+		cachedStore.store.getState().delete({ toHexString: () => hexId } as unknown as string);
+		expect(cachedStore.store.getState().has(hexId)).toBe(false);
+		expect(recordsOf(cachedStore)).toHaveLength(0);
+	});
+
+	it('preserves distinct records when IDs are different', async () => {
+		const cachedStore = new TestCachedStore();
+		const id1 = '6a7fc7b8376b837b4b8aa6c3';
+		const id2 = 'ffffffffffffffffffffffff';
+		const record1 = { _id: id1, rid: 'ROOM1', _updatedAt: new Date(1) };
+		const record2 = { _id: { toHexString: () => id2 } as unknown as string, rid: 'ROOM2', _updatedAt: new Date(2) };
+
+		mockCall.mockResolvedValue([record1, record2]);
+		await cachedStore.init();
+
+		const records = recordsOf(cachedStore);
+		expect(records).toHaveLength(2);
+		expect(cachedStore.store.getState().has(id1)).toBe(true);
+		expect(cachedStore.store.getState().has(id2)).toBe(true);
+	});
 });

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { normalizeId } from './normalizeId';
+
 export interface IDocumentMapStore<T extends { _id: string }> {
 	readonly records: ReadonlyMap<T['_id'], T>;
 	/**
@@ -169,8 +171,8 @@ export interface IDocumentMapStoreHooks<T extends { _id: string }> {
 export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate, onInvalidateAll }: IDocumentMapStoreHooks<T> = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
-		has: (id: T['_id']) => get().records.has(id),
-		get: (id: T['_id']) => get().records.get(id),
+		has: (id: T['_id']) => get().records.has(normalizeId(id)),
+		get: (id: T['_id']) => get().records.get(normalizeId(id)),
 		some: (predicate: (record: T) => boolean) => {
 			for (const record of get().records.values()) {
 				if (predicate(record)) return true;
@@ -213,31 +215,51 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			return index;
 		},
 		replaceAll: (records: T[]) => {
-			set({ records: new Map(records.map((record) => [record._id, record])) });
+			const map = new Map<T['_id'], T>();
+			for (let record of records) {
+				const key = normalizeId(record._id);
+				if (typeof record._id !== 'string' || record._id !== key) {
+					record = { ...record, _id: key };
+				}
+				map.set(key, record);
+			}
+			set({ records: map });
 			onInvalidateAll?.();
 		},
 		store: (doc) => {
-			set((state) => ({ records: new Map(state.records).set(doc._id, doc) }));
-			onInvalidate?.(doc);
+			const key = normalizeId(doc._id);
+			const normalizedDoc = typeof doc._id === 'string' && doc._id === key ? doc : { ...doc, _id: key };
+			set((state) => ({ records: new Map(state.records).set(key, normalizedDoc) }));
+			onInvalidate?.(normalizedDoc);
 		},
 		storeMany: (docs) => {
+			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
 
-				for (const doc of docs) {
-					records.set(doc._id, doc);
+				for (let doc of docs) {
+					const key = normalizeId(doc._id);
+					if (typeof doc._id !== 'string' || doc._id !== key) {
+						doc = { ...doc, _id: key };
+					}
+					records.set(key, doc);
+					if (onInvalidate) affected.push(doc);
 				}
 
 				return { records };
 			});
-			onInvalidate?.(...docs);
+			onInvalidate?.(...affected);
 		},
 		delete: (_id) => {
+			const key = normalizeId(_id);
 			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
-				if (onInvalidate) affected.push(state.records.get(_id)!);
-				records.delete(_id);
+				if (onInvalidate) {
+					const prev = state.records.get(key);
+					if (prev) affected.push(prev);
+				}
+				records.delete(key);
 				return { records };
 			});
 			onInvalidate?.(...affected);
@@ -249,8 +271,12 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 				const records = new Map<T['_id'], T>();
 				for (const record of state.records.values()) {
 					if (predicate(record)) {
-						const newRecord = modifier(record);
-						records.set(record._id, newRecord);
+						let newRecord = modifier(record);
+						const key = normalizeId(newRecord._id);
+						if (typeof newRecord._id !== 'string' || newRecord._id !== key) {
+							newRecord = { ...newRecord, _id: key };
+						}
+						records.set(key, newRecord);
 						if (onInvalidate) affected.push(newRecord);
 					} else {
 						records.set(record._id, record);
@@ -268,8 +294,12 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 
 			for await (const record of get().records.values()) {
 				if (predicate(record)) {
-					const newRecord = await modifier(record);
-					records.set(record._id, newRecord);
+					let newRecord = await modifier(record);
+					const key = normalizeId(newRecord._id);
+					if (typeof newRecord._id !== 'string' || newRecord._id !== key) {
+						newRecord = { ...newRecord, _id: key };
+					}
+					records.set(key, newRecord);
 					if (onInvalidate) affected.push(newRecord);
 				} else {
 					records.set(record._id, record);
