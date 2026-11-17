@@ -58,20 +58,20 @@ On `viewSubmit` the server confirms the files named by the `file_input` values o
 
 ## Server interactions
 
-The app returns one of these from its handler, usually built with `UIKitInteractionResponder` in apps-engine. The server passes the result through unchanged.
+The app returns one of these from its handler, usually built with `UIKitInteractionResponder` in apps-engine. The server passes the result through, except for the changes in the table below, [View lifecycle](#view-lifecycle) and [Validation](#validation).
 
-| `type`                                           | Client effect                                                                                                                                                                   |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `modal.open`                                     | Opens a modal, closing the app's other open modals.                                                                                                                             |
-| `modal.push`                                     | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced.                                                               |
-| `modal.clear`                                    | Closes every modal of the app.                                                                                                                                                  |
-| `modal.update`                                   | Replaces the open modal's view (matched by `view.id`).                                                                                                                          |
-| `modal.close`                                    | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens.                                                  |
-| `banner.open`                                    | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`.                                                                             |
-| `banner.update` / `banner.close`                 | Replaces or disposes the banner (matched by `viewId`).                                                                                                                          |
-| `contextual_bar.open`                            | Stores the view and navigates the room to `tab=app&context=<view.id>`.                                                                                                          |
-| `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar.                                                                                                                                        |
-| `errors`                                         | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
+| `type`                                           | Client effect                                                                                                                                                                                                                             |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modal.open`                                     | Opens a modal, closing the app's other open modals.                                                                                                                                                                                       |
+| `modal.push`                                     | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced.                                                                                                                         |
+| `modal.clear`                                    | Closes every modal of the app.                                                                                                                                                                                                            |
+| `modal.update`                                   | Replaces the open modal's view (matched by `view.id`).                                                                                                                                                                                    |
+| `modal.close`                                    | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, a block action's response closes the modal the action came from (the server fills `viewId`), and otherwise nothing happens. |
+| `banner.open`                                    | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`.                                                                                                                                       |
+| `banner.update` / `banner.close`                 | Replaces or disposes the banner (matched by `viewId`).                                                                                                                                                                                    |
+| `contextual_bar.open`                            | Stores the view and navigates the room to `tab=app&context=<view.id>`.                                                                                                                                                                    |
+| `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar.                                                                                                                                                                                                  |
+| `errors`                                         | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements.                                                           |
 
 After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update`, `modal.push` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
 
@@ -125,7 +125,7 @@ Differences from the web client:
 
 ## Validation
 
-Payloads are not validated per type: user interactions and app responses reach the other side as sent. Only the blocks apps send are checked, by `validateLayoutBlocks` in `@rocket.chat/ui-kit` (a typia validator for `LayoutBlock[]` plus the [size limits](reference.md#size-limits)). The server runs it in `reportInvalidBlocks` for `sendMessage`, `updateMessage`, the `ui.interaction` endpoint response and views pushed through the `uiInteraction` bridge.
+Payloads are not validated per type: user interactions reach the server as sent, and app responses reach the client with only the changes listed in [Server interactions](#server-interactions), [View lifecycle](#view-lifecycle) and this section. Only the blocks apps send are checked, by `validateLayoutBlocks` in `@rocket.chat/ui-kit` (a typia validator for `LayoutBlock[]` plus the [size limits](reference.md#size-limits)). The server runs it in `reportInvalidBlocks` for `sendMessage`, `updateMessage`, the `ui.interaction` endpoint response and views pushed through the `uiInteraction` bridge.
 
 What happens to invalid blocks depends on the admin setting `UiKit_Reject_Invalid_Blocks` (Apps section, default off):
 

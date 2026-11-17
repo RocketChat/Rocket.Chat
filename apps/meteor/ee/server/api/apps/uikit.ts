@@ -13,7 +13,7 @@ import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/
 import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
 import { confirmViewFiles } from '../../../../server/lib/uikit/confirmViewFiles';
-import { viewSubmitAnswer } from '../../../../server/lib/uikit/interactionResponses';
+import { viewSubmitAnswer, withDefaultCloseTarget } from '../../../../server/lib/uikit/interactionResponses';
 import { recordInteractionView, withRecordedView } from '../../../../server/lib/uikit/recordedViews';
 import { reportInvalidInteractionBlocks } from '../../../../server/lib/uikit/reportInvalidBlocks';
 import { settings } from '../../../../server/settings';
@@ -254,6 +254,7 @@ export class AppUIKitInteractionApi {
 						break;
 					}
 
+					await withDefaultCloseTarget(result, container, appId, req.user?._id);
 					const delivered = await recordInteractionView(result, appId, req.user?._id);
 					res.send(delivered ? result : {});
 				} catch (e) {
