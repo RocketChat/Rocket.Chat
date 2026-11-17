@@ -4,7 +4,6 @@ import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import AppRequestRow from './layout/AppRequestRow';
-import RequesterName from './layout/RequesterName';
 import UnseenIndicatorSlot from './layout/UnseenIndicatorSlot';
 
 export type AppRequestItemProps = {
@@ -29,7 +28,9 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 			}
 		>
 			<Stack direction='row' align='start' gap='x4'>
-				<RequesterName>{name}</RequesterName>
+				<Text fontScale='p2b' color='titles-labels'>
+					{name}
+				</Text>
 				<Text fontScale='c1' color='annotation'>
 					{formatDateAndTime(createdDate)}
 				</Text>
