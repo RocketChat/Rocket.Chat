@@ -58,5 +58,28 @@ it('offers a disabled choice as unavailable', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
 
-	expect(await screen.findByRole('menuitemradio', { name: /720p/ })).toHaveAttribute('aria-disabled', 'true');
+	expect(await screen.findByRole('menuitemcheckbox', { name: /720p/ })).toHaveAttribute('aria-disabled', 'true');
+});
+
+// Screen readers only hear which row is in use from the menu, not from the radio.
+it('marks the device and the choice in use as checked, and nothing else', async () => {
+	const onSelect = jest.fn();
+	renderMenu([qualities(onSelect)]);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
+
+	expect(await screen.findByRole('menuitemcheckbox', { name: /Logitech BRIO/ })).toHaveAttribute('aria-checked', 'true');
+	expect(screen.getByRole('menuitemcheckbox', { name: /Auto/ })).toHaveAttribute('aria-checked', 'true');
+	expect(screen.getByRole('menuitemcheckbox', { name: /720p/ })).toHaveAttribute('aria-checked', 'false');
+});
+
+it('closes a menu of one kind once something is chosen, as before', async () => {
+	const onSelect = jest.fn();
+	renderMenu([qualities(onSelect)]);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
+	await userEvent.click(await screen.findByText('720p'));
+
+	expect(onSelect).toHaveBeenCalledTimes(1);
+	expect(screen.queryByRole('menu')).not.toBeInTheDocument();
 });

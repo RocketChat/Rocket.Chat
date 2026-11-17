@@ -67,6 +67,8 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 	};
 
 	const picks = new Map<string, DevicePick>();
+	// Rows in use are passed as the selection, so screen readers announce them as checked.
+	const selectedKeys: string[] = [];
 
 	const sections = kinds
 		.map((kind) => {
@@ -76,6 +78,9 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 				const id = `${row.id}-${kind}`;
 				const name = row.name || t('Default');
 				picks.set(id, { kind, deviceId: row.id, inUse: row === selected });
+				if (row === selected) {
+					selectedKeys.push(id);
+				}
 
 				return {
 					id,
@@ -98,6 +103,9 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 		items: options.map((choice): GenericMenuItemProps => {
 			const id = choiceKey(sectionIndex, choice.id);
 			choiceActions.set(id, choice);
+			if (choice.selected) {
+				selectedKeys.push(id);
+			}
 			return {
 				id,
 				textValue: choice.name,
@@ -125,10 +133,16 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 			sections={[...sections, ...choiceSections]}
 			disabled={disabled}
 			placement={placement}
-			selectionMode={kinds.length > 1 ? 'multiple' : 'single'}
+			// 'multiple': one row is in use per section.
+			selectionMode='multiple'
+			selectedKeys={selectedKeys}
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			onAction={(key) => {
+				// Multiple selection keeps the menu open; a menu of one device kind still closes on a choice.
+				if (kinds.length === 1) {
+					setIsOpen(false);
+				}
 				const choice = choiceActions.get(String(key));
 				if (choice) {
 					if (!choice.selected && !choice.disabled) {
