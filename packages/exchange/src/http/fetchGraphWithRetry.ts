@@ -1,7 +1,7 @@
 import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { serverFetch } from '@rocket.chat/server-fetch';
 
-import { sleep } from '../../../../../lib/utils/sleep';
+import { sleep } from '../sleep';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 

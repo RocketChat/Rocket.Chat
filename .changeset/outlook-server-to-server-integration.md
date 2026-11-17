@@ -9,6 +9,7 @@
 '@rocket.chat/ui-voip': minor
 '@rocket.chat/media-calls': minor
 '@rocket.chat/ntlm': minor
+'@rocket.chat/exchange': minor
 '@rocket.chat/tools': minor
 
 ---

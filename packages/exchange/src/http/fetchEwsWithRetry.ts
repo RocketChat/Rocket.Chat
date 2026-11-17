@@ -1,4 +1,4 @@
-import { sleep } from '../../../../../lib/utils/sleep';
+import { sleep } from '../sleep';
 import { ExchangeError, isExchangeError } from '../errors';
 import { logger } from '../logger';
 
