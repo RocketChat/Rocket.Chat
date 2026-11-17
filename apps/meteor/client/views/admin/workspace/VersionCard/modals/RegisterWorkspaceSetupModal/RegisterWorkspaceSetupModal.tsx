@@ -8,7 +8,7 @@ import RegisterWorkspaceSetupStepTwoModal from './RegisterWorkspaceSetupStepTwoM
 
 export type RegisterWorkspaceSetupModalProps = {
 	onClose: () => void;
-	onStatusChange?: () => void;
+	onStatusChange?: () => void | Promise<unknown>;
 };
 
 const RegisterWorkspaceSetupModal = ({ onClose }: RegisterWorkspaceSetupModalProps) => {
@@ -33,7 +33,7 @@ const RegisterWorkspaceSetupModal = ({ onClose }: RegisterWorkspaceSetupModalPro
 		if (step === 1) {
 			setValidInfo(validateEmail(email) && terms);
 		}
-	}, [email, terms]);
+	}, [email, terms, step]);
 
 	const onSuccess = () => {
 		const handleModalClose = (): void => setModal(null);

@@ -14,6 +14,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ContextType } from 'react';
 
+import { useForwardToMentionedUsers } from './useForwardToMentionedUsers';
 import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
@@ -54,6 +55,8 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 
 	const { openTab } = useRoomToolbox();
 
+	const forwardToMentionedUsers = useForwardToMentionedUsers(rid, mid);
+
 	return {
 		action: ({ appId, actionId, blockId, value }, event) => {
 			if (appId === 'videoconf-core') {
@@ -72,6 +75,10 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 				if (actionId === 'open-history') {
 					return openTab('media-call-history', blockId);
 				}
+			}
+
+			if (appId === 'mention-core' && actionId === 'share-message') {
+				return forwardToMentionedUsers(blockId, value);
 			}
 
 			actionManager.emitInteraction(appId, {

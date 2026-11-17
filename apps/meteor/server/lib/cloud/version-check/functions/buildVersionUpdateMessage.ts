@@ -63,7 +63,7 @@ export const buildVersionUpdateMessage = async (
 
 	await cleanupOutdatedVersionUpdateBanners();
 
-	for await (const version of sortedVersions) {
+	for (const version of sortedVersions) {
 		if (semver.prerelease(version.version)) {
 			continue;
 		}

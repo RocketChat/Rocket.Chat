@@ -106,7 +106,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				<Text fontScale='c1'>
 					<Stack direction='row'>
 						<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
-							Didn't receive email?{' '}
+							Didn&apos;t receive email?{' '}
 							<Box is='a' paddingInline='x4' onClick={handleResendRegistrationEmail}>
 								Resend
 							</Box>{' '}

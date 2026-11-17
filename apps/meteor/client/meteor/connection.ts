@@ -48,6 +48,7 @@ const isSocketMethod = (method: string, args: unknown[]): boolean =>
 const unwrapMethodResult = (message: string): unknown => {
 	const response = parseDDP(message) as { error?: unknown; result?: unknown };
 	if (response.error) {
+		// oxlint-disable-next-line typescript/only-throw-error -- consumers read the DDP error payload's fields
 		throw response.error;
 	}
 	return response.result;
@@ -69,6 +70,7 @@ const callOverREST = async (method: string, params: unknown[]): Promise<any> => 
 	}
 
 	if (typeof body.message !== 'string') {
+		// oxlint-disable-next-line typescript/only-throw-error -- consumers read the DDP error payload's fields
 		throw body;
 	}
 	return unwrapMethodResult(body.message);
