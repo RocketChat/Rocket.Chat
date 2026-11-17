@@ -19,8 +19,8 @@ import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
-import type { DiscussionsListItemSurfaceProps } from '../layout/DiscussionsListItemSurface';
-import DiscussionsListItemSurface from '../layout/DiscussionsListItemSurface';
+import type { ContextualbarMessageRowProps } from '../../layout/ContextualbarMessageRow';
+import ContextualbarMessageRow from '../../layout/ContextualbarMessageRow';
 
 export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
@@ -32,7 +32,7 @@ export type DiscussionListItemProps = {
 	name?: IDiscussionMessage['u']['name'];
 	ts: IDiscussionMessage['ts'];
 	emoji: IDiscussionMessage['emoji'];
-} & DiscussionsListItemSurfaceProps;
+} & ContextualbarMessageRowProps;
 
 const DiscussionListItem = ({
 	_id,
@@ -49,7 +49,7 @@ const DiscussionListItem = ({
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<DiscussionsListItemSurface {...props} className={className}>
+		<ContextualbarMessageRow {...props} className={className} spaceBelow='x8'>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>
@@ -81,7 +81,7 @@ const DiscussionListItem = ({
 					</MessageMetrics>
 				</MessageBlock>
 			</MessageContainer>
-		</DiscussionsListItemSurface>
+		</ContextualbarMessageRow>
 	);
 };
 
