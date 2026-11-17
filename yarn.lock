@@ -9059,6 +9059,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/exchange@workspace:^, @rocket.chat/exchange@workspace:packages/exchange":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/exchange@workspace:packages/exchange"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/ntlm": "workspace:^"
+    "@rocket.chat/server-fetch": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@xmldom/xmldom": "npm:~0.8.15"
+    jest: "npm:~30.5.2"
+    typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/favicon@workspace:^, @rocket.chat/favicon@workspace:packages/favicon":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
@@ -9297,6 +9312,7 @@ __metadata:
     "@storybook/addon-docs": "npm:~10.6.5"
     "@storybook/react": "npm:~10.6.5"
     "@storybook/react-vite": "npm:~10.6.5"
+    "@storybook/test-runner": "npm:~0.26.0"
     "@tamagui/vite-plugin": "npm:3.0.18"
     "@tamagui/web": "npm:3.0.18"
     "@testing-library/dom": "npm:~10.4.2"
@@ -9310,11 +9326,13 @@ __metadata:
     autoprefixer: "npm:~10.5.6"
     caniuse-lite: "npm:~1.0.30001810"
     cssnano: "npm:~9.0.4"
+    dom-accessibility-api: "npm:~0.6.3"
     invariant: "npm:^2.2.4"
     jest: "npm:~30.5.2"
     jest-axe: "npm:~11.0.0"
     magic-string: "npm:~0.30.21"
     normalize.css: "npm:^8.0.1"
+    playwright-core: "npm:~1.52.0"
     postcss: "npm:8.5.26"
     postcss-scss: "npm:~4.0.9"
     react: "npm:~19.2.8"
@@ -9825,6 +9843,7 @@ __metadata:
     "@rocket.chat/ddp-server": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
+    "@rocket.chat/exchange": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.9.1"
@@ -9858,6 +9877,7 @@ __metadata:
     "@rocket.chat/mongo-adapter": "workspace:^"
     "@rocket.chat/mp3-encoder": "workspace:~"
     "@rocket.chat/network-broker": "workspace:^"
+    "@rocket.chat/ntlm": "workspace:^"
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
@@ -10294,6 +10314,17 @@ __metadata:
     moleculer: "npm:^0.14.36"
     pino: "npm:10.3.1"
     sinon: "npm:^19.0.5"
+    typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ntlm@workspace:^, @rocket.chat/ntlm@workspace:packages/ntlm":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ntlm@workspace:packages/ntlm"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    jest: "npm:~30.5.2"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -21125,7 +21156,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-accessibility-api@npm:^0.6.3":
+"dom-accessibility-api@npm:^0.6.3, dom-accessibility-api@npm:~0.6.3":
   version: 0.6.3
   resolution: "dom-accessibility-api@npm:0.6.3"
   checksum: 10/83d3371f8226487fbad36e160d44f1d9017fb26d46faba6a06fcad15f34633fc827b8c3e99d49f71d5f3253d866e2131826866fd0a3c86626f8eccfc361881ff

@@ -5,9 +5,21 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Cloud]', () => {
 	before((_t, done) => getCredentials(done));
+
+	describe('[/cloud.registerPreIntent]', () => {
+		it('should fail when user does not have the manage-cloud permission', async (t) => {
+			const user = await createUser();
+			t.after(() => deleteUser(user));
+			const userCredentials = await login(user.username, password);
+
+			await request.post(api('cloud.registerPreIntent')).set(userCredentials).expect(403);
+		});
+	});
 
 	describe('[/cloud.manualRegister]', () => {
 		before(async () => {

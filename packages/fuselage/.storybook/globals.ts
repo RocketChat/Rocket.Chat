@@ -1,4 +1,5 @@
-// Keep in step with ../../storybook-config/src/globals.ts, which Fuselage can't import: storybook-config depends on Fuselage.
+// The `theme` global is kept in step with ../../storybook-config/src/globals.ts, which Fuselage can't import: storybook-config depends on Fuselage.
+// `direction` is Fuselage-only: the preview here is the one that applies it.
 import type { ThemeGlobal } from './theme';
 
 /** The toolbar control that picks which Fuselage palette stories, docs and the manager use. */
@@ -18,8 +19,22 @@ export const globalTypes = {
 			],
 		},
 	},
+	direction: {
+		name: 'Direction',
+		description: 'Text direction of the story root',
+		toolbar: {
+			title: 'Direction',
+			icon: 'transfer',
+			dynamicTitle: true,
+			items: [
+				{ value: 'ltr', title: 'Left to right' },
+				{ value: 'rtl', title: 'Right to left' },
+			],
+		},
+	},
 };
 
-export const initialGlobals: { theme: ThemeGlobal } = {
+export const initialGlobals: { theme: ThemeGlobal; direction: 'ltr' | 'rtl' } = {
 	theme: 'system',
+	direction: 'ltr',
 };
