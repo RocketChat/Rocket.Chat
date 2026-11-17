@@ -7,6 +7,8 @@ import store from '../store';
 
 export const UIKitInteractionType = {
 	MODAL_OPEN: 'modal.open',
+	MODAL_PUSH: 'modal.push',
+	MODAL_CLEAR: 'modal.clear',
 	MODAL_CLOSE: 'modal.close',
 	MODAL_UPDATE: 'modal.update',
 	ERRORS: 'errors',
@@ -46,13 +48,52 @@ type OpenView = { appId: string; view: UiKitModalView; errors?: Record<string, s
 
 const openViews = new Map<string, OpenView>();
 
+const MODAL_STACK_LIMIT = 3;
+
+// Open view ids, bottom to top. The last one is the view the visitor sees.
+let stack: string[] = [];
+
 let displayedViewId: string | undefined;
 
-const closeModal = (viewId: string) => {
-	if (openViews.delete(viewId) && displayedViewId === viewId) {
-		displayedViewId = undefined;
-		store.setState({ modal: null });
+const viewsOf = (appId: string) => stack.filter((id) => openViews.get(id)?.appId === appId);
+
+const forget = (viewIds: string[]) => {
+	for (const id of viewIds) {
+		openViews.delete(id);
 	}
+	stack = stack.filter((id) => !viewIds.includes(id));
+};
+
+// Shows the view that lies under a view that left, or no modal when none is left.
+const reveal = () => {
+	if (displayedViewId === undefined || openViews.has(displayedViewId)) {
+		return;
+	}
+	const top = stack.at(-1);
+	const next = top === undefined ? undefined : openViews.get(top);
+	if (top !== undefined && next) {
+		showModal(top, next);
+		return;
+	}
+	displayedViewId = undefined;
+	store.setState({ modal: null });
+};
+
+const closeModal = (viewId: string) => {
+	if (openViews.has(viewId)) {
+		forget([viewId]);
+		reveal();
+	}
+};
+
+const pushView = (viewId: string, openView: OpenView) => {
+	const own = viewsOf(openView.appId).filter((id) => id !== viewId);
+	if (own.length >= MODAL_STACK_LIMIT) {
+		forget([own[own.length - 1]]);
+	}
+	forget([viewId]);
+	stack.push(viewId);
+	showModal(viewId, openView);
 };
 
 const showModal = (viewId: string, openView: OpenView) => {
@@ -76,12 +117,14 @@ const showModal = (viewId: string, openView: OpenView) => {
 
 		if (
 			type === UIKitIncomingInteractionType.VIEW_CLOSED ||
-			![UIKitInteractionType.ERRORS, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_OPEN].includes(result ?? '')
+			![
+				UIKitInteractionType.ERRORS,
+				UIKitInteractionType.MODAL_UPDATE,
+				UIKitInteractionType.MODAL_OPEN,
+				UIKitInteractionType.MODAL_PUSH,
+			].includes(result ?? '')
 		) {
 			closeModal(viewId);
-		} else if (result === UIKitInteractionType.MODAL_OPEN && openViews.get(viewId) === openView) {
-			// The app replaced this view with another one, which already took the modal's place.
-			openViews.delete(viewId);
 		}
 	};
 
@@ -115,6 +158,12 @@ export const handlePayloadUserInteraction = (type: string, { triggerId, ...data 
 		return;
 	}
 
+	if (type === UIKitInteractionType.MODAL_CLEAR) {
+		forget(viewsOf(appId));
+		reveal();
+		return UIKitInteractionType.MODAL_CLEAR;
+	}
+
 	const { view } = data;
 	let { viewId } = data;
 
@@ -143,8 +192,14 @@ export const handlePayloadUserInteraction = (type: string, { triggerId, ...data 
 	}
 
 	if (type === UIKitInteractionType.MODAL_OPEN) {
-		showModal(viewId, { appId, view });
+		forget(viewsOf(appId));
+		pushView(viewId, { appId, view });
 		return UIKitInteractionType.MODAL_OPEN;
+	}
+
+	if (type === UIKitInteractionType.MODAL_PUSH) {
+		pushView(viewId, { appId, view });
+		return UIKitInteractionType.MODAL_PUSH;
 	}
 
 	closeModal(viewId);

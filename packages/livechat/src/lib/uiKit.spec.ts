@@ -68,7 +68,8 @@ describe('app responses to a visitor interaction', () => {
 
 	it('keeps the displayed modal when the app closes a view it covered', async () => {
 		await open();
-		await open({ ...view, id: 'view-2' });
+		respond({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id: 'view-2' } });
+		await trigger();
 		mockSetState.mockClear();
 
 		respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-1' });
@@ -115,5 +116,77 @@ describe('the modal a visitor sees', () => {
 			expect.objectContaining({ type: 'viewClosed', payload: expect.objectContaining({ isCleared: false }) }),
 			'app',
 		);
+	});
+});
+
+describe('the modal stack', () => {
+	const interact = async (response: Record<string, unknown>) => {
+		respond(response);
+		await trigger();
+	};
+
+	it('shows a pushed view over the open one and reveals the open one when it closes', async () => {
+		await open();
+		await interact({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id: 'view-2' } });
+		expect(lastModalProps().view.id).toBe('view-2');
+
+		await interact({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-2' });
+		expect(lastModalProps().view.id).toBe('view-1');
+	});
+
+	it('closes every view when the app answers modal.clear', async () => {
+		await open();
+		await interact({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id: 'view-2' } });
+
+		await interact({ type: UIKitInteractionType.MODAL_CLEAR });
+		expect(mockSetState).toHaveBeenLastCalledWith({ modal: null });
+	});
+
+	it('replaces the stack when the app answers modal.open', async () => {
+		await open();
+		await interact({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id: 'view-2' } });
+		await open({ ...view, id: 'view-3' });
+		await interact({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-3' });
+
+		expect(mockSetState).toHaveBeenLastCalledWith({ modal: null });
+	});
+});
+
+describe('the modal stack limit and submit answers', () => {
+	const push = async (id: string) => {
+		respond({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id } });
+		await trigger();
+	};
+
+	afterEach(async () => {
+		for (const viewId of ['view-3', 'view-4']) {
+			respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId });
+			await trigger();
+		}
+	});
+
+	it('drops the top view of an app that pushes past three views', async () => {
+		await open();
+		await push('view-2');
+		await push('view-3');
+		await push('view-4');
+
+		respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-4' });
+		await trigger();
+
+		expect(lastModalProps().view.id).toBe('view-2');
+	});
+
+	it('keeps the submitting view under the view the app pushes', async () => {
+		await open();
+		const { onSubmit } = lastModalProps();
+		respond({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id: 'view-2' } });
+		await onSubmit({});
+		expect(lastModalProps().view.id).toBe('view-2');
+
+		respond({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-2' });
+		await trigger();
+
+		expect(lastModalProps().view.id).toBe('view-1');
 	});
 });
