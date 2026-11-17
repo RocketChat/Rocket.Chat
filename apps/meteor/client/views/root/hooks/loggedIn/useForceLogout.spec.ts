@@ -13,9 +13,8 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	},
 	useSessionDispatch: () => setForceLogout,
 	useWipeLocalAuth: () => wipeLocalAuth,
+	useGetConnectionSessionId: () => () => 'this-session',
 }));
-
-jest.mock('../../../../meteor/connection', () => ({ getConnectionSessionId: () => 'this-session' }));
 
 describe('useForceLogout', () => {
 	beforeEach(() => {

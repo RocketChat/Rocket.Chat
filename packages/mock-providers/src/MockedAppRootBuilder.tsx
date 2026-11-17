@@ -132,6 +132,7 @@ export class MockedAppRootBuilder {
 		connected: true,
 		status: 'connected',
 		retryCount: 0,
+		getSessionId: () => undefined,
 		disconnect: () => {
 			throw new Error('not implemented');
 		},

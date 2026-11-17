@@ -3,7 +3,7 @@ import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
-import { type ConnectionStatus, getConnectionStatus } from '../meteor/connection';
+import { type ConnectionStatus, getConnectionSessionId, getConnectionStatus } from '../meteor/connection';
 
 const disconnect = () => {
 	try {
@@ -70,6 +70,7 @@ const ConnectionStatusProvider = ({ children }: ConnectionStatusProviderProps) =
 			status,
 			retryCount,
 			retryTime,
+			getSessionId: getConnectionSessionId,
 			disconnect,
 			reconnect,
 		}),
