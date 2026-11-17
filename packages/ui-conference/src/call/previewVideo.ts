@@ -22,6 +22,7 @@ export type PreviewVideoProviderProps = {
 	enabled: boolean;
 	deviceId?: string;
 	quality: VideoQuality;
+	backgroundEffectsBaseUrl?: string;
 	children: ReactNode;
 };
 

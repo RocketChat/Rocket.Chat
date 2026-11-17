@@ -73,7 +73,12 @@ const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaPro
 						<BackgroundEffectProvider value={BACKGROUND_EFFECTS_UNAVAILABLE}>
 							{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
 							<Suspense fallback={children}>
-								<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
+								<media.PreviewVideoProvider
+									enabled={preferences.cam}
+									deviceId={devices.camId}
+									quality={videoQuality}
+									backgroundEffectsBaseUrl={media.backgroundEffectsBaseUrl}
+								>
 									{children}
 								</media.PreviewVideoProvider>
 							</Suspense>

@@ -15,7 +15,6 @@ import {
 	CallStateProvider,
 	NoiseSuppressionProvider,
 	BackgroundEffectProvider,
-	BACKGROUND_EFFECTS_UNAVAILABLE,
 	VideoQualityProvider,
 	playJoinChime,
 	playMutedReminder,
@@ -28,10 +27,13 @@ import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useBackgroundEffect } from './backgroundEffects/useBackgroundEffect';
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useArrivalHoldBack } from './useArrivalHoldBack';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
+import { useCameraToggle } from './useCameraToggle';
 import { useLiveKitTransport } from './useLiveKitTransport';
 import { useNoiseSuppression } from './useNoiseSuppression';
 import { useSendResolution } from './useSendResolution';
@@ -48,6 +50,7 @@ export type LiveKitCallProviderProps = {
 	onEnded: () => void;
 	/** Where the workspace serves RNNoise's worklet and WebAssembly from. */
 	rnnoiseBaseUrl: string;
+	backgroundEffectsBaseUrl: string;
 	children: ReactNode;
 };
 
@@ -70,7 +73,15 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnnoiseBaseUrl, children }: LiveKitCallProviderProps) => {
+export const LiveKitCallProvider = ({
+	callId,
+	connect,
+	preferences,
+	onEnded,
+	rnnoiseBaseUrl,
+	backgroundEffectsBaseUrl,
+	children,
+}: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 	const [room] = useState(() => new Room());
@@ -102,6 +113,28 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 	const [startedAt, setStartedAt] = useState(() => new Date());
 	const onConnected = useCallback(() => setStartedAt(new Date()), []);
 
+	const {
+		localParticipant,
+		isMicrophoneEnabled: micEnabled,
+		isCameraEnabled: camEnabled,
+		isScreenShareEnabled: screenEnabled,
+	} = useLocalParticipant({ room });
+
+	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
+	const localCameraTrack = localCameraPub?.videoTrack;
+
+	// A stalled effect turns the camera off rather than risk sending the room.
+	const turnCameraOff = useStableCallback(() => {
+		void localParticipant.setCameraEnabled(false).catch(() => undefined);
+	});
+	const background = useBackgroundEffect({
+		track: camEnabled ? localCameraTrack : undefined,
+		baseUrl: backgroundEffectsBaseUrl,
+		onStalled: turnCameraOff,
+	});
+
+	const arrivalHoldBack = useArrivalHoldBack(connect, Boolean(arrival?.cam), background.wanted.kind !== 'none');
+
 	useLiveKitRoom({
 		room,
 		token: credentials?.token,
@@ -109,7 +142,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 		connect: connect && Boolean(credentials),
 		// Whether to arrive with each track published; which device each opens is `arrival`, below.
 		audio: arrival?.mic ?? true,
-		video: arrival?.cam ?? false,
+		video: arrivalHoldBack.video,
 		onConnected,
 		onDisconnected: onEnded,
 		onError: onCallError,
@@ -120,12 +153,6 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 	const connectionState = connectionStateFor(roomState);
 
 	const persistDevicePreference = useUpdateCallPreferences();
-	const {
-		localParticipant,
-		isMicrophoneEnabled: micEnabled,
-		isCameraEnabled: camEnabled,
-		isScreenShareEnabled: screenEnabled,
-	} = useLocalParticipant({ room });
 	const allParticipants = useParticipants({ room });
 
 	const remotes = useMemo(() => otherPeople(allParticipants, localParticipant.identity), [allParticipants, localParticipant.identity]);
@@ -148,12 +175,10 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath],
 	);
 
-	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
-	const localCameraTrack = localCameraPub?.videoTrack;
-
-	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
+	// The self-view shows what others receive, effect included.
+	const cameraStream = camEnabled ? background.selfViewStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
@@ -190,6 +215,19 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 
 	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
+	const { cameraStarting, toggleCamera } = useCameraToggle({
+		room,
+		localParticipant,
+		cameraTrack: localCameraTrack,
+		camEnabled,
+		connected,
+		deviceId: deviceSelection.selectedIds.videoinput,
+		background,
+		arrival: arrivalHoldBack,
+		onToggled: (cam) => persistDevicePreference({ cam }),
+		onError: onToggleError,
+	});
+
 	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled, playMutedReminder, deviceSelection.selectedIds.audioinput);
 
 	const user = useUser();
@@ -202,6 +240,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
 			muted: !micEnabled,
 			cameraOn: Boolean(cameraStream),
+			cameraStarting,
 			screenSharing: Boolean(screenStream),
 			handRaised: localHandRaised,
 			speakingWhileMuted,
@@ -217,6 +256,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 			getUserAvatarPath,
 			micEnabled,
 			cameraStream,
+			cameraStarting,
 			screenStream,
 			localHandRaised,
 			speakingWhileMuted,
@@ -236,9 +276,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 			toggleMic: () => {
 				localParticipant.setMicrophoneEnabled(!micEnabled).then(() => persistDevicePreference({ mic: !micEnabled }), onToggleError);
 			},
-			toggleCamera: () => {
-				localParticipant.setCameraEnabled(!camEnabled).then(() => persistDevicePreference({ cam: !camEnabled }), onToggleError);
-			},
+			toggleCamera,
 			toggleScreenShare: () => {
 				localParticipant.setScreenShareEnabled(!screenEnabled).catch(onToggleError);
 			},
@@ -250,7 +288,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 		[
 			persistDevicePreference,
 			micEnabled,
-			camEnabled,
+			toggleCamera,
 			screenEnabled,
 			localParticipant,
 			toggleHand,
@@ -267,7 +305,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 				<DeviceSelectionProvider value={deviceSelection}>
 					<VideoQualityProvider value={videoQuality}>
 						<NoiseSuppressionProvider value={noiseSuppression}>
-							<BackgroundEffectProvider value={BACKGROUND_EFFECTS_UNAVAILABLE}>
+							<BackgroundEffectProvider value={background.selection}>
 								<CallDiagnosticsProvider value={diagnostics ?? null}>
 									{children}
 									<RoomAudioRenderer room={room} />

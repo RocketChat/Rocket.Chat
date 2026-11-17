@@ -29,6 +29,26 @@ export const [BackgroundEffectProvider, useBackgroundEffectSelection] =
 
 export const BLUR_LEVELS: BlurLevel[] = ['light', 'medium', 'strong'];
 
+export const NO_BACKGROUND_EFFECT: BackgroundEffect = { kind: 'none' };
+
+export const isBackgroundEffect = (value: unknown): value is BackgroundEffect => {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+	const { kind, level, id } = value as Record<string, unknown>;
+	switch (kind) {
+		case 'none':
+			return true;
+		case 'blur':
+			return BLUR_LEVELS.includes(level as BlurLevel);
+		case 'preset':
+		case 'image':
+			return typeof id === 'string' && id.length > 0;
+		default:
+			return false;
+	}
+};
+
 export const isSameEffect = (a: BackgroundEffect | undefined, b: BackgroundEffect | undefined): boolean => {
 	if (!a || !b || a.kind !== b.kind) {
 		return false;

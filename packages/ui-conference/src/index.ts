@@ -38,6 +38,7 @@ export {
 	useCallDevicesInitialState,
 	useCallRingPreference,
 	useVideoQualityPreference,
+	useBackgroundEffectPreference,
 	useNoiseSuppressionPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
@@ -90,7 +91,14 @@ export { VideoQualityProvider } from './devices/VideoQualityContext';
 export type { VideoQualitySelection } from './devices/VideoQualityContext';
 export { NoiseSuppressionProvider, supportsRnnoise } from './devices/NoiseSuppressionContext';
 export type { NoiseSuppressionSelection } from './devices/NoiseSuppressionContext';
-export { BackgroundEffectProvider, BACKGROUND_EFFECTS_UNAVAILABLE } from './devices/BackgroundEffectContext';
+export {
+	BackgroundEffectProvider,
+	BACKGROUND_EFFECTS_UNAVAILABLE,
+	NO_BACKGROUND_EFFECT,
+	isSameEffect,
+} from './devices/BackgroundEffectContext';
+export { useBackgroundImages } from './hooks/useBackgroundImages';
+export { default as CameraWithoutEffectModal } from './backgrounds/CameraWithoutEffectModal';
 export type {
 	BackgroundEffect,
 	BackgroundEffectSelection,

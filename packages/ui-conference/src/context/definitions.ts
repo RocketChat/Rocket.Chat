@@ -161,6 +161,8 @@ export type ConferenceSlots = {
 export type PreflightMedia = {
 	/** Mounted around the preview for as long as the preflight is on screen; it may suspend while it loads. */
 	PreviewVideoProvider: ComponentType<PreviewVideoProviderProps>;
+	/** Where the workspace serves the background effects' files; without it, no effect is offered. */
+	backgroundEffectsBaseUrl?: string;
 };
 
 /**
