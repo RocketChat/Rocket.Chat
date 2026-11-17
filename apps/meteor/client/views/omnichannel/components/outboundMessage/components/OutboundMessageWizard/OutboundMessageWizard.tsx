@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { Wizard, useWizard, WizardContent, WizardTabs, useHasLicenseModule, GenericError } from '@rocket.chat/ui-client';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +40,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	const hasOmnichannelModule = useHasLicenseModule('livechat-enterprise');
 	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
 	const hasOutboundPermission = usePermission('outbound.send-messages');
+	const debug = useSearchParameter('debug');
 
 	const isLoadingModule = hasOutboundModule.isPending || hasOmnichannelModule.isPending;
 
@@ -131,10 +132,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
 
 			// only console.error when in debug mode
-			const urlParams = new URLSearchParams(window.location.search);
-			const debug = urlParams.get('debug') === 'true';
-
-			if (debug) {
+			if (debug === 'true') {
 				console.error(error);
 			}
 
