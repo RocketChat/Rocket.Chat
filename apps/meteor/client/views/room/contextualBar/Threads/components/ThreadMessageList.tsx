@@ -82,6 +82,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const userInteractedRef = useRef(false);
 	const isJumpingToMessageRef = useRef(false);
 	const isPrependRef = useRef(false);
+	const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	const loadMoreMessages = useDebouncedCallback(
 		() => {
@@ -321,7 +322,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		recenter();
 
 		setHighlightMessage(msgJumpParam);
-		const highlightTimeout = setTimeout(() => {
+		clearTimeout(highlightTimeoutRef.current);
+		highlightTimeoutRef.current = setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 		const settleTimeout = setTimeout(() => {
@@ -330,10 +332,17 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 		return () => {
 			cancelAnimationFrame(rafId);
-			clearTimeout(highlightTimeout);
 			clearTimeout(settleTimeout);
 		};
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
+
+	useEffect(
+		() => () => {
+			clearTimeout(highlightTimeoutRef.current);
+			clearHighlightMessage();
+		},
+		[],
+	);
 
 	useEffect(() => {
 		if (!msgJumpParam) {

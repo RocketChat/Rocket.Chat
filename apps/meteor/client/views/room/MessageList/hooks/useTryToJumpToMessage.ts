@@ -1,8 +1,8 @@
 import { isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { WindowVirtualizerHandle } from 'virtua';
 
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
@@ -22,6 +22,14 @@ type UseTryToJumpToMessageProps = {
 
 const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
+	const tab = useRouteParameter('tab');
+	const context = useRouteParameter('context');
+
+	// A thread already open when the jump starts handles its own replies; the main feed only follows permalinks into a thread.
+	const [jumpOrigin, setJumpOrigin] = useState({ msg: messageJumpParam, openThread: tab === 'thread' ? context : undefined });
+	if (jumpOrigin.msg !== messageJumpParam) {
+		setJumpOrigin({ msg: messageJumpParam, openThread: tab === 'thread' ? context : undefined });
+	}
 
 	const { isLoadingMoreMessages } = useRoomMessages();
 
@@ -40,7 +48,9 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 	});
 
 	const isThreadReply = !!message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true;
-	const targetId = isThreadReply ? message.tmid : messageJumpParam;
+	const isOwnedByOpenThread = isThreadReply && jumpOrigin.msg === messageJumpParam && jumpOrigin.openThread === message.tmid;
+	const threadTargetId = isOwnedByOpenThread ? undefined : message?.tmid;
+	const targetId = isThreadReply ? threadTargetId : messageJumpParam;
 
 	useEffect(() => {
 		if (!targetId || !message) {

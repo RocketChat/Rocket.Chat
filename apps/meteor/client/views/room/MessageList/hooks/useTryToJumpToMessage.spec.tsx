@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { MutableRefObject } from 'react';
 import type { WindowVirtualizerHandle } from 'virtua';
 
@@ -40,7 +40,7 @@ afterEach(() => {
 	jest.clearAllMocks();
 });
 
-const renderJumpHook = (rid: string, message: unknown) =>
+const renderJumpHook = (rid: string, message: unknown, routeParameters: Record<string, string> = {}) =>
 	renderHook(
 		() =>
 			useTryToJumpToMessage({
@@ -51,7 +51,7 @@ const renderJumpHook = (rid: string, message: unknown) =>
 			}),
 		{
 			wrapper: mockAppRoot()
-				.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }) })
+				.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }), getRouteParameters: () => routeParameters })
 				.withEndpoint('GET', '/v1/chat.getMessage', (() => {
 					if (message instanceof Error) {
 						throw message;
@@ -137,4 +137,21 @@ it('should stop jumping when the surrounding messages request fails', async () =
 	rerender();
 
 	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledTimes(1);
+});
+
+it('should leave a reply to the thread that is already open', async () => {
+	renderJumpHook('room-1', { ...message, rid: 'room-1', tmid: 'parent-msg-1' }, { tab: 'thread', context: 'parent-msg-1' });
+
+	await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+
+	expect(mockedSetIsJumpingToMessage).not.toHaveBeenCalledWith(true);
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
+});
+
+it('should jump to the thread parent when a permalink targets a reply of a thread that is not open', async () => {
+	renderJumpHook('room-1', { ...message, rid: 'room-1', tmid: 'parent-msg-1' });
+
+	await waitFor(() =>
+		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledWith({ _id: 'parent-msg-1', rid: 'room-1' }),
+	);
 });
