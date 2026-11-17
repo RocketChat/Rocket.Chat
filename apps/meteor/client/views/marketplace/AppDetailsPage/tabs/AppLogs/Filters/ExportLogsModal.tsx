@@ -13,13 +13,13 @@ import {
 	ModalTitle,
 	NumberInput,
 	RadioButton,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
-import ExportLogsOptions from './layout/ExportLogsOptions';
 import FilterField from './layout/FilterField';
 
 export type ExportLogsModalProps = {
@@ -102,7 +102,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<ExportLogsOptions>
+				<Stack gap='x24'>
 					<FilterField>
 						<Label>{t('Format')}</Label>
 						<Field>
@@ -198,7 +198,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 							/>
 						</Field>
 					</FilterField>
-				</ExportLogsOptions>
+				</Stack>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
