@@ -50,7 +50,12 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 	});
 
 	const isThreadReply = !!message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true;
-	const isOwnedByOpenThread = isThreadReply && jumpOrigin.msg === messageJumpParam && jumpOrigin.openThread === message.tmid;
+	const isOwnedByOpenThread =
+		isThreadReply &&
+		jumpOrigin.msg === messageJumpParam &&
+		jumpOrigin.openThread === message.tmid &&
+		tab === 'thread' &&
+		context === message.tmid;
 	const threadTargetId = isOwnedByOpenThread ? undefined : message?.tmid;
 	const targetId = isThreadReply ? threadTargetId : messageJumpParam;
 

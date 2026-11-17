@@ -22,7 +22,11 @@ import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMounte
 import { getDistanceFromBottom } from '../../../MessageList/lib/getDistanceFromBottom';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
-import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
+import {
+	clearHighlightMessage,
+	getSnapshot as getHighlightedMessageId,
+	setHighlightMessage,
+} from '../../../MessageList/providers/messageHighlightSubscription';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
@@ -86,6 +90,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const isJumpingToMessageRef = useRef(false);
 	const isPrependRef = useRef(false);
 	const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const highlightedIdRef = useRef<IMessage['_id'] | undefined>(undefined);
 
 	const loadMoreMessages = useDebouncedCallback(
 		() => {
@@ -246,6 +251,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	useEffect(() => {
 		if (!msgJumpParam) {
 			isJumpingToMessageRef.current = false;
+			lastThreadJumpKeyRef.current = undefined;
 			return;
 		}
 		isJumpingToMessageRef.current = true;
@@ -327,6 +333,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		recenter();
 
 		setHighlightMessage(msgJumpParam);
+		highlightedIdRef.current = msgJumpParam;
 		clearTimeout(highlightTimeoutRef.current);
 		highlightTimeoutRef.current = setTimeout(() => {
 			clearHighlightMessage();
@@ -344,7 +351,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	useEffect(
 		() => () => {
 			clearTimeout(highlightTimeoutRef.current);
-			clearHighlightMessage();
+			lastThreadJumpKeyRef.current = undefined;
+			if (getHighlightedMessageId() === highlightedIdRef.current) {
+				clearHighlightMessage();
+			}
 		},
 		[],
 	);
