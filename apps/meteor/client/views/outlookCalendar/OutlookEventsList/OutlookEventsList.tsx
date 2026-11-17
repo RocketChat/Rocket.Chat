@@ -99,13 +99,15 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 							window: t('Outlook_calendar_sync_window_days', { count: syncWindowDays }),
 						})}
 					</Callout>
-					<ButtonGroup stretch>
-						<Button onClick={changeRoute}>{t('Settings')}</Button>
-						{outlookUrl && (
+					{outlookUrl && (
+						<ButtonGroup stretch>
 							<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
 								{t('Open_Outlook')}
 							</Button>
-						)}
+						</ButtonGroup>
+					)}
+					<ButtonGroup stretch>
+						<Button onClick={changeRoute}>{t('Settings')}</Button>
 						<Button icon='refresh' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 							{t('Sync')}
 						</Button>
