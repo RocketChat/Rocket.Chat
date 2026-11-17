@@ -64,6 +64,7 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 		await UiKitViews.saveView({ _id: view.id, appId, userId, type, view: recorded ? { ...recorded.view, ...view } : view });
 	} catch (error) {
 		logger.error({ msg: 'Could not record a UiKit view', viewId: view.id, appId, err: error });
+		return false;
 	}
 
 	return true;

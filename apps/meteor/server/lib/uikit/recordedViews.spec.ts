@@ -100,6 +100,12 @@ describe('recordInteractionView', () => {
 		);
 	});
 
+	it('does not deliver the interaction when the view cannot be saved', async () => {
+		mockSaveView.mockRejectedValue(new Error('duplicate key'));
+
+		expect(await recordInteractionView({ type: 'modal.open', view: { ...appView } }, 'app', 'user')).toBe(false);
+	});
+
 	it.each([
 		['an interaction with no view', { type: 'errors', errors: {} }, 'user'],
 		['a banner', { type: 'banner.open', view: { id: 'view' } }, 'user'],
