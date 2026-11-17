@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { LayoutContext } from '@rocket.chat/ui-contexts';
+import { EmbeddingContext } from '@rocket.chat/ui-contexts';
 import { renderHook, waitFor } from '@testing-library/react';
 import { createElement, useContext, type ReactNode } from 'react';
 
@@ -22,7 +22,7 @@ jest.mock('./useOpenRoomMutation', () => ({
 }));
 
 const EmbeddedLayout = ({ children }: { children: ReactNode }) =>
-	createElement(LayoutContext.Provider, { value: { ...useContext(LayoutContext), isEmbedded: true } }, children);
+	createElement(EmbeddingContext.Provider, { value: { ...useContext(EmbeddingContext), isEmbedded: true } }, children);
 
 afterEach(() => {
 	Subscriptions.state.replaceAll([]);

@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
@@ -87,7 +87,7 @@ export const useUserInfoActions = ({
 	const videoCall = useVideoCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
-	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
+	const { userToolbox: hiddenActions } = useHiddenActions();
 	const userMediaCall = useUserMediaCallAction(user, rid);
 
 	const userinfoActions = useMemo(

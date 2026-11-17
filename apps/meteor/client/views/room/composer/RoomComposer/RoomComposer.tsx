@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { AllHTMLAttributes } from 'react';
 
 const customStyle = css`
@@ -33,7 +33,7 @@ const customStyle = css`
 `;
 
 const RoomComposer = ({ children, ...props }: Omit<AllHTMLAttributes<HTMLElement>, 'is'>) => {
-	const { isEmbedded } = useLayout();
+	const isEmbedded = useEmbeddedLayout();
 
 	return (
 		<Box is='footer' className={[customStyle, 'rc-message-box', isEmbedded && 'embedded'].filter(Boolean)} {...props}>

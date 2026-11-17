@@ -1,11 +1,12 @@
-import { useAbsoluteUrl, useLayout } from '@rocket.chat/ui-contexts';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 
 export const useMessageLinkClicks = () => {
 	const absoluteUrl = useAbsoluteUrl();
-	const { isEmbedded: embeddedLayout } = useLayout();
+	const embeddedLayout = useEmbeddedLayout();
 
 	useEffect(() => {
 		if (!embeddedLayout) {
