@@ -11,8 +11,8 @@ import { usePeriodSelectorState } from '../../../../components/dashboards/usePer
 import LegendSymbol from '../dataView/LegendSymbol';
 import ChartFrame from '../layout/ChartFrame';
 import ChartWithLegend from '../layout/ChartWithLegend';
+import DashboardColumns from '../layout/DashboardColumns';
 import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
-import MessagesPerChannelColumns from '../layout/MessagesPerChannelColumns';
 import NoDataTile from '../layout/NoDataTile';
 
 const colors = {
@@ -58,8 +58,9 @@ const MessagesPerChannelSection = () => {
 				/>
 			</EngagementDashboardCardFilter>
 
-			<MessagesPerChannelColumns
-				chart={
+			<DashboardColumns
+				gap='x24'
+				start={
 					pie ? (
 						<ChartWithLegend
 							chart={
@@ -131,7 +132,7 @@ const MessagesPerChannelSection = () => {
 						<Skeleton variant='rect' height={300} />
 					)
 				}
-				table={
+				end={
 					<Stack gap='x16'>
 						{table ? <Text fontScale='p1'>{t('Most_popular_channels_top_5')}</Text> : <Skeleton width='50%' />}
 						{table && !table.length && <NoDataTile>{t('Not_enough_data')}</NoDataTile>}

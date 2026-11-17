@@ -6,7 +6,7 @@ import ActiveUsersSection from './ActiveUsersSection';
 import BusiestChatTimesSection from './BusiestChatTimesSection';
 import NewUsersSection from './NewUsersSection';
 import UsersByTimeOfTheDaySection from './UsersByTimeOfTheDaySection';
-import DashboardCardPair from '../layout/DashboardCardPair';
+import DashboardColumns from '../layout/DashboardColumns';
 import EngagementDashboardCard from '../layout/EngagementDashboardCard';
 
 export type UsersTabProps = {
@@ -28,7 +28,8 @@ const UsersTab = ({ timezone }: UsersTabProps) => {
 					<ActiveUsersSection timezone={timezone} />
 				</EngagementDashboardCard>
 			</Stack>
-			<DashboardCardPair
+			<DashboardColumns
+				gap='x16'
 				stacked={!isXxlScreen}
 				start={
 					<EngagementDashboardCard title={t('Users_by_time_of_day')}>
