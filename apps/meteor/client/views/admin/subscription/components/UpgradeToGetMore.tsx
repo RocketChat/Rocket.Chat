@@ -1,11 +1,10 @@
-import { States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid, Stack } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { Children, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard } from '../../../../components/GenericCard';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
-import UpgradeSection from '../layout/UpgradeSection';
 import { PRICING_LINK } from '../utils/links';
 
 export type UpgradeToGetMoreProps = {
@@ -49,35 +48,34 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 	}
 
 	return (
-		<UpgradeSection
-			actions={
-				<ButtonGroup large vertical>
-					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
-						{t('Compare_plans')}
-					</Button>
-					{children}
-				</ButtonGroup>
-			}
-		>
-			<States>
-				<StatesIcon name='rocket' />
-				<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>
-				<StatesSubtitle>{t('UpgradeToGetMore_Subtitle')}</StatesSubtitle>
-			</States>
-			<CardGrid
-				breakpoints={{
-					xs: 4,
-					sm: 4,
-					md: 4,
-					lg: 6,
-					xl: 4,
-				}}
-			>
-				{upgradeModules.map((card, index) => {
-					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
-				})}
-			</CardGrid>
-		</UpgradeSection>
+		<Stack gap='x24'>
+			<div>
+				<States>
+					<StatesIcon name='rocket' />
+					<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>
+					<StatesSubtitle>{t('UpgradeToGetMore_Subtitle')}</StatesSubtitle>
+				</States>
+				<CardGrid
+					breakpoints={{
+						xs: 4,
+						sm: 4,
+						md: 4,
+						lg: 6,
+						xl: 4,
+					}}
+				>
+					{upgradeModules.map((card, index) => {
+						return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
+					})}
+				</CardGrid>
+			</div>
+			<ButtonGroup large vertical>
+				<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
+					{t('Compare_plans')}
+				</Button>
+				{children}
+			</ButtonGroup>
+		</Stack>
 	);
 };
 
