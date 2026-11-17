@@ -226,6 +226,53 @@ it('should handle reconnecting', async () => {
 	jest.useRealTimers();
 });
 
+it('should give up on a socket that never opens and retry', async () => {
+	// A socket whose opening handshake nobody answers.
+	const sockets: { close: () => void }[] = [];
+	class NeverOpeningWebSocket {
+		readyState = 0;
+
+		onopen?: () => void;
+
+		onclose?: () => void;
+
+		onerror?: () => void;
+
+		onmessage?: () => void;
+
+		constructor() {
+			sockets.push(this);
+		}
+
+		close() {
+			this.readyState = 3;
+			this.onclose?.();
+		}
+
+		send() {
+			// never opens, so nothing is sent
+		}
+	}
+
+	jest.useFakeTimers();
+
+	const client = new MinimalDDPClient();
+	connection = ConnectionImpl.create('ws://localhost:1234', NeverOpeningWebSocket as any, client, { retryCount: 1, retryTime: 100 });
+
+	const outcome = connection.connect().catch((error: Error) => error);
+
+	await jest.advanceTimersByTimeAsync(9_999);
+	expect(connection.status).toBe('connecting');
+
+	await jest.advanceTimersByTimeAsync(1);
+	expect(await outcome).toEqual(new Error('Connection closed before the DDP handshake completed'));
+	expect(connection.status).toBe('disconnected');
+
+	await jest.advanceTimersByTimeAsync(100);
+	expect(sockets).toHaveLength(2);
+	expect(connection.status).toBe('connecting');
+});
+
 it('should keep reconnecting while the server stays down', async () => {
 	const client = new MinimalDDPClient();
 	connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: Infinity, retryTime: 100 });

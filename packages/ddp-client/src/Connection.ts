@@ -25,6 +25,9 @@ type RetryOptions = {
 // Caps the backoff so an unlimited retryCount keeps polling a server that is down for a long time.
 const MAX_RETRY_DELAY = 30_000;
 
+// How long a socket may take to open before it is given up for a fresh attempt.
+const OPEN_TIMEOUT = 10_000;
+
 // Exponential, with jitter so the clients a server restart dropped don't all come back on the same tick.
 export const getRetryDelay = (retryTime: number, attempt: number): number =>
 	Math.min(retryTime * 2 ** (attempt - 1), MAX_RETRY_DELAY) * (0.5 + Math.random() / 2);
@@ -193,6 +196,10 @@ export class ConnectionImpl
 
 		this.ws = ws;
 
+		// A handshake nobody answers would otherwise hold the connection until the runtime gives up on its own, which
+		// can take far longer than a new attempt needs; closing it lets onclose schedule that attempt.
+		const openTimer = setTimeout(() => ws.close(), OPEN_TIMEOUT);
+
 		// Build the in-flight promise and publish it on `this.connectPromise`
 		// before emitting any status change, so a synchronous re-entrant
 		// caller (an event listener that calls `connect()`/`reconnect()`)
@@ -201,6 +208,7 @@ export class ConnectionImpl
 			let stopHandshake: (() => void) | undefined;
 
 			ws.onopen = () => {
+				clearTimeout(openTimer);
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
 				};
@@ -269,6 +277,7 @@ export class ConnectionImpl
 			ws.onerror = () => undefined;
 
 			ws.onclose = () => {
+				clearTimeout(openTimer);
 				// The handshake listener belongs to this socket; a later attempt registers its own.
 				stopHandshake?.();
 				// A no-op once the handshake settled the promise.
