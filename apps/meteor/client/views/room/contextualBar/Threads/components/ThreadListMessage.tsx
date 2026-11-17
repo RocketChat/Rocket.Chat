@@ -9,6 +9,7 @@ import {
 	MessageContainerFixed,
 	MessageStatusIndicatorItem,
 	Box,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTimeAgo } from '@rocket.chat/ui-client';
@@ -22,7 +23,6 @@ import ThreadMetricsFollow from '../../../../../components/message/content/Threa
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
 import type { ThreadListMessageSurfaceProps } from '../layout/ThreadListMessageSurface';
 import ThreadListMessageSurface from '../layout/ThreadListMessageSurface';
-import ThreadUnreadBadgeSlot from '../layout/ThreadUnreadBadgeSlot';
 
 export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
@@ -89,12 +89,10 @@ const ThreadListMessage = ({
 				<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
 			</MessageContainer>
 			<MessageContainerFixed>
-				<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
-				{unread && (
-					<ThreadUnreadBadgeSlot>
-						<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
-					</ThreadUnreadBadgeSlot>
-				)}
+				<Stack align='center' gap='x24'>
+					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
+					{unread && <ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />}
+				</Stack>
 			</MessageContainerFixed>
 		</ThreadListMessageSurface>
 	);
