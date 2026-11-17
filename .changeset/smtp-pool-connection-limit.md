@@ -1,5 +1,6 @@
 ---
 '@rocket.chat/meteor': patch
+'@rocket.chat/i18n': patch
 ---
 
-Allow administrators to configure the number of SMTP pool connections per server instance.
+Adds an SMTP pool connection limit setting so administrators can match mail server limits.
