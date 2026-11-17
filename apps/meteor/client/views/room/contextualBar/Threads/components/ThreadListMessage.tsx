@@ -21,8 +21,8 @@ import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
-import type { ThreadListMessageSurfaceProps } from '../layout/ThreadListMessageSurface';
-import ThreadListMessageSurface from '../layout/ThreadListMessageSurface';
+import type { ContextualbarMessageRowProps } from '../../layout/ContextualbarMessageRow';
+import ContextualbarMessageRow from '../../layout/ContextualbarMessageRow';
 
 export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
@@ -41,7 +41,7 @@ export type ThreadListMessageProps = {
 	emoji: IMessage['emoji'];
 	hasDraft?: boolean;
 	ignored?: boolean;
-} & ThreadListMessageSurfaceProps;
+} & ContextualbarMessageRowProps;
 
 const ThreadListMessage = ({
 	_id,
@@ -67,7 +67,7 @@ const ThreadListMessage = ({
 	const formatDate = useTimeAgo();
 
 	return (
-		<ThreadListMessageSurface className={className} {...props}>
+		<ContextualbarMessageRow className={className} {...props}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>
@@ -94,7 +94,7 @@ const ThreadListMessage = ({
 					{unread && <ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />}
 				</Stack>
 			</MessageContainerFixed>
-		</ThreadListMessageSurface>
+		</ContextualbarMessageRow>
 	);
 };
 
