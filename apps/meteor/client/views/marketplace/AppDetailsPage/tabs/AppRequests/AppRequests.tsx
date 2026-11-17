@@ -59,7 +59,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 
 	if (isLoading) {
 		return (
-			<AppDetailsTabContent spaceAbove='x32'>
+			<AppDetailsTabContent>
 				<ContentColumn>
 					<AppRequestsLoading />
 				</ContentColumn>
@@ -69,7 +69,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 
 	return (
 		<Stack grow justify='space-between'>
-			<AppDetailsTabContent spaceAbove='x32'>
+			<AppDetailsTabContent>
 				<ContentColumn>
 					{isSuccess && paginatedAppRequests.data?.length ? (
 						paginatedAppRequests.data.map((request) => (

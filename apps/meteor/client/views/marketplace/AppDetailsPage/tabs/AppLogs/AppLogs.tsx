@@ -111,7 +111,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	return (
 		<>
-			<AppDetailsTabContent spaceAbove='x16' spaceBelow='x16'>
+			<AppDetailsTabContent spaceBelow='x16'>
 				<AppLogsFilter
 					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}

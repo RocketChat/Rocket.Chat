@@ -45,7 +45,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	const columns: TableColumnWidth[] = ['auto', 'auto', 64];
 
 	return (
-		<AppDetailsTabContent spaceAbove='x24' fill>
+		<AppDetailsTabContent fill>
 			{isLoading && <AccordionLoading />}
 			{isError && t('App_not_found')}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
