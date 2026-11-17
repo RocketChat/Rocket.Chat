@@ -64,6 +64,18 @@ describe('Imports', () => {
 			userCredentials = await login(user.username, password);
 		});
 
+		before(() =>
+			withTimeout(async (signal) => {
+				while (!signal.aborted) {
+					const res = await request.get(api('getCurrentImportOperation')).set(credentials).expect(200);
+					if (!['importer_preparing_started', 'importer_importing_files'].includes(res.body.operation?.status)) {
+						return;
+					}
+					await sleep(100);
+				}
+			}, 10_000),
+		);
+
 		after(() => deleteUser(user));
 
 		const readRoutes = ['getCurrentImportOperation', 'getImportProgress', 'getImportFileData', 'import.status'] as const;
