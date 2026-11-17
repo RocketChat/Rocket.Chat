@@ -137,10 +137,7 @@ test.describe.serial('message-mentions', () => {
 			});
 
 			await test.step('show the mentioned user as a mention', async () => {
-				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block [data-uid]')).toHaveAttribute(
-					'data-uid',
-					Users.user1.data._id,
-				);
+				await expect(adminPage.content.lastUserMessage.locator(`[data-uid="${Users.user1.data._id}"]`)).toBeVisible();
 			});
 
 			await test.step('show "Do nothing" action', async () => {

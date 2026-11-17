@@ -2,11 +2,9 @@ import { api } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp, UiKitCoreAppBlockActionPayload } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Messages } from '@rocket.chat/models';
-import { isTruthy } from '@rocket.chat/tools';
 
 import { i18n } from '../../lib/i18n';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
-import { formatMentionList } from '../../lib/messaging/mentions/formatMentionList';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
@@ -37,7 +35,7 @@ export class MentionModule implements IUiKitCoreApp {
 
 		const mentions = retrieveMentionsFromPayload(stringifiedMentions as string);
 
-		const usernames = mentions.map(({ username }) => username).filter(isTruthy);
+		const usernames = mentions.map(({ username }) => username);
 
 		const message = await Messages.findOneById(referenceMessageId, { projection: { _id: 1, tmid: 1 } });
 
@@ -45,7 +43,7 @@ export class MentionModule implements IUiKitCoreApp {
 			throw new Error('Mention bot - Failed to retrieve message information');
 		}
 
-		const joinedUsernames = formatMentionList(usernames, user.language);
+		const joinedUsernames = `@${usernames.join(', @')}`;
 
 		if (actionId === 'dismiss') {
 			void api.broadcast('notify.ephemeralMessage', user._id, room, {
@@ -61,7 +59,7 @@ export class MentionModule implements IUiKitCoreApp {
 		}
 
 		if (actionId === 'add-users') {
-			void addUsersToRoomMethod(user._id, { rid: room, users: usernames }, user);
+			void addUsersToRoomMethod(user._id, { rid: room, users: usernames as string[] }, user);
 			void api.broadcast('notify.ephemeralMessage', user._id, room, {
 				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
 					mentions: joinedUsernames,
