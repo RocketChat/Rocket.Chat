@@ -165,6 +165,7 @@ describe('processDirectEmail', () => {
 		['the user blocked the room', () => findSubscription.resolves({ rid, blocker: true }), replyEmail],
 		['the user is muted in the room', () => findRoom.resolves({ ...room, muted: [replier.username] }), replyEmail],
 		['the room is read-only for the user', () => findRoom.resolves({ ...room, ro: true }), replyEmail],
+		['the sender has no address', () => undefined, () => replyEmail({ from: { value: [{}] } })],
 		['the room refuses new messages', () => beforeSendMessageToRoom.rejects(new Error('error-room-archived')), replyEmail],
 	];
 

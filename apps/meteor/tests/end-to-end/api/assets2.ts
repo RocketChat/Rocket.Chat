@@ -93,8 +93,15 @@ describe('[Assets]', () => {
 			expect(current.body.value).to.deep.equal(previous.body.value);
 		});
 
-		it('should refuse assets.unsetAsset', async () => {
+		it('should refuse assets.unsetAsset and keep the logo', async (t) => {
+			await request.post(api('assets.setAsset')).set(credentials).attach('asset', imgURL).field({ assetName: 'logo' }).expect(200);
+			t.after(() => request.post(api('assets.unsetAsset')).set(credentials).send({ assetName: 'logo' }));
+			const previous = await request.get(api('settings/Assets_logo')).set(credentials).expect(200);
+
 			await request.post(api('assets.unsetAsset')).set(userCredentials).send({ assetName: 'logo' }).expect(403);
+
+			const current = await request.get(api('settings/Assets_logo')).set(credentials).expect(200);
+			expect(current.body.value).to.deep.equal(previous.body.value);
 		});
 	});
 });
