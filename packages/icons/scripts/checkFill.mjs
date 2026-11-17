@@ -10,7 +10,6 @@ import { listFiles, readSource } from './utils.mjs';
 const VIEWBOX = 32;
 const SIZE = 256;
 const SAMPLES = 24;
-const THRESHOLD = 0.1;
 
 const ARITY = { M: 2, L: 2, H: 1, V: 1, C: 6, Z: 0 };
 
@@ -154,7 +153,7 @@ const compareFill = async (source) => {
 		if (!fontFill && svgFill[i]) missing++;
 	}
 
-	return { extra: (extra / total.length) * 100, missing: (missing / total.length) * 100 };
+	return { extra, missing };
 };
 
 const rows = [];
@@ -178,9 +177,9 @@ for (const { name, message } of failures) {
 	console.log(`${'ERROR'.padEnd(6)} ${name}: ${message}`);
 }
 for (const { name, extra, missing } of rows) {
-	const flag = extra > THRESHOLD || missing > THRESHOLD ? 'BROKEN' : 'ok';
+	const flag = extra > 0 || missing > 0 ? 'BROKEN' : 'ok';
 	if (flag === 'BROKEN') broken++;
-	console.log(`${flag.padEnd(6)} extra=${extra.toFixed(2).padStart(6)}%  missing=${missing.toFixed(2).padStart(5)}%  ${name}`);
+	console.log(`${flag.padEnd(6)} extra=${String(extra).padStart(5)} px  missing=${String(missing).padStart(5)} px  ${name}`);
 }
 console.log(`${rows.length + failures.length} evenodd icons checked, ${broken} broken`);
 
