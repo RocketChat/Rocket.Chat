@@ -100,6 +100,25 @@ describe('recordInteractionView', () => {
 		);
 	});
 
+	it('removes private_metadata from the view the user gets, after saving it', async () => {
+		const interaction = { type: 'modal.open', view: { ...appView, private_metadata: 'secret' } };
+
+		await recordInteractionView(interaction, 'app', 'user');
+
+		expect(mockSaveView).toHaveBeenCalledWith(expect.objectContaining({ view: expect.objectContaining({ private_metadata: 'secret' }) }));
+		expect(interaction.view).not.toHaveProperty('private_metadata');
+	});
+
+	it('keeps the recorded private_metadata when an update leaves the field out', async () => {
+		mockFindOneByIdForUser.mockResolvedValue({ view: { ...appView, private_metadata: 's' } });
+		const interaction = { type: 'modal.update', view: { id: 'view', blocks: [] } };
+
+		await recordInteractionView(interaction, 'app', 'user');
+
+		expect(mockSaveView).toHaveBeenCalledWith(expect.objectContaining({ view: expect.objectContaining({ private_metadata: 's' }) }));
+		expect(interaction.view).not.toHaveProperty('private_metadata');
+	});
+
 	it('records an opened banner by its viewId, without the interaction fields', async () => {
 		const interaction = { type: 'banner.open', triggerId: 't', appId: 'app', viewId: 'b1', blocks: [], private_metadata: 'secret' };
 
@@ -112,6 +131,7 @@ describe('recordInteractionView', () => {
 			type: 'banner',
 			view: { appId: 'app', viewId: 'b1', blocks: [], private_metadata: 'secret', hash: 'new-hash' },
 		});
+		expect(interaction).not.toHaveProperty('private_metadata');
 	});
 
 	it('merges a banner update into the recorded banner', async () => {

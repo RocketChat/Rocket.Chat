@@ -73,6 +73,8 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 		const saved = (interaction.type === 'banner.open' ? fields : view) as IUiKitView['view'];
 		// An update may send only the fields that change, as the client merges it into the view it shows.
 		await UiKitViews.saveView({ _id: view[idKey], appId, userId, type, view: { ...recorded?.view, ...saved } });
+		// The app's private data stays on the server; it comes back from the record on submit and close.
+		delete view.private_metadata;
 	} catch (error) {
 		logger.error({ msg: 'Could not record a UiKit view', viewId: view[idKey], appId, err: error });
 		return false;
