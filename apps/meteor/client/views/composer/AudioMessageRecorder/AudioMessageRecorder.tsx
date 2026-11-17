@@ -9,6 +9,7 @@ import { AudioRecorder } from '../../../lib/AudioRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
+let currentRecordingId = 0;
 
 export type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
@@ -23,6 +24,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
 	const isMountedRef = useRef(true);
+	const recordingIdRef = useRef(0);
 
 	const stopRecording = useStableCallback(async () => {
 		if (recordingIntervalRef.current) {
@@ -43,7 +45,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	});
 
 	const handleUnmount = useStableCallback(async () => {
-		if (state === 'recording') {
+		if (state === 'recording' && recordingIdRef.current === currentRecordingId) {
 			await stopRecording();
 		}
 	});
@@ -55,14 +57,22 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 			return;
 		}
 
+		const attemptId = ++currentRecordingId;
+		recordingIdRef.current = attemptId;
+
 		try {
 			await audioRecorder.start();
-			if (!isMountedRef.current) {
-				await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-				chat?.composer?.setRecordingMode(false);
+			if (!isMountedRef.current || recordingIdRef.current !== attemptId) {
+				if (attemptId === currentRecordingId) {
+					await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
+					chat?.composer?.setRecordingMode(false);
+				}
 				return;
 			}
 			chat?.action.performContinuously('recording');
+			if (recordingIntervalRef.current) {
+				clearInterval(recordingIntervalRef.current);
+			}
 			const startTime = new Date();
 			recordingIntervalRef.current = setInterval(() => {
 				const now = new Date();
