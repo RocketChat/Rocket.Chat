@@ -2,8 +2,8 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VoipSoundsContext } from '@rocket.chat/ui-voip';
 import { useMemo, type ReactNode } from 'react';
 
-import { formatVolume } from './CustomSoundProvider/lib';
 import { useUserSoundPreferences } from '../hooks/useUserSoundPreferences';
+import { formatVolume } from './CustomSoundProvider/lib/formatVolume';
 
 export type VoipSoundsProviderProps = {
 	children: ReactNode;

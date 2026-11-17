@@ -20,7 +20,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
 	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
-	const { notificationsSoundVolume, voipRingerVolume } = useUserSoundPreferences();
+	const { notificationsSoundVolume } = useUserSoundPreferences();
 
 	const { data: list } = useQuery({
 		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
@@ -95,21 +95,14 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			stopNewRoom: () => stop(newRoomNotification),
 			stopNewMessage: () => stop(newMessageNotification),
 		};
-		const callSounds = {
-			playRinger: () => play('ringtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playDialer: () => play('dialtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			stopRinger: () => stop('ringtone'),
-			stopDialer: () => stop('dialtone'),
-		};
 		return {
 			list,
 			notificationSounds,
-			callSounds,
 			play,
 			pause,
 			stop,
 		};
-	}, [list, newMessageNotification, newRoomNotification, notificationsSoundVolume, pause, play, stop, voipRingerVolume]);
+	}, [list, newMessageNotification, newRoomNotification, notificationsSoundVolume, pause, play, stop]);
 
 	useEffect(() => {
 		return streamAll('public-info', ([key]) => {

@@ -14,12 +14,6 @@ export type CustomSoundContextValue = {
 	) => StopSound;
 	pause: (sound: ICustomSound['_id']) => void;
 	stop: (sound: ICustomSound['_id']) => void;
-	callSounds: {
-		playRinger: () => StopSound;
-		playDialer: () => StopSound;
-		stopRinger: () => void;
-		stopDialer: () => void;
-	};
 	notificationSounds: {
 		playNewRoom: () => void;
 		playNewRoomLoop: () => void;
@@ -35,12 +29,6 @@ export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	play: () => undefined,
 	pause: () => undefined,
 	stop: () => undefined,
-	callSounds: {
-		playRinger: () => undefined,
-		playDialer: () => undefined,
-		stopRinger: () => undefined,
-		stopDialer: () => undefined,
-	},
 	notificationSounds: {
 		playNewRoom: () => undefined,
 		playNewRoomLoop: () => undefined,
