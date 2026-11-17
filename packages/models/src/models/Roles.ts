@@ -2,7 +2,7 @@ import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/
 import type { IRolesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
-import { Subscriptions, Users } from '../index';
+import { Subscriptions, Users } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {

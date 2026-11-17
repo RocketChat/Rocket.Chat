@@ -60,7 +60,7 @@ export class BusinessHourManager {
 			return;
 		}
 
-		for await (const { _id: businessHourId, validDepartments, invalidDepartments } of bhWithDepartments) {
+		for (const { _id: businessHourId, validDepartments, invalidDepartments } of bhWithDepartments) {
 			if (!invalidDepartments.length) {
 				continue;
 			}
@@ -278,20 +278,22 @@ export class BusinessHourManager {
 			return;
 		}
 		const result = await Promise.allSettled(
-			timezonesNeedingAdjustment.map((businessHour) => {
+			timezonesNeedingAdjustment.flatMap((businessHour) => {
 				const businessHourType = this.getBusinessHourType(businessHour.type);
 				if (!businessHourType) {
-					return;
+					return [];
 				}
 
-				return businessHourType.saveBusinessHour({
-					...businessHour,
-					timezoneName: businessHour.timezone.name,
-					workHours: businessHour.workHours.map((hour) => ({ ...hour, start: hour.start.time, finish: hour.finish.time })) as Record<
-						string,
-						any
-					>[],
-				} as ILivechatBusinessHour & { timezoneName: string });
+				return [
+					businessHourType.saveBusinessHour({
+						...businessHour,
+						timezoneName: businessHour.timezone.name,
+						workHours: businessHour.workHours.map((hour) => ({ ...hour, start: hour.start.time, finish: hour.finish.time })) as Record<
+							string,
+							any
+						>[],
+					} as ILivechatBusinessHour & { timezoneName: string }),
+				];
 			}),
 		);
 		const failed = result.filter((r) => r.status === 'rejected');

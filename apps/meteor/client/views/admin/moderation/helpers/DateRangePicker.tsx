@@ -87,7 +87,7 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates', value, onP
 
 	useEffect(() => {
 		handleOptionClick(defaultSelectedKey);
-	}, []);
+	}, [defaultSelectedKey, handleOptionClick]);
 
 	return (
 		<Select

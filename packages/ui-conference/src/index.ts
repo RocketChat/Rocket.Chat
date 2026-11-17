@@ -3,6 +3,8 @@ export type { ConferenceContextValue, ConferencePanel } from './context/Conferen
 export { OngoingCallsContext, defaultOngoingCallsContextValue, useOngoingCalls } from './context/OngoingCallsContext';
 export type { OngoingCallsContextValue, CallRing } from './context/OngoingCallsContext';
 export { useConferenceChatPanel } from './context/ChatPanelContext';
+export { CallSoundsContext, defaultCallSoundsContextValue, useCallSounds } from './context/CallSoundsContext';
+export type { CallSoundsContextValue } from './context/CallSoundsContext';
 export type {
 	ConferenceActions,
 	ConferenceCall,

@@ -649,7 +649,7 @@ API.v1.get(
 
 		const ourQuery = { prid: room._id };
 
-		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 			sort: sort || { fname: 1 },
 			skip: offset,
 			limit: count,

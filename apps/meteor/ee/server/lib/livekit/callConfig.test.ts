@@ -2,9 +2,8 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-const proxyquire = require('proxyquire');
 
 const findOneById = sinon.stub();
 const canAccessConference = sinon.stub();

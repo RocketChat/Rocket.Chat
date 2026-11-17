@@ -1,4 +1,4 @@
-import { renderHook, act, fireEvent, waitFor } from '@testing-library/react';
+import { renderHook, act, fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { useItemListDrag } from './useItemListDrag';
 import { useItemListNavigation } from './useItemListNavigation';
@@ -27,8 +27,10 @@ const attachNavigation = (ref: (node: HTMLElement | null) => void, list: HTMLEle
 
 const createList = () => {
 	const list = document.createElement('div');
+	const groups: HTMLDivElement[] = [];
 	const rows = ['Projects', 'Clients'].map((key) => {
 		const row = document.createElement('div');
+		groups.push(row);
 		row.dataset.dragKey = key;
 		row.dataset.dragKind = 'group';
 		row.dataset.dragGroup = key;
@@ -41,7 +43,7 @@ const createList = () => {
 		return title;
 	});
 	document.body.appendChild(list);
-	return { list, rows };
+	return { list, rows, groups };
 };
 
 describe('useItemListDrag', () => {
@@ -58,8 +60,8 @@ describe('useItemListDrag', () => {
 		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
 
 		expect(onMove).toHaveBeenCalledWith({ key: 'Projects', kind: 'group', group: 'Projects' }, 'down');
-		await waitFor(() => expect(document.querySelector('[role="status"]')).toHaveTextContent('Projects moved to position 2 of 2'));
-		expect(document.activeElement).toBe(rows[0]);
+		await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Projects moved to position 2 of 2'));
+		expect(rows[0]).toHaveFocus();
 	});
 
 	it('advertises the shortcut only on the rows the keyboard can move', () => {
@@ -92,8 +94,8 @@ describe('useItemListDrag', () => {
 
 		await waitFor(() => expect(onMove).toHaveBeenCalled());
 		await act(async () => undefined);
-		expect(document.querySelector('[role="status"]')).toBeEmptyDOMElement();
-		expect(document.activeElement).toBe(rows[0]);
+		expect(screen.getByRole('status')).toBeEmptyDOMElement();
+		expect(rows[0]).toHaveFocus();
 	});
 
 	it('ignores the shortcut while a move is still saving', async () => {
@@ -121,9 +123,9 @@ describe('useItemListDrag', () => {
 	});
 
 	it('leaves the shortcut to text fields inside a row', () => {
-		const { list } = createList();
+		const { list, groups } = createList();
 		const input = document.createElement('input');
-		list.querySelector('[data-drag-key="Projects"]')!.appendChild(input);
+		groups[0].appendChild(input);
 		const onMove = jest.fn();
 
 		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
@@ -150,11 +152,14 @@ describe('useItemListDrag', () => {
 		act(() => {
 			window.dispatchEvent(new MouseEvent('pointermove', { clientX: 0, clientY: 20 }));
 		});
+		// oxlint-disable-next-line testing-library/no-node-access -- the drag shield is an inert overlay with no accessible query
 		expect(document.querySelector('.rcx-item-drag-shield')).toBeInTheDocument();
 
 		act(() => detach?.());
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the drag shield is an inert overlay with no accessible query
 		expect(document.querySelector('.rcx-item-drag-shield')).not.toBeInTheDocument();
+		// oxlint-disable-next-line testing-library/no-node-access -- the drag preview is an inert overlay with no accessible query
 		expect(document.querySelector('.rcx-item-drag-preview')).not.toBeInTheDocument();
 		expect(result.current.source).toBeUndefined();
 	});

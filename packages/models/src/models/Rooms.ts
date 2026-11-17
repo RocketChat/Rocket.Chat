@@ -29,7 +29,7 @@ import type {
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 
-import { Subscriptions } from '../index';
+import { Subscriptions } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 import type { Updater } from '../updater';
