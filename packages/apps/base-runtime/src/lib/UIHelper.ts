@@ -22,21 +22,22 @@ export class UIHelper {
 	 * @returns the array of block with the ids properties assigned
 	 */
 	public static assignIds(blocks: Array<IBlock | LayoutBlock>, appId: string): Array<IBlock | LayoutBlock> {
-		blocks.forEach((block: (IBlock | LayoutBlock) & { appId?: string; blockId?: string; elements?: Array<any> }) => {
-			if (!block.appId) {
-				block.appId = appId;
-			}
-			if (!block.blockId) {
-				block.blockId = randomUUID();
-			}
-			if (block.elements) {
-				block.elements.forEach((element) => {
-					if (!element.actionId) {
+		blocks.forEach(
+			(block: (IBlock | LayoutBlock) & { appId?: string; blockId?: string; elements?: Array<any>; accessory?: any; element?: any }) => {
+				if (!block.appId) {
+					block.appId = appId;
+				}
+				if (!block.blockId) {
+					block.blockId = randomUUID();
+				}
+				// Elements sit in `elements` (actions, context), `accessory` (section) or `element` (input).
+				[...(block.elements ?? []), block.accessory, block.element].forEach((element) => {
+					if (element && typeof element === 'object' && !element.actionId) {
 						element.actionId = randomUUID();
 					}
 				});
-			}
-		});
+			},
+		);
 
 		return blocks;
 	}
