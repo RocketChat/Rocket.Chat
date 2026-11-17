@@ -1,4 +1,4 @@
-import { isExchangeError, logger } from '@rocket.chat/exchange';
+import { getExchangeProvider, isExchangeError, isServerSyncEnabled, logger, syncCalendarForUser } from '@rocket.chat/exchange';
 import type { ExchangeErrorCode } from '@rocket.chat/exchange';
 import {
 	validateBadRequestErrorResponse,
@@ -9,8 +9,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
-import { getExchangeProvider, isServerSyncEnabled } from '../lib/exchange/ExchangeProviderRegistry';
-import { syncCalendarForUser } from '../lib/exchange/sync/calendar/syncCalendarForUser';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'not-configured': 'Exchange_Test_Connection_not_configured',

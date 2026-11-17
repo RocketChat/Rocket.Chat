@@ -1,8 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { isExchangeError, logger } from '@rocket.chat/exchange';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { getExchangeProvider, getCalendarSyncWindow, isServerSyncEnabled } from '../../ExchangeProviderRegistry';
+import { isExchangeError } from '../../errors';
+import { logger } from '../../logger';
+import { getExchangeProvider, getCalendarSyncWindow, isServerSyncEnabled } from '../../registry';
 import { forEachWithConcurrency } from '../forEachWithConcurrency';
 import { MAILBOX_CONCURRENCY } from '../limits';
 import { iterateMailboxCandidates } from '../resolveMailboxes';

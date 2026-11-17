@@ -1,10 +1,10 @@
 import type { IExchangeSyncLease, IUser } from '@rocket.chat/core-typings';
-import { logger } from '@rocket.chat/exchange';
 import { ExchangeSyncLease } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { MongoServerError } from 'mongodb';
 
-import { sleep } from '../../../../../lib/utils/sleep';
+import { logger } from '../logger';
+import { sleep } from '../sleep';
 
 /** A lease left behind by an instance that died frees itself after it */
 const LEASE_MS = 15 * 60 * 1000;

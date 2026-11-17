@@ -16,8 +16,8 @@ jest.mock('@rocket.chat/models', () => ({
 		countActiveLeases: (...args: unknown[]) => countActiveLeases(...args),
 	},
 }));
-jest.mock('../../../../../lib/utils/sleep', () => ({ sleep: (...args: unknown[]) => sleep(...args) }));
-jest.mock('@rocket.chat/exchange', () => ({ logger: { warn: jest.fn() } }));
+jest.mock('../sleep', () => ({ sleep: (...args: unknown[]) => sleep(...args) }));
+jest.mock('../logger', () => ({ logger: { warn: jest.fn() } }));
 
 describe('acquireSyncLease', () => {
 	beforeEach(() => {

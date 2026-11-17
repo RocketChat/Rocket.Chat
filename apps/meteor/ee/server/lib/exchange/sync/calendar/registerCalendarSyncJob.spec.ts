@@ -22,8 +22,11 @@ jest.mock('@rocket.chat/cron', () => ({
 		remove: (...args: unknown[]) => remove(...args),
 	},
 }));
-jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn() }));
-jest.mock('../syncLease', () => ({ whenSyncsIdle: (...args: unknown[]) => whenSyncsIdle(...args) }));
+jest.mock('@rocket.chat/exchange', () => ({
+	logger: { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() },
+	runCalendarSync: jest.fn(),
+	whenSyncsIdle: (...args: unknown[]) => whenSyncsIdle(...args),
+}));
 jest.mock('@rocket.chat/core-services', () => ({
 	Calendar: { discardUpcomingImportedBySource: (...args: unknown[]) => discardUpcomingImportedBySource(...args) },
 }));

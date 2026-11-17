@@ -1,8 +1,8 @@
-import { ExchangeError } from '@rocket.chat/exchange';
 import { MongoServerError } from 'mongodb';
 
 import { syncCalendarForUser } from './syncCalendarForUser';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
+import { ExchangeError } from '../../errors';
 
 const findOneById = jest.fn();
 const syncCalendarWindow = jest.fn();
@@ -25,7 +25,7 @@ jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
 }));
 jest.mock('../resolveMailboxes', () => ({ resolveMailbox: (...args: unknown[]) => resolveMailbox(...args) }));
-jest.mock('../../ExchangeProviderRegistry', () => ({
+jest.mock('../../registry', () => ({
 	getExchangeProvider: () => getExchangeProvider(),
 	getCalendarSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
 }));

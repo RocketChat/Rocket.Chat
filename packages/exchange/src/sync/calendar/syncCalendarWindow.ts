@@ -1,10 +1,14 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { CalendarBatchResult } from '@rocket.chat/core-services';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
-import { isExchangeError, logger, scrubText } from '@rocket.chat/exchange';
-import type { IExchangeProvider, DateRange, ExchangeEventUpsert } from '@rocket.chat/exchange';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
+
+import type { IExchangeProvider } from '../../definition/IExchangeProvider';
+import { isExchangeError } from '../../errors';
+import { logger } from '../../logger';
+import { scrubText } from '../../scrub';
+import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
 
 export const MAX_EVENT_PAGES = 50;
 

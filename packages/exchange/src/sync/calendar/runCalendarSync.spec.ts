@@ -1,7 +1,7 @@
-import { ExchangeError } from '@rocket.chat/exchange';
 import { MongoServerError } from 'mongodb';
 
 import { runCalendarSync } from './runCalendarSync';
+import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
 
@@ -25,7 +25,7 @@ jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
 }));
 jest.mock('../resolveMailboxes', () => ({ iterateMailboxCandidates: () => candidates() }));
-jest.mock('../../ExchangeProviderRegistry', () => ({
+jest.mock('../../registry', () => ({
 	getExchangeProvider: () => getExchangeProvider(),
 	getCalendarSyncWindow: (...args: unknown[]) => getCalendarSyncWindow(...args),
 	isServerSyncEnabled: () => isServerSyncEnabled(),

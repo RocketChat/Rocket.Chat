@@ -1,8 +1,15 @@
-import { ExchangeError, EwsTransport, EwsTransportPool, ExchangeEwsProvider, MicrosoftGraphProvider, logger } from '@rocket.chat/exchange';
-import type { IExchangeProvider, DateRange, EwsTransportConfig } from '@rocket.chat/exchange';
-import { startOfDayAt } from '@rocket.chat/tools';
+import {
+	EwsTransport,
+	EwsTransportPool,
+	ExchangeEwsProvider,
+	MAILBOX_CONCURRENCY,
+	MicrosoftGraphProvider,
+	logger,
+	setCalendarSyncWindowDays,
+	setExchangeProvider,
+} from '@rocket.chat/exchange';
+import type { EwsTransportConfig, IExchangeProvider } from '@rocket.chat/exchange';
 
-import { MAILBOX_CONCURRENCY } from './sync/limits';
 import { settings } from '../../../../server/settings';
 import { getCalendarSyncWindowDays } from '../../../lib/exchange/calendarSyncSchedule';
 
@@ -22,8 +29,6 @@ const WATCHED_SETTINGS = [
 	'Exchange_EWS_CA_Cert',
 	'Exchange_EWS_Reject_Unauthorized',
 ];
-
-let current: IExchangeProvider | undefined;
 
 const buildExchangeProvider = (): IExchangeProvider | undefined => {
 	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
@@ -64,46 +69,20 @@ const buildExchangeProvider = (): IExchangeProvider | undefined => {
 	}
 };
 
-export const getExchangeProvider = (): IExchangeProvider => {
-	if (!current) {
-		throw new ExchangeError('not-configured', 'Server-to-server Exchange sync is not configured');
-	}
+export const registerExchangeProviderWatchers = () => {
+	setCalendarSyncWindowDays(() => getCalendarSyncWindowDays(settings.get<number>('Exchange_Calendar_Sync_Window_Days')));
 
-	return current;
-};
+	return settings.watchMultiple(WATCHED_SETTINGS, () => {
+		let provider: IExchangeProvider | undefined;
 
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
-
-/**
- * Starts at the mailbox owner's own midnight, the same day `calendar-events.list` reports on, so an event
- * that already happened today is still refreshed rather than left behind. Both bounds land on a day
- * boundary, so the window is identical for every run of the same day, which is what makes a Graph delta
- * link reusable.
- */
-export const getCalendarSyncWindow = (from: Date = new Date(), utcOffset?: number): DateRange => {
-	const days = getCalendarSyncWindowDays(settings.get<number>('Exchange_Calendar_Sync_Window_Days'));
-
-	const start = startOfDayAt(from, utcOffset);
-
-	const end = new Date(start.getTime() + days * DAY_IN_MS);
-
-	return { start, end };
-};
-
-export const isServerSyncEnabled = (): boolean => current !== undefined;
-
-export const registerExchangeProviderWatchers = () =>
-	settings.watchMultiple(WATCHED_SETTINGS, () => {
 		try {
-			current = buildExchangeProvider();
+			provider = buildExchangeProvider();
 		} catch (err) {
-			current = undefined;
 			logger.error({ msg: 'Could not build the Exchange provider from the current settings', err });
 		}
 
-		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
-	});
+		setExchangeProvider(provider);
 
-export const detachExchangeProvider = (): void => {
-	current = undefined;
+		logger.debug({ msg: 'Exchange provider rebuilt', provider: provider?.id ?? 'none' });
+	});
 };

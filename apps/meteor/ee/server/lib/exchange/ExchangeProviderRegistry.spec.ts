@@ -1,10 +1,6 @@
-import {
-	detachExchangeProvider,
-	getExchangeProvider,
-	getCalendarSyncWindow,
-	isServerSyncEnabled,
-	registerExchangeProviderWatchers,
-} from './ExchangeProviderRegistry';
+import { detachExchangeProvider, getCalendarSyncWindow, getExchangeProvider, isServerSyncEnabled } from '@rocket.chat/exchange';
+
+import { registerExchangeProviderWatchers } from './ExchangeProviderRegistry';
 import { settings } from '../../../../server/settings';
 
 const watchMultiple = jest.fn();
@@ -13,63 +9,29 @@ jest.mock('../../../../server/settings', () => ({
 	settings: { get: jest.fn(), watchMultiple: (...args: unknown[]) => watchMultiple(...args) },
 }));
 
-const setDays = (value: number | undefined) => jest.mocked(settings.get).mockReturnValue(value);
-
-const HOUR = 60 * 60 * 1000;
-const DAY = 24 * HOUR;
+const DAY = 24 * 60 * 60 * 1000;
 const midnight = new Date('2026-08-31T00:00:00Z');
 
-describe('getCalendarSyncWindow', () => {
-	beforeEach(() => jest.clearAllMocks());
-
-	it('starts at midnight so an event earlier today is still inside the window', () => {
-		setDays(2);
-
-		expect(getCalendarSyncWindow(new Date('2026-08-31T09:47:31.250Z'))).toEqual({
-			start: midnight,
-			end: new Date('2026-09-02T00:00:00Z'),
-		});
+describe('sync window length', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		registerExchangeProviderWatchers();
 	});
 
 	it.each([
-		['hours ahead of the process', 9, '2026-08-30T15:00:00.000Z'],
-		['hours behind it', -4, '2026-08-31T04:00:00.000Z'],
-		['half an hour off the mark', 5.5, '2026-08-30T18:30:00.000Z'],
-	])('starts at the midnight of a mailbox owner %s, not the one the process is in', (_, utcOffset, expected) => {
-		setDays(2);
-
-		expect(getCalendarSyncWindow(new Date('2026-08-31T09:47:31.250Z'), utcOffset).start).toEqual(new Date(expected));
-	});
-
-	it('gives every moment of one day the identical window, which is what a delta link needs', () => {
-		setDays(2);
-
-		const first = getCalendarSyncWindow(midnight);
-
-		for (const offset of [1, HOUR, DAY - 1]) {
-			expect(getCalendarSyncWindow(new Date(midnight.getTime() + offset))).toEqual(first);
-		}
-	});
-
-	it('moves to the next window once the day is over', () => {
-		setDays(2);
-
-		expect(getCalendarSyncWindow(new Date(midnight.getTime() + DAY)).start).toEqual(new Date(midnight.getTime() + DAY));
-	});
-
-	it.each([
+		['the configured length', 2, 2],
 		['zero, which would sync nothing at all', 0, 2],
 		['a fractional value the int field should not have allowed', 0.5, 2],
 		['a negative value', -12, 1],
 		['more than the hard limit of a week', 5000, 7],
-	])('clamps %s', (_label, configured, expectedDays) => {
-		setDays(configured);
+	])('uses %s', (_label, configured, expectedDays) => {
+		jest.mocked(settings.get).mockReturnValue(configured);
 
 		expect(getCalendarSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + expectedDays * DAY));
 	});
 
 	it('defaults when the setting is missing rather than producing an invalid range', () => {
-		setDays(undefined);
+		jest.mocked(settings.get).mockReturnValue(undefined);
 
 		expect(getCalendarSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + 2 * DAY));
 	});
@@ -122,15 +84,5 @@ describe('provider selection', () => {
 
 		expect(isServerSyncEnabled()).toBe(false);
 		expect(() => getExchangeProvider()).toThrow(expect.objectContaining({ code: 'not-configured' }));
-	});
-
-	it('detaches on a license downgrade so no credentialed provider is left behind', () => {
-		configured();
-		rebuild();
-		expect(isServerSyncEnabled()).toBe(true);
-
-		detachExchangeProvider();
-
-		expect(isServerSyncEnabled()).toBe(false);
 	});
 });

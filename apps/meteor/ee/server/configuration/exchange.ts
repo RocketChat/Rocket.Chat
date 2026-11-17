@@ -1,7 +1,8 @@
 import { Calendar } from '@rocket.chat/core-services';
+import { detachExchangeProvider } from '@rocket.chat/exchange';
 import { License } from '@rocket.chat/license';
 
-import { detachExchangeProvider, registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
+import { registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
 import { registerCalendarSyncJob } from '../lib/exchange/sync/calendar/registerCalendarSyncJob';
 import { addSettings } from '../settings/exchange';
 

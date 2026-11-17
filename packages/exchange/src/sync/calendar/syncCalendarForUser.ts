@@ -1,12 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { ExchangeError } from '@rocket.chat/exchange';
 import { Users } from '@rocket.chat/models';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
 import { resolveMailbox } from '../resolveMailboxes';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
 import { syncCalendarWindow } from './syncCalendarWindow';
-import { getExchangeProvider, getCalendarSyncWindow } from '../../ExchangeProviderRegistry';
+import { ExchangeError } from '../../errors';
+import { getExchangeProvider, getCalendarSyncWindow } from '../../registry';
 import { acquireSyncLease } from '../syncLease';
 
 export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSyncOutcome> => {

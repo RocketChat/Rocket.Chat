@@ -1,13 +1,11 @@
 import { Calendar } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
-import { logger } from '@rocket.chat/exchange';
+import { logger, runCalendarSync, whenSyncsIdle } from '@rocket.chat/exchange';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 
-import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { getCalendarSyncIntervalHours } from '../../../../../lib/exchange/calendarSyncSchedule';
-import { whenSyncsIdle } from '../syncLease';
 
 export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
 

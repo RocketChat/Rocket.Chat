@@ -1,7 +1,7 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { logger } from '@rocket.chat/exchange';
 
+import { logger } from '../../logger';
 import { forEachWithConcurrency } from '../forEachWithConcurrency';
 import { PRESENCE_REFRESH_CONCURRENCY } from '../limits';
 
