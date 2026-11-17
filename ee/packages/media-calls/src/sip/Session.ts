@@ -146,11 +146,7 @@ export class SipServerSession {
 			},
 		});
 
-		if (res.status === 202) {
-			logger.debug({ msg: 'REFER was accepted', method: 'SipServerSession.sendReferRequest', ...params });
-		} else {
-			logger.debug({ msg: 'REFER status code', statusCode: res.status, method: 'SipServerSession.sendReferRequest', ...params });
-		}
+		logger.debug({ msg: 'REFER status code', statusCode: res.status, method: 'SipServerSession.sendReferRequest', ...params });
 
 		return res.status;
 	}

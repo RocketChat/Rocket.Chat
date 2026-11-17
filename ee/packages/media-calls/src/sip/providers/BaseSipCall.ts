@@ -405,6 +405,10 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			if (referStatus === 603) {
 				throw new Error('sip-refer-declined');
 			}
+
+			if (referStatus >= 300) {
+				throw new Error('sip-refer-failed');
+			}
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processTransferredCall', err, callId: call._id, type: this.constructor.name });
 			if (!call.ended) {
