@@ -1,9 +1,9 @@
 import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { serverFetch } from '@rocket.chat/server-fetch';
 
-import { sleep } from '../../../../../lib/utils/sleep';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
+import { sleep } from '../sleep';
 
 /**
  * Retry policy for Microsoft Graph

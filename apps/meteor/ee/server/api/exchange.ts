@@ -1,3 +1,5 @@
+import { isExchangeError, logger } from '@rocket.chat/exchange';
+import type { ExchangeErrorCode } from '@rocket.chat/exchange';
 import {
 	validateBadRequestErrorResponse,
 	ajv,
@@ -8,9 +10,6 @@ import {
 
 import { API } from '../../../server/api/api';
 import { getExchangeProvider, isServerSyncEnabled } from '../lib/exchange/ExchangeProviderRegistry';
-import type { ExchangeErrorCode } from '../lib/exchange/errors';
-import { isExchangeError } from '../lib/exchange/errors';
-import { logger } from '../lib/exchange/logger';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'not-configured': 'Exchange_Test_Connection_not_configured',

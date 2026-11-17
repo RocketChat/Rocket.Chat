@@ -1,6 +1,6 @@
-import { sleep } from '../../../../../lib/utils/sleep';
 import { ExchangeError, isExchangeError } from '../errors';
 import { logger } from '../logger';
+import { sleep } from '../sleep';
 
 /**
  * Retry policy for EWS, under the same bounds as Graph's. Exchange reports throttling inside the SOAP body as often as in the

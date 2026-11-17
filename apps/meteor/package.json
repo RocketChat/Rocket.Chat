@@ -109,6 +109,7 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/ddp-server": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",
+		"@rocket.chat/exchange": "workspace:^",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/federation-matrix": "workspace:^",
 		"@rocket.chat/federation-sdk": "0.9.1",

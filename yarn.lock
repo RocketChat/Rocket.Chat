@@ -9059,6 +9059,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/exchange@workspace:^, @rocket.chat/exchange@workspace:packages/exchange":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/exchange@workspace:packages/exchange"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/ntlm": "workspace:^"
+    "@rocket.chat/server-fetch": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@xmldom/xmldom": "npm:~0.8.15"
+    jest: "npm:~30.5.2"
+    typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/favicon@workspace:^, @rocket.chat/favicon@workspace:packages/favicon":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
@@ -9825,6 +9840,7 @@ __metadata:
     "@rocket.chat/ddp-server": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
+    "@rocket.chat/exchange": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.9.1"

@@ -1,10 +1,6 @@
-import type { IExchangeProvider } from './definition/IExchangeProvider';
-import type { DateRange } from './definition/types';
-import { ExchangeError } from './errors';
-import { EwsTransport } from './ews/EwsTransport';
-import { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
-import { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';
-import { logger } from './logger';
+import { ExchangeError, EwsTransport, ExchangeEwsProvider, MicrosoftGraphProvider, logger } from '@rocket.chat/exchange';
+import type { IExchangeProvider, DateRange } from '@rocket.chat/exchange';
+
 import { settings } from '../../../../server/settings';
 
 const WATCHED_SETTINGS = [
