@@ -2,22 +2,22 @@
 
 ## What the feature does
 
-Until 10.0, Rocket.Chat could show a user their Outlook calendar only if that user signed in to Exchange
-themselves, from the Rocket.Chat Desktop App, with their own credentials. Coverage was therefore whatever
-each person happened to do. Someone who never opened that dialog had no calendar, no busy status and no
+Rocket.Chat can already show a user their Outlook calendar, but only if that user signs in to Exchange
+themselves, from the Rocket.Chat Desktop App, with their own credentials. Coverage is therefore whatever
+each person happened to do. Someone who never opened that dialog has no calendar, no busy status and no
 meeting reminders.
 
-Three limits came with that model, and the first two were not gaps but walls:
+Three limits come with that model, and the first two are not gaps but walls:
 
-- **It was the desktop app only.** Someone who worked from the browser or the phone had no way to connect
-  their calendar at all, and saw only whatever their own desktop app had already brought in.
-- **Each user had to type their domain username and password into it.** Plenty of managed fleets cannot
+- **It is the desktop app only.** Someone who works from the browser or the phone has no way to connect
+  their calendar at all, and sees only whatever their own desktop app has already brought in.
+- **Each user has to type their domain username and password into it.** Plenty of managed fleets cannot
   do that: people sign in with single sign-on or a smart card and do not know their own password, or
   policy forbids entering domain credentials in anything but Windows itself.
-- **Microsoft 365 workspaces were out.** The desktop app authenticated the way an on-premises Exchange
+- **Microsoft 365 workspaces are out.** The desktop app authenticates the way an on-premises Exchange
   Server expects, which Exchange Online no longer accepts.
 
-This integration replaced the per-user sign-in with **one connection an administrator configures once**.
+This integration replaces the per-user sign-in with **one connection an administrator configures once**.
 The workspace holds the credentials, Exchange is read on behalf of each user, and nobody is ever asked to
 authenticate to Outlook again.
 
@@ -39,10 +39,12 @@ integrations:
 Everything lives under **Admin → Outlook Calendar**, in a settings card named **Microsoft Exchange**. It
 requires a premium license that includes the `outlook-calendar` module.
 
-1. **Pick where Exchange lives.** `Exchange Online (Microsoft Graph)` for Microsoft 365, or
+1. **Pick the mode.** `Legacy` keeps today's behaviour, where each user signs in from the desktop app.
+   `Server-to-server` switches to the admin-configured connection.
+2. **Pick where Exchange lives.** `Exchange Online (Microsoft Graph)` for Microsoft 365, or
    `Exchange on-premises (EWS)` for an Exchange Server the organisation runs itself. The fields change
    with the choice, so only the ones that apply to that world are shown.
-2. **Fill in the credentials, and grant them the access they need.** This is the part that is done on
+3. **Fill in the credentials, and grant them the access they need.** This is the part that is done on
    Microsoft's side rather than here, and the connection cannot work until it is.
    - **Graph**: the tenant, client id and client secret of an app registration in Microsoft Entra ID. It
      needs **application** permissions with admin consent, not delegated ones, because it reads mailboxes
@@ -53,7 +55,7 @@ requires a premium license that includes the `outlook-calendar` module.
      certificate of a private certificate authority. The service account needs the
      **ApplicationImpersonation** role, scoped to the mailboxes it should reach, because it reads each
      user's mailbox on their behalf rather than its own.
-3. **Press Test connection.** It reports what is wrong in the admin's terms: credentials rejected,
+4. **Press Test connection.** It reports what is wrong in the admin's terms: credentials rejected,
    settings incomplete, the endpoint not reachable, impersonation not granted. It does not report success
    until a complete round trip has happened.
 
@@ -75,8 +77,8 @@ Nothing to set up, which is the point.
 - **Their status turns busy while a meeting is running**, and goes back on its own when it ends. A meeting
   marked Free in Outlook does not make them busy.
 - **Reminders arrive** for upcoming meetings, if they have calendar notifications enabled.
-- **No Outlook sign-in is ever requested.** The desktop app no longer offers one, because the workspace
-  reads their calendar on their behalf.
+- **No Outlook sign-in is ever requested.** In server-to-server mode the desktop app stops offering it,
+  because the workspace no longer needs anything from the user to read their calendar.
 - **An unknown number resolves to a name.** When a call comes in from a number saved in their Outlook
   contacts, the caller shows as that person, and the call history shows names instead of digits.
 - **Their Outlook contacts are searchable in Rocket.Chat**, alongside contacts they create by hand here.
@@ -92,23 +94,11 @@ shared across the workspace, and no administrator view of them exists.
 
 - **Events a user created in Rocket.Chat are never touched** by any of this. They stay editable and
   deletable as before.
+- **The legacy desktop integration keeps working** for workspaces that stay in `Legacy` mode. Switching
+  modes is the only thing that decides which one is in charge, and the two can never both write.
 - **Events that came from Outlook cannot be edited or deleted in Rocket.Chat.** The sync owns them: it
   re-reads the window on every run, so an edit would silently revert and a deletion would come straight
   back. They are changed in Outlook.
-
-## What 10.0 removed
-
-The per-user desktop integration is gone, and with it the `Exchange_Mode` setting that chose between the
-two, `Outlook_Calendar_Exchange_Url`, `Outlook_Calendar_Url_Mapping` and `Calendar_MeetingUrl_Regex`, and the
-Exchange URL the server used to hand the desktop app. Enabling the integration now means the server owns the
-calendar. Two things stay:
-
-- **`calendar-events.import` remains** for anything outside Rocket.Chat that wants to push events in. It is
-  refused while the integration is enabled, because then the sync owns the calendar and an import could
-  only duplicate what it writes.
-- **Events the desktop app had already imported stay** as the user's own events. They are editable and
-  deletable, and nothing refreshes them, so at most the day of the upgrade can list one of them beside its
-  server-synced twin.
 
 ## What ships when
 
@@ -117,7 +107,6 @@ calendar. Two things stay:
 | 1 | The connection itself: both providers, the admin settings, Test connection | Nothing yet. Only an administrator sees anything, and only the connection test |
 | 2 | Calendar sync, on a schedule and on demand, and busy presence | Meetings and busy status appear without signing in |
 | 3 | Personal contacts, the contacts list, caller identification | Incoming calls and call history show names, contacts become searchable |
-| 10.0 | Removes the legacy per-user desktop integration | The desktop app stops asking for Exchange credentials |
 
 ## Two worlds, two mechanisms
 
