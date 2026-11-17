@@ -93,3 +93,32 @@ it('opens the url only after the user confirms', async () => {
 	expect(open).toHaveBeenCalledWith('https://rocket.chat', '_blank', 'noopener');
 	open.mockRestore();
 });
+
+
+it('drops the action when the element changes while the dialog is open', async () => {
+	const action = jest.fn();
+	const make = (actionId: string): UiKit.ButtonElement => ({
+		type: 'button',
+		appId: 'test',
+		blockId: 'test',
+		actionId,
+		text: { type: 'plain_text', text: 'Delete' },
+		confirm,
+	});
+	const ui = (actionId: string) => (
+		<MockedServerContext>
+			<UiKitContext.Provider value={{ action, values: {} }}>
+				<ButtonElement index={0} block={make(actionId)} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
+			</UiKitContext.Provider>
+		</MockedServerContext>
+	);
+	const { rerender } = render(ui('one'));
+
+	await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+	expect(await screen.findByText('This cannot be undone')).toBeInTheDocument();
+	rerender(ui('two'));
+	await userEvent.click(screen.getByRole('button', { name: 'Yes, delete' }));
+
+	await waitFor(() => expect(screen.queryByText('This cannot be undone')).not.toBeInTheDocument());
+	expect(action).not.toHaveBeenCalled();
+});

@@ -1,7 +1,7 @@
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { KeyboardEvent } from 'react';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useStringFromTextObject } from './useStringFromTextObject';
 import { UiKitContext } from '../contexts/UiKitContext';
@@ -138,15 +138,29 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		);
 	});
 
-	const isAccepted = async () =>
-		!confirm ||
-		askConfirmation({
+	const identity = JSON.stringify([actionId, blockId, viewId]);
+	const identityRef = useRef<string | undefined>(identity);
+	useEffect(() => {
+		identityRef.current = identity;
+		return () => {
+			identityRef.current = undefined;
+		};
+	}, [identity]);
+
+	const isAccepted = async () => {
+		if (!confirm) {
+			return true;
+		}
+		const asked = identityRef.current;
+		const accepted = await askConfirmation({
 			title: fromTextObjectToString(confirm.title) ?? '',
 			text: fromTextObjectToString(confirm.text) ?? '',
 			confirm: fromTextObjectToString(confirm.confirm) ?? '',
 			deny: fromTextObjectToString(confirm.deny) ?? '',
 			style: confirm.style,
 		});
+		return accepted && identityRef.current === asked;
+	};
 
 	const confirmedAction = useStableCallback(async (e: any) => {
 		if (await isAccepted()) {
