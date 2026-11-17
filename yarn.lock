@@ -4917,6 +4917,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mediapipe/tasks-vision@npm:0.10.14":
+  version: 0.10.14
+  resolution: "@mediapipe/tasks-vision@npm:0.10.14"
+  checksum: 10/59bd0e5da5c14f2b449721c91e2d81c0602ba51222231455418bec7860281299021088db6e384d696093769fbad62b2a19818582714cd8a4e174d3561c322861
+  languageName: node
+  linkType: hard
+
 "@mongodb-js/saslprep@npm:^1.1.9":
   version: 1.6.0
   resolution: "@mongodb-js/saslprep@npm:1.6.0"
@@ -8832,6 +8839,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/background-effects-assets@workspace:^, @rocket.chat/background-effects-assets@workspace:packages/background-effects-assets":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/background-effects-assets@workspace:packages/background-effects-assets"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/base64@workspace:^, @rocket.chat/base64@workspace:packages/base64":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/base64@workspace:packages/base64"
@@ -9792,6 +9805,7 @@ __metadata:
     "@hono/node-server": "npm:2.1.5"
     "@kaciras/deasync": "npm:^1.1.0"
     "@livekit/components-react": "npm:2.9.23"
+    "@mediapipe/tasks-vision": "npm:0.10.14"
     "@nivo/bar": "npm:0.88.0"
     "@nivo/core": "npm:0.88.0"
     "@nivo/heatmap": "npm:0.88.0"
@@ -9814,6 +9828,7 @@ __metadata:
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/authorization": "workspace:^"
+    "@rocket.chat/background-effects-assets": "workspace:^"
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
