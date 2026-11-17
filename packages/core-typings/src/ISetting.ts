@@ -27,7 +27,15 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset | ISettingRange;
+export type ISetting =
+	| ISettingBase
+	| ISettingEnterprise
+	| ISettingColor
+	| ISettingCode
+	| ISettingAction
+	| ISettingAsset
+	| ISettingInt
+	| ISettingRange;
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
@@ -151,6 +159,12 @@ export interface ISettingAsset extends ISettingBase {
 	value: { url?: string; defaultUrl?: string };
 	fileConstraints: IRocketChatAssetConstraint;
 	asset: string;
+}
+
+interface ISettingInt extends ISettingBase {
+	type: 'int';
+	minValue?: number;
+	maxValue?: number;
 }
 
 interface ISettingRange extends ISettingBase {
