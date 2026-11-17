@@ -1,6 +1,6 @@
 import { Sidebar as FuselageSidebar } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEmbedding, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,9 +15,9 @@ const Sidebar = () => {
 	const sidebarViewMode = useUserPreference<string>('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const {
-		isEmbedded,
 		sidebar: { shouldToggle },
 	} = useLayout();
+	const { isEmbedded } = useEmbedding();
 
 	return (
 		<FuselageSidebar

@@ -7,6 +7,7 @@ import { useMessageListHighlights } from './message/list/MessageListContext';
 
 jest.mock('@rocket.chat/ui-client', () => ({
 	useFeaturePreview: () => false,
+	useEmbeddedLayout: () => false,
 }));
 jest.mock('@rocket.chat/fuselage-hooks', () => ({
 	useLocalStorage: () => ['en', jest.fn()],

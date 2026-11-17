@@ -1,33 +1,23 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
+import { useEmbeddedLayout, useFeaturePreview } from '@rocket.chat/ui-client';
+import { LayoutContext, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, useState, useEffect } from 'react';
-
-const hiddenActionsDefaultValue = {
-	roomToolbox: [],
-	messageToolbox: [],
-	composerToolbox: [],
-	userToolbox: [],
-};
 
 export type LayoutProviderProps = {
 	children?: ReactNode;
 };
 
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
-	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const [displaySidePanel, setDisplaySidePanel] = useState(true);
 	const [overlayed, setOverlayed] = useState(false);
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
-	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
 	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
 
 	const router = useRouter();
-	// Once the layout is embedded, it can't be changed
-	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
+	const isEmbedded = useEmbeddedLayout();
 
 	const isMobile = !breakpoints.includes('md');
 	const isTablet = !breakpoints.includes('lg');
@@ -40,26 +30,12 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 		setIsCollapsed(shouldToggle);
 	}, [shouldToggle]);
 
-	useEffect(() => {
-		const eventHandler = (event: MessageEvent<any>) => {
-			if (event.data?.event !== 'overrideUi') {
-				return;
-			}
-
-			setHiddenActions({ ...hiddenActionsDefaultValue, ...event.data.hideActions });
-		};
-		window.addEventListener('message', eventHandler);
-		return () => window.removeEventListener('message', eventHandler);
-	}, []);
-
 	return (
 		<LayoutContext.Provider
 			value={useMemo(
 				() => ({
 					isMobile,
 					isTablet,
-					isEmbedded,
-					showTopNavbarEmbeddedLayout,
 					navbar: {
 						searchExpanded: navBarSearchExpanded,
 						expandSearch: isMobile ? () => setNavBarSearchExpanded(true) : undefined,
@@ -89,13 +65,11 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					contextualBarExpanded: breakpoints.includes('sm'),
 					// oxlint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
-					hiddenActions,
 				}),
 				[
 					isMobile,
 					isTablet,
 					isEmbedded,
-					showTopNavbarEmbeddedLayout,
 					navBarSearchExpanded,
 					overlayed,
 					isCollapsed,
@@ -103,7 +77,6 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					shouldDisplaySidePanel,
 					defaultSidebarWidth,
 					breakpoints,
-					hiddenActions,
 					router,
 				],
 			)}

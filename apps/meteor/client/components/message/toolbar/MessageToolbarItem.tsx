@@ -1,6 +1,6 @@
 import { MessageToolbarItem as FuselageMessageToolbarItem } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useHiddenActions } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler } from 'react';
 
 export type MessageToolbarItemProps = {
@@ -12,7 +12,7 @@ export type MessageToolbarItemProps = {
 };
 
 const MessageToolbarItem = ({ id, icon, title, disabled, onClick }: MessageToolbarItemProps) => {
-	const hiddenActions = useLayoutHiddenActions().messageToolbox;
+	const hiddenActions = useHiddenActions().messageToolbox;
 
 	if (hiddenActions.includes(id)) {
 		return null;

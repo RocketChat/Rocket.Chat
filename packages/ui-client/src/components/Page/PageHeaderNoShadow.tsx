@@ -3,7 +3,7 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDocumentTitle } from '../../hooks';
+import { useDocumentTitle, useEmbeddedLayout } from '../../hooks';
 import { HeaderToolbar } from '../Header';
 import { SidebarToggler } from '../SidebarToggler';
 
@@ -15,7 +15,8 @@ type PageHeaderProps = {
 
 const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props }: PageHeaderProps) => {
 	const { t } = useTranslation();
-	const { sidebar, isEmbedded } = useLayout();
+	const { sidebar } = useLayout();
+	const isEmbedded = useEmbeddedLayout();
 
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 

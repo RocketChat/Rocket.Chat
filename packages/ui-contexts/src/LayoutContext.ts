@@ -6,8 +6,6 @@ export type SizeLayout = {
 };
 
 export type LayoutContextValue = {
-	isEmbedded: boolean;
-	showTopNavbarEmbeddedLayout: boolean;
 	isTablet: boolean;
 	isMobile: boolean;
 	roomToolboxExpanded: boolean;
@@ -34,17 +32,9 @@ export type LayoutContextValue = {
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
 	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
-	hiddenActions: {
-		roomToolbox: Array<string>;
-		messageToolbox: Array<string>;
-		composerToolbox: Array<string>;
-		userToolbox: Array<string>;
-	};
 };
 
 export const LayoutContext = createContext<LayoutContextValue>({
-	isEmbedded: false,
-	showTopNavbarEmbeddedLayout: false,
 	isTablet: false,
 	isMobile: false,
 	roomToolboxExpanded: true,
@@ -74,10 +64,4 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	},
 	contextualBarPosition: 'relative',
 	contextualBarExpanded: false,
-	hiddenActions: {
-		roomToolbox: [],
-		messageToolbox: [],
-		composerToolbox: [],
-		userToolbox: [],
-	},
 });
