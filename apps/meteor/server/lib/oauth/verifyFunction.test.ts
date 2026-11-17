@@ -1,12 +1,13 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const updateOrCreateUserFromExternalService = sinon.stub();
 
-const { verifyFunction } = p.noCallThru().load('./verifyFunction.ts', {
+const { verifyFunction } = loadWithMocks('./verifyFunction.ts', {
 	'meteor/accounts-base': { Accounts: { updateOrCreateUserFromExternalService } },
 });
 
