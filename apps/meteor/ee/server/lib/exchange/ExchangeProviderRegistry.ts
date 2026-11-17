@@ -1,12 +1,4 @@
-import {
-	ExchangeError,
-	EwsTransport,
-	EwsTransportPool,
-	ExchangeEwsProvider,
-	MicrosoftGraphProvider,
-	logger,
-	scrubForLog,
-} from '@rocket.chat/exchange';
+import { ExchangeError, EwsTransport, EwsTransportPool, ExchangeEwsProvider, MicrosoftGraphProvider, logger } from '@rocket.chat/exchange';
 import type { IExchangeProvider, DateRange, EwsTransportConfig } from '@rocket.chat/exchange';
 import { startOfDayAt } from '@rocket.chat/tools';
 

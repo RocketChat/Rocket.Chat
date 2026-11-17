@@ -1,7 +1,7 @@
+import { ExchangeError } from '@rocket.chat/exchange';
 import { MongoServerError } from 'mongodb';
 
 import { runCalendarSync } from './runCalendarSync';
-import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
 

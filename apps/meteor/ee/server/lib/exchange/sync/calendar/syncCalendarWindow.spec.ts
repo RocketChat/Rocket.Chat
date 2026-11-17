@@ -1,8 +1,7 @@
+import { ExchangeError } from '@rocket.chat/exchange';
+import type { IExchangeProvider, DateRange, EventPage, ExchangeEvent, ExchangeEventUpsert, ExchangeErrorCode } from '@rocket.chat/exchange';
+
 import { MAX_EVENT_PAGES, syncCalendarWindow } from './syncCalendarWindow';
-import type { IExchangeProvider } from '../../definition/IExchangeProvider';
-import type { DateRange, EventPage, ExchangeEvent, ExchangeEventUpsert } from '../../definition/types';
-import type { ExchangeErrorCode } from '../../errors';
-import { ExchangeError } from '../../errors';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();

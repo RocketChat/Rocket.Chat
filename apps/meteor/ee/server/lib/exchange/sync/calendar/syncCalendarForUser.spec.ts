@@ -1,8 +1,8 @@
+import { ExchangeError } from '@rocket.chat/exchange';
 import { MongoServerError } from 'mongodb';
 
 import { syncCalendarForUser } from './syncCalendarForUser';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
-import { ExchangeError } from '../../errors';
 
 const findOneById = jest.fn();
 const syncCalendarWindow = jest.fn();
