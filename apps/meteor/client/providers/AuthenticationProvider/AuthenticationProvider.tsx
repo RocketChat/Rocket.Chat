@@ -8,7 +8,6 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
-import { loginWithSamlToken } from '../../meteor/login/saml';
 import {
 	callLoginMethod,
 	getLoginWithMethod,
@@ -17,6 +16,7 @@ import {
 	setConnectionUserId,
 	subscribeLoggingIn,
 } from '../../meteor/accounts';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
