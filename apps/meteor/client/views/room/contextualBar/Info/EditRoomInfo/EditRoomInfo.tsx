@@ -49,6 +49,7 @@ import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../lib/MessageTypes';
 import AbacAttributesRemovalWarning from '../../../../../components/ABAC/AbacAttributesRemovalWarning';
+import ModalCalloutContent from '../../../../../components/ModalCalloutContent';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
@@ -212,9 +213,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				onCancel={() => setModal(null)}
 				onClose={() => setModal(null)}
 			>
-				<Box paddingBlockStart={16}>
+				<ModalCalloutContent>
 					<AbacAttributesRemovalWarning />
-				</Box>
+				</ModalCalloutContent>
 			</GenericModal>,
 		);
 	});
