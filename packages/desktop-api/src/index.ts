@@ -49,7 +49,7 @@ export type DesktopUserStatusChangeRequest = {
  * The version of this contract the web client implements. A web client that announces version 1 pushes the server info,
  * URL resolver, title, favicon, user roles, badge, login state, unread alert preference and git commit hash through the
  * bridge itself, so the desktop app has no reason to read those from the web client's modules. Version 1 does not cover
- * presence. Outlook credentials left the contract with the legacy per-user integration, in server 10.0.
+ * presence.
  */
 export type WebClientBridgeVersion = 1;
 
