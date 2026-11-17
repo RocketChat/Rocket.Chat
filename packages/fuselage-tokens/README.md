@@ -4,7 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/@rocket.chat/fuselage-tokens?style=flat-square)](https://www.npmjs.com/package/@rocket.chat/fuselage-tokens) [![downloads](https://img.shields.io/npm/dw/@rocket.chat/fuselage-tokens?style=flat-square)](https://www.npmjs.com/package/@rocket.chat/fuselage-tokens)
 
-The colors, typography, breakpoints and border values that Fuselage and the Rocket.Chat clients are styled with. They are defined once and built with [Style Dictionary](https://styledictionary.com/) into JSON files (with TypeScript declarations) and SCSS maps.
+The colors, typography, breakpoints, border and spacing values that Fuselage and the Rocket.Chat clients are styled with. They are defined once and built with [Style Dictionary](https://styledictionary.com/) into JSON files (with TypeScript declarations) and SCSS maps.
 
 Use this package when you need Rocket.Chat's design values outside of Fuselage's React components: charts, emails, PDFs, native code, or your own stylesheets. If you use `@rocket.chat/fuselage`, its `Box` props and `Palette` already read from these tokens.
 
@@ -82,6 +82,7 @@ Every category is available as `dist/<category>.json`, `dist/<category>.d.json.t
 | `typography`   | `fontFamily` (`sans`, `mono`) and `fontScale` (`hero`, `h1`–`h5`, `p1`, `p1m`, `p1b`, `p2`, `p2m`, `p2b`, `c1`, `c2`, `micro`).                           |
 | `breakpoints`  | `xs`, `sm`, `md`, `lg`, `xl`, `xxl` and `xxxl`, each with `minViewportWidth`, `columns` and `gutterWidth`.                                                |
 | `border`       | `radius` (`none`, `default`, `small`, `medium`, `large`, `extra-large`, `full`) and `width` (`none`, `default`, `medium`, `large`, `extra-large`).        |
+| `spacing`      | The spacing scale for margins, paddings and gaps: `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32` and `x40`. The SCSS map holds them in `px`.               |
 
 `surface`, `font`, `stroke`, `status`, `statusBullet`, `badge`, `button` and `shadow` are split by theme: `light`, `dark` and `high-contrast`.
 

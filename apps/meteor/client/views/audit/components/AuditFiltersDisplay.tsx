@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -18,13 +18,13 @@ const AuditFiltersDisplay = ({ users, room, startDate, endDate, filters }: Audit
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='stretch' withTruncatedText>
-			<Box withTruncatedText>{users?.length ? users.map((user) => `@${user}`).join(' : ') : `#${room}`}</Box>
+			<Text truncate>{users?.length ? users.map((user) => `@${user}`).join(' : ') : `#${room}`}</Text>
 			{startDate && endDate ? (
-				<Box withTruncatedText>
+				<Text truncate>
 					{formatDate(startDate)} {t('Date_to')} {formatDate(endDate)} {/* TODO: fix this translation */}
-				</Box>
+				</Text>
 			) : null}
-			{filters ? <Box withTruncatedText>{filters}</Box> : null}
+			{filters ? <Text truncate>{filters}</Text> : null}
 		</Box>
 	);
 };

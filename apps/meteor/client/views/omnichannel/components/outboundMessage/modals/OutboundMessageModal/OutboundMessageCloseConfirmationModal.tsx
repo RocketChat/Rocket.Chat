@@ -32,19 +32,19 @@ const OutboundMessageCloseConfirmationModal = ({ onConfirm, onCancel }: Outbound
 					{t('Are_you_sure_you_want_to_discard_this_outbound_message')}
 				</p>
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>{t('This_action_cannot_be_undone')}</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button
 						ref={(el) => {
 							el?.focus();
 						}}
-						secondary
+						variant='secondary'
 						onClick={onCancel}
 					>
 						{t('Keep_editing')}
 					</Button>
-					<Button danger onClick={onConfirm}>
+					<Button variant='danger' onClick={onConfirm}>
 						{t('Discard')}
 					</Button>
 				</ModalFooterControllers>

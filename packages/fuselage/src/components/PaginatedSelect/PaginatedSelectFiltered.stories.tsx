@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Option, OptionDescription } from '../Option';
 import PaginatedSelectFiltered from './PaginatedSelectFiltered';
@@ -12,7 +12,7 @@ export default {
 			value: i,
 			label: `Item #${i}`,
 		})),
-		width: '250px',
+		style: { width: '250px' },
 	},
 	parameters: {
 		actions: { argTypesRegex: '^on.*' },

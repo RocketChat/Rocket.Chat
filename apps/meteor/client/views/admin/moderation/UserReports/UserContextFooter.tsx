@@ -17,11 +17,11 @@ const UserContextFooter = ({ userId, deleted }: UserContextFooterProps) => {
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
-			<Button disabled={deleted} onClick={deactivateUserAction.onClick} secondary danger>
+			<Button disabled={deleted} onClick={deactivateUserAction.onClick} variant='secondary-danger'>
 				{t('Moderation_Deactivate_User')}
 			</Button>
 			<Box display='flex' flexGrow={0} marginInlineStart={8}>
-				<GenericMenu large title={t('More')} items={[{ ...useResetAvatarAction(userId), disabled: deleted }]} placement='top-end' />
+				<GenericMenu size='large' title={t('More')} items={[{ ...useResetAvatarAction(userId), disabled: deleted }]} placement='top-end' />
 			</Box>
 		</ButtonGroup>
 	);

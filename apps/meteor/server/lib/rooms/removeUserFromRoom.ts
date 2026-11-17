@@ -1,9 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team, Room } from '@rocket.chat/core-services';
+import { Message, Team, Room, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
 import { afterLeaveRoomCallback } from '../callbacks/afterLeaveRoomCallback';
@@ -39,15 +38,7 @@ export const performUserRemoval = async function (
 		if (options?.customSystemMessage) {
 			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
 		} else if (options?.byUser) {
-			const extraData = {
-				u: options.byUser,
-			};
-
-			if (room.teamMain) {
-				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username, user, extraData);
-			} else {
-				await Message.saveSystemMessage('ru', room._id, user.username, user, extraData);
-			}
+			await Message.saveSystemMessage(room.teamMain ? 'removed-user-from-team' : 'ru', room._id, user.username, options.byUser);
 		} else if (subscription.status === 'INVITED') {
 			await Message.saveSystemMessage('uir', room._id, user.username, user);
 		} else if (room.teamMain) {
@@ -103,7 +94,7 @@ export const removeUserFromRoom = async function (
 			await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw new ClientSafeError('error-app-prevented', error.message);
 			}
 
 			throw error;

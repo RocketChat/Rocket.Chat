@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import type { ConversationData } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';

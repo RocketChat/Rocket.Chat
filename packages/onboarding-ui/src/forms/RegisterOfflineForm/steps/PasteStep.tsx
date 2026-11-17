@@ -50,7 +50,7 @@ const PasteStep = ({ setStep }: PasteStepProps) => {
 			<FormFooter>
 				<Box display='flex' flexDirection='column'>
 					<ButtonGroup vertical={isMobile}>
-						<Button type='submit' primary loading={isSubmitting || isValidating} disabled={isSubmitSuccessful}>
+						<Button type='submit' variant='primary' loading={isSubmitting || isValidating} disabled={isSubmitSuccessful}>
 							{t('component.form.action.completeRegistration')}
 						</Button>
 						<Button type='button' onClick={() => setStep(Steps.COPY)}>

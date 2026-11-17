@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Item, ItemContent, ItemGroupHeader, ItemGroupTitle, ItemTitle, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Item, ItemContent, ItemGroupHeader, ItemGroupTitle, ItemTitle, PopoverSurface, Skeleton } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode } from 'react';
@@ -7,7 +7,7 @@ import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
-import { getActiveDescendantOptionProps } from '../../../hooks/useActiveDescendant';
+import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
 import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
@@ -114,8 +114,8 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 	}
 
 	return (
-		<Box position='relative'>
-			<Tile padding={0} marginBlockEnd={8} overflow='hidden'>
+		<Box position='relative' marginBlockEnd={8}>
+			<PopoverSurface elevation='1' flush>
 				{title && (
 					<Box backgroundColor='tint'>
 						<ItemGroupHeader inset='md'>
@@ -174,7 +174,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 							</Item>
 						))}
 				</Box>
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 });

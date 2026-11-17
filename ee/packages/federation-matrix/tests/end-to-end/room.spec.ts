@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { Room } from 'matrix-js-sdk';
 import { EventTimeline } from 'matrix-js-sdk';
@@ -1662,7 +1664,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(pendingInvitation).not.toBeUndefined();
 
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation!.rid!;
 
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
@@ -1706,7 +1708,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				expect(pendingInvitation).not.toBeUndefined();
 
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 				rid = pendingInvitation!.rid!;
 			}, 15000);
 
@@ -1739,7 +1741,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(pendingInvitation).not.toBeUndefined();
 
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation!.rid!;
 
 					// hs1 revokes the invitation by kicking the invited user
@@ -1788,9 +1790,9 @@ import { SynapseClient } from '../helper/synapse-client';
 					const pendingInvitation = subscriptions.update.find(
 						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
 					);
-					expect(pendingInvitation).not.toBeUndefined();
+					assert(pendingInvitation);
 
-					const rid = pendingInvitation!.rid!;
+					const { rid } = pendingInvitation;
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
 
 					// Wait for join to propagate to Synapse
@@ -1833,7 +1835,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(pendingInvitation).not.toBeUndefined();
 					expect(pendingInvitation).toHaveProperty('rid');
 					expect(pendingInvitation).toHaveProperty('fname');
-					expect(pendingInvitation!.fname).toContain(channelName);
+					expect(pendingInvitation?.fname).toContain(channelName);
 				});
 			});
 
@@ -1855,9 +1857,9 @@ import { SynapseClient } from '../helper/synapse-client';
 					const pendingInvitation = subscriptions.update.find(
 						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
 					);
-					expect(pendingInvitation).not.toBeUndefined();
+					assert(pendingInvitation);
 
-					const rid = pendingInvitation!.rid!;
+					const { rid } = pendingInvitation;
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
 
 					// Wait for join to propagate to Synapse
@@ -1904,11 +1906,13 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(pendingInvitation).not.toBeUndefined();
 					expect(pendingInvitation).toHaveProperty('rid');
 					expect(pendingInvitation).toHaveProperty('fname');
-					expect(pendingInvitation!.fname).toContain(channelName);
+					expect(pendingInvitation?.fname).toContain(channelName);
 				});
 			});
 		});
 
+		// Skipped since it was added in #39750 (FGA-13); un-skip as part of that work
+		// oxlint-disable-next-line jest/no-disabled-tests
 		describe.skip('Synchronizing user names across federated servers', () => {
 			const ts = Date.now();
 

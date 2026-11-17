@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 
 export type Placement = 'left' | 'top' | 'right' | 'bottom' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | null;

@@ -1,5 +1,5 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, StatusBullet, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarHeader,
@@ -66,9 +66,9 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }:
 									<StatusBullet status={userPresence?.status} />
 								</Box>
 								{name && <Box is='span'>{name}</Box>}
-								<Box is='span' color='hint'>
+								<Text is='span' color='hint'>
 									{`(${username})`}
-								</Box>
+								</Text>
 							</Box>
 						</InfoPanelField>
 					)}
@@ -91,7 +91,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }:
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={() => handleDeviceLogout()}>
+					<Button variant='primary' onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>

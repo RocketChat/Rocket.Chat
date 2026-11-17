@@ -65,7 +65,7 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, onAbacRoomsChange
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label }, onRemove }) => (
-				<Chip key={value} height='x20' value={value} onClick={onRemove} marginBlock={2} marginInlineEnd={4}>
+				<Chip key={value} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />
 					<Box is='span' margin='none' marginInlineStart={4}>
 						{label.name}

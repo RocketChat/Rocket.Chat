@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { PushToken } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from './i18n';
 import { Push } from './notifications/push';
@@ -9,7 +9,7 @@ export const executePushTest = async (userId: IUser['_id'], username: IUser['use
 	const tokens = await PushToken.countTokensByUserId(userId);
 
 	if (tokens === 0) {
-		throw new Meteor.Error('error-no-tokens-for-this-user', 'There are no tokens for this user', {
+		throw new ClientSafeError('error-no-tokens-for-this-user', 'There are no tokens for this user', {
 			method: 'push_test',
 		});
 	}

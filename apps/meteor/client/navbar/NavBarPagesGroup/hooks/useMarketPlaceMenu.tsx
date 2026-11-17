@@ -1,11 +1,12 @@
 import { Badge, Skeleton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { useAppRequestStats } from '../../../views/marketplace/hooks/useAppRequestStats';
 
 export const useMarketPlaceMenu = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');

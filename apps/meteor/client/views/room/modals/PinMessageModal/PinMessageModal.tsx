@@ -1,8 +1,9 @@
 import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useUserDisplayName, GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
@@ -10,7 +11,7 @@ import AttachmentProvider from '../../../../providers/AttachmentProvider';
 export type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
 
 const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const displayName = useUserDisplayName(message.u);
 	const avatarUrl = getUserAvatarPath(message.u.username);
@@ -36,9 +37,9 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 			<Box is='p' fontScale='c1' marginBlockStart={16}>
 				{t('Pinned_messages_are_visible_to_everyone')}
 			</Box>
-			<Box is='p' fontScale='c1'>
+			<Text is='p' fontScale='c1'>
 				{t('Starred_messages_are_only_visible_to_you')}
-			</Box>
+			</Text>
 		</GenericModal>
 	);
 };

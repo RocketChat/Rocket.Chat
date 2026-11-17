@@ -29,7 +29,6 @@ import {
 	LivechatRooms,
 	AbacAttributes,
 } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
 import { getAppsStatistics } from './getAppsStatistics';
@@ -39,6 +38,7 @@ import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { Info } from '../../../../rocketchat.info';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { db } from '../../../database/utils';
 import { getMatrixFederationStatistics } from '../../../services/federation/infrastructure/rocket-chat/adapters/Statistics';
 import { settings } from '../../../settings';
 import { isRunningMs } from '../../isRunningMs';
@@ -63,8 +63,6 @@ const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: nu
 
 	return languages;
 };
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export const statistics = {
 	get: async (): Promise<IStats> => {

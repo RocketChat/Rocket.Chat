@@ -12,7 +12,7 @@ const Wrapper = ({ children }: WrapperProps) => (
 		alignItems='center'
 		justifyContent='space-between'
 		paddingBlock={4}
-		paddingInline={2}
+		paddingInline='x4'
 		verticalAlign='middle'
 		height='x24'
 		className={css`

@@ -5,7 +5,7 @@ import { isApp, isRecord } from '../handlers/lib/assertions';
 
 export function wrapAppForRequest(app: App, req: RequestContext): App {
 	return new Proxy(app, {
-		get(target, property, receiver) {
+		get(target, property, receiver): unknown {
 			if (property === 'logger') {
 				return req.context.logger;
 			}

@@ -1,0 +1,89 @@
+import nameToCharacterMapping from '@rocket.chat/icons';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import type { ComponentType } from 'react';
+
+import SelectFiltered from './SelectFiltered';
+import SelectLegacy, { type SelectOption } from './SelectLegacy';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
+
+withResizeObserverMock();
+
+const options: SelectOption[] = [['1', 'Apple']];
+
+describe.each<[string, ComponentType<any>, string]>([
+	['SelectLegacy', SelectLegacy, 'button'],
+	['SelectFiltered', SelectFiltered, 'textbox'],
+])('[%s Component]', (_name, Component, role) => {
+	it('should label and describe its focusable control', () => {
+		render(
+			<>
+				<span id='label'>Fruit</span>
+				<Component
+					aria-labelledby='label'
+					aria-describedby='hint'
+					aria-invalid
+					placeholder='Pick one'
+					options={options}
+					onChange={jest.fn()}
+				/>
+				<span id='hint'>Required field</span>
+			</>,
+		);
+
+		const control = screen.getByRole(role, { name: 'Fruit' });
+		expect(control).toHaveAccessibleDescription('Required field');
+		expect(control).toHaveAttribute('aria-invalid', 'true');
+	});
+
+	it('should focus its control when the label pointing to its id is clicked', async () => {
+		render(
+			<>
+				<label htmlFor='fruit'>Fruit</label>
+				<Component id='fruit' placeholder='Pick one' options={options} onChange={jest.fn()} />
+			</>,
+		);
+
+		const control = screen.getByLabelText('Fruit');
+		expect(control).toHaveAttribute('id', 'fruit');
+		expect(control).toHaveRole(role);
+
+		await userEvent.click(screen.getByText('Fruit'));
+		expect(control).toHaveFocus();
+	});
+});
+
+describe('[SelectLegacy Component] controlled value', () => {
+	it('should show the new option when the value changes after mount', () => {
+		const twoOptions: SelectOption[] = [
+			['1', 'Apple'],
+			['2', 'Banana'],
+		];
+		const { rerender } = render(<SelectLegacy value='1' options={twoOptions} onChange={jest.fn()} />);
+		expect(screen.getByText('Apple')).toBeInTheDocument();
+
+		rerender(<SelectLegacy value='2' options={twoOptions} onChange={jest.fn()} />);
+		expect(screen.getByText('Banana')).toBeInTheDocument();
+		expect(screen.queryByText('Apple')).not.toBeInTheDocument();
+	});
+});
+
+describe('[SelectLegacy Component] keyboard', () => {
+	beforeEach(() => jest.useFakeTimers());
+	afterEach(() => jest.useRealTimers());
+
+	it('should stay open after Space opens it', async () => {
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		const isOpen = () => screen.queryByText(nameToCharacterMapping['chevron-up']) !== null;
+
+		screen.getByRole('button').focus();
+		await user.keyboard('[Space>]');
+		act(() => jest.advanceTimersByTime(20));
+		expect(isOpen()).toBe(true);
+
+		await user.keyboard('[/Space]');
+		act(() => jest.advanceTimersByTime(20));
+		expect(isOpen()).toBe(true);
+	});
+});

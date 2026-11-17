@@ -18,6 +18,8 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ContentColumn from '../../../components/ContentColumn';
+
 type OAuthAddAppPayload = {
 	name: string;
 	active: boolean;
@@ -56,45 +58,47 @@ const OAuthAddApp = () => {
 
 	return (
 		<ContextualbarScrollableContent width='full'>
-			<FieldGroup maxWidth='x600' alignSelf='center' width='full'>
-				<Field>
-					<FieldRow>
-						<FieldLabel>{t('Active')}</FieldLabel>
-						<Controller
-							name='active'
-							control={control}
-							defaultValue={false}
-							render={({ field }) => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={nameField}>{t('Application_Name')}</FieldLabel>
-					<FieldRow>
-						<TextInput id={nameField} {...register('name', { required: t('Required_field', { field: t('Name') }) })} />
-					</FieldRow>
-					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
-					{errors?.name && <FieldError>{errors.name.message}</FieldError>}
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={redirectUriField}>{t('Redirect_URI')}</FieldLabel>
-					<FieldRow>
-						<TextAreaInput id={redirectUriField} rows={5} {...register('redirectUri', { required: true })} />
-					</FieldRow>
-					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
-					{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
-				</Field>
-				<Field>
-					<FieldRow>
-						<ButtonGroup stretch>
-							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSubmit(onSubmit)}>
-								{t('Save')}
-							</Button>
-						</ButtonGroup>
-					</FieldRow>
-				</Field>
-			</FieldGroup>
+			<ContentColumn>
+				<FieldGroup>
+					<Field>
+						<FieldRow>
+							<FieldLabel>{t('Active')}</FieldLabel>
+							<Controller
+								name='active'
+								control={control}
+								defaultValue={false}
+								render={({ field }) => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={nameField}>{t('Application_Name')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={nameField} {...register('name', { required: t('Required_field', { field: t('Name') }) })} />
+						</FieldRow>
+						<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
+						{errors?.name && <FieldError>{errors.name.message}</FieldError>}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={redirectUriField}>{t('Redirect_URI')}</FieldLabel>
+						<FieldRow>
+							<TextAreaInput id={redirectUriField} rows={5} {...register('redirectUri', { required: true })} />
+						</FieldRow>
+						<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
+						{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
+					</Field>
+					<Field>
+						<FieldRow>
+							<ButtonGroup stretch>
+								<Button onClick={close}>{t('Cancel')}</Button>
+								<Button variant='primary' onClick={handleSubmit(onSubmit)}>
+									{t('Save')}
+								</Button>
+							</ButtonGroup>
+						</FieldRow>
+					</Field>
+				</FieldGroup>
+			</ContentColumn>
 		</ContextualbarScrollableContent>
 	);
 };

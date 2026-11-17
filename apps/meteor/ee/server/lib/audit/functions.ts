@@ -1,12 +1,13 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { keepPublicAuthorFields } from '../../../../server/lib/messages/keepPublicAuthorFields';
 import { updateCounter } from '../../../../server/lib/statistics';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
@@ -56,12 +57,12 @@ const getRoomInfoByAuditParams = async ({
 
 const requireAuditor = async (userId: string | null): Promise<IUser> => {
 	if (!userId) {
-		throw new Meteor.Error('Not allowed');
+		throw new ClientSafeError('Not allowed');
 	}
 
 	const user = await Users.findOneById(userId);
 	if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
-		throw new Meteor.Error('Not allowed');
+		throw new ClientSafeError('Not allowed');
 	}
 	return user;
 };
@@ -118,7 +119,7 @@ export const auditGetMessagesMethod = async (userId: string | null, params: Audi
 			userId: user._id,
 		});
 		if (!roomInfo) {
-			throw new Meteor.Error(`Room doesn't exist`);
+			throw new ClientSafeError(`Room doesn't exist`);
 		}
 
 		rids = roomInfo.rids;
@@ -145,7 +146,7 @@ export const auditGetMessagesMethod = async (userId: string | null, params: Audi
 
 	updateCounter({ settingsId: 'Message_Auditing_Panel_Load_Count' });
 
-	return messages;
+	return messages.map((message) => keepPublicAuthorFields(message));
 };
 
 type AuditOmnichannelMessagesParams = {
@@ -208,12 +209,12 @@ export const auditGetOmnichannelMessagesMethod = async (
 		{ ignoreUndefined: true },
 	);
 
-	return messages;
+	return messages.map((message) => keepPublicAuthorFields(message));
 };
 
 export const auditGetAuditionsMethod = async (userId: string | null, startDate: Date, endDate: Date): Promise<IAuditLog[]> => {
 	if (!userId || !(await hasPermissionAsync(userId, 'can-audit-log'))) {
-		throw new Meteor.Error('Not allowed');
+		throw new ClientSafeError('Not allowed');
 	}
 	return AuditLog.find(
 		{

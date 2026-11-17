@@ -30,6 +30,7 @@ import type {
 	Document,
 	UpdateFilter,
 	UpdateOptions,
+	UpdateResult,
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
@@ -40,7 +41,7 @@ import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
-const usersDefaultFields = { __rooms: 0 } as const;
+const usersDefaultFields = { __rooms: 0, roomRolePriorities: 0 } as const;
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -253,7 +254,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	addRolesByUserId(uid: string, roles: string | string[]) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			}
 		}
 
 		const query = {
@@ -681,6 +684,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			active: true,
 			_id: {
 				$nin: userIds,
+			},
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = {
+			ldap: true,
+			active: true,
+			_id: {
+				$in: userIds,
 			},
 		};
 
@@ -1315,6 +1333,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			{
 				returnDocument: 'after',
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					status: 1,
+					statusText: 1,
+					statusSource: 1,
+					statusExpiresAt: 1,
+					roles: 1,
+					xmppFederation: 1,
+				},
 			},
 		);
 	}
@@ -1552,6 +1581,44 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.updateOne({ _id }, update);
 	}
 
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken) {
+		return this.col.updateOne(
+			{ _id: userId },
+			{
+				$addToSet: {
+					'services.resume.loginTokens': loginToken,
+				},
+			},
+		);
+	}
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		// login tokens created by old Meteor versions stamp `when` as a number
+		const query = {
+			$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	removeLoginTokensOlderThan(date: Date) {
+		return this.col.updateMany(
+			{
+				$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						$or: [{ when: { $lt: date } }, { when: { $lt: +date } }],
+					},
+				},
+			},
+		);
+	}
+
 	unsetLoginTokens(userId: IUser['_id']) {
 		return this.col.updateOne(
 			{
@@ -1725,6 +1792,38 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments({
 			federated: true,
 		});
+	}
+
+	upsertXMPPUser(jid: string, origin: string, name?: string): Promise<IUser | null> {
+		return this.findOneAndUpdate(
+			{ username: jid, xmppFederation: { $exists: true } },
+			{
+				$set: {
+					username: jid,
+					...(name && { name }),
+					type: 'user' as const,
+					active: true,
+					roles: ['federated-external'],
+					requirePasswordChange: false,
+					federated: true,
+					xmppFederation: { version: 1 as const, jid, origin },
+					_updatedAt: new Date(),
+				},
+				$setOnInsert: {
+					...(!name && { name: jid }),
+					status: UserStatus.OFFLINE,
+					createdAt: new Date(),
+				},
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	updateStatusAndStatusDefaultById(userId: IUser['_id'], status: UserStatus): Promise<UpdateResult> {
+		return this.updateOne({ _id: userId }, { $set: { status, statusDefault: status } });
 	}
 
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(
@@ -2115,7 +2214,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail = false,
-	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phones' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
 		// TODO: Create class Agent
 		const query = {
 			_id: agentId,
@@ -2125,7 +2224,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			projection: {
 				name: 1,
 				username: 1,
-				phone: 1,
+				phones: 1,
 				customFields: 1,
 				status: 1,
 				livechat: 1,
@@ -2136,7 +2235,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	setE2EPublicAndPrivateKeysByUserId(userId: IUser['_id'], { public_key, private_key }: { public_key: string; private_key: string }) {
 		return this.updateOne(
 			{ _id: userId },
@@ -3033,6 +3131,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	setPasswordHash(_id: IUser['_id'], passwordHash: string) {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: { 'services.password.bcrypt': passwordHash },
+				$unset: { 'services.password.reset': 1, 'services.password.argon2': 1 },
+			},
+		);
+	}
+
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
 		const update = {
 			$unset: {
@@ -3098,6 +3206,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						},
 					}),
 		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
 		return this.updateOne({ _id }, update);
 	}
 
@@ -3263,6 +3376,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		Object.assign(user, data);
 
 		return this.insertOne(user);
+	}
+
+	createIfNotExists({ _id, ...data }: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$setOnInsert: {
+					createdAt: new Date(),
+					avatarOrigin: 'none',
+					...data,
+				},
+			},
+			{ upsert: true },
+		);
 	}
 
 	// REMOVE

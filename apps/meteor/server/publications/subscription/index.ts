@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { subscriptionFields } from '../../../lib/publishFields';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'subscriptions/get'(updatedAt?: Date): ISubscription[] | { update: ISubscription[]; remove: { _id: string; _deletedAt: Date }[] };
 	}

@@ -1,4 +1,4 @@
-import { GrInfo } from './GrInfo';
+import { GrInfo } from './GrInfo.js';
 
 export class IIISideInfo {
 	tt = Array.from({ length: 2 }, () => Array.from({ length: 2 }, () => new GrInfo()));

@@ -2,7 +2,7 @@ import { License } from '@rocket.chat/license';
 
 await License.onLicense('canned-responses', async () => {
 	const { createSettings } = await import('./settings');
-	await import('./permissions');
+	const { createPermissions } = await import('./permissions');
 	await import('../../hooks/canned-responses/onRemoveAgentDepartment');
 	await import('../../hooks/canned-responses/onSaveAgentDepartment');
 	await import('../../hooks/canned-responses/cannedResponses');
@@ -10,4 +10,5 @@ await License.onLicense('canned-responses', async () => {
 	await import('../../meteor-methods/removeCannedResponse');
 
 	await createSettings();
+	await createPermissions();
 });

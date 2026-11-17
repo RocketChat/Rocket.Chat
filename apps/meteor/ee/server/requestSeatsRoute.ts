@@ -10,7 +10,7 @@ const apiServer = express();
 
 WebApp.connectHandlers.use(apiServer);
 
-// eslint-disable-next-line new-cap
+// oxlint-disable-next-line new-cap
 const router = express.Router();
 
 apiServer.use('/requestSeats', router);

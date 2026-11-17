@@ -1,20 +1,18 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import * as semver from 'semver';
 
-export class RequiredApiVersionError implements Error {
+export class RequiredApiVersionError extends Error {
 	public name = 'RequiredApiVersion';
 
-	public message: string;
-
 	constructor(info: IAppInfo, versionInstalled: string) {
-		let moreInfo = '';
-		if (semver.gt(versionInstalled, info.requiredApiVersion)) {
-			moreInfo = ' Please tell the author to update their App as it is out of date.';
-		}
+		const moreInfo = semver.gt(versionInstalled, info.requiredApiVersion)
+			? ' Please tell the author to update their App as it is out of date.'
+			: '';
 
-		this.message =
+		super(
 			`Failed to load the App "${info.name}" (${info.id}) as it requires ` +
-			`v${info.requiredApiVersion} of the App API however your server comes with ` +
-			`v${versionInstalled}.${moreInfo}`;
+				`v${info.requiredApiVersion} of the App API however your server comes with ` +
+				`v${versionInstalled}.${moreInfo}`,
+		);
 	}
 }

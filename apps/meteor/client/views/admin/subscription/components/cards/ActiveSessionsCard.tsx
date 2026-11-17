@@ -49,7 +49,7 @@ const ActiveSessionsCard = () => {
 				...card,
 				...(exceedLimit && {
 					upgradeButton: (
-						<UpgradeButton target='active-session-card' action='upgrade' small>
+						<UpgradeButton target='active-session-card' action='upgrade' size='small'>
 							{t('Upgrade')}
 						</UpgradeButton>
 					),

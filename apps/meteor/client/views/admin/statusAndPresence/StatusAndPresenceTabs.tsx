@@ -1,5 +1,6 @@
-import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
+
+import { PageTabs } from '../../../components/PageTabs';
 
 export type StatusAndPresenceTab = 'settings' | 'custom-status' | 'user-presence';
 
@@ -21,23 +22,15 @@ const StatusAndPresenceTabs = ({
 	const { t } = useTranslation();
 
 	return (
-		<Tabs>
-			{canViewSettings && (
-				<TabsItem selected={currentTab === 'settings'} onClick={() => onChange('settings')}>
-					{t('Settings')}
-				</TabsItem>
-			)}
-			{canManageCustomStatus && (
-				<TabsItem selected={currentTab === 'custom-status'} onClick={() => onChange('custom-status')}>
-					{t('Custom_User_Status')}
-				</TabsItem>
-			)}
-			{canManageUserPresence && (
-				<TabsItem selected={currentTab === 'user-presence'} onClick={() => onChange('user-presence')}>
-					{t('Managed_users')}
-				</TabsItem>
-			)}
-		</Tabs>
+		<PageTabs
+			items={[
+				{ id: 'settings', label: t('Settings'), hidden: !canViewSettings },
+				{ id: 'custom-status', label: t('Custom_User_Status'), hidden: !canManageCustomStatus },
+				{ id: 'user-presence', label: t('Managed_users'), hidden: !canManageUserPresence },
+			]}
+			selected={currentTab}
+			onSelect={onChange}
+		/>
 	);
 };
 

@@ -69,7 +69,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 								<GenericMenu
 									title={t('More')}
 									placement='bottom-end'
-									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
+									button={<IconButton icon='kebab' variant='secondary' />}
 									sections={menu}
 								/>
 							)}

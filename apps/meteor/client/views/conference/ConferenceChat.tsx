@@ -85,10 +85,10 @@ const ConferenceChat = () => {
 				{presentWithoutAccess > 0 && chatAccess && (
 					<IconButton
 						icon='balloon-exclamation'
-						small
+						size='small'
 						aria-label={t('__count__participants_cannot_see_the_chat', { count: presentWithoutAccess })}
 						title={t('__count__participants_cannot_see_the_chat', { count: presentWithoutAccess })}
-						danger
+						variant='danger'
 						// Carried across because the app's modal region is mounted above this window, outside the
 						// conference's provider — the modal reads the viewer and the share action from it.
 						onClick={() =>

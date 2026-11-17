@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -8,49 +8,60 @@ import {
 	GenericTableBody,
 	GenericTableRow,
 	GenericTableCell,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../../components/FilterByText';
-import { links } from '../../../lib/links';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const [filter, setFilter] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
 
-	const query = useDebouncedValue(
-		useMemo(
-			() => ({
-				text: filter,
-				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
-			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
-		),
-		500,
+	const params = useMemo(
+		() => ({
+			text: filter,
+			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+		}),
+		[filter, sortBy, sortDirection],
 	);
+	const query = useDebouncedValue(params, 500);
+
+	const queryKey = ['/v1/livechat/sla', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery({
-		queryKey: ['/v1/livechat/sla', query],
-		queryFn: () => getSlaData(query),
+	const { data, isSuccess, isLoading, isFetching, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getSlaData({ ...query, ...page }),
+		},
+		itemsKey: 'sla',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -58,6 +69,8 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
 	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
 
 	const headers = (
 		<>
@@ -82,9 +95,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Estimated_wait_time')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -94,13 +105,14 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={4} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
+			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
 			{isSuccess && data?.sla.length === 0 && queryHasChanged && <GenericNoResults />}
 			{isSuccess && data?.sla.length === 0 && !queryHasChanged && (
 				<GenericNoResults
@@ -115,14 +127,14 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			)}
 			{isSuccess && data?.sla.length > 0 && (
 				<>
-					<GenericTable aria-label={t('SLA_Policies')}>
+					<GenericTable columns={columns} aria-label={t('SLA_Policies')} aria-busy={params !== query || isFetching}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.sla.map(({ _id, name, description, dueTimeInMinutes }) => (
 								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{name}</GenericTableCell>
+									<GenericTableCell truncate>{description}</GenericTableCell>
+									<GenericTableCell truncate>
 										{dueTimeInMinutes} {t('minutes')}
 									</GenericTableCell>
 									<RemoveSlaButton _id={_id} reload={refetch} />

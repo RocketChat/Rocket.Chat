@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -230,7 +230,7 @@ const RoomBadge = ({ room }: { room: Room }) =>
 	) : null;
 
 const RoomMenu = ({ room }: { room: Room }) => (
-	<Menu mini aria-label={`Options for ${room.name}`} title='Options'>
+	<Menu size='mini' aria-label={`Options for ${room.name}`} title='Options'>
 		<MenuItem key='hide'>Hide</MenuItem>
 		<MenuItem key='read'>Mark as read</MenuItem>
 		<MenuItem key='favorite'>Favorite</MenuItem>
@@ -330,7 +330,7 @@ export const Default: Story = {
 								3
 							</Badge>
 							<ItemActions reveal='hover'>
-								<IconButton mini icon='kebab' aria-label='Options' />
+								<IconButton size='mini' icon='kebab' aria-label='Options' />
 							</ItemActions>
 						</ItemRow>
 					</ItemContent>
@@ -358,6 +358,29 @@ export const Heights: Story = {
 	),
 };
 
+export const DescriptionSizes: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column'>
+			{(['default', 'large'] as const).map((size) => (
+				<div key={size}>
+					<Caption>{size}</Caption>
+					<ItemGroup is='ul' aria-label={`${size} description`}>
+						<Item is='li'>
+							<ItemMedia>
+								<Avatar size='x36' url={leterAvatarUrls[1]} alt='' />
+							</ItemMedia>
+							<ItemContent>
+								<ItemTitle>Michael</ItemTitle>
+								<ItemDescription size={size}>Away</ItemDescription>
+							</ItemContent>
+						</Item>
+					</ItemGroup>
+				</div>
+			))}
+		</Box>
+	),
+};
+
 export const Insets: Story = {
 	render: () => (
 		<Box display='flex' flexDirection='column' width='x400'>
@@ -376,7 +399,7 @@ export const Insets: Story = {
 									</ItemTitle>
 								</ItemContent>
 								<ItemActions>
-									<IconButton small icon='kebab' aria-label='Actions for Mariana Kovač' />
+									<IconButton size='small' icon='kebab' aria-label='Actions for Mariana Kovač' />
 								</ItemActions>
 							</Item>
 						</ItemGroup>
@@ -445,12 +468,33 @@ export const Actions: Story = {
 							</ItemTitle>
 						</ItemContent>
 						<ItemActions>
-							<IconButton mini icon='phone' aria-label='Join call in ops-oncall' />
-							<IconButton mini icon='kebab' aria-label='Options for ops-oncall' />
+							<IconButton size='mini' icon='phone' aria-label='Join call in ops-oncall' />
+							<IconButton size='mini' icon='kebab' aria-label='Options for ops-oncall' />
 						</ItemActions>
 					</Item>
 				</ItemGroup>
 			</SidebarSurface>
+			<Caption>reveal=&quot;always&quot;, inside an ItemRow</Caption>
+			<ItemGroup is='ul' aria-label='Always visible actions on the second line'>
+				<Item is='li' inset='md'>
+					<ItemContent>
+						<ItemRow>
+							<Icon name='video' size='x16' />
+							<ItemTitle>
+								<ItemLink href='#ada-lovelace'>Ada Lovelace</ItemLink>
+							</ItemTitle>
+							<ItemMeta>Ringing…</ItemMeta>
+						</ItemRow>
+						<ItemRow>
+							<ItemDescription>1 person joined</ItemDescription>
+							<ItemActions>
+								<IconButton size='mini' variant='secondary' icon='bell-off' aria-label='Silence call from Ada Lovelace' />
+								<IconButton size='mini' variant='secondary' icon='cross' aria-label='Decline call from Ada Lovelace' />
+							</ItemActions>
+						</ItemRow>
+					</ItemContent>
+				</Item>
+			</ItemGroup>
 			<Caption>reveal=&quot;hover&quot;, shown on hover and focus</Caption>
 			<SidebarSurface>
 				<ItemGroup is='ul' aria-label='Actions revealed on hover'>
@@ -464,7 +508,7 @@ export const Actions: Story = {
 
 const HiddenActionsMenu = ({ label }: { label: string }) => (
 	<ItemActions reveal='hover'>
-		<IconButton mini icon='kebab' aria-label={`Options for ${label}`} />
+		<IconButton size='mini' icon='kebab' aria-label={`Options for ${label}`} />
 	</ItemActions>
 );
 
@@ -572,7 +616,7 @@ export const GroupHeaders: Story = {
 						Favorites
 					</ItemGroupTitle>
 					<ItemActions reveal='hover'>
-						<IconButton mini icon='kebab' aria-label='Options for Favorites' />
+						<IconButton size='mini' icon='kebab' aria-label='Options for Favorites' />
 					</ItemActions>
 				</ItemGroupHeader>
 				<ItemGroup is='ul' aria-labelledby='favorites-title'>
@@ -616,7 +660,7 @@ const CollapsibleGroup = ({
 					</Badge>
 				)}
 				<ItemActions reveal='hover'>
-					<IconButton mini icon='kebab' aria-label={`Options for ${title}`} />
+					<IconButton size='mini' icon='kebab' aria-label={`Options for ${title}`} />
 				</ItemActions>
 			</ItemGroupHeader>
 			<ItemGroup is='ul' id={`${id}-list`} aria-labelledby={`${id}-title`} hidden={!expanded}>
@@ -712,7 +756,7 @@ const MemberRow = ({ member }: { member: (typeof members)[number] }) => (
 			</ItemTitle>
 		</ItemContent>
 		<ItemActions reveal='hover'>
-			<IconButton small icon='kebab' aria-label={`Actions for ${member.name}`} />
+			<IconButton size='small' icon='kebab' aria-label={`Actions for ${member.name}`} />
 		</ItemActions>
 	</Item>
 );
@@ -861,8 +905,8 @@ export const RoomFiles: Story = {
 							</ItemRow>
 						</ItemContent>
 						<ItemActions reveal='hover'>
-							<IconButton small icon='download' aria-label={`Download ${file.name}`} />
-							<IconButton small icon='kebab' aria-label={`More options for ${file.name}`} />
+							<IconButton size='small' icon='download' aria-label={`Download ${file.name}`} />
+							<IconButton size='small' icon='kebab' aria-label={`More options for ${file.name}`} />
 						</ItemActions>
 					</Item>
 				))}

@@ -31,8 +31,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			justifyContent='space-between'
 			minWidth='x144'
 			height='x40'
-			paddingInlineEnd={7}
-			paddingInlineStart={14}
+			paddingInlineEnd='x8'
+			paddingInlineStart='x12'
 			lineHeight='unset'
 			rcx-input-box
 			{...props}
@@ -49,7 +49,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					fontWeight={700}
 					height='fit-content'
 					justifyContent='center'
-					marginInlineEnd={6}
+					marginInlineEnd='x4'
 					minWidth={22}
 					paddingBlock={4}
 					paddingInline={0}
@@ -60,8 +60,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box marginInline={4} display='flex' alignItems='center' justifyContent='center'>
-				<Icon name='chevron-down' size='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
+			<Box marginInline={4} display='flex' alignItems='center' justifyContent='center' color={selectedCategoriesCount ? 'white' : 'hint'}>
+				<Icon name='chevron-down' size='x20' />
 			</Box>
 		</Box>
 	);

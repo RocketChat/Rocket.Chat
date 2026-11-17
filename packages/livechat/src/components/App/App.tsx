@@ -156,7 +156,7 @@ export const App = ({ dispatch }: AppProps) => {
 			userPresence.reset();
 			visibility.removeListener(handleVisibilityChange);
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Emulates componentDidUpdate: keep the document direction in sync with the

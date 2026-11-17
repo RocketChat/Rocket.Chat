@@ -45,9 +45,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 	return (
 		<>
 			<Field>
-				<FieldLabel htmlFor={expirationId} flexGrow={0}>
-					{t('Expiration_(Days)')}
-				</FieldLabel>
+				<FieldLabel htmlFor={expirationId}>{t('Expiration_(Days)')}</FieldLabel>
 				<FieldRow>
 					<Controller
 						name='days'
@@ -59,9 +57,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 				</FieldRow>
 			</Field>
 			<Field>
-				<FieldLabel htmlFor={maxUsesId} flexGrow={0}>
-					{t('Max_number_of_uses')}
-				</FieldLabel>
+				<FieldLabel htmlFor={maxUsesId}>{t('Max_number_of_uses')}</FieldLabel>
 				<FieldRow>
 					<Controller
 						name='maxUses'
@@ -73,7 +69,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 				</FieldRow>
 			</Field>
 			<Box marginBlockStart={8}>
-				<Button loading={isSubmitting} disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
+				<Button loading={isSubmitting} disabled={!isDirty} variant='primary' onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
 			</Box>

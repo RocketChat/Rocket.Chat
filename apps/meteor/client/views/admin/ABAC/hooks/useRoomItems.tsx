@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -33,7 +33,7 @@ export const useRoomItems = (room: { rid: string; name: string }): GenericMenuIt
 			id: 'delete',
 			iconColor: 'danger',
 			icon: 'cross' as const,
-			content: <Box color='danger'>{t('Remove')}</Box>,
+			content: <Text color='danger'>{t('Remove')}</Text>,
 			onClick: setDeleteRoomModal,
 		},
 	];

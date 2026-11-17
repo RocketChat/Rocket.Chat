@@ -58,7 +58,7 @@ const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 			placement='bottom-end'
 			button={
 				<RaisedHandsButton aria-label={label}>
-					<Icon name='hand' size='x16' flexShrink={0} />
+					<Icon name='hand' size='x16' />
 					<Box is='span' withTruncatedText>
 						{nameOf(next)}
 					</Box>

@@ -26,11 +26,10 @@ import {
 	validateForbiddenErrorResponse,
 	ajv,
 } from '@rocket.chat/rest-typings';
-import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
-import { check, Match } from 'meteor/check';
+import { isGETLivechatRoomParams, isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 
 import { API } from '../..';
-import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
+import { findGuest, findRoom, settings, findAgent } from './lib/livechat';
 import { canAccessRoomAsync } from '../../../lib/authorization';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { callbacks } from '../../../lib/callbacks';
@@ -57,18 +56,10 @@ API.v1.addRoute(
 			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
 		},
+		validateParams: isGETLivechatRoomParams,
 	},
 	{
 		async get() {
-			// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-			const extraCheckParams = onCheckRoomParams({
-				token: String,
-				rid: Match.Maybe(String),
-				agentId: Match.Maybe(String),
-			});
-
-			check(this.queryParams, extraCheckParams);
-
 			const { token, rid, agentId, ...extraParams } = this.queryParams;
 
 			const guest = token && (await findGuest(token));
@@ -394,7 +385,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 
 type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatAnalyticsEndpoints {}
 }
 
@@ -408,7 +399,7 @@ API.v1.addRoute(
 			const { user } = this;
 
 			if (!user) {
-				throw new Error('error-invalid-user');
+				throw new Error('error-unauthenticated');
 			}
 
 			const room = await LivechatRooms.findOneById(roomId);
@@ -535,6 +526,6 @@ const livechatRoomsEndpoints = API.v1
 type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatRoomsEndpoints {}
 }

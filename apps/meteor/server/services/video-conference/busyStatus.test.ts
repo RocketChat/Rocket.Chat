@@ -1,7 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -76,16 +77,6 @@ const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 		Room: { addUserToRoom: sinon.stub().resolves() },
 		Presence: PresenceMock,
 	},
-	'@rocket.chat/models': {
-		Users: UsersMock,
-		VideoConference: VideoConferenceModelMock,
-		Rooms: { findOneById: sinon.stub().resolves(null) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: {
-			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-			findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }),
-		},
-	},
 	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },
 });
 
@@ -94,6 +85,15 @@ const at = (offsetMs: number) => new Date(ts.getTime() + offsetMs);
 
 describe('VideoConfService presence while in a call', () => {
 	let service: any;
+
+	before(() => {
+		mockModel('Users', UsersMock);
+		mockModel('VideoConference', VideoConferenceModelMock);
+		mockModel('Subscriptions', {
+			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
+			findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }),
+		});
+	});
 
 	beforeEach(() => {
 		service = new VideoConfService();

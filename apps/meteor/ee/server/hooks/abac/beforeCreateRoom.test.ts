@@ -38,6 +38,8 @@ const privateRoom = (extra: Partial<RoomToCreate> = {}): RoomToCreate => ({ t: '
 
 const run = (room: RoomToCreate, members: string[] = ['owner']) => guard({ owner, room, members });
 
+const xmppFederation = { version: 1, role: 'host-muc', muc: 'room@conference.example.com', origin: 'example.com' } as const;
+
 const enforcement = (requiredAttributeKeys: string[] = []) =>
 	getRoomAbacLockContextMock.returns({ enforcementOn: true, requiredAttributeKeys });
 
@@ -77,6 +79,10 @@ describe('beforeCreateRoom (ABAC)', () => {
 
 		it('should be refused when federated, whether or not enforcement is on', async () => {
 			await expect(run(privateRoom({ abacAttributes, federated: true }))).to.be.rejectedWith('error-abac-federated-room-attributes');
+		});
+
+		it('should be refused when XMPP federated, whether or not enforcement is on', async () => {
+			await expect(run(privateRoom({ abacAttributes, xmppFederation }))).to.be.rejectedWith('error-abac-federated-room-attributes');
 		});
 
 		it('should be refused unless it is a private room', async () => {
@@ -162,6 +168,11 @@ describe('beforeCreateRoom (ABAC)', () => {
 			await expect(run(privateRoom({ federated: true }))).to.be.fulfilled;
 			await expect(run(privateRoom({ t: 'c', federated: true }))).to.be.fulfilled;
 			await expect(run(privateRoom({ prid: 'parent', federated: true }))).to.be.fulfilled;
+		});
+
+		it('should leave XMPP federated rooms alone, public channels included', async () => {
+			await expect(run(privateRoom({ xmppFederation }))).to.be.fulfilled;
+			await expect(run(privateRoom({ t: 'c', xmppFederation }))).to.be.fulfilled;
 		});
 
 		it('should refuse public channels and discussions', async () => {

@@ -44,9 +44,9 @@ export function assertAppAvailable(v: unknown): asserts v is App {
 	throw JsonRpcError.internalError({ err: 'App object not available', code: Errors.DRT_APP_NOT_AVAILABLE });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function assertHandlerFunction(v: unknown): asserts v is Function {
 	if (v instanceof Function) return;
 
-	throw JsonRpcError.internalError({ err: `Expected handler function, got ${v}`, code: Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING });
+	throw JsonRpcError.internalError({ err: `Expected handler function, got ${typeof v}`, code: Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING });
 }

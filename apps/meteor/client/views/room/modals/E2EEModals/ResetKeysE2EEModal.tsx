@@ -1,9 +1,8 @@
 import { Box, ModalFooterAnnotation, ModalIcon } from '@rocket.chat/fuselage';
-import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
+import { ExternalLink, GenericModal, links } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { links } from '../../../../lib/links';
 import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
 const E2EE_RESET_KEY_LINK = links.go.e2eeGuide;
@@ -39,7 +38,7 @@ const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalPr
 
 	return (
 		<GenericModal
-			icon={<ModalIcon color='danger' name='key' />}
+			icon={<ModalIcon variant='danger' name='key' />}
 			title={t('E2E_reset_encryption_keys')}
 			variant='danger'
 			confirmText={t('E2E_reset_encryption_keys')}

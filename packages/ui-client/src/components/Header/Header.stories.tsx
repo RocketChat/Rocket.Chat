@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Avatar, Box, IconButton } from '@rocket.chat/fuselage';
+import { Avatar, Badge, Box, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentPropsWithoutRef, ComponentType } from 'react';
@@ -13,7 +13,6 @@ import {
 	HeaderIcon,
 	HeaderToolbar,
 	HeaderToolbarAction,
-	HeaderToolbarActionBadge,
 	HeaderTitle,
 	HeaderState,
 } from '.';
@@ -154,15 +153,9 @@ export const WithActionBadge: StoryObj<typeof Header> = {
 				</HeaderContentRow>
 			</HeaderContent>
 			<HeaderToolbar>
-				<HeaderToolbarAction title='call' icon='phone'>
-					<HeaderToolbarActionBadge variant='primary'>1</HeaderToolbarActionBadge>
-				</HeaderToolbarAction>
-				<HeaderToolbarAction title='disable' icon='phone'>
-					<HeaderToolbarActionBadge variant='danger'>2</HeaderToolbarActionBadge>
-				</HeaderToolbarAction>
-				<HeaderToolbarAction title='decline' icon='phone'>
-					<HeaderToolbarActionBadge variant='warning'>99</HeaderToolbarActionBadge>
-				</HeaderToolbarAction>
+				<HeaderToolbarAction title='call' icon='phone' aria-label='call, 1 unread' badge={<Badge variant='primary'>1</Badge>} />
+				<HeaderToolbarAction title='disable' icon='phone' aria-label='disable, 2 unread' badge={<Badge variant='danger'>2</Badge>} />
+				<HeaderToolbarAction title='decline' icon='phone' aria-label='decline, 99 unread' badge={<Badge variant='warning'>99</Badge>} />
 				<HeaderToolbarAction title='menu' icon='kebab' />
 			</HeaderToolbar>
 		</Header>

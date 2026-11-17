@@ -2,14 +2,15 @@ import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
 
 const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const triggersRoute = useRoute('omnichannel-triggers');
 	const deleteTrigger = useEndpoint('DELETE', '/v1/livechat/triggers/:_id', { _id });
@@ -48,11 +49,11 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 
 	return (
 		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{description}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{enabled ? t('Yes') : t('No')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
-				<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
+			<GenericTableCell truncate>{name}</GenericTableCell>
+			<GenericTableCell truncate>{description}</GenericTableCell>
+			<GenericTableCell truncate>{enabled ? t('Yes') : t('No')}</GenericTableCell>
+			<GenericTableCell truncate>
+				<IconButton icon='trash' size='small' title={t('Remove')} onClick={handleDelete} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

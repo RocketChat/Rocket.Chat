@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
-import { PropsVariationSection } from '../../../.storybook/helpers';
+import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
 import { Box } from '../Box';
 import { ButtonGroup } from '../ButtonGroup';
 import { Margins } from '../Margins';
@@ -47,6 +47,11 @@ export default {
 		square: {
 			control: 'boolean',
 			description: 'Renders as a square icon-only footprint instead of the default pill shape.',
+			table: { category: 'Shape' },
+		},
+		compact: {
+			control: 'boolean',
+			description: 'Lowers the minimum width so a label of one or two characters fits.',
 			table: { category: 'Shape' },
 		},
 		icon: {
@@ -168,6 +173,18 @@ export const Sizes: Story = {
 	),
 };
 
+export const Compact: Story = {
+	render: () => (
+		<ButtonGroup>
+			{['1', '2', '10'].map((label) => (
+				<Button key={label} size='small' compact>
+					{label}
+				</Button>
+			))}
+		</ButtonGroup>
+	),
+};
+
 export const AsLink: Story = {
 	args: {
 		is: 'a',
@@ -178,6 +195,7 @@ export const AsLink: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStatesWithFocusVisible },
 	render: () => (
 		<>
 			<PropsVariationSection
@@ -185,9 +203,9 @@ export const States: Story = {
 				common={{ onClick: action('click') }}
 				xAxis={{
 					default: {},
-					hover: { className: 'hover' },
-					active: { className: 'active' },
-					focus: { className: 'focus focus-visible' },
+					hover: {},
+					active: {},
+					focus: {},
 					disabled: { disabled: true },
 				}}
 				yAxis={{
@@ -240,9 +258,9 @@ export const States: Story = {
 				}}
 				xAxis={{
 					default: {},
-					hover: { className: 'hover' },
-					active: { className: 'active' },
-					focus: { className: 'focus focus-visible' },
+					hover: {},
+					active: {},
+					focus: {},
 					disabled: { disabled: true },
 				}}
 				yAxis={{

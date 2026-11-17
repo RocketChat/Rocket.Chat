@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -14,10 +15,6 @@ const modelsMock = {
 	},
 };
 
-const { patchContact } = proxyquire.noCallThru().load('./patchContact.ts', {
-	'@rocket.chat/models': modelsMock,
-});
-
 const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 	'./getAllowedCustomFields': {
 		getAllowedCustomFields: sinon.stub().resolves([]),
@@ -28,12 +25,6 @@ const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 	'./validateCustomFields': {
 		validateCustomFields: sinon.stub(),
 	},
-
-	'@rocket.chat/models': modelsMock,
-
-	'./patchContact': {
-		patchContact,
-	},
 	'../../notifyListener': {
 		notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
 		notifyOnRoomChangedByContactId: sinon.stub(),
@@ -43,6 +34,11 @@ const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 });
 
 describe('updateContact', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		modelsMock.LivechatContacts.patchContact.reset();

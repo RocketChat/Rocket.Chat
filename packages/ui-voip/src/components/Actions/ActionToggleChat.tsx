@@ -17,7 +17,12 @@ const ActionToggleChat = ({ pressed, onClick, badgeCount = 0, badgeVariant = 'se
 	// announced once, with the control it belongs to, rather than as a stray number beside it.
 	return (
 		<Box position='relative' display='inline-flex'>
-			<Button medium onClick={onClick} icon={icon} aria-label={badgeCount > 0 ? `${label}, ${badgeCount} ${t('Unread')}` : undefined}>
+			<Button
+				size='medium'
+				onClick={onClick}
+				icon={icon}
+				aria-label={badgeCount > 0 ? `${label}, ${badgeCount} ${t('Unread')}` : undefined}
+			>
 				{label}
 			</Button>
 			{badgeCount > 0 && (

@@ -26,7 +26,14 @@ const CallListItem = ({ call }: CallListItemProps) => {
 	const ringing = !call.declined && !call.joined && isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
 
 	const decline = (
-		<IconButton mini secondary icon='cross' title={t('Decline')} aria-label={t('Decline')} onClick={() => declineCall(call.callId)} />
+		<IconButton
+			size='mini'
+			variant='secondary'
+			icon='cross'
+			title={t('Decline')}
+			aria-label={t('Decline')}
+			onClick={() => declineCall(call.callId)}
+		/>
 	);
 
 	const actions = (() => {
@@ -34,7 +41,9 @@ const CallListItem = ({ call }: CallListItemProps) => {
 			return (
 				<>
 					{silenced && <Icon name='bell-off' size='x16' color='hint' title={t('Incoming_call_silenced')} />}
-					{audible && <IconButton mini secondary icon='bell-off' title={t('Silence')} aria-label={t('Silence')} onClick={silence} />}
+					{audible && (
+						<IconButton size='mini' variant='secondary' icon='bell-off' title={t('Silence')} aria-label={t('Silence')} onClick={silence} />
+					)}
 					{decline}
 				</>
 			);

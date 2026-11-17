@@ -93,7 +93,9 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 		setValue(value);
 
-		updateState && (await updateState({ blockId, appId, actionId, value, viewId }, e));
+		if (updateState) {
+			await updateState({ blockId, appId, actionId, value, viewId }, e);
+		}
 
 		await action(
 			{

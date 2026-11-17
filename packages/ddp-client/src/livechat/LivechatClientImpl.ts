@@ -25,12 +25,12 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		delete: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>;
 	}>();
 
-	subscribeRoom(rid: string) {
-		return Promise.all([
+	async subscribeRoom(rid: string) {
+		return [
 			this.onRoomMessage(rid, (...args) => this.ev.emit('message', args)),
 			this.onRoomUserActivity(rid, (...args) => this.ev.emit('userActivity', args)),
 			this.onRoomDeleteMessage(rid, (...args) => this.ev.emit('delete', args)),
-		]);
+		];
 	}
 
 	onMessage(cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void): () => void {
@@ -333,6 +333,4 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		const subscriptions = Array.from(this.client.subscriptions.keys());
 		return Promise.all(subscriptions.map((subscription) => this.client.unsubscribe(subscription)));
 	}
-
-	protected static override defaultOptions = { retryCount: 3, retryTime: 10000 };
 }

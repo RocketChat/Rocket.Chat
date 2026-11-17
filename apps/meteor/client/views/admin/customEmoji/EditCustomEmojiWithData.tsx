@@ -1,11 +1,11 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditCustomEmoji from './EditCustomEmoji';
-import { FormSkeleton } from '../../../components/Skeleton';
 
 export type EditCustomEmojiWithDataProps = {
 	_id: string;

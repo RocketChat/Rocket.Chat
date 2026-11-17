@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Tag, Text } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
@@ -47,9 +47,9 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 				/>
 			) : (
 				<ContextualbarScrollableContent>
-					<Box is='h4' fontScale='h4' color='titles-labels'>
+					<Text is='h4' fontScale='h4' color='titles-labels'>
 						{t('ABAC_Room_Attributes')}
-					</Box>
+					</Text>
 					<Box fontScale='p2' color='hint' marginBlockStart={8}>
 						{t('ABAC_Room_attributes_description')}
 					</Box>
@@ -58,12 +58,16 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 							<Box fontScale='p1' color='default' marginBlockEnd={8}>
 								{key}
 							</Box>
-							<Box display='flex' flexWrap='wrap'>
+							<Box
+								display='flex'
+								flexWrap='wrap'
+								gap={4}
+								paddingInlineEnd={values.length ? 4 : undefined}
+								paddingBlockEnd={values.length ? 4 : undefined}
+							>
 								{values.length === 0 && <Tag variant='danger'>{t('ABAC_Not_set')}</Tag>}
 								{values.map((value) => (
-									<Tag key={value} marginInlineEnd={4} marginBlockEnd={4}>
-										{value}
-									</Tag>
+									<Tag key={value}>{value}</Tag>
 								))}
 							</Box>
 						</Box>
@@ -72,7 +76,7 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 			)}
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={onManage}>
+					<Button variant='primary' onClick={onManage}>
 						{t('ABAC_Manage_attributes')}
 					</Button>
 				</ButtonGroup>

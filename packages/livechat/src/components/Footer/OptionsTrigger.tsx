@@ -1,7 +1,7 @@
 import { type MouseEventHandler } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 
 const handleMouseUp: MouseEventHandler<HTMLButtonElement> = ({ target }) => (target as HTMLButtonElement | null)?.blur();

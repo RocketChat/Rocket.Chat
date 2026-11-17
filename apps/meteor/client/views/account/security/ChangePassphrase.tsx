@@ -1,4 +1,17 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput, Button } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	PasswordInput,
+	Stack,
+	Text,
+} from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -6,6 +19,7 @@ import { useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import SecuritySection from './layout/SecuritySection';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { useE2EEState } from '../../room/hooks/useE2EEState';
 
@@ -97,15 +111,12 @@ export const ChangePassphrase = () => {
 	};
 
 	return (
-		<>
-			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
+		<Stack gap='x32'>
+			<Text is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
-			</Box>
-			<Box marginBlockStart={36} width='full'>
-				<Box is='h3' fontScale='h4' marginBlockEnd={12}>
-					{t('Change_E2EE_password')}
-				</Box>
-				<FieldGroup width='full'>
+			</Text>
+			<SecuritySection title={t('Change_E2EE_password')} headingLevel='h3'>
+				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
 						<FieldRow>
@@ -175,7 +186,6 @@ export const ChangePassphrase = () => {
 											{...field}
 											id={confirmPassphraseId}
 											error={errors.confirmationPassphrase?.message}
-											flexGrow={1}
 											disabled={!keysExist || !valid}
 											aria-required={passphrase ? 'true' : 'false'}
 											aria-invalid={errors.confirmationPassphrase ? 'true' : 'false'}
@@ -192,10 +202,12 @@ export const ChangePassphrase = () => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} marginBlockStart={12}>
-					{t('Save_changes')}
-				</Button>
-			</Box>
-		</>
+				<ButtonGroup>
+					<Button variant='primary' disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</SecuritySection>
+		</Stack>
 	);
 };

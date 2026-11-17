@@ -2,9 +2,10 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
 import { useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserAction, USER_ACTIVITIES } from '../../../lib/UserAction';
 import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../lib/videoRecorder';
@@ -37,7 +38,7 @@ const getVideoRecordingExtension = () => {
 };
 
 const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -120,17 +121,17 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
 				<Box marginBlockStart={4} display='flex' justifyContent='space-between'>
-					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} small onClick={handleRecord}>
-						<Box is='span' display='flex' alignItems='center'>
-							<Icon size='x16' marginInlineEnd={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
+					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} size='small' onClick={handleRecord}>
+						<Box is='span' display='flex' alignItems='center' gap={4}>
+							<Icon size='x16' name={isRecording ? 'stop-unfilled' : 'rec'} />
 							{time && <span>{time}</span>}
 						</Box>
 					</Button>
 					<ButtonGroup>
-						<Button small onClick={handleCancel}>
+						<Button size='small' onClick={handleCancel}>
 							{t('Cancel')}
 						</Button>
-						<Button primary small disabled={sendButtonDisabled} onClick={handleSendRecord}>
+						<Button variant='primary' size='small' disabled={sendButtonDisabled} onClick={handleSendRecord}>
 							{t('Send')}
 						</Button>
 					</ButtonGroup>

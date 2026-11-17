@@ -55,6 +55,7 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 			}
 		}
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- the handler is the app's own executePreFileUpload, asserted only as a Function, so its result is untyped
 		return await handlerFunction.call(
 			wrapAppForRequest(app, request),
 			context,

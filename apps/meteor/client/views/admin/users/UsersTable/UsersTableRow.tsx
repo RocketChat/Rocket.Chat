@@ -1,6 +1,6 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, Text } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
@@ -123,38 +123,38 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 	return (
 		<GenericTableRow onKeyDown={(e) => onClick(_id, e)} onClick={(e) => onClick(_id, e)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
 						<Box marginInline={8}>
 							<UserStatus status={status || Status.OFFLINE} />
 						</Box>
-						<Box fontScale='p2' withTruncatedText>
+						<Text fontScale='p2' truncate>
 							{name || username}
-						</Box>
+						</Text>
 					</Box>
 				</Box>
 			</GenericTableCell>
 
 			<GenericTableCell>
-				<Box fontScale='p2m' color='hint' withTruncatedText>
+				<Text fontScale='p2m' color='hint' truncate>
 					{username}
-				</Box>
+				</Text>
 			</GenericTableCell>
 
-			{!isLaptop && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
 
-			{!isLaptop && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell truncate>{roleNames}</GenericTableCell>}
 
 			{tab === 'all' && !isMobile && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{registrationStatusText}
 				</GenericTableCell>
 			)}
 
 			{tab === 'pending' && !isMobile && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
 					</Box>
@@ -162,7 +162,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 			)}
 
 			{tab === 'all' && showVoipExtension && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{sipExtension || t('Not_assigned')}
 				</GenericTableCell>
 			)}
@@ -176,11 +176,11 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 					{tab === 'pending' && (
 						<>
 							{active ? (
-								<Button small secondary onClick={handleResendWelcomeEmail}>
+								<Button size='small' variant='secondary' onClick={handleResendWelcomeEmail}>
 									{t('Resend_welcome_email')}
 								</Button>
 							) : (
-								<Button small primary onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
+								<Button size='small' variant='primary' onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
 									{t('Activate')}
 								</Button>
 							)}

@@ -10,10 +10,6 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 
 	border-top: $divider-size solid $divider-color;
 
-	&--danger {
-		border-color: colors.stroke(error);
-	}
-
 	&__bar {
 		display: flex;
 		justify-content: flex-end;
@@ -42,4 +38,30 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 
 		border-left: $divider-size solid $divider-color;
 	}
+
+	&--danger {
+		border-color: colors.stroke(error);
+	}
+
+	&--light {
+		border-color: colors.stroke(light);
+	}
+
+	&--small {
+		margin-inline: lengths.margin(4);
+	}
+
+	&--stretch {
+		align-self: stretch;
+
+		height: auto;
+	}
+
+	&#{&}--flush {
+		margin: 0;
+	}
+}
+
+.rcx-message-divider.rcx-divider--labelled {
+	padding-inline: 0;
 }

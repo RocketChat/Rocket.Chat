@@ -62,9 +62,6 @@ const AutoCompleteDepartmentMultiple = ({
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
 			options={departmentOptions}
-			width='100%'
-			flexShrink={0}
-			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			renderItem={({ label, value, ...props }) => {
 				if (withCheckbox) {

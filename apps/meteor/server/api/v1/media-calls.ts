@@ -94,7 +94,7 @@ const mediaCallsAnswerEndpoints = API.v1.post(
 type MediaCallsAnswerEndpoints = ExtractRoutesFromAPI<typeof mediaCallsAnswerEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsAnswerEndpoints {}
 }
 
@@ -207,7 +207,7 @@ const mediaCallsStateEndpoints = API.v1
 type MediaCallsStateEndpoints = ExtractRoutesFromAPI<typeof mediaCallsStateEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsStateEndpoints {}
 }
 
@@ -272,6 +272,6 @@ const mediaCallsInfoEndpoints = API.v1.get(
 type MediaCallsInfoEndpoints = ExtractRoutesFromAPI<typeof mediaCallsInfoEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsInfoEndpoints {}
 }

@@ -1,4 +1,4 @@
-import { IconButton, Pagination } from '@rocket.chat/fuselage';
+import { IconButton, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -11,18 +11,19 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRemoveCustomField } from './useRemoveCustomField';
 import FilterByText from '../../../components/FilterByText';
-import { links } from '../../../lib/links';
 import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
 
 const CustomFieldsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
 
@@ -52,6 +53,8 @@ const CustomFieldsTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='field' direction={sortDirection} active={sortBy === '_id'} onClick={setSort} sort='_id'>
@@ -72,7 +75,7 @@ const CustomFieldsTable = () => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60' />
+			<GenericTableHeaderCell key='remove' />
 		</>
 	);
 
@@ -82,7 +85,7 @@ const CustomFieldsTable = () => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={5} />
@@ -104,19 +107,19 @@ const CustomFieldsTable = () => {
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Custom_Fields')} aria-busy={isLoading} aria-live='polite'>
+					<GenericTable columns={columns} aria-label={t('Custom_Fields')} aria-busy={isLoading} aria-live='polite'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (
 								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
-									<GenericTableCell withTruncatedText>{_id}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{label}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{visibility === 'visible' ? t('Visible') : t('Hidden')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{_id}</GenericTableCell>
+									<GenericTableCell truncate>{label}</GenericTableCell>
+									<GenericTableCell truncate>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>
+									<GenericTableCell truncate>{visibility === 'visible' ? t('Visible') : t('Hidden')}</GenericTableCell>
+									<GenericTableCell truncate>
 										<IconButton
 											icon='trash'
-											small
+											size='small'
 											title={t('Remove')}
 											onClick={(e) => {
 												e.stopPropagation();

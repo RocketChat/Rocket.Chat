@@ -22,8 +22,8 @@ const isWellKnownServerResponseProps = ajv.compile(WellKnownServerResponseSchema
 export const getWellKnownRoutes = () => {
 	// GET /.well-known/matrix/server
 	// https://spec.matrix.org/v1.19/server-server-api/#getwell-knownmatrixserver
-	return new Router('/matrix').get(
-		'/server',
+	return new Router('/server').get(
+		'/',
 		{
 			response: {
 				200: isWellKnownServerResponseProps,

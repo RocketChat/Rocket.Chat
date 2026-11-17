@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	MessageAttachment,
 	FileAttachmentProps,
@@ -9,8 +10,7 @@ import type {
 	FileProp,
 } from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { executeSendMessage } from './sendMessage';
 import { getFileExtension } from '../../../lib/utils/getFileExtension';
@@ -24,7 +24,7 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 	const requiredFields = ['_id', 'name', 'type', 'size'];
 	requiredFields.forEach((field) => {
 		if (!Object.keys(file).includes(field)) {
-			throw new Meteor.Error('error-invalid-file', 'Invalid file');
+			throw new ClientSafeError('error-invalid-file', 'Invalid file');
 		}
 	});
 }
@@ -38,7 +38,7 @@ export const parseFileIntoMessageAttachments = async (
 
 	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
 	if (!upload) {
-		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+		throw new ClientSafeError('error-invalid-file', 'Invalid file', {
 			method: 'sendFileMessage',
 		});
 	}
@@ -161,6 +161,26 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
+const isFileMessageData = ajv.compile({
+	type: 'object',
+	properties: {
+		avatar: { type: 'string' },
+		emoji: { type: 'string' },
+		alias: { type: 'string' },
+		groupable: { type: 'boolean' },
+		msg: { type: 'string' },
+		tmid: { type: 'string' },
+		customFields: { type: 'string' },
+		t: { type: 'string' },
+		content: {
+			type: 'object',
+			properties: { algorithm: { type: 'string' }, ciphertext: { type: 'string' } },
+			required: ['algorithm', 'ciphertext'],
+		},
+	},
+	additionalProperties: false,
+});
+
 export const sendFileMessage = async (
 	userId: string,
 	{
@@ -176,7 +196,7 @@ export const sendFileMessage = async (
 	const user = await Users.findOneById(userId, { projection: { services: 0 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'sendFileMessage',
 		} as any);
 	}
@@ -190,25 +210,11 @@ export const sendFileMessage = async (
 		return false;
 	}
 
-	check(
-		msgData,
-		Match.Maybe({
-			avatar: Match.Optional(String),
-			emoji: Match.Optional(String),
-			alias: Match.Optional(String),
-			groupable: Match.Optional(Boolean),
-			msg: Match.Optional(String),
-			tmid: Match.Optional(String),
-			customFields: Match.Optional(String),
-			t: Match.Optional(String),
-			content: Match.Optional(
-				Match.ObjectIncluding({
-					algorithm: String,
-					ciphertext: String,
-				}),
-			),
-		}),
-	);
+	if (msgData != null && !isFileMessageData(msgData)) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'sendFileMessage',
+		});
+	}
 
 	const data = {
 		rid: roomId,

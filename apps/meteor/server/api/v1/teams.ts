@@ -300,7 +300,7 @@ API.v1.post(
 		}
 
 		if (!(await hasPermissionAsync(this.user, 'move-room-to-team', team.roomId))) {
-			return API.v1.forbidden('error-no-permission-team-channel');
+			return API.v1.forbidden('User does not have the permissions required for this action');
 		}
 
 		const { rooms } = this.bodyParams;
@@ -873,6 +873,6 @@ API.v1.post(
 export type TeamsEndpoints = ExtractRoutesFromAPI<typeof teamsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends TeamsEndpoints {}
 }

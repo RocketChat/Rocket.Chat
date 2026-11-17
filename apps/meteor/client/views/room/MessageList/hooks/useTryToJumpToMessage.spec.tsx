@@ -12,6 +12,8 @@ jest.mock('../../../../lib/RoomHistoryManager', () => ({
 	RoomHistoryManager: {
 		getSurroundingChannelMessages: jest.fn().mockResolvedValue(undefined),
 	},
+	useRoomHistoryState: <T,>(_rid: string, selector: (state: { hasMore: boolean; hasMoreNext: boolean; isLoading: boolean }) => T) =>
+		selector({ hasMore: false, hasMoreNext: false, isLoading: false }),
 }));
 
 jest.mock('../../hooks/useGoToRoom', () => ({
@@ -62,9 +64,6 @@ const renderJumpHook = (rid: string, message: unknown) =>
 							{
 								rid,
 								room: { _id: rid, t: 'c', name: 'general' },
-								hasMorePreviousMessages: false,
-								hasMoreNextMessages: false,
-								isLoadingMoreMessages: false,
 							} as any
 						}
 					>

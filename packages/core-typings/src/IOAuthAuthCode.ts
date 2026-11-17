@@ -6,4 +6,6 @@ export interface IOAuthAuthCode extends IRocketChatRecord {
 	userId: string;
 	expires: Date;
 	redirectUri: string;
+	codeChallenge?: string;
+	codeChallengeMethod?: string;
 }

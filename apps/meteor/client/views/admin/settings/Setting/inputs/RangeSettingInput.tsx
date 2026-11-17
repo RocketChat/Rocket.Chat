@@ -31,11 +31,6 @@ function RangeSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			{hint && (
-				<FieldRow>
-					<FieldHint marginBlockEnd={4}>{hint}</FieldHint>
-				</FieldRow>
-			)}
 			<FieldRow>
 				<Slider
 					disabled={disabled || readonly}
@@ -45,6 +40,7 @@ function RangeSettingInput({
 					onChange={onChangeValue}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

@@ -1,10 +1,10 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from './FormSkeleton';
 import { UserStatus } from '../../../../components/UserStatus';
 import AgentInfoDetails from '../../components/AgentInfoDetails';
 import Field from '../../components/Field';
@@ -40,12 +40,7 @@ const AgentField = ({ agent, isSmall = false }: AgentFieldProps) => {
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username || ''} />
-				<AgentInfoDetails
-					marginInlineStart={isSmall ? 'x8' : 'x10'}
-					name={displayName}
-					shortName={username}
-					status={<UserStatus status={status} />}
-				/>
+				<AgentInfoDetails marginInlineStart='x8' name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

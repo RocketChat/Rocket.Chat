@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { minutesToMilliseconds } from 'date-fns/minutesToMilliseconds';
 
 import { roomsQueryKeys } from '../lib/queryKeys';
+import { isForbiddenError } from '../lib/utils/isForbiddenError';
 
 type UseRoomInfoEndpointOptions<
 	TData = Serialized<{
@@ -42,7 +43,7 @@ export const useRoomInfoEndpoint = <
 		queryKey: roomsQueryKeys.info(rid),
 		queryFn: () => getRoomInfo({ roomId: rid }),
 		gcTime: minutesToMilliseconds(15),
-		retry: (count, error: { success: boolean; error: string }) => count <= 2 && error.error !== 'not-allowed',
+		retry: (count, error) => count <= 2 && !isForbiddenError(error),
 		enabled: !!uid,
 		...options,
 	});

@@ -1,3 +1,4 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
@@ -6,7 +7,6 @@ import ldapEscape from 'ldap-escape';
 import limax from 'limax';
 // #ToDo: #TODO: Remove Meteor dependencies
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { LDAPConnection } from './Connection';
@@ -336,7 +336,7 @@ export class LDAPManager {
 	): Promise<void> {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-			await Accounts.setPasswordAsync(user._id, password, { logout: false });
+			await UsersRaw.setPasswordHash(user._id, await hashPassword(password));
 		}
 
 		await this.syncUserAvatar(user, ldapUser);
@@ -351,7 +351,7 @@ export class LDAPManager {
 	): Promise<LDAPLoginResult> {
 		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.debug('User exists without "ldap: true"');
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				'LDAP-login-error',
 				`LDAP Authentication succeeded, but there's already an existing user with provided username [${user.username}] in Mongo.`,
 			);

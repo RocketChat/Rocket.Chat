@@ -105,7 +105,7 @@ const PriorityEditForm = ({ data, onSave }: PriorityEditFormProps) => {
 						{t('Reset')}
 					</Button>
 
-					<Button primary type='submit' loading={isSubmitting} form={formId}>
+					<Button variant='primary' type='submit' loading={isSubmitting} form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

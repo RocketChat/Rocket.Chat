@@ -1,8 +1,8 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter, getDirtyFields } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
@@ -19,7 +19,7 @@ export type PreferencesViewProps = {
 };
 
 const PreferencesView = ({ vm }: PreferencesViewProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const methods = useForm({ defaultValues: vm.values });
 
@@ -67,7 +67,7 @@ const PreferencesView = ({ vm }: PreferencesViewProps) => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(vm.values)}>{t('Cancel')}</Button>
-					<Button form={preferencesFormId} primary type='submit'>
+					<Button form={preferencesFormId} variant='primary' type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

@@ -11,10 +11,11 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
-import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
@@ -22,8 +23,9 @@ import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
 const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const xmppEnabled = useSetting('XMPP_Server_Enabled', false);
 	const createDMFormId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -64,7 +66,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent marginBlockEnd={2}>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
@@ -86,6 +88,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 										value={value}
 										onBlur={onBlur}
 										federated
+										xmpp={xmppEnabled}
 										aria-required='true'
 										error={errors.users?.message}
 									/>
@@ -100,7 +103,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} type='submit' variant='primary'>
 						{t('Create')}
 					</Button>
 				</ModalFooterControllers>

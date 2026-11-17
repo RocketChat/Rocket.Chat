@@ -1,4 +1,4 @@
-import { Import } from '@rocket.chat/core-services';
+import { Import, ClientSafeError } from '@rocket.chat/core-services';
 import type { IImport } from '@rocket.chat/core-typings';
 import { Imports } from '@rocket.chat/models';
 import {
@@ -18,7 +18,6 @@ import {
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '../../lib/import';
 import { PendingAvatarImporter } from '../../lib/import/pending-avatars/PendingAvatarImporter';
@@ -214,7 +213,7 @@ API.v1.post(
 	async function action() {
 		const importer = Importers.get('pending-files');
 		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingFiles');
+			throw new ClientSafeError('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingFiles');
 		}
 
 		const operation = await Import.newOperation(this.userId, importer.name, importer.key);
@@ -243,7 +242,7 @@ API.v1.post(
 	async function action() {
 		const importer = Importers.get('pending-avatars');
 		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingAvatars');
+			throw new ClientSafeError('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingAvatars');
 		}
 
 		const operation = await Import.newOperation(this.userId, importer.name, importer.key);

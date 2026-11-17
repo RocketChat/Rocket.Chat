@@ -3,9 +3,10 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { canonicalizeTimezone } from '@rocket.chat/tools';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { BusinessHoursFormData } from './BusinessHoursForm';
 import BusinessHoursForm from './BusinessHoursForm';
@@ -36,7 +37,7 @@ export type EditBusinessHoursProps = {
 };
 
 const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
@@ -86,7 +87,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={() => router.navigate('/omnichannel/businessHours')}>{t('Back')}</Button>}
 					{type === 'custom' && businessHourData?._id && (
-						<Button danger onClick={() => handleRemove(businessHourData?._id, type)}>
+						<Button variant='danger' onClick={() => handleRemove(businessHourData?._id, type)}>
 							{t('Delete')}
 						</Button>
 					)}
@@ -104,7 +105,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

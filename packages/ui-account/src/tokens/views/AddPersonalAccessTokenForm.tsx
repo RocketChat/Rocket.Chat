@@ -42,8 +42,8 @@ const AddPersonalAccessTokenForm = ({ onCreate }: AddPersonalAccessTokenFormProp
 	};
 
 	return (
-		<Box is='form' onSubmit={handleSubmit(handleAddToken)}>
-			<FieldGroup marginBlock={8}>
+		<Box is='form' onSubmit={handleSubmit(handleAddToken)} paddingBlock={8}>
+			<FieldGroup>
 				<Field>
 					<FieldRow>
 						<Margins inlineEnd={4}>
@@ -69,7 +69,7 @@ const AddPersonalAccessTokenForm = ({ onCreate }: AddPersonalAccessTokenFormProp
 								/>
 							</Box>
 						</Margins>
-						<Button primary type='submit'>
+						<Button variant='primary' type='submit'>
 							{t('Add')}
 						</Button>
 					</FieldRow>

@@ -1,5 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -48,9 +50,7 @@ describe('setUsername', () => {
 
 	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('./setUsername', {
 		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-		'meteor/meteor': { Meteor: { Error } },
-		'@rocket.chat/core-services': { api: stubs.api },
-		'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
+		'@rocket.chat/core-services': { api: stubs.api, ClientSafeError },
 		'meteor/accounts-base': { Accounts: stubs.Accounts },
 		'underscore': stubs.underscore,
 		'../../settings': { settings: stubs.settings },
@@ -64,6 +64,12 @@ describe('setUsername', () => {
 		'./validateUsername': { validateUsername: stubs.validateUsername },
 		'../callbacks': { callbacks: stubs.callbacks },
 		'../logger/system': { SystemLogger: stubs.SystemLogger },
+	});
+
+	before(() => {
+		mockModel('Users', stubs.Users);
+		mockModel('Invites', stubs.Invites);
+		mockModel('Subscriptions', stubs.Subscriptions);
 	});
 
 	beforeEach(() => {
@@ -100,7 +106,7 @@ describe('setUsername', () => {
 			try {
 				await setUsernameWithValidation(userId, '');
 			} catch (error: any) {
-				expect(error.message).to.equal('error-invalid-username');
+				expect(error.error).to.equal('error-invalid-username');
 			}
 		});
 
@@ -111,7 +117,7 @@ describe('setUsername', () => {
 				await setUsernameWithValidation(userId, username);
 			} catch (error: any) {
 				expect(stubs.Users.findOneById.calledOnce).to.be.true;
-				expect(error.message).to.equal('error-invalid-user');
+				expect(error.error).to.equal('error-invalid-user');
 			}
 		});
 
@@ -123,7 +129,7 @@ describe('setUsername', () => {
 				await setUsernameWithValidation(userId, username);
 			} catch (error: any) {
 				expect(stubs.settings.get.calledOnce).to.be.true;
-				expect(error.message).to.equal('error-not-allowed');
+				expect(error.error).to.equal('error-not-allowed');
 			}
 		});
 
@@ -135,7 +141,7 @@ describe('setUsername', () => {
 				await setUsernameWithValidation(userId, 'invalid-username');
 			} catch (error: any) {
 				expect(stubs.validateUsername.calledOnce).to.be.true;
-				expect(error.message).to.equal('username-invalid');
+				expect(error.error).to.equal('username-invalid');
 			}
 		});
 
@@ -148,7 +154,7 @@ describe('setUsername', () => {
 				await setUsernameWithValidation(userId, 'existingUsername');
 			} catch (error: any) {
 				expect(stubs.checkUsernameAvailability.calledOnce).to.be.true;
-				expect(error.message).to.equal('error-field-unavailable');
+				expect(error.error).to.equal('error-field-unavailable');
 			}
 		});
 
@@ -165,7 +171,7 @@ describe('setUsername', () => {
 				await setUsernameWithValidation(userId, 'newUsername');
 			} catch (error: any) {
 				expect(stubs.Subscriptions.findUserFederatedRoomIds.calledOnce).to.be.true;
-				expect(error.message).to.equal('error-not-allowed');
+				expect(error.error).to.equal('error-not-allowed');
 			}
 		});
 
@@ -183,7 +189,7 @@ describe('setUsername', () => {
 				await setUsernameWithValidation(userId, 'newUsername');
 			} catch (error: any) {
 				expect(stubs.Subscriptions.findUserFederatedRoomIds.notCalled).to.be.true;
-				expect(error.message).to.equal('error-not-allowed');
+				expect(error.error).to.equal('error-not-allowed');
 			}
 		});
 

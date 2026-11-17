@@ -5,7 +5,8 @@ import { SchedulerBridge } from '@rocket.chat/apps/dist/server/bridges/Scheduler
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { ObjectId } from 'bson';
-import { MongoInternals } from 'meteor/mongo';
+
+import { client } from '../../../database/utils';
 
 function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
 	return (job) => {
@@ -38,7 +39,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: client.db(),
 			db: { collection: 'rocketchat_apps_scheduler' },
 			// this ensures the same job doesn't get executed multiple times in a cluster
 			defaultConcurrency: 1,

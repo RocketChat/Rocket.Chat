@@ -106,7 +106,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{view.close && (
-							<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
+							<Button variant={view.close.style === 'danger' ? 'danger' : undefined} onClick={handleCancel}>
 								{contextualBarParser.renderTextObject(view.close.text, 0)}
 							</Button>
 						)}

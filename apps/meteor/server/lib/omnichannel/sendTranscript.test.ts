@@ -1,5 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -19,8 +21,6 @@ const modelsMock = {
 		findOneByIdAndRoomId: sinon.stub(),
 	},
 };
-
-const checkMock = sinon.stub();
 
 const mockLogger = class {
 	debug() {
@@ -63,15 +63,9 @@ const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
 	'@rocket.chat/core-services': {
 		Message: { saveSystemMessage: sinon.stub().resolves() },
 		Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
+		ClientSafeError,
 	},
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/logger': { Logger: mockLogger },
-	'meteor/meteor': {
-		Meteor: {
-			Error: globalThis.Error,
-		},
-	},
-	'meteor/check': { check: checkMock },
 	'../callbacks': {
 		callbacks: {
 			run: sinon.stub(),
@@ -85,8 +79,14 @@ const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
 });
 
 describe('Send transcript', () => {
+	before(() => {
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Users', modelsMock.Users);
+		mockModel('Uploads', modelsMock.Uploads);
+	});
+
 	beforeEach(() => {
-		checkMock.reset();
 		modelsMock.LivechatRooms.findOneById.reset();
 		modelsMock.Messages.findLivechatClosingMessage.reset();
 		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.reset();
@@ -180,10 +180,6 @@ describe('Send transcript', () => {
 		});
 	});
 
-	it('should throw error when rid or email are invalid params', async () => {
-		checkMock.throws(new Error('Invalid params'));
-		await expect(sendTranscript({})).to.be.rejectedWith(Error);
-	});
 	it('should throw error when visitor not found', async () => {
 		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
 	});

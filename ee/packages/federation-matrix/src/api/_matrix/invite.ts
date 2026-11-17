@@ -161,7 +161,15 @@ export const getMatrixInviteRoutes = () => {
 		isAuthenticatedMiddleware(),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
+			const {
+				event,
+				room_version: roomVersion,
+				invite_room_state: strippedStateEvents,
+			} = await c.req.json<{
+				event: any;
+				room_version: string;
+				invite_room_state?: { type: string }[] | null;
+			}>();
 
 			const userToCheck = event.state_key;
 
@@ -178,7 +186,7 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			// spec: servers SHOULD return M_INVALID_PARAM if m.room.create is missing from invite_room_state
-			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
+			if (!strippedStateEvents?.some((e) => e.type === 'm.room.create')) {
 				return {
 					body: {
 						errcode: 'M_INVALID_PARAM',

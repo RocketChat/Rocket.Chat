@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { createClassName } from '../../../helpers/createClassName';
 import type { MessageBubbleProps } from '../MessageBubble';
 import { MessageBubble } from '../MessageBubble';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 export type AudioAttachmentProps = {
 	url: string;
@@ -16,7 +16,7 @@ const AudioAttachment = ({ url, className, ...messageBubbleProps }: AudioAttachm
 
 	return (
 		<MessageBubble nude className={createClassName(styles, 'audio-attachment', {}, [className])} {...messageBubbleProps}>
-			{/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+			{/* oxlint-disable-next-line jsx-a11y/media-has-caption */}
 			<audio src={url} controls className={createClassName(styles, 'audio-attachment__inner')}>
 				{t('you_browser_doesn_t_support_audio_element')}
 			</audio>

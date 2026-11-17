@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import { useRoomRoute, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +8,11 @@ import ParentRoomButton from '../ParentRoomButton';
 
 export type ParentDiscussionProps = {
 	loading?: boolean;
-	room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'prid' | 'u' | 'federated'>;
+	room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'prid' | 'u' | 'federated' | 'xmppFederation'>;
 };
 
 const getChannelRoomName = (room: ParentDiscussionProps['room'], allowSpecialChars: boolean): string => {
-	if (room.prid || isRoomFederated(room)) {
+	if (room.prid || isRoomFederated(room) || isRoomXMPPFederated(room)) {
 		return room.fname || '';
 	}
 

@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
@@ -20,13 +21,12 @@ import {
 import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
-import { check } from 'meteor/check';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { checkDdpRateLimit } from '../../lib/utils/checkDdpRateLimit';
 import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
 import { getURL } from '../../lib/utils/getURL';
@@ -221,7 +221,7 @@ API.v1.get(
 		const { type, icon } = this.queryParams;
 		let { channel, name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
-			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+			throw new ClientSafeError('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
 			});
 		}
@@ -235,7 +235,7 @@ API.v1.get(
 				.map((t: string) => t.trim())
 				.includes(type)
 		) {
-			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
+			throw new ClientSafeError('error-shield-disabled', 'This shield type is disabled', {
 				route: '/api/v1/shield.svg',
 			});
 		}
@@ -551,7 +551,6 @@ API.v1.get(
  */
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'method.call/:method': {
 			POST: (params: { method: string; args: any[] }) => any;
@@ -636,10 +635,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		check(this.bodyParams, {
-			message: String,
-		});
-
 		const data = EJSON.parse(this.bodyParams.message);
 
 		const { method, params, id } = data;
@@ -660,13 +655,7 @@ API.v1.post(
 		};
 
 		try {
-			DDPRateLimiter._increment(rateLimiterInput);
-			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-					timeToReset: rateLimitResult.timeToReset,
-				});
-			}
+			checkDdpRateLimit(rateLimiterInput);
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
@@ -691,10 +680,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		check(this.bodyParams, {
-			message: String,
-		});
-
 		const data = EJSON.parse(this.bodyParams.message);
 
 		const { method, params, id } = data;
@@ -715,14 +700,7 @@ API.v1.post(
 		};
 
 		try {
-			DDPRateLimiter._increment(rateLimiterInput);
-
-			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-					timeToReset: rateLimitResult.timeToReset,
-				});
-			}
+			checkDdpRateLimit(rateLimiterInput);
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
@@ -811,10 +789,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		check(this.bodyParams, {
-			setDeploymentAs: String,
-		});
-
 		const settingsIds: string[] = [];
 
 		if (this.bodyParams.setDeploymentAs === 'new-workspace') {

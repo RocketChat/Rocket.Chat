@@ -1,5 +1,5 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { ExperimentalTabElement } from '../elements/ExperimentalTabElement';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { ExperimentalTabElement } from '../elements/ExperimentalTabElement.js';
 
 export type ExperimentalTabNavigationBlock = LayoutBlockish<{
 	type: 'tab_navigation';

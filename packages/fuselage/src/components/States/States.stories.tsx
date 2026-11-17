@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import {
 	States,
@@ -63,7 +63,7 @@ export const Default: Story = {
 					<StatesTitle>No app matches</StatesTitle>
 					<StatesSubtitle>
 						No Marketplace matches for:
-						<strong>"{searchTerm}"</strong>
+						<strong>&quot;{searchTerm}&quot;</strong>
 					</StatesSubtitle>
 					<StatesSuggestion>
 						<StatesSuggestionText>You can try to:</StatesSuggestionText>

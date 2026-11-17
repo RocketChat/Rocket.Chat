@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';

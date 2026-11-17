@@ -1,12 +1,13 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { generatePath } from '../../../../../lib/utils/generatePath';
 import { SystemLogger } from '../../../logger/system';
+import { getWorkspaceURL } from '../../../utils/getURL';
 import { placeholders } from '../../../utils/placeholders';
 import * as Mailer from '../../email/api';
 
@@ -26,7 +27,7 @@ export const sendMail = async function ({
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 
 	if (body.indexOf('[unsubscribe]') === -1) {
-		throw new Meteor.Error('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {
+		throw new ClientSafeError('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {
 			function: 'Mailer.sendMail',
 		});
 	}
@@ -40,14 +41,14 @@ export const sendMail = async function ({
 		const user = await Users.findOneByEmailAddress(from);
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				function: 'Mailer.sendMail',
 			});
 		}
 
 		const email = `${user.name} <${user.emails?.[0].address}>`;
 		const html = placeholders.replace(body, {
-			unsubscribe: Meteor.absoluteUrl(
+			unsubscribe: getWorkspaceURL(
 				generatePath('mailer/unsubscribe/:_id/:createdAt', {
 					_id: user._id,
 					createdAt: user.createdAt?.getTime().toString() || '',
@@ -77,7 +78,7 @@ export const sendMail = async function ({
 			const email = `${user.name} <${user.emails[0].address}>`;
 
 			const html = placeholders.replace(body, {
-				unsubscribe: Meteor.absoluteUrl(
+				unsubscribe: getWorkspaceURL(
 					generatePath('mailer/unsubscribe/:_id/:createdAt', {
 						_id: user._id,
 						createdAt: user.createdAt?.getTime().toString() || '',

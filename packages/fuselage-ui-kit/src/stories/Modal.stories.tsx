@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	AnimatedVisibility,
 	Button,
@@ -19,10 +19,8 @@ import { action } from 'storybook/actions';
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
 
-type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
-
 const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boolean }) => (
-	<AnimatedVisibility visibility={visible ? (AnimatedVisibility.VISIBLE as VisibilityType) : (AnimatedVisibility.HIDDEN as VisibilityType)}>
+	<AnimatedVisibility visibility={visible ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
 		<Modal open={visible}>
 			<ModalHeader>
 				<ModalThumb url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />
@@ -33,7 +31,7 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={action('cancel')}>Cancel</Button>
-					<Button primary onClick={action('submit')}>
+					<Button variant='primary' onClick={action('submit')}>
 						Submit
 					</Button>
 				</ButtonGroup>
@@ -177,3 +175,7 @@ export const Conditional = createStory(payloads.conditional);
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);

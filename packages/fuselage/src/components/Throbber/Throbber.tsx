@@ -1,37 +1,13 @@
-import { css } from '@rocket.chat/css-in-js';
-import type { RefAttributes } from 'react';
-
+import type { ElementProps } from '../../types/ElementProps';
 import { Box, type BoxProps } from '../Box';
+import Circle from './Circle';
 
-type CircleProps = {
-	circleCount: number;
-	iteration: number;
-	inheritColor?: boolean;
+export type ThrobberProps = ElementProps<HTMLElement> & {
+	size?: BoxProps['size'];
+	circleCount?: number;
 	disabled?: boolean;
-} & Pick<BoxProps, 'size'>;
-
-function Circle({ disabled, circleCount, iteration, inheritColor, ...props }: CircleProps) {
-	return (
-		<Box
-			is='span'
-			className={css`
-				animation-duration: ${circleCount * 0.466}s;
-				animation-delay: ${iteration * 0.16}s;
-			`}
-			rcx-throbber__circle
-			rcx-throbber__circle--disabled={disabled}
-			rcx-throbber__circle--inherit-color={inheritColor}
-			{...props}
-		/>
-	);
-}
-
-export type ThrobberProps = Omit<BoxProps, 'ref' | 'disabled'> &
-	RefAttributes<HTMLElement> & {
-		circleCount?: number;
-		disabled?: boolean;
-		inheritColor?: boolean;
-	};
+	inheritColor?: boolean;
+};
 
 /**
  * Indicates content that has not loaded yet.

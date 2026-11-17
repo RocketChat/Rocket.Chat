@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
@@ -15,7 +15,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 	bypassTwoFactor: boolean;
 }): Promise<string> => {
 	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
-		throw new Meteor.Error('not-authorized', 'Not Authorized', {
+		throw new ClientSafeError('not-authorized', 'Not Authorized', {
 			method: 'personalAccessTokens:generateToken',
 		});
 	}
@@ -26,7 +26,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 		tokenName,
 	});
 	if (tokenExist) {
-		throw new Meteor.Error('error-token-already-exists', 'A token with this name already exists', {
+		throw new ClientSafeError('error-token-already-exists', 'A token with this name already exists', {
 			method: 'personalAccessTokens:generateToken',
 		});
 	}
@@ -34,7 +34,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 	await Users.addPersonalAccessTokenToUser({
 		userId,
 		loginTokenObject: {
-			hashedToken: Accounts._hashLoginToken(token),
+			hashedToken: hashLoginToken(token),
 			type: 'personalAccessToken',
 			createdAt: new Date(),
 			lastTokenPart: token.slice(-6),

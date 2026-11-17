@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Stack } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { List, DarkModeProvider, ListItem } from '@rocket.chat/layout';
 import { useMemo } from 'react';
@@ -26,8 +26,10 @@ const Description = () => {
 
 	const listItem = (text: string, id: number) => (
 		<ListItem key={id} fontScale='p1'>
-			<Icon name='check' size='x24' marginInlineEnd={12} />
-			{text}
+			<Stack direction='row' gap={12}>
+				<Icon name='check' size='x24' />
+				{text}
+			</Stack>
 		</ListItem>
 	);
 

@@ -73,6 +73,7 @@ export interface IRoom extends IRocketChatRecord {
 
 	/* @deprecated */
 	federated?: boolean;
+	xmppFederation?: IRoomXMPPFederation;
 	/* @deprecated */
 	customFields?: Record<string, any>;
 
@@ -133,6 +134,40 @@ export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated =>
 
 export const isRoomNativeFederated = (room: Partial<IRoom>): room is IRoomNativeFederated =>
 	isRoomFederated(room) && 'federation' in room && room.federation !== undefined;
+
+type XMPPFederationRole<TRole extends string, TFields> = { version: 1; role: TRole; origin: string } & TFields;
+
+/**
+ * How a room is federated over native XMPP; such a room never sets `federated` ([ADR 0006](../../../ee/packages/xmpp-server/docs/adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md)).
+ * A `host-muc` room's `muc` is `<room>@<mucSubdomain>.<domain>`.
+ */
+export type IRoomXMPPFederation =
+	| XMPPFederationRole<'dm', { with: string }>
+	| XMPPFederationRole<'host-muc', { muc: string }>
+	| XMPPFederationRole<'remote-muc', { muc: string }>;
+
+export interface IRoomXMPPFederated extends IRoom {
+	xmppFederation: IRoomXMPPFederation;
+}
+
+export const isRoomXMPPFederated = (room: Partial<IRoom>): room is IRoomXMPPFederated =>
+	'xmppFederation' in room && (room as Partial<IRoomXMPPFederated>).xmppFederation !== undefined;
+
+/** A MUC room hosted by this server. */
+export interface IRoomXMPPHostedMuc extends IRoomXMPPFederated {
+	xmppFederation: Extract<IRoomXMPPFederation, { role: 'host-muc' }>;
+}
+
+export const isRoomXMPPHostedMuc = (room: Partial<IRoom>): room is IRoomXMPPHostedMuc =>
+	isRoomXMPPFederated(room) && room.xmppFederation.role === 'host-muc' && !!room.xmppFederation.muc;
+
+/** The shadow of a MUC hosted elsewhere; `muc` is the remote room JID we join as a client. */
+export interface IRoomXMPPRemoteMuc extends IRoomXMPPFederated {
+	xmppFederation: Extract<IRoomXMPPFederation, { role: 'remote-muc' }>;
+}
+
+export const isRoomXMPPRemoteMuc = (room: Partial<IRoom>): room is IRoomXMPPRemoteMuc =>
+	isRoomXMPPFederated(room) && room.xmppFederation.role === 'remote-muc' && !!room.xmppFederation.muc;
 
 export interface ICreatedRoom extends IRoom {
 	rid: string;

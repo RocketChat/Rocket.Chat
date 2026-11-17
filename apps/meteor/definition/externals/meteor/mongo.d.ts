@@ -24,6 +24,13 @@ declare module 'meteor/mongo' {
 	namespace MongoInternals {
 		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
 
+		const NpmModules: {
+			mongodb: {
+				version: string;
+				module: typeof mongodb;
+			};
+		};
+
 		class ConnectionClass {}
 
 		function Connection(): ConnectionClass;

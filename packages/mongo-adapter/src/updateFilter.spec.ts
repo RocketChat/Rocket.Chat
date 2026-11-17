@@ -1,4 +1,4 @@
-import { createTransformFromUpdateFilter, createUpsertDocument } from './updateFilter';
+import { createTransformFromUpdateFilter, createUpsertDocument } from './updateFilter.js';
 
 type DocType = {
 	_id: string;

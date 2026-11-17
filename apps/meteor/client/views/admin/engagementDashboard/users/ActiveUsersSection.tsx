@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, FlexContainer, FlexItem, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Skeleton, Text, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { addDays } from 'date-fns/addDays';
 import { differenceInDays } from 'date-fns/differenceInDays';
@@ -258,13 +258,13 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 												<Box>
 													<Box>{formatDate(points[0].data.x)}</Box>
 													{points.map(({ serieId, data: { y: activeUsers } }) => (
-														<Box key={serieId} fontScale='p1m'>
+														<Text key={serieId} fontScale='p1m'>
 															<Box>
 																{(serieId === 'dau' && t('DAU_value', { value: activeUsers })) ||
 																	(serieId === 'wau' && t('WAU_value', { value: activeUsers })) ||
 																	(serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
 															</Box>
-														</Box>
+														</Text>
 													))}
 												</Box>
 											</Tile>

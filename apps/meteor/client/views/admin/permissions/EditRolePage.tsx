@@ -110,11 +110,11 @@ const EditRolePage = ({ role, isEnterprise }: EditRolePageProps) => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup vertical stretch>
-					<Button primary disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (
-						<Button secondary danger onClick={handleDelete}>
+						<Button variant='secondary-danger' onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

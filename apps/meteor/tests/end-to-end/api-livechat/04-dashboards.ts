@@ -68,7 +68,7 @@ describe('LIVECHAT - dashboards', () => {
 			// send a few messages
 			const numberOfMessages = Random.between(TOTAL_MESSAGES.min, TOTAL_MESSAGES.max);
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 			for await (const _ of Array(numberOfMessages - 1).keys()) {
 				// flip a coin to decide who will send the message
 				const willSendFromAgent = Random.between(0, 1) === 1;

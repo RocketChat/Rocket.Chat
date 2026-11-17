@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
+import ContextActionsBlock from '../blocks/ContextActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
 import HeaderBlock from '../blocks/HeaderBlock';
@@ -12,6 +13,8 @@ import InputBlock from '../blocks/InputBlock';
 import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
+import TableBlock from '../blocks/TableBlock';
+import VideoBlock from '../blocks/VideoBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
 import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSelectElement';
@@ -19,6 +22,7 @@ import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiC
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
 import DateTimePickerElement from '../elements/DateTimePickerElement';
+import FeedbackButtonsElement from '../elements/FeedbackButtonsElement';
 import FormattedTextInputElement from '../elements/FormattedTextInputElement';
 import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
@@ -326,6 +330,42 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		);
 	}
 
+	table(block: UiKit.TableBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<TableBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	video(block: UiKit.VideoBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<VideoBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	context_actions(block: UiKit.ContextActionsBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<ContextActionsBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
 	markdown(block: UiKit.MarkdownBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return (
@@ -444,6 +484,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		}
 
 		return <IconElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	feedback_buttons(block: UiKit.FeedbackButtonsElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<FeedbackButtonsElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
 	}
 
 	icon_button(block: UiKit.IconButtonElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {

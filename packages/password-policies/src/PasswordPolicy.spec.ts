@@ -1,5 +1,5 @@
-import { PasswordPolicy } from './PasswordPolicy';
-import { PasswordPolicyError } from './PasswordPolicyError';
+import { PasswordPolicy } from './PasswordPolicy.js';
+import { PasswordPolicyError } from './PasswordPolicyError.js';
 
 describe('Password tests with default options', () => {
 	it('should allow all passwords', () => {

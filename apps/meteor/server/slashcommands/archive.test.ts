@@ -1,6 +1,7 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { isRegisterUser } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -27,9 +28,10 @@ import { loadSlashCommand } from '../../tests/mocks/server/slashcommands/helpers
 			allowMemberAction = sinon.stub().resolves(true);
 			hasPermission = sinon.stub().resolves(true);
 			changeRoom = sinon.stub().resolves();
+			mockModel('Rooms', { findOneById: findCurrentRoom, findOneByName: findRoom });
+			mockModel('Users', { findOneById: findUser });
 			slashCommand = loadSlashCommand(`${command === 'archive' ? 'archiveroom' : 'unarchiveroom'}/server`, {
 				'@rocket.chat/core-typings': { isRegisterUser },
-				'@rocket.chat/models': { Rooms: { findOneById: findCurrentRoom, findOneByName: findRoom }, Users: { findOneById: findUser } },
 				'../../lib/rooms/roomCoordinator': { roomCoordinator: { getRoomDirectives: () => ({ allowMemberAction }) } },
 				'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermission },
 				[`../../lib/rooms/${command}Room`]: { [`${command}Room`]: changeRoom },
@@ -56,7 +58,7 @@ import { loadSlashCommand } from '../../tests/mocks/server/slashcommands/helpers
 		it('does not change rooms without an authenticated user', async () => {
 			const result = slashCommand.runCommand(command, { userId: '' });
 			if (command === 'unarchive') {
-				await expect(result).to.be.rejectedWith('Invalid user');
+				await expect(result).to.be.rejectedWith('Unauthenticated');
 			} else {
 				await result;
 			}

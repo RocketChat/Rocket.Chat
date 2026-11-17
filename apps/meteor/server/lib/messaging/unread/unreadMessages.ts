@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../notifyListener';
@@ -15,7 +15,7 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		)[0];
 
 		if (!lastMessage) {
-			throw new Meteor.Error('error-no-message-for-unread', 'There are no messages to mark unread', {
+			throw new ClientSafeError('error-no-message-for-unread', 'There are no messages to mark unread', {
 				method: 'unreadMessages',
 				action: 'Unread_messages',
 			});
@@ -30,7 +30,7 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 	}
 
 	if (typeof firstUnreadMessage?._id !== 'string') {
-		throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Not allowed', {
 			method: 'unreadMessages',
 			action: 'Unread_messages',
 		});
@@ -44,14 +44,14 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		},
 	});
 	if (!originalMessage || userId === originalMessage.u._id) {
-		throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Not allowed', {
 			method: 'unreadMessages',
 			action: 'Unread_messages',
 		});
 	}
 	const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId))?.ls;
 	if (!lastSeen) {
-		throw new Meteor.Error('error-subscription-not-found', 'Subscription not found', {
+		throw new ClientSafeError('error-subscription-not-found', 'Subscription not found', {
 			method: 'unreadMessages',
 			action: 'Unread_messages',
 		});

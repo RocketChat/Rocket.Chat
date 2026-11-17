@@ -1,9 +1,9 @@
-import type { BitStream } from './BitStream';
-import type { GrInfo } from './GrInfo';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { LameInternalFlags } from './LameInternalFlags';
-import type { MeanBits } from './MeanBits';
-import { assert } from './assert';
+import type { BitStream } from './BitStream.js';
+import type { GrInfo } from './GrInfo.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import type { MeanBits } from './MeanBits.js';
+import { assert } from './assert.js';
 
 export class Reservoir {
 	private bs: BitStream | undefined;

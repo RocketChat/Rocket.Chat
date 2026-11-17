@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Label } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 export type MenuItemProps = {
@@ -22,9 +22,9 @@ const MenuItem = ({ name, ...props }: MenuItemProps) => {
 	`;
 	return (
 		<Box width='100%' height='28px' paddingBlock='4px' display='flex' alignItems='center' className={[pointer, style]} {...props}>
-			<Label className={pointer} color='hint' fontScale='p2'>
+			<Box className={pointer} color='hint' fontScale='p2'>
 				{name}
-			</Label>
+			</Box>
 		</Box>
 	);
 };

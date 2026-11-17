@@ -1,20 +1,11 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-const mockMeteorError = class extends Error {
-	constructor(
-		public error: string,
-		public reason: string,
-		public details: any,
-	) {
-		super(reason);
-		this.name = 'Meteor.Error';
-	}
-};
 
 const messagesMock = {
 	findForUpdates: sinon.stub(),
@@ -35,25 +26,13 @@ const {
 	handleCursorPagination,
 	getMessageHistory,
 } = proxyquire.noCallThru().load('./messages', {
-	'meteor/check': {
-		check: sinon.stub(),
-	},
 	'../lib/authorization/canAccessRoom': {
 		canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
 	},
 	'../meteor-methods/messages/getChannelHistory': {
 		getChannelHistory: getChannelHistoryStub,
 	},
-	'meteor/meteor': {
-		'Meteor': {
-			methods: sinon.stub(),
-			Error: mockMeteorError,
-		},
-		'@global': true,
-	},
-	'@rocket.chat/models': {
-		Messages: messagesMock,
-	},
+	'@rocket.chat/core-services': { ClientSafeError },
 });
 
 describe('extractTimestampFromCursor', () => {
@@ -125,7 +104,7 @@ describe('mountCursorFromMessage', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z'),
 		};
 
-		expect(() => mountCursorFromMessage(message, 'DELETED')).to.throw(mockMeteorError, 'Cursor not found');
+		expect(() => mountCursorFromMessage(message, 'DELETED')).to.throw(ClientSafeError, 'Cursor not found');
 	});
 });
 
@@ -199,6 +178,10 @@ describe('mountPreviousCursor', () => {
 });
 
 describe('handleWithoutPagination', () => {
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
+
 	afterEach(() => {
 		messagesMock.findForUpdates.reset();
 		messagesMock.trashFindDeletedAfter.reset();
@@ -266,6 +249,10 @@ describe('handleWithoutPagination', () => {
 });
 
 describe('handleCursorPagination', () => {
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
+
 	it('should return updated messages and cursor when type is UPDATED', async () => {
 		const rid = 'roomId';
 		const count = 10;
@@ -309,6 +296,10 @@ describe('handleCursorPagination', () => {
 describe('getMessageHistory', () => {
 	const rid = 'roomId';
 	const fromId = 'userId';
+
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
 
 	const catchError = async (promise: Promise<unknown>): Promise<any> => {
 		try {

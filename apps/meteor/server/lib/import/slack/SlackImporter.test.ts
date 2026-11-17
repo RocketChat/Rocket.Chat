@@ -8,12 +8,6 @@ const addMessageStub = sinon.stub().resolves();
 const settingsStub = { get: sinon.stub() };
 
 const { SlackImporter } = proxyquire.noCallThru().load('./SlackImporter', {
-	'@rocket.chat/models': {
-		'Messages': { find: sinon.stub().returns({ toArray: () => [] }) },
-		'Settings': { findOneById: sinon.stub().resolves(null) },
-		'ImportData': {},
-		'@global': true,
-	},
 	'..': {
 		Importer: class MockImporter {
 			logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };

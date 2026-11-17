@@ -24,12 +24,12 @@ const RedirectPage = ({ title, countDownSeconds, onRedirect }: RedirectPageProps
 		return () => {
 			clearInterval(timer);
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		if (seconds === 0) onRedirect();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [seconds]);
 
 	return (

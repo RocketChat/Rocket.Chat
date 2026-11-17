@@ -11,6 +11,9 @@ export type GroupsCreateProps = {
 		broadcast: boolean;
 		encrypted: boolean;
 		teamId?: string;
+		federated?: boolean;
+		topic?: string;
+		xmppFederated?: boolean;
 	};
 	excludeSelf?: boolean;
 	abacAttributes?: AbacCreationAttributes;
@@ -59,6 +62,10 @@ const GroupsCreatePropsSchema = {
 				},
 				topic: {
 					type: 'string',
+					nullable: true,
+				},
+				xmppFederated: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},

@@ -1,5 +1,6 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -17,27 +18,12 @@ const mocks = {
 	getRoomName: sinon.stub(),
 };
 
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
-
 const { roomAvatar } = proxyquire.noCallThru().load('./room', {
-	'@rocket.chat/models': {
-		Rooms: {
-			findOneById: mocks.findOneById,
-		},
-		Avatars: {
-			findOneByRoomId: mocks.avatarFindOneByRoomId,
-		},
-	},
 	'./utils': mocks.utils,
 	'../../lib/rooms/roomCoordinator': {
 		roomCoordinator: {
 			getRoomName: mocks.getRoomName,
 		},
-	},
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
 	},
 });
 
@@ -48,6 +34,11 @@ describe('#roomAvatar()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(() => {
+		mockModel('Rooms', { findOneById: mocks.findOneById });
+		mockModel('Avatars', { findOneByRoomId: mocks.avatarFindOneByRoomId });
+	});
 
 	afterEach(() => {
 		mocks.settingsGet.reset();
@@ -121,7 +112,7 @@ describe('#roomAvatar()', () => {
 	});
 
 	it(`should serve svg fallback if no file found`, async () => {
-		const request = { url: '/roomId', headers: { cookie: 'userId' } };
+		const request = { url: '/roomId', headers: { cookie: 'rc_uid=userId' } };
 
 		mocks.utils.wasFallbackModified.returns(true);
 		mocks.findOneById.withArgs('roomId').returns({ _id: 'roomId' });
@@ -131,5 +122,6 @@ describe('#roomAvatar()', () => {
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'roomName', req: request, res: response })).to.be.true;
+		expect(mocks.getRoomName.lastCall.args[2]).to.equal('userId');
 	});
 });

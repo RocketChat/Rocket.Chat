@@ -50,7 +50,7 @@ const UsersPageHeaderContent = ({ isSeatsCapExceeded, seatsCap }: UsersPageHeade
 				)}
 
 				{isSeatsCapExceeded && (
-					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
+					<Button variant='primary' role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>
 				)}

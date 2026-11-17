@@ -1,12 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
 
 const mocks = {
 	settingsGet: sinon.stub(),
@@ -25,14 +22,6 @@ const {
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
 } = proxyquire.noCallThru().load('./utils', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
-	'@rocket.chat/models': {
-		Users: {
-			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
-		},
-	},
 	'../../lib/media/file-upload': {
 		FileUpload: {
 			get: mocks.fileUploadGet,
@@ -222,6 +211,10 @@ describe('#setCacheAndDispositionHeaders', () => {
 });
 
 describe('#userCanAccessAvatar()', async () => {
+	before(() => {
+		mockModel('Users', { findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken });
+	});
+
 	beforeEach(() => {
 		mocks.findOneByIdAndLoginToken.reset();
 		mocks.settingsGet.reset();
@@ -235,6 +228,7 @@ describe('#userCanAccessAvatar()', async () => {
 
 		await expect(userCanAccessAvatar({ query: { rc_token: 'token', rc_uid: 'id' } })).to.eventually.equal(true);
 		await expect(userCanAccessAvatar({ headers: { cookie: 'rc_token=token; rc_uid=id' } })).to.eventually.equal(true);
+		expect(mocks.findOneByIdAndLoginToken.lastCall.args[0]).to.equal('id');
 	});
 	it('should return false and warn if user is unauthenticated', async (t) => {
 		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });

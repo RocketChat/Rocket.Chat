@@ -1,9 +1,8 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { settings } from '../../settings';
@@ -55,9 +54,6 @@ export async function setUserActiveStatus(
 	confirmRelinquish = false,
 	executedBy?: string,
 ): Promise<boolean | undefined> {
-	check(userId, String);
-	check(active, Boolean);
-
 	const user = await Users.findOneById(userId);
 
 	if (!user) {
@@ -65,7 +61,7 @@ export async function setUserActiveStatus(
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
+		throw new ClientSafeError('error-user-is-federated', 'Cannot change federated users status', {
 			method: 'setUserActiveStatus',
 		});
 	}
@@ -75,7 +71,7 @@ export async function setUserActiveStatus(
 		const userAdmin = await Users.findOneAdmin(userId || '');
 		const adminsCount = await Users.countActiveUsersInRoles(['admin']);
 		if (userAdmin && adminsCount === 1) {
-			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
 				method: 'removeUserFromRole',
 				action: 'Remove_last_admin',
 			});
@@ -88,7 +84,7 @@ export async function setUserActiveStatus(
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
 			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms as []);
-			throw new Meteor.Error('user-last-owner', '', rooms);
+			throw new ClientSafeError('user-last-owner', '', rooms);
 		}
 
 		// We don't want one killing the other :)

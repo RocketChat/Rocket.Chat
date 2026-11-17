@@ -110,8 +110,8 @@ const CallMemberItem = ({
 					    silence is what everyone already hears. */}
 					{canMute && (
 						<IconButton
-							secondary
-							small
+							variant='secondary'
+							size='small'
 							icon='mic-off'
 							title={t('Mute__name__', { name: nameOrUsername })}
 							aria-label={t('Mute__name__', { name: nameOrUsername })}
@@ -123,7 +123,7 @@ const CallMemberItem = ({
 						// The button stays until the server says the phone is ringing, which is a round trip away — so
 						// while the request is out it refuses a second one. Clicking three times rang three times.
 						<IconButton
-							small
+							size='small'
 							icon='phone'
 							title={t('Ring__name__', { name: nameOrUsername })}
 							aria-label={t('Ring__name__', { name: nameOrUsername })}

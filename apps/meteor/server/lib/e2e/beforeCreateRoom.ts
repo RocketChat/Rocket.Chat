@@ -8,6 +8,11 @@ prepareCreateRoomCallback.add(({ type, extraData }) => {
 		return;
 	}
 
+	// XMPP federated rooms cannot be encrypted (hosted-muc R1)
+	if ((extraData as { xmppFederated?: boolean }).xmppFederated) {
+		return;
+	}
+
 	if (
 		(type === 'd' && settings.get<boolean>('E2E_Enabled_Default_DirectRooms')) ||
 		(type === 'p' && settings.get<boolean>('E2E_Enabled_Default_PrivateRooms'))

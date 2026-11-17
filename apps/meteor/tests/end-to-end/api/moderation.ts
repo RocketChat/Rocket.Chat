@@ -809,7 +809,7 @@ describe('[Moderation]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 	});

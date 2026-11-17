@@ -69,7 +69,7 @@ const LoginForm = ({ onSubmit, initialValues, isPasswordLess = false, onChangeFo
 			</FormContainer>
 			<FormFooter>
 				<LoginActionsWrapper>
-					<Button type='submit' loading={isValidating || isSubmitting} disabled={!isDirty} primary>
+					<Button type='submit' loading={isValidating || isSubmitting} disabled={!isDirty} variant='primary'>
 						{isPasswordLess ? t('form.loginForm.sendLoginLink') : t('form.loginForm.button.text')}
 					</Button>
 					{!isPasswordLess && (

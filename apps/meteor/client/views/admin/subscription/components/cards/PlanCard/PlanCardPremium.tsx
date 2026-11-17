@@ -1,5 +1,5 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
-import { Box, Card, CardBody, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Card, CardBody, Icon, Skeleton, Stack } from '@rocket.chat/fuselage';
 import { ExternalLink, useLicenseName } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -29,18 +29,18 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) =
 	const { visualExpiration } = licenseInformation;
 
 	return (
-		<Card height='full'>
+		<Card>
 			<PlanCardHeader name={planName.data ?? ''} />
 			<CardBody flexDirection='column'>
 				{licenseLimits?.activeUsers.max === Infinity && (
-					<Box display='flex' alignItems='center'>
-						<Icon name='lightning' size='x24' marginInlineEnd={12} />
+					<Stack direction='row' align='center' gap={12}>
+						<Icon name='lightning' size='x24' />
 						{t('Unlimited_seats')}
-					</Box>
+					</Stack>
 				)}
 				{visualExpiration && (
-					<Box display='flex' alignItems='center'>
-						<Icon name='calendar' size='x24' marginInlineEnd={12} />
+					<Stack direction='row' align='center' gap={12}>
+						<Icon name='calendar' size='x24' />
 						<span>
 							{isAutoRenew ? (
 								t('Renews_DATE', { date: formatDate(visualExpiration || '') })
@@ -50,12 +50,12 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) =
 								</Trans>
 							)}
 						</span>
-					</Box>
+					</Stack>
 				)}
 				{!isLoading ? (
-					<Box display='flex' alignItems='center'>
-						<Icon name='cloud-plus' size='x24' marginInlineEnd={12} /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}
-					</Box>
+					<Stack direction='row' align='center' gap={12}>
+						<Icon name='cloud-plus' size='x24' /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}
+					</Stack>
 				) : (
 					<Skeleton />
 				)}

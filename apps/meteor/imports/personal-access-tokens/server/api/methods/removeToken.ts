@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 
 export const removePersonalAccessTokenOfUser = async (tokenName: string, userId: string): Promise<void> => {
 	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
-		throw new Meteor.Error('not-authorized', 'Not Authorized', {
+		throw new ClientSafeError('not-authorized', 'Not Authorized', {
 			method: 'personalAccessTokens:removeToken',
 		});
 	}
@@ -14,7 +14,7 @@ export const removePersonalAccessTokenOfUser = async (tokenName: string, userId:
 		tokenName,
 	});
 	if (!tokenExist) {
-		throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', {
+		throw new ClientSafeError('error-token-does-not-exists', 'Token does not exist', {
 			method: 'personalAccessTokens:removeToken',
 		});
 	}

@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
@@ -16,7 +16,7 @@ export const updateOutgoingIntegration = async (
 	const integration = await validateOutgoingIntegration(_integration, userId);
 
 	if (!integration.token || integration.token.trim() === '') {
-		throw new Meteor.Error('error-invalid-token', 'Invalid token', {
+		throw new ClientSafeError('error-invalid-token', 'Invalid token', {
 			method: 'updateOutgoingIntegration',
 		});
 	}
@@ -31,13 +31,13 @@ export const updateOutgoingIntegration = async (
 			'_createdBy._id': userId,
 		});
 	} else {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'updateOutgoingIntegration',
 		});
 	}
 
 	if (!currentIntegration) {
-		throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
+		throw new ClientSafeError('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 	}
 
 	const oldScriptEngine = currentIntegration.scriptEngine;
@@ -47,7 +47,7 @@ export const updateOutgoingIntegration = async (
 		(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
 	) {
 		wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
-			throw new Meteor.Error(e.message);
+			throw new ClientSafeError(e.message);
 		});
 	}
 

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* oxlint-disable @typescript-eslint/no-non-null-assertion */
 import { after, before, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';

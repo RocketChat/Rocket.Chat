@@ -9,8 +9,8 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode, RefObject } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -86,7 +86,7 @@ const MessageBoxBase = ({
 	onJoin,
 	closeEditing,
 }: MessageBoxBaseProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const variant = inlineSize < 480 ? 'small' : 'large';
 
@@ -162,7 +162,7 @@ const MessageBoxBase = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<MessageComposerButton primary onClick={onJoin} loading={joinPending}>
+							<MessageComposerButton variant='primary' onClick={onJoin} loading={joinPending}>
 								{t('Join')}
 							</MessageComposerButton>
 						)}
@@ -174,8 +174,7 @@ const MessageBoxBase = ({
 									icon='send'
 									disabled={!sendEnabled}
 									onClick={onSend}
-									secondary={sendActive}
-									info={sendActive}
+									variant={sendActive ? 'primary' : undefined}
 								/>
 							</>
 						)}

@@ -1,11 +1,10 @@
 import fs from 'node:fs';
 
-import { Meteor } from 'meteor/meteor';
 import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
 
-Meteor.startup(() => {
+export const ensureUploadTempDirectory = (): void => {
 	const path = UploadFS.config.tmpDir;
 	const mode = UploadFS.config.tmpDirPermissions;
 
@@ -26,4 +25,4 @@ Meteor.startup(() => {
 			});
 		}
 	});
-});
+};

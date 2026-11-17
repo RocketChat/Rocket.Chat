@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -7,12 +7,13 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableHeader,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +29,6 @@ const ModConsoleUsersTable = () => {
 	const { sortBy, sortDirection, setSort } = useSort<
 		'reports.ts' | 'reports.reportedUser.username' | 'reports.reportedUser.createdAt' | 'count'
 	>('reports.ts');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
 		start: '',
@@ -41,22 +41,34 @@ const ModConsoleUsersTable = () => {
 			() => ({
 				selector: text,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				count: itemsPerPage,
-				offset: current,
 				latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
 				oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
 			}),
-			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
+			[end, sortBy, sortDirection, start, text],
 		),
 		500,
 	);
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: ['moderation', 'userReports', 'fetchAll', query],
-		queryFn: () => getReports(query),
-		placeholderData: keepPreviousData,
+	const queryKey = ['moderation', 'userReports', 'fetchAll', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getReports({ ...query, ...page }),
+			placeholderData: keepPreviousData,
+		},
+		itemsKey: 'reports',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const handleClick = useStableCallback((id: IUser['_id']): void => {
@@ -65,6 +77,8 @@ const ModConsoleUsersTable = () => {
 			params: { tab: 'users', context: 'info', id },
 		});
 	});
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 'x48'];
 
 	const headers = (
 		<>
@@ -95,7 +109,7 @@ const ModConsoleUsersTable = () => {
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Reports')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='actions' width='x48' />
+			<GenericTableHeaderCell key='actions' />
 		</>
 	);
 
@@ -103,14 +117,14 @@ const ModConsoleUsersTable = () => {
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (

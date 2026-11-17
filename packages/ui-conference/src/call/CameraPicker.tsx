@@ -21,7 +21,14 @@ const CameraPicker = () => {
 			// A call joined with the camera off may not have the permission that names the cameras yet.
 			beforeOpen={() => revealDeviceLabels(['videoinput'], devices)}
 			button={
-				<DeviceMenuButton splitButtonTrigger secondary large menuIcon='chevron-up' label={t('Camera_options')} danger={!self.cameraOn} />
+				<DeviceMenuButton
+					splitButtonTrigger
+					secondary
+					size='large'
+					menuIcon='chevron-up'
+					label={t('Camera_options')}
+					danger={!self.cameraOn}
+				/>
 			}
 		/>
 	);

@@ -11,7 +11,7 @@ import {
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useId, useState } from 'react';
+import { useId, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -90,11 +90,6 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 		},
 	});
 
-	useEffect(
-		() => () => queryClient.removeQueries({ queryKey: ABACQueryKeys.roomMembershipPreview.all(room._id) }),
-		[queryClient, room._id],
-	);
-
 	if (previewAttributes) {
 		return (
 			<>
@@ -143,7 +138,7 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onBack}>{t('Back')}</Button>
-					<Button primary type='submit' form={formId} disabled={!canReview}>
+					<Button variant='primary' type='submit' form={formId} disabled={!canReview}>
 						{t('ABAC_Review_changes')}
 					</Button>
 				</ButtonGroup>

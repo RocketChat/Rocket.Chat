@@ -2,12 +2,12 @@
 
 ## TypeScript is a superset of JavaScript
 
-TypeScript is an extension of JavaScript, meaning that when transitioning from JavaScript to TypeScript, you can employ the identical syntax used in JavaScript. Errors flagged by the TypeScript compiler (`tsc`) and ESLint enforce best practices, and both gate CI — [`ci-code-check`](../../.github/workflows/ci-code-check.yml) runs `turbo run typecheck` and `yarn lint` — so resolve them rather than leaving them in place.
+TypeScript is an extension of JavaScript, meaning that when transitioning from JavaScript to TypeScript, you can employ the identical syntax used in JavaScript. Errors flagged by the TypeScript compiler (`tsc`) and oxlint enforce best practices, and both gate CI — [`ci-code-check`](../../.github/workflows/ci-code-check.yml) runs `turbo run typecheck` and `yarn oxlint` — so resolve them rather than leaving them in place.
 
 When a diagnostic is genuinely wrong about the code, suppress it explicitly and narrowly:
 
 - `@ts-expect-error` with a short reason, rather than `@ts-ignore` — it fails once the underlying error is gone, so the suppression can't outlive its cause;
-- `eslint-disable-next-line`, naming the specific rule rather than disabling the line wholesale.
+- `oxlint-disable-next-line`, naming the specific rule rather than disabling the line wholesale.
 
 ## JSDoc
 

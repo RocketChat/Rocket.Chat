@@ -1,7 +1,8 @@
+import { links } from '@rocket.chat/ui-client';
+
 import MarketplaceRequestBadge from './components/MarketplaceRequestBadge';
 import { hasAtLeastOnePermission, hasPermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
-import { links } from '../../lib/links';
 
 export const {
 	registerSidebarItem: registerMarketplaceSidebarItem,

@@ -1,4 +1,4 @@
-import { InputBoxSkeleton, Modal, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { Box, InputBoxSkeleton, Modal, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 type CreateRoomModalSkeletonProps = {
@@ -15,10 +15,12 @@ const CreateRoomModalSkeleton = ({ title, onClose }: CreateRoomModalSkeletonProp
 				<ModalTitle>{title}</ModalTitle>
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent marginBlockEnd={24}>
-				{Array.from({ length: 4 }, (_, index) => (
-					<InputBoxSkeleton key={index} marginBlockEnd={16} />
-				))}
+			<ModalContent>
+				<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={24}>
+					{Array.from({ length: 4 }, (_, index) => (
+						<InputBoxSkeleton key={index} />
+					))}
+				</Box>
 			</ModalContent>
 		</Modal>
 	);

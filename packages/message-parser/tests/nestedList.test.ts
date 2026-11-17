@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { bold, listItem, orderedList, paragraph, plain, task, tasks, unorderedList } from './helpers';
+import { bold, listItem, orderedList, paragraph, plain, task, tasks, unorderedList } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	[

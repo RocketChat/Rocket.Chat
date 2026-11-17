@@ -1,10 +1,10 @@
-import type { GrInfo } from './GrInfo';
-import type { III_psy_ratio } from './III_psy_ratio';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { PsyModel } from './PsyModel';
-import type { Takehiro } from './Takehiro';
-import { VbrMode } from './VbrMode';
-import { assert } from './assert';
+import type { GrInfo } from './GrInfo.js';
+import type { III_psy_ratio } from './III_psy_ratio.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { PsyModel } from './PsyModel.js';
+import type { Takehiro } from './Takehiro.js';
+import { VbrMode } from './VbrMode.js';
+import { assert } from './assert.js';
 import {
 	MAX_BITS_PER_CHANNEL,
 	MAX_BITS_PER_GRANULE,
@@ -16,8 +16,8 @@ import {
 	SBPSY_l,
 	SBPSY_s,
 	SHORT_TYPE,
-} from './constants';
-import { isCloseToEachOther } from './math';
+} from './constants.js';
+import { isCloseToEachOther } from './math.js';
 
 export class QuantizePVT {
 	static Q_MAX = 256 + 1;
@@ -286,7 +286,7 @@ export class QuantizePVT {
 		return Math.pow(10, 0.1 * u);
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	calc_xmin(gfp: LameGlobalFlags, ratio: III_psy_ratio, cod_info: GrInfo, pxmin: Float32Array) {
 		let pxminPos = 0;
 		const gfc = gfp.internal_flags;

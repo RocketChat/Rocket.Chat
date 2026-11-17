@@ -24,7 +24,6 @@ export function validateScriptSyntax(
 		// Wrap so top-level return/declarations parse the same way as in
 		// getCompatibilityScript at runtime. vm.Script only parses — it does
 		// not execute the code here.
-		// eslint-disable-next-line no-new
 		new vm.Script(`(function(){${script}})`);
 		return { script };
 	} catch (e) {

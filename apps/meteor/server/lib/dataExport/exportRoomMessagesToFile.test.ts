@@ -1,6 +1,7 @@
 import { before, describe, it } from 'node:test';
 
 import { faker } from '@faker-js/faker';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -20,11 +21,6 @@ const stubs = {
 };
 
 const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
-	'@rocket.chat/models': {
-		Messages: {
-			findPaginated: stubs.findPaginatedMessages,
-		},
-	},
 	'fs/promises': {
 		mkdir: stubs.mkdir,
 		writeFile: stubs.writeFile,
@@ -191,6 +187,7 @@ describe('Export - exportRoomMessages', () => {
 	};
 
 	before(() => {
+		mockModel('Messages', { findPaginated: stubs.findPaginatedMessages });
 		stubs.findPaginatedMessagesCursor.resolves(exportMessagesMock);
 		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
 		stubs.findPaginatedMessages.returns({

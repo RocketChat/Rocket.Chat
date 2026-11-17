@@ -1,10 +1,12 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* oxlint-disable react-hooks/rules-of-hooks */
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import { wrapExceptions } from '@rocket.chat/tools';
+import { DDP } from 'meteor/ddp';
+import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { processOnChange, serviceConfigCallbacks } from './userReactivity';
@@ -198,8 +200,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			};
 		}
 
+		const invocation = new DDPCommon.MethodInvocation({ connection: null, isSimulation: false, userId });
 		return {
-			result: await Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
+			result: await DDP._CurrentInvocation.withValue(invocation as any, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { appendClassName } from '../../helpers/appendClassName';
 import { useStyle } from '../../hooks/useStyle';
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
 
@@ -35,6 +36,7 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 	const className = useStyle(
 		css`
 			animation-duration: 230ms;
+			animation-fill-mode: both;
 
 			${
 				visibility === AnimatedVisibility.HIDING &&
@@ -90,12 +92,12 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 	);
 
 	const transformFn = useCallback(
-		(props: any) => {
-			if (props.onAnimationEnd === undefined) {
-				props.onAnimationEnd = handleAnimationEnd;
+		(boxProps: BoxTransformProps) => {
+			if (boxProps.onAnimationEnd === undefined) {
+				boxProps.onAnimationEnd = handleAnimationEnd;
 			}
-			props.className = className && appendClassName(props.className, className);
-			return props;
+			boxProps.className = className && appendClassName(boxProps.className, className);
+			return boxProps;
 		},
 		[className, handleAnimationEnd],
 	);

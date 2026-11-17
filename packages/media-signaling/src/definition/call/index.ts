@@ -1,5 +1,5 @@
-export type * from './CallEvents';
-export type * from './callStates';
-export type * from './common';
-export * from './IClientMediaCall';
-export type * from './IClientMediaCallParticipant';
+export type * from './CallEvents.js';
+export type * from './callStates/index.js';
+export type * from './common.js';
+export * from './IClientMediaCall.js';
+export type * from './IClientMediaCallParticipant.js';

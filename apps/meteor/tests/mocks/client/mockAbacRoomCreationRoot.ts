@@ -5,6 +5,7 @@ import { createFakeLicenseInfo } from '../data';
 export type AbacRoomCreationRootOptions = {
 	enforced?: boolean;
 	federation?: boolean;
+	xmpp?: boolean;
 	requiredAttributes?: string[];
 	assignable?: { key: string; values: string[] }[];
 	permissions?: string[];
@@ -18,6 +19,7 @@ export type AbacRoomCreationRootOptions = {
 export const mockAbacRoomCreationRoot = ({
 	enforced = false,
 	federation = false,
+	xmpp = false,
 	requiredAttributes = [],
 	assignable = [{ key: 'dept', values: ['eng', 'sales'] }],
 	permissions = ['create-abac-managed-room', 'create-c', 'create-p', 'create-team'],
@@ -32,7 +34,7 @@ export const mockAbacRoomCreationRoot = ({
 	createChannel = () => ({ channel: { _id: 'channel-room' } }),
 	createGroup = () => ({ group: { _id: 'group-room' } }),
 }: AbacRoomCreationRootOptions = {}) =>
-	[...permissions, ...(federation ? ['access-federation'] : [])]
+	[...permissions, ...(federation || xmpp ? ['access-federation'] : [])]
 		.reduce(
 			(root, permission) => root.withPermission(permission),
 			mockAppRoot()
@@ -40,13 +42,14 @@ export const mockAbacRoomCreationRoot = ({
 				.withSetting('ABAC_Enabled', true)
 				.withSetting('ABAC_Enforce_All_Rooms', enforced)
 				.withSetting('Federation_Service_Enabled', federation)
+				.withSetting('XMPP_Server_Enabled', xmpp)
 				.withSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+')
 				.withTranslations('en', 'core', { Step_of_total: 'Step {{step}} of {{total}}' })
 				.withEndpoint(
 					'GET',
 					'/v1/licenses.info',
 					jest.fn().mockImplementation(() => ({
-						license: createFakeLicenseInfo({ activeModules: federation ? ['abac', 'federation'] : ['abac'] }),
+						license: createFakeLicenseInfo({ activeModules: federation || xmpp ? ['abac', 'federation'] : ['abac'] }),
 					})),
 				)
 				.withEndpoint('GET', '/v1/abac/attributes.listAssignable', jest.fn().mockImplementation(assignableAttributes))

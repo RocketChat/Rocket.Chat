@@ -114,7 +114,7 @@ const AISearchErrorCallout = ({ error, notConfigured = false, onRetry, ...props 
 	const getActions = () => {
 		if (action === 'retry' && onRetry) {
 			return (
-				<Button small onClick={onRetry}>
+				<Button size='small' onClick={onRetry}>
 					{t('Try_again')}
 				</Button>
 			);
@@ -122,7 +122,7 @@ const AISearchErrorCallout = ({ error, notConfigured = false, onRetry, ...props 
 
 		if (action === 'settings') {
 			return (
-				<Button small onClick={() => router.navigate({ name: 'admin-ai-center', params: { section: 'search' } })}>
+				<Button size='small' onClick={() => router.navigate({ name: 'admin-ai-center', params: { section: 'search' } })}>
 					{t('Open_AI_center')}
 				</Button>
 			);
