@@ -30,6 +30,14 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 	const idsRef = useRef<string[]>(value ?? []);
 	const pendingRef = useRef(0);
 
+	const mountedRef = useRef(true);
+	useEffect(() => {
+		mountedRef.current = true;
+		return () => {
+			mountedRef.current = false;
+		};
+	}, []);
+
 	useEffect(
 		() => () => {
 			if (pendingRef.current > 0) {
@@ -47,7 +55,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 	const finishUpload = () => {
 		pendingRef.current -= 1;
 		setUploads(pendingRef.current);
-		if (pendingRef.current === 0) {
+		if (pendingRef.current === 0 && mountedRef.current) {
 			setUploading?.(actionId, false);
 		}
 	};
@@ -65,6 +73,9 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 
 		try {
 			const uploaded = await uploadFile(file);
+			if (!mountedRef.current) {
+				return;
+			}
 			setNames((current) => ({ ...current, [uploaded._id]: uploaded.name }));
 			commit([...idsRef.current, uploaded._id]);
 		} catch {

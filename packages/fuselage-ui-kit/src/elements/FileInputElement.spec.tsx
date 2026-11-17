@@ -22,7 +22,7 @@ const renderFileInput = (element: UiKit.FileInputElement, context: Partial<Compo
 	const setUploading = jest.fn();
 	const uploadFile = jest.fn(async (file: File) => ({ _id: `id-${file.name}`, name: file.name }));
 
-	render(
+	const { unmount } = render(
 		<MockedServerContext>
 			<UiKitContext.Provider value={{ action: jest.fn(), updateState, setUploading, uploadFile, values: {}, ...context }}>
 				<FileInputElement index={0} block={element} context={BlockContext.FORM} surfaceRenderer={modalParser} />
@@ -30,7 +30,7 @@ const renderFileInput = (element: UiKit.FileInputElement, context: Partial<Compo
 		</MockedServerContext>,
 	);
 
-	return { updateState, setUploading, uploadFile, input: screen.getByLabelText('UIKit_File_input_choose') };
+	return { unmount, updateState, setUploading, uploadFile, input: screen.getByLabelText('UIKit_File_input_choose') };
 };
 
 const file = (name: string) => new File(['content'], name);
@@ -118,4 +118,24 @@ it('is disabled when the surface cannot store files', () => {
 
 	expect(input).toBeDisabled();
 	expect(screen.getByText('UIKit_File_input_unavailable')).toBeInTheDocument();
+});
+
+it('does not clear the upload flag or the value when an upload ends after the input unmounted', async () => {
+	let finish: (uploaded: { _id: string; name: string }) => void = () => undefined;
+	const uploadFile = jest.fn(
+		() =>
+			new Promise<{ _id: string; name: string }>((resolve) => {
+				finish = resolve;
+			}),
+	);
+	const { input, unmount, setUploading, updateState } = renderFileInput(block(), { uploadFile });
+
+	await userEvent.upload(input, file('a.pdf'));
+	unmount();
+	setUploading.mockClear();
+	finish({ _id: 'id-a', name: 'a.pdf' });
+	await new Promise((resolve) => setTimeout(resolve, 0));
+
+	expect(setUploading).not.toHaveBeenCalled();
+	expect(updateState).not.toHaveBeenCalled();
 });
