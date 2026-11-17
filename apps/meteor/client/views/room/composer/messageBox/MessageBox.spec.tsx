@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
 import MessageBox from './MessageBox';
+import RichTextMessageBox from './RichTextMessageBox';
 import type { createComposerAPI } from './createComposerAPI';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 import { useFileUpload } from '../../body/hooks/useFileUpload';
@@ -36,12 +37,12 @@ const createChatStub = () => {
 	return chat as unknown as ChatAPI & { composer?: ReturnType<typeof createComposerAPI> };
 };
 
-const renderMessageBox = (onSend: jest.Mock, endpointHandler: jest.Mock) => {
+const renderMessageBox = (onSend: jest.Mock, endpointHandler: jest.Mock, Composer: typeof MessageBox = MessageBox) => {
 	const chat = createChatStub();
 
 	(useChat as jest.Mock).mockReturnValue(chat);
 
-	const view = render(<MessageBox showFormattingTips={false} onSend={onSend} />, {
+	const view = render(<Composer showFormattingTips={false} onSend={onSend} />, {
 		wrapper: mockAppRoot().withUserPreference('sendOnEnter', 'normal').withEndpoint('POST', '/v1/rooms.saveDraft', endpointHandler).build(),
 	});
 
@@ -175,11 +176,15 @@ describe('MessageBox drafts', () => {
 });
 
 describe('MessageBox paste', () => {
-	it('should not queue a pasted image while editing a message', async () => {
+	it.each([
+		['MessageBox', MessageBox],
+		['RichTextMessageBox', RichTextMessageBox],
+	])('%s should not queue a pasted image while editing a message', async (_name, Composer) => {
 		const user = userEvent.setup();
 		const { chat } = renderMessageBox(
 			jest.fn(),
 			jest.fn(() => null),
+			Composer,
 		);
 		const { handleUploadFiles } = (useFileUpload as jest.Mock).mock.results[0].value;
 
