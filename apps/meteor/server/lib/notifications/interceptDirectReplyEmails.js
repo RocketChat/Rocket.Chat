@@ -5,6 +5,31 @@ import { processDirectEmail } from './processDirectEmail';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { settings } from '../../settings';
 
+const POP3_SHUTDOWN_TIMEOUT = 5 * 1000;
+const POP3_MINIMUM_INACTIVITY_TIMEOUT = 10 * 60 * 1000;
+const MAX_TIMEOUT_DELAY = 2 ** 31 - 1;
+
+const setLongTimeout = (callback, delay) => {
+	let timeout;
+	let remaining = delay;
+
+	const schedule = () => {
+		const currentDelay = Math.min(remaining, MAX_TIMEOUT_DELAY);
+		timeout = setTimeout(() => {
+			remaining -= currentDelay;
+			if (remaining > 0) {
+				return schedule();
+			}
+
+			callback();
+		}, currentDelay);
+	};
+
+	schedule();
+
+	return () => clearTimeout(timeout);
+};
+
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 	constructor(imapConfig, options = {}) {
 		imapConfig = {
@@ -26,7 +51,13 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 }
 
 class POP3Intercepter {
-	constructor() {
+	constructor({ inactivityTimeout, onClose } = {}) {
+		this.closed = false;
+		this.stopping = false;
+		this.stopPromise = undefined;
+		this.onClose = onClose;
+		this.inactivityTimeout = inactivityTimeout;
+
 		this.pop3 = new POP3Lib(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
 			enabletls: !settings.get('Direct_Reply_IgnoreTLS'),
 			// debug: settings.get('Direct_Reply_Debug') ? console.log : false,
@@ -36,14 +67,27 @@ class POP3Intercepter {
 		this.totalMsgCount = 0;
 		this.currentMsgCount = 0;
 
-		this.pop3.on('connect', () => {
+		this.pop3.on('connect', (status) => {
+			this.resetInactivityTimeout();
+			if (this.stopping) {
+				return this.quit();
+			}
+			if (!status) {
+				return this.fail('Unable to connect ....');
+			}
+
 			console.log('Pop connect');
 			this.pop3.login(settings.get('Direct_Reply_Username'), settings.get('Direct_Reply_Password'));
 		});
 
 		this.pop3.on('login', (status) => {
+			this.resetInactivityTimeout();
+			if (this.stopping) {
+				return this.quit();
+			}
+
 			if (!status) {
-				return console.log('Unable to Log-in ....');
+				return this.fail('Unable to Log-in ....');
 			}
 			console.log('Pop logged');
 			// run on start
@@ -52,8 +96,13 @@ class POP3Intercepter {
 
 		// on getting list of all emails
 		this.pop3.on('list', (status, msgcount) => {
+			this.resetInactivityTimeout();
+			if (this.stopping) {
+				return this.quit();
+			}
+
 			if (!status) {
-				console.log('Cannot Get Emails ....');
+				return this.fail('Cannot Get Emails ....');
 			}
 			if (msgcount === 0) {
 				return this.pop3.quit();
@@ -67,8 +116,13 @@ class POP3Intercepter {
 
 		// on retrieved email
 		this.pop3.on('retr', async (status, msgnumber, data) => {
+			this.resetInactivityTimeout();
+			if (this.stopping) {
+				return this.quit();
+			}
+
 			if (!status) {
-				return console.log('Cannot Retrieve Message ....');
+				return this.fail('Cannot Retrieve Message ....');
 			}
 
 			// parse raw email data to  JSON object
@@ -84,8 +138,13 @@ class POP3Intercepter {
 
 		// on email deleted
 		this.pop3.on('dele', (status) => {
+			this.resetInactivityTimeout();
+			if (this.stopping) {
+				return this.quit();
+			}
+
 			if (!status) {
-				return console.log('Cannot Delete Message....');
+				return this.fail('Cannot Delete Message....');
 			}
 
 			// get next email
@@ -104,12 +163,77 @@ class POP3Intercepter {
 
 		this.pop3.on('error', (cmd) => {
 			console.log(`error state. You tried calling ${cmd}`);
+			void this.stop('failure');
 		});
 
 		// locked => command already running, not finished yet
 		this.pop3.on('locked', (cmd) => {
 			console.log(`Current command has not finished yet. You tried calling ${cmd}`);
 		});
+		this.pop3.on('activity', () => this.resetInactivityTimeout());
+
+		this.pop3.once('close', () => this.close());
+		this.resetInactivityTimeout();
+	}
+
+	resetInactivityTimeout() {
+		this.clearInactivityTimer?.();
+		if (this.stopping || !this.inactivityTimeout) {
+			return;
+		}
+
+		this.clearInactivityTimer = setLongTimeout(() => this.stop('inactivity'), this.inactivityTimeout);
+	}
+
+	fail(message) {
+		console.log(message);
+		void this.stop('failure');
+	}
+
+	quit() {
+		if (this.closed || this.pop3.getLocked()) {
+			return;
+		}
+
+		if (this.pop3.getState() === 0) {
+			return this.pop3.destroy();
+		}
+
+		this.pop3.quit();
+	}
+
+	close() {
+		if (this.closed) {
+			return;
+		}
+
+		this.closed = true;
+		this.clearInactivityTimer?.();
+		clearTimeout(this.shutdownTimer);
+		this.pop3.removeAllListeners();
+		this.resolveStop?.();
+		this.onClose?.(this.stopReason);
+	}
+
+	stop(reason = 'shutdown') {
+		if (this.stopPromise) {
+			return this.stopPromise;
+		}
+
+		if (this.closed) {
+			return Promise.resolve();
+		}
+
+		this.stopping = true;
+		this.stopReason = reason;
+		this.clearInactivityTimer?.();
+		this.stopPromise = new Promise((resolve) => {
+			this.resolveStop = resolve;
+		});
+		this.shutdownTimer = setTimeout(() => this.pop3.destroy(), POP3_SHUTDOWN_TIMEOUT);
+		this.quit();
+
+		return this.stopPromise;
 	}
 }
 
@@ -117,8 +241,10 @@ export class POP3Helper {
 	constructor(frequency) {
 		this.frequency = frequency;
 		this.running = false;
+		this.pollInterval = Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000);
+		this.inactivityTimeout = Math.max(this.pollInterval, POP3_MINIMUM_INACTIVITY_TIMEOUT);
 
-		this.POP3 = new POP3Intercepter();
+		this.poll();
 	}
 
 	isActive() {
@@ -127,24 +253,58 @@ export class POP3Helper {
 
 	start() {
 		this.log('POP3 started');
-		this.running = setInterval(
-			() => {
-				// get new emails and process
-				this.POP3 = new POP3Intercepter();
-			},
-			Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000),
-		);
+		if (this.isActive()) {
+			return;
+		}
+
+		this.running = true;
+		this.schedulePoll();
 	}
 
 	log(...args) {
 		console.log(...args);
 	}
 
-	stop(callback = new Function()) {
-		this.log('POP3 stop called');
-		if (this.isActive()) {
-			clearInterval(this.running);
+	schedulePoll() {
+		this.clearPollTimer?.();
+		if (!this.isActive()) {
+			return;
 		}
+
+		this.clearPollTimer = setLongTimeout(() => {
+			this.poll();
+			this.schedulePoll();
+		}, this.pollInterval);
+	}
+
+	poll() {
+		if (this.POP3) {
+			return;
+		}
+
+		const interceptor = new POP3Intercepter({
+			inactivityTimeout: this.inactivityTimeout,
+			onClose: (reason) => {
+				if (this.POP3 === interceptor) {
+					this.POP3 = undefined;
+				}
+
+				if (this.isActive() && reason === 'inactivity') {
+					this.poll();
+				}
+			},
+		});
+
+		this.POP3 = interceptor;
+	}
+
+	async stop(callback = () => {}) {
+		this.log('POP3 stop called');
+		this.running = false;
+		this.clearPollTimer?.();
+		const interceptor = this.POP3;
+		this.POP3 = undefined;
+		await interceptor?.stop();
 		callback();
 		this.log('POP3 stopped');
 	}

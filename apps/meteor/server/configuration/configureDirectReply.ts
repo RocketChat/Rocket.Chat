@@ -6,10 +6,22 @@ import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureDirectReply(settings: ICachedSettings): Promise<void> {
 	let client: DirectReplyIMAPInterceptor | POP3Helper | undefined;
-	const startEmailInterceptor = _.debounce(async () => {
-		logger.info('Email Interceptor...');
-		const protocol = settings.get('Direct_Reply_Protocol');
+	let configurationVersion = 0;
+	let configurationQueue = Promise.resolve();
 
+	const applyConfiguration = async (version: number): Promise<void> => {
+		logger.info('Email Interceptor...');
+		if (client) {
+			const previousClient = client;
+			client = undefined;
+			await previousClient.stop();
+		}
+
+		if (version !== configurationVersion) {
+			return;
+		}
+
+		const protocol = settings.get('Direct_Reply_Protocol');
 		const isEnabled =
 			settings.get('Direct_Reply_Enable') &&
 			protocol &&
@@ -17,10 +29,6 @@ export async function configureDirectReply(settings: ICachedSettings): Promise<v
 			settings.get('Direct_Reply_Port') &&
 			settings.get('Direct_Reply_Username') &&
 			settings.get('Direct_Reply_Password');
-
-		if (client) {
-			await client.stop();
-		}
 
 		if (!isEnabled) {
 			logger.info('Email Interceptor Stopped...');
@@ -37,9 +45,22 @@ export async function configureDirectReply(settings: ICachedSettings): Promise<v
 			client = new POP3Helper(settings.get('Direct_Reply_Frequency'));
 			client.start();
 		}
+	};
+
+	const startEmailInterceptor = _.debounce(() => {
+		const version = configurationVersion;
+		configurationQueue = configurationQueue
+			.then(() => applyConfiguration(version))
+			.catch((err) => {
+				logger.error({ msg: 'Error configuring direct reply interceptor', err });
+			});
 	}, 1000);
+	const handleSettingsChange = () => {
+		configurationVersion += 1;
+		startEmailInterceptor();
+	};
 
-	settings.watchByRegex(/^Direct_Reply_.+/, startEmailInterceptor);
+	settings.watchByRegex(/^Direct_Reply_.+/, handleSettingsChange);
 
-	void startEmailInterceptor();
+	handleSettingsChange();
 }
