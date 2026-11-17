@@ -7,6 +7,7 @@ type MockInterceptor = {
 };
 
 const mockPop3Interceptors: MockInterceptor[] = [];
+const mockImapInterceptors: MockInterceptor[] = [];
 let mockSettingsChanged: (() => void) | undefined;
 
 jest.mock('underscore', () => ({
@@ -24,7 +25,14 @@ jest.mock('../features/EmailInbox/logger', () => ({
 }));
 
 jest.mock('../lib/notifications/interceptDirectReplyEmails', () => ({
-	DirectReplyIMAPInterceptor: jest.fn(),
+	DirectReplyIMAPInterceptor: jest.fn(() => {
+		const interceptor = {
+			start: jest.fn().mockResolvedValue(undefined),
+			stop: jest.fn().mockResolvedValue(undefined),
+		};
+		mockImapInterceptors.push(interceptor);
+		return interceptor;
+	}),
 	POP3Helper: jest.fn(() => {
 		const interceptor = {
 			start: jest.fn(),
@@ -45,6 +53,7 @@ describe('configureDirectReply', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockPop3Interceptors.length = 0;
+		mockImapInterceptors.length = 0;
 		mockSettingsChanged = undefined;
 	});
 
@@ -91,5 +100,47 @@ describe('configureDirectReply', () => {
 		expect(mockPop3Interceptors[0].stop).toHaveBeenCalledTimes(1);
 		expect(mockPop3Interceptors).toHaveLength(2);
 		expect(mockPop3Interceptors[1].start).toHaveBeenCalledTimes(1);
+	});
+
+	it('waits for IMAP shutdown before starting a POP replacement', async () => {
+		const values: Record<string, unknown> = {
+			Direct_Reply_Enable: true,
+			Direct_Reply_Protocol: 'IMAP',
+			Direct_Reply_Host: 'localhost',
+			Direct_Reply_Port: 993,
+			Direct_Reply_Username: 'user',
+			Direct_Reply_Password: 'password',
+			Direct_Reply_Frequency: 5,
+		};
+		const settings = {
+			get: jest.fn((key: string) => values[key]),
+			watchByRegex: jest.fn((_regex: RegExp, callback: () => void) => {
+				mockSettingsChanged = callback;
+			}),
+		} as unknown as ICachedSettings;
+
+		await configureDirectReply(settings);
+		await flushPromises();
+
+		expect(mockImapInterceptors).toHaveLength(1);
+
+		let finishStopping: (() => void) | undefined;
+		mockImapInterceptors[0].stop.mockReturnValueOnce(
+			new Promise<void>((resolve) => {
+				finishStopping = resolve;
+			}),
+		);
+		values.Direct_Reply_Protocol = 'POP';
+
+		mockSettingsChanged?.();
+		await flushPromises();
+
+		expect(mockPop3Interceptors).toHaveLength(0);
+
+		finishStopping?.();
+		await flushPromises();
+
+		expect(mockPop3Interceptors).toHaveLength(1);
+		expect(mockPop3Interceptors[0].start).toHaveBeenCalledTimes(1);
 	});
 });

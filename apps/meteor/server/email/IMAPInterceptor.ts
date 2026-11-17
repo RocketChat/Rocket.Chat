@@ -107,24 +107,46 @@ export class IMAPInterceptor extends EventEmitter {
 		return !!(this.imap?.state && this.imap.state !== 'disconnected');
 	}
 
-	stop(callback = new Function()): void {
+	stop(callback?: () => void): Promise<void> {
 		if (this.backoff) {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
 		}
-		this.stopWithNoStopBackoff(callback);
+		return this.stopWithNoStopBackoff(callback);
 	}
 
-	private stopWithNoStopBackoff(callback = new Function()): void {
+	private stopWithNoStopBackoff(callback?: () => void): Promise<void> {
 		logger.debug('IMAP stop called');
-		this.imap.removeAllListeners();
-		this.imap.once('end', () => {
-			logger.debug('IMAP stopped');
-			callback?.();
-		});
-		this.imap.end();
-		this.imap.on('error', async (err: Error) => {
-			logger.error({ msg: 'IMAP error', err });
+		return new Promise((resolve) => {
+			const finish = () => {
+				this.imap.removeListener('end', finish);
+				this.imap.removeListener('close', finish);
+				logger.debug('IMAP stopped');
+				try {
+					callback?.();
+				} finally {
+					resolve();
+				}
+			};
+
+			this.imap.removeAllListeners();
+			this.imap.on('error', async (err: Error) => {
+				logger.error({ msg: 'IMAP error', err });
+			});
+
+			const socket = (this.imap as IMAP & { _sock?: { destroyed?: boolean } })._sock;
+			if (!this.isActive() && (!socket || socket.destroyed)) {
+				finish();
+				return;
+			}
+
+			this.imap.once('end', finish);
+			this.imap.once('close', finish);
+			if (this.isActive()) {
+				this.imap.end();
+			} else {
+				this.imap.destroy();
+			}
 		});
 	}
 
@@ -142,8 +164,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 		this.backoff = setTimeout(
 			() => {
-				this.stopWithNoStopBackoff();
-				void this.start();
+				void this.stopWithNoStopBackoff().then(() => this.start());
 			},
 			(this.backoffDurationMS += this.backoffDurationMS),
 		);
