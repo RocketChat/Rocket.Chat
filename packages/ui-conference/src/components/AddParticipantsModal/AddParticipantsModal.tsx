@@ -91,12 +91,19 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 			const { added, dial } = await addParticipants(users, canRingUsers && ring, canDialOut);
 
 			// People who take calls on a device join from it, called in the same way as a typed number.
-			dial.forEach((destination) => provider?.actions.dialOut(destination));
+			dial.forEach(({ number }) => provider?.actions.dialOut(number));
+
+			// Those dialled are in the call as their number, not as members, so the chat is not theirs to read.
+			// Sharing with nobody named would fall back to every member who cannot read it, so it is skipped.
+			const sharedWith = users.filter((username) => !dial.some((entry) => entry.username === username));
+			if (!sharedWith.length) {
+				return { added: added + dial.length, chatShared: true };
+			}
 
 			// Membership is what lets them into the call and puts them in no room, so the chat is a second ask:
 			// either the room they are joining as it stands, or a fresh one started for the call. Refused, the
 			// people are in the call already — so that is told apart from the add failing, which leaves nothing done.
-			const chatShared = await shareChat(keepHistory && canKeepHistory ? 'invite' : 'discussion', users).then(
+			const chatShared = await shareChat(keepHistory && canKeepHistory ? 'invite' : 'discussion', sharedWith).then(
 				() => true,
 				() => false,
 			);

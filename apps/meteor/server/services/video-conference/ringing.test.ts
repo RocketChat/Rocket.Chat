@@ -292,7 +292,7 @@ describe('VideoConfService.addMembers', () => {
 
 		const result = await service.addMembers('caller', 'call1', ['deskUser.user', 'newUser1.user'], { dialOut: true });
 
-		expect(result).to.deep.equal({ added: ['newUser1'], dial: ['1001'] });
+		expect(result).to.deep.equal({ added: ['newUser1'], dial: [{ username: 'deskUser.user', number: '1001' }] });
 		expect(ringedUserIds(broadcastStub)).to.deep.equal(['newUser1']);
 		expect(VideoConferenceModelMock.addMemberById.args.map(([, member]) => member._id)).to.deep.equal(['newUser1']);
 		VideoConferenceModelMock.addMemberById.args.forEach(([, member]) => {
@@ -332,7 +332,7 @@ describe('VideoConfService.addMembers', () => {
 
 		const result = await service.addMembers('caller', 'call1', ['deskUser.user'], { ring: false, dialOut: true });
 
-		expect(result).to.deep.equal({ added: [], dial: ['1001'] });
+		expect(result).to.deep.equal({ added: [], dial: [{ username: 'deskUser.user', number: '1001' }] });
 		expect(VideoConferenceModelMock.addMemberById.called).to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});

@@ -147,7 +147,11 @@ export type ConferenceActions = {
 	 * back empty, and the numbers to dial for those who take calls on an external device, when `dialOut` says
 	 * the caller can dial them — those are not added, and not counted in `added`.
 	 */
-	addParticipants: (users: string[], ring: boolean, dialOut: boolean) => Promise<{ added: number; dial: string[] }>;
+	addParticipants: (
+		users: string[],
+		ring: boolean,
+		dialOut: boolean,
+	) => Promise<{ added: number; dial: { username: string; number: string }[] }>;
 };
 
 /**

@@ -39,7 +39,7 @@ const StubPicker = ({ value, onChange, placeholder }: UserPickerProps) => (
 	</>
 );
 
-const addParticipants = jest.fn(async (users: string[]) => ({ added: users.length, dial: [] as string[] }));
+const addParticipants = jest.fn(async (users: string[]) => ({ added: users.length, dial: [] as { username: string; number: string }[] }));
 const shareChat = jest.fn(async () => undefined);
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
@@ -122,7 +122,7 @@ it('adds the selected user to the conference', async () => {
 it('dials the numbers the server hands back for people who take calls on a device', async () => {
 	const provider = speakingProvider();
 	const dialOut = jest.spyOn(provider.actions, 'dialOut');
-	addParticipants.mockImplementation(async () => ({ added: 0, dial: ['1001'] }));
+	addParticipants.mockImplementation(async () => ({ added: 0, dial: [{ username: 'grace', number: '1001' }] }));
 	renderModal({ provider });
 
 	await choose('grace');
@@ -132,6 +132,31 @@ it('dials the numbers the server hands back for people who take calls on a devic
 	await waitFor(() => expect(dialOut).toHaveBeenCalledWith('1001'));
 	// They are dialled rather than made members, which is not the same as having been in the call already.
 	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'Users_added' }));
+});
+
+// Dialled people are in the call as their number, not as members, so the chat is not shared with them. With
+// nobody else selected there is no share at all, since naming nobody would share with every member left out.
+it('does not share the chat with the people it dials', async () => {
+	const provider = speakingProvider();
+	addParticipants.mockImplementation(async () => ({ added: 0, dial: [{ username: 'grace', number: '1001' }] }));
+	renderModal({ provider });
+
+	await choose('grace');
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'Users_added' }));
+	expect(shareChat).not.toHaveBeenCalled();
+});
+
+it('shares the chat only with the people it added as members', async () => {
+	const provider = speakingProvider();
+	addParticipants.mockImplementation(async () => ({ added: 1, dial: [{ username: 'grace', number: '1001' }] }));
+	renderModal({ provider });
+
+	await choose('grace', 'alan');
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(shareChat).toHaveBeenCalledWith('invite', ['alan']));
 });
 
 // The endpoint takes at most `RING_RECIPIENTS_LIMIT` at a time and refuses the whole body past that, so a

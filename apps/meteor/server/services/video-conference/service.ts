@@ -1520,7 +1520,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
 		{ ring = true, dialOut = false }: { ring?: boolean; dialOut?: boolean } = {},
-	): Promise<{ added: IUser['_id'][]; dial: string[] }> {
+	): Promise<{ added: IUser['_id'][]; dial: { username: NonNullable<IUser['username']>; number: string }[] }> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
@@ -1540,7 +1540,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		).toArray();
 
 		const added: IUser['_id'][] = [];
-		const dial: string[] = [];
+		const dial: { username: NonNullable<IUser['username']>; number: string }[] = [];
 		const ts = new Date();
 
 		for (const { sipExtension, mediaCallDevice, ...user } of users) {
@@ -1554,7 +1554,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			// Only an adder who can dial out gets to do that; for anyone else they are added and rung like
 			// everybody, rather than left with no way in.
 			if (dialOut && mediaCallDevice && sipExtension) {
-				dial.push(sipExtension);
+				dial.push({ username: user.username, number: sipExtension });
 				continue;
 			}
 

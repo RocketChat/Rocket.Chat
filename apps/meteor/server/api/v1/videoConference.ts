@@ -97,13 +97,18 @@ const oneValueResponseSchema = <T>(name: string, value: Record<string, unknown>)
 		additionalProperties: false,
 	});
 
-const addParticipantsResponseSchema = ajv.compile<{ added: string[]; dial: string[] }>({
+const addParticipantsResponseSchema = ajv.compile<{ added: string[]; dial: { username: string; number: string }[] }>({
 	type: 'object',
 	properties: {
 		added: { type: 'array', items: { type: 'string' }, description: 'Ids of the users newly added as members.' },
 		dial: {
 			type: 'array',
-			items: { type: 'string' },
+			items: {
+				type: 'object',
+				properties: { username: { type: 'string' }, number: { type: 'string' } },
+				required: ['username', 'number'],
+				additionalProperties: false,
+			},
 			description: 'Numbers for the caller to dial into the call, for people who take calls on an external device; they are not added as members.',
 		},
 		success: { type: 'boolean', enum: [true] },
