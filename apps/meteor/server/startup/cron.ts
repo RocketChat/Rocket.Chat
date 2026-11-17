@@ -2,6 +2,7 @@ import { Logger } from '@rocket.chat/logger';
 
 import { npsCron } from '../cron/nps';
 import { oembedCron } from '../cron/oembed';
+import { scheduledMessagesCron } from '../cron/scheduledMessages';
 import { startCron } from '../cron/start';
 import { temporaryUploadCleanupCron } from '../cron/temporaryUploadsCleanup';
 import { usageReportCron } from '../cron/usageReport';
@@ -11,6 +12,14 @@ import { videoConferencesCron } from '../cron/videoConferences';
 const logger = new Logger('SyncedCron');
 
 export const startCronJobs = async (): Promise<void> => {
-	await Promise.all([startCron(), oembedCron(), usageReportCron(logger), npsCron(), temporaryUploadCleanupCron(), videoConferencesCron()]);
+	await Promise.all([
+		startCron(),
+		oembedCron(),
+		usageReportCron(logger),
+		npsCron(),
+		temporaryUploadCleanupCron(),
+		videoConferencesCron(),
+		scheduledMessagesCron(),
+	]);
 	userDataDownloadsCron();
 };

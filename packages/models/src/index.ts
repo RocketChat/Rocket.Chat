@@ -111,6 +111,7 @@ import {
 	VideoConferenceRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
+import { ScheduledMessagesRaw } from './models/ScheduledMessages';
 
 const prefix = 'rocketchat_';
 export function getCollectionName(name: string): string {
@@ -126,6 +127,7 @@ export * from './helpers';
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
 export { readSecondaryPreferred } from './readSecondaryPreferred';
+export { ScheduledMessagesRaw };
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
@@ -195,6 +197,7 @@ export const TeamMember = proxify<ITeamMemberModel>('ITeamMemberModel');
 export const Team = proxify<ITeamModel>('ITeamModel');
 export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
+export const ScheduledMessages = proxify<any>('IScheduledMessagesModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
@@ -222,6 +225,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
 
 	registerModel('IMessagesModel', () => new MessagesRaw(db));
+	registerModel('IScheduledMessagesModel', () => new ScheduledMessagesRaw(db));
 
 	registerModel(
 		'ILivechatInquiryModel',

@@ -6,6 +6,7 @@ import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useScheduleMessageAction } from './hooks/useScheduleMessageAction';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
@@ -19,143 +20,147 @@ import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export type MessageBoxActionsToolbarProps = {
-	canSend: boolean;
-	isMicrophoneDenied: boolean;
-	variant: 'small' | 'large';
-	isRecording: boolean;
-	rid: IRoom['_id'];
-	tmid?: IMessage['_id'];
-	isEditing: boolean;
+    canSend: boolean;
+    isMicrophoneDenied: boolean;
+    variant: 'small' | 'large';
+    isRecording: boolean;
+    rid: IRoom['_id'];
+    tmid?: IMessage['_id'];
+    isEditing: boolean;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
-	if (!action) {
-		return true;
-	}
-	return hiddenActions.includes(action.id);
+    if (!action) {
+        return true;
+    }
+    return hiddenActions.includes(action.id);
 };
 
 const MessageBoxActionsToolbar = ({
-	canSend,
-	isRecording,
-	rid,
-	tmid,
-	variant = 'large',
-	isMicrophoneDenied,
-	isEditing = false,
+    canSend,
+    isRecording,
+    rid,
+    tmid,
+    variant = 'large',
+    isMicrophoneDenied,
+    isEditing = false,
 }: MessageBoxActionsToolbarProps) => {
-	const { t } = useTranslation();
-	const chatContext = useChat();
+    const { t } = useTranslation();
+    const chatContext = useChat();
 
-	if (!chatContext) {
-		throw new Error('useChat must be used within a ChatProvider');
-	}
+    if (!chatContext) {
+        throw new Error('useChat must be used within a ChatProvider');
+    }
 
-	const room = useRoom();
+    const room = useRoom();
 
-	const disableBasicActions = !canSend || isRecording || isEditing;
+    const disableBasicActions = !canSend || isRecording || isEditing;
 
-	const audioMessageAction = useAudioMessageAction(disableBasicActions || isMicrophoneDenied, isMicrophoneDenied);
-	const videoMessageAction = useVideoMessageAction(disableBasicActions);
-	const fileUploadAction = useFileUploadAction(disableBasicActions);
-	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
-	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
-	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
+    const audioMessageAction = useAudioMessageAction(disableBasicActions || isMicrophoneDenied, isMicrophoneDenied);
+    const videoMessageAction = useVideoMessageAction(disableBasicActions);
+    const fileUploadAction = useFileUploadAction(disableBasicActions);
+    const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
+    const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
+    const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
+    
+    // BUG FIX: Removed isComposerEmpty check from here to fix the non-reactive disabled state
+    const scheduleMessageAction = useScheduleMessageAction(disableBasicActions, room, chatContext, tmid);
 
-	const apps = useMessageboxAppsActionButtons();
-	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
+    const apps = useMessageboxAppsActionButtons();
+    const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
 
-	const allActions = {
-		...(!isHidden(hiddenActions, audioMessageAction) && { audioMessageAction }),
-		...(!isHidden(hiddenActions, videoMessageAction) && { videoMessageAction }),
-		...(!isHidden(hiddenActions, fileUploadAction) && { fileUploadAction }),
-		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
-		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
-		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
-	};
+    const allActions = {
+        ...(!isHidden(hiddenActions, audioMessageAction) && { audioMessageAction }),
+        ...(!isHidden(hiddenActions, videoMessageAction) && { videoMessageAction }),
+        ...(!isHidden(hiddenActions, fileUploadAction) && { fileUploadAction }),
+        ...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
+        ...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
+        ...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
+        ...(!isHidden(hiddenActions, scheduleMessageAction) && { scheduleMessageAction }),
+    };
 
-	const featured = [];
-	const createNew = [];
-	const share = [];
-	const insert = [];
+    const featured = [];
+    const createNew = [];
+    const share = [];
+    const insert = [];
 
-	createNew.push(allActions.createDiscussionAction);
+    createNew.push(allActions.createDiscussionAction, allActions.scheduleMessageAction);
 
-	if (allActions.timestampAction) {
-		insert.push(allActions.timestampAction);
-	}
+    if (allActions.timestampAction) {
+        insert.push(allActions.timestampAction);
+    }
 
-	if (variant === 'small') {
-		featured.push(allActions.audioMessageAction, allActions.fileUploadAction);
-		createNew.push(allActions.videoMessageAction);
-	} else {
-		featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
-	}
+    if (variant === 'small') {
+        featured.push(allActions.audioMessageAction, allActions.fileUploadAction);
+        createNew.push(allActions.videoMessageAction);
+    } else {
+        featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
+    }
 
-	share.push(allActions.shareLocationAction);
+    share.push(allActions.shareLocationAction);
 
-	const groups = {
-		...(apps.isSuccess &&
-			apps.data.length > 0 && {
-				Apps: apps.data,
-			}),
-		...messageBox.actions.get(),
-	};
-	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
-		const items: GenericMenuItemProps[] = group
-			.filter((item) => !hiddenActions.includes(item.id))
-			.map((item) => ({
-				id: item.id,
-				icon: item.icon,
-				content: t(item.label),
-				onClick: (event?: MouseEvent<HTMLElement>) =>
-					item.action({
-						rid,
-						tmid,
-						event: event as unknown as Event,
-						chat: chatContext,
-					}),
-				gap: Boolean(!item.icon),
-				disabled: disableBasicActions,
-			}));
+    const groups = {
+        ...(apps.isSuccess &&
+            apps.data.length > 0 && {
+                Apps: apps.data,
+            }),
+        ...messageBox.actions.get(),
+    };
+    const messageBoxActions = Object.entries(groups).map(([name, group]) => {
+        const items: GenericMenuItemProps[] = group
+            .filter((item) => !hiddenActions.includes(item.id))
+            .map((item) => ({
+                id: item.id,
+                icon: item.icon,
+                content: t(item.label),
+                onClick: (event?: MouseEvent<HTMLElement>) =>
+                    item.action({
+                        rid,
+                        tmid,
+                        event: event as unknown as Event,
+                        chat: chatContext,
+                    }),
+                gap: Boolean(!item.icon),
+                disabled: disableBasicActions,
+            }));
 
-		return {
-			title: t(name),
-			items: items || [],
-		};
-	});
+        return {
+            title: t(name),
+            items: items || [],
+        };
+    });
 
-	const createNewFiltered = createNew.filter(isTruthy);
-	const shareFiltered = share.filter(isTruthy);
-	const insertFiltered = insert.filter(isTruthy);
+    const createNewFiltered = createNew.filter(isTruthy);
+    const shareFiltered = share.filter(isTruthy);
+    const insertFiltered = insert.filter(isTruthy);
 
-	const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
-		if (!icon) {
-			return;
-		}
+    const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
+        if (!icon) {
+            return;
+        }
 
-		return <MessageComposerAction key={id} icon={icon} data-qa-id={id} title={content as string} disabled={disabled} onClick={onClick} />;
-	};
+        return <MessageComposerAction key={id} icon={icon} data-qa-id={id} title={content as string} disabled={disabled} onClick={onClick} />;
+    };
 
-	return (
-		<>
-			<MessageComposerActionsDivider />
-			{featured.map((action) => action && renderAction(action))}
-			<GenericMenu
-				disabled={isRecording || !canSend}
-				data-qa-id='menu-more-actions'
-				detached
-				icon='plus'
-				sections={[
-					{ title: t('Create_new'), items: createNewFiltered },
-					{ title: t('Share'), items: shareFiltered },
-					...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
-					...messageBoxActions,
-				]}
-				title={t('More_actions')}
-			/>
-		</>
-	);
+    return (
+        <>
+            <MessageComposerActionsDivider />
+            {featured.map((action) => action && renderAction(action))}
+            <GenericMenu
+                disabled={isRecording || !canSend}
+                data-qa-id='menu-more-actions'
+                detached
+                icon='plus'
+                sections={[
+                    { title: t('Create_new'), items: createNewFiltered },
+                    { title: t('Share'), items: shareFiltered },
+                    ...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
+                    ...messageBoxActions,
+                ]}
+                title={t('More_actions')}
+            />
+        </>
+    );
 };
 
 export default memo(MessageBoxActionsToolbar);
