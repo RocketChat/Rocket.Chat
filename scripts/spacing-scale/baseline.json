@@ -266,7 +266,6 @@
 	"apps/meteor/client/views/room/contextualBar/RoomMembers/AddUsers/AddMatrixUsers/AddMatrixUsersModal.tsx": 1,
 	"apps/meteor/client/views/room/contextualBar/RoomMembers/AddUsers/BannedUsersUnbanModal.tsx": 1,
 	"apps/meteor/client/views/room/contextualBar/RoomMembers/RoomMembers.tsx": 1,
-	"apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfConfigModal.tsx": 1,
 	"apps/meteor/client/views/room/modals/E2EEModals/DisableE2EEModal.tsx": 3,
 	"apps/meteor/client/views/room/modals/E2EEModals/EnableE2EEModal.tsx": 1,
 	"apps/meteor/client/views/room/modals/E2EEModals/ResetKeysE2EEModal.tsx": 1,
