@@ -2,7 +2,7 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 import { NotificationSoundsContext, useCustomSound, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo, type ReactNode } from 'react';
 
-import { useUserSoundPreferences } from '../hooks/useUserSoundPreferences';
+import { useSoundVolume } from '../hooks/useSoundVolume';
 import { formatVolume } from './CustomSoundProvider/lib/formatVolume';
 
 export type NotificationSoundsProviderProps = {
@@ -15,7 +15,7 @@ const NotificationSoundsProvider = ({ children }: NotificationSoundsProviderProp
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
 	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
-	const { notificationsSoundVolume } = useUserSoundPreferences();
+	const notificationsSoundVolume = useSoundVolume('notificationsSoundVolume');
 
 	const contextValue = useMemo(() => {
 		const volume = formatVolume(notificationsSoundVolume);

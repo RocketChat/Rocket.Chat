@@ -2,7 +2,7 @@ import { CallSoundsContext } from '@rocket.chat/ui-conference';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useMemo, type ReactNode } from 'react';
 
-import { useUserSoundPreferences } from '../hooks/useUserSoundPreferences';
+import { useSoundVolume } from '../hooks/useSoundVolume';
 import { formatVolume } from './CustomSoundProvider/lib/formatVolume';
 
 export type CallSoundsProviderProps = {
@@ -12,7 +12,7 @@ export type CallSoundsProviderProps = {
 /** Plays the video conference call sounds at the user's ringer volume. */
 const CallSoundsProvider = ({ children }: CallSoundsProviderProps) => {
 	const { play, stop } = useCustomSound();
-	const { voipRingerVolume } = useUserSoundPreferences();
+	const voipRingerVolume = useSoundVolume('voipRingerVolume');
 
 	const contextValue = useMemo(
 		() => ({

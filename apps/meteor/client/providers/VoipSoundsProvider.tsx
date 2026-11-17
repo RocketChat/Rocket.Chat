@@ -2,7 +2,7 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VoipSoundsContext } from '@rocket.chat/ui-voip';
 import { useMemo, type ReactNode } from 'react';
 
-import { useUserSoundPreferences } from '../hooks/useUserSoundPreferences';
+import { useSoundVolume } from '../hooks/useSoundVolume';
 import { formatVolume } from './CustomSoundProvider/lib/formatVolume';
 
 export type VoipSoundsProviderProps = {
@@ -12,7 +12,7 @@ export type VoipSoundsProviderProps = {
 /** Plays the voice call sounds at the user's ringer volume. */
 const VoipSoundsProvider = ({ children }: VoipSoundsProviderProps) => {
 	const { play, stop } = useCustomSound();
-	const { voipRingerVolume } = useUserSoundPreferences();
+	const voipRingerVolume = useSoundVolume('voipRingerVolume');
 
 	const contextValue = useMemo(
 		() => ({
