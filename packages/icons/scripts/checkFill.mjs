@@ -31,8 +31,16 @@ const parseSubpaths = (d) => {
 			if (!(command in ARITY)) {
 				throw new Error(`unsupported path command ${command}`);
 			}
+		} else if (command === undefined || command === 'Z') {
+			throw new Error(`number ${tokens[i]} without a path command`);
+		}
+		if (command !== 'M' && !points) {
+			throw new Error(`path starts with ${command} instead of M`);
 		}
 		const args = tokens.slice(i, i + ARITY[command]).map(Number);
+		if (args.length < ARITY[command] || args.some(Number.isNaN)) {
+			throw new Error(`path command ${command} is missing arguments`);
+		}
 		i += ARITY[command];
 
 		switch (command) {
