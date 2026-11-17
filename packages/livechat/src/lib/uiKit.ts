@@ -96,6 +96,14 @@ const pushView = (viewId: string, openView: OpenView) => {
 	showModal(viewId, openView);
 };
 
+// A response that arrives late changes the stored view, and the visitor sees it only if it is on top.
+const updateView = (viewId: string, openView: OpenView) => {
+	openViews.set(viewId, openView);
+	if (displayedViewId === viewId) {
+		showModal(viewId, openView);
+	}
+};
+
 const showModal = (viewId: string, openView: OpenView) => {
 	openViews.set(viewId, openView);
 	displayedViewId = viewId;
@@ -179,14 +187,14 @@ export const handlePayloadUserInteraction = (type: string, { triggerId, ...data 
 
 	if (type === UIKitInteractionType.ERRORS) {
 		if (openView) {
-			showModal(viewId, { ...openView, errors: data.errors });
+			updateView(viewId, { ...openView, errors: data.errors });
 		}
 		return UIKitInteractionType.ERRORS;
 	}
 
 	if (type === UIKitInteractionType.MODAL_UPDATE) {
 		if (openView) {
-			showModal(viewId, { appId, view: { ...openView.view, ...view }, errors: undefined });
+			updateView(viewId, { appId, view: { ...openView.view, ...view }, errors: undefined });
 		}
 		return UIKitInteractionType.MODAL_UPDATE;
 	}

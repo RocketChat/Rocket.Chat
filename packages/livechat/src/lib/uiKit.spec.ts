@@ -150,6 +150,19 @@ describe('the modal stack', () => {
 
 		expect(mockSetState).toHaveBeenLastCalledWith({ modal: null });
 	});
+
+	it('keeps a covered view covered when an update or errors for it arrive late', async () => {
+		await open();
+		await interact({ type: UIKitInteractionType.MODAL_PUSH, view: { ...view, id: 'view-2' } });
+		mockSetState.mockClear();
+
+		await interact({ type: UIKitInteractionType.MODAL_UPDATE, view: { id: 'view-1', title: { type: 'plain_text', text: 'New' } } });
+		await interact({ type: UIKitInteractionType.ERRORS, viewId: 'view-1', errors: { a: 'x' } });
+		expect(mockSetState).not.toHaveBeenCalled();
+
+		await interact({ type: UIKitInteractionType.MODAL_CLOSE, viewId: 'view-2' });
+		expect(lastModalProps()).toMatchObject({ view: { title: { text: 'New' } }, errors: { a: 'x' } });
+	});
 });
 
 describe('the modal stack limit and submit answers', () => {
