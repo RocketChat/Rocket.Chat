@@ -297,6 +297,7 @@ function POP3Client(port, host, options) {
 		transportSocket = new net.createConnection(port, host);
 		tlssock = tls.connect(
 			{
+				host: host,
 				socket: transportSocket,
 				rejectUnauthorized: !self.data.ignoretlserrs,
 			},
