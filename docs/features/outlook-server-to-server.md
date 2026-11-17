@@ -131,4 +131,4 @@ left as an intention.
 
 Why there are two providers, how each one detects what changed, why EWS is spoken without a SOAP library,
 how channel binding is implemented and what is deliberately accepted as a risk are all recorded in
-[ADR 0008](../adr/0008-outlook-server-to-server-integration.md).
+[ADR 0012](../adr/0012-outlook-server-to-server-integration.md).
