@@ -1,13 +1,11 @@
-import { useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui-contexts';
+import { useGetConnectionSessionId, useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
-
-// oxlint-disable-next-line no-restricted-imports -- moves to ui-contexts, see docs/proposals/view-isolation-migration.md phase 0
-import { getConnectionSessionId } from '../../../../meteor/connection';
 
 export const useForceLogout = (userId: string) => {
 	const getNotifyUserStream = useStream('notify-user');
 	const setForceLogout = useSessionDispatch('forceLogout');
 	const wipeLocalAuth = useWipeLocalAuth();
+	const getConnectionSessionId = useGetConnectionSessionId();
 
 	useEffect(() => {
 		setForceLogout(false);
@@ -26,5 +24,5 @@ export const useForceLogout = (userId: string) => {
 		});
 
 		return unsubscribe;
-	}, [getNotifyUserStream, setForceLogout, userId, wipeLocalAuth]);
+	}, [getConnectionSessionId, getNotifyUserStream, setForceLogout, userId, wipeLocalAuth]);
 };
