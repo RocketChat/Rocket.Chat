@@ -12,7 +12,7 @@ export const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInv
 	const hasInvalidApps = !!apps.find((app) => app.getLatestLicenseValidationResult().hasErrors);
 
 	if (!hasInvalidApps) {
-		return;
+		return apps;
 	}
 
 	const id = 'someAppInInvalidState';
