@@ -1,6 +1,9 @@
 // Reports every evenodd icon whose font glyph would fill a different area than its SVG.
 
 import { relative } from 'path';
+import { promisify } from 'util';
+
+import { parseString } from 'xml2js';
 
 import { listFiles, readSource } from './utils.mjs';
 
@@ -105,13 +108,34 @@ const addWinding = (winding, polygon) => {
 	}
 };
 
-const compareFill = (svg) => {
+// every <path> with the fill rule it inherits from its ancestors
+const collectPaths = (element, fillRule, paths = []) => {
+	const rule = element.$?.['fill-rule'] ?? fillRule;
+	for (const [name, children] of Object.entries(element)) {
+		if (name === '$') continue;
+		for (const child of children) {
+			const node = typeof child === 'string' ? {} : child;
+			if (name === 'path') {
+				if (!node.$?.d) {
+					throw new Error('<path> without a d attribute');
+				}
+				paths.push({ d: node.$.d, evenodd: (node.$['fill-rule'] ?? rule) === 'evenodd' });
+			} else if (name === 'g') {
+				collectPaths(node, rule, paths);
+			} else {
+				throw new Error(`unsupported element <${name}>`);
+			}
+		}
+	}
+	return paths;
+};
+
+const compareFill = async (source) => {
+	const { svg } = await promisify(parseString)(source);
 	const svgFill = new Uint8Array(SIZE * SIZE);
 	const total = new Int32Array(SIZE * SIZE);
 
-	for (const [, attributes] of svg.matchAll(/<path\b([^>]*)\/?>/g)) {
-		const d = /\sd="([^"]*)"/.exec(attributes)[1];
-		const evenodd = /fill-rule="evenodd"/.test(attributes);
+	for (const { d, evenodd } of collectPaths(svg, 'nonzero')) {
 		const winding = new Int32Array(SIZE * SIZE);
 		for (const polygon of parseSubpaths(d)) {
 			addWinding(winding, polygon);
@@ -134,21 +158,31 @@ const compareFill = (svg) => {
 };
 
 const rows = [];
+const failures = [];
 for (const path of await listFiles('./src/**/*.svg')) {
-	const svg = await readSource(path);
-	if (!svg.includes('evenodd')) continue;
-	rows.push({ name: relative('./src', path), ...compareFill(svg) });
+	const source = await readSource(path);
+	if (!source.includes('evenodd')) continue;
+	const name = relative('./src', path);
+	try {
+		rows.push({ name, ...(await compareFill(source)) });
+	} catch (error) {
+		failures.push({ name, message: error.message });
+	}
 }
 
 rows.sort((a, b) => b.extra - a.extra || b.missing - a.missing || a.name.localeCompare(b.name));
+failures.sort((a, b) => a.name.localeCompare(b.name));
 
-let broken = 0;
+let broken = failures.length;
+for (const { name, message } of failures) {
+	console.log(`${'ERROR'.padEnd(6)} ${name}: ${message}`);
+}
 for (const { name, extra, missing } of rows) {
 	const flag = extra > THRESHOLD || missing > THRESHOLD ? 'BROKEN' : 'ok';
 	if (flag === 'BROKEN') broken++;
 	console.log(`${flag.padEnd(6)} extra=${extra.toFixed(2).padStart(6)}%  missing=${missing.toFixed(2).padStart(5)}%  ${name}`);
 }
-console.log(`${rows.length} evenodd icons checked, ${broken} broken`);
+console.log(`${rows.length + failures.length} evenodd icons checked, ${broken} broken`);
 
 if (broken > 0) {
 	process.exitCode = 1;
