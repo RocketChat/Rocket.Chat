@@ -109,3 +109,11 @@ describe('callbacks', () => {
 		expect(handleClose).not.toHaveBeenCalled();
 	});
 });
+
+describe('confirm button', () => {
+	it('shows the confirm icon before the confirm text', async () => {
+		renderModal(<GenericModal title='Modal' confirmText='Schedule' confirmIcon='send' onConfirm={jest.fn()} />);
+
+		expect((await screen.findByRole('button', { name: 'Schedule' })).innerHTML).toContain('rcx-icon--name-send');
+	});
+});
