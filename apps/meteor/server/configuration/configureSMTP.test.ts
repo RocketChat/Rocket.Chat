@@ -87,6 +87,20 @@ describe('configureSMTP', () => {
 		});
 	});
 
+	it('should configure the maximum number of connections for a pool', () => {
+		expect(applySettings({ ...smtpSettings, SMTP_Max_Connections: 2 })).to.include({ pool: true, maxConnections: 2 });
+	});
+
+	it('should not apply the pool limit when pooling is disabled', () => {
+		expect(applySettings({ ...smtpSettings, SMTP_Pool: false, SMTP_Max_Connections: 2 })).to.not.have.property('maxConnections');
+	});
+
+	for (const maxConnections of [0, -1, 1.5, NaN]) {
+		it(`should use the transport default for invalid connection limit ${maxConnections}`, () => {
+			expect(applySettings({ ...smtpSettings, SMTP_Max_Connections: maxConnections })).to.not.have.property('maxConnections');
+		});
+	}
+
 	it('should ignore TLS only over plain smtp', () => {
 		expect(applySettings({ ...smtpSettings, SMTP_IgnoreTLS: true })).to.deep.equal({
 			host: 'smtp.example.com',
