@@ -106,7 +106,9 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 		className: className ? appendAnimation(childProps.className, className) : childProps.className,
 		onAnimationEnd: (event: AnimationEvent<Element>) => {
 			childProps.onAnimationEnd?.(event);
-			handleAnimationEnd();
+			if (event.target === event.currentTarget) {
+				handleAnimationEnd();
+			}
 		},
 	}));
 };

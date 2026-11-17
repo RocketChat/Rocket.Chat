@@ -74,4 +74,34 @@ describe('[AnimatedVisibility Component]', () => {
 		expect(onAnimationEnd).toHaveBeenCalledTimes(1);
 		expect(container.firstElementChild).toBeNull();
 	});
+
+	it('ignores descendant animationEnd events and hides only on the element itself', () => {
+		const onAnimationEnd = jest.fn();
+		const { container, rerender } = render(
+			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
+				<Box data-qa='child' onAnimationEnd={onAnimationEnd}>
+					<span data-qa='descendant' />
+				</Box>
+			</AnimatedVisibility>,
+		);
+
+		rerender(
+			<AnimatedVisibility visibility={AnimatedVisibility.HIDDEN}>
+				<Box data-qa='child' onAnimationEnd={onAnimationEnd}>
+					<span data-qa='descendant' />
+				</Box>
+			</AnimatedVisibility>,
+		);
+		expect(container.firstElementChild).not.toBeNull();
+
+		const descendant = container.querySelector('[data-qa="descendant"]');
+		expect(descendant).not.toBeNull();
+		fireEvent.animationEnd(descendant as Element);
+
+		expect(container.firstElementChild).not.toBeNull();
+
+		fireEvent.animationEnd(container.firstElementChild as Element);
+		expect(onAnimationEnd).toHaveBeenCalled();
+		expect(container.firstElementChild).toBeNull();
+	});
 });
