@@ -675,7 +675,7 @@ describe('[Calendar Events]', () => {
 		const date = new Date();
 		const syncedId = `calendar-events.synced-${Date.now()}`;
 		let connection: MongoClient;
-		let desktopId: string | undefined;
+		let importedId: string | undefined;
 		let ownId: string | undefined;
 
 		before(async () => {
@@ -697,20 +697,20 @@ describe('[Calendar Events]', () => {
 					notificationSent: false,
 				});
 
-			const desktop = await request
+			const imported = await request
 				.post(api('calendar-events.import'))
 				.set(credentials)
 				.send({
 					startTime: date.toISOString(),
 					subject,
 					description: 'Description',
-					externalId: `calendar-events.by-source-desktop-${Date.now()}`,
+					externalId: `calendar-events.by-source-imported-${Date.now()}`,
 					reminderMinutesBeforeStart: 15,
 				})
 				.expect(200);
 
-			expect(desktop.body).to.have.property('success', true);
-			desktopId = desktop.body.id;
+			expect(imported.body).to.have.property('success', true);
+			importedId = imported.body.id;
 
 			const own = await request
 				.post(api('calendar-events.create'))
@@ -725,13 +725,13 @@ describe('[Calendar Events]', () => {
 			expect(own.body).to.have.property('success', true);
 			ownId = own.body.id;
 
-			expect(desktopId).to.be.a('string');
+			expect(importedId).to.be.a('string');
 			expect(ownId).to.be.a('string');
 		});
 
 		after(async () => {
 			await Promise.all([
-				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: desktopId }),
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: importedId }),
 				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: ownId }),
 			]);
 			if (connection) {
@@ -763,7 +763,7 @@ describe('[Calendar Events]', () => {
 				expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.include(ownId);
 			});
 
-			it('should still list an event the desktop integration imported, which carries no source', async () => {
+			it('should still list an imported event, which carries no source', async () => {
 				const res = await request
 					.get(api('calendar-events.list'))
 					.set(credentials)
@@ -771,7 +771,7 @@ describe('[Calendar Events]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 
-				expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.include(desktopId);
+				expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.include(importedId);
 			});
 
 			it('should refuse to return a server synced event by id', async () => {
@@ -796,11 +796,11 @@ describe('[Calendar Events]', () => {
 					});
 			});
 
-			it('should still return an event the desktop integration imported by id', async () => {
+			it('should still return an imported event by id', async () => {
 				await request
 					.get(api('calendar-events.info'))
 					.set(credentials)
-					.query({ id: desktopId })
+					.query({ id: importedId })
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res: Response) => {
@@ -811,15 +811,15 @@ describe('[Calendar Events]', () => {
 		});
 
 		(IS_EE ? describe : describe.skip)('[Calendar Events while the server owns the sync]', () => {
-			let previousExchangeMode: ISetting['value'];
+			let previousOutlookEnabled: ISetting['value'];
 
 			before(async () => {
-				previousExchangeMode = await getSettingValueById('Exchange_Mode');
-				await updateSetting('Exchange_Mode', 'server');
+				previousOutlookEnabled = await getSettingValueById('Outlook_Calendar_Enabled');
+				await updateSetting('Outlook_Calendar_Enabled', true);
 			});
 
 			after(async () => {
-				await updateSetting('Exchange_Mode', previousExchangeMode);
+				await updateSetting('Outlook_Calendar_Enabled', previousOutlookEnabled);
 			});
 
 			it('should refuse to create an event carrying an external id', async () => {
@@ -880,11 +880,11 @@ describe('[Calendar Events]', () => {
 					});
 			});
 
-			it('should still update an event the desktop integration imported, which carries no source', async () => {
+			it('should still update an imported event, which carries no source', async () => {
 				await request
 					.post(api('calendar-events.update'))
 					.set(credentials)
-					.send({ eventId: desktopId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
+					.send({ eventId: importedId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res: Response) => {

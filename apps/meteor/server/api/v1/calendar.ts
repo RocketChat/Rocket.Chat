@@ -53,7 +53,7 @@ const successSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-const isServerManaged = (): boolean => settings.get<string>('Exchange_Mode') === 'server';
+const isServerManaged = (): boolean => Boolean(settings.get<boolean>('Outlook_Calendar_Enabled'));
 
 const isOutlookImported = (event: ICalendarEvent) => event.source === 'outlook';
 

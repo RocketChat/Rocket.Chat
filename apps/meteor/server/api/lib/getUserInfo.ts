@@ -46,48 +46,17 @@ const filterOutdatedVersionUpdateBanners = (banners: NonNullable<IUser['banners'
 	);
 };
 
-/**
- * Returns the user's calendar settings based on their email domain and the configured mapping.
- * If the email is not provided or the domain is not found in the mapping,
- * it returns the default Outlook calendar settings.
- * @param email - The user's email object, which may contain the address and verification status.
- * @returns The calendar settings for the user, including Outlook calendar settings if enabled.
- */
-const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar => {
-	const calendarSettings: IUserCalendar = {};
+const getUserCalendar = (): IUserCalendar => {
+	if (!settings.get<boolean>('Outlook_Calendar_Enabled')) {
+		return {};
+	}
 
-	// In server mode the exchange URL is withheld, which leaves the desktop app with no sync target and
-	// keeps the two integrations from both writing to `calendar_event`.
-	const isLegacyMode = settings.get<string>('Exchange_Mode') !== 'server';
-
-	const outlook = {
-		Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
-		Exchange_Url: isLegacyMode ? settings.get<string>('Outlook_Calendar_Exchange_Url') : '',
-		Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
+	return {
+		outlook: {
+			Enabled: true,
+			Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
+		},
 	};
-
-	const domain = email ? email.address.split('@').pop() : undefined;
-	const outlookCalendarUrlMapping = isLegacyMode ? settings.get<string>('Outlook_Calendar_Url_Mapping') : '';
-
-	if (domain && outlookCalendarUrlMapping && outlookCalendarUrlMapping.includes(domain)) {
-		try {
-			const mappingObject = JSON.parse(outlookCalendarUrlMapping);
-			const mappedSettings = mappingObject[domain];
-			if (mappedSettings) {
-				outlook.Enabled = mappedSettings.Enabled ?? outlook.Enabled;
-				outlook.Exchange_Url = mappedSettings.Exchange_Url ?? outlook.Exchange_Url;
-				outlook.Outlook_Url = mappedSettings.Outlook_Url ?? outlook.Outlook_Url;
-			}
-		} catch (error) {
-			console.error('Invalid Outlook Calendar URL Mapping JSON:', error);
-		}
-	}
-
-	if (outlook.Enabled) {
-		calendarSettings.outlook = outlook;
-	}
-
-	return calendarSettings;
 };
 
 export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IMeApiUser> {
@@ -113,7 +82,7 @@ export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IM
 		settings: {
 			profile: {},
 			...(preferences && { preferences }),
-			calendar: getUserCalendar(verifiedEmail),
+			calendar: getUserCalendar(),
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
 		isOAuthUser: isOAuthUser(me),

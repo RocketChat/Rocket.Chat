@@ -9,7 +9,6 @@ import { useAutoupdate } from './hooks/useAutoupdate';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useDesktopBridgeContract } from './hooks/useDesktopBridgeContract';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
-import { useDesktopOutlookCredentials } from './hooks/useDesktopOutlookCredentials';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserLoggedIn } from './hooks/useDesktopUserLoggedIn';
 import { useDesktopUserPresence } from './hooks/useDesktopUserPresence';
@@ -68,7 +67,6 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useDesktopUserLoggedIn();
-	useDesktopOutlookCredentials();
 	useDesktopUserRoles();
 	useDesktopUserPresence();
 	useStartupEvent();

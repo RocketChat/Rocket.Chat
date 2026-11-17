@@ -10,10 +10,6 @@ export type VideoChatWindowOptions = {
 	providerName?: string | undefined;
 };
 
-export type OutlookEventsResponse = {
-	status: 'success' | 'canceled';
-};
-
 export type CustomNotificationOptions = {
 	type: 'voice' | 'text';
 	id?: string;
@@ -51,9 +47,9 @@ export type DesktopUserStatusChangeRequest = {
 
 /**
  * The version of this contract the web client implements. A web client that announces version 1 pushes the server info,
- * URL resolver, title, favicon, user roles, badge, login state, unread alert preference, git commit hash and Outlook
- * credentials through the bridge itself, so the desktop app has no reason to read those from the web client's modules.
- * Version 1 does not cover presence.
+ * URL resolver, title, favicon, user roles, badge, login state, unread alert preference and git commit hash through the
+ * bridge itself, so the desktop app has no reason to read those from the web client's modules. Version 1 does not cover
+ * presence.
  */
 export type WebClientBridgeVersion = 1;
 
@@ -103,11 +99,6 @@ export interface IRocketChatDesktop {
 	openInternalVideoChatWindow: (url: string, options: VideoChatWindowOptions) => void;
 	setGitCommitHash: (gitCommitHash: string) => void;
 	writeTextToClipboard: (text: string) => void;
-	getOutlookEvents: (date: Date) => Promise<OutlookEventsResponse>;
-	setOutlookExchangeUrl: (url: string, userId: string) => void;
-	hasOutlookCredentials: () => Promise<boolean>;
-	clearOutlookCredentials: () => void;
-	setUserToken: (token: string, userId: string) => void;
 	openDocumentViewer: (url: string, format: string, options: any) => void;
 	supportedDocumentViewerFormats?: () => string[];
 	reloadServer: () => void;

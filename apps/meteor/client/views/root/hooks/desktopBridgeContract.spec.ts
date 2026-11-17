@@ -1,10 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useDesktopUnreadAlert } from './loggedIn/useDesktopUnreadAlert';
 import { useDesktopBridgeContract } from './useDesktopBridgeContract';
-import { useDesktopOutlookCredentials } from './useDesktopOutlookCredentials';
 import { useDesktopUserLoggedIn } from './useDesktopUserLoggedIn';
 
 jest.mock('../../../../rocketchat.info', () => ({
@@ -12,7 +10,6 @@ jest.mock('../../../../rocketchat.info', () => ({
 }));
 
 let mockIsLoggingIn = false;
-let mockUser: Pick<IUser, '_id' | 'settings'> | null = null;
 // `null` keeps the user id of the `mockAppRoot` wrapper.
 let mockUserId: string | undefined | null = null;
 
@@ -20,9 +17,7 @@ jest.mock('@rocket.chat/ui-contexts', () => {
 	const actual = jest.requireActual('@rocket.chat/ui-contexts');
 	return {
 		...actual,
-		useLoginToken: () => 'login-token',
 		useIsLoggingIn: () => mockIsLoggingIn,
-		useUser: () => mockUser,
 		useUserId: () => (mockUserId === null ? actual.useUserId() : mockUserId),
 	};
 });
@@ -34,9 +29,6 @@ const mockDesktop = () => {
 		setGitCommitHash: jest.fn(),
 		setUserLoggedIn: jest.fn(),
 		setUnreadAlertEnabled: jest.fn(),
-		setUserToken: jest.fn(),
-		setOutlookExchangeUrl: jest.fn(),
-		clearOutlookCredentials: jest.fn(),
 	};
 	Object.assign(window, { RocketChatDesktop: desktop });
 	return desktop;
@@ -44,7 +36,6 @@ const mockDesktop = () => {
 
 afterEach(() => {
 	mockIsLoggingIn = false;
-	mockUser = null;
 	mockUserId = null;
 	jest.restoreAllMocks();
 	delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
@@ -167,122 +158,5 @@ describe('useDesktopUnreadAlert', () => {
 		});
 
 		expect(desktop.setUnreadAlertEnabled).toHaveBeenLastCalledWith(false);
-	});
-});
-
-describe('useDesktopOutlookCredentials', () => {
-	const outlookUser = (enabled: boolean) => ({
-		_id: 'user-id',
-		settings: { calendar: { outlook: { Enabled: enabled, Exchange_Url: 'https://exchange.example.com', Outlook_Url: '' } } },
-	});
-
-	it('should hand the Outlook integration its credentials when the user enabled it', () => {
-		const desktop = mockDesktop();
-		mockUser = outlookUser(true);
-
-		renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		expect(desktop.setUserToken).toHaveBeenCalledWith('login-token', 'user-id');
-		expect(desktop.setOutlookExchangeUrl).toHaveBeenCalledWith('https://exchange.example.com', 'user-id');
-	});
-
-	it('should not hand over the login token when the user did not enable the integration', () => {
-		const desktop = mockDesktop();
-		mockUser = outlookUser(false);
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-		rerender();
-
-		expect(desktop.setUserToken).not.toHaveBeenCalled();
-		// An earlier page load may have handed credentials over before the user turned the integration off.
-		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
-	});
-
-	it('should take back the credentials an earlier page load left when a reload ends logged out', () => {
-		const desktop = mockDesktop();
-		mockIsLoggingIn = true;
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
-
-		mockIsLoggingIn = false;
-		rerender();
-		rerender();
-
-		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
-	});
-
-	it('should not take the credentials back while the user of a stored user id loads', () => {
-		const desktop = mockDesktop();
-		mockUserId = 'user-id';
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		mockUser = outlookUser(true);
-		rerender();
-
-		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
-		expect(desktop.setUserToken).toHaveBeenCalledTimes(1);
-	});
-
-	it.each([
-		['turns the integration off', () => outlookUser(false)],
-		['logs out', () => null],
-	])('should take the credentials back when the user %s', (_name, nextUser) => {
-		const desktop = mockDesktop();
-		mockUser = outlookUser(true);
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		mockUser = nextUser();
-		rerender();
-		rerender();
-
-		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
-	});
-
-	it('should not take the credentials back while a stored session resumes on reload', () => {
-		const desktop = mockDesktop();
-		mockIsLoggingIn = true;
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		mockUser = outlookUser(true);
-		mockIsLoggingIn = false;
-		rerender();
-
-		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
-		expect(desktop.setUserToken).toHaveBeenCalledTimes(1);
-	});
-
-	it('should hand the credentials over again when the user logs back in', () => {
-		const desktop = mockDesktop();
-		mockUser = outlookUser(true);
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		mockUser = null;
-		rerender();
-		mockUser = outlookUser(true);
-		rerender();
-
-		expect(desktop.setUserToken).toHaveBeenCalledTimes(2);
-		expect(desktop.setOutlookExchangeUrl).toHaveBeenCalledTimes(2);
-		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
-	});
-
-	it('should skip the Outlook calls quietly on desktop apps that predate the Outlook integration', () => {
-		const { setUserToken: _token, setOutlookExchangeUrl: _url, clearOutlookCredentials: _clear, ...desktop } = mockDesktop();
-		Object.assign(window, { RocketChatDesktop: desktop });
-		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-		mockUser = outlookUser(true);
-
-		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
-
-		mockUser = null;
-		rerender();
-
-		expect(warn).not.toHaveBeenCalled();
 	});
 });

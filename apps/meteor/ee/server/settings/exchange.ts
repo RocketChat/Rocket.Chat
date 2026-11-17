@@ -2,13 +2,10 @@ import { settingsRegistry } from '../../../server/settings';
 
 const enabled = { _id: 'Outlook_Calendar_Enabled', value: true };
 
-const legacyOnly = [enabled, { _id: 'Exchange_Mode', value: 'legacy' }];
-const serverOnly = [enabled, { _id: 'Exchange_Mode', value: 'server' }];
+const graphOnly = [enabled, { _id: 'Exchange_Sync_Provider', value: 'graph' }];
+const ewsOnly = [enabled, { _id: 'Exchange_Sync_Provider', value: 'ews' }];
 
-const graphOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'graph' }];
-const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }];
-
-const contactsOnly = [...serverOnly, { _id: 'Exchange_Contacts_Sync_Enabled', value: true }];
+const contactsOnly = [enabled, { _id: 'Exchange_Contacts_Sync_Enabled', value: true }];
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('Outlook_Calendar', async function () {
@@ -24,18 +21,6 @@ export function addSettings(): Promise<void> {
 					invalidValue: false,
 				});
 
-				await this.add('Exchange_Mode', 'legacy', {
-					type: 'select',
-					public: true,
-					invalidValue: 'legacy',
-					alert: 'Exchange_Mode_Legacy_Deprecation_Alert',
-					values: [
-						{ key: 'legacy', i18nLabel: 'Exchange_Mode_Legacy' },
-						{ key: 'server', i18nLabel: 'Exchange_Mode_Server' },
-					],
-					enableQuery: { _id: 'Outlook_Calendar_Enabled', value: true },
-				});
-
 				await this.add('Calendar_BusyStatus_Enabled', true, {
 					type: 'boolean',
 					public: true,
@@ -43,75 +28,36 @@ export function addSettings(): Promise<void> {
 					enableQuery: enabled,
 				});
 
-				await this.section('Exchange_Desktop', async function () {
-					await this.add('Outlook_Calendar_Exchange_Url', '', {
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						placeholder: 'https://exchange.example.com/',
-						enableQuery: legacyOnly,
-					});
-
-					await this.add('Outlook_Calendar_Outlook_Url', '', {
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
-						enableQuery: legacyOnly,
-					});
-
-					await this.add(
-						'Calendar_MeetingUrl_Regex',
-						'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
-						{
-							type: 'string',
-							public: true,
-							invalidValue: '',
-							enableQuery: legacyOnly,
-						},
-					);
-
-					/**
-					 * const defaultMapping = {
-					 *	'rocket.chat': {
-					 *      Enabled: true,
-					 *		Exchange_Url: 'https://owa.dev.rocket.chat/',
-					 *		Outlook_Url: 'https://owa.dev.rocket.chat/owa/#path=/calendar'
-					 *	},
-					 * };
-					 */
-					await this.add('Outlook_Calendar_Url_Mapping', '{}', {
-						type: 'code',
-						multiline: true,
-						public: true,
-						code: 'application/json',
-						invalidValue: '{}',
-						enableQuery: legacyOnly,
-					});
+				await this.add('Outlook_Calendar_Outlook_Url', '', {
+					type: 'string',
+					public: true,
+					invalidValue: '',
+					placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
+					enableQuery: enabled,
 				});
 
-				await this.section('Exchange_Mode_Server', async function () {
+				await this.section('Exchange_Server_Sync', async function () {
 					await this.add('Exchange_Sync_Provider', 'graph', {
 						type: 'select',
 						values: [
 							{ key: 'graph', i18nLabel: 'Exchange_Sync_Provider_Graph' },
 							{ key: 'ews', i18nLabel: 'Exchange_Sync_Provider_EWS' },
 						],
-						enableQuery: serverOnly,
+						enableQuery: enabled,
 						invalidValue: 'graph',
 					});
 
 					await this.add('Exchange_Calendar_Sync_Interval', 1, {
 						type: 'int',
 						public: true,
-						enableQuery: serverOnly,
+						enableQuery: enabled,
 						invalidValue: 1,
 					});
 
 					await this.add('Exchange_Calendar_Sync_Window_Days', 2, {
 						type: 'int',
 						public: true,
-						enableQuery: serverOnly,
+						enableQuery: enabled,
 						invalidValue: 2,
 					});
 
@@ -119,7 +65,7 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						public: true,
 						alert: 'Exchange_Contacts_Favorites_Graph_Alert',
-						enableQuery: serverOnly,
+						enableQuery: enabled,
 						invalidValue: false,
 					});
 

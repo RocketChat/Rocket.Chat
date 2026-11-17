@@ -521,26 +521,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const defaultPattern = '(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)';
-		const pattern = (settings.get<string>('Calendar_MeetingUrl_Regex') || defaultPattern).trim();
-
-		if (!pattern) {
-			return;
-		}
-
-		const regex: RegExp | undefined = (() => {
-			try {
-				return new RegExp(pattern, 'im');
-			} catch {
-				logger.error('Failed to parse regular expression for meeting url.');
-			}
-		})();
-
-		if (!regex) {
-			return;
-		}
-
-		const results = description.match(regex);
+		const meetingUrlPattern = /(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)/im;
+		const results = description.match(meetingUrlPattern);
 		if (!results) {
 			return;
 		}

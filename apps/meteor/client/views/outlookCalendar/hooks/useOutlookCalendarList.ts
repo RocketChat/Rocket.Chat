@@ -1,10 +1,8 @@
-import { useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { useOutlookAuthenticationMutation } from './useOutlookAuthentication';
 import { getErrorMessage } from '../../../lib/errorHandling';
-import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 
 export const useOutlookCalendarListForToday = () => {
 	return useOutlookCalendarList(new Date());
@@ -27,40 +25,23 @@ export const useMutationOutlookCalendarSync = () => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
-	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
 	const syncMyCalendar = useEndpoint('POST', '/v1/exchange.syncMyCalendar');
-
-	const checkOutlookCredentials = useOutlookAuthenticationMutation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const syncMutation = useMutation({
+	return useMutation({
 		mutationFn: async () => {
-			if (isServerManaged) {
-				await syncMyCalendar();
-			} else {
-				await syncOutlookEvents();
-			}
+			await syncMyCalendar();
 
 			await queryClient.invalidateQueries({
 				queryKey: ['outlook', 'calendar', 'list'],
 			});
-
-			if (!isServerManaged) {
-				await checkOutlookCredentials.mutateAsync();
-			}
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Outlook_Sync_Success') });
 		},
-		onError: async (error) => {
-			if (error instanceof Error && error.message === 'abort') {
-				return;
-			}
-
-			const errorMessage = isServerManaged ? getErrorMessage(error, 'Outlook_Sync_Failed') : t('Outlook_Sync_Failed');
-			dispatchToastMessage({ type: 'error', message: errorMessage });
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Outlook_Sync_Failed') });
 		},
 	});
-	return syncMutation;
 };

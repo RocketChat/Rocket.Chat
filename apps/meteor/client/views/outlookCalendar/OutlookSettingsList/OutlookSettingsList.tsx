@@ -13,7 +13,6 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OutlookSettingItem from './OutlookSettingItem';
-import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
 
 export type OutlookSettingsListProps = {
 	onClose: () => void;
@@ -25,8 +24,6 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 	const dispatchToastMessage = useToastMessageDispatch();
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const notifyCalendarEvents = useUserPreference('notifyCalendarEvents') as boolean;
-	const { authEnabled } = useOutlookAuthentication();
-	const handleDisableAuth = useOutlookAuthenticationMutationLogout();
 
 	const handleNotifyCalendarEvents = useCallback(
 		(value: boolean) => {
@@ -40,26 +37,6 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 		[saveUserPreferences, dispatchToastMessage, t],
 	);
 
-	const calendarSettings = [
-		{
-			id: 'notification',
-			title: t('Event_notifications'),
-			subTitle: t('Event_notifications_description'),
-			enabled: notifyCalendarEvents,
-			handleEnable: handleNotifyCalendarEvents,
-		},
-		{
-			id: 'authentication',
-			title: t('Outlook_authentication'),
-			subTitle: t('Outlook_authentication_description'),
-			enabled: authEnabled,
-			handleEnable: () =>
-				handleDisableAuth.mutate(undefined, {
-					onSuccess: changeRoute,
-				}),
-		},
-	];
-
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
@@ -68,13 +45,12 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent flush>
-				{calendarSettings.map((setting, index) => {
-					if (setting.id === 'authentication' && !setting.enabled) {
-						return;
-					}
-
-					return <OutlookSettingItem key={index} {...setting} />;
-				})}
+				<OutlookSettingItem
+					title={t('Event_notifications')}
+					subTitle={t('Event_notifications_description')}
+					enabled={notifyCalendarEvents}
+					handleEnable={handleNotifyCalendarEvents}
+				/>
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

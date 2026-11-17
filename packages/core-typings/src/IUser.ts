@@ -164,7 +164,6 @@ export const MAX_USER_PHONES = 10;
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;
-		Exchange_Url: string;
 		Outlook_Url: string;
 	};
 }

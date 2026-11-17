@@ -11,7 +11,7 @@ import { whenSyncsIdle } from '../syncLease';
 
 export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
 
-const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
+const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Calendar_Sync_Interval'];
 
 const stopCalendarSyncJob = async (): Promise<void> => {
 	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
@@ -19,8 +19,7 @@ const stopCalendarSyncJob = async (): Promise<void> => {
 	}
 };
 
-export const isServerSyncOn = (): boolean =>
-	Boolean(settings.get<boolean>('Outlook_Calendar_Enabled')) && settings.get<string>('Exchange_Mode') === 'server';
+export const isServerSyncOn = (): boolean => Boolean(settings.get<boolean>('Outlook_Calendar_Enabled'));
 
 /** Every await here is a chance for the switch to be undone, so `stillOff` is asked again before each step that cannot be */
 const discardUpcomingServerSyncedEvents = async (stillOff: () => boolean): Promise<void> => {
