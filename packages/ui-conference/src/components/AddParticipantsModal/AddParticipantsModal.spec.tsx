@@ -122,7 +122,7 @@ it('adds the selected user to the conference', async () => {
 it('dials the numbers the server hands back for people who take calls on a device', async () => {
 	const provider = speakingProvider();
 	const dialOut = jest.spyOn(provider.actions, 'dialOut');
-	addParticipants.mockImplementation(async (users: string[]) => ({ added: users.length, dial: ['1001'] }));
+	addParticipants.mockImplementation(async () => ({ added: 0, dial: ['1001'] }));
 	renderModal({ provider });
 
 	await choose('grace');
@@ -130,6 +130,8 @@ it('dials the numbers the server hands back for people who take calls on a devic
 
 	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], true, true));
 	await waitFor(() => expect(dialOut).toHaveBeenCalledWith('1001'));
+	// They are dialled rather than made members, which is not the same as having been in the call already.
+	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'Users_added' }));
 });
 
 // The endpoint takes at most `RING_RECIPIENTS_LIMIT` at a time and refuses the whole body past that, so a

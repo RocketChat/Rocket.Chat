@@ -101,7 +101,7 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 				() => false,
 			);
 
-			return { added, chatShared };
+			return { added: added + dial.length, chatShared };
 		})()
 			.then(({ added, chatShared }) => {
 				if (!chatShared) {

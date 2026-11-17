@@ -1540,7 +1540,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		).toArray();
 
 		const added: IUser['_id'][] = [];
-		const toRing: IUser['_id'][] = [];
 		const dial: string[] = [];
 		const ts = new Date();
 
@@ -1550,18 +1549,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				continue;
 			}
 
-			await VideoConferenceModel.addMemberById(callId, { ...user, ts });
-			added.push(user._id);
-
 			// Someone who takes calls on a device is not listening to Rocket.Chat: they join from the device, dialled
-			// by the adder the way a typed number is. Only an adder who can dial out gets to do that; for anyone
-			// else they are rung like everybody, rather than left with no way in.
+			// by the adder the way a typed number is, and are in the call as that number rather than as a member.
+			// Only an adder who can dial out gets to do that; for anyone else they are added and rung like
+			// everybody, rather than left with no way in.
 			if (dialOut && mediaCallDevice && sipExtension) {
 				dial.push(sipExtension);
 				continue;
 			}
 
-			toRing.push(user._id);
+			await VideoConferenceModel.addMemberById(callId, { ...user, ts });
+			added.push(user._id);
 		}
 
 		if (added.length) {
@@ -1572,8 +1570,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing limit —
 		// so unlike starting a call in a large room, an add can always ring. Whether it does is the adder's to
 		// say: someone added to carry on later is not someone to interrupt now.
-		if (ring && shouldRingRecipients(toRing.length)) {
-			await this.ringUsers(callId, call.rid, uid, toRing);
+		if (ring && shouldRingRecipients(added.length)) {
+			await this.ringUsers(callId, call.rid, uid, added);
 		}
 
 		return { added, dial };

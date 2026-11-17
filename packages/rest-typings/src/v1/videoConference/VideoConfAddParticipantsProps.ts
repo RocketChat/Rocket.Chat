@@ -19,8 +19,8 @@ export type VideoConfAddParticipantsProps = {
 	 */
 	ring?: boolean;
 	/**
-	 * Whether the caller can dial numbers into the call. When it can, members added who take calls on an external
-	 * device are not rung: their numbers come back in `dial` for the caller to call instead.
+	 * Whether the caller can dial numbers into the call. When it can, people who take calls on an external device
+	 * are neither added as members nor rung: their numbers come back in `dial` for the caller to call instead.
 	 */
 	dialOut?: boolean;
 };

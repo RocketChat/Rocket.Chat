@@ -284,17 +284,17 @@ describe('VideoConfService.addMembers', () => {
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
-	// Someone on a desk phone is not watching Rocket.Chat: the device is called instead, and they are still a member.
-	it('hands back the extension of a user who takes calls on a device instead of ringing them, when the adder can dial out', async () => {
+	// Someone on a desk phone is not watching Rocket.Chat: the device is called instead, and they join as that number.
+	it('hands back the extension of a user who takes calls on a device instead of adding and ringing them, when the adder can dial out', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 		const deskUser = { ...buildUser('deskUser'), sipExtension: '1001', mediaCallDevice: { id: 'phone-1', appId: 'cti-app' } };
 		UsersMock.find.returns({ toArray: sinon.stub().resolves([deskUser, buildUser('newUser1')]) });
 
 		const result = await service.addMembers('caller', 'call1', ['deskUser.user', 'newUser1.user'], { dialOut: true });
 
-		expect(result.added.sort()).to.deep.equal(['deskUser', 'newUser1']);
-		expect(result.dial).to.deep.equal(['1001']);
+		expect(result).to.deep.equal({ added: ['newUser1'], dial: ['1001'] });
 		expect(ringedUserIds(broadcastStub)).to.deep.equal(['newUser1']);
+		expect(VideoConferenceModelMock.addMemberById.args.map(([, member]) => member._id)).to.deep.equal(['newUser1']);
 		VideoConferenceModelMock.addMemberById.args.forEach(([, member]) => {
 			expect(member).to.not.have.property('sipExtension');
 			expect(member).to.not.have.property('mediaCallDevice');
@@ -332,7 +332,8 @@ describe('VideoConfService.addMembers', () => {
 
 		const result = await service.addMembers('caller', 'call1', ['deskUser.user'], { ring: false, dialOut: true });
 
-		expect(result).to.deep.equal({ added: ['deskUser'], dial: ['1001'] });
+		expect(result).to.deep.equal({ added: [], dial: ['1001'] });
+		expect(VideoConferenceModelMock.addMemberById.called).to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
