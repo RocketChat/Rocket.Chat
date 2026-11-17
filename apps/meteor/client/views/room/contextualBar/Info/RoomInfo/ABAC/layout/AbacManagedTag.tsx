@@ -11,11 +11,8 @@ export type AbacManagedTagProps = {
  */
 const AbacManagedTag = ({ icon, children }: AbacManagedTagProps) => (
 	<Box display='flex' marginBlockEnd='x16'>
-		<Tag medium>
-			<Box display='flex' alignItems='center'>
-				{icon}
-				<Box marginInlineStart='x4'>{children}</Box>
-			</Box>
+		<Tag medium icon={icon}>
+			{children}
 		</Tag>
 	</Box>
 );
