@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated, normalizeUsername } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
@@ -102,7 +102,11 @@ callbacks.add(
 			? 'You_mentioned___mentions__but_theyre_not_in_this_room'
 			: 'You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them';
 
-		const mentionsText = mentionsUsersNotInChannel.map(({ username }) => `@${username}`).join(', ');
+		const mentionsText = mentionsUsersNotInChannel
+			.map(({ username }) => username)
+			.filter(isTruthy)
+			.map((username) => `@${normalizeUsername(username)}`)
+			.join(', ');
 
 		void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 			msg: '',
