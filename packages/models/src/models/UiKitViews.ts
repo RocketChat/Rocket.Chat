@@ -20,7 +20,7 @@ export class UiKitViewsRaw extends BaseRaw<IUiKitView> implements IUiKitViewsMod
 	}
 
 	async saveView({ _id, appId, userId, type, view }: Pick<IUiKitView, '_id' | 'appId' | 'userId' | 'type' | 'view'>): Promise<void> {
-		await this.updateOne({ _id }, { $set: { appId, userId, type, view, expireAt: new Date(Date.now() + VIEW_TTL_MS) } }, { upsert: true });
+		await this.updateOne({ _id, appId, userId }, { $set: { type, view, expireAt: new Date(Date.now() + VIEW_TTL_MS) } }, { upsert: true });
 	}
 
 	findOneByIdForUser(viewId: IUiKitView['_id'], appId: IUiKitView['appId'], userId: IUiKitView['userId']): Promise<IUiKitView | null> {
