@@ -5,6 +5,7 @@ import {
 	gridCellKeys,
 	gridColumnStartFor,
 	pickFeaturedTile,
+	pinnedOrFeaturedTile,
 	sidebarCapacity,
 	splitByPriority,
 	spotlightOrientation,
@@ -51,6 +52,23 @@ describe('pickFeaturedTile', () => {
 
 	it('features the reader when they are alone', () => {
 		expect(pickFeaturedTile([tile('me')], null, 'me').id).toBe('me');
+	});
+});
+
+describe('pinnedOrFeaturedTile', () => {
+	const all = [tile('me'), tile('ada'), tile('bob')];
+
+	it('features the pinned person over whoever is speaking', () => {
+		expect(pinnedOrFeaturedTile(all, 'ada', 'bob', 'me').id).toBe('ada');
+	});
+
+	it('lets the reader pin themselves', () => {
+		expect(pinnedOrFeaturedTile(all, 'me', 'bob', 'me').id).toBe('me');
+	});
+
+	// A pin waiting out its grace period names someone with no tile; the stage carries on as if nobody were pinned.
+	it('features the speaker while the pinned person has no tile', () => {
+		expect(pinnedOrFeaturedTile(all, 'gone', 'bob', 'me').id).toBe('bob');
 	});
 });
 

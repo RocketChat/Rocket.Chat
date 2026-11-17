@@ -6,7 +6,7 @@ import TilePicture from './TilePicture';
 import { TILE_RING_WIDTH } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
-export type SelfTileProps = TileParticipant & Pick<TileFrameProps, 'sendHeight'>;
+export type SelfTileProps = TileParticipant & Pick<TileFrameProps, 'sendHeight' | 'pin'>;
 
 /** The reader's own view, at the size of a grid cell or the stage: mirrored, and saying what it sends. */
 const SelfTile = ({
@@ -19,6 +19,7 @@ const SelfTile = ({
 	handPosition,
 	reaction,
 	sendHeight,
+	pin,
 }: SelfTileProps) => (
 	<TileFrame
 		displayName={displayName}
@@ -27,6 +28,7 @@ const SelfTile = ({
 		audioStream={audioStream}
 		handPosition={handPosition}
 		reaction={reaction}
+		pin={pin}
 		ringWidth={TILE_RING_WIDTH}
 		sendHeight={sendHeight}
 	>
