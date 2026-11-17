@@ -7,10 +7,10 @@ type AppsListScrollerProps = {
 };
 
 /**
- * The scrolling column of the apps page's lists, inset to line up with the page header.
+ * The scrolling column of the apps page's lists.
  */
 const AppsListScroller = ({ ref, children }: AppsListScrollerProps) => (
-	<Box ref={ref} overflowY='scroll' height='100%' marginInline='x24' paddingBlockEnd='x16' display='flex' flexDirection='column' gap='x16'>
+	<Box ref={ref} overflowY='scroll' height='100%' paddingBlockEnd='x16' display='flex' flexDirection='column' gap='x16'>
 		{children}
 	</Box>
 );

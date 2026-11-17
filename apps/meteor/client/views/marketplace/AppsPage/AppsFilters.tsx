@@ -6,7 +6,6 @@ import TagList from '../components/CategoryFilter/TagList';
 import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
 import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
-import AppsPageInset from './layout/AppsPageInset';
 
 export type AppsFiltersProps = {
 	text: string;
@@ -52,7 +51,7 @@ const AppsFilters = ({
 	};
 
 	return (
-		<AppsPageInset>
+		<>
 			<FilterBar>
 				<FilterBarSearch value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]} />
 				<FilterBarFilters>
@@ -65,7 +64,7 @@ const AppsFilters = ({
 				</FilterBarFilters>
 			</FilterBar>
 			<TagList categories={categoryTagList} onClick={onSelected} />
-		</AppsPageInset>
+		</>
 	);
 };
 

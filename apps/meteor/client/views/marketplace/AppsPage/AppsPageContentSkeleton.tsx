@@ -1,7 +1,5 @@
 import { Skeleton, Stack } from '@rocket.chat/fuselage';
 
-import AppsPageInset from './layout/AppsPageInset';
-
 const AppsPageContentSkeleton = () => {
 	const loadingSection = (
 		<Stack gap='x20'>
@@ -14,13 +12,11 @@ const AppsPageContentSkeleton = () => {
 		</Stack>
 	);
 	return (
-		<AppsPageInset>
-			<Stack gap='x32'>
-				{loadingSection}
-				{loadingSection}
-				{loadingSection}
-			</Stack>
-		</AppsPageInset>
+		<Stack gap='x32'>
+			{loadingSection}
+			{loadingSection}
+			{loadingSection}
+		</Stack>
 	);
 };
 
