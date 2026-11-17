@@ -236,7 +236,7 @@ $item-indents: (
 		outline: 0;
 		background: none;
 
-		> .rcx-icon {
+		> .rcx-icon[class] {
 			transition: transform $item-reveal-duration ease-out;
 
 			@media (prefers-reduced-motion: reduce) {
@@ -244,11 +244,11 @@ $item-indents: (
 			}
 		}
 
-		&--collapsed > .rcx-icon {
+		&--collapsed > .rcx-icon[class] {
 			transform: rotate(-90deg);
 		}
 
-		&--collapsed:dir(rtl) > .rcx-icon {
+		&--collapsed:dir(rtl) > .rcx-icon[class] {
 			transform: rotate(90deg);
 		}
 

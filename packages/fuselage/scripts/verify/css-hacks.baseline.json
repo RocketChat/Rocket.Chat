@@ -252,11 +252,11 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 88,
-		"nested": 60,
-		"combinators": 10,
+		"rules": 102,
+		"nested": 71,
+		"combinators": 14,
 		"important": 0,
-		"specificityBumps": 6,
+		"specificityBumps": 9,
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
