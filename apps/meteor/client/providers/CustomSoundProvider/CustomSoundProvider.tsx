@@ -1,11 +1,10 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { CustomSoundContext, useEndpoint, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { CustomSoundContext, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
-import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
-import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
+import { defaultSounds, getCustomSoundURL } from './lib';
 
 export type CustomSoundProviderProps = {
 	children?: ReactNode;
@@ -17,10 +16,6 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const queryClient = useQueryClient();
 	const streamAll = useStream('notify-all');
 	const getCustomSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-
-	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
-	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
-	const { notificationsSoundVolume } = useUserSoundPreferences();
 
 	const { data: list } = useQuery({
 		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
@@ -85,24 +80,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		}
 	});
 
-	const contextValue = useMemo(() => {
-		const notificationSounds = {
-			playNewRoom: () => play(newRoomNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			playNewRoomLoop: () => play(newRoomNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
-			playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			playNewMessageCustom: (soundId: ICustomSound['_id']) =>
-				play(soundId, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			stopNewRoom: () => stop(newRoomNotification),
-			stopNewMessage: () => stop(newMessageNotification),
-		};
-		return {
-			list,
-			notificationSounds,
-			play,
-			pause,
-			stop,
-		};
-	}, [list, newMessageNotification, newRoomNotification, notificationsSoundVolume, pause, play, stop]);
+	const contextValue = useMemo(() => ({ list, play, pause, stop }), [list, pause, play, stop]);
 
 	useEffect(() => {
 		return streamAll('public-info', ([key]) => {
