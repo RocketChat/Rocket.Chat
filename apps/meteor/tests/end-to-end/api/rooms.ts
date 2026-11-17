@@ -3848,6 +3848,48 @@ describe('[Rooms]', () => {
 					});
 			});
 		});
+		describe('with an encrypted image', () => {
+			let roomId: IRoom['_id'];
+			let encryptedFileId: string;
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+				const content = { algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' };
+
+				const res = await request
+					.post(api(`rooms.media/${roomId}`))
+					.set(credentials)
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/diagram.drawio')), {
+						contentType: 'application/octet-stream',
+					})
+					.field({ content: JSON.stringify(content) })
+					.expect(200);
+				encryptedFileId = res.body.file._id;
+
+				await request
+					.post(api(`rooms.mediaConfirm/${roomId}/${encryptedFileId}`))
+					.set(credentials)
+					.send({ t: 'e2e', content })
+					.expect(200);
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should return the encrypted file passed as startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: encryptedFileId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', encryptedFileId);
+						expect(res.body.files[0]).to.have.property('typeGroup', 'application');
+					});
+			});
+		});
 		it('should allow to filter images passing the startingFromId parameter', async () => {
 			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
 			const {
