@@ -3,6 +3,8 @@ import type { ComponentProps, MouseEvent } from 'react';
 import { useCallback } from 'react';
 
 export type PinToggleProps = Omit<ComponentProps<typeof IconButton>, 'icon' | 'onClick' | 'pressed' | 'aria-pressed'> & {
+	/** What is pinned, when the pin itself would not say: the pressed state still tells pinned from not. */
+	icon?: ComponentProps<typeof IconButton>['icon'];
 	pinned: boolean;
 	label: string;
 	onPinToggle: (hadFocus: boolean) => void;
@@ -11,7 +13,7 @@ export type PinToggleProps = Omit<ComponentProps<typeof IconButton>, 'icon' | 'o
 };
 
 /** Pins or unpins one thing on the stage, pressed while it is pinned. */
-const PinToggle = ({ pinned, label, onPinToggle, restoreFocus = false, title, ...props }: PinToggleProps) => {
+const PinToggle = ({ icon, pinned, label, onPinToggle, restoreFocus = false, title, ...props }: PinToggleProps) => {
 	const focusRef = useCallback(
 		(node: Element | null) => {
 			if (restoreFocus && node instanceof HTMLElement) {
@@ -25,7 +27,7 @@ const PinToggle = ({ pinned, label, onPinToggle, restoreFocus = false, title, ..
 		<IconButton
 			{...props}
 			ref={focusRef}
-			icon={pinned ? 'pin-filled' : 'pin'}
+			icon={icon ?? (pinned ? 'pin-filled' : 'pin')}
 			pressed={pinned}
 			aria-pressed={pinned}
 			aria-label={label}

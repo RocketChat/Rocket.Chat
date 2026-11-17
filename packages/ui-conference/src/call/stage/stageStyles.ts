@@ -145,20 +145,29 @@ export const screenThumbStyles = css`
 	}
 `;
 
-export const spotlightOverlayStyles = css`
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: ${Palette.surface['surface-overlay'].toString()};
+/** A share in a grid cell, the size of the cell. */
+export const screenThumbFillStyles = css`
+	width: 100%;
+	height: 100%;
 `;
 
-export const stopShareButtonStyles = css`
+/** The thumbnail's own controls, in a corner, so its label stays readable while they show. */
+export const screenThumbActionsStyles = css`
+	position: absolute;
+	top: 0.25rem;
+	right: 0.25rem;
+	display: flex;
+	gap: 0.25rem;
+`;
+
+/** The viewer's controls, in the same corner as a tile's pin. */
+export const screenActionsStyles = css`
 	position: absolute;
 	top: 0.5rem;
 	right: 0.5rem;
 	z-index: 1;
+	display: flex;
+	gap: 0.25rem;
 `;
 
 export const ownBadgeStyles = css`

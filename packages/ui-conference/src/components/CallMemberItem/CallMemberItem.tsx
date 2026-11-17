@@ -15,7 +15,8 @@ import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PinToggle from '../../call/PinToggle';
+import type { MemberPins } from './CallMemberPins';
+import CallMemberPins from './CallMemberPins';
 import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
 import type { ConferenceMember } from '../../context/definitions';
 import { useIsRinging } from '../../hooks/useRinging';
@@ -42,10 +43,8 @@ type CallMemberItemProps = {
 	muted?: boolean;
 	/** Asks them to mute. Absent where the call cannot carry the request. */
 	onMute?: (memberId: string) => void;
-	/** Whether the reader pinned them to see them large. */
-	pinned?: boolean;
-	/** Absent for anyone not in the call's video, who has nothing to pin. */
-	onTogglePin?: (memberId: string) => void;
+	/** What the reader can pin of them, for a call whose stage this window draws. */
+	pins?: MemberPins;
 	/** Their microphone level, for a call whose audio this window holds. */
 	activity?: ReactNode;
 	onRing: (memberId: string) => void;
@@ -58,6 +57,9 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	invited: 'Waiting_for_answer',
 };
 
+/** Pins are only offered for someone the stage can show: in the call's video, which implies joined. */
+const offersPin = (pins?: MemberPins) => !!(pins?.onToggle ?? pins?.onToggleScreen);
+
 const CallMemberItem = ({
 	member,
 	hasChatAccess,
@@ -68,8 +70,7 @@ const CallMemberItem = ({
 	activity,
 	onRing,
 	onMute,
-	pinned = false,
-	onTogglePin,
+	pins,
 }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
@@ -84,7 +85,6 @@ const CallMemberItem = ({
 	const isLive = status === 'joined' && !muted;
 	const canMute = isLive && member._id !== ownUserId && !!onMute;
 	const showActivity = isLive && !!activity;
-	const canPin = status === 'joined' && !!onTogglePin;
 
 	return (
 		<Item role='listitem' inset='lg'>
@@ -100,7 +100,7 @@ const CallMemberItem = ({
 				</ItemRow>
 				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
 			</ItemContent>
-			{(canMute || canPin || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
+			{(canMute || offersPin(pins) || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
 				<ItemActions>
 					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
@@ -126,15 +126,7 @@ const CallMemberItem = ({
 							onClick={() => onMute?.(member._id)}
 						/>
 					)}
-					{canPin && (
-						<PinToggle
-							size='small'
-							variant='secondary'
-							pinned={pinned}
-							label={t(pinned ? 'Unpin_participant' : 'Pin_participant', { name: nameOrUsername })}
-							onPinToggle={() => onTogglePin?.(member._id)}
-						/>
-					)}
+					{pins && <CallMemberPins name={nameOrUsername} isSelf={member._id === ownUserId} {...pins} />}
 					{showActivity && activity}
 					{canRingUsers && canRing && (
 						// The button stays until the server says the phone is ringing, which is a round trip away — so

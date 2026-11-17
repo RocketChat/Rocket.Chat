@@ -1,8 +1,11 @@
 import type { RemoteParticipantInfo } from '../context';
-import type { StageSelf } from './stageTiles';
+import type { StageSelf, TilePin } from './stageTiles';
 
 /** `name` is who is sharing, absent for the reader's own share. */
 export type ScreenShare = { id: string; stream: MediaStream; name?: string; isLocal: boolean };
+
+/** A share as the stage draws it, with its pin. */
+export type StageScreen = ScreenShare & { pin: TilePin };
 
 /** When each share started, by participant: a new stream from the same person is a new share. */
 export type ShareStarts = ReadonlyMap<string, { stream: MediaStream; startedAt: number }>;
@@ -36,17 +39,24 @@ export const recordShareStarts = (
 	return { starts: next, started };
 };
 
-/** A share that just started takes the pin; a pinned share that stopped gives it up. */
-export const nextPinnedScreen = (pinned: string | null, started: string | null, shares: ScreenShare[]): string | null => {
-	if (started !== null) return started;
-	if (pinned && !shares.some(({ id }) => id === pinned)) return null;
-	return pinned;
-};
+/**
+ * What the reader decided about the shares: the one they chose to see large, or that they unpinned the share on the
+ * stage and want their layout back. Shares that start change neither.
+ */
+export type ScreenChoice = { chosen: string | null; dismissed: boolean };
 
-/** The share shown large: the pinned one while it lasts, else whichever started last. */
-export const pickFeaturedScreen = (shares: ScreenShare[], pinned: string | null, starts: ShareStarts): ScreenShare | null => {
-	if (shares.length === 0) return null;
-	const pinnedShare = pinned ? shares.find(({ id }) => id === pinned) : undefined;
-	if (pinnedShare) return pinnedShare;
+export const NO_SCREEN_CHOICE: ScreenChoice = { chosen: null, dismissed: false };
+
+/** A chosen share that stopped ends the choice; once nobody shares, the next share is welcome on the stage again. */
+export const nextScreenChoice = ({ chosen, dismissed }: ScreenChoice, shares: ScreenShare[]): ScreenChoice => ({
+	chosen: chosen !== null && shares.some(({ id }) => id === chosen) ? chosen : null,
+	dismissed: dismissed && shares.length > 0,
+});
+
+/** The share shown large: none once the reader unpinned it, else the chosen one, else whichever started last. */
+export const pickFeaturedScreen = (shares: ScreenShare[], { chosen, dismissed }: ScreenChoice, starts: ShareStarts): ScreenShare | null => {
+	if (shares.length === 0 || dismissed) return null;
+	const chosenShare = chosen !== null ? shares.find(({ id }) => id === chosen) : undefined;
+	if (chosenShare) return chosenShare;
 	return [...shares].sort((a, b) => (starts.get(b.id)?.startedAt ?? 0) - (starts.get(a.id)?.startedAt ?? 0))[0];
 };

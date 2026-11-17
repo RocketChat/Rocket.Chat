@@ -146,8 +146,9 @@ export const absorbLonelyTile = (
 	cols: number,
 	activeSpeakerId: string | null,
 	selfId: string,
+	leadingCells = 0,
 ): { visible: StageTile[]; hidden: StageTile[] } => {
-	const count = visible.length + (hidden.length > 0 ? 1 : 0);
+	const count = leadingCells + visible.length + (hidden.length > 0 ? 1 : 0);
 	if (cols > 1 && visible.length > 0 && hidden.length > 0 && count % cols === 1) {
 		const priority = (tile: StageTile) => tilePriority(tile, activeSpeakerId, selfId);
 		const absorbed = visible.reduce((lowest, tile) => (priority(tile) <= priority(lowest) ? tile : lowest));

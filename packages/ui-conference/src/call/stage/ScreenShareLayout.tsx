@@ -1,55 +1,65 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from 'react-i18next';
 
 import MainTile from './MainTile';
 import ScreenShareThumb from './ScreenShareThumb';
 import ScreenViewer from './ScreenViewer';
 import StopShareButton from './StopShareButton';
 import ThumbnailTile from './ThumbnailTile';
-import { mainStreamStyles, spotlightClasses } from './stageStyles';
-import type { ScreenShare } from '../lib/screenShares';
+import { mainStreamStyles, screenActionsStyles, spotlightClasses } from './stageStyles';
+import PinToggle from '../PinToggle';
+import { useScreenShareLabels } from '../hooks/useScreenShareLabels';
+import type { StageScreen } from '../lib/screenShares';
 import type { SpotlightOrientation, StageTile } from '../lib/stageTiles';
 
 export type ScreenShareLayoutProps = {
-	featured: ScreenShare;
-	others: ScreenShare[];
+	/** What is large: a share, or the person the reader pinned over the shares. */
+	main: { screen: StageScreen } | { tile: StageTile };
+	/** The shares not on the stage, at the head of the thumbnails. */
+	screens: StageScreen[];
 	tiles: StageTile[];
 	orientation: SpotlightOrientation;
-	/** The person the reader pinned: large instead of any share, which all go to the head of the thumbnails. */
-	pinnedTile?: StageTile;
-	onPin: (id: string) => void;
 	onStopLocalScreenShare?: () => void;
 };
 
-/** A shared screen on the stage, or the pinned person, with the shares and everyone's tile beside or under it. */
-const ScreenShareLayout = ({ featured, others, tiles, orientation, pinnedTile, onPin, onStopLocalScreenShare }: ScreenShareLayoutProps) => {
-	const { t } = useTranslation();
+/** A shared screen on the stage, or the pinned person, with the other shares and everyone's tile beside or under it. */
+const ScreenShareLayout = ({ main, screens, tiles, orientation, onStopLocalScreenShare }: ScreenShareLayoutProps) => {
 	const classes = spotlightClasses(orientation);
-	const labelOf = ({ name, isLocal }: ScreenShare) => (isLocal || !name ? t('Your_screen') : t('__name__screen', { name }));
+	const { labelOf, pinLabelOf } = useScreenShareLabels();
 
-	const thumbShares = pinnedTile ? [featured, ...others] : others;
-	const thumbTiles = pinnedTile ? tiles.filter(({ id }) => id !== pinnedTile.id) : tiles;
+	const largeTileId = 'tile' in main ? main.tile.id : undefined;
 
 	return (
 		<Box className={classes.container}>
-			{pinnedTile ? (
+			{'tile' in main ? (
 				<Box className={mainStreamStyles}>
-					<MainTile tile={pinnedTile} />
+					<MainTile tile={main.tile} />
 				</Box>
 			) : (
-				<ScreenViewer stream={featured.stream} label={labelOf(featured)}>
-					{featured.isLocal && onStopLocalScreenShare && <StopShareButton onStop={onStopLocalScreenShare} />}
+				<ScreenViewer stream={main.screen.stream} label={labelOf(main.screen)}>
+					<Box className={screenActionsStyles}>
+						<PinToggle
+							size='small'
+							variant='secondary'
+							pinned
+							label={pinLabelOf(main.screen, true)}
+							restoreFocus={main.screen.pin.restoreFocus}
+							onPinToggle={main.screen.pin.onToggle}
+						/>
+						{main.screen.isLocal && onStopLocalScreenShare && <StopShareButton onStop={onStopLocalScreenShare} />}
+					</Box>
 				</ScreenViewer>
 			)}
 			<Box className={classes.thumbs} data-thumb-orientation={classes.thumbOrientation}>
-				{thumbShares.map((s) => (
-					<ScreenShareThumb key={`screen-${s.id}`} stream={s.stream} label={labelOf(s)} onSpotlight={() => onPin(s.id)} />
+				{screens.map((screen) => (
+					<ScreenShareThumb key={`screen-${screen.id}`} screen={screen} />
 				))}
-				{thumbTiles.map((t) => (
-					<Box key={t.id} className={classes.thumb}>
-						<ThumbnailTile tile={t} />
-					</Box>
-				))}
+				{tiles
+					.filter(({ id }) => id !== largeTileId)
+					.map((t) => (
+						<Box key={t.id} className={classes.thumb}>
+							<ThumbnailTile tile={t} />
+						</Box>
+					))}
 			</Box>
 		</Box>
 	);

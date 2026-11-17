@@ -1,5 +1,5 @@
 import type { ScreenShare } from './screenShares';
-import { collectScreenShares, nextPinnedScreen, pickFeaturedScreen, recordShareStarts } from './screenShares';
+import { NO_SCREEN_CHOICE, collectScreenShares, nextScreenChoice, pickFeaturedScreen, recordShareStarts } from './screenShares';
 
 const streamA = { id: 'a' } as MediaStream;
 const streamB = { id: 'b' } as MediaStream;
@@ -40,16 +40,18 @@ describe('recordShareStarts', () => {
 	});
 });
 
-describe('nextPinnedScreen', () => {
+describe('nextScreenChoice', () => {
 	const shares = [share('ada', streamA), share('bob', streamB)];
 
-	it('gives the pin to a share that just started', () => {
-		expect(nextPinnedScreen('ada', 'bob', shares)).toBe('bob');
+	// The reader's choice holds whatever starts after it.
+	it('keeps the choice while the chosen share lasts, and drops it after', () => {
+		expect(nextScreenChoice({ chosen: 'ada', dismissed: false }, shares).chosen).toBe('ada');
+		expect(nextScreenChoice({ chosen: 'carol', dismissed: false }, shares).chosen).toBeNull();
 	});
 
-	it('keeps the pin while the pinned share lasts, and drops it after', () => {
-		expect(nextPinnedScreen('ada', null, shares)).toBe('ada');
-		expect(nextPinnedScreen('carol', null, shares)).toBeNull();
+	it('keeps the stage free of shares while any is live, and not after', () => {
+		expect(nextScreenChoice({ chosen: null, dismissed: true }, shares).dismissed).toBe(true);
+		expect(nextScreenChoice({ chosen: null, dismissed: true }, []).dismissed).toBe(false);
 	});
 });
 
@@ -61,15 +63,19 @@ describe('pickFeaturedScreen', () => {
 	]);
 
 	it('features nothing when nobody shares', () => {
-		expect(pickFeaturedScreen([], null, starts)).toBeNull();
+		expect(pickFeaturedScreen([], NO_SCREEN_CHOICE, starts)).toBeNull();
 	});
 
-	it('features the pinned share', () => {
-		expect(pickFeaturedScreen(shares, 'bob', starts)?.id).toBe('bob');
+	it('features the chosen share, even over one that started later', () => {
+		expect(pickFeaturedScreen(shares, { chosen: 'bob', dismissed: false }, starts)?.id).toBe('bob');
 	});
 
-	it('features the latest share when nothing pinned is still there', () => {
-		expect(pickFeaturedScreen(shares, null, starts)?.id).toBe('ada');
-		expect(pickFeaturedScreen(shares, 'carol', starts)?.id).toBe('ada');
+	it('features the latest share when nothing chosen is still there', () => {
+		expect(pickFeaturedScreen(shares, NO_SCREEN_CHOICE, starts)?.id).toBe('ada');
+		expect(pickFeaturedScreen(shares, { chosen: 'carol', dismissed: false }, starts)?.id).toBe('ada');
+	});
+
+	it('features nothing once the reader unpinned the share on the stage', () => {
+		expect(pickFeaturedScreen(shares, { chosen: null, dismissed: true }, starts)).toBeNull();
 	});
 });
