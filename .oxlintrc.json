@@ -237,6 +237,16 @@
 			}
 		},
 		{
+			"files": ["apps/meteor/private/outlook-addin/**/*.js"],
+			"globals": {
+				"Office": "readonly",
+				"STRINGS": "readonly"
+			},
+			"env": {
+				"browser": true
+			}
+		},
+		{
 			"files": ["packages/livechat/**/*"],
 			"globals": {
 				"AsyncDisposableStack": "readonly",

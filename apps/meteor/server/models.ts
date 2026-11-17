@@ -74,6 +74,7 @@ import {
 	UsersRaw,
 	UsersSessionsRaw,
 	VideoConferenceRaw,
+	ScheduledConferencesRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
 	TwoFactorChallengesRaw,
@@ -163,6 +164,7 @@ registerModel('IUserDataFilesModel', new UserDataFilesRaw(db));
 registerModel('IUsersModel', new UsersRaw(db, trashCollection));
 registerModel('IUsersSessionsModel', new UsersSessionsRaw(db));
 registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
+registerModel('IScheduledConferencesModel', new ScheduledConferencesRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
 registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
