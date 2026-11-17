@@ -44,7 +44,16 @@ describe('ComposerBoxPopup', () => {
 		expect(scrollIntoView.mock.contexts).toEqual([screen.getByRole('option', { name: 'First' })]);
 
 		scrollIntoView.mockClear();
-		rerender(<ComposerBoxPopup title='People' listboxId='popup-listbox' items={items} focused={second} select={jest.fn()} renderItem={({ item }) => <>{item.label}</>} />);
+		rerender(
+			<ComposerBoxPopup
+				title='People'
+				listboxId='popup-listbox'
+				items={items}
+				focused={second}
+				select={jest.fn()}
+				renderItem={({ item }) => <>{item.label}</>}
+			/>,
+		);
 		expect(scrollIntoView.mock.contexts).toEqual([screen.getByRole('option', { name: 'Second' })]);
 	});
 
