@@ -16,6 +16,7 @@ import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
 import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
@@ -40,6 +41,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 	};
 
 	const setModal = useSetModal();
+	const openExternalLink = useExternalLink();
 
 	const { t } = useTranslation();
 
@@ -97,7 +99,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 		if (versionStatus?.label === 'outdated') {
 			return {
 				action: () => {
-					window.open(RELEASES_EXTERNAL_LINK, '_blank');
+					openExternalLink(RELEASES_EXTERNAL_LINK);
 				},
 				label: t('Update_version'),
 			};
@@ -106,7 +108,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 		if (isOverLimits) {
 			return { path: '/admin/subscription', label: t('Manage_subscription') };
 		}
-	}, [canViewRegistrationStatus, isRegistered, versionStatus, isOverLimits, t, setModal, refetchLicense]);
+	}, [canViewRegistrationStatus, isRegistered, versionStatus, isOverLimits, t, setModal, refetchLicense, openExternalLink]);
 
 	const actionItems = useMemo(() => {
 		return (

@@ -109,7 +109,7 @@ jobs:
 
       - name: Browser reach in screens
         if: matrix.check == 'lint'
-        run: node scripts/scan-view-isolation.mjs --max 48 --max-hook 23 --max-exempt 103 "$RUNNER_TEMP/view-isolation-findings.json"
+        run: node scripts/scan-view-isolation.mjs --max 42 --max-hook 23 --max-exempt 103 "$RUNNER_TEMP/view-isolation-findings.json"
 
       - name: Spacing scale
         if: matrix.check == 'lint'

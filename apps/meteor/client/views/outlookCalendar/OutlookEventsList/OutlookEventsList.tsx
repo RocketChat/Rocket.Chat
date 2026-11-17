@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
+import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useItemListNavigation } from '../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
@@ -29,6 +30,7 @@ export type OutlookEventsListProps = {
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => {
 	const { t } = useTranslation();
 	const user = useUser();
+	const openExternalLink = useExternalLink();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -91,7 +93,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 				<ButtonGroup stretch>
 					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
 					{outlookUrl && (
-						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
+						<Button icon='new-window' onClick={() => openExternalLink(outlookUrl)}>
 							{t('Open_Outlook')}
 						</Button>
 					)}
