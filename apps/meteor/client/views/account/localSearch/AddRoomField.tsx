@@ -21,7 +21,7 @@ const AddRoomField = ({ chosen }: { chosen: readonly string[] }) => {
 		<Field>
 			<FieldLabel htmlFor={id}>{t('E2E_Local_Search_Add_Room')}</FieldLabel>
 			<FieldRow>
-				<Stack direction='row' gap={8} grow>
+				<Stack direction='row' gap='x8' grow>
 					<Select
 						id={id}
 						options={options}

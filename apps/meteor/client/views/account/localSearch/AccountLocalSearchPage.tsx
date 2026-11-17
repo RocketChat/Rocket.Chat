@@ -26,7 +26,7 @@ const AccountLocalSearchPage = () => {
 		<Page>
 			<PageHeader
 				title={
-					<Stack direction='row' align='center' gap={8}>
+					<Stack direction='row' align='center' gap='x8'>
 						{t('E2E_Local_Search_Page_Title')}
 						<Tag variant='featured'>{t('Experimental')}</Tag>
 					</Stack>
@@ -34,8 +34,8 @@ const AccountLocalSearchPage = () => {
 			/>
 			<PageScrollableContentWithShadow>
 				<ContentColumn>
-					<Stack gap={32}>
-						<Stack gap={16}>
+					<Stack gap='x32'>
+						<Stack gap='x16'>
 							<Callout type='warning' title={t('Experimental')}>
 								{t('E2E_Local_Search_Experimental_Description')}
 							</Callout>
@@ -43,7 +43,7 @@ const AccountLocalSearchPage = () => {
 						</Stack>
 						{available && (
 							<>
-								<Stack is='section' gap={8}>
+								<Stack is='section' gap='x8'>
 									<Text is='h3' fontScale='h4'>
 										{t('E2E_Local_Search_Indexed_Rooms')}
 									</Text>
@@ -78,7 +78,7 @@ const AccountLocalSearchPage = () => {
 										<AddRoomField chosen={preferences.rooms} />
 									</FieldGroup>
 								</Stack>
-								<Stack is='section' gap={8}>
+								<Stack is='section' gap='x8'>
 									<Text is='h3' fontScale='h4'>
 										{t('E2E_Local_Search_Indexing_Pace')}
 									</Text>

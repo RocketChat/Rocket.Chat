@@ -16,9 +16,9 @@ const LocalSearchIndexRoomPrompt = ({ rid }: { rid: string }) => {
 	return (
 		<LocalSearchIndexStatusPanel>
 			<Callout type='info' title={t('E2E_Local_Search_Room_Not_Chosen_Title')} data-qa='local-search-room-prompt'>
-				<Stack gap={8}>
+				<Stack gap='x8'>
 					<Text is='p'>{t('E2E_Local_Search_Room_Not_Chosen_Description')}</Text>
-					<Stack direction='row' align='center' gap={8} wrap>
+					<Stack direction='row' align='center' gap='x8' wrap>
 						<Button size='small' variant='primary' onClick={() => startIndexingSearchRoom(rid)}>
 							{t('E2E_Local_Search_Index_Room')}
 						</Button>
