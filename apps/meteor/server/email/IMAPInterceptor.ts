@@ -18,11 +18,7 @@ type IMAPOptions = {
 	maxRetries: number;
 };
 
-export declare interface IMAPInterceptor {
-	on(event: 'email', listener: (email: ParsedMail) => void): this;
-}
-
-export class IMAPInterceptor extends EventEmitter {
+export class IMAPInterceptor extends EventEmitter<{ email: [ParsedMail] }> {
 	private imap: IMAP;
 
 	private config: IMAP.Config;
@@ -107,7 +103,7 @@ export class IMAPInterceptor extends EventEmitter {
 		return !!(this.imap?.state && this.imap.state !== 'disconnected');
 	}
 
-	stop(callback = new Function()): void {
+	stop(callback: () => void = () => undefined): void {
 		if (this.backoff) {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
@@ -115,7 +111,7 @@ export class IMAPInterceptor extends EventEmitter {
 		this.stopWithNoStopBackoff(callback);
 	}
 
-	private stopWithNoStopBackoff(callback = new Function()): void {
+	private stopWithNoStopBackoff(callback: () => void = () => undefined): void {
 		logger.debug('IMAP stop called');
 		this.imap.removeAllListeners();
 		this.imap.once('end', () => {

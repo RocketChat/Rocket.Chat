@@ -241,6 +241,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	const fieldsToGet: F[] = [];
 
 	if (options.fields) {
+		// oxlint-disable-next-line typescript/no-for-in-array -- iterating field names would turn on a projection no caller uses; removal tracked in CORE-3042
 		for (const field in Object.keys(options.fields)) {
 			if (options.fields.hasOwnProperty(field as F)) {
 				if (options.fields[field as F] === 0) {

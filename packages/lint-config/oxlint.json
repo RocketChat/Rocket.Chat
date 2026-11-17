@@ -453,7 +453,17 @@
 				"jest/valid-describe-callback": "warn",
 				"jest/valid-expect": "warn",
 				"jest/valid-expect-in-promise": "warn",
-				"jest/valid-title": "warn",
+				"jest/valid-title": "warn"
+			},
+			"plugins": ["jest"],
+			"env": {
+				"jest": true
+			}
+		},
+		{
+			"files": ["**/*.{spec,test}.{ts,tsx,js,jsx,mjs,cjs}"],
+			"excludeFiles": ["apps/meteor/server/**", "apps/meteor/ee/server/**"],
+			"rules": {
 				"testing-library/await-async-events": [
 					"error",
 					{
@@ -483,10 +493,6 @@
 				"testing-library/render-result-naming-convention": "warn",
 				"testing-library/prefer-explicit-assert": "warn",
 				"testing-library/prefer-user-event": "warn"
-			},
-			"plugins": ["jest"],
-			"env": {
-				"jest": true
 			}
 		},
 		{

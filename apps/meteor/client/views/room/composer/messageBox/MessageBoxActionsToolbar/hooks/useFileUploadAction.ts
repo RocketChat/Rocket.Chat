@@ -35,8 +35,9 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 			chat?.flows.uploadFiles({ files: filesToUpload, resetFileInput });
 		};
 
-		fileInputRef.current?.addEventListener('change', handleUploadChange);
-		return () => fileInputRef?.current?.removeEventListener('change', handleUploadChange);
+		const input = fileInputRef.current;
+		input?.addEventListener('change', handleUploadChange);
+		return () => input?.removeEventListener('change', handleUploadChange);
 	}, [chat, fileInputRef]);
 
 	const handleUpload = () => {

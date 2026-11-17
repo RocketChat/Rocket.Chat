@@ -11,7 +11,7 @@ License.onToggledFeature('device-management', {
 		await addSettings();
 		await createPermissions();
 		await createEmailTemplates();
-		stopListening = await listenSessionLogin();
+		stopListening = listenSessionLogin();
 	},
 	down: async () => {
 		stopListening?.();

@@ -115,7 +115,7 @@ export const ImageGallery = ({
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
-			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
+			const { scale, in: zoomIn } = swiperRef.current.swiper.zoom;
 			setZoomScale(scale + ratio);
 			return zoomIn(scale + ratio);
 		}
