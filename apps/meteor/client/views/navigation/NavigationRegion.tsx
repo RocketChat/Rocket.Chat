@@ -4,7 +4,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useLayoutSizes } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import { useIsSidePanelHidden } from './hooks/useIsSidePanelHidden';
 import Sidebar from './sidebar';
 import SidePanel from './sidepanel';
 import { NAVIGATION_REGION_ID } from '../../lib/constants';
@@ -86,7 +85,7 @@ const NavigationRegion = () => {
 
 	const showSideBar = !displaySidePanel || !isTablet;
 	const isSidebarOpen = !sidebar.isCollapsed && isTablet;
-	const hideSidePanel = useIsSidePanelHidden();
+	const hideSidePanel = sidebar.overlayed || (sidebar.isCollapsed && isTablet);
 
 	return (
 		<>
