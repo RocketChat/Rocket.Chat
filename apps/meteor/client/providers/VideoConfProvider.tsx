@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallSoundsProvider from './CallSoundsProvider';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
@@ -114,10 +115,12 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	);
 
 	return (
-		<VideoConfContext.Provider value={contextValue}>
-			{children}
-			<VideoConfPopups>{outgoing}</VideoConfPopups>
-		</VideoConfContext.Provider>
+		<CallSoundsProvider>
+			<VideoConfContext.Provider value={contextValue}>
+				{children}
+				<VideoConfPopups>{outgoing}</VideoConfPopups>
+			</VideoConfContext.Provider>
+		</CallSoundsProvider>
 	);
 };
 
