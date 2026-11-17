@@ -68,7 +68,7 @@ export class ModalParser extends UiKitParserModal<ComponentChild> {
 
 	mrkdwn = this.delegate('mrkdwn');
 
-	input = ({ appId, blockId, label, element, hint }: any, context: any, index: any) => {
+	input = ({ appId, blockId, label, element, hint }: any, context: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -79,7 +79,7 @@ export class ModalParser extends UiKitParserModal<ComponentChild> {
 		}
 
 		return (
-			<Block key={index} appId={appId} blockId={blockId}>
+			<Block key={`${blockId}:${element.actionId}`} appId={appId} blockId={blockId}>
 				<InputField label={label?.text} hint={hint?.text} actionId={element.actionId}>
 					{control}
 				</InputField>
