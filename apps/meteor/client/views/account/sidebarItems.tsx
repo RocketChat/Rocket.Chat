@@ -1,8 +1,16 @@
+import { Tag } from '@rocket.chat/fuselage';
 import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
 import { hasPermission, hasAtLeastOnePermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import { getSearchIndexBackend } from '../../lib/e2eeSearch/getSearchIndexBackend';
 import { settings } from '../../lib/settings';
+
+const ExperimentalBadge = () => {
+	const { t } = useTranslation();
+	return <Tag variant='featured'>{t('Experimental')}</Tag>;
+};
 
 export const {
 	registerSidebarItem: registerAccountSidebarItem,
@@ -48,6 +56,13 @@ export const {
 		icon: 'flask',
 		badge: () => <FeaturePreviewBadge />,
 		permissionGranted: () => settings.peek('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
+	},
+	{
+		href: '/account/local-search',
+		i18nLabel: 'E2E_Local_Search_Page_Title',
+		icon: 'magnifier',
+		badge: () => <ExperimentalBadge />,
+		permissionGranted: (): boolean => settings.peek('E2E_Enable') === true && !!getSearchIndexBackend(),
 	},
 	{
 		href: '/account/accessibility-and-appearance',

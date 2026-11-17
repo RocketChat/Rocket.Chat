@@ -15,12 +15,38 @@ import { E2ERoom } from './rocketchat.e2e.room';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { t } from '../../../lib/i18n';
-import { Rooms, Subscriptions } from '../../stores';
+import { SubscriptionsCachedStore } from '../../cachedStores/SubscriptionsCachedStore';
+import { Messages, Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
+import { APIClient } from '../RestApiClient';
+import { RoomManager } from '../RoomManager';
 import { sdk } from '../SDKClient';
+import { absoluteUrl } from '../absoluteUrl';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { baseURI } from '../baseURI';
+import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
+import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
+import { applyDeleteMessageBulkToSearchIndex } from '../e2eeSearch/searchIndexDeletes';
+import { createSearchIndexSyncTimeStore, isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
+import {
+	addSearchIndexRoom,
+	getSearchIndexPreferences,
+	removeSearchIndexRoom,
+	subscribeToSearchIndexPreferences,
+} from '../e2eeSearch/searchIndexPreferences';
+import {
+	backfillMonthsToMaxAgeMs,
+	createSearchIndexRuntime,
+	createSyncMessagesFetcher,
+	searchIndexTuningFromPreferences,
+	toSearchIndexRooms,
+} from '../e2eeSearch/searchIndexRuntime';
+import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
+import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
+import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
+import { isDecryptFailed, isDeletionPlaceholder } from '../e2eeSearch/toSearchDoc';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
@@ -40,6 +66,9 @@ type KeyPair = {
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
+// limitQuoteChain keeps one quote also when the limit is 0 or 1, so the decrypt resolves at least one level.
+const getQuoteChainLimit = (): number => Math.max(1, settings.peek<number>('Message_QuoteChainLimit') ?? 2);
+
 class E2E extends Emitter {
 	private userId: string | false = false;
 
@@ -56,6 +85,12 @@ class E2E extends Emitter {
 	public publicKey: string | undefined;
 
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null = null;
+
+	/**
+	 * Moves on each start and stop of the client. A key load that began under an older value belongs to a session that
+	 * ended (logout or another user), so it stops at its next step and writes no key to memory or storage.
+	 */
+	private startGeneration = 0;
 
 	private state: E2EEState;
 
@@ -256,7 +291,13 @@ class E2E extends Emitter {
 		}
 
 		if (!this.instancesByRoomId[rid] && this.userId) {
-			this.instancesByRoomId[rid] = new E2ERoom(this.userId, room);
+			const e2eRoom = new E2ERoom(this.userId, room);
+			// A message sent with an old room key decrypts only after the old keys are loaded, so the retry waits for them.
+			const emitRoomReady = () => this.emit('E2E_ROOM_READY', rid);
+			e2eRoom.on('READY', () => {
+				void e2eRoom.whenOldRoomKeysLoaded().then(emitRoomReady, emitRoomReady);
+			});
+			this.instancesByRoomId[rid] = e2eRoom;
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance
@@ -354,12 +395,30 @@ class E2E extends Emitter {
 
 		span.info(this.state);
 
+		if (this.userId) {
+			// Another user logged in on this page with no logout (login with a token). The stored keys and the saved
+			// password are not stored per user, so drop the previous user's session before the new one reads them.
+			const stopping = this.stopClient();
+			const stoppedGeneration = this.startGeneration;
+			await stopping;
+			// Another start ran while this one waited for the stop: that start is newer and owns the session.
+			if (this.isStale(stoppedGeneration)) {
+				return;
+			}
+		}
+
+		const generation = ++this.startGeneration;
 		this.userId = userId;
 		this.keychain = new Keychain(userId);
 
 		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
-		await this.loadKeysFromDB();
+		await this.loadKeysFromDB(generation);
+
+		// A logout or a start for another user happened while this one waited: that session owns the keys now.
+		if (this.isStale(generation)) {
+			return;
+		}
 
 		if (!public_key && this.db_public_key) {
 			public_key = this.db_public_key;
@@ -370,6 +429,9 @@ class E2E extends Emitter {
 				this.setState('ENTER_PASSWORD');
 				private_key = await this.decodePrivateKey(this.db_private_key);
 			} catch (error) {
+				if (this.isStale(generation)) {
+					return;
+				}
 				this.userId = false;
 				failedToDecodeKey = true;
 				this.openAlert({
@@ -385,19 +447,35 @@ class E2E extends Emitter {
 				});
 				return span.error('E2E -> Error decoding private key: ', error);
 			}
+
+			if (this.isStale(generation)) {
+				return;
+			}
 		}
 
 		if (public_key && private_key) {
-			await this.loadKeys({ public_key, private_key });
-			this.setState('READY');
+			await this.loadKeys({ public_key, private_key }, generation);
 		} else {
-			await this.createAndLoadKeys();
-			this.setState('READY');
+			await this.createAndLoadKeys(generation);
 		}
+
+		if (this.isStale(generation)) {
+			return;
+		}
+
+		this.setState('READY');
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState('LOADING_KEYS');
-			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			const keys = this.getKeysFromLocalStorage();
+			const password = await this.createRandomPassword(generation);
+			if (this.isStale(generation)) {
+				return;
+			}
+			await this.persistKeys(keys, password);
+			if (this.isStale(generation)) {
+				return;
+			}
 		}
 
 		const randomPassword = getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
@@ -414,21 +492,31 @@ class E2E extends Emitter {
 		}
 	}
 
+	private isStale(generation: number): boolean {
+		return generation !== this.startGeneration;
+	}
+
 	async stopClient(): Promise<void> {
 		const span = log.span('stopClient');
 		span.info(this.state);
 		this.closeAlert();
+		this.startGeneration++;
 
+		// Every E2EE item in storage belongs to this user. The next user on this browser must not read any of them.
 		removeStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY);
 		removeStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY);
+		removeStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
+		this.db_public_key = undefined;
+		this.db_private_key = undefined;
 		this.userId = false;
 		if (this.keyDistributionInterval) {
 			clearInterval(this.keyDistributionInterval);
 		}
 		this.keyDistributionInterval = null;
+		this.pendingSubscriptionKeysRequest = undefined;
 		this.setState('DISABLED');
 	}
 
@@ -440,17 +528,26 @@ class E2E extends Emitter {
 		}
 	}
 
-	async loadKeysFromDB(): Promise<void> {
+	async loadKeysFromDB(generation = this.startGeneration): Promise<void> {
 		const span = log.span('loadKeysFromDB');
 		try {
 			this.setState('LOADING_KEYS');
 			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
+
+			// The session ended while the request was in flight: these keys belong to the previous user.
+			if (this.isStale(generation)) {
+				return;
+			}
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 
 			span.info('fetched keys from db');
 		} catch (error) {
+			// The session ended while the request was in flight: the failure belongs to the previous session.
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			span.error('Error fetching RSA keys: ', error);
 			// Stop any process since we can't communicate with the server
@@ -459,49 +556,83 @@ class E2E extends Emitter {
 		}
 	}
 
-	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
+	async loadKeys(
+		{ public_key, private_key }: { public_key: string; private_key: string },
+		generation = this.startGeneration,
+	): Promise<void> {
 		const span = log.span('loadKeys');
+		if (this.isStale(generation)) {
+			return;
+		}
 		setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, public_key);
 		this.publicKey = public_key;
 
 		try {
-			this.privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
+			const privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
+			if (this.isStale(generation)) {
+				return;
+			}
+			this.privateKey = privateKey;
 
 			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, private_key);
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.error('Error importing private key: ', error);
 		}
 	}
 
-	async createAndLoadKeys(): Promise<void> {
+	async createAndLoadKeys(generation = this.startGeneration): Promise<void> {
 		const span = log.span('createAndLoadKeys');
+		if (this.isStale(generation)) {
+			return;
+		}
 		// Could not obtain public-private keypair from server.
 		this.setState('LOADING_KEYS');
 		let keyPair;
 		try {
 			keyPair = await Rsa.generate();
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.privateKey = keyPair.privateKey;
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.set('error', error).error('Error generating key');
 		}
 
 		try {
 			const publicKey = await Rsa.exportPublicKey(keyPair.publicKey);
+			if (this.isStale(generation)) {
+				return;
+			}
 
 			this.publicKey = JSON.stringify(publicKey);
 			setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, JSON.stringify(publicKey));
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting public key');
 		}
 
 		try {
 			const privateKey = await Rsa.exportPrivateKey(keyPair.privateKey);
+			if (this.isStale(generation)) {
+				return;
+			}
 
 			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, JSON.stringify(privateKey));
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting private key');
 		}
@@ -509,13 +640,34 @@ class E2E extends Emitter {
 		await this.requestSubscriptionKeys();
 	}
 
-	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
+	private pendingSubscriptionKeysRequest: Promise<void> | undefined;
+
+	// Asks the server to queue this user for the keys of every encrypted room where the user has no key.
+	// The server checks all the rooms in one call, so concurrent callers share the request in flight.
+	requestSubscriptionKeys(): Promise<void> {
+		if (this.pendingSubscriptionKeysRequest) {
+			return this.pendingSubscriptionKeysRequest;
+		}
+
+		const request: Promise<void> = sdk.rest
+			.post('/v1/e2e.requestSubscriptionKeys')
+			.then(() => undefined)
+			.finally(() => {
+				// After stopClient, a newer request can be in flight. Only the request that set the field clears it.
+				if (this.pendingSubscriptionKeysRequest === request) {
+					this.pendingSubscriptionKeysRequest = undefined;
+				}
+			});
+		this.pendingSubscriptionKeysRequest = request;
+
+		return request;
 	}
 
-	async createRandomPassword(): Promise<string> {
+	async createRandomPassword(generation = this.startGeneration): Promise<string> {
 		const randomPassword = await generatePassphrase();
-		setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, randomPassword);
+		if (!this.isStale(generation)) {
+			setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, randomPassword);
+		}
 		return randomPassword;
 	}
 
@@ -631,11 +783,38 @@ class E2E extends Emitter {
 		return e2eRoom.decryptContent(file);
 	}
 
-	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
+	/**
+	 * Returns a function that queues a decrypted message for the local search index that is open now. It drops the message
+	 * when a logout or another user's login ended this session first. Call it before the decrypt starts.
+	 */
+	bindSearchIndex(): (message: IMessage) => void {
+		const generation = this.startGeneration;
+		const indexDecrypted = e2eSearchIndexWriter.bindToOpenIndex();
+		return (message) => {
+			if (!this.isStale(generation)) indexDecrypted(message);
+		};
+	}
+
+	/**
+	 * `quoteDepth` is how many levels of quoted message links the decrypt follows. A quote deeper than the quote chain limit
+	 * is never shown, and each level is a request, so a chain of messages that quote each other stops there.
+	 */
+	async decryptMessage(
+		message: IMessage | IE2EEMessage,
+		{ quoteDepth = getQuoteChainLimit() }: { quoteDepth?: number } = {},
+	): Promise<IMessage> {
+		// A deleted message that stays as a placeholder arrives as an update: its old text leaves the local search index.
+		if (isDeletionPlaceholder(message)) {
+			e2eSearchIndexWriter.index(message);
+			return message;
+		}
+
 		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
 		}
 
+		const generation = this.startGeneration;
+		const indexDecrypted = e2eSearchIndexWriter.bindToOpenIndex();
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
@@ -644,7 +823,16 @@ class E2E extends Emitter {
 
 		const decryptedMessage = (await e2eRoom.decryptMessage(message)) as IE2EEMessage;
 
-		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
+		const decryptedMessageWithQuote = quoteDepth > 0 ? await this.parseQuoteAttachment(decryptedMessage, quoteDepth) : decryptedMessage;
+
+		// A logout or another user's login ended the session that started this decrypt: its words stay out of the index.
+		if (this.isStale(generation)) {
+			return decryptedMessageWithQuote;
+		}
+
+		indexDecrypted(decryptedMessageWithQuote);
+		// The room key is missing: the retry after E2E_ROOM_READY indexes the message. Only the crawler kept it before.
+		if (isDecryptFailed(decryptedMessageWithQuote)) e2eSearchIndexRuntime.onDecryptFailed(message);
 
 		return decryptedMessageWithQuote;
 	}
@@ -714,8 +902,8 @@ class E2E extends Emitter {
 		banners.closeById('e2e');
 	}
 
-	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
-		if (!message?.msg) {
+	async parseQuoteAttachment(message: IE2EEMessage, quoteDepth = getQuoteChainLimit()): Promise<IE2EEMessage> {
+		if (!message?.msg || quoteDepth <= 0) {
 			return message;
 		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
@@ -756,7 +944,7 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
+				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage), { quoteDepth: quoteDepth - 1 });
 
 				message.attachments = message.attachments || [];
 				const useRealName = settings.peek('UI_Use_Real_Name');
@@ -767,7 +955,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
+				message.attachments.push(limitQuoteChain(quoteAttachment, getQuoteChainLimit()));
 			}),
 		);
 
@@ -878,6 +1066,160 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+const getE2EUserId = () => {
+	try {
+		return e2e.getUserId();
+	} catch {
+		return undefined;
+	}
+};
+
+/**
+ * The local search index of decrypted E2EE messages: open while E2EE is unlocked, unused after a logout. It is used only
+ * when the workspace admin allows local search and the user opted in on this device. Otherwise it is wiped.
+ */
+export const e2eSearchIndexSession = createSearchIndexSession(
+	{
+		on: (type, handler) => e2e.on(type, handler),
+		getUserId: getE2EUserId,
+		getPrivateKey: () => e2e.privateKey,
+	},
+	{
+		getBackend: getSearchIndexBackend,
+		isAllowed: () => isSearchIndexOptedIn(getE2EUserId()),
+		onError: (error) => log.span('searchIndexSession').error('Error opening the local search index', error),
+	},
+);
+
+subscribeToSearchIndexOptIn(() => e2eSearchIndexSession.recheck());
+
+/** The workspace of the local search index and of the user's search preferences on this device. */
+export const e2eSearchIndexNamespace = absoluteUrl('');
+
+const getSearchPreferences = () => getSearchIndexPreferences(e2eSearchIndexNamespace, getE2EUserId());
+
+/** The rooms that the user chose to index: the index holds no other room. */
+const getChosenRids = (): ReadonlySet<string> => new Set(getSearchPreferences().rooms);
+
+/** Sends the decrypted messages to the local search index in batches, only while that index is open. */
+export const e2eSearchIndexWriter = createSearchIndexWriter({
+	getBackend: () => e2eSearchIndexSession.getActiveBackend(),
+	onError: (error) => log.span('searchIndexWriter').error('Error indexing decrypted messages', error),
+	onWarn: (message) => log.span('searchIndexWriter').warn(message),
+	isRoomSubscribed: (rid) =>
+		getSearchPreferences().rooms.includes(rid) && Subscriptions.state.find((record) => record.rid === rid) !== undefined,
+});
+
+roomMessageDeletes.on('deleteMessage', ({ _id }) => {
+	void e2eSearchIndexWriter.remove([_id]);
+});
+
+roomMessageDeletes.on('deleteMessageBulk', (event) => {
+	void applyDeleteMessageBulkToSearchIndex(event, {
+		writer: e2eSearchIndexWriter,
+		findMessage: (id) => Messages.state.get(id),
+	});
+});
+
+/**
+ * Indexes the history of the encrypted rooms (catch-up and backfill) while the local search index is open, one request
+ * at a time with a pause between two requests, also while the user is active.
+ */
+export const e2eSearchIndexRuntime = createSearchIndexRuntime({
+	session: e2eSearchIndexSession,
+	syncTime: createSearchIndexSyncTimeStore(e2eSearchIndexNamespace, getE2EUserId),
+	writer: e2eSearchIndexWriter,
+	syncMessages: createSyncMessagesFetcher({
+		baseUrl: baseURI.replace(/\/$/, ''),
+		getCredentials: () => APIClient.getCredentials(),
+	}),
+	// The index leaves quotes out, so the crawler follows no quoted message links.
+	decryptMessage: (message) => e2e.decryptMessage(message, { quoteDepth: 0 }),
+	getRooms: () => {
+		const chosen = getChosenRids();
+		return toSearchIndexRooms(Subscriptions.state.records.values()).filter(({ rid }) => chosen.has(rid));
+	},
+	// The rooms that the index keeps. At open, the index removes the rows of every other room: a room that the user left or
+	// that the user stopped indexing in another tab.
+	getSubscribedRids: () => {
+		const chosen = getChosenRids();
+		return new Set(Array.from(Subscriptions.state.records.values(), (sub) => sub.rid).filter((rid) => chosen.has(rid)));
+	},
+	whenRoomsReady: () =>
+		new Promise<void>((resolve) => {
+			if (SubscriptionsCachedStore.useReady.getState()) return resolve();
+			const unsubscribe = SubscriptionsCachedStore.useReady.subscribe((ready) => {
+				if (!ready) return;
+				unsubscribe();
+				resolve();
+			});
+		}),
+	getMaxAgeMs: () => backfillMonthsToMaxAgeMs(getSearchPreferences().backfillMonths),
+	getTuning: () => searchIndexTuningFromPreferences(getSearchPreferences()),
+	onError: (error) => log.span('searchIndexCrawler').error('Error indexing the history of encrypted rooms', error),
+});
+
+/** Adds the room to the rooms that this device indexes, and starts its backfill. Returns false when it was not saved. */
+export const startIndexingSearchRoom = (rid: string): boolean => {
+	const userId = getE2EUserId();
+	// The save calls the preferences listener below, which adds the room to the scheduler's room list.
+	if (!userId || !addSearchIndexRoom(e2eSearchIndexNamespace, userId, rid)) return false;
+	e2eSearchIndexRuntime.requestRoomCatchUp(rid);
+	return true;
+};
+
+/** Removes the room from the rooms that this device indexes, and deletes its rows from the index. */
+export const stopIndexingSearchRoom = async (rid: string): Promise<void> => {
+	const userId = getE2EUserId();
+	if (!userId) return;
+	// First out of the room list: the scheduler then lets the room in again when the user chooses it again.
+	removeSearchIndexRoom(e2eSearchIndexNamespace, userId, rid);
+	await e2eSearchIndexRuntime.onRoomRemoved(rid);
+};
+
+// Each change of the chosen rooms, on this page or in another tab, reads the room list again: a chosen room starts its
+// backfill. A room removed in another tab leaves the index at the next open.
+subscribeToSearchIndexPreferences(() => e2eSearchIndexRuntime.onRoomsChanged());
+
+// A sync after a reload reports the rooms that the user left while this client was closed. Rooms that the user left
+// before the index opened are removed at open.
+subscriptionRemovals.on('removed', ({ rid }) => {
+	void e2eSearchIndexRuntime.onRoomRemoved(rid);
+});
+
+e2e.on('E2E_ROOM_READY', (rid: string) => {
+	e2eSearchIndexRuntime.onRoomKeyReady(rid);
+});
+
+// A new message moves its room's last activity. The catch-up indexes what the room's last message does not carry: a
+// burst of messages, an edit or a delete of an older message, a thread reply.
+Subscriptions.use.subscribe(() => {
+	e2eSearchIndexRuntime.onRoomsChanged();
+});
+
+// An edit or a delete does not move the room's activity. The client keeps a few rooms open with a live stream and loads a
+// room again when it opens with none; the index catches up the room at the same point.
+RoomManager.on('opened', (rid) => {
+	e2eSearchIndexRuntime.onRoomOpened(rid);
+});
+RoomManager.on('closed', (rid) => {
+	e2eSearchIndexRuntime.onRoomClosed(rid);
+});
+
+{
+	const { connection } = getDdpSdk();
+	let wentOffline = connection.status !== 'connected';
+	connection.on('connection', () => {
+		if (connection.status !== 'connected') {
+			wentOffline = true;
+			return;
+		}
+		if (!wentOffline) return;
+		wentOffline = false;
+		e2eSearchIndexRuntime.onReconnect();
+	});
+}
 
 window.__rocketChatE2E = e2e;
 

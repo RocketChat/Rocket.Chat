@@ -32,6 +32,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/feature-preview';
 			pattern: '/account/feature-preview';
 		};
+		'local-search': {
+			pathname: '/account/local-search';
+			pattern: '/account/local-search';
+		};
 		'accessibility-and-appearance': {
 			pathname: '/account/accessibility-and-appearance';
 			pattern: '/account/accessibility-and-appearance';
@@ -78,4 +82,9 @@ registerAccountRoute('/feature-preview', {
 registerAccountRoute('/accessibility-and-appearance', {
 	name: 'accessibility-and-appearance',
 	component: lazy(() => import('@rocket.chat/ui-account').then(({ AccessibilityPage }) => ({ default: AccessibilityPage }))),
+});
+
+registerAccountRoute('/local-search', {
+	name: 'local-search',
+	component: lazy(() => import('./localSearch/AccountLocalSearchPage')),
 });

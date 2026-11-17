@@ -1,6 +1,8 @@
+import { absoluteUrl } from './absoluteUrl';
+import { isSearchIndexOptedIn, setSearchIndexOptIn } from './e2eeSearch/searchIndexOptIn';
 import { clearStoredCredentials } from './sdk/ddpSdk';
 import { STORAGE_KEYS } from './sdk/storage';
-import { synchronizeUserData } from './userData';
+import { removeLocalUserData, synchronizeUserData } from './userData';
 
 type StreamHandler = (data: { type: string; id: string }) => void;
 
@@ -47,5 +49,35 @@ describe('synchronizeUserData', () => {
 		mockStreamHandler?.({ type: 'removed', id: 'uid-1' });
 
 		expect(clearStoredCredentials).not.toHaveBeenCalled();
+	});
+});
+
+describe('removeLocalUserData', () => {
+	beforeEach(() => {
+		localStorage.clear();
+	});
+
+	it('clears the local data of the session but keeps the local search choice of each user on this device', () => {
+		localStorage.setItem(STORAGE_KEYS.USER_ID, 'uid-1');
+		localStorage.setItem('private_key', 'secret');
+		setSearchIndexOptIn('uid-1', true);
+		setSearchIndexOptIn('uid-2', true);
+
+		removeLocalUserData();
+
+		expect(localStorage.getItem(STORAGE_KEYS.USER_ID)).toBeNull();
+		expect(localStorage.getItem('private_key')).toBeNull();
+		// The sealed index stays on the device after a logout, so the choice stays with it: without it the next login
+		// reads "off" and wipes the index.
+		expect(isSearchIndexOptedIn('uid-1')).toBe(true);
+		expect(isSearchIndexOptedIn('uid-2')).toBe(true);
+	});
+
+	it('does not keep a choice that is off', () => {
+		localStorage.setItem(`E2EESearch_OptIn_v2_${JSON.stringify([absoluteUrl(''), 'uid-1'])}`, 'false');
+
+		removeLocalUserData();
+
+		expect(localStorage.length).toBe(0);
 	});
 });
