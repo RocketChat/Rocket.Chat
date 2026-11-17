@@ -60,6 +60,9 @@ const functionName = (node, parent) => {
 	if ((node.type === 'ArrowFunctionExpression' || node.type === 'FunctionExpression') && parent?.type === 'VariableDeclarator') {
 		return parent.id?.name;
 	}
+	if (node.type === 'FunctionExpression' && (parent?.type === 'MethodDefinition' || parent?.type === 'Property') && !parent.computed) {
+		return parent.key?.name;
+	}
 	return undefined;
 };
 

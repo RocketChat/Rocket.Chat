@@ -86,7 +86,7 @@ Planned follow-up, not part of the scan change. The exempt list and the second c
 - `views/root/` to `client/boot/`.
 - `views/conference/` and `views/room/contextualBar/VideoConference/` to `client/conference/`.
 
-The destinations are suggestions, to be confirmed. Eleven files outside the folders import from them and need their paths updated: `startup/appRoot.tsx`, `startup/routes.tsx`, `providers/VideoConfProvider.tsx`, `navbar/NavBarControls/NavBarControlsSection.tsx`, `navbar/NavBarItemOngoingCalls.tsx`, `providers/AuthorizationProvider.tsx`, `providers/SettingsProvider.tsx`, `lib/createRouteGroup.tsx`, `lib/rooms/roomCoordinator.tsx`, `startup/audit.tsx` and `vite/vite.config.mts` (all under `apps/meteor/client/`). After the move, delete `EXEMPT_FOLDERS` and `--max-exempt`.
+The destinations are suggestions, to be confirmed. Every importer needs its path updated, specs and mocks included: about twenty files under `apps/meteor/client/` (find them with `grep -rn "views/root\|views/conference\|contextualBar/VideoConference"`, plus the relative `../root/` imports in `views/oauth`, `views/invite` and `views/admin/integrations`) and three path entries in `apps/meteor/vite/vite.config.mts`. After the move, delete `EXEMPT_FOLDERS` and `--max-exempt`.
 
 The original proposal listed only root and conference as exempt. `views/room/contextualBar/VideoConference/` (11 hits) is the third folder and is on the list now.
 

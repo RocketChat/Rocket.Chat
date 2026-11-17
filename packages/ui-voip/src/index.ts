@@ -8,8 +8,9 @@ export {
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
 	usePeekMediaSessionHidden,
+	VoipSoundsContext,
 } from './context';
-export type { PeekMediaSessionStateReturn } from './context';
+export type { PeekMediaSessionStateReturn, VoipSoundsContextValue } from './context';
 export type { PeerInfo } from './context';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
 

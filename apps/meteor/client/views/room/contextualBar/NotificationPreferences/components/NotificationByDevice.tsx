@@ -1,4 +1,4 @@
-import { Box, AccordionItem, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, AccordionItem, Icon, FieldGroup, Stack } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
@@ -14,13 +14,15 @@ const NotificationByDevice = ({ device, icon, children }: NotificationByDevicePr
 		title={
 			<Box display='flex' alignItems='center'>
 				<Icon name={icon} size='x18' />
-				<Box fontScale='p2m' marginInline={16}>
+				<Box fontScale='p2m' marginInline='x16'>
 					{device}
 				</Box>
 			</Box>
 		}
 	>
-		<FieldGroup>{children}</FieldGroup>
+		<FieldGroup>
+			<Stack gap='x16'>{children}</Stack>
+		</FieldGroup>
 	</AccordionItem>
 );
 
