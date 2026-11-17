@@ -19,6 +19,7 @@ const parseSubpaths = (d) => {
 	let command;
 	let x = 0;
 	let y = 0;
+	let start;
 	let points;
 
 	const sample = (fn) => {
@@ -36,8 +37,12 @@ const parseSubpaths = (d) => {
 		} else if (command === undefined || command === 'Z') {
 			throw new Error(`number ${tokens[i]} without a path command`);
 		}
-		if (command !== 'M' && !points) {
+		if (command !== 'M' && !start) {
 			throw new Error(`path starts with ${command} instead of M`);
+		}
+		if (command !== 'M' && !points) {
+			points = [[x, y]];
+			subpaths.push(points);
 		}
 		const args = tokens.slice(i, i + ARITY[command]).map(Number);
 		if (args.length < ARITY[command] || args.some(Number.isNaN)) {
@@ -48,7 +53,8 @@ const parseSubpaths = (d) => {
 		switch (command) {
 			case 'M':
 				[x, y] = args;
-				points = [[x, y]];
+				start = [x, y];
+				points = [start];
 				subpaths.push(points);
 				command = 'L';
 				break;
@@ -78,7 +84,8 @@ const parseSubpaths = (d) => {
 				break;
 			}
 			case 'Z':
-				[x, y] = points[0];
+				[x, y] = start;
+				points = undefined;
 				break;
 		}
 	}
