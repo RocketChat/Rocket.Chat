@@ -1,6 +1,6 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import type { Preview } from '@storybook/react';
-import { useSyncExternalStore } from 'react';
+import { useLayoutEffect, useSyncExternalStore } from 'react';
 
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
@@ -9,6 +9,26 @@ import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
+
+// A Docs page mounts several stories at once, so the document's direction is held while any RTL story is mounted
+let rtlStories = 0;
+let dirBeforeRtl: string | null = null;
+
+const holdRtl = () => {
+	const root = document.documentElement;
+	if (rtlStories++ === 0) {
+		dirBeforeRtl = root.getAttribute('dir');
+		root.dir = 'rtl';
+	}
+	return () => {
+		if (--rtlStories > 0) return;
+		if (dirBeforeRtl === null) {
+			root.removeAttribute('dir');
+		} else {
+			root.dir = dirBeforeRtl;
+		}
+	};
+};
 
 export default {
 	parameters: {
@@ -50,6 +70,9 @@ export default {
 	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
 		function PaletteDecorator(Story, { globals }) {
+			// Only the rtl global touches `dir`, so a story that sets its own direction keeps it
+			useLayoutEffect(() => (globals.direction === 'rtl' ? holdRtl() : undefined), [globals.direction]);
+
 			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
 
 			return (

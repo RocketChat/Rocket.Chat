@@ -65,6 +65,12 @@ describe('licenses', () => {
 		});
 	});
 
+	describe('[/licenses.validate]', () => {
+		it('should fail if user is unauthorized', async () => {
+			await request.post(api('licenses.validate')).set(unauthorizedUserCredentials).send({ license: '' }).expect(403);
+		});
+	});
+
 	describe('[/licenses.info]', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('licenses.info')).expect('Content-Type', 'application/json').expect(401);

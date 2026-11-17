@@ -69,11 +69,14 @@ type declared it or not.
 - A layout need that a component doesn't cover is a new declared variation, reviewed with design, or layout on
   the container. Passing a styling prop to a component fails CI even where TypeScript still allows it.
 - Component prop types still include `BoxProps`, and `Margins`/`BoxTransforms` are still exported. Removing them
-  is the breaking step planned for 9.0.0; from then on TypeScript rejects styling props and the scanner's count
-  must stay at zero.
+  is not a single breaking step: see the amendment below.
 - The scanner doesn't see props passed through a spread, props computed at runtime, or styling applied through
   `className` and app CSS. Those stay a review concern.
 - The migration added 82 wrapper `Box`es in the app, accepted on purpose; `scripts/scan-raw-layout.mjs` was raised
   to `--max 1248` for them. Replacing them with named layout containers or `Stack` brings that count back down.
 - A few layouts changed by up to a couple of pixels. They are listed in the changeset of #42974 and covered by the
   updated visual regression baselines.
+
+## Amendment (2026-11)
+
+Removing Box styling from the component types is no longer "the breaking step planned for 9.0.0", and 9.0.0 has shipped without it. It ships per component family, as a **minor** changeset on the affected Fuselage package's current release line (`@rocket.chat/fuselage` is versioned independently of the 9.x fixed group), with a "Breaking for npm consumers" section listing the removed props. Each removal is a prerequisite unit that lands before that family's Tamagui migration, never inside it; the migration rules are in [docs/frontend/fuselage-tamagui-components.md](../frontend/fuselage-tamagui-components.md). Once a family's types no longer include `BoxProps`, TypeScript rejects styling props on it, and the scanner's count for it must stay at zero.

@@ -40,14 +40,24 @@ afterEach(() => {
 	jest.clearAllMocks();
 });
 
-const renderJumpHook = (rid: string, message: unknown, routeParameters: Record<string, string> = {}) =>
+const renderJumpHook = (
+	rid: string,
+	message: unknown,
+	{
+		messages = [{ _id: 'another-msg' }],
+		leadingRows = 0,
+		scrollToIndex = jest.fn(),
+		routeParameters = {},
+	}: { messages?: { _id: string }[]; leadingRows?: number; scrollToIndex?: jest.Mock; routeParameters?: Record<string, string> } = {},
+) =>
 	renderHook(
 		() =>
 			useTryToJumpToMessage({
 				rid,
-				virtualizerRef: { current: { scrollToIndex: jest.fn() } } as unknown as MutableRefObject<WindowVirtualizerHandle | null>,
+				virtualizerRef: { current: { scrollToIndex } } as unknown as MutableRefObject<WindowVirtualizerHandle | null>,
 				setIsJumpingToMessage: mockedSetIsJumpingToMessage,
-				messages: [{ _id: 'another-msg' }],
+				messages,
+				leadingRows,
 			}),
 		{
 			wrapper: mockAppRoot()
@@ -139,8 +149,26 @@ it('should stop jumping when the surrounding messages request fails', async () =
 	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledTimes(1);
 });
 
+it('should count the rows above the first message when scrolling to the target', async () => {
+	const scrollToIndex = jest.fn();
+
+	renderJumpHook(
+		'room-1',
+		{ ...message, rid: 'room-1' },
+		{ messages: [{ _id: 'another-msg' }, { _id: 'msg-1' }], leadingRows: 1, scrollToIndex },
+	);
+
+	await waitFor(() => expect(scrollToIndex).toHaveBeenCalledWith(2, { align: 'center' }));
+});
+
 it('should leave a reply to the thread that is already open', async () => {
-	renderJumpHook('room-1', { ...message, rid: 'room-1', tmid: 'parent-msg-1' }, { tab: 'thread', context: 'parent-msg-1' });
+	renderJumpHook(
+		'room-1',
+		{ ...message, rid: 'room-1', tmid: 'parent-msg-1' },
+		{
+			routeParameters: { tab: 'thread', context: 'parent-msg-1' },
+		},
+	);
 
 	await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
 

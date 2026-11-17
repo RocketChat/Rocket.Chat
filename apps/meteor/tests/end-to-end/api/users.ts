@@ -7004,6 +7004,12 @@ describe('[Users]', () => {
 			await deleteUser(otherUser);
 		});
 
+		it('should refuse a user without send-mail', async () => {
+			const userCredentials = await login(user.username, password);
+
+			await request.post(api('users.sendWelcomeEmail')).set(userCredentials).send({ email: otherUser.emails[0].address }).expect(403);
+		});
+
 		it('should send Welcome Email to user', async () => {
 			await updateSetting('SMTP_Host', 'localhost');
 
