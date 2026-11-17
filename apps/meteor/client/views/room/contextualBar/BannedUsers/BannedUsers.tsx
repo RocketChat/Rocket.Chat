@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import BannedUsersItem from './BannedUsersItem';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../components/ListViewport';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
@@ -42,9 +42,9 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 			</ContextualbarHeader>
 			<ContextualbarContent flush spaced>
 				{loading && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 
 				{error && <ContextualbarEmptyContent icon='warning' title={t('Banned_users_error')} subtitle={t('Please_try_again')} />}

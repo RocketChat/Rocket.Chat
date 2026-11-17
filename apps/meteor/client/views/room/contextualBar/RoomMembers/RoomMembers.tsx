@@ -23,8 +23,8 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
 import ContextualbarListSummary from '../../../../components/ContextualbarListSummary';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ListViewport from '../../../../components/ListViewport';
@@ -175,14 +175,14 @@ const RoomMembers = ({
 			<ContextualbarContent flush spaced>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{error && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Callout type='danger'>{error.message}</Callout>
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{isSuccess && (
 					<>

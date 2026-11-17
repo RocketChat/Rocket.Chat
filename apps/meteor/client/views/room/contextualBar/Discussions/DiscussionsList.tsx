@@ -18,7 +18,7 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../components/ListViewport';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -86,14 +86,14 @@ function DiscussionsList({
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{error instanceof Error && (
-					<ContextualbarInset>
+					<ContextualbarStatus>
 						<Callout type='danger'>{error.toString()}</Callout>
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{isSuccess && (
 					<ListViewport id={discussionListId} ref={discussionListRef}>

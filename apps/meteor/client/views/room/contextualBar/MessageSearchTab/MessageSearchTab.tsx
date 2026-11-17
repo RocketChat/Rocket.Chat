@@ -19,7 +19,7 @@ import { Virtuoso } from 'react-virtuoso';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
@@ -123,9 +123,9 @@ const MessageSearchTab = () => {
 					</>
 				)}
 				{providerQuery.isError && (
-					<ContextualbarInset block='x24'>
+					<ContextualbarStatus>
 						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
