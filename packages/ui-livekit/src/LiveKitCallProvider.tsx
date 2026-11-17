@@ -14,6 +14,8 @@ import {
 	CallDiagnosticsProvider,
 	CallStateProvider,
 	NoiseSuppressionProvider,
+	BackgroundEffectProvider,
+	BACKGROUND_EFFECTS_UNAVAILABLE,
 	VideoQualityProvider,
 	playJoinChime,
 	playMutedReminder,
@@ -265,10 +267,12 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 				<DeviceSelectionProvider value={deviceSelection}>
 					<VideoQualityProvider value={videoQuality}>
 						<NoiseSuppressionProvider value={noiseSuppression}>
-							<CallDiagnosticsProvider value={diagnostics ?? null}>
-								{children}
-								<RoomAudioRenderer room={room} />
-							</CallDiagnosticsProvider>
+							<BackgroundEffectProvider value={BACKGROUND_EFFECTS_UNAVAILABLE}>
+								<CallDiagnosticsProvider value={diagnostics ?? null}>
+									{children}
+									<RoomAudioRenderer room={room} />
+								</CallDiagnosticsProvider>
+							</BackgroundEffectProvider>
 						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>

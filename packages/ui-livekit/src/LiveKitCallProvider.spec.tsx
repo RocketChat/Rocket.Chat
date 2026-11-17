@@ -49,6 +49,8 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 	},
 	VideoQualityProvider: ({ children }: { children: ReactNode }) => children,
 	NoiseSuppressionProvider: ({ children }: { children: ReactNode }) => children,
+	BackgroundEffectProvider: ({ children }: { children: ReactNode }) => children,
+	BACKGROUND_EFFECTS_UNAVAILABLE: {},
 	CallDiagnosticsProvider: ({ children }: { children: ReactNode }) => children,
 	playJoinChime: jest.fn(),
 	playMutedReminder: jest.fn(),

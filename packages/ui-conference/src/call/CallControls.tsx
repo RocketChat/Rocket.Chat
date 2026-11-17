@@ -133,10 +133,11 @@ export type CallControlsProps = {
 	layout: StageLayout;
 	onLayoutChange: (layout: StageLayout) => void;
 	onOpenDiagnostics: () => void;
+	onOpenBackgrounds: () => void;
 };
 
 /** The controls of a call running in this window: devices, sharing, hands, reactions, layout and leaving. */
-const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControlsProps) => {
+const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics, onOpenBackgrounds }: CallControlsProps) => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants } = useCallState();
 	const { toggleMic, toggleCamera, toggleScreenShare, toggleHand, sendReaction, leave } = useCallActions();
@@ -198,19 +199,31 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					onToggle={toggleMic}
 				/>
 			</SplitButton>
-			<SplitButton danger={!self.cameraOn} aria-label={t('Camera_controls')}>
-				<CameraPicker />
-				<ToggleButton
-					label={t('Camera')}
-					icons={['video', 'video-off']}
-					titles={[t('Stop_camera'), t('Start_camera')]}
-					pressed={!self.cameraOn}
-					// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
-					aria-pressed={self.cameraOn}
-					dangerWhenPressed
-					size='large'
-					onToggle={toggleCamera}
-				/>
+			<SplitButton danger={!self.cameraOn && !self.cameraStarting} aria-label={t('Camera_controls')}>
+				<CameraPicker onOpenBackgrounds={onOpenBackgrounds} />
+				{self.cameraStarting ? (
+					// Busy while the effect starts: toggling now would race it.
+					<ToggleButton
+						label={t('Camera')}
+						icons={['video', 'video']}
+						titles={[t('Starting_background_effect'), t('Starting_background_effect')]}
+						aria-busy
+						disabled
+						size='large'
+					/>
+				) : (
+					<ToggleButton
+						label={t('Camera')}
+						icons={['video', 'video-off']}
+						titles={[t('Stop_camera'), t('Start_camera')]}
+						pressed={!self.cameraOn}
+						// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
+						aria-pressed={self.cameraOn}
+						dangerWhenPressed
+						size='large'
+						onToggle={toggleCamera}
+					/>
+				)}
 			</SplitButton>
 			<ToggleButton
 				label={t('Share_screen')}

@@ -9,6 +9,7 @@ import type { CallState } from '../call/context';
 import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
+import { BACKGROUND_EFFECTS_UNAVAILABLE, BackgroundEffectProvider } from '../devices/BackgroundEffectContext';
 import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
 import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
@@ -60,7 +61,9 @@ const CallContexts = ({ state = buildCallState(), children }: { state?: CallStat
 			<DeviceSelectionProvider value={deviceSelection}>
 				<VideoQualityProvider value={videoQuality}>
 					<NoiseSuppressionProvider value={noiseSuppression}>
-						<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+						<BackgroundEffectProvider value={BACKGROUND_EFFECTS_UNAVAILABLE}>
+							<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+						</BackgroundEffectProvider>
 					</NoiseSuppressionProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>

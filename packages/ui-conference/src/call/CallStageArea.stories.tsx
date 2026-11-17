@@ -64,3 +64,8 @@ export const HandsAndReactions: Story = {
 		}),
 	],
 };
+
+/** The reader's tile while their background effect starts. */
+export const CameraStarting: Story = {
+	decorators: [withCall({ state: { remoteParticipants, self: { cameraStarting: true } } })],
+};

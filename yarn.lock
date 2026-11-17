@@ -11023,7 +11023,12 @@ __metadata:
   resolution: "@rocket.chat/ui-conference@workspace:packages/ui-conference"
   dependencies:
     "@react-aria/focus": "npm:^3.21.1"
+    "@react-aria/gridlist": "npm:^3.10.1"
+    "@react-aria/i18n": "npm:^3.12.5"
+    "@react-aria/selection": "npm:^3.22.0"
     "@react-aria/visually-hidden": "npm:^3.8.27"
+    "@react-stately/collections": "npm:^3.12.1"
+    "@react-stately/list": "npm:^3.11.2"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "workspace:~"
@@ -11060,7 +11065,12 @@ __metadata:
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@react-aria/focus": "*"
+    "@react-aria/gridlist": "*"
+    "@react-aria/i18n": "*"
+    "@react-aria/selection": "*"
     "@react-aria/visually-hidden": "*"
+    "@react-stately/collections": "*"
+    "@react-stately/list": "*"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": 1.0.0
