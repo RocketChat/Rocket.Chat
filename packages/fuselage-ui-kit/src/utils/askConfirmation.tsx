@@ -38,7 +38,17 @@ export const askConfirmation = ({ title, text, confirm, deny, style }: Confirmat
 		};
 		document.addEventListener('keydown', onKeyDown, true);
 
+		const inerted = Array.from(document.body.children).filter(
+			(child): child is HTMLElement => child instanceof HTMLElement && child !== container && !child.inert,
+		);
+		inerted.forEach((child) => {
+			child.inert = true;
+		});
+
 		const settle = (answer: boolean) => {
+			inerted.forEach((child) => {
+				child.inert = false;
+			});
 			document.removeEventListener('keydown', onKeyDown, true);
 			resolve(answer);
 			root.unmount();

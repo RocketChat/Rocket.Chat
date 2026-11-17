@@ -94,6 +94,19 @@ it('opens the url only after the user confirms', async () => {
 	open.mockRestore();
 });
 
+it('makes the content behind the dialog inert while it is open', async () => {
+	renderButton(true);
+	const behind = document.createElement('div');
+	document.body.appendChild(behind);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+	expect(await screen.findByText('This cannot be undone')).toBeInTheDocument();
+	expect(behind.inert).toBe(true);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Keep it' }));
+	expect(behind.inert).toBe(false);
+	behind.remove();
+});
 
 it('drops the action when the element changes while the dialog is open', async () => {
 	const action = jest.fn();
