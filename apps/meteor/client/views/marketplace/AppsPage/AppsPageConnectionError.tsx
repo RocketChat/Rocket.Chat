@@ -7,7 +7,7 @@ const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }) 
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState offset='x20'>
+		<AppsPageEmptyState>
 			<States>
 				<StatesIcon variation='danger' name='circle-exclamation' />
 				<StatesTitle>{t('Connection_error')}</StatesTitle>

@@ -14,7 +14,7 @@ const UnsupportedEmptyState = () => {
 	const description = isAdmin ? t('Update_to_access_marketplace_description') : t('Marketplace_unavailable_description');
 
 	return (
-		<AppsPageEmptyState offset='x64'>
+		<AppsPageEmptyState>
 			<States>
 				<StatesIcon name='warning' />
 				<StatesTitle>{title}</StatesTitle>

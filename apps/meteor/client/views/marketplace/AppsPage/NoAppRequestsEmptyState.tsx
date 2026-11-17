@@ -7,7 +7,7 @@ const NoAppRequestsEmptyState = () => {
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState offset='x24'>
+		<AppsPageEmptyState>
 			<States>
 				<StatesIcon name='cube' />
 				<StatesTitle>{t('No_requested_apps')}</StatesTitle>

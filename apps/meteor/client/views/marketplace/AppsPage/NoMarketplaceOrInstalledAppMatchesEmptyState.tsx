@@ -21,7 +21,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState offset='x20'>
+		<AppsPageEmptyState>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>

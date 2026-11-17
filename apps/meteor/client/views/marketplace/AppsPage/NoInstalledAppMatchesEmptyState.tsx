@@ -22,7 +22,7 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState offset='x20'>
+		<AppsPageEmptyState>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>

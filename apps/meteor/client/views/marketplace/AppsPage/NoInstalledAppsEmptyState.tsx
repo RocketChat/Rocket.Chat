@@ -7,7 +7,7 @@ const NoInstalledAppsEmptyState = ({ onButtonClick }: { onButtonClick: () => voi
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState offset='x20'>
+		<AppsPageEmptyState>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_apps_installed')}</StatesTitle>
