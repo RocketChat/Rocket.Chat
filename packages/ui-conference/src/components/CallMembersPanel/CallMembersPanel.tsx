@@ -25,6 +25,11 @@ export type MembersInCall = {
 	pinnable: ReadonlySet<string>;
 	pinnedId: string | null;
 	togglePin: (memberId: string) => void;
+	/** Who is sharing a screen, so can have it pinned. */
+	sharing: ReadonlySet<string>;
+	/** Whose screen is on the stage. */
+	screenOnStage: string | null;
+	toggleScreenPin: (memberId: string) => void;
 };
 
 type CallMembersPanelProps = {
@@ -109,8 +114,14 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 					handRaised={inCall?.raisedHands.has(member._id)}
 					muted={inCall?.mutedMembers.has(member._id)}
 					onMute={inCall?.muteMember}
-					pinned={inCall?.pinnedId === member._id}
-					onTogglePin={inCall?.pinnable.has(member._id) ? inCall.togglePin : undefined}
+					pins={
+						inCall && {
+							pinned: inCall.pinnedId === member._id,
+							onToggle: inCall.pinnable.has(member._id) ? () => inCall.togglePin(member._id) : undefined,
+							screenPinned: inCall.screenOnStage === member._id,
+							onToggleScreen: inCall.sharing.has(member._id) ? () => inCall.toggleScreenPin(member._id) : undefined,
+						}
+					}
 					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>

@@ -1,5 +1,6 @@
 import { createRequiredContext } from '@rocket.chat/ui-media';
 
+import type { FeaturedScreen } from './hooks/useFeaturedScreen';
 import type { PinnedParticipant } from './hooks/usePinnedParticipantState';
 
 /** The reader, as the call running in this window has them. Each stream is present only while it is live. */
@@ -100,3 +101,6 @@ export const [CallDiagnosticsProvider, useCallDiagnostics] = createRequiredConte
 
 /** Only inside a call that runs in this window, and only while joined. */
 export const [PinnedParticipantProvider, usePinnedParticipant] = createRequiredContext<PinnedParticipant>('PinnedParticipant');
+
+/** The screen shares and the reader's choice among them, beside the person pin and under the same scope. */
+export const [ScreenPinProvider, useScreenPin] = createRequiredContext<FeaturedScreen>('ScreenPin');

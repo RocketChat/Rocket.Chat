@@ -2,8 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 
 import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
+import ScreenShareThumb from './ScreenShareThumb';
 import ThumbnailTile from './ThumbnailTile';
 import { mainStreamStyles, spotlightClasses } from './stageStyles';
+import type { StageScreen } from '../lib/screenShares';
 import type { SpotlightOrientation, StageSize, StageTile } from '../lib/stageTiles';
 import { sidebarCapacity, splitByPriority } from '../lib/stageTiles';
 
@@ -14,14 +16,16 @@ export type SidebarLayoutProps = {
 	selfId: string;
 	stageSize: StageSize;
 	orientation: SpotlightOrientation;
+	/** Live shares nobody put on the stage, at the head of the thumbnails. */
+	screens?: StageScreen[];
 };
 
 /** The speaker large, and as many of everyone else as fit beside or under them without scrolling. */
-const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, orientation }: SidebarLayoutProps) => {
+const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, orientation, screens = [] }: SidebarLayoutProps) => {
 	const classes = spotlightClasses(orientation);
 	const { visible, hidden } = splitByPriority(
 		tiles.filter((t) => t.id !== featured.id),
-		sidebarCapacity(stageSize, orientation),
+		Math.max(1, sidebarCapacity(stageSize, orientation) - screens.length),
 		activeSpeakerId,
 		selfId,
 	);
@@ -31,8 +35,11 @@ const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, or
 			<Box className={mainStreamStyles}>
 				<MainTile tile={featured} />
 			</Box>
-			{(visible.length > 0 || hidden.length > 0) && (
+			{(screens.length > 0 || visible.length > 0 || hidden.length > 0) && (
 				<Box className={classes.thumbs} style={{ overflow: 'hidden' }} data-thumb-orientation={classes.thumbOrientation}>
+					{screens.map((screen) => (
+						<ScreenShareThumb key={`screen-${screen.id}`} screen={screen} />
+					))}
 					{visible.map((t) => (
 						<Box key={t.id} className={classes.thumb}>
 							<ThumbnailTile tile={t} />
