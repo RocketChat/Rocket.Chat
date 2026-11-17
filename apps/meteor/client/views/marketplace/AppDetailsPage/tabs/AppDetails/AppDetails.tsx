@@ -4,7 +4,6 @@ import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';
-import AppCategoryList from './layout/AppCategoryList';
 import AppContactRow from './layout/AppContactRow';
 import { normalizeUrl } from './normalizeUrl';
 import ContentColumn from '../../../../../components/ContentColumn';
@@ -109,13 +108,13 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						}
 					>
 						{categories.length > 0 && (
-							<AppCategoryList>
+							<Stack direction='row' wrap gap='x8'>
 								{categories.map((current) => (
 									<Chip key={current} label>
 										{current}
 									</Chip>
 								))}
-							</AppCategoryList>
+							</Stack>
 						)}
 					</AppInfoSection>
 
