@@ -8,6 +8,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 import {
 	callLoginMethod,
 	getLoginWithMethod,
@@ -89,6 +90,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					callback?.(error);
 					throw error;
 				}),
+			loginWithSamlToken,
 			getLoginToken: () => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN),
 			wipeLocalAuth: () => {
 				removeStoredItem(STORAGE_KEYS.USER_ID);
