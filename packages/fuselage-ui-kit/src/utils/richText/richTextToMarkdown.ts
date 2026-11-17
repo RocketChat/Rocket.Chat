@@ -3,6 +3,16 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { MentionNames } from './richTextToAst';
 import { messageHref } from './richTextToAst';
 
+// Escapes the characters of plain text that the Markdown parser reads as syntax: the inline
+// markers, a `#` or a list number that starts a line. Styled text cannot hold an escape.
+const escapeText = (text: string) =>
+	text
+		.replace(/[*_~`]/g, '\\$&')
+		.replace(/^(\s*)#/gm, '$1\\#')
+		.replace(/^(\s*\d+)\./gm, '$1\\.');
+
+const hasStyle = (style: UiKit.RichTextStyle | undefined) => Boolean(style?.code || style?.bold || style?.italic || style?.strike);
+
 const wrap = (text: string, style: UiKit.RichTextStyle | undefined) => {
 	let result = text;
 	if (style?.code) result = `\`${result}\``;
@@ -17,7 +27,7 @@ const broadcastNames = { here: 'here', channel: 'all', everyone: 'all' } as cons
 const inlineToMarkdown = (element: UiKit.RichTextInlineElement, names: MentionNames): string => {
 	switch (element.type) {
 		case 'text':
-			return wrap(element.text, element.style);
+			return wrap(hasStyle(element.style) ? element.text : escapeText(element.text), element.style);
 		case 'link':
 			return wrap(`[${element.text ?? element.url}](${element.url})`, element.style);
 		case 'emoji':

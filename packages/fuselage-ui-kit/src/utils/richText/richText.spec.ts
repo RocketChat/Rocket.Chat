@@ -374,4 +374,25 @@ describe('richTextFromMarkdown', () => {
 
 		expect(richTextToMarkdown(richTextFromMarkdown(markdown), names)).toBe(markdown);
 	});
+
+	it.each([
+		['plain', text('**x** _y_ ~z~ `c`')],
+		['plain with a leading #', text('# not a heading')],
+		['plain with a mid-line #', text('see #general')],
+		['plain with a list number', text('1. Buy milk')],
+		['plain with a mid-line number', text('version 1. ok')],
+		['bold with an underscore', text('snake_case', { bold: true })],
+		['italic with an asterisk', text('a*b', { italic: true })],
+		['strike with an underscore', text('a_b', { strike: true })],
+		['code with markers', text('**x**', { code: true })],
+	])('round-trips %s text', (_name, element) => {
+		const [section] = richTextFromMarkdown(
+			richTextToMarkdown({ elements: [{ type: 'rich_text_section', elements: [element] }] }, names),
+		).elements;
+		const elements = (section as UiKit.RichTextSection).elements as Extract<UiKit.RichTextInlineElement, { type: 'text' }>[];
+
+		expect(elements.every((item) => item.type === 'text')).toBe(true);
+		expect(elements.map((item) => item.text).join('')).toBe((element as { text: string }).text);
+		expect(elements.map((item) => item.style ?? {})).toEqual(elements.map(() => (element as { style?: object }).style ?? {}));
+	});
 });
