@@ -15,7 +15,7 @@ import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mo
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { retry } from '../../data/retry';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -4065,6 +4065,78 @@ describe('[Chat]', () => {
 	});
 
 	describe('[/chat.syncMessages]', () => {
+		describe('equal timestamp pagination', () => {
+			let room: IRoom;
+			let boundary: number;
+			let ids: string[];
+
+			before(async () => {
+				room = (await createRoom({ type: 'c', name: `sync-timestamps-${Date.now()}` })).body.channel;
+				await withDatabase(async (db) => {
+					await db.collection('rocketchat_message').deleteMany({ rid: room._id });
+					boundary = Date.now() + 60_000;
+					const messages: IMessage[] = Array.from({ length: 431 }, (_, index) => ({
+						_id: `${room._id}-${index}`,
+						rid: room._id,
+						msg: `Message ${index}`,
+						u: { _id: credentials['X-User-Id'], username: adminUsername },
+						ts: new Date(boundary),
+						_updatedAt: new Date(boundary),
+					}));
+					messages[0]._updatedAt = new Date(boundary - 1);
+					messages[430]._updatedAt = new Date(boundary + 1);
+					ids = messages.map(({ _id }) => _id);
+					await db.collection<IMessage>('rocketchat_message').insertMany(messages);
+					await db.collection<IMessage & { __collection__: string; _deletedAt: Date }>('rocketchat__trash').insertMany(
+						messages.map((message, index) => ({
+							...message,
+							__collection__: 'message',
+							_deletedAt: message._updatedAt,
+							_updatedAt: new Date(boundary - index),
+						})),
+					);
+				});
+			});
+
+			after(async () => {
+				if (!room) return;
+				try {
+					await deleteRoom({ type: 'c', roomId: room._id });
+				} finally {
+					await withDatabase((db) => db.collection('rocketchat__trash').deleteMany({ rid: room._id }));
+				}
+			});
+
+			(['UPDATED', 'DELETED'] as const).forEach((type) => {
+				(['next', 'previous'] as const).forEach((direction) => {
+					it(`returns every ${type} message when paging ${direction} through 429 equal timestamps`, async () => {
+						let cursor: string | null = `${boundary + (direction === 'next' ? -2 : 2)}`;
+						const seen: string[] = [];
+						let pages = 0;
+						while (cursor !== null) {
+							expect(pages++).to.be.lessThan(3);
+							const response: Response = await request
+								.get(api('chat.syncMessages'))
+								.set(credentials)
+								.query({ roomId: room._id, type, count: 50, [direction]: cursor })
+								.expect(200);
+							const { result } = response.body;
+							const messages: { _id: string }[] = result[type === 'UPDATED' ? 'updated' : 'deleted'];
+							seen.push(...messages.map(({ _id }) => _id));
+							if (pages === 1) {
+								expect(messages).to.have.lengthOf(430);
+								expect(result.cursor[direction]).to.equal(`${boundary}`);
+							}
+							cursor = result.cursor[direction];
+						}
+						expect(pages).to.equal(2);
+						expect(seen).to.have.lengthOf(ids.length);
+						expect(new Set(seen).size).to.equal(ids.length);
+						expect(seen).to.have.members(ids);
+					});
+				});
+			});
+		});
 		let testChannel: IRoom;
 
 		before(async () => {

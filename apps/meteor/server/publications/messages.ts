@@ -1,54 +1,50 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import type { Filter, FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
 import { getChannelHistory } from '../meteor-methods/messages/getChannelHistory';
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
 
-/** Parse the timestamp prefix of a numeric or timestamp/ID continuation cursor. */
 export function extractTimestampFromCursor(cursor: string): Date {
-	const prefix = cursor.split('_', 1)[0];
-	const timestamp = Number(prefix);
-	if (!/^-?\d+$/.test(prefix) || !Number.isSafeInteger(timestamp) || Number.isNaN(new Date(timestamp).getTime())) {
+	const timestamp = parseInt(cursor, 10);
+
+	if (isNaN(timestamp) || new Date(timestamp).toString() === 'Invalid Date') {
 		throw new Error('Invalid Date');
 	}
+
 	return new Date(timestamp);
 }
 
-/** Build a timestamp boundary and bounded, deterministic database read options. */
 export function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
 	query: { $gt: Date } | { $lt: Date };
 	options: FindOptions<IMessage>;
 } {
-	const order = previous ? -1 : 1;
-	const options: FindOptions<IMessage> = { sort: { _updatedAt: order, _id: order }, limit: count + 1 };
-	return {
-		query: previous ? { $lt: extractTimestampFromCursor(previous) } : { $gt: next ? extractTimestampFromCursor(next) : new Date(0) },
-		options,
+	const options: FindOptions<IMessage> = {
+		sort: { _updatedAt: 1 },
+		...(next || previous ? { batchSize: count + 1 } : {}),
 	};
+
+	if (next) {
+		return { query: { $gt: extractTimestampFromCursor(next) }, options };
+	}
+
+	if (previous) {
+		return { query: { $lt: extractTimestampFromCursor(previous) }, options: { ...options, sort: { _updatedAt: -1 } } };
+	}
+
+	return { query: { $gt: new Date(0) }, options };
 }
 
-/** Construct a lexicographic boundary, including an empty-ID starting millisecond in either direction. */
-export function mountSyncFilter(field: '_updatedAt' | '_deletedAt', cursor: string | undefined, previous: boolean): Filter<IMessage> {
-	const timestamp = cursor ? extractTimestampFromCursor(cursor) : new Date(0);
-	const operator = previous ? '$lt' : '$gt';
-	const separator = cursor?.indexOf('_') ?? -1;
-	if (!cursor || separator === -1) return { [field]: { [operator]: timestamp } };
-	const id = cursor.slice(separator + 1);
-	if (id === '') return { [field]: { [previous ? '$lte' : '$gte']: timestamp } };
-	return { $or: [{ [field]: { [operator]: timestamp } }, { [field]: timestamp, _id: { [operator]: id } }] };
-}
-
-export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED', compound = false): string {
+export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED'): string {
 	if (type === 'UPDATED' && message._updatedAt) {
-		return `${message._updatedAt.getTime()}${compound ? `_${message._id}` : ''}`;
+		return `${message._updatedAt.getTime()}`;
 	}
 
 	if (type === 'DELETED' && message._deletedAt) {
-		return `${message._deletedAt.getTime()}${compound ? `_${message._id}` : ''}`;
+		return `${message._deletedAt.getTime()}`;
 	}
 
 	throw new ClientSafeError('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
@@ -60,14 +56,13 @@ export function mountNextCursor(
 	type: CursorPaginationType,
 	next?: string,
 	previous?: string,
-	compound = false,
 ): string | null {
 	if (messages.length === 0) {
 		return null;
 	}
 
 	if (previous) {
-		return mountCursorFromMessage(messages[0], type, compound);
+		return mountCursorFromMessage(messages[0], type);
 	}
 
 	if (messages.length <= count && next) {
@@ -75,10 +70,10 @@ export function mountNextCursor(
 	}
 
 	if (messages.length > count && next) {
-		return mountCursorFromMessage(messages[messages.length - 2], type, compound);
+		return mountCursorFromMessage(messages[messages.length - 2], type);
 	}
 
-	return mountCursorFromMessage(messages[messages.length - 1], type, compound);
+	return mountCursorFromMessage(messages[messages.length - 1], type);
 }
 
 export function mountPreviousCursor(
@@ -87,18 +82,17 @@ export function mountPreviousCursor(
 	type: CursorPaginationType,
 	next?: string,
 	previous?: string,
-	compound = false,
 ): string | null {
 	if (messages.length === 0) {
 		return null;
 	}
 
 	if (messages.length <= count && next) {
-		return mountCursorFromMessage(messages[0], type, compound);
+		return mountCursorFromMessage(messages[0], type);
 	}
 
 	if (messages.length > count && next) {
-		return mountCursorFromMessage(messages[0], type, compound);
+		return mountCursorFromMessage(messages[0], type);
 	}
 
 	if (messages.length <= count && previous) {
@@ -106,10 +100,10 @@ export function mountPreviousCursor(
 	}
 
 	if (messages.length > count && previous) {
-		return mountCursorFromMessage(messages[messages.length - 2], type, compound);
+		return mountCursorFromMessage(messages[messages.length - 2], type);
 	}
 
-	return mountCursorFromMessage(messages[0], type, compound);
+	return mountCursorFromMessage(messages[0], type);
 }
 
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date, fromTs?: Date) {
@@ -130,12 +124,6 @@ export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Dat
 	};
 }
 
-/**
- * Read at most count sync records, with one lookahead record to detect continuation.
- * Numeric starting cursors are accepted; returned cursors are opaque timestamp/ID
- * strings that clients must pass back unchanged. The ID resumes within timestamp
- * groups without materializing them, including in the reverse direction.
- */
 export async function handleCursorPagination(
 	type: CursorPaginationType,
 	rid: IRoom['_id'],
@@ -145,25 +133,49 @@ export async function handleCursorPagination(
 ): Promise<{
 	updated: IMessage[];
 	deleted: IMessage[];
-	cursor: { next: string | null; previous: string | null };
-}> {
-	if (!Number.isSafeInteger(count) || count < 1) throw new ClientSafeError('error-invalid-count', 'count must be a positive integer');
-	const field = type === 'UPDATED' ? '_updatedAt' : '_deletedAt';
-	const { options } = mountCursorQuery({ next, previous, count });
-	const order = previous ? -1 : 1;
-	options.sort = { [field]: order, _id: order };
-	const boundary = next || previous;
-	const filter = mountSyncFilter(field, boundary, !!previous);
-	const response =
-		type === 'UPDATED'
-			? await Messages.findForSync(rid, filter, options).toArray()
-			: ((await Messages.trashFind({ rid, ...filter }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!.toArray()) as IMessage[]);
-	const cursor = {
-		next: mountNextCursor(response, count, type, next, previous, true),
-		previous: mountPreviousCursor(response, count, type, next, previous, true),
+	cursor?: {
+		next: string | null;
+		previous: string | null;
 	};
-	if (response.length > count) response.pop();
-	return { updated: type === 'UPDATED' ? response : [], deleted: type === 'DELETED' ? response : [], cursor };
+}> {
+	const { query, options } = mountCursorQuery({ next, previous, count });
+
+	options.sort = { [type === 'UPDATED' ? '_updatedAt' : '_deletedAt']: previous ? -1 : 1 };
+	const messages =
+		type === 'UPDATED'
+			? Messages.findForUpdates(rid, { updatedAt: query }, options)
+			: Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!;
+
+	const response: IMessage[] = [];
+	let hasMore = false;
+	for await (const message of messages) {
+		if (
+			response.length >= count &&
+			response.length > 0 &&
+			mountCursorFromMessage(message as IMessage, type) !== mountCursorFromMessage(response[response.length - 1], type)
+		) {
+			response.push(message as IMessage);
+			hasMore = true;
+			break;
+		}
+		response.push(message as IMessage);
+	}
+
+	const pageSize = response.length - (hasMore ? 1 : 0);
+	const cursor = {
+		next: mountNextCursor(response, pageSize, type, next, previous),
+		previous: mountPreviousCursor(response, pageSize, type, next, previous),
+	};
+
+	if (hasMore) {
+		response.pop();
+	}
+
+	return {
+		updated: type === 'UPDATED' ? response : [],
+		deleted: type === 'DELETED' ? response : [],
+		cursor,
+	};
 }
 
 export const getMessageHistory = async (
