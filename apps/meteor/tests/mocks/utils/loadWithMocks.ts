@@ -75,9 +75,9 @@ const withStubs = <T>(subject: string, subjectStubs: Map<string, unknown>, place
 const keepStubs = (subjectModule: NodeJS.Module, stubbed: Map<string, unknown>, placeholders: Map<string, string>): void => {
 	const requireReal = subjectModule.require.bind(subjectModule);
 	subjectModule.require = ((request: string) => {
-		const target = placeholders.get(request) ?? request;
-		const resolved = resolveFrom(target, subjectModule);
-		return resolved !== undefined && stubbed.has(resolved) ? stubbed.get(resolved) : requireReal(target);
+		const placeholder = placeholders.get(request);
+		const resolved = placeholder ?? resolveFrom(request, subjectModule);
+		return resolved !== undefined && stubbed.has(resolved) ? stubbed.get(resolved) : requireReal(placeholder ?? request);
 	}) as NodeJS.Module['require'];
 };
 
@@ -154,12 +154,9 @@ export const loadWithMocks = <T = any>(path: string, stubs: Stubs, { callThru = 
 					}
 				}
 
-				const isGlobal = isStubObject(stub) && stub['@global'] === true;
-				if (!isGlobal) {
-					keptStubs.set(resolved, stub);
-				}
+				keptStubs.set(resolved, stub);
 
-				if (exists && !isGlobal) {
+				if (exists && !(isStubObject(stub) && stub['@global'] === true)) {
 					subjectStubs.set(resolved, stub);
 					continue;
 				}
