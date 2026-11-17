@@ -1,4 +1,4 @@
-import { Box, Button, Callout, Tag } from '@rocket.chat/fuselage';
+import { Button, Callout, Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -16,9 +16,9 @@ const LocalSearchIndexRoomPrompt = ({ rid }: { rid: string }) => {
 	return (
 		<LocalSearchIndexStatusPanel>
 			<Callout type='info' title={t('E2E_Local_Search_Room_Not_Chosen_Title')} data-qa='local-search-room-prompt'>
-				<Box display='flex' flexDirection='column' gap={8}>
-					<Box>{t('E2E_Local_Search_Room_Not_Chosen_Description')}</Box>
-					<Box display='flex' alignItems='center' gap={8}>
+				<Stack gap={8}>
+					<Text is='p'>{t('E2E_Local_Search_Room_Not_Chosen_Description')}</Text>
+					<Stack direction='row' align='center' gap={8} wrap>
 						<Button size='small' variant='primary' onClick={() => startIndexingSearchRoom(rid)}>
 							{t('E2E_Local_Search_Index_Room')}
 						</Button>
@@ -26,8 +26,8 @@ const LocalSearchIndexRoomPrompt = ({ rid }: { rid: string }) => {
 							{t('E2E_Local_Search_Open_Settings')}
 						</Button>
 						<Tag variant='featured'>{t('Experimental')}</Tag>
-					</Box>
-				</Box>
+					</Stack>
+				</Stack>
 			</Callout>
 		</LocalSearchIndexStatusPanel>
 	);

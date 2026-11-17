@@ -1,4 +1,4 @@
-import { Box, Button, Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Button, Field, FieldLabel, FieldRow, Select, Stack } from '@rocket.chat/fuselage';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
@@ -21,7 +21,7 @@ const AddRoomField = ({ chosen }: { chosen: readonly string[] }) => {
 		<Field>
 			<FieldLabel htmlFor={id}>{t('E2E_Local_Search_Add_Room')}</FieldLabel>
 			<FieldRow>
-				<Box display='flex' gap={8} width='full'>
+				<Stack direction='row' gap={8} grow>
 					<Select
 						id={id}
 						options={options}
@@ -39,7 +39,7 @@ const AddRoomField = ({ chosen }: { chosen: readonly string[] }) => {
 					>
 						{t('E2E_Local_Search_Index_Room')}
 					</Button>
-				</Box>
+				</Stack>
 			</FieldRow>
 		</Field>
 	);

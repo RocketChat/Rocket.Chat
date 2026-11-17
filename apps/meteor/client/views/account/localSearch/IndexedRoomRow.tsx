@@ -1,9 +1,10 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import IndexedRoomListItem from './layout/IndexedRoomListItem';
 import { stopIndexingSearchRoom } from '../../../lib/e2ee/rocketchat.e2e';
 import { Subscriptions } from '../../../stores';
 import { useLocalSearchIndexRoomCoverage } from '../../room/contextualBar/MessageSearchTab/hooks/useLocalSearchIndexRoomCoverage';
@@ -31,33 +32,28 @@ const IndexedRoomRow = ({ rid, backend }: { rid: string; backend: ISearchIndexBa
 	}
 
 	return (
-		<Box is='li' display='flex' alignItems='center' justifyContent='space-between' paddingBlock={8} data-qa='local-search-room'>
-			<Box display='flex' flexDirection='column' minWidth={0} marginInlineEnd={8}>
-				<Box fontScale='p2m' withTruncatedText>
-					{roomLabel(subscription, rid)}
-				</Box>
-				{status && (
-					<Box fontScale='c1' color='hint'>
-						{status}
-					</Box>
-				)}
-			</Box>
-			<Button
-				size='small'
-				variant='secondary-danger'
-				loading={removing}
-				onClick={async () => {
-					setRemoving(true);
-					try {
-						await stopIndexingSearchRoom(rid);
-					} finally {
-						setRemoving(false);
-					}
-				}}
-			>
-				{t('Remove')}
-			</Button>
-		</Box>
+		<IndexedRoomListItem
+			data-qa='local-search-room'
+			title={roomLabel(subscription, rid)}
+			status={status}
+			action={
+				<Button
+					size='small'
+					variant='secondary-danger'
+					loading={removing}
+					onClick={async () => {
+						setRemoving(true);
+						try {
+							await stopIndexingSearchRoom(rid);
+						} finally {
+							setRemoving(false);
+						}
+					}}
+				>
+					{t('Remove')}
+				</Button>
+			}
+		/>
 	);
 };
 
