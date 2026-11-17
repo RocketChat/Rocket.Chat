@@ -38,6 +38,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, the props a component accepts, layout containers, adding a variation, Storybook-first
   - [list-keyboard-navigation.md](docs/frontend/list-keyboard-navigation.md) — the three keyboard models for lists (combobox, menu, composite list), the implementation of each, and how to test them
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
+  - [view-isolation.md](docs/frontend/view-isolation.md) — keeping screens free of Meteor and direct browser APIs: view-model hook vs view, `ui-contexts` only, browser APIs behind hooks, web-only widgets behind app components, `.native.tsx` twins, the CI ratchet
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
   - [adding-icons.md](docs/frontend/adding-icons.md) — adding an icon to `@rocket.chat/icons`: SVG cleanup, shape-based naming, directional icons, glyph mapping, changeset
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
@@ -80,3 +81,4 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
+  - [view-isolation-migration.md](docs/proposals/view-isolation-migration.md) — what still ties the views to Meteor and the browser, and the phases to apply the view isolation rules

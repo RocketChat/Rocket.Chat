@@ -400,6 +400,51 @@
 			}
 		},
 		{
+			"files": ["apps/meteor/client/views/**/*.{ts,tsx}"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						],
+						"patterns": [
+							{
+								"group": ["meteor/*"],
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not Meteor. See docs/frontend/view-isolation.md."
+							},
+							{
+								"regex": "^(?:(?:\\.\\./)+|/)(?:app|client/meteor)/|^(?:\\.\\./)+meteor/",
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not apps/meteor/app or client/meteor. See docs/frontend/view-isolation.md."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"apps/meteor/client/views/**/*.{spec,test,stories}.{ts,tsx}",
+				"apps/meteor/client/views/**/{__tests__,__mocks__,tests,testing}/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
 			"files": [
 				"**/*.d.ts",
 				"**/__tests__/**",
