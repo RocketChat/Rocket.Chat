@@ -6,7 +6,7 @@ import TilePicture from './TilePicture';
 import { THUMBNAIL_RING_WIDTH } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
-export type SelfThumbnailProps = TileParticipant & Pick<TileFrameProps, 'sendHeight'>;
+export type SelfThumbnailProps = TileParticipant & Pick<TileFrameProps, 'sendHeight' | 'pin'>;
 
 /** The reader's own view in a strip, a column or the corner of the stage. */
 const SelfThumbnail = ({
@@ -19,6 +19,7 @@ const SelfThumbnail = ({
 	handPosition,
 	reaction,
 	sendHeight,
+	pin,
 }: SelfThumbnailProps) => (
 	<TileFrame
 		displayName={displayName}
@@ -27,6 +28,7 @@ const SelfThumbnail = ({
 		audioStream={audioStream}
 		handPosition={handPosition}
 		reaction={reaction}
+		pin={pin}
 		ringWidth={THUMBNAIL_RING_WIDTH}
 		sendHeight={sendHeight}
 	>

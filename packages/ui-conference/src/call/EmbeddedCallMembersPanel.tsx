@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useCallActions, useCallState } from './context';
+import { useCallActions, useCallState, usePinnedParticipant } from './context';
 import type { MembersInCall } from '../components/CallMembersPanel/CallMembersPanel';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 
@@ -12,6 +12,7 @@ export type EmbeddedCallMembersPanelProps = {
 const EmbeddedCallMembersPanel = ({ onClose }: EmbeddedCallMembersPanelProps) => {
 	const { self, remoteParticipants, raisedHands } = useCallState();
 	const { muteParticipant } = useCallActions();
+	const { pinnedId, togglePin } = usePinnedParticipant();
 
 	const inCall = useMemo((): MembersInCall => {
 		const mutedMembers = new Set(remoteParticipants.filter(({ muted }) => muted).map(({ id }) => id));
@@ -27,8 +28,11 @@ const EmbeddedCallMembersPanel = ({ onClose }: EmbeddedCallMembersPanelProps) =>
 			mutedMembers,
 			audioStreams,
 			muteMember: muteParticipant,
+			pinnable: new Set([self.id, ...remoteParticipants.map(({ id }) => id)]),
+			pinnedId,
+			togglePin,
 		};
-	}, [self.id, self.muted, self.microphoneStream, remoteParticipants, raisedHands, muteParticipant]);
+	}, [self.id, self.muted, self.microphoneStream, remoteParticipants, raisedHands, muteParticipant, pinnedId, togglePin]);
 
 	return <CallMembersPanel inCall={inCall} onClose={onClose} />;
 };

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import CallReactions, { type CallReaction } from './CallReactions';
 import CallStage, { type StageLayout } from './CallStage';
-import { useCallActions, useCallState } from './context';
+import { useCallActions, useCallState, usePinnedParticipant } from './context';
 import { handPositionsOf } from './lib/raisedHands';
 import { latestReactionBySender } from './lib/reactions';
 
@@ -17,6 +17,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants, raisedHands, activeReactions } = useCallState();
 	const { toggleScreenShare } = useCallActions();
+	const { pinnedId, togglePin } = usePinnedParticipant();
 
 	const localParticipant = useMemo(
 		() => ({
@@ -74,6 +75,8 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 					handPositions={handPositions}
 					reactions={tileReactions}
 					layout={layout}
+					pinnedId={pinnedId}
+					onTogglePin={togglePin}
 				/>
 				<CallReactions reactions={reactions} />
 			</Box>

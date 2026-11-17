@@ -31,8 +31,16 @@ export type TileParticipant = {
 	reaction?: TileReaction;
 };
 
+/** The reader's own choice of whom to see large, as one tile offers it. */
+export type TilePin = {
+	pinned: boolean;
+	onToggle: (hadFocus: boolean) => void;
+	/** Takes the focus once drawn, after the same person was pinned or unpinned from the keyboard. */
+	restoreFocus: boolean;
+};
+
 /** The reader's tile says what it sends; nobody else's can. */
-export type StageTile = TileParticipant & { id: string } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
+export type StageTile = TileParticipant & { id: string; pin?: TilePin } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
 
 export type StageSize = { width: number; height: number };
 
@@ -91,6 +99,14 @@ export const buildStageTiles = (
 /** Who gets the large view: whoever is speaking, else the first person who is not the reader. */
 export const pickFeaturedTile = (tiles: StageTile[], activeSpeakerId: string | null, selfId: string): StageTile =>
 	tiles.find((t) => t.id === activeSpeakerId) ?? tiles.find((t) => t.id !== selfId) ?? tiles[0];
+
+/** Whoever the reader pinned, else whoever {@link pickFeaturedTile} picks. */
+export const pinnedOrFeaturedTile = (
+	tiles: StageTile[],
+	pinnedId: string | null,
+	activeSpeakerId: string | null,
+	selfId: string,
+): StageTile => tiles.find((t) => t.id === pinnedId) ?? pickFeaturedTile(tiles, activeSpeakerId, selfId);
 
 /** How much a tile deserves one of the few visible slots: the speaker, then a camera, then the reader. */
 export const tilePriority = (tile: StageTile, activeSpeakerId: string | null, selfId: string): number =>

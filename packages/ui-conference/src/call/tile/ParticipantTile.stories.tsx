@@ -85,3 +85,27 @@ export const SelfThumbnailMuted: Story = {
 	decorators: [withThumbnailSize],
 	render: () => <SelfThumbnail displayName='John Doe' muted held={false} />,
 };
+
+const pin = (pinned: boolean) => ({ pinned, restoreFocus: false, onToggle: () => undefined });
+
+/** Offers to pin them on hover or focus. */
+export const Pinnable: Story = {
+	args: { pin: pin(false) },
+};
+
+/** Pinned: the control stays, pressed, without hovering. */
+export const Pinned: Story = {
+	args: { pin: pin(true) },
+};
+
+/** Narrower than a strip thumbnail: no room for the control, so only the mark. */
+export const PinnedNarrow: Story = {
+	decorators: [
+		(Story) => (
+			<div style={{ width: 120, aspectRatio: '4 / 3' }}>
+				<Story />
+			</div>
+		),
+	],
+	render: () => <ParticipantTile displayName='Ada Lovelace' muted held={false} pin={pin(true)} />,
+};

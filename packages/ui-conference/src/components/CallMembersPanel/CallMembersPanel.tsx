@@ -21,6 +21,10 @@ export type MembersInCall = {
 	mutedMembers: ReadonlySet<string>;
 	audioStreams: ReadonlyMap<string, MediaStream | undefined>;
 	muteMember: (memberId: string) => void;
+	/** Who is in the call's video, so can be pinned. */
+	pinnable: ReadonlySet<string>;
+	pinnedId: string | null;
+	togglePin: (memberId: string) => void;
 };
 
 type CallMembersPanelProps = {
@@ -105,6 +109,8 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 					handRaised={inCall?.raisedHands.has(member._id)}
 					muted={inCall?.mutedMembers.has(member._id)}
 					onMute={inCall?.muteMember}
+					pinned={inCall?.pinnedId === member._id}
+					onTogglePin={inCall?.pinnable.has(member._id) ? inCall.togglePin : undefined}
 					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>

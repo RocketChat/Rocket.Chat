@@ -4,11 +4,13 @@ import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import PinToggle from '../PinToggle';
 import VoiceActivity from '../VoiceActivity';
 import { useSpeakingRing } from '../hooks/useSpeakingRing';
 import { REACTION_VISIBLE_MS } from '../lib/reactions';
 import { speakingRingThickness } from '../lib/speakingRing';
-import type { TileParticipant } from '../lib/stageTiles';
+import type { TileParticipant, TilePin } from '../lib/stageTiles';
+import { STRIP_THUMB_WIDTH } from '../lib/stageTiles';
 
 const tileStyles = css`
 	position: relative;
@@ -23,6 +25,30 @@ const tileStyles = css`
 	isolation: isolate;
 	container-type: inline-size;
 	color: ${Palette.text['font-pure-white'].toString()};
+
+	& .rcx-tile-pin {
+		opacity: 0;
+		pointer-events: auto;
+		transition: opacity 150ms ease;
+	}
+	&:hover .rcx-tile-pin,
+	&:focus-within .rcx-tile-pin,
+	& .rcx-tile-pin[data-pinned='true'] {
+		opacity: 1;
+	}
+	& .rcx-tile-pin-mark {
+		display: none;
+	}
+
+	/* Too narrow for a control beside the badges: the pin is only marked, and changed from the People panel. */
+	@container (max-width: ${STRIP_THUMB_WIDTH - 1}px) {
+		& .rcx-tile-pin {
+			display: none;
+		}
+		& .rcx-tile-pin-mark {
+			display: flex;
+		}
+	}
 `;
 
 /**
@@ -150,12 +176,24 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 	 * else's encoder is doing is not something this client can honestly claim.
 	 */
 	sendHeight?: number;
+	pin?: TilePin;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
 
 /** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand, their reaction. */
-const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reaction, ringWidth, sendHeight, children }: TileFrameProps) => {
+const TileFrame = ({
+	displayName,
+	muted,
+	held,
+	audioStream,
+	handPosition,
+	reaction,
+	ringWidth,
+	sendHeight,
+	pin,
+	children,
+}: TileFrameProps) => {
 	const { t } = useTranslation();
 	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
 	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
@@ -211,6 +249,24 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reacti
 				</Box>
 			)}
 			<Box className={indicatorRowStyles}>
+				{pin && (
+					<Box className='rcx-tile-pin' data-pinned={pin.pinned}>
+						<PinToggle
+							size='small'
+							variant='secondary'
+							pinned={pin.pinned}
+							label={t(pin.pinned ? 'Unpin_participant' : 'Pin_participant', { name: displayName })}
+							restoreFocus={pin.restoreFocus}
+							onPinToggle={pin.onToggle}
+						/>
+					</Box>
+				)}
+				{pin?.pinned && (
+					<Box className={[indicatorBadgeStyles, 'rcx-tile-pin-mark']} title={t('Pinned')}>
+						<Icon name='pin-filled' size='x16' />
+						<VisuallyHidden>{t('Pinned')}</VisuallyHidden>
+					</Box>
+				)}
 				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
 					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>

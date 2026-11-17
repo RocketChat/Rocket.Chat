@@ -15,6 +15,7 @@ import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import PinToggle from '../../call/PinToggle';
 import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
 import type { ConferenceMember } from '../../context/definitions';
 import { useIsRinging } from '../../hooks/useRinging';
@@ -41,6 +42,10 @@ type CallMemberItemProps = {
 	muted?: boolean;
 	/** Asks them to mute. Absent where the call cannot carry the request. */
 	onMute?: (memberId: string) => void;
+	/** Whether the reader pinned them to see them large. */
+	pinned?: boolean;
+	/** Absent for anyone not in the call's video, who has nothing to pin. */
+	onTogglePin?: (memberId: string) => void;
 	/** Their microphone level, for a call whose audio this window holds. */
 	activity?: ReactNode;
 	onRing: (memberId: string) => void;
@@ -63,6 +68,8 @@ const CallMemberItem = ({
 	activity,
 	onRing,
 	onMute,
+	pinned = false,
+	onTogglePin,
 }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
@@ -77,6 +84,7 @@ const CallMemberItem = ({
 	const isLive = status === 'joined' && !muted;
 	const canMute = isLive && member._id !== ownUserId && !!onMute;
 	const showActivity = isLive && !!activity;
+	const canPin = status === 'joined' && !!onTogglePin;
 
 	return (
 		<Item role='listitem' inset='lg'>
@@ -92,7 +100,7 @@ const CallMemberItem = ({
 				</ItemRow>
 				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
 			</ItemContent>
-			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
+			{(canMute || canPin || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
 				<ItemActions>
 					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
@@ -116,6 +124,15 @@ const CallMemberItem = ({
 							title={t('Mute__name__', { name: nameOrUsername })}
 							aria-label={t('Mute__name__', { name: nameOrUsername })}
 							onClick={() => onMute?.(member._id)}
+						/>
+					)}
+					{canPin && (
+						<PinToggle
+							size='small'
+							variant='secondary'
+							pinned={pinned}
+							label={t(pinned ? 'Unpin_participant' : 'Pin_participant', { name: nameOrUsername })}
+							onPinToggle={() => onTogglePin?.(member._id)}
 						/>
 					)}
 					{showActivity && activity}
