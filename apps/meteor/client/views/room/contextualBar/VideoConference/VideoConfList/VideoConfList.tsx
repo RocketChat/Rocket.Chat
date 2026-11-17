@@ -16,7 +16,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
 import CallHistoryState from './layout/CallHistoryState';
-import ContextualbarInset from '../../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../../components/ListViewport';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
@@ -46,9 +46,9 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 			</ContextualbarHeader>
 			<ContextualbarContent flush ref={ref}>
 				{loading && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{(total === 0 || error) && (
 					<CallHistoryState>

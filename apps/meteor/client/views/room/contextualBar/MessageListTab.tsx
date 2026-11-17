@@ -18,7 +18,7 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ContextualbarInset from '../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../components/ContextualbarStatus';
 import ListViewport from '../../../components/ListViewport';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
@@ -59,9 +59,9 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 			</ContextualbarHeader>
 			<ContextualbarContent flush>
 				{queryResult.isLoading && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{queryResult.isSuccess && (
 					<>

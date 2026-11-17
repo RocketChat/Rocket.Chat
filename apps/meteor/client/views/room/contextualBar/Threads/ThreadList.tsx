@@ -20,7 +20,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -150,14 +150,14 @@ const ThreadList = () => {
 			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<ContextualbarInset block='x12'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{error && (
-					<ContextualbarInset>
+					<ContextualbarStatus>
 						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{isSuccess && (
 					<ListViewport id={threadListId} ref={threadListRef}>

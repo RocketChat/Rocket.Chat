@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
@@ -114,9 +114,9 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 
 			{isError && !user && (
 				<ContextualbarContent flush>
-					<ContextualbarInset block='x16'>
+					<ContextualbarStatus>
 						<Callout type='danger'>{t('User_not_found')}</Callout>
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				</ContextualbarContent>
 			)}
 

@@ -21,7 +21,7 @@ import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
 import RoomFilesListArea from './layout/RoomFilesListArea';
-import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
@@ -94,9 +94,9 @@ const RoomFiles = ({
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
-					<ContextualbarInset block='x24'>
+					<ContextualbarStatus>
 						<Throbber size='x12' />
-					</ContextualbarInset>
+					</ContextualbarStatus>
 				)}
 				{isSuccess && (
 					<RoomFilesListArea id={filesListId}>
