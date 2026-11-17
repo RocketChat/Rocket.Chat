@@ -11,6 +11,8 @@ const surfaceByInteractionType: Record<string, IUiKitView['type'] | undefined> =
 	'modal.update': 'modal',
 	'contextual_bar.open': 'contextual_bar',
 	'contextual_bar.update': 'contextual_bar',
+	'banner.open': 'banner',
+	'banner.update': 'banner',
 };
 
 type ViewLike = { id?: unknown; state?: unknown };
@@ -21,25 +23,30 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 const serverOwnedFields = ['private_metadata', 'callback_id', 'external_id', 'submit_disabled', 'hash'] as const;
 
 /**
- * Keeps the modal or contextual bar an app opens or updates for a user, so its submit and close can carry the app's copy.
+ * Keeps the modal, contextual bar or banner an app opens or updates for a user, so its submit and close can carry the app's copy.
  * Stamps the view with a new `hash`, and resolves an update that names a view by `external_id`.
  * Returns `false` when the interaction is a stale or unresolvable update that must not reach the user.
  */
 export const recordInteractionView = async (interaction: unknown, appId: string, userId: string | undefined): Promise<boolean> => {
-	if (!userId || !isObject(interaction) || typeof interaction.type !== 'string' || !isObject(interaction.view)) {
+	if (!userId || !isObject(interaction) || typeof interaction.type !== 'string') {
 		return true;
 	}
 
 	const type = surfaceByInteractionType[interaction.type];
-	const view = interaction.view as IUiKitView['view'];
+	// An opened banner carries its fields on the interaction itself; every other surface nests them in `view`.
+	const source = interaction.type === 'banner.open' ? interaction : interaction.view;
 
-	if (!type) {
+	if (!type || !isObject(source)) {
 		return true;
 	}
 
+	const view = source;
+	const idKey = type === 'banner' ? 'viewId' : 'id';
+
 	try {
 		const isUpdate = interaction.type.endsWith('.update');
-		let recorded = isUpdate && typeof view.id === 'string' ? await UiKitViews.findOneByIdForUser(view.id, appId, userId) : null;
+		const viewId = view[idKey];
+		let recorded = isUpdate && typeof viewId === 'string' ? await UiKitViews.findOneByIdForUser(viewId, appId, userId) : null;
 
 		if (isUpdate && !recorded && typeof view.external_id === 'string') {
 			recorded = await UiKitViews.findOneByExternalIdForUser(view.external_id, appId, userId);
@@ -47,23 +54,27 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 				logger.warn({ msg: 'UiKit update names an external_id the user has no view for; skipped', externalId: view.external_id, appId });
 				return false;
 			}
-			view.id = recorded._id;
+			view[idKey] = recorded._id;
 		}
 
-		if (typeof view.id !== 'string') {
+		if (typeof view[idKey] !== 'string') {
 			return true;
 		}
 
-		if (recorded?.view.hash && typeof view.hash === 'string' && view.hash !== recorded.view.hash) {
-			logger.warn({ msg: 'Stale UiKit view update skipped: its hash does not match the saved view', viewId: view.id, appId });
+		const recordedHash = recorded && 'hash' in recorded.view ? recorded.view.hash : undefined;
+		if (recordedHash && typeof view.hash === 'string' && view.hash !== recordedHash) {
+			logger.warn({ msg: 'Stale UiKit view update skipped: its hash does not match the saved view', viewId: view[idKey], appId });
 			return false;
 		}
 
 		view.hash = Random.id();
+		// The interaction fields of an opened banner are not part of its view.
+		const { type: _type, triggerId: _triggerId, ...fields } = view;
+		const saved = (interaction.type === 'banner.open' ? fields : view) as IUiKitView['view'];
 		// An update may send only the fields that change, as the client merges it into the view it shows.
-		await UiKitViews.saveView({ _id: view.id, appId, userId, type, view: recorded ? { ...recorded.view, ...view } : view });
+		await UiKitViews.saveView({ _id: view[idKey], appId, userId, type, view: { ...recorded?.view, ...saved } });
 	} catch (error) {
-		logger.error({ msg: 'Could not record a UiKit view', viewId: view.id, appId, err: error });
+		logger.error({ msg: 'Could not record a UiKit view', viewId: view[idKey], appId, err: error });
 		return false;
 	}
 
@@ -72,15 +83,19 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 
 /**
  * The view a user submits or closes, as the app sent it, with the state the user filled in.
- * Falls back to the client's copy when the server has none, such as a view opened before the server kept them.
+ * Returns `null` when a user's view has no record or the record cannot be read, so the caller must not call the app.
  */
 export const withRecordedView = async <TView extends ViewLike>(
 	clientView: TView,
 	appId: string,
 	userId: string | undefined,
-): Promise<TView> => {
-	if (!userId || typeof clientView?.id !== 'string') {
+): Promise<TView | null> => {
+	if (!userId) {
 		return clientView;
+	}
+
+	if (typeof clientView?.id !== 'string') {
+		return null;
 	}
 
 	const recorded = await UiKitViews.findOneByIdForUser(clientView.id, appId, userId).catch((error) => {
@@ -89,8 +104,8 @@ export const withRecordedView = async <TView extends ViewLike>(
 	});
 
 	if (!recorded) {
-		logger.debug({ msg: 'UiKit view not recorded on the server; passing the client copy to the app', viewId: clientView.id, appId });
-		return clientView;
+		logger.warn({ msg: 'UiKit view not recorded on the server; refusing it', viewId: clientView.id, appId });
+		return null;
 	}
 
 	const view: TView = { ...clientView, ...recorded.view, state: clientView.state };

@@ -294,6 +294,13 @@ export class AppUIKitInteractionApi {
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const recordedView = await withRecordedView(view, appId, req.user?._id);
+				if (!recordedView) {
+					// A view the server no longer has still closes for the user.
+					res.send({});
+					break;
+				}
+
 				const { visitor } = req.body;
 				const action = {
 					type,
@@ -303,7 +310,7 @@ export class AppUIKitInteractionApi {
 					visitor,
 					room,
 					payload: {
-						view: await withRecordedView(view, appId, req.user?._id),
+						view: recordedView,
 						isCleared,
 					},
 				};
@@ -335,6 +342,11 @@ export class AppUIKitInteractionApi {
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const view = await withRecordedView(payload.view, appId, req.user?._id);
+				if (!view) {
+					res.status(400).send({ error: 'The view is no longer available' });
+					break;
+				}
+
 				const { visitor } = req.body;
 				const action = {
 					type,

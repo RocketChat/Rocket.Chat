@@ -100,6 +100,31 @@ describe('recordInteractionView', () => {
 		);
 	});
 
+	it('records an opened banner by its viewId, without the interaction fields', async () => {
+		const interaction = { type: 'banner.open', triggerId: 't', appId: 'app', viewId: 'b1', blocks: [], private_metadata: 'secret' };
+
+		await recordInteractionView(interaction, 'app', 'user');
+
+		expect(mockSaveView).toHaveBeenCalledWith({
+			_id: 'b1',
+			appId: 'app',
+			userId: 'user',
+			type: 'banner',
+			view: { appId: 'app', viewId: 'b1', blocks: [], private_metadata: 'secret', hash: 'new-hash' },
+		});
+	});
+
+	it('merges a banner update into the recorded banner', async () => {
+		mockFindOneByIdForUser.mockResolvedValue({ view: { viewId: 'b1', blocks: [], title: 'Old' } });
+
+		await recordInteractionView({ type: 'banner.update', view: { viewId: 'b1', title: 'New' } }, 'app', 'user');
+
+		expect(mockFindOneByIdForUser).toHaveBeenCalledWith('b1', 'app', 'user');
+		expect(mockSaveView).toHaveBeenCalledWith(
+			expect.objectContaining({ _id: 'b1', type: 'banner', view: { viewId: 'b1', blocks: [], title: 'New', hash: 'new-hash' } }),
+		);
+	});
+
 	it('does not deliver the interaction when the view cannot be saved', async () => {
 		mockSaveView.mockRejectedValue(new Error('duplicate key'));
 
@@ -108,7 +133,7 @@ describe('recordInteractionView', () => {
 
 	it.each([
 		['an interaction with no view', { type: 'errors', errors: {} }, 'user'],
-		['a banner', { type: 'banner.open', view: { id: 'view' } }, 'user'],
+		['a banner close', { type: 'banner.close', viewId: 'view' }, 'user'],
 		['a visitor, who has no user id', { type: 'modal.open', view: appView }, undefined],
 	])('records nothing for %s', async (_case, interaction, userId) => {
 		await recordInteractionView(interaction, 'app', userId);
@@ -144,17 +169,25 @@ describe('withRecordedView', () => {
 		expect(view).not.toHaveProperty('submit_disabled');
 	});
 
-	it('passes the client copy on when the server has no record of the view', async () => {
+	it('refuses a view the server has no record of', async () => {
 		mockFindOneByIdForUser.mockResolvedValue(null);
-		const clientView = { id: 'view', blocks: [], state: {} };
 
-		expect(await withRecordedView(clientView, 'app', 'user')).toBe(clientView);
+		expect(await withRecordedView({ id: 'view', private_metadata: 'forged', state: {} }, 'app', 'user')).toBeNull();
 	});
 
-	it('passes the client copy on when the record cannot be read', async () => {
+	it('refuses a view when the record cannot be read', async () => {
 		mockFindOneByIdForUser.mockRejectedValue(new Error('down'));
-		const clientView = { id: 'view', blocks: [], state: {} };
 
-		expect(await withRecordedView(clientView, 'app', 'user')).toBe(clientView);
+		expect(await withRecordedView({ id: 'view', state: {} }, 'app', 'user')).toBeNull();
+	});
+
+	it('refuses a user view that names no id', async () => {
+		expect(await withRecordedView({ state: {} }, 'app', 'user')).toBeNull();
+	});
+
+	it('passes the view through for a visitor, who has no user id', async () => {
+		const clientView = { id: 'view', state: {} };
+
+		expect(await withRecordedView(clientView, 'app', undefined)).toBe(clientView);
 	});
 });

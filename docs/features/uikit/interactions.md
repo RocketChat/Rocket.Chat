@@ -84,6 +84,7 @@ Apps drive multi-step forms by answering a `viewSubmit` with `modal.push` (the n
 Per view, set by the app:
 
 - `private_metadata`, `callback_id` and `external_id` ride on the view. The server keeps the app's copy of each view (`UiKitViews`), and `viewSubmit` and `viewClosed` hand the app that copy with only the `state` taken from the client, so `private_metadata` always comes back as the app set it. A value the client adds is dropped.
+- Modals, contextual bars and banners opened for a logged-in user are recorded. A submit or close for such a view with no record (a record expires after 24 hours) is refused and the app is not called; a refused submit is a 400, and a refused close answers 200 so the client disposes the view. Views opened for a Livechat visitor are not recorded: the app receives the visitor's copy.
 - `external_id` lets `updateSurfaceView` (or a `modal.update` response) address a view without its `id`: the server finds the user's view with that `external_id` and rewrites the update to its `id`. An update naming an unknown `external_id` is dropped.
 - `hash` is a random string the server sets on every save and returns in the view. An update that carries a `hash` different from the saved one is stale and is dropped, so a slow handler cannot overwrite a newer view. Updates without a `hash` always apply.
 - `submit_disabled` disables the submit button.
