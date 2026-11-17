@@ -179,6 +179,11 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.createStrategy({ identityPath }).identityPath).toBe(expected);
 		});
 
+		it('appends a query-only identity path to serverURL unchanged', () => {
+			const strategy = env.createStrategy({ serverURL: 'https://identity.example.com/api/me', identityPath: '?fields=id,email' });
+			expect(strategy.identityPath).toBe('https://identity.example.com/api/me?fields=id,email');
+		});
+
 		it('preserves an absolute tokenPath property', () => {
 			const tokenPath = 'https://tokens.example.com/token';
 			expect(env.createStrategy({ tokenPath }).tokenPath).toBe(tokenPath);

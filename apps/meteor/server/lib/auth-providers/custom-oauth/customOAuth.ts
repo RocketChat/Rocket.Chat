@@ -28,6 +28,10 @@ const resolveEndpoint = (serverURL: string, path: string): string => {
 		return path;
 	}
 
+	if (path.startsWith('?')) {
+		return serverURL + path;
+	}
+
 	return `${serverURL.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 };
 
