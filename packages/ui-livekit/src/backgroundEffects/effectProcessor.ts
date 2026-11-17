@@ -1,8 +1,14 @@
-import type { BackgroundProcessorWrapper, SwitchBackgroundProcessorOptions } from '@livekit/track-processors';
+import type {
+	BackgroundOptions,
+	BackgroundProcessorWrapper,
+	BackgroundTransformer,
+	SwitchBackgroundProcessorOptions,
+} from '@livekit/track-processors';
 import type { BackgroundEffect } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack } from 'livekit-client';
 
 import { blurRadiusFor } from './blurRadius';
+import { withSmoothedMask } from './smoothedMaskTransformer';
 import type { BackgroundEffectAssets } from './useBackgroundEffectAssets';
 
 /** Counted only while the page is visible. */
@@ -37,14 +43,25 @@ export const supportsBackgroundEffects = (): boolean => {
 	return supported;
 };
 
-let library: Promise<typeof import('@livekit/track-processors')> | undefined;
+type EffectLibrary = {
+	Wrapper: typeof BackgroundProcessorWrapper;
+	Transformer: typeof BackgroundTransformer;
+};
+
+let library: Promise<EffectLibrary> | undefined;
 
 /** Loaded on the first effect applied, so calls without one never download it. */
 const loadLibrary = () => {
-	library ??= import('@livekit/track-processors').catch((err) => {
-		library = undefined;
-		throw err;
-	});
+	library ??= import('@livekit/track-processors').then(
+		({ BackgroundProcessorWrapper, BackgroundTransformer }) => ({
+			Wrapper: BackgroundProcessorWrapper,
+			Transformer: withSmoothedMask(BackgroundTransformer),
+		}),
+		(err) => {
+			library = undefined;
+			throw err;
+		},
+	);
 	return library;
 };
 
@@ -80,6 +97,17 @@ export const switchOptionsFor = (
 	}
 };
 
+const transformerOptionsFor = (options: SwitchBackgroundProcessorOptions): BackgroundOptions => {
+	switch (options.mode) {
+		case 'background-blur':
+			return { blurRadius: options.blurRadius };
+		case 'virtual-background':
+			return { imagePath: options.imagePath };
+		default:
+			return { backgroundDisabled: true };
+	}
+};
+
 /** Calls back once the page has been visible for `ms` in total. */
 const visibleTimeout = (ms: number, onTimeout: () => void) => {
 	let spent = 0;
@@ -111,20 +139,13 @@ export class EffectProcessor {
 	private readonly waiters = new Set<() => void>();
 
 	static async create(effect: BackgroundEffect, source: EffectSource): Promise<EffectProcessor> {
-		const { BackgroundProcessor } = await loadLibrary();
-		return new EffectProcessor(effect, source, BackgroundProcessor);
+		return new EffectProcessor(effect, source, await loadLibrary());
 	}
 
-	private constructor(
-		effect: BackgroundEffect,
-		source: EffectSource,
-		BackgroundProcessor: (typeof import('@livekit/track-processors'))['BackgroundProcessor'],
-	) {
+	private constructor(effect: BackgroundEffect, source: EffectSource, { Wrapper, Transformer }: EffectLibrary) {
 		this.effect = effect;
-		// A factory, despite its name.
-		// oxlint-disable-next-line new-cap
-		this.processor = BackgroundProcessor({
-			...switchOptionsFor(effect, source),
+		const transformer = new Transformer({
+			...transformerOptionsFor(switchOptionsFor(effect, source)),
 			assetPaths: { tasksVisionFileSet: source.assets.runtimeUrl, modelAssetPath: source.assets.modelUrl },
 			onFrameProcessed: () => {
 				this.framed = true;
@@ -134,6 +155,7 @@ export class EffectProcessor {
 				waiting.forEach((resolve) => resolve());
 			},
 		});
+		this.processor = new Wrapper(transformer, 'background-processor');
 	}
 
 	/** Rejects when no frame comes within the start limit. */
