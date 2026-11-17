@@ -61,16 +61,57 @@ it('offers a disabled choice as unavailable', async () => {
 	expect(await screen.findByRole('menuitemcheckbox', { name: /720p/ })).toHaveAttribute('aria-disabled', 'true');
 });
 
+it('turns a toggle over whichever way it is, and runs an action', async () => {
+	const onToggle = jest.fn();
+	const onAction = jest.fn();
+	renderMenu([
+		{
+			title: 'Background',
+			choices: [
+				{ type: 'toggle', id: 'effect', name: 'Background effect', checked: true, onToggle },
+				{ type: 'action', id: 'settings', name: 'Background settings…', onAction },
+			],
+		},
+	]);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
+	await userEvent.click(await screen.findByText('Background effect'));
+	expect(onToggle).toHaveBeenCalledTimes(1);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
+	await userEvent.click(await screen.findByText('Background settings…'));
+	expect(onAction).toHaveBeenCalledTimes(1);
+});
+
+it('does nothing for a disabled toggle', async () => {
+	const onToggle = jest.fn();
+	renderMenu([
+		{
+			title: 'Background',
+			choices: [{ type: 'toggle', id: 'effect', name: 'Background effect', checked: false, disabled: true, onToggle }],
+		},
+	]);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
+	await userEvent.click(await screen.findByText('Background effect'));
+
+	expect(onToggle).not.toHaveBeenCalled();
+});
+
 // Screen readers only hear which row is in use from the menu, not from the radio.
-it('marks the device and the choice in use as checked, and nothing else', async () => {
+it('marks the device and the choices in use as checked, and nothing else', async () => {
 	const onSelect = jest.fn();
-	renderMenu([qualities(onSelect)]);
+	renderMenu([
+		qualities(onSelect),
+		{ title: 'Background', choices: [{ type: 'toggle', id: 'effect', name: 'Background effect', checked: true, onToggle: jest.fn() }] },
+	]);
 
 	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
 
 	expect(await screen.findByRole('menuitemcheckbox', { name: /Logitech BRIO/ })).toHaveAttribute('aria-checked', 'true');
 	expect(screen.getByRole('menuitemcheckbox', { name: /Auto/ })).toHaveAttribute('aria-checked', 'true');
 	expect(screen.getByRole('menuitemcheckbox', { name: /720p/ })).toHaveAttribute('aria-checked', 'false');
+	expect(screen.getByRole('menuitemcheckbox', { name: /Background effect/ })).toHaveAttribute('aria-checked', 'true');
 });
 
 it('closes a menu of one kind once something is chosen, as before', async () => {
