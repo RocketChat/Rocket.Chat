@@ -1,6 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,14 +24,11 @@ function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGr
 
 	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
 
-	const handleTestConnectionButtonClick = async (): Promise<void> => {
-		try {
-			const { message } = await testConnection();
-			dispatchToastMessage({ type: 'success', message: t(message) });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Exchange_Test_Connection_failed') });
-		}
-	};
+	const testConnectionMutation = useMutation({
+		mutationFn: testConnection,
+		onSuccess: ({ message }) => dispatchToastMessage({ type: 'success', message: t(message) }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Exchange_Test_Connection_failed') }),
+	});
 
 	return (
 		<BaseGroupPage
@@ -39,7 +37,11 @@ function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGr
 			onClickBack={onClickBack}
 			{...group}
 			headerButtons={
-				<Button disabled={!exchangeEnabled || !serverMode || changed} onClick={handleTestConnectionButtonClick}>
+				<Button
+					disabled={!exchangeEnabled || !serverMode || changed || testConnectionMutation.isPending}
+					loading={testConnectionMutation.isPending}
+					onClick={() => testConnectionMutation.mutate()}
+				>
 					{t('Test_Connection')}
 				</Button>
 			}
