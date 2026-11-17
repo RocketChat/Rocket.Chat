@@ -189,6 +189,14 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.createStrategy({ tokenPath }).tokenPath).toBe(tokenPath);
 		});
 
+		it.each([
+			['https://tokens.example.com/token', 'https://tokens.example.com/token'],
+			['HTTPS://tokens.example.com/token', 'HTTPS://tokens.example.com/token'],
+			['/token', 'https://identity.example.com/token'],
+		])('resolves the token path %s', (tokenPath, expected) => {
+			expect(env.createStrategy({ tokenPath }).options.tokenURL).toBe(expected);
+		});
+
 		it('passes absolute provider endpoints to Passport unchanged', () => {
 			const strategy = env.createStrategy({
 				authorizePath: 'https://authorize.example.com/authorize',
