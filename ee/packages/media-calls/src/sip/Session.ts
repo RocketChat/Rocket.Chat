@@ -92,7 +92,7 @@ export class SipServerSession {
 	}
 
 	public geContactUri(contact: MediaCallContact): string {
-		const sipExtension = contact.sipExtension || (contact.type === 'sip' && contact.id) || null;
+		const sipExtension = (contact.type === 'sip' && contact.id) || contact.sipExtension || null;
 		const username = contact.username && `user-${contact.username}`;
 		const userId = contact.id && `user-${contact.id}`;
 
