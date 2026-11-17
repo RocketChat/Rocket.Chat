@@ -67,7 +67,7 @@ export const UiKitModal = ({ appId, view, errors = {}, dispatchBlockAction, onSu
 	);
 
 	return (
-		<Modal open animated dismissByOverlay={false} aria-label={view.title.text} onDismiss={() => run(onClose)}>
+		<Modal open animated dismissByOverlay={false} aria-label={view.title.text} onDismiss={() => !busy && run(onClose)}>
 			<h3>{view.title.text}</h3>
 			<ErrorsContext.Provider value={errors}>
 				<Surface dispatchAction={dispatchAction}>{renderBlocks(view.blocks)}</Surface>

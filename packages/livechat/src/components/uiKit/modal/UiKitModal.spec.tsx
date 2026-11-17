@@ -66,4 +66,16 @@ describe('UiKitModal', () => {
 
 		expect(input().value).toBe('y');
 	});
+
+	it('ignores Escape while a request is in flight', async () => {
+		const onClose = jest.fn();
+		draw({ view: viewWith('a', 'x'), onSubmit: () => new Promise(() => undefined), onClose });
+
+		await act(() => {
+			(Array.from(root.querySelectorAll('button')).pop() as HTMLButtonElement).click();
+		});
+		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+		expect(onClose).not.toHaveBeenCalled();
+	});
 });
