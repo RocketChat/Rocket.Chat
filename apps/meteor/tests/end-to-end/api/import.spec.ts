@@ -1,5 +1,7 @@
 import { after, before, describe, it } from 'node:test';
 
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -8,6 +10,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, login, deleteUser } from '../../data/users.helper';
 import { withTimeout } from '../../data/utils';
 
@@ -52,6 +55,59 @@ describe('Imports', () => {
 				});
 		});
 	});
+	describe('without run-import', () => {
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+		});
+
+		before(() =>
+			withTimeout(async (signal) => {
+				while (!signal.aborted) {
+					const res = await request.get(api('getCurrentImportOperation')).set(credentials).expect(200);
+					if (!['importer_preparing_started', 'importer_importing_files'].includes(res.body.operation?.status)) {
+						return;
+					}
+					await sleep(100);
+				}
+			}, 10_000),
+		);
+
+		after(() => deleteUser(user));
+
+		const readRoutes = ['getCurrentImportOperation', 'getImportProgress', 'getImportFileData', 'import.status'] as const;
+
+		readRoutes.forEach((route) => {
+			it(`should refuse ${route}`, async () => {
+				await request.get(api(route)).set(userCredentials).expect(403);
+			});
+		});
+
+		const actions = [
+			['downloadPublicImportFile', { importerKey: 'csv', fileUrl: `${IMPORT_MOCK_SERVER_URL}/users.zip` }],
+			['downloadPendingFiles', {}],
+			['downloadPendingAvatars', {}],
+			['import.addUsers', { users: [{ emails: ['refused@rocket.chat'], importIds: ['refused'] }] }],
+			['startImport', { input: { users: { all: true } } }],
+			['import.run', {}],
+			['import.clear', {}],
+		] as const;
+
+		actions.forEach(([route, body]) => {
+			it(`should refuse ${route} and keep the current operation`, async () => {
+				const previous = await request.get(api('getCurrentImportOperation')).set(credentials).expect(200);
+
+				await request.post(api(route)).set(userCredentials).send(body).expect(403);
+
+				const current = await request.get(api('getCurrentImportOperation')).set(credentials).expect(200);
+				expect(current.body.operation).to.deep.equal(previous.body.operation);
+			});
+		});
+	});
+
 	describe('[/getLatestImportOperations]', () => {
 		let testUser: any = {};
 		before(async () => {

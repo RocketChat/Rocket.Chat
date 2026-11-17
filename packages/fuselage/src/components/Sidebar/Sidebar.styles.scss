@@ -183,10 +183,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			background-color: $sidebar-color-surface-hover;
 		}
 
-		&__bar.rcx-item-group-header {
-			padding-block: lengths.padding(8);
-		}
-
 		&__panel--expanded {
 			padding-block: lengths.padding(none);
 		}

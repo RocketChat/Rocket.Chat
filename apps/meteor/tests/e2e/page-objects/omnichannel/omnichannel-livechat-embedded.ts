@@ -30,6 +30,10 @@ export class OmnichannelLiveChatEmbedded extends RoutedPage {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`button >> text="Yes"`);
 	}
 
+	get selectDepartment(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[name="department"]');
+	}
+
 	get headerTitle(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="header-title"]');
 	}
