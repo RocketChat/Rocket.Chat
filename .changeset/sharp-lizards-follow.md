@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/fuselage': patch
+'@rocket.chat/fuselage': minor
 ---
 
-Add accessible name to Banner close button
+Add accessible name to the Banner close button with optional `closeButtonLabel` prop (default `close`).
