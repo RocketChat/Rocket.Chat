@@ -26,3 +26,14 @@ it('filters the room list while the search is open, and clears the filter and re
 	expect(screen.getByRole('button', { name: 'Search_rooms' })).toHaveAttribute('aria-expanded', 'false');
 	expect(screen.getByRole('button', { name: 'Search_rooms' })).toHaveFocus();
 });
+
+it.each([
+	['condensed', true],
+	['medium', false],
+])('sizes the search to the %s sidebar view mode', async (sidebarViewMode, small) => {
+	render(<Inbox />, { wrapper: mockAppRoot().withUserPreference('sidebarViewMode', sidebarViewMode).build() });
+
+	await userEvent.click(screen.getByRole('button', { name: 'Search_rooms' }));
+
+	expect(screen.getByRole('textbox', { name: 'Search_rooms' }).classList.contains('rcx-input-box--small')).toBe(small);
+});
