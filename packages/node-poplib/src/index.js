@@ -279,6 +279,9 @@ function POP3Client(port, host, options) {
 	}
 
 	function onClose() {
+		self.setState(0);
+		self.setLocked(false);
+		self.setCallback(function () {});
 		socket = null;
 		transportSocket = null;
 		tlsPair = null;
@@ -291,10 +294,10 @@ function POP3Client(port, host, options) {
 
 	// Remote end socket
 	if (enabletls === true) {
+		transportSocket = new net.createConnection(port, host);
 		tlssock = tls.connect(
 			{
-				host: host,
-				port: port,
+				socket: transportSocket,
 				rejectUnauthorized: !self.data.ignoretlserrs,
 			},
 			function () {
@@ -303,8 +306,10 @@ function POP3Client(port, host, options) {
 		);
 
 		socket = tlssock;
-	} else socket = new net.createConnection(port, host);
-	transportSocket = socket;
+	} else {
+		socket = new net.createConnection(port, host);
+		transportSocket = socket;
+	}
 
 	// Set up event handlers
 	socket.on('data', onData);

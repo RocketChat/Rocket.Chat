@@ -207,4 +207,37 @@ describe('POP3Helper', () => {
 
 		expect(client.destroy).toHaveBeenCalledTimes(1);
 	});
+
+	it('closes a failed session so a later poll can reconnect', () => {
+		const helper = new POP3Helper(5);
+		const client = mockPop3Clients[0];
+		client.state = 1;
+
+		helper.start();
+		client.emit('login', false);
+
+		expect(client.quit).toHaveBeenCalledTimes(1);
+
+		client.emit('close');
+		jest.advanceTimersByTime(5 * 60 * 1000);
+
+		expect(mockPop3Clients).toHaveLength(2);
+	});
+
+	it('re-arms polling intervals above the Node timer limit', () => {
+		const frequency = 40_000;
+		const pollInterval = frequency * 60 * 1000;
+		const maxTimeoutDelay = 2 ** 31 - 1;
+		const helper = new POP3Helper(frequency);
+
+		mockPop3Clients[0].emit('close');
+		helper.start();
+		jest.advanceTimersByTime(maxTimeoutDelay);
+
+		expect(mockPop3Clients).toHaveLength(1);
+
+		jest.advanceTimersByTime(pollInterval - maxTimeoutDelay);
+
+		expect(mockPop3Clients).toHaveLength(2);
+	});
 });
