@@ -145,10 +145,6 @@ describe('CalendarService', () => {
 		sandbox.stub(api, 'broadcast').resolves();
 
 		settingsMock.clear();
-		settingsMock.set(
-			'Calendar_MeetingUrl_Regex',
-			'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
-		);
 		settingsMock.set('Calendar_BusyStatus_Enabled', true);
 
 		cronJobsMock.jobNames.clear();

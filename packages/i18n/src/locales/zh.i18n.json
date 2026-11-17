@@ -981,8 +981,6 @@
   "cache_cleared": "缓存已清理",
   "Calendar_BusyStatus_Enabled": "Outlook 日历状态同步",
   "Calendar_BusyStatus_Enabled_Description": "在计划的 Outlook 会议期间自动将用户状态设为忙碌，并在结束后恢复为之前的状态。",
-  "Calendar_MeetingUrl_Regex": "会议 URL 正则表达式",
-  "Calendar_MeetingUrl_Regex_Description": "用于在事件描述中检测会议 URL 的表达式。将使用首个匹配且为有效 URL 的分组。HTML 编码的 URL 将自动解码。",
   "Call": "调用",
   "Call_again": "再次呼叫",
   "Call_Already_Ended": "通话已结束",

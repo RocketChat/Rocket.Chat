@@ -981,8 +981,6 @@
   "cache_cleared": "Buffer er tømt",
   "Calendar_BusyStatus_Enabled": "Synkronisering av Outlook-kalenderstatus",
   "Calendar_BusyStatus_Enabled_Description": "Setter automatisk brukerstatus til opptatt under planlagte Outlook-møter og returnerer den til forrige status etterpå.",
-  "Calendar_MeetingUrl_Regex": "Regulæruttrykk for møte-URL ",
-  "Calendar_MeetingUrl_Regex_Description": "Uttrykk som brukes til å oppdage møte-URLer i hendelsesbeskrivelser. Den første matchende gruppen med en gyldig URL vil bli brukt. HTML-kodede nettadresser vil bli dekodet automatisk.",
   "Call": "Ring",
   "Call_again": "Ring igjen",
   "Call_Already_Ended": "Samtale allerede avsluttet",

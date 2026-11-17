@@ -36,17 +36,6 @@ export function addSettings(): Promise<void> {
 					enableQuery: enabled,
 				});
 
-				await this.add(
-					'Calendar_MeetingUrl_Regex',
-					'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
-					{
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						enableQuery: enabled,
-					},
-				);
-
 				await this.section('Exchange_Server_Sync', async function () {
 					await this.add('Exchange_Sync_Provider', 'graph', {
 						type: 'select',

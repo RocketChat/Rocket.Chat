@@ -99,9 +99,9 @@ shared across the workspace, and no administrator view of them exists.
 ## What 10.0 removed
 
 The per-user desktop integration is gone, and with it the `Exchange_Mode` setting that chose between the
-two, `Outlook_Calendar_Exchange_Url` and `Outlook_Calendar_Url_Mapping`, and the Exchange URL the server
-used to hand the desktop app. Enabling the integration now means the server owns the calendar. Two things
-stay:
+two, `Outlook_Calendar_Exchange_Url`, `Outlook_Calendar_Url_Mapping` and `Calendar_MeetingUrl_Regex`, and the
+Exchange URL the server used to hand the desktop app. Enabling the integration now means the server owns the
+calendar. Two things stay:
 
 - **`calendar-events.import` remains** for anything outside Rocket.Chat that wants to push events in. It is
   refused while the integration is enabled, because then the sync owns the calendar and an import could

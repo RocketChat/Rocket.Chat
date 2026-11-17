@@ -1282,8 +1282,6 @@
   "cache_cleared": "Cachen rensad",
   "Calendar_BusyStatus_Enabled": "Synkronisering av Outlook-kalenderns status",
   "Calendar_BusyStatus_Enabled_Description": "Ställer automatiskt in användarens status till upptagen under schemalagda Outlook-möten och återställer den till föregående status efteråt.",
-  "Calendar_MeetingUrl_Regex": "Reguljärt uttryck för mötes-URL",
-  "Calendar_MeetingUrl_Regex_Description": "Uttryck som används för att upptäcka möteswebbadresser i händelsebeskrivningar. Den första matchande gruppen med en giltig webbadress kommer att användas. HTML-kodade webbadresser avkodas automatiskt.",
   "Call": "Ring upp",
   "Call__name__": "Ring {{name}}",
   "Call_actions_for_participant": "Åtgärder för {{name}}",

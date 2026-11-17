@@ -1053,8 +1053,6 @@
   "cache_cleared": "Zwischenspeicher gelöscht",
   "Calendar_BusyStatus_Enabled": "Statussynchronisierung mit Outlook-Kalender",
   "Calendar_BusyStatus_Enabled_Description": "Setzt den Benutzerstatus während geplanter Outlook-Termine automatisch auf beschäftigt und stellt danach den vorherigen Status wieder her.",
-  "Calendar_MeetingUrl_Regex": "Regulärer Ausdruck für Meeting-URLs",
-  "Calendar_MeetingUrl_Regex_Description": "Ausdruck zur Erkennung von Meeting-URLs in Terminbeschreibungen. Die erste passende Gruppe mit einer gültigen URL wird verwendet. HTML-kodierte URLs werden automatisch dekodiert.",
   "Call": "Anruf",
   "Call_again": "Erneut anrufen",
   "Call_Already_Ended": "Anruf bereits beendet",

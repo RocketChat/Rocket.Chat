@@ -1051,8 +1051,6 @@
   "cache_cleared": "Cache limpo",
   "Calendar_BusyStatus_Enabled": "Sincronização do status do calendário do Outlook",
   "Calendar_BusyStatus_Enabled_Description": "Define automaticamente o status do usuário como ocupado durante as reuniões agendadas do Outlook e retorna ao status anterior depois.",
-  "Calendar_MeetingUrl_Regex": "Expressão regular da URL de reunião",
-  "Calendar_MeetingUrl_Regex_Description": "Expressão usada para detectar URLs de reuniões em descrições de eventos. O primeiro grupo correspondente com um URL válido será usado. Os URLs codificados em HTML serão decodificados automaticamente.",
   "Call": "Ligação",
   "Call_again": "Ligar novamente",
   "Call_Already_Ended": "Chamada já encerrada",
