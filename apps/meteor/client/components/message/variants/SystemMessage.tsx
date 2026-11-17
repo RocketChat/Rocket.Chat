@@ -80,7 +80,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					<UserAvatar
 						username={message.u.username}
 						size='x18'
-						title=''
 						style={{ cursor: 'pointer' }}
 						onMouseEnter={openUserCardOnHover}
 						onClick={() => openUserInfo(user.username)}
