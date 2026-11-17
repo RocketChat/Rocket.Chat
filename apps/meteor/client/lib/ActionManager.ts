@@ -11,6 +11,7 @@ import { lazy } from 'react';
 
 import { sdk } from './SDKClient';
 import * as banners from './banners';
+import { getErrorMessage } from './errorHandling';
 import { UiKitTriggerTimeoutError } from './errors/UiKitTriggerTimeoutError';
 import { dispatchToastMessage } from './toast';
 import { exhaustiveCheck } from '../../lib/utils/exhaustiveCheck';
@@ -152,6 +153,8 @@ export class ActionManager implements IActionManager {
 				if (details.viewId) {
 					this.disposeView(details.viewId);
 				}
+			} else {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Something_went_wrong') });
 			}
 		} finally {
 			if (timer) clearTimeout(timer);

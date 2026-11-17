@@ -5,10 +5,12 @@ import type { ContextType } from 'react';
 
 import { ActionManager } from './ActionManager';
 import { sdk } from './SDKClient';
+import { dispatchToastMessage } from './toast';
 
 jest.mock('@rocket.chat/ui-client', () => ({ imperativeModal: { push: jest.fn() } }));
 jest.mock('./SDKClient', () => ({ sdk: { rest: { post: jest.fn() } } }));
 jest.mock('./banners', () => ({ open: jest.fn(), closeById: jest.fn() }));
+jest.mock('../../lib/i18n', () => ({ t: (key: string) => key }));
 jest.mock('./toast', () => ({ dispatchToastMessage: jest.fn() }));
 
 const appId = 'app-id';
@@ -157,6 +159,19 @@ describe('emitInteraction', () => {
 		await actionManager.emitInteraction(appId, interaction);
 
 		expect(sdk.rest.post).toHaveBeenCalledWith(`/apps/ui.interaction/${appId}`, expect.objectContaining({ actionId: 'a' }));
+	});
+
+	it.each([
+		['the message the server sends', { error: 'The view update was not delivered' }, 'The view update was not delivered'],
+		['a fallback when the body has no text error', { error: { code: 1 } }, 'Something_went_wrong'],
+	])('keeps the submitted view open and toasts %s', async (_name, body, message) => {
+		const { actionManager, close } = openModal();
+		jest.mocked(sdk.rest.post).mockRejectedValue(body);
+
+		await actionManager.emitInteraction(appId, { type: 'viewSubmit', viewId: view.id, payload: { view, state: {} } } as never);
+
+		expect(close).not.toHaveBeenCalled();
+		expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message });
 	});
 
 	it.each(['../../v1/users.removeOtherTokens', '..', 'a/b', '%2e%2e', ''])('sends nothing for the app ID %p', async (invalidAppId) => {
