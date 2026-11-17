@@ -95,19 +95,6 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			stopNewRoom: () => stop(newRoomNotification),
 			stopNewMessage: () => stop(newMessageNotification),
 		};
-		const voipSounds = {
-			playRinger: () => play('telephone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playDialer: () => play('outbound-call-ringing', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playCallEnded: () => play('call-ended', { loop: false, volume: formatVolume(voipRingerVolume) }),
-			stopRinger: () => stop('telephone'),
-			stopDialer: () => stop('outbound-call-ringing'),
-			stopCallEnded: () => stop('call-ended'),
-			stopAll: () => {
-				stop('telephone');
-				stop('outbound-call-ringing');
-				stop('call-ended');
-			},
-		};
 		const callSounds = {
 			playRinger: () => play('ringtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
 			playDialer: () => play('dialtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
@@ -118,7 +105,6 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			list,
 			notificationSounds,
 			callSounds,
-			voipSounds,
 			play,
 			pause,
 			stop,
