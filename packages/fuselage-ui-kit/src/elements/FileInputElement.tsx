@@ -47,9 +47,20 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 		[actionId, setUploading],
 	);
 
-	const commit = (ids: string[]) => {
-		idsRef.current = ids;
-		void action({ target: { value: ids } });
+	// One change at a time, so each confirmation starts from the accepted list and a denied pick never reaches the value.
+	const commitsRef = useRef(Promise.resolve());
+	const commit = (change: (ids: string[]) => string[]) => {
+		commitsRef.current = commitsRef.current
+			.then(() => {
+				const ids = change(idsRef.current);
+				return action({
+					target: { value: ids },
+					onConfirmed: () => {
+						idsRef.current = ids;
+					},
+				});
+			})
+			.catch(() => undefined);
 	};
 
 	const finishUpload = () => {
@@ -77,7 +88,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 				return;
 			}
 			setNames((current) => ({ ...current, [uploaded._id]: uploaded.name }));
-			commit([...idsRef.current, uploaded._id]);
+			commit((ids) => [...ids, uploaded._id]);
 		} catch {
 			setMessage(t('UIKit_File_input_upload_failed', { name: file.name }));
 		} finally {
@@ -105,7 +116,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 		acceptable.slice(0, slots).forEach((file) => void upload(file));
 	};
 
-	const handleRemove = (id: string) => commit(idsRef.current.filter((current) => current !== id));
+	const handleRemove = (id: string) => commit((ids) => ids.filter((current) => current !== id));
 
 	const ids = value ?? [];
 	const full = ids.length + uploads >= maxFiles;

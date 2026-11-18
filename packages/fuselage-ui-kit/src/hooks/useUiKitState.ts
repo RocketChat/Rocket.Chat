@@ -124,6 +124,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 			target: { value },
 		} = e;
 
+		// This path never asks, so the value counts as accepted.
+		e?.onConfirmed?.();
 		setValue(value);
 
 		await updateState?.(

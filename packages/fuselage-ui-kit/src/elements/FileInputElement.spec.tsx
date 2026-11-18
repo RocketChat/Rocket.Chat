@@ -8,6 +8,9 @@ import type { ComponentProps } from 'react';
 import FileInputElement from './FileInputElement';
 import { UiKitContext } from '../contexts/UiKitContext';
 import { modalParser } from '../surfaces';
+import { askConfirmation } from '../utils/askConfirmation';
+
+jest.mock('../utils/askConfirmation', () => ({ askConfirmation: jest.fn() }));
 
 const block = (overrides: Partial<UiKit.FileInputElement> = {}): UiKit.FileInputElement => ({
 	type: 'file_input',
@@ -138,4 +141,23 @@ it('does not clear the upload flag or the value when an upload ends after the in
 
 	expect(setUploading).not.toHaveBeenCalled();
 	expect(updateState).not.toHaveBeenCalled();
+});
+
+it('leaves a file the user denied out of the value', async () => {
+	jest.mocked(askConfirmation).mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+	const confirm = {
+		title: { type: 'plain_text', text: 't' },
+		text: { type: 'plain_text', text: 't' },
+		confirm: { type: 'plain_text', text: 'y' },
+		deny: { type: 'plain_text', text: 'n' },
+	} as const;
+	const { input, updateState } = renderFileInput(
+		block({ confirm, dispatchActionConfig: ['on_item_selected'] } as Partial<UiKit.FileInputElement>),
+	);
+
+	await userEvent.upload(input, file('a.txt'));
+	await waitFor(() => expect(askConfirmation).toHaveBeenCalledTimes(1));
+	await userEvent.upload(input, file('b.txt'));
+
+	await waitFor(() => expect(updateState).toHaveBeenLastCalledWith(expect.objectContaining({ value: ['id-b.txt'] }), expect.anything()));
 });
