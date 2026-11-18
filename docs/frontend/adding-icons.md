@@ -15,7 +15,7 @@ Icons are scaled arbitrarily and recolored with `currentColor`, so the source fi
 
 - The `<svg>` element keeps only `viewBox` (normally `"0 0 32 32"`) and `xmlns`.
 - XLink references, such as masks and clip paths, are discarded.
-- `<path>` elements keep only the `d` attribute, with no styling attributes such as `fill` or `stroke`.
+- `<path>` elements keep only the `d` attribute, plus `fill-rule="evenodd"` on a path that cuts holes with it (see [Holes in the font glyph](#holes-in-the-font-glyph)). Styling attributes such as `fill` or `stroke` are removed.
 - `<g>` and any other element are removed by optimization tooling, leaving only `<path>` elements.
 
 A clean source file looks like this:
