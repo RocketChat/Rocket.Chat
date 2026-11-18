@@ -1077,7 +1077,7 @@ const getE2EUserId = () => {
 
 /**
  * The local search index of decrypted E2EE messages: open while E2EE is unlocked, unused after a logout. It is used only
- * when the workspace admin allows local search and the user opted in on this device. Otherwise it is wiped.
+ * when the user opted in on this device. Otherwise it is wiped.
  */
 export const e2eSearchIndexSession = createSearchIndexSession(
 	{

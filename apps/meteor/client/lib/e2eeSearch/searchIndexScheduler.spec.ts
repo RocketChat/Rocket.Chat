@@ -461,6 +461,27 @@ describe('createSearchIndexScheduler', () => {
 			scheduler.stop();
 		});
 
+		it('does not keep a live message pending when the user did not choose its room', () => {
+			const crawler = {
+				backfillRoomPage: jest.fn(),
+				catchUpRoomPage: jest.fn(),
+				retryPendingDecrypt: jest.fn(),
+				addPendingDecrypt: jest.fn(),
+				getPendingDecrypt: jest.fn(() => []),
+				forgetRoom: jest.fn(),
+			};
+			const scheduler = createSearchIndexScheduler({
+				crawler,
+				backend: { getRoomState: jest.fn(), removeRoom: jest.fn() },
+				getRooms: () => [{ rid: 'chosen', lastActivityAt: NOW }],
+			});
+
+			scheduler.addPendingDecrypt({ _id: 'm1', rid: 'other' } as IMessage);
+			scheduler.addPendingDecrypt({ _id: 'm2', rid: 'chosen' } as IMessage);
+
+			expect(crawler.addPendingDecrypt.mock.calls.map(([message]) => message._id)).toEqual(['m2']);
+		});
+
 		it('counts a live message that failed to decrypt as pending, and indexes it when the key of its room arrives', async () => {
 			const { scheduler, missingKeys, indexed } = await setup({
 				rooms: [{ rid: 'recent', lastActivityAt: NOW }],
@@ -687,8 +708,9 @@ describe('createSearchIndexScheduler', () => {
 			scheduler.start();
 			await jest.advanceTimersByTimeAsync(60_000);
 
-			expect(await backend.getRoomState('recent')).toMatchObject({ backfillDone: true });
-			expect(scheduler.getProgress()).toMatchObject({ status: 'done', pendingDecrypt: 25 });
+			// The saved state stays before the pending messages, so a restart reads them again.
+			expect(await backend.getRoomState('recent')).toMatchObject({ backfillDone: false });
+			expect(scheduler.getProgress()).toMatchObject({ status: 'done', roomsDone: 1, pendingDecrypt: 25 });
 			scheduler.stop();
 		});
 
@@ -699,7 +721,7 @@ describe('createSearchIndexScheduler', () => {
 
 			scheduler.start();
 			await jest.advanceTimersByTimeAsync(60_000);
-			expect(await backend.getRoomState('recent')).toMatchObject({ backfillDone: true });
+			expect(scheduler.getProgress()).toMatchObject({ status: 'done', roomsDone: 1 });
 
 			const left = rooms.splice(0);
 			await scheduler.removeRoom('recent');

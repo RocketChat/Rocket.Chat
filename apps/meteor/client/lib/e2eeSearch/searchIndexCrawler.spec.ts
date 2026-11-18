@@ -561,6 +561,49 @@ describe('createSearchIndexCrawler', () => {
 				['UPDATED', `${NOW}_`],
 			]);
 		});
+
+		it('does not save the backfill cursor past a page whose messages stay pending without the key, so a restart reads it again', async () => {
+			const { crawler, backend, calls } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m4', NOW - 1000), encrypted('m3', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+					{ updated: [encrypted('m2', NOW - 3000), encrypted('m1', NOW - 4000)], deleted: [], cursor: noMore },
+				],
+				undecryptable: new Set(['m4', 'm3']),
+			});
+
+			expect(await crawler.backfillRoomPage('room1', { waitForKey: false })).toEqual({ done: false, indexed: 0 });
+			expect(await crawler.backfillRoomPage('room1', { waitForKey: false })).toEqual({ done: true, indexed: 2 });
+			expect(await crawler.backfillRoomPage('room1', { waitForKey: false })).toEqual({ done: true, indexed: 0 });
+
+			expect(calls.map(({ previous }) => previous)).toEqual([`${NOW}_`, `${NOW - 2000}_`]);
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW - 1000, backfillDone: false });
+		});
+
+		it('does not save lastUpdate past updates that stay pending without the key, so a restart reads them again', async () => {
+			const { crawler, backend, calls } = await setup({
+				pages: [
+					{ updated: [encrypted('m4', NOW + 5000)], deleted: [], cursor: noMore },
+					{ updated: [], deleted: [], cursor: noMore },
+					{ updated: [], deleted: [], cursor: noMore },
+					{ updated: [], deleted: [], cursor: noMore },
+				],
+				undecryptable: new Set(['m4']),
+			});
+			await backend.setRoomState('room1', { lastUpdate: NOW, backfillDone: true });
+
+			await untilDone(() => crawler.catchUpRoomPage('room1', { waitForKey: false }));
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW, backfillDone: true });
+			expect(crawler.getPendingDecrypt('room1').map(({ _id }) => _id)).toEqual(['m4']);
+
+			// The next catch-up of the session starts after the updates that it already read.
+			await untilDone(() => crawler.catchUpRoomPage('room1'));
+			expect(calls[2].next).toBe(`${NOW + 5000}_`);
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW, backfillDone: true });
+		});
 	});
 
 	describe('failed removals', () => {
@@ -962,6 +1005,22 @@ describe('createSearchIndexCrawler', () => {
 			await untilDone(() => crawler.catchUpRoomPage(ROOM));
 
 			expect([...indexed.keys()]).toEqual(['recent']);
+		});
+
+		it('keeps a new message with a depth of 0: the backfill indexes no history, and the catch-up does not remove it', async () => {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			server.addHistory('old', ROOM, NOW - DAY);
+			const { crawler, indexed, removedFromIndex } = await crawlAgainst(server, { maxAgeMs: 0 });
+			await untilDone(() => crawler.backfillRoomPage(ROOM));
+			expect(indexed.size).toBe(0);
+
+			server.advance(1000);
+			server.send('new', ROOM);
+			server.advance(1000);
+			await untilDone(() => crawler.catchUpRoomPage(ROOM));
+
+			expect([...indexed.keys()]).toEqual(['new']);
+			expect(removedFromIndex).toEqual([]);
 		});
 
 		it('removes a message from the index when its edit arrives after the message passed the depth limit', async () => {

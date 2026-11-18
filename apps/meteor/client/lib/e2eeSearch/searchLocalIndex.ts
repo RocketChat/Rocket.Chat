@@ -6,6 +6,8 @@ import { parseLocalSearchQuery } from './parseLocalSearchQuery';
 const INDEX_PAGE_LIMIT = 100;
 /** The most hits that a local search lists: the result list asks for more as the user scrolls, up to this. */
 export const MAX_LOCAL_SEARCH_LIMIT = 1000;
+/** The most index pages that a search with a filter on the hits reads: few hits can match, and each page is a bridge call. */
+const MAX_FILTERED_PAGES = 20;
 
 type LocalSearchParams = {
 	searchText: string;
@@ -65,7 +67,7 @@ export const searchLocalIndex = async (
 	const kept: E2EESearchHit[] = [];
 	const seen = new Set<string>();
 	let pageTo = to;
-	for (let first = true; ; first = false) {
+	for (let first = true, pagesRead = 1; ; first = false, pagesRead++) {
 		signal?.throwIfAborted();
 		// After the first page, a full index page: the inclusive time bound reads some hits of the last page again.
 		const pageLimit = filtersHits || !first ? INDEX_PAGE_LIMIT : Math.min(INDEX_PAGE_LIMIT, wanted);
@@ -89,7 +91,7 @@ export const searchLocalIndex = async (
 			if (isKept(hit)) kept.push(hit);
 		}
 
-		if (kept.length >= wanted || page.length < pageLimit) break;
+		if (kept.length >= wanted || page.length < pageLimit || (filtersHits && pagesRead >= MAX_FILTERED_PAGES)) break;
 
 		// The time bound is inclusive, so the next page starts at the oldest time again, unless that page brought nothing new.
 		pageTo = fresh > 0 ? oldest : oldest - 1;

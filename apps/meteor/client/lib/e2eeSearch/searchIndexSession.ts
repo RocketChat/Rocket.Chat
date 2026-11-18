@@ -43,9 +43,9 @@ export type SearchIndexSessionSource = {
 type SearchIndexSessionOptions = {
 	getBackend: () => ISearchIndexBackend | undefined;
 	/**
-	 * Whether the local search of encrypted messages is allowed (the workspace admin's setting and the user's opt-in on
-	 * this device), read at each login and at each `recheck`. When it is not, the session wipes the index of the user
-	 * without opening it, and does not use it.
+	 * Whether the local search of encrypted messages is allowed (the user's opt-in on this device), read at each login
+	 * and at each `recheck`. When it is not, the session wipes the index of the user without opening it, and does not use
+	 * it.
 	 */
 	isAllowed?: () => boolean;
 	onError?: (error: unknown) => void;

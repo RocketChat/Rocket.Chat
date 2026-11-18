@@ -74,7 +74,7 @@ export type SearchIndexCrawler = {
 	forgetRoom(rid: string): void;
 };
 
-type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newestUpdate: number };
+type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newestUpdate: number; keepsPending?: boolean };
 
 /*
  * `chat.syncMessages` cursors. A server with compound cursors reads `<ms>_<_id>` as a position: it orders the messages of
@@ -123,6 +123,9 @@ export const createSearchIndexCrawler = ({
 	const catchUps = new Map<string, CatchUp>();
 	/** The messages that the backfill of each room fetched inside the depth limit since this crawler was made. */
 	const backfilled = new Map<string, number>();
+	// Progress past messages that went pending without waiting for their key stays in memory, so a restart reads them again.
+	const unsavedBackfill = new Map<string, { cursor?: string; done: boolean }>();
+	const unsavedLastUpdate = new Map<string, number>();
 
 	const keepPending = (message: IMessage) => {
 		pendingDecrypt.set(message._id, message);
@@ -141,12 +144,12 @@ export const createSearchIndexCrawler = ({
 
 	/**
 	 * Decrypts the messages, so the client indexes them. Returns how many of them were indexed and `counts` accepts, and
-	 * whether every encrypted message failed to decrypt.
+	 * whether every encrypted message (or some of them) failed to decrypt.
 	 */
 	const decryptAll = async (
 		messages: IMessage[],
 		counts: (message: IMessage) => boolean = () => true,
-	): Promise<{ indexed: number; noneDecrypted: boolean }> => {
+	): Promise<{ indexed: number; noneDecrypted: boolean; someFailed: boolean }> => {
 		let indexed = 0;
 		let encrypted = 0;
 		let failed = 0;
@@ -171,7 +174,7 @@ export const createSearchIndexCrawler = ({
 			const pending = pendingDecrypt.get(message._id);
 			if (pending && !(updatedAtOf(pending) > updatedAtOf(message))) pendingDecrypt.delete(message._id);
 		}
-		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted };
+		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted, someFailed: failed > 0 };
 	};
 
 	/**
@@ -190,6 +193,9 @@ export const createSearchIndexCrawler = ({
 		async backfillRoomPage(rid, { waitForKey = false } = {}) {
 			const state: E2EESearchRoomState = (await backend.getRoomState(rid)) ?? { backfillDone: false };
 			if (state.backfillDone) return { done: true, indexed: 0 };
+			const unsaved = unsavedBackfill.get(rid);
+			if (unsaved?.done) return { done: true, indexed: 0 };
+			const fromCursor = unsaved?.cursor ?? state.backfillCursor;
 
 			const startedAt = now();
 			const counted = backfilled.get(rid) ?? 0;
@@ -197,13 +203,13 @@ export const createSearchIndexCrawler = ({
 				roomId: rid,
 				type: 'UPDATED',
 				count: maxBackfillMessagesPerRoom === undefined ? pageSize : Math.max(1, Math.min(pageSize, maxBackfillMessagesPerRoom - counted)),
-				previous: state.backfillCursor === undefined ? previousCursorAt(startedAt) : toCompoundPreviousCursor(state.backfillCursor),
+				previous: fromCursor === undefined ? previousCursorAt(startedAt) : toCompoundPreviousCursor(fromCursor),
 			});
 
 			await removeDeletionPlaceholders(page.updated);
 			const oldestSendTime = oldestSendTimeAt(startedAt);
 			const inDepth = page.updated.filter((message) => isInDepth(message, oldestSendTime));
-			const { indexed, noneDecrypted } = await decryptAll(inDepth.filter((message) => !isDeletionPlaceholder(message)));
+			const { indexed, noneDecrypted, someFailed } = await decryptAll(inDepth.filter((message) => !isDeletionPlaceholder(message)));
 			if (waitForKey && noneDecrypted) return { done: false, indexed, waitingForKey: true };
 			const reachedLimit = maxBackfillMessagesPerRoom !== undefined && counted + inDepth.length >= maxBackfillMessagesPerRoom;
 
@@ -215,13 +221,15 @@ export const createSearchIndexCrawler = ({
 			const done = !cursor || page.updated.length === 0 || reachedDepth || reachedLimit;
 
 			// An empty room starts its catch-up at 0, not at the client clock, which can be ahead of the server's.
-			const lastUpdate = state.lastUpdate ?? (updatedAts.length ? Math.max(...updatedAts) : 0);
+			// With a depth of 0 the newest message before the start is history, so the catch-up starts after its millisecond.
+			const lastUpdate = state.lastUpdate ?? (updatedAts.length ? Math.max(...updatedAts) + (maxAgeMs === 0 ? 1 : 0) : 0);
 
-			await backend.setRoomState(rid, {
-				lastUpdate,
-				...(!done && { backfillCursor: cursor }),
-				backfillDone: done,
-			});
+			const keepsPending = unsaved !== undefined || (!waitForKey && someFailed);
+			await backend.setRoomState(
+				rid,
+				keepsPending ? { ...state, lastUpdate } : { lastUpdate, ...(!done && { backfillCursor: cursor }), backfillDone: done },
+			);
+			if (keepsPending) unsavedBackfill.set(rid, { cursor, done });
 			// Counted only after the state is saved: a page read again from the same cursor does not count twice.
 			backfilled.set(rid, counted + inDepth.length);
 
@@ -232,21 +240,23 @@ export const createSearchIndexCrawler = ({
 			const state = await backend.getRoomState(rid);
 			if (state?.lastUpdate === undefined) return { done: true, indexed: 0, removed: 0 };
 
+			const lastUpdate = unsavedLastUpdate.get(rid) ?? state.lastUpdate;
 			const catchUp: CatchUp = catchUps.get(rid) ?? {
 				type: 'UPDATED',
-				from: state.lastUpdate,
-				cursor: nextCursorFrom(state.lastUpdate),
-				newestUpdate: state.lastUpdate,
+				from: lastUpdate,
+				cursor: nextCursorFrom(lastUpdate),
+				newestUpdate: lastUpdate,
 			};
 			const page = await syncMessages({ roomId: rid, type: catchUp.type, count: pageSize, next: catchUp.cursor });
 
 			let indexed = 0;
 			let removed = 0;
-			let { newestUpdate } = catchUp;
+			let { newestUpdate, keepsPending } = catchUp;
 			const deletedIds = page.deleted.map(({ _id }) => _id);
 			if (catchUp.type === 'UPDATED') {
 				removed = await removeDeletionPlaceholders(page.updated);
-				const oldestSendTime = oldestSendTimeAt(now());
+				// With a depth of 0 the catch-up reads only changes after the index started: a limit at now would remove new messages.
+				const oldestSendTime = maxAgeMs === 0 ? undefined : oldestSendTimeAt(now());
 				const outOfDepth = page.updated
 					.filter((message) => !isDeletionPlaceholder(message) && !isInDepth(message, oldestSendTime))
 					.map(({ _id }) => _id);
@@ -264,6 +274,7 @@ export const createSearchIndexCrawler = ({
 				// The cursor does not move, so the page is read again after the key arrives.
 				if (waitForKey && decrypted.noneDecrypted) return { done: false, indexed: decrypted.indexed, removed, waitingForKey: true };
 				indexed = decrypted.indexed;
+				keepsPending ||= !waitForKey && decrypted.someFailed;
 				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
 			} else if (deletedIds.length) {
 				// A failed remove rejects, so `lastUpdate` does not move past the deletes and the next catch-up reads them again.
@@ -275,17 +286,21 @@ export const createSearchIndexCrawler = ({
 
 			const next = page.cursor?.next;
 			if (next) {
-				catchUps.set(rid, { ...catchUp, cursor: next, newestUpdate });
+				catchUps.set(rid, { ...catchUp, cursor: next, newestUpdate, keepsPending });
 				return { done: false, ...result };
 			}
 			if (catchUp.type === 'UPDATED') {
-				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: nextCursorFrom(catchUp.from), newestUpdate });
+				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: nextCursorFrom(catchUp.from), newestUpdate, keepsPending });
 				return { done: false, ...result };
 			}
 
 			// The deletes are read after the updates, so a delete can be newer than an update that landed between the two reads.
 			// A lastUpdate that counted the deletes would skip that update.
 			catchUps.delete(rid);
+			if (keepsPending || unsavedLastUpdate.has(rid)) {
+				unsavedLastUpdate.set(rid, newestUpdate);
+				return { done: true, ...result };
+			}
 			const latest = (await backend.getRoomState(rid)) ?? state;
 			await backend.setRoomState(rid, { ...latest, lastUpdate: newestUpdate });
 			return { done: true, ...result };
@@ -309,6 +324,8 @@ export const createSearchIndexCrawler = ({
 			for (const message of pendingOf(rid)) pendingDecrypt.delete(message._id);
 			catchUps.delete(rid);
 			backfilled.delete(rid);
+			unsavedBackfill.delete(rid);
+			unsavedLastUpdate.delete(rid);
 		},
 	};
 };

@@ -126,6 +126,18 @@ describe('searchLocalIndex filters', () => {
 		expect(backend.search.mock.calls.every(([query]) => query.limit === 100 && !('uid' in query))).toBe(true);
 	});
 
+	it('reads at most 20 index pages when it filters the hits, so a rare author does not read the whole index', async () => {
+		const docs: E2EESearchHit[] = Array.from({ length: 5000 }, (_, i) => ({ ...authorHit(`m${i}`, 'u-carol', 'carol'), ts: 5000 - i }));
+		const backend = {
+			search: jest.fn(async ({ to = Number.MAX_SAFE_INTEGER, limit = 50 }: E2EESearchQuery) =>
+				docs.filter((doc) => doc.ts <= to).slice(0, limit),
+			),
+		} as unknown as jest.Mocked<ISearchIndexBackend>;
+
+		await expect(searchLocalIndex(backend, { searchText: 'from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([]);
+		expect(backend.search).toHaveBeenCalledTimes(20);
+	});
+
 	it('moves past a millisecond that holds more hits than one page', async () => {
 		const docs: E2EESearchHit[] = [
 			...Array.from({ length: 150 }, (_, i) => ({ ...authorHit(`same${i}`, 'u-carol', 'carol'), ts: 1000 })),

@@ -95,6 +95,25 @@ describe('CachedStore', () => {
 		expect(recordsOf(cachedStore)).toEqual([fresh]);
 	});
 
+	it('gives a sync removal to handleSyncEvent as the stored record, because the server sends only its _id and _deletedAt', async () => {
+		const removals: TestRecord[] = [];
+		class ListeningCachedStore extends TestCachedStore {
+			protected override handleSyncEvent(action: 'removed' | 'changed', record: TestRecord) {
+				if (action === 'removed') removals.push(record);
+			}
+		}
+		const cachedStore = new ListeningCachedStore();
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'token');
+		mockGetItem.mockResolvedValue({ version: Number.MAX_SAFE_INTEGER, token: 'token', records: [stale], updatedAt: new Date() });
+		mockCall.mockResolvedValue({ update: [], remove: [{ _id: stale._id, _deletedAt: new Date() }] });
+
+		await cachedStore.init();
+		await new Promise((resolve) => setTimeout(resolve, 50));
+
+		expect(removals).toEqual([stale]);
+		expect(recordsOf(cachedStore)).toEqual([]);
+	});
+
 	it('keeps the records it has when the load fails, instead of blanking the store over a network error', async () => {
 		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		const cachedStore = new TestCachedStore();
