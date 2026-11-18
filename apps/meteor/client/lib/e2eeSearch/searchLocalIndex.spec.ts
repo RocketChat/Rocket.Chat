@@ -99,17 +99,17 @@ describe('searchLocalIndex filters', () => {
 		expect(backend.search.mock.calls[0][0]).toMatchObject({ text: 'invoice', uid: 'u-alice' });
 	});
 
-	it('keeps only the hits of an unknown username, and asks the index for the most hits', async () => {
-		const backend = createBackend([authorHit('m1', 'u-bob', 'Bob'), authorHit('m2', 'u-carol', 'carol'), hit('m3', 'r1')]);
+	it('gives one unknown username to the index as a username filter, so no page is filtered on the client', async () => {
+		const backend = createBackend([authorHit('m1', 'u-bob', 'Bob')]);
 
-		await expect(searchLocalIndex(backend, { searchText: 'invoice from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([
+		await expect(searchLocalIndex(backend, { searchText: 'invoice from:Bob', rid: 'r1', limit: 10 })).resolves.toEqual([
 			authorHit('m1', 'u-bob', 'Bob'),
 		]);
+		expect(backend.search.mock.calls[0][0]).toMatchObject({ text: 'invoice', username: 'bob', limit: 10 });
 		expect(backend.search.mock.calls[0][0]).not.toHaveProperty('uid');
-		expect(backend.search.mock.calls[0][0].limit).toBe(100);
 	});
 
-	it('finds an old message of an unknown username behind more than 100 newer hits of other authors', async () => {
+	it('finds an old message of unknown usernames behind more than 100 newer hits of other authors', async () => {
 		const docs: E2EESearchHit[] = [
 			...Array.from({ length: 250 }, (_, i) => ({ ...authorHit(`new${i}`, 'u-carol', 'carol'), ts: 1000 - Math.floor(i / 3) })),
 			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
@@ -120,7 +120,7 @@ describe('searchLocalIndex filters', () => {
 			),
 		} as unknown as jest.Mocked<ISearchIndexBackend>;
 
-		await expect(searchLocalIndex(backend, { searchText: 'invoice from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([
+		await expect(searchLocalIndex(backend, { searchText: 'invoice from:bob from:dan', rid: 'r1', limit: 10 })).resolves.toEqual([
 			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
 		]);
 		expect(backend.search.mock.calls.every(([query]) => query.limit === 100 && !('uid' in query))).toBe(true);
@@ -134,7 +134,7 @@ describe('searchLocalIndex filters', () => {
 			),
 		} as unknown as jest.Mocked<ISearchIndexBackend>;
 
-		await expect(searchLocalIndex(backend, { searchText: 'from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([]);
+		await expect(searchLocalIndex(backend, { searchText: 'from:bob from:dan', rid: 'r1', limit: 10 })).resolves.toEqual([]);
 		expect(backend.search).toHaveBeenCalledTimes(20);
 	});
 
@@ -149,7 +149,7 @@ describe('searchLocalIndex filters', () => {
 			),
 		} as unknown as jest.Mocked<ISearchIndexBackend>;
 
-		await expect(searchLocalIndex(backend, { searchText: 'from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([
+		await expect(searchLocalIndex(backend, { searchText: 'from:bob from:dan', rid: 'r1', limit: 10 })).resolves.toEqual([
 			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
 		]);
 		expect(backend.search).toHaveBeenCalledTimes(3);
@@ -163,7 +163,7 @@ describe('searchLocalIndex filters', () => {
 		];
 		const backend = { search: jest.fn(async () => pages.shift() ?? []) } as unknown as jest.Mocked<ISearchIndexBackend>;
 
-		await expect(searchLocalIndex(backend, { searchText: 'from:bob after:01-01-2025', rid: 'r1', limit: 10 })).resolves.toEqual([
+		await expect(searchLocalIndex(backend, { searchText: 'from:bob from:dan after:01-01-2025', rid: 'r1', limit: 10 })).resolves.toEqual([
 			{ ...authorHit('b', 'u-bob', 'bob'), ts: base + 300 },
 		]);
 		expect(backend.search).toHaveBeenCalledTimes(2);
@@ -255,17 +255,18 @@ describe('searchLocalIndex filters', () => {
 			});
 
 			await expect(
-				searchLocalIndex(backend, { searchText: 'needle from:nobody', rid: 'r1', limit: 10, signal: controller.signal }),
+				searchLocalIndex(backend, { searchText: 'needle from:nobody from:else', rid: 'r1', limit: 10, signal: controller.signal }),
 			).rejects.toThrow();
 			expect(backend.search).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	it('reads from:Me as a username, not as the logged-in user, like the server', async () => {
-		const backend = createBackend([authorHit('m1', 'u-self', 'jean')]);
+		const backend = createBackend([]);
 
-		await expect(
-			searchLocalIndex(backend, { searchText: 'from:Me', rid: 'r1', limit: 10, self: { uid: 'u-self' }, resolveUid: () => undefined }),
-		).resolves.toEqual([]);
+		await searchLocalIndex(backend, { searchText: 'from:Me', rid: 'r1', limit: 10, self: { uid: 'u-self' }, resolveUid: () => undefined });
+
+		expect(backend.search.mock.calls[0][0]).toMatchObject({ username: 'me' });
+		expect(backend.search.mock.calls[0][0]).not.toHaveProperty('uid');
 	});
 });

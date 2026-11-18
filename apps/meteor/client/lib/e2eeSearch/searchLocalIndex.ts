@@ -52,10 +52,11 @@ export const searchLocalIndex = async (
 	}
 
 	const byAuthor = uids.size > 0 || unresolved.size > 0;
-	// One known author goes to the index as a filter. More authors, or a username that the client does not know, need
-	// a filter on the hits, so each page then asks for the most hits that the index returns.
+	// One author goes to the index as a filter: by user id, or by username when the client does not know the id, so the
+	// username never goes to the server. More authors need a filter on the hits, so each page asks for the most hits.
 	const singleUid = byAuthor && uids.size === 1 && unresolved.size === 0 ? [...uids][0] : undefined;
-	const filtersHits = byAuthor && !singleUid;
+	const singleUsername = byAuthor && uids.size === 0 && unresolved.size === 1 ? [...unresolved][0] : undefined;
+	const filtersHits = byAuthor && !singleUid && !singleUsername;
 	const wanted = clampLimit(limit);
 
 	const isKept = (hit: E2EESearchHit) =>
@@ -77,6 +78,7 @@ export const searchLocalIndex = async (
 			order: 'recent',
 			limit: pageLimit,
 			...(singleUid && { uid: singleUid }),
+			...(singleUsername && { username: singleUsername }),
 			...(from !== undefined && { from }),
 			...(pageTo !== undefined && { to: pageTo }),
 		});

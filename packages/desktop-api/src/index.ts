@@ -68,6 +68,8 @@ export type E2EESearchQuery = {
 	text: string;
 	rid?: string;
 	uid?: string;
+	/** The author by username, without case: for a `from:` username that the client knows no user id for. */
+	username?: string;
 	from?: number;
 	to?: number;
 	order?: 'relevance' | 'recent';

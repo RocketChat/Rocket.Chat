@@ -134,6 +134,8 @@ type SearchIndexRuntimeOptions = {
 	syncMessages: (params: SyncMessagesParams) => Promise<SyncMessagesPage>;
 	/** The client's E2E decrypt path, which also queues the decrypted message for the writer. */
 	decryptMessage: (message: IMessage) => Promise<IMessage>;
+	/** Whether a room has its current key. See the crawler option of the same name. */
+	hasRoomKey?: (rid: string) => Promise<boolean>;
 	getRooms: () => SearchIndexRoom[];
 	/**
 	 * The rooms of every subscription of the user, encrypted or not. When the index opens, the rows of the other rooms are
@@ -209,6 +211,7 @@ export const createSearchIndexRuntime = ({
 	writer,
 	syncMessages,
 	decryptMessage,
+	hasRoomKey,
 	getRooms,
 	getSubscribedRids,
 	whenRoomsReady = () => Promise.resolve(),
@@ -227,6 +230,7 @@ export const createSearchIndexRuntime = ({
 				backend,
 				syncMessages,
 				decryptMessage,
+				hasRoomKey,
 				writer,
 				maxAgeMs: getMaxAgeMs(),
 				pageSize,

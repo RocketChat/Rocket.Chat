@@ -38,6 +38,11 @@ type SearchIndexCrawlerOptions = {
 	maxBackfillMessagesPerRoom?: number;
 	/** The most messages that the crawler keeps pending (across rooms). A new one past the limit drops the oldest. */
 	maxPending?: number;
+	/**
+	 * Whether the room has its current key. A room with a key that still fails to decrypt a message lost that message's
+	 * older key, which does not come back, so its progress is saved. Without it, every login would read that history again.
+	 */
+	hasRoomKey?: (rid: string) => Promise<boolean>;
 };
 
 const DEFAULT_MAX_PENDING = 5000;
@@ -117,6 +122,7 @@ export const createSearchIndexCrawler = ({
 	maxAgeMs,
 	maxBackfillMessagesPerRoom,
 	maxPending = DEFAULT_MAX_PENDING,
+	hasRoomKey = async () => false,
 }: SearchIndexCrawlerOptions): SearchIndexCrawler => {
 	// One map for all rooms: its insertion order is the age order that the cap drops from.
 	const pendingDecrypt = new Map<string, IMessage>();
@@ -224,7 +230,7 @@ export const createSearchIndexCrawler = ({
 			// With a depth of 0 the newest message before the start is history, so the catch-up starts after its millisecond.
 			const lastUpdate = state.lastUpdate ?? (updatedAts.length ? Math.max(...updatedAts) + (maxAgeMs === 0 ? 1 : 0) : 0);
 
-			const keepsPending = unsaved !== undefined || (!waitForKey && someFailed);
+			const keepsPending = unsaved !== undefined || (!waitForKey && someFailed && !(await hasRoomKey(rid)));
 			await backend.setRoomState(
 				rid,
 				keepsPending ? { ...state, lastUpdate } : { lastUpdate, ...(!done && { backfillCursor: cursor }), backfillDone: done },
@@ -274,7 +280,7 @@ export const createSearchIndexCrawler = ({
 				// The cursor does not move, so the page is read again after the key arrives.
 				if (waitForKey && decrypted.noneDecrypted) return { done: false, indexed: decrypted.indexed, removed, waitingForKey: true };
 				indexed = decrypted.indexed;
-				keepsPending ||= !waitForKey && decrypted.someFailed;
+				keepsPending ||= !waitForKey && decrypted.someFailed && !(await hasRoomKey(rid));
 				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
 			} else if (deletedIds.length) {
 				// A failed remove rejects, so `lastUpdate` does not move past the deletes and the next catch-up reads them again.

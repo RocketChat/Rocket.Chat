@@ -1137,6 +1137,7 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	}),
 	// The index leaves quotes out, so the crawler follows no quoted message links.
 	decryptMessage: (message) => e2e.decryptMessage(message, { quoteDepth: 0 }),
+	hasRoomKey: async (rid) => !!(await e2e.getInstanceByRoomId(rid))?.hasSessionKey(),
 	getRooms: () => {
 		const chosen = getChosenRids();
 		return toSearchIndexRooms(Subscriptions.state.records.values()).filter(({ rid }) => chosen.has(rid));

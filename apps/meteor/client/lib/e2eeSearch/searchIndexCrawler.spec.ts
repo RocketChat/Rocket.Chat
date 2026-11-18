@@ -28,6 +28,7 @@ type SetupOptions = {
 	undecryptable?: Set<string>;
 	maxPending?: number;
 	maxBackfillMessagesPerRoom?: number;
+	hasRoomKey?: (rid: string) => Promise<boolean>;
 };
 
 const setup = async ({
@@ -36,6 +37,7 @@ const setup = async ({
 	undecryptable = new Set<string>(),
 	maxPending,
 	maxBackfillMessagesPerRoom,
+	hasRoomKey,
 }: SetupOptions = {}) => {
 	const backend = createFakeSearchIndexBackend();
 	await backend.open({ userId: 'u1' });
@@ -65,6 +67,7 @@ const setup = async ({
 		maxAgeMs,
 		maxPending,
 		maxBackfillMessagesPerRoom,
+		hasRoomKey,
 	});
 
 	return { backend, crawler, calls, decryptMessage, writer, undecryptable };
@@ -581,6 +584,27 @@ describe('createSearchIndexCrawler', () => {
 
 			expect(calls.map(({ previous }) => previous)).toEqual([`${NOW}_`, `${NOW - 2000}_`]);
 			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW - 1000, backfillDone: false });
+		});
+
+		it('saves the backfill progress past messages that fail while the room has its key, because their old key does not come back', async () => {
+			const { crawler, backend } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m4', NOW - 1000), encrypted('m3', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+					{ updated: [encrypted('m2', NOW - 3000), encrypted('m1', NOW - 4000)], deleted: [], cursor: noMore },
+				],
+				undecryptable: new Set(['m4', 'm3']),
+				hasRoomKey: async () => true,
+			});
+
+			await crawler.backfillRoomPage('room1', { waitForKey: false });
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW - 1000, backfillCursor: `${NOW - 2000}`, backfillDone: false });
+
+			await crawler.backfillRoomPage('room1', { waitForKey: false });
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW - 1000, backfillDone: true });
 		});
 
 		it('does not save lastUpdate past updates that stay pending without the key, so a restart reads them again', async () => {
