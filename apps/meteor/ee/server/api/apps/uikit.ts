@@ -373,6 +373,9 @@ export class AppUIKitInteractionApi {
 						break;
 					}
 
+					if (typeof view.id === 'string') {
+						await withDefaultCloseTarget(result, { type: 'view', id: view.id }, appId, req.user?._id);
+					}
 					const delivered = await recordInteractionView(result, appId, req.user?._id);
 					const answer = viewSubmitAnswer(delivered, result);
 					res.status(answer.status).send(answer.body);

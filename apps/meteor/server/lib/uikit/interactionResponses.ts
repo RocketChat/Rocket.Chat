@@ -1,7 +1,7 @@
 import { UiKitViews } from '@rocket.chat/models';
 
 /**
- * Names the modal a block action came from as the one to close when the app answers `modal.close` without a target.
+ * Names the modal a block action or submit came from as the one to close when the app answers `modal.close` without a target.
  * Only a Livechat visitor's view, which has no record and is always a modal, or a recorded modal gets the default.
  */
 export const withDefaultCloseTarget = async (
