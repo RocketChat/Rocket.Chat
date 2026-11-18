@@ -13,10 +13,11 @@ export type MessageCollapsibleProps = {
 	link?: string;
 	size?: number;
 	isCollapsed?: boolean;
+	attachmentId?: string;
 };
 
-const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps) => {
-	const [collapsed, toggleCollapse] = useCollapse(isCollapsed);
+const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed, attachmentId }: MessageCollapsibleProps) => {
+	const [collapsed, toggleCollapse] = useCollapse(isCollapsed, attachmentId);
 
 	return (
 		<>

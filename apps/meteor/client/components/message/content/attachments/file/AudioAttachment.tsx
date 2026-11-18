@@ -22,6 +22,7 @@ type AudioAttachmentComponentProps = AudioAttachmentProps & {
 };
 
 const AudioAttachment = ({
+	id,
 	title,
 	audio_url: url,
 	audio_type: type,
@@ -70,7 +71,7 @@ const AudioAttachment = ({
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed} attachmentId={id}>
 				<Box
 					borderWidth='default'
 					borderStyle='solid'

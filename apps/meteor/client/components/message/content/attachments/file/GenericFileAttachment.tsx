@@ -28,6 +28,7 @@ const MARKDOWN_FILE_FORMATS = ['MD', 'MARKDOWN'];
 export type GenericFileAttachmentProps = MessageAttachmentBase;
 
 const GenericFileAttachment = ({
+	id,
 	title,
 	description,
 	descriptionMd,
@@ -100,7 +101,7 @@ const GenericFileAttachment = ({
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed} attachmentId={id}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}

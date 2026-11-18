@@ -12,7 +12,7 @@ const OEmbedCollapsible = ({ children, ...props }: OEmbedCollapsibleProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<MessageCollapsible title={t('Link_Preview')}>
+		<MessageCollapsible title={t('Link_Preview')} >
 			<MessageGenericPreview>
 				{children}
 				<OEmbedPreviewContent {...props} />
