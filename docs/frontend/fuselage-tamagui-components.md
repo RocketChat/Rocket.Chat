@@ -36,7 +36,7 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | No frame bails to the runtime; no `@tamagui/*` reachable from the client | zero `enforce` mode in `build:vite`, and the zero graph receipt |
 | Compiled output looks like the runtime output | visual regression, runtime and zero legs against the same baselines |
 | `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` |
-| Values come from `fuselage-tokens`; generated sections are in sync | `generate:frame-values --check` (arrives with L1, not yet available) |
+| Frame values name tokens and theme keys the Tamagui config has, never a CSS custom property or a length with a unit; generated sections are in sync | `generate:frame-values --check`, run by `yarn lint` ([`generate-frame-values.mts`](../../packages/fuselage/scripts/generate-frame-values.mts)) |
 | The tokens and themes of the Tamagui config match `fuselage-tokens` | `generate:tamagui-tokens --check`, run by `yarn workspace @rocket.chat/fuselage test:verify` |
 | No token or theme key the config lacks reaches the zero stylesheet, and each theme class declares every theme key under the name a frame reads | [`zero-stylesheet.mjs`](../../packages/fuselage/scripts/verify/zero-stylesheet.mjs), called by `build:vite` and the livechat build |
 | No text node directly in a `View` | jest dev-mode check ([`textNodes.spec.tsx`](../../packages/fuselage/src/testing/textNodes.spec.tsx)) |
