@@ -9,7 +9,6 @@ import semver from 'semver';
 
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import AppAcquireAction from './layout/AppAcquireAction';
-import AppStatusBar from './layout/AppStatusBar';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
@@ -129,7 +128,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed }: AppS
 	};
 
 	return (
-		<AppStatusBar>
+		<Stack direction='row' align='center'>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<AppAcquireAction withPrice={!!shouldShowPriceDisplay} hidden={!showStatus && !loading}>
 					<Button
@@ -162,7 +161,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed }: AppS
 					</Tag>
 				))}
 			</Stack>
-		</AppStatusBar>
+		</Stack>
 	);
 };
 

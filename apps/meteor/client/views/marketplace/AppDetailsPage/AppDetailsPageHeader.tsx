@@ -51,7 +51,7 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 				<Stack gap='x16'>
 					{shortDescription && <Text fontScale='p1'>{shortDescription}</Text>}
 
-					<Stack direction='row' align='center'>
+					<Stack direction='row' align='center' gap='x8'>
 						<AppStatus app={app} installed={installed} isAppDetailsPage />
 						{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 					</Stack>

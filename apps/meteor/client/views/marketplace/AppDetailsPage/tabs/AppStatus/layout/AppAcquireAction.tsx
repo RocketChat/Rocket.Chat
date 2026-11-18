@@ -17,7 +17,6 @@ const AppAcquireAction = ({ hidden = false, withPrice = false, children }: AppAc
 		flexDirection='row'
 		alignItems='center'
 		justifyContent='center'
-		borderRadius='medium'
 		gap='x12'
 		paddingInlineEnd={withPrice ? 'x4' : undefined}
 		invisible={hidden}
