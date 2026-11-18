@@ -1,17 +1,16 @@
-import type { AllHTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { IconButton } from '../Button';
+import { cx } from '../../../helpers/composeClassNames';
+import { IconButton } from '../../Button';
 
 export type SidebarBannerVariant = 'default' | 'info' | 'success' | 'warning' | 'danger';
 
 export type SidebarBannerProps = {
 	title?: ReactNode;
-	linkText?: string;
-	linkProps?: AllHTMLAttributes<HTMLAnchorElement>;
 	onClick?: () => void;
 	variant?: SidebarBannerVariant;
 	onClose?: () => void;
+	closeLabel?: string;
 	children?: ReactNode;
 	addon?: ReactNode;
 	className?: string;
@@ -19,11 +18,10 @@ export type SidebarBannerProps = {
 
 export const SidebarBanner = ({
 	title,
-	linkText,
-	linkProps,
 	variant = 'default',
 	addon,
 	onClose,
+	closeLabel = 'Close',
 	children,
 	className,
 	...props
@@ -31,16 +29,11 @@ export const SidebarBanner = ({
 	<div {...props} className={cx('rcx-box rcx-box--full rcx-sidebar-banner', `rcx-sidebar-banner--${variant}`, className)}>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__content'>
 			{title && <h5 className='rcx-box rcx-box--full rcx-sidebar-banner__title'>{title}</h5>}
-			{linkText && (
-				<a className='rcx-box rcx-box--full rcx-sidebar-banner__link' {...linkProps}>
-					{linkText}
-				</a>
-			)}
 			{children}
 		</div>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__addon'>
 			{addon}
-			{onClose && <IconButton onClick={onClose} size='tiny' icon='cross' />}
+			{onClose && <IconButton aria-label={closeLabel} onClick={onClose} size='tiny' icon='cross' />}
 		</div>
 	</div>
 );
