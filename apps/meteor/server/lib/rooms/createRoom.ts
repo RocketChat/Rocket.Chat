@@ -214,13 +214,12 @@ async function runAfterCreateRoomCallbacks(
 	owner: IUser,
 	options?: ICreateRoomParams['options'],
 ): Promise<void> {
+	const team = type === 'c' && room.teamId ? await Team.getOneById(room.teamId) : null;
+	if (team) {
+		await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
+	}
+
 	if (type === 'c') {
-		if (room.teamId) {
-			const team = await Team.getOneById(room.teamId);
-			if (team) {
-				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
-			}
-		}
 		callbacks.runAsync('afterCreateChannel', owner, room);
 	} else if (type === 'p') {
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
@@ -300,19 +299,13 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (!owner) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
-			function: 'RocketChat.createRoom',
-		});
-	}
-
 	if (!owner?.username) {
 		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.createRoom',
 		});
 	}
 
-	if (!excludeSelf && owner.username && !memberList.includes(owner.username)) {
+	if (!excludeSelf && !memberList.includes(owner.username)) {
 		memberList.push(owner.username);
 	}
 

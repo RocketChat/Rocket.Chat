@@ -14,20 +14,22 @@ import { checkEmailAvailability } from '../checkEmailAvailability';
 import { checkUsernameAvailability } from '../checkUsernameAvailability';
 
 async function checkNewUserAvailability(userData: SaveUserData): Promise<void> {
-	if (!isUpdateUserData(userData)) {
-		if (userData.username && !(await checkUsernameAvailability(userData.username))) {
-			throw new ClientSafeError('error-field-unavailable', `${escape(userData.username)} is already in use :(`, {
-				method: 'insertOrUpdateUser',
-				field: userData.username,
-			});
-		}
+	if (isUpdateUserData(userData)) {
+		return;
+	}
 
-		if (userData.email && !(await checkEmailAvailability(userData.email))) {
-			throw new ClientSafeError('error-field-unavailable', `${escape(userData.email)} is already in use :(`, {
-				method: 'insertOrUpdateUser',
-				field: userData.email,
-			});
-		}
+	if (userData.username && !(await checkUsernameAvailability(userData.username))) {
+		throw new ClientSafeError('error-field-unavailable', `${escape(userData.username)} is already in use :(`, {
+			method: 'insertOrUpdateUser',
+			field: userData.username,
+		});
+	}
+
+	if (userData.email && !(await checkEmailAvailability(userData.email))) {
+		throw new ClientSafeError('error-field-unavailable', `${escape(userData.email)} is already in use :(`, {
+			method: 'insertOrUpdateUser',
+			field: userData.email,
+		});
 	}
 }
 
@@ -66,14 +68,11 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 		});
 	}
 
-	if (userData.roles) {
-		const newRoles = userData.roles.filter((roleId) => !existingRoles.includes(roleId));
-		if (newRoles.length > 0) {
-			throw new ClientSafeError('error-action-not-allowed', 'The field Roles consist invalid role id', {
-				method: 'insertOrUpdateUser',
-				action: 'Assign_role',
-			});
-		}
+	if (userData.roles?.some((roleId) => !existingRoles.includes(roleId))) {
+		throw new ClientSafeError('error-action-not-allowed', 'The field Roles consist invalid role id', {
+			method: 'insertOrUpdateUser',
+			action: 'Assign_role',
+		});
 	}
 
 	if (userData.roles?.includes('admin') && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {

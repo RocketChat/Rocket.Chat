@@ -256,22 +256,12 @@ Accounts.onCreateUser(function (...args) {
 
 const { insertUserDoc } = Accounts;
 
-const collectRequestedGlobalRoles = (options, user) => {
-	const globalRoles = new Set();
-
-	if (Array.isArray(options.globalRoles) && options.globalRoles.every((role) => typeof role === 'string')) {
-		options.globalRoles.map((role) => globalRoles.add(role));
-	}
-
-	if (Array.isArray(user.globalRoles) && user.globalRoles.every((role) => typeof role === 'string')) {
-		user.globalRoles.map((role) => globalRoles.add(role));
-	}
-
-	return globalRoles;
-};
-
 Accounts.insertUserDoc = async function (options, user) {
-	const globalRoles = collectRequestedGlobalRoles(options, user);
+	const globalRoles = new Set(
+		[options.globalRoles, user.globalRoles]
+			.filter((roles) => Array.isArray(roles) && roles.every((role) => typeof role === 'string'))
+			.flat(),
+	);
 
 	delete user.globalRoles;
 
