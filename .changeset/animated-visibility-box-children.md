@@ -1,5 +1,7 @@
 ---
-'@rocket.chat/fuselage': patch
+'@rocket.chat/fuselage': minor
 ---
 
-Restrict `AnimatedVisibility` children to a single element and document that it must render a `Box`, since other content never finishes hiding and stays mounted
+`AnimatedVisibility` takes a single element as its child, since text and other content that can't play the animation never finish hiding and stay mounted.
+
+Breaking for npm consumers: `children` is narrowed from `ReactNode` to `ReactElement`.

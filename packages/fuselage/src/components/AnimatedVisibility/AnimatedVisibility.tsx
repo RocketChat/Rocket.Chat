@@ -17,7 +17,7 @@ const appendAnimation = (current: ClassNameProp, animation: string): ClassNamePr
 
 export type AnimatedVisibilityProps = {
 	/**
-	 * An element that renders a `Box`, which plays the animation; without one, hiding never completes and the element stays mounted.
+	 * An element that forwards `className` and `onAnimationEnd` to the DOM element it renders, which plays the animation; without them, hiding never completes and the element stays mounted.
 	 */
 	children: ReactElement;
 	visibility?: VisibilityType;
