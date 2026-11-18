@@ -180,6 +180,27 @@
 			"plugins": ["jest"]
 		},
 		{
+			"files": ["packages/fuselage/**/*.spec.{ts,tsx}"],
+			"rules": {
+				"jest/expect-expect": [
+					"warn",
+					{
+						"assertFunctionNames": [
+							"expect",
+							"expectForwards",
+							"expectKeyboardActivation",
+							"expectTabOrder",
+							"expectCompositeList",
+							"expectCombobox",
+							"expectMenu",
+							"Story.run"
+						]
+					}
+				]
+			},
+			"plugins": ["jest"]
+		},
+		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
 			"rules": {
 				"jest/expect-expect": "off",
