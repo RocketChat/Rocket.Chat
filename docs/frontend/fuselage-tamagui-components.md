@@ -35,7 +35,7 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | --- | --- |
 | No frame bails to the runtime; no `@tamagui/*` reachable from the client | zero `enforce` mode in `build:vite`, and the zero graph receipt |
 | Compiled output looks like the runtime output | visual regression, runtime and zero legs against the same baselines |
-| `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` (arrives with L1, not yet available) |
+| `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` |
 | Values come from `fuselage-tokens`; generated sections are in sync | `generate:frame-values --check` (arrives with L1, not yet available) |
 | No text node directly in a `View` | jest dev-mode check ([`textNodes.spec.tsx`](../../packages/fuselage/src/testing/textNodes.spec.tsx)) |
 | Raw layout and style props don't grow | `scripts/scan-raw-layout.mjs`, `scripts/scan-style-props.mjs` ratchets |
