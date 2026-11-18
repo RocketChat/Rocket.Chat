@@ -1,4 +1,4 @@
-import { Callout, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import { MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
 	ContextualbarClose,
@@ -19,7 +19,6 @@ import { Virtuoso } from 'react-virtuoso';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
-import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
@@ -123,9 +122,7 @@ const MessageSearchTab = () => {
 					</>
 				)}
 				{providerQuery.isError && (
-					<ContextualbarStatus>
-						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
-					</ContextualbarStatus>
+					<ContextualbarEmptyContent icon='circle-exclamation' iconVariation='danger' title={t('Search_current_provider_not_active')} />
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

@@ -1,5 +1,5 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { Callout, Throbber } from '@rocket.chat/fuselage';
+import { Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -50,11 +50,14 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 					</ContextualbarStatus>
 				)}
 				{error && (
-					<ContextualbarStatus>
-						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</ContextualbarStatus>
+					<ContextualbarEmptyContent
+						icon='circle-exclamation'
+						iconVariation='danger'
+						title={t('Something_went_wrong')}
+						subtitle={getErrorMessage(error)}
+					/>
 				)}
-				{!loading && total === 0 && (
+				{!error && !loading && total === 0 && (
 					<ContextualbarEmptyContent
 						icon='phone'
 						title={t('No_history')}

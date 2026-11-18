@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Select, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Select, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -155,9 +155,12 @@ const ThreadList = () => {
 					</ContextualbarStatus>
 				)}
 				{error && (
-					<ContextualbarStatus>
-						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</ContextualbarStatus>
+					<ContextualbarEmptyContent
+						icon='circle-exclamation'
+						iconVariation='danger'
+						title={t('Something_went_wrong')}
+						subtitle={getErrorMessage(error)}
+					/>
 				)}
 				{isSuccess && (
 					<ListViewport id={threadListId} ref={threadListRef}>
