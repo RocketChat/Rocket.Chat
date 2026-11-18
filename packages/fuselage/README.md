@@ -196,7 +196,7 @@ FUSELAGE_ZERO_RUNTIME=1 yarn workspace @rocket.chat/fuselage build-storybook -o 
 node packages/fuselage/scripts/verify/story-computed.mjs packages/fuselage/storybook-static/runtime packages/fuselage/storybook-static/zero
 ```
 
-The zero build leaves out the MDX documentation pages (`Box.mdx`, `Flex.mdx`), which need the docs addon.
+The zero build leaves out the MDX documentation pages, which need the docs addon.
 
 Visual regression tests compare Storybook screenshots:
 

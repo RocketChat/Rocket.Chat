@@ -46,7 +46,24 @@ export default {
 		},
 		options: {
 			storySort: {
-				order: ['Inputs', 'Data Display', 'Feedback', 'Containers', 'Navigation', 'Layout', 'Message', 'Sidebar'],
+				order: [
+					'Introduction',
+					'Getting started',
+					'Inputs',
+					['Overview', '*'],
+					'Data Display',
+					['Overview', '*'],
+					'Feedback',
+					['Overview', '*'],
+					'Containers',
+					['Overview', '*'],
+					'Navigation',
+					['Overview', '*'],
+					'Layout',
+					['Overview', '*'],
+					'Message',
+					['Overview', '*'],
+				],
 			},
 		},
 		viewport: {

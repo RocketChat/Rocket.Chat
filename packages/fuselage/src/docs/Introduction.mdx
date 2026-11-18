@@ -1,0 +1,72 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { componentStatuses } from '../../.storybook/status';
+
+<Meta title='Introduction' />
+
+# Fuselage
+
+Fuselage is Rocket.Chat's design system, and `@rocket.chat/fuselage` is its React component library: the buttons,
+inputs, menus, modals, messages and sidebars the Rocket.Chat web client is built with. This Storybook documents
+each of them: what it is for, how to use it well, and what each prop does.
+
+New here? Start with [Getting started](?path=/docs/getting-started--docs) to install the package and render a
+first component.
+
+## Categories
+
+- [Inputs](?path=/docs/inputs-overview--docs) — buttons, text inputs, selects, choice controls, and the fields that label them.
+- [Data Display](?path=/docs/data-display-overview--docs) — content and status shown rather than edited: avatars, badges,
+  tags, icons, tables, tooltips.
+- [Feedback](?path=/docs/feedback-overview--docs) — what the system tells the user: banners, callouts, toasts and empty states.
+- [Containers](?path=/docs/containers-overview--docs) — surfaces that group content: cards, modals, accordions and the
+  contextual bar.
+- [Navigation](?path=/docs/navigation-overview--docs) — menus, list items, options, tabs, pagination and the app's sidebars.
+- [Layout](?path=/docs/layout-overview--docs) — the primitives components and containers are built from: `Box`, `Stack`,
+  `Grid`, popovers.
+- [Message](?path=/docs/message-overview--docs) — the parts of a chat message: header, body, reactions, toolbar, threads,
+  system messages.
+
+## Reading a component's page
+
+Each component has a docs page, the first entry under its name in the sidebar:
+
+- **Description** — what the component is for.
+- **Usage** — the design system's rules for it: when to use it, what to pair it with, what to avoid and how to word
+  its labels. Components the guidance hasn't reached yet don't have this section.
+- **The primary story and its controls** — try the props live. The table lists every prop the component
+  declares, with its type and what it changes.
+- **Stories** — each variation, state and composition, with a note where the name doesn't say enough.
+
+A badge next to a component's name in the sidebar marks where it is in its lifecycle:
+
+<table>
+	<thead>
+		<tr>
+			<th>Badge</th>
+			<th>Meaning</th>
+		</tr>
+	</thead>
+	<tbody>
+		{Object.values(componentStatuses).map(({ label, description }) => (
+			<tr key={label}>
+				<td>{label}</td>
+				<td>{description}</td>
+			</tr>
+		))}
+	</tbody>
+</table>
+
+Components without a badge are stable.
+
+## Toolbar
+
+- **Theme** switches every story and docs page between the light, dark and high-contrast palettes, or follows your
+  system's setting.
+- **Direction** renders the stories right to left, to check a component in Arabic, Hebrew or Persian.
+
+## Contributing
+
+The guidance comes from the design system's Figma file and is written in the code's terms. To document a
+component, or to add the usage rules a page is missing, follow
+[Documenting Fuselage components](https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/frontend/documenting-components.md).

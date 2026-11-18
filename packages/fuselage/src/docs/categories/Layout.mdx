@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title='Layout/Overview' />
+
+# Layout
+
+The primitives that components and containers are built from.
+
+A component decides how it looks, and the container it sits in decides where it goes. In the Rocket.Chat web
+client, screens compose named containers (a form is a `FieldGroup` of `Field`s, buttons side by side are a
+`ButtonGroup`) and these primitives stay inside those containers' implementation. See
+[Layout in the app](https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/frontend/layout.md).
+
+## Arranging children
+
+- Children in a row or a column, spaced by a gap: [`Stack`](?path=/docs/layout-stack--docs)
+- Children in responsive columns: [`Grid`](?path=/docs/layout-grid--docs)
+- Flexbox control beyond what `Stack` offers: [`Flex`](?path=/docs/layout-flex--docs)
+- Margins around each of a group of children: [`Margins`](?path=/docs/layout-margins--docs)
+- A region that scrolls, vertically, horizontally or both: [`Scrollable`](?path=/docs/layout-scrollable--docs)
+
+## The primitive
+
+[`Box`](?path=/docs/layout-box-overview--docs) renders any element with design tokens as props: spacing, colours,
+typography and borders. Components are built on it.
+
+## Floating content
+
+- A layer anchored to a trigger, such as a menu or a dropdown: [`Popover`](?path=/docs/layout-popover--docs)
+- The raised surface inside it, which scrolls its content: [`PopoverSurface`](?path=/docs/layout-popoversurface--docs)
+- An element placed next to an anchor and animated in and out: [`PositionAnimated`](?path=/docs/layout-positionanimated--docs),
+  [`AnimatedVisibility`](?path=/docs/layout-animatedvisibility--docs)
+
+## Loading and theme
+
+- Placeholder shapes while content loads: [`Skeleton`](?path=/docs/layout-skeleton--docs)
+- The colour palette of a theme, as CSS custom properties: [`PaletteStyleTag`](?path=/docs/layout-palettestyletag--docs)

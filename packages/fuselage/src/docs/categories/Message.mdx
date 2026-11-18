@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title='Message/Overview' />
+
+# Message
+
+The parts a chat message is composed from. A message is a row, built on [`Item`](?path=/docs/navigation-item--docs),
+whose slots hold the sender's avatar, a header, the body and the actions.
+
+- A message and its parts: [`Message`](?path=/docs/message-message--docs), and the same message composed from `Item`
+  parts in [Message on Item](?path=/docs/message-message-on-item--docs)
+- The actions shown when the user hovers or focuses a message: [`MessageToolbar`](?path=/docs/message-messagetoolbar--docs)
+- Emoji reactions under a message: [`MessageReactions`](?path=/docs/message-messagereactions--docs)
+- Replies, participants and whether the user follows, under a message that starts a thread or discussion:
+  [`MessageMetrics`](?path=/docs/message-messagemetrics--docs)
+- A message shown as a reply inside a thread: [`ThreadMessage`](?path=/docs/message-threadmessage--docs)
+- An event in the room, such as someone joining: [`MessageSystem`](?path=/docs/message-messagesystem--docs)
+- A divider between days, or before the first unread message: [`MessageDivider`](?path=/docs/message-messagedivider--docs)
+- Status icons such as edited, pinned or starred: [`MessageStatusIndicator`](?path=/docs/message-messagestatusindicator--docs)
+- A preview of a link or an attachment: [`MessageGenericPreview`](?path=/docs/message-messagegenericpreview--docs)
