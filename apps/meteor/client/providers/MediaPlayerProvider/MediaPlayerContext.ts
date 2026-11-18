@@ -25,6 +25,8 @@ export type PersistentAudioTrack = {
 	username?: string;
 	/** Display name of the sender. */
 	name?: string;
+	/** Original message, when the audio is played from a quote. */
+	originMid?: string;
 };
 
 export type MediaPlayerContextValue = {
