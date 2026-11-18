@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, usePermission, useUserId } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +31,49 @@ export type ChatInfoProps = {
 	id: string;
 	route: keyof IRouterPaths;
 };
+
+type ChatTimingFieldsParams = Partial<Pick<Serialized<IOmnichannelRoom>, 'ts' | 'closedAt' | 'servedBy' | 'metrics'>> & {
+	t: TFunction;
+	formatDuration: ReturnType<typeof useFormatDuration>;
+	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
+};
+
+function renderChatTimingFields({ ts, closedAt, servedBy, metrics, t, formatDuration, formatDateAndTime }: ChatTimingFieldsParams) {
+	return (
+		<>
+			{closedAt && ts && (
+				<InfoPanelField>
+					<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
+					<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
+				</InfoPanelField>
+			)}
+			{ts && (
+				<InfoPanelField>
+					<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
+					<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
+				</InfoPanelField>
+			)}
+			{closedAt && (
+				<InfoPanelField>
+					<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
+					<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
+				</InfoPanelField>
+			)}
+			{servedBy?.ts && (
+				<InfoPanelField>
+					<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
+					<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
+				</InfoPanelField>
+			)}
+			{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
+				<InfoPanelField>
+					<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
+					<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
+				</InfoPanelField>
+			)}
+		</>
+	);
+}
 
 function ChatInfo({ id, route }: ChatInfoProps) {
 	const { t } = useTranslation();
@@ -133,36 +177,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 						<InfoPanelText>{queueTime}</InfoPanelText>
 					</InfoPanelField>
 				)}
-				{closedAt && ts && (
-					<InfoPanelField>
-						<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-						<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
-					</InfoPanelField>
-				)}
-				{ts && (
-					<InfoPanelField>
-						<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
-						<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
-					</InfoPanelField>
-				)}
-				{closedAt && (
-					<InfoPanelField>
-						<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
-						<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
-					</InfoPanelField>
-				)}
-				{servedBy?.ts && (
-					<InfoPanelField>
-						<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
-						<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
-					</InfoPanelField>
-				)}
-				{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-					<InfoPanelField>
-						<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
-						<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
-					</InfoPanelField>
-				)}
+				{renderChatTimingFields({ ts, closedAt, servedBy, metrics, t, formatDuration, formatDateAndTime })}
 				{!waitingResponse && responseBy?.lastMessageTs && (
 					<InfoPanelField>
 						<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>

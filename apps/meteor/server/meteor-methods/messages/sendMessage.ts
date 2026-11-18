@@ -11,6 +11,26 @@ import { SystemLogger } from '../../lib/logger/system';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { metrics } from '../../lib/metrics';
 import { settings } from '../../settings';
+
+function applyMessageTimestamp(message: AtLeast<IMessage, 'rid'>, extraInfo?: { ts?: Date }) {
+	const isTimestampFromClient = Boolean(!extraInfo?.ts && message.ts);
+	const now = new Date();
+	message.ts = extraInfo?.ts ?? message.ts ?? now;
+	if (isTimestampFromClient) {
+		const tsDiff = Math.abs(moment(message.ts).diff(Date.now()));
+		if (tsDiff > 60000) {
+			throw new ClientSafeError('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+				method: 'sendMessage',
+				message_ts: message.ts,
+				server_ts: new Date().getTime(),
+			});
+		}
+		if (tsDiff > 10000) {
+			message.ts = now;
+		}
+	}
+}
+
 /**
  *
  * @param uid
@@ -38,22 +58,7 @@ export async function executeSendMessage(
 		});
 	}
 
-	const isTimestampFromClient = Boolean(!extraInfo?.ts && message.ts);
-	const now = new Date();
-	message.ts = extraInfo?.ts ?? message.ts ?? now;
-	if (isTimestampFromClient) {
-		const tsDiff = Math.abs(moment(message.ts).diff(Date.now()));
-		if (tsDiff > 60000) {
-			throw new ClientSafeError('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-				method: 'sendMessage',
-				message_ts: message.ts,
-				server_ts: new Date().getTime(),
-			});
-		}
-		if (tsDiff > 10000) {
-			message.ts = now;
-		}
-	}
+	applyMessageTimestamp(message, extraInfo);
 
 	if (message.msg) {
 		if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {

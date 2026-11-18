@@ -200,6 +200,17 @@ export class ContactMerger {
 		return fields.filter((field) => field.type === type).map(({ value }) => value) as ContactFields[T][];
 	}
 
+	private static groupCustomFieldsByName(newCustomFields: CustomFieldAndValue[]): Map<string, CustomFieldAndValue[]> {
+		const customFieldsPerName = new Map<string, CustomFieldAndValue[]>();
+		for (const customField of newCustomFields) {
+			if (!customFieldsPerName.has(customField.type)) {
+				customFieldsPerName.set(customField.type, []);
+			}
+			customFieldsPerName.get(customField.type)?.push(customField);
+		}
+		return customFieldsPerName;
+	}
+
 	static async mergeFieldsIntoContact({
 		fields,
 		contact,
@@ -270,13 +281,7 @@ export class ContactMerger {
 			}
 		}
 
-		const customFieldsPerName = new Map<string, CustomFieldAndValue[]>();
-		for (const customField of newCustomFields) {
-			if (!customFieldsPerName.has(customField.type)) {
-				customFieldsPerName.set(customField.type, []);
-			}
-			customFieldsPerName.get(customField.type)?.push(customField);
-		}
+		const customFieldsPerName = ContactMerger.groupCustomFieldsByName(newCustomFields);
 
 		for (const [key, customFields] of customFieldsPerName) {
 			const fieldName = key.replace('customFields.', '');

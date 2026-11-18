@@ -1,5 +1,6 @@
-import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
+import type { AbacAttributeDefinitionChangeType, AbacActionPerformed, Serialized } from '@rocket.chat/core-typings';
 import { Box, InputBox, Pagination } from '@rocket.chat/fuselage';
+import type { OperationResult } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -14,12 +15,60 @@ import {
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FilterBar, FilterBarFilters } from '../../../../components/FilterBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import DateRangePicker, { type DateRangePreset } from '../../moderation/helpers/DateRangePicker';
+
+type AbacAuditEvent = Serialized<OperationResult<'GET', '/v1/abac/audit'>>['events'][number];
+
+type ActionLabelGetter = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => string;
+
+const getBaseEventInfo = (event: AbacAuditEvent, t: TFunction, getActionLabel: ActionLabelGetter) => ({
+	id: event._id,
+	user: event.actor?.type === 'user' ? event.actor.username : t('System'),
+	...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
+	timestamp: new Date(event.ts),
+	element: t('ABAC_Room'),
+	action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
+	room: undefined,
+});
+
+type BaseEventInfo = ReturnType<typeof getBaseEventInfo>;
+
+const getActionPerformedEventInfo = (
+	event: Extract<AbacAuditEvent, { t: 'abac.action.performed' }>,
+	eventInfo: BaseEventInfo,
+	t: TFunction,
+	getActionLabel: ActionLabelGetter,
+) => ({
+	...eventInfo,
+	name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
+	action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+	room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
+	element: t('ABAC_room_membership'),
+});
+
+const getObjectAttributeChangedEventInfo = (
+	event: Extract<AbacAuditEvent, { t: 'abac.object.attribute.changed' }>,
+	eventInfo: BaseEventInfo,
+	t: TFunction,
+) => {
+	const app = event.data?.find((item) => item.key === 'app')?.value;
+	return {
+		...eventInfo,
+		...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+		name:
+			event.data
+				?.find((item) => item.key === 'current')
+				?.value?.map((item) => item.key)
+				.join(', ') ?? t('Empty'),
+		room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+	};
+};
 
 const LogsPage = () => {
 	const { t } = useTranslation();
@@ -84,15 +133,7 @@ const LogsPage = () => {
 	// TODO: Move this mapping from useQuery's old `select` into a usePaginatedQuery `combine`
 	const data = logs && {
 		events: logs.events.map((event) => {
-			const eventInfo = {
-				id: event._id,
-				user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-				...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
-				timestamp: new Date(event.ts),
-				element: t('ABAC_Room'),
-				action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
-				room: undefined,
-			};
+			const eventInfo = getBaseEventInfo(event, t, getActionLabel);
 			switch (event.t) {
 				case 'abac.attribute.changed':
 					return {
@@ -101,26 +142,9 @@ const LogsPage = () => {
 						name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
 					};
 				case 'abac.action.performed':
-					return {
-						...eventInfo,
-						name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
-						action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
-						room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
-						element: t('ABAC_room_membership'),
-					};
-				case 'abac.object.attribute.changed': {
-					const app = event.data?.find((item) => item.key === 'app')?.value;
-					return {
-						...eventInfo,
-						...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
-						name:
-							event.data
-								?.find((item) => item.key === 'current')
-								?.value?.map((item) => item.key)
-								.join(', ') ?? t('Empty'),
-						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-					};
-				}
+					return getActionPerformedEventInfo(event, eventInfo, t, getActionLabel);
+				case 'abac.object.attribute.changed':
+					return getObjectAttributeChangedEventInfo(event, eventInfo, t);
 				case 'abac.object.attributes.removed':
 					return {
 						...eventInfo,

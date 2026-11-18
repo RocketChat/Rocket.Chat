@@ -29,6 +29,14 @@ export type RoomMessageContentProps = {
 	searchText?: string;
 };
 
+const isPendingDecryption = (message: IMessage, encrypted: boolean) => encrypted && message?.e2e === 'pending';
+
+const getQuoteAttachments = (message: IMessage) => message?.attachments?.filter(isQuoteAttachment) || [];
+
+const getNonQuoteAttachments = (message: IMessage) => message?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
+
+const isFollowingThread = (replies: string[] | undefined, uid: string | undefined) => Boolean(uid && (replies?.indexOf(uid) ?? -1) > -1);
+
 const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const oembedEnabled = useMessageListOembedEnabled();
@@ -40,11 +48,11 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const { t } = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
-	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
+	const isMessageEncrypted = isPendingDecryption(normalizedMessage, encrypted);
 
-	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
+	const quotes = getQuoteAttachments(normalizedMessage);
 
-	const attachments = normalizedMessage?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
+	const attachments = getNonQuoteAttachments(normalizedMessage);
 
 	return (
 		<>
@@ -106,7 +114,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			{chat && isThreadMainMessage(normalizedMessage) && (
 				<ThreadMetrics
 					counter={normalizedMessage.tcount}
-					following={Boolean(uid && normalizedMessage?.replies?.indexOf(uid) > -1)}
+					following={isFollowingThread(normalizedMessage?.replies, uid)}
 					mid={normalizedMessage._id}
 					rid={normalizedMessage.rid}
 					lm={normalizedMessage.tlm}

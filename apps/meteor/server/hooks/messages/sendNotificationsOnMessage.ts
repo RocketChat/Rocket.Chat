@@ -43,6 +43,62 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
 	[Property in Key]-?: Type[Property];
 };
 
+const pushEmailNotificationItem = async (
+	queueItems: NotificationItem[],
+	{
+		emails,
+		message,
+		receiver,
+		sender,
+		subscription,
+		room,
+		hasMentionToUser,
+	}: {
+		emails: NonNullable<NonNullable<SubscriptionAggregation['receiver'][0]>['emails']>;
+		message: AtLeast<IMessage, '_id' | 'u' | 'msg' | 't' | 'attachments'>;
+		receiver: NonNullable<SubscriptionAggregation['receiver'][0]>;
+		sender: Pick<IUser, '_id' | 'name' | 'username'>;
+		subscription: SubscriptionAggregation;
+		room: IRoom;
+		hasMentionToUser: boolean;
+	},
+): Promise<void> => {
+	const messageWithUnicode = message.msg ? shortnameToUnicode(message.msg) : message.msg;
+	const firstAttachment = message.attachments?.[0];
+
+	const convertedFirstAttachment = firstAttachment
+		? {
+				...firstAttachment,
+				description: typeof firstAttachment.description === 'string' ? shortnameToUnicode(firstAttachment.description) : undefined,
+				text: typeof firstAttachment.text === 'string' ? shortnameToUnicode(firstAttachment.text) : undefined,
+			}
+		: undefined;
+
+	const attachments = convertedFirstAttachment ? [convertedFirstAttachment, ...(message.attachments?.slice(1) ?? [])] : [];
+	for (const email of emails) {
+		if (email.verified) {
+			queueItems.push({
+				type: 'email',
+				data: await getEmailData({
+					message: {
+						...message,
+						msg: messageWithUnicode,
+						...(attachments.length > 0 ? { attachments } : {}),
+					},
+					receiver,
+					sender,
+					subscription,
+					room,
+					emailAddress: email.address,
+					hasMentionToUser,
+				}),
+			});
+
+			break;
+		}
+	}
+};
+
 export const sendNotification = async ({
 	subscription,
 	sender,
@@ -191,40 +247,15 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		const messageWithUnicode = message.msg ? shortnameToUnicode(message.msg) : message.msg;
-		const firstAttachment = message.attachments?.[0];
-
-		const convertedFirstAttachment = firstAttachment
-			? {
-					...firstAttachment,
-					description: typeof firstAttachment.description === 'string' ? shortnameToUnicode(firstAttachment.description) : undefined,
-					text: typeof firstAttachment.text === 'string' ? shortnameToUnicode(firstAttachment.text) : undefined,
-				}
-			: undefined;
-
-		const attachments = convertedFirstAttachment ? [convertedFirstAttachment, ...(message.attachments?.slice(1) ?? [])] : [];
-		for (const email of receiver.emails) {
-			if (email.verified) {
-				queueItems.push({
-					type: 'email',
-					data: await getEmailData({
-						message: {
-							...message,
-							msg: messageWithUnicode,
-							...(attachments.length > 0 ? { attachments } : {}),
-						},
-						receiver,
-						sender,
-						subscription,
-						room,
-						emailAddress: email.address,
-						hasMentionToUser,
-					}),
-				});
-
-				break;
-			}
-		}
+		await pushEmailNotificationItem(queueItems, {
+			emails: receiver.emails,
+			message,
+			receiver,
+			sender,
+			subscription,
+			room,
+			hasMentionToUser,
+		});
 	}
 
 	if (queueItems.length) {

@@ -47,6 +47,11 @@ export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 
 export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'sipExtension';
 
+const getPendingUsersCounter = (pendingUsersCount: ReturnType<typeof usePendingUsersCount>) =>
+	(pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' />) ||
+	(pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`) ||
+	undefined;
+
 const AdminUsersPage = () => {
 	const { t } = useTranslation();
 
@@ -144,10 +149,7 @@ const AdminUsersPage = () => {
 						{
 							id: 'pending',
 							label: t('Pending'),
-							counter:
-								(pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' />) ||
-								(pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`) ||
-								undefined,
+							counter: getPendingUsersCounter(pendingUsersCount),
 						},
 						{ id: 'active', label: t('Active') },
 						{ id: 'deactivated', label: t('Deactivated') },

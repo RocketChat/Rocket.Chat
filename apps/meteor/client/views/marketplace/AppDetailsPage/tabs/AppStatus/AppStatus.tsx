@@ -22,6 +22,9 @@ export type AppStatusProps = {
 	installed?: boolean;
 };
 
+const isAppUpdatable = (app: App, installed: boolean | undefined) =>
+	installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
+
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps) => {
 	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
@@ -35,7 +38,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly && !installed;
-	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
+	const canUpdate = isAppUpdatable(app, installed);
 
 	const { data } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise ?? false;

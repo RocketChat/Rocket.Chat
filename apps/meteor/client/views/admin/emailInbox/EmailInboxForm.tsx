@@ -52,6 +52,36 @@ export type EmailInboxFormProps = {
 	inboxData?: IEmailInboxPayload;
 };
 
+const getSmtpFormValues = (inboxData: IEmailInboxPayload | undefined) => ({
+	smtpServer: inboxData?.smtp.server ?? '',
+	smtpPort: String(inboxData?.smtp.port ?? 587),
+	smtpUsername: inboxData?.smtp.username ?? '',
+	smtpPassword: inboxData?.smtp.password ?? '',
+	smtpSecure: inboxData?.smtp.secure ?? false,
+});
+
+const getImapFormValues = (inboxData: IEmailInboxPayload | undefined) => ({
+	imapServer: inboxData?.imap.server ?? '',
+	imapPort: String(inboxData?.imap.port ?? 993),
+	imapUsername: inboxData?.imap.username ?? '',
+	imapPassword: inboxData?.imap.password ?? '',
+	imapSecure: inboxData?.imap.secure ?? false,
+	imapRetries: String(inboxData?.imap.maxRetries ?? 10),
+});
+
+const getEmailInboxFormValues = (inboxData: IEmailInboxPayload | undefined): EmailInboxFormData => ({
+	active: inboxData?.active ?? true,
+	name: inboxData?.name ?? '',
+	email: inboxData?.email ?? '',
+	description: inboxData?.description ?? '',
+	senderInfo: inboxData?.senderInfo ?? '',
+	department: inboxData?.department ?? '',
+	// SMTP
+	...getSmtpFormValues(inboxData),
+	// IMAP
+	...getImapFormValues(inboxData),
+});
+
 const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -69,27 +99,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 		handleSubmit,
 		formState: { errors, isDirty },
 	} = useForm<EmailInboxFormData>({
-		values: {
-			active: inboxData?.active ?? true,
-			name: inboxData?.name ?? '',
-			email: inboxData?.email ?? '',
-			description: inboxData?.description ?? '',
-			senderInfo: inboxData?.senderInfo ?? '',
-			department: inboxData?.department ?? '',
-			// SMTP
-			smtpServer: inboxData?.smtp.server ?? '',
-			smtpPort: String(inboxData?.smtp.port ?? 587),
-			smtpUsername: inboxData?.smtp.username ?? '',
-			smtpPassword: inboxData?.smtp.password ?? '',
-			smtpSecure: inboxData?.smtp.secure ?? false,
-			// IMAP
-			imapServer: inboxData?.imap.server ?? '',
-			imapPort: String(inboxData?.imap.port ?? 993),
-			imapUsername: inboxData?.imap.username ?? '',
-			imapPassword: inboxData?.imap.password ?? '',
-			imapSecure: inboxData?.imap.secure ?? false,
-			imapRetries: String(inboxData?.imap.maxRetries ?? 10),
-		},
+		values: getEmailInboxFormValues(inboxData),
 		mode: 'all',
 	});
 

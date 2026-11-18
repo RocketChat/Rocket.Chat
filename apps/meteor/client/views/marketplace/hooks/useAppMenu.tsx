@@ -56,6 +56,14 @@ const AppMenuOptionLabel = ({ icon, color, children }: AppMenuOptionLabelProps) 
 	</Box>
 );
 
+const canEnableApp = (app: App, isAdminUser: boolean, isAppEnabled: boolean, isEnterpriseLicense: boolean) =>
+	app.installed &&
+	isAdminUser &&
+	!isAppEnabled &&
+	// If the app is migrated, it can be enabled regardless of other validations
+	// If not, and the app isEnterpriseOnly, we need to check the workspace's license
+	(app.migrated || !app.isEnterpriseOnly || isEnterpriseLicense);
+
 export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -367,13 +375,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				},
 		];
 
-		const isPossibleToEnableApp =
-			app.installed &&
-			isAdminUser &&
-			!isAppEnabled &&
-			// If the app is migrated, it can be enabled regardless of other validations
-			// If not, and the app isEnterpriseOnly, we need to check the workspace's license
-			(app.migrated || !app.isEnterpriseOnly || isEnterpriseLicense);
+		const isPossibleToEnableApp = canEnableApp(app, isAdminUser, isAppEnabled, isEnterpriseLicense);
 
 		const doesItReachedTheLimit =
 			!app.migrated &&

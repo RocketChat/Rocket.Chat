@@ -253,6 +253,28 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		}
 	}
 
+	private buildUserUpdateData(userData: IImportUser): Record<string, any> {
+		const updateData: Record<string, any> = Object.assign(Object.create(null), {
+			$set: Object.assign(Object.create(null), {
+				...(userData.roles && { roles: userData.roles }),
+				...(userData.type && { type: userData.type }),
+				...(userData.statusText && { statusText: userData.statusText }),
+				...(userData.bio && { bio: userData.bio }),
+				...(userData.services?.ldap && { ldap: true }),
+				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+				...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
+			}),
+			...(this._options.syncVoipExtension &&
+				!userData.voipExtension && {
+					$unset: {
+						sipExtension: 1,
+					},
+				}),
+		});
+
+		return updateData;
+	}
+
 	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
 		const { _id } = existingUser;
 		if (!_id) {
@@ -272,23 +294,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			userData.type = 'user';
 		}
 
-		const updateData: Record<string, any> = Object.assign(Object.create(null), {
-			$set: Object.assign(Object.create(null), {
-				...(userData.roles && { roles: userData.roles }),
-				...(userData.type && { type: userData.type }),
-				...(userData.statusText && { statusText: userData.statusText }),
-				...(userData.bio && { bio: userData.bio }),
-				...(userData.services?.ldap && { ldap: true }),
-				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-				...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
-			}),
-			...(this._options.syncVoipExtension &&
-				!userData.voipExtension && {
-					$unset: {
-						sipExtension: 1,
-					},
-				}),
-		});
+		const updateData = this.buildUserUpdateData(userData);
 
 		this.addCustomFields(updateData, userData);
 		this.addUserServices(updateData, userData);
