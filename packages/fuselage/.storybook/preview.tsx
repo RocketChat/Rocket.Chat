@@ -4,6 +4,7 @@ import { useLayoutEffect, useSyncExternalStore } from 'react';
 
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
+import DocsPage from './DocsPage';
 import { globalTypes, initialGlobals } from './globals';
 import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 
@@ -41,6 +42,7 @@ export default {
 		},
 		docs: {
 			container: DocsContainer,
+			page: DocsPage,
 		},
 		options: {
 			storySort: {

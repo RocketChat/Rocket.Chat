@@ -88,7 +88,7 @@ Simple components are atomic elements such as buttons or inputs.
   }
   ```
 
-- Document every variation in Storybook, with a note on the non-obvious ones.
+- Document every variation in Storybook, with a note on the non-obvious ones ([how](documenting-components.md)).
 - Unit test every behavior: rendering, interactions, keyboard, and accessible names.
 
 ## Complex components
