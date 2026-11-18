@@ -35,7 +35,7 @@
 	}
 
 	&:invalid,
-	&:has(> .rcx-input-box:invalid),
+	&:has(> .rcx-input-box[class]:invalid),
 	&.#{$invalid-class} {
 		@extend %input--invalid;
 	}
