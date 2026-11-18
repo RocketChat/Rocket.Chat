@@ -131,6 +131,24 @@ jest.mock('../../../../server/api', () => ({
 						],
 					},
 				},
+				'/api/v1/rooms.saveDraft': {
+					post: {
+						tags: [],
+						requestBody: {
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										description: 'Save a draft',
+										properties: { rid: { type: 'string' }, draft: { type: 'string' }, tmid: { type: 'string' } },
+										required: ['rid', 'draft'],
+										additionalProperties: false,
+									},
+								},
+							},
+						},
+					},
+				},
 				'/api/v1/users.delete': {
 					post: {
 						tags: ['Users'],
@@ -190,6 +208,14 @@ describe('MCP tool catalog', () => {
 		);
 		expect(tools.some(({ name }) => name.includes('users_delete'))).toBe(false);
 		expect(tools.some(({ name }) => name.includes('users_register'))).toBe(false);
+	});
+
+	it('exposes rooms.saveDraft only in the extended catalog', () => {
+		const tool = getExtendedTools().find(({ name }) => name === 'post_rooms_saveDraft');
+
+		expect(tool).toMatchObject({ path: '/api/v1/rooms.saveDraft', method: 'post', description: 'Save a draft' });
+		expect(tool?.inputSchema.required).toEqual(['rid', 'draft']);
+		expect(getCuratedTools().some(({ name }) => name === 'post_rooms_saveDraft')).toBe(false);
 	});
 
 	it('keeps curated tool names stable when the extended catalog is enabled', () => {
