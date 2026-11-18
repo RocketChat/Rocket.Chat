@@ -20,9 +20,9 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
-import RoomFilesListArea from './layout/RoomFilesListArea';
 import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
+import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
 export type RoomFilesProps = {
@@ -99,7 +99,7 @@ const RoomFiles = ({
 					</ContextualbarStatus>
 				)}
 				{isSuccess && (
-					<RoomFilesListArea id={filesListId}>
+					<ListViewport id={filesListId}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>
@@ -120,7 +120,7 @@ const RoomFiles = ({
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</RoomFilesListArea>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
