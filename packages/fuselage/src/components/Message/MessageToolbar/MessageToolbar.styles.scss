@@ -18,11 +18,12 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 
 		user-select: none;
 
-		// Out of the row's flow, so it takes no room and no gap.
+		// Out of the row's flow, so it takes no room and no gap. Anchored where the toolbar sits,
+		// not on the row's edge, so it still intersects the viewport when that edge is fractional.
 		.rcx-message > & {
 			position: absolute;
 			top: 0;
-			inset-inline-end: 0;
+			inset-inline-end: lengths.margin(20);
 		}
 
 		.rcx-message:hover &,
@@ -48,5 +49,7 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 		z-index: 10;
 		top: lengths.inset(-24);
 		inset-inline-end: 0;
+
+		margin-inline: 0;
 	}
 }
