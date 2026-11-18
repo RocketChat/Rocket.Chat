@@ -1,5 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App, AppPermission } from '@rocket.chat/core-typings';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
@@ -29,11 +30,12 @@ import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
-import IconLabel from '../layout/IconLabel';
 
 export type AppMenuOption = {
 	id: string;
 	section: number;
+	icon?: IconName;
+	color?: 'status-font-on-warning' | 'status-font-on-danger';
 	content: ReactNode;
 	disabled?: boolean;
 	onClick?: (e?: MouseEvent<HTMLElement>) => void;
@@ -293,7 +295,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	]);
 
 	const incompatibleIconName = useCallback(
-		(app: App, action: 'subscribe' | 'install' | 'update') => {
+		(app: App, action: 'subscribe' | 'install' | 'update'): IconName => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';
@@ -336,7 +338,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				isAdminUser && {
 					id: 'subscribe',
 					section: 0,
-					content: <IconLabel icon={incompatibleIconName(app, 'subscribe')}>{t('Subscription')}</IconLabel>,
+					icon: incompatibleIconName(app, 'subscribe'),
+					content: t('Subscription'),
 					onClick: handleSubscription,
 				},
 		];
@@ -347,7 +350,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'acquire',
 					section: 0,
 					disabled: requestedEndUser,
-					content: <IconLabel icon={isAdminUser ? incompatibleIconName(app, 'install') : undefined}>{t(buttonLabel)}</IconLabel>,
+					icon: isAdminUser ? incompatibleIconName(app, 'install') : undefined,
+					content: t(buttonLabel),
 					onClick: handleAcquireApp,
 				},
 		];
@@ -372,7 +376,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				app.installed && {
 					id: 'viewLogs',
 					section: 0,
-					content: <IconLabel icon='desktop-text'>{t('View_Logs')}</IconLabel>,
+					icon: 'desktop-text' as const,
+					content: t('View_Logs'),
 					onClick: handleViewLogs,
 				},
 			isAdminUser &&
@@ -380,7 +385,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				!isAppDetailsPage && {
 					id: 'update',
 					section: 0,
-					content: <IconLabel icon={incompatibleIconName(app, 'update')}>{t('Update')}</IconLabel>,
+					icon: incompatibleIconName(app, 'update'),
+					content: t('Update'),
 					onClick: handleUpdate,
 				},
 			app.installed &&
@@ -388,29 +394,26 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				isAppEnabled && {
 					id: 'disable',
 					section: 0,
-					content: (
-						<IconLabel icon='ban' color='status-font-on-warning'>
-							{t('Disable')}
-						</IconLabel>
-					),
+					icon: 'ban' as const,
+					color: 'status-font-on-warning' as const,
+					content: t('Disable'),
 					onClick: handleDisable,
 				},
 			isPossibleToEnableApp && {
 				id: 'enable',
 				section: 0,
 				disabled: doesItReachedTheLimit,
-				content: <IconLabel icon='check'>{t('Enable')}</IconLabel>,
+				icon: 'check' as const,
+				content: t('Enable'),
 				onClick: handleEnable,
 			},
 			app.installed &&
 				isAdminUser && {
 					id: 'uninstall',
 					section: 1,
-					content: (
-						<IconLabel icon='trash' color='status-font-on-danger'>
-							{t('Uninstall')}
-						</IconLabel>
-					),
+					icon: 'trash' as const,
+					color: 'status-font-on-danger' as const,
+					content: t('Uninstall'),
 					onClick: handleUninstall,
 				},
 		];

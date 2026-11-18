@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Button, Tag, Stack } from '@rocket.chat/fuselage';
+import { Button, Icon, Tag, Stack } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
@@ -16,7 +16,6 @@ import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
-import IconLabel from '../../../layout/IconLabel';
 
 export type AppStatusProps = {
 	app: App;
@@ -104,15 +103,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed }: AppS
 			return 'secondary-danger';
 		}
 
-		return undefined;
-	};
-
-	const getStatusColor = (status: appStatusSpanResponseProps) => {
-		if (status.type === 'warning' || status.type === 'danger') {
-			return `status-font-on-${status.type}` as const;
+		if (status.type === 'warning') {
+			return 'secondary-warning';
 		}
 
-		return 'font-default';
+		return undefined;
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
@@ -161,10 +156,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed }: AppS
 						data-qa-type='app-status-tag'
 						variant={getStatusVariant(status)}
 						title={status.tooltipText ? status.tooltipText : ''}
+						icon={status.icon && <Icon name={status.icon} size='x16' />}
 					>
-						<IconLabel icon={status.icon} color={getStatusColor(status)}>
-							{handleAppRequestsNumber(status)} {t(status.label)}
-						</IconLabel>
+						{handleAppRequestsNumber(status)} {t(status.label)}
 					</Tag>
 				))}
 			</Stack>
