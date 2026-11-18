@@ -2,6 +2,7 @@ import type { HTMLAttributes, RefAttributes } from 'react';
 
 export type MessageToolbarWrapperProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {
+		/** Shows the toolbar. It stays hidden otherwise: the application decides when a message shows its toolbar. */
 		visible?: boolean;
 	};
 
