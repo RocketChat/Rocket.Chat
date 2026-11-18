@@ -91,7 +91,6 @@ const Thread = ({ tmid }: ThreadProps) => {
 	const threadContent = (
 		// The thread view lays itself over the room, so it builds the contextual bar's surface itself instead of a Contextualbar
 		<Box
-			rcx-vertical-bar
 			rcx-thread-view
 			className={
 				isExpanded
@@ -104,6 +103,8 @@ const Thread = ({ tmid }: ThreadProps) => {
 					: undefined
 			}
 			backgroundColor='room'
+			borderInlineStartWidth='default'
+			borderInlineStartColor='extra-light'
 			color='default'
 			display='flex'
 			flexDirection='column'
