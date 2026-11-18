@@ -12,8 +12,6 @@ type Callbacks = {
 	removed(id: string): void;
 };
 
-export const serviceConfigCallbacks = new Set<Callbacks>();
-
 // Stores the callbacks for the disconnection reactivity bellow
 const userCallbacks = new Map();
 
@@ -62,16 +60,11 @@ MongoInternals.Connection.prototype._observeChanges = async function (
 		}
 	}
 
-	if (collectionName === 'meteor_accounts_loginServiceConfiguration') {
-		serviceConfigCallbacks.add(callbacks);
-	}
-
 	return {
 		stop(): void {
 			if (cbs) {
 				cbs.delete(data);
 			}
-			serviceConfigCallbacks.delete(callbacks);
 		},
 	};
 };
