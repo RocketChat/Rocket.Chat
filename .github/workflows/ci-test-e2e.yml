@@ -45,6 +45,9 @@ on:
       coverage:
         required: false
         type: string
+      qase-run-id:
+        required: false
+        type: string
     secrets:
       CR_USER:
         required: true
@@ -266,7 +269,7 @@ jobs:
           REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-          QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          QASE_TESTOPS_RUN_ID: ${{ inputs.qase-run-id }}
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
           E2E_SHARD: ${{ matrix.shard }}
