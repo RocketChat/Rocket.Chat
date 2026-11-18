@@ -71,6 +71,7 @@ jobs:
       meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       github-actions-changed: ${{ steps.diff.outputs.actions-changed }}
       federation-changed: ${{ steps.diff.outputs.federation-changed }}
+      qase-release-run-id: ${{ steps.qase-release-run.outputs.id }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2027-07-01
       enterprise-license: MK+bpK5NveUuNlWGaQXGoy+8b74Luet82M3ZGcBB8b5P9Y+m67NEtpW64dc1d5lEWi6d0nFjCjtCMneVD7bKxodz/Cml8URKEo5P7cQb/9wmeT0MzAhYNaRFZlIGkZ3ITF59pDV2u4HZuosEDJikVRwnaJ5ZoU/pOsHSPUPhTyGNIqLeKynODtUpfwDdIKEmHxpf2yVkKjgRiIJmbWjM6A4k+MNNYXWVXHzye7GggqWVg/ZcT7nKU1CCadpLhTJiIrgrrPzil1G5DQ4xnLs3Q2tu2dILSDiW5OYw/ywu2yCMicTjMq4MLL5SXDQJj6WoJzZ54HosbvsDzOXvsdC9gI1CjhPL2uRuvC8XLrzn3vL2UgXnifzD1VrLTtdZ+aSADveqtlzYlRWtqoUFBbNw8o+YVHdhbZGR0beMoAyRbHi5EMpxpad3L+NyztUIT/Uh/IjQ/C2SQZ6jB0GKPBOPxFLN56FNhTGrffLFR++TVoBu0Iquc7kajWkNit3bVbZvbx+oFcVW2PcjQ/+i2jpJjbgtUFUKrTKxGMAXTWoDzIQQ35zNzGAy268IM4Ymp5JmsVEnBOEUkbF9yx6fzkO6xZhpsHf0muklnW0kA+Tlore/TUrBWh1/RwWlQeZlxM5NyWoRM5onQmr/k/4BmObtL1Hpmbk8oMG29z89xtE9y/4=
@@ -217,6 +218,22 @@ jobs:
             echo "Federation changes detected"
             echo "federation-changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # every UI shard of a release reports into this one Qase run; a failure here only skips the report
+      - id: qase-release-run
+        if: github.event_name == 'release'
+        continue-on-error: true
+        env:
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          response="$(curl -sS --fail-with-body https://api.qase.io/v1/run/RC \
+            -H "Token: ${QASE_API_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            -d "$(jq -n --arg title "UI E2E Tests - Release ${RELEASE_TAG}" '{title: $title}')")"
+          run_id="$(jq -er '.result.id' <<< "$response")"
+          echo "Created Qase run ${run_id}"
+          echo "id=${run_id}" >> "$GITHUB_OUTPUT"
 
   test-guard:
     name: ⚙️ Test Guard
@@ -745,6 +762,7 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      qase-run-id: ${{ needs.release-versions.outputs.qase-release-run-id }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -812,6 +830,7 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      qase-run-id: ${{ needs.release-versions.outputs.qase-release-run-id }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -1043,7 +1062,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile]
+    needs: [release-versions, test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1108,6 +1127,16 @@ jobs:
           fi
 
           echo finished
+
+      # the release Qase run stays open while any test fails, so re-run shards still report into it
+      - name: Complete the release Qase run
+        if: needs.release-versions.outputs.qase-release-run-id
+        continue-on-error: true
+        env:
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_RUN_ID: ${{ needs.release-versions.outputs.qase-release-run-id }}
+        run: |
+          curl -sS --fail-with-body -X POST "https://api.qase.io/v1/run/RC/${QASE_RUN_ID}/complete" -H "Token: ${QASE_API_TOKEN}"
 
   deploy:
     name: 🚀 Publish build assets
