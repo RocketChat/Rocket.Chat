@@ -67,13 +67,10 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description:
-				'Preview content, composed from MessageGenericPreview subcomponents (cover image, content, title, description, thumbnail, icon).',
 			table: { category: 'Content' },
 		},
 		style: {
 			control: false,
-			description: 'Inline CSS styles applied to the root element.',
 			table: { category: 'Style' },
 		},
 	},

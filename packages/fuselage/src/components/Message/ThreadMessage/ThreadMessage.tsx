@@ -5,6 +5,10 @@ import type { MessageProps } from '../Message';
 
 export type ThreadMessageProps = MessageProps;
 
+/**
+ * A reply in a thread, shown among the room's messages: a `ThreadMessageRow` quoting the message that started the
+ * thread, and one with the reply.
+ */
 const ThreadMessage = ({
 	className,
 	clickable,

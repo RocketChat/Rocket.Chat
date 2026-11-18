@@ -17,7 +17,6 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Reaction pills content, composed from MessageReaction and MessageReactionAction subcomponents.',
 			table: { category: 'Content' },
 		},
 	},

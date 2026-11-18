@@ -30,14 +30,6 @@ import { avatarUrl } from './helpers';
 export default {
 	title: 'Message/Message on Item',
 	component: Message,
-	parameters: {
-		docs: {
-			description: {
-				component:
-					'`Message` rendered on the `Item` primitives: the left container is `ItemMedia`, the container is `ItemContent` and the header is an `ItemRow`.',
-			},
-		},
-	},
 } satisfies Meta<typeof Message>;
 
 type Story = StoryObj<typeof Message>;

@@ -3,6 +3,7 @@ import type { HTMLAttributes } from 'react';
 export type MessageEmojiBaseProps = {
 	/** The emoji sprite's class name, added to the element as is. */
 	name: string;
+	/** A CSS `background-image` value, such as `url(…)`, for an emoji drawn from an image instead of a sprite. */
 	image?: string;
 } & HTMLAttributes<HTMLSpanElement>;
 

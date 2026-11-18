@@ -8,24 +8,20 @@ export default {
 	component: MessageDivider,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Separates message sections, appearing above them.\n\n' +
-					'**Rules**\n' +
-					'- Use the date to mark when messages were sent; use the unread indicator to highlight new messages.\n' +
-					'- Omit the divider line itself for longer messages likely to wrap multiple lines.',
-			},
+			usage: `
+- Place the divider above the messages it introduces.
+- Pass the date as \`children\` to mark when the messages below were sent, and set \`unreadLabel\` to mark where new messages start.
+- Leave the divider line out for longer messages likely to wrap onto several lines.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Label rendered in the divider bar, e.g. a date.',
 			table: { category: 'Content' },
 		},
 		unreadLabel: {
 			control: 'text',
-			description: 'Label rendered on the trailing bar; when set, switches the divider to its unread styling.',
 			table: { category: 'Content' },
 		},
 	},
@@ -34,6 +30,13 @@ export default {
 type Story = StoryObj<typeof MessageDivider>;
 
 export const Default: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'A date, a date that also marks where unread messages start, and an unread marker alone.',
+			},
+		},
+	},
 	render: () => (
 		<Box>
 			<MessageDivider>Text</MessageDivider>

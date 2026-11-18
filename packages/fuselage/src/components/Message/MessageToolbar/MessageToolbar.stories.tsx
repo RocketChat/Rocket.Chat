@@ -14,38 +14,31 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Toolbar buttons, composed from MessageToolbarItem.',
 			table: { category: 'Content' },
 		},
 		align: {
 			control: 'select',
 			options: ['start', 'center', 'end'],
-			description: 'Horizontal alignment of the toolbar items.',
 			table: { category: 'Layout', defaultValue: { summary: 'start' } },
 		},
 		stretch: {
 			control: 'boolean',
-			description: 'Stretches items to fill the available width.',
 			table: { category: 'Layout' },
 		},
 		wrap: {
 			control: 'boolean',
-			description: 'Allows items to wrap onto multiple lines.',
 			table: { category: 'Layout' },
 		},
 		vertical: {
 			control: 'boolean',
-			description: 'Stacks items vertically instead of horizontally.',
 			table: { category: 'Layout' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Small size scale for the toolbar items.',
 			table: { category: 'Size', defaultValue: { summary: 'true' } },
 		},
 		large: {
 			control: 'boolean',
-			description: 'Large size scale for the toolbar items.',
 			table: { category: 'Size' },
 		},
 	},
