@@ -8,7 +8,19 @@ const ALPHA_RANGE: [number, number] = [0.2, 0.8];
 
 const PROCESSOR_NAME = 'background-effect';
 
-const SEGMENTATION_MODEL = 'selfie_multiclass_256x256_fp16.tflite';
+// TEMP, for comparing models: `localStorage.setItem('bg-model', 'segmenter_landscape' | 'multiclass')` picks the model
+// for the next effect started from none; anything else, or nothing, the multiclass one.
+const SEGMENTATION_MODELS: Record<string, string> = {
+	segmenter_landscape: 'selfie_segmenter_landscape.tflite',
+	multiclass: 'selfie_multiclass_256x256_fp16.tflite',
+};
+const segmentationModel = () => {
+	try {
+		return SEGMENTATION_MODELS[localStorage.getItem('bg-model') ?? ''] ?? SEGMENTATION_MODELS.multiclass;
+	} catch {
+		return SEGMENTATION_MODELS.multiclass;
+	}
+};
 
 export type VisibleBackgroundEffect = Exclude<BackgroundEffect, { mode: 'none' }>;
 
@@ -54,7 +66,7 @@ export const createBackgroundProcessor = async (effect: VisibleBackgroundEffect,
 			temporalSmoothing: true,
 			assetPaths: {
 				tasksVisionFileSet: segmentationBaseUrl,
-				modelAssetPath: `${segmentationBaseUrl}/${SEGMENTATION_MODEL}`,
+				modelAssetPath: `${segmentationBaseUrl}/${segmentationModel()}`,
 			},
 		},
 		PROCESSOR_NAME,

@@ -5,7 +5,11 @@ import { resolvePrivateAsset } from './privateAssets';
 export const CAMERA_BACKGROUNDS_PATH = '/video-conference/backgrounds';
 
 /** The backgrounds every call is offered, by id, in the order they are shown. */
-const CAMERA_BACKGROUNDS = new Map<string, string>([]);
+const CAMERA_BACKGROUNDS = new Map([
+	['meeting-room', 'meeting-room.jpg'],
+	['office', 'office.jpg'],
+	['living-room', 'living-room.jpg'],
+]);
 
 export const CAMERA_BACKGROUND_IDS = [...CAMERA_BACKGROUNDS.keys()];
 

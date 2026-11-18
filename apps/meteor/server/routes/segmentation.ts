@@ -18,6 +18,7 @@ serveFiles(
 		['vision_wasm_internal.wasm', fromTasksVision('vision_wasm_internal.wasm')],
 		['vision_wasm_nosimd_internal.js', fromTasksVision('vision_wasm_nosimd_internal.js')],
 		['vision_wasm_nosimd_internal.wasm', fromTasksVision('vision_wasm_nosimd_internal.wasm')],
+		['selfie_segmenter_landscape.tflite', fromPrivate('selfie_segmenter_landscape.tflite')],
 		['selfie_multiclass_256x256_fp16.tflite', fromPrivate('selfie_multiclass_256x256_fp16.tflite')],
 	]),
 );
