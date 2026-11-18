@@ -11,8 +11,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import AbacAttributeTags from './layout/AbacAttributeTags';
-
 export const getAttributeRows = (attributes: IAbacAttributeDefinition[], requiredKeys: string[]): IAbacAttributeDefinition[] => {
 	const setAttributes = attributes.filter(({ values }) => values.length > 0);
 	const missingRequired = requiredKeys
@@ -63,12 +61,18 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 								<Text fontScale='p1' color='default'>
 									{key}
 								</Text>
-								<AbacAttributeTags empty={values.length === 0}>
-									{values.length === 0 && <Tag variant='danger'>{t('ABAC_Not_set')}</Tag>}
+								<Stack is='ul' direction='row' wrap gap='x4'>
+									{values.length === 0 && (
+										<Stack is='li'>
+											<Tag variant='danger'>{t('ABAC_Not_set')}</Tag>
+										</Stack>
+									)}
 									{values.map((value) => (
-										<Tag key={value}>{value}</Tag>
+										<Stack is='li' key={value}>
+											<Tag>{value}</Tag>
+										</Stack>
 									))}
-								</AbacAttributeTags>
+								</Stack>
 							</Stack>
 						))}
 					</Stack>

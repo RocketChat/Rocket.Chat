@@ -44,7 +44,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 							<Text is='span' id={`room-attribute-${attribute.key}-label`}>
 								{attribute.key}
 							</Text>
-							<Stack is='ul' direction='row' align='center' gap='x4' aria-labelledby={`room-attribute-${attribute.key}-label`}>
+							<Stack is='ul' direction='row' wrap align='center' gap='x4' aria-labelledby={`room-attribute-${attribute.key}-label`}>
 								{attribute.values.map((value) => (
 									<Stack is='li' key={value}>
 										<Tag medium>{value}</Tag>
