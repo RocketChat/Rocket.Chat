@@ -80,7 +80,12 @@ const listFromAst = (
 			current = { type: 'rich_text_list', style, ...(indent > 0 && { indent }), elements: [] };
 			result.push(current);
 		}
-		current.elements.push(section(item.value));
+		// A rich text list has no checkbox, so a task keeps its state as a `[x] ` or `[ ] ` prefix.
+		current.elements.push(
+			item.type === 'TASK'
+				? { type: 'rich_text_section', elements: [{ type: 'text', text: item.status ? '[x] ' : '[ ] ' }, ...inlinesFromAst(item.value)] }
+				: section(item.value),
+		);
 
 		if (item.nested?.length) {
 			result.push(...item.nested.flatMap((nested) => listFromAst(nested, indent + 1)));

@@ -350,6 +350,21 @@ describe('richTextFromMarkdown', () => {
 		]);
 	});
 
+	it('keeps the checked state of each task', () => {
+		const { elements } = richTextFromMarkdown('- [x] a\n- [ ] b');
+
+		expect(elements).toEqual([
+			{
+				type: 'rich_text_list',
+				style: 'bullet',
+				elements: [
+					{ type: 'rich_text_section', elements: [text('[x] '), text('a')] },
+					{ type: 'rich_text_section', elements: [text('[ ] '), text('b')] },
+				],
+			},
+		]);
+	});
+
 	it('emits a nested list after its parent items with its indent', () => {
 		const { elements } = richTextFromMarkdown('- a\n  - b\n- c');
 
