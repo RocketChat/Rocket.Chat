@@ -139,11 +139,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
 					</AppInfoSection>
 
-					{apis?.length ? (
-						<AppInfoSection>
-							<AppDetailsAPIs apis={apis || []} />
-						</AppInfoSection>
-					) : null}
+					{apis?.length ? <AppDetailsAPIs apis={apis} /> : null}
 				</Stack>
 			</ContentColumn>
 		</AppDetailsTabContent>

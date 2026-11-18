@@ -1,19 +1,19 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Stack } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 type AppInfoSectionProps = {
-	title?: ReactNode;
+	title: ReactNode;
 	children: ReactNode;
 };
 
 /**
- * One section of an app details tab: its title, then its content in the normal text flow.
+ * One section of an app details tab: its title, then its content.
  */
 const AppInfoSection = ({ title, children }: AppInfoSectionProps) => (
-	<Box is='section'>
-		{title && <Box marginBlockEnd='x8'>{title}</Box>}
+	<Stack is='section' gap='x8'>
+		{title}
 		{children}
-	</Box>
+	</Stack>
 );
 
 export default AppInfoSection;
