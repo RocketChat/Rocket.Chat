@@ -29,7 +29,7 @@ const parseSubpaths = (d) => {
 	};
 
 	for (let i = 0; i < tokens.length;) {
-		if (/[a-zA-Z]/.test(tokens[i])) {
+		if (/^[a-zA-Z]$/.test(tokens[i])) {
 			command = tokens[i++];
 			if (!(command in ARITY)) {
 				throw new Error(`unsupported path command ${command}`);
