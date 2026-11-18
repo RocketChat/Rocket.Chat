@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import type { Options } from '@rocket.chat/message-parser';
 import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
@@ -13,6 +14,7 @@ import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlig
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useAutoLinkDomains } from '../hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 import { useRolesByUser } from '../hooks/useRolesByUser';
@@ -56,12 +58,19 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const highlights = useUserPreference<string[]>('highlights');
 
 	const autoTranslate = useAutoTranslate(subscription);
+	const autoLinkDomains = useAutoLinkDomains();
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
-	const katex = useMemo(
-		() =>
-			katexEnabled ? { dollarSyntaxEnabled: katexDollarSyntaxEnabled, parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled } : undefined,
-		[katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
+	const parseOptions = useMemo<Options>(
+		() => ({
+			colors: showColors,
+			emoticons: true,
+			customDomains: autoLinkDomains,
+			...(katexEnabled && {
+				katex: { dollarSyntax: katexDollarSyntaxEnabled, parenthesisSyntax: katexParenthesisSyntaxEnabled },
+			}),
+		}),
+		[showColors, autoLinkDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
 	);
 
 	const parsedHighlights = useMemo(
@@ -91,7 +100,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
-			showColors,
+			parseOptions,
 			useUserHasReacted: username
 				? (message: IMessage) =>
 						(reaction: string): boolean =>
@@ -121,7 +130,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				return { normalizedUsername, showUsername: showUsername && showRealName && !nameRepeatsUsername };
 			},
 			jumpToMessageParam: msgParameter,
-			...(katex && { katex }),
 			highlights: parsedHighlights,
 
 			useOpenEmojiPicker: uid
@@ -146,10 +154,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			userRoles,
 			showRealName,
 			showUsername,
-			katex,
 			parsedHighlights,
 			reactToMessage,
-			showColors,
+			parseOptions,
 			msgParameter,
 			chat?.emojiPicker,
 			readReceipts,

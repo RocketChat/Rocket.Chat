@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { Options } from '@rocket.chat/message-parser';
 import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
@@ -30,12 +31,8 @@ export type MessageListContextValue = {
 		regex: RegExp;
 		urlRegex: RegExp;
 	}[];
-	katex?: {
-		dollarSyntaxEnabled: boolean;
-		parenthesisSyntaxEnabled: boolean;
-	};
 	autoTranslateLanguage?: string;
-	showColors: boolean;
+	parseOptions: Options;
 	jumpToMessageParam?: string;
 	username: string | undefined;
 	apiEmbedEnabled: boolean;
@@ -65,7 +62,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	showRoles: false,
 	showRealName: false,
 	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
-	showColors: false,
+	parseOptions: { emoticons: true },
 	username: undefined,
 	apiEmbedEnabled: false,
 	readReceipts: {
@@ -104,9 +101,7 @@ export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 
-export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
-
-export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
+export const useMessageListParseOptions = (): MessageListContextValue['parseOptions'] => useContext(MessageListContext).parseOptions;
 
 export const useMessageListReadReceipts = (): MessageListContextValue['readReceipts'] => useContext(MessageListContext).readReceipts;
 

@@ -7,13 +7,11 @@ import {
 	isFileVideoAttachment,
 	isQuoteAttachment,
 } from '@rocket.chat/core-typings';
-import type { Options } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
-import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
-import { useMessageListAutoTranslate, useMessageListKatex, useMessageListShowColors } from '../list/MessageListContext';
+import { useMessageListAutoTranslate, useMessageListParseOptions } from '../list/MessageListContext';
 
 const normalizeAttachments = (attachments: MessageAttachment[], name?: string, type?: string): MessageAttachment[] => {
 	if (name) {
@@ -57,26 +55,16 @@ const normalizeAttachments = (attachments: MessageAttachment[], name?: string, t
 	});
 };
 
+/**
+ * Returns the message ready to render: markdown text parsed to an AST per the room's
+ * display settings, and encrypted file attachments pointed at `/file-decrypt`.
+ * Needed because the stored message holds raw text and ciphertext URLs, which the UI can't show as-is.
+ */
 export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessage): MessageWithMdEnforced => {
-	const katex = useMessageListKatex();
-	const katexEnabled = !!katex;
-	const customDomains = useAutoLinkDomains();
+	const parseOptions = useMessageListParseOptions();
 	const autoTranslateOptions = useMessageListAutoTranslate();
-	const showColors = useMessageListShowColors();
 
 	return useMemo(() => {
-		const parseOptions: Options = {
-			colors: showColors,
-			emoticons: true,
-			customDomains,
-			...(katexEnabled && {
-				katex: {
-					dollarSyntax: katex.dollarSyntaxEnabled,
-					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
-				},
-			}),
-		};
-
 		const normalizedMessage = parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions);
 
 		if (normalizedMessage.attachments) {
@@ -88,5 +76,5 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 		}
 
 		return normalizedMessage;
-	}, [showColors, customDomains, katexEnabled, katex?.dollarSyntaxEnabled, katex?.parenthesisSyntaxEnabled, message, autoTranslateOptions]);
+	}, [message, parseOptions, autoTranslateOptions]);
 };
