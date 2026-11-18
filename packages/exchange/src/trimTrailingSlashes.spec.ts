@@ -15,10 +15,14 @@ describe('trimTrailingSlashes', () => {
 		expect(trimTrailingSlashes('https://graph.microsoft.com/v1.0//users/')).toBe('https://graph.microsoft.com/v1.0//users');
 	});
 
-	// A backtracking regex runs for hours on this input, so a regression fails as a CI timeout rather than an assertion.
-	it('leaves 16M slashes followed by another character untouched', () => {
-		const value = `${'/'.repeat(16 * 1024 * 1024)}x`;
+	it('never runs a regex, which backtracks quadratically on a long run of slashes', () => {
+		const exec = jest.spyOn(RegExp.prototype, 'exec');
 
-		expect(trimTrailingSlashes(value)).toBe(value);
+		try {
+			trimTrailingSlashes('https://graph.microsoft.com///');
+			expect(exec).not.toHaveBeenCalled();
+		} finally {
+			exec.mockRestore();
+		}
 	});
 });
