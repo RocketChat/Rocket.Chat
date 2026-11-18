@@ -18,7 +18,10 @@ const { AppUIKitInteractionApi } = proxyquire.noCallThru().load('./uikit', {
 	'../../../../server/api/v1/middlewares/logger': { nodeLoggerMiddleware: () => () => undefined },
 	'../../../../server/lib/http/httpServer': { httpApp: { use: sinon.stub() } },
 	'../../../../server/lib/uikit/confirmViewFiles': { confirmViewFiles: sinon.stub().resolves() },
-	'../../../../server/lib/uikit/interactionResponses': { 'withDefaultCloseTarget': sinon.stub().resolves(), '@noCallThru': false },
+	'../../../../server/lib/uikit/interactionResponses': {
+		withDefaultCloseTarget: sinon.stub().resolves(),
+		viewSubmitAnswer: (_delivered: boolean, body: unknown) => ({ status: 200, body }),
+	},
 	'../../../../server/lib/uikit/recordedViews': {
 		recordInteractionView: sinon.stub().resolves(true),
 		withRecordedView: async (view: unknown) => view,
