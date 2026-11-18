@@ -17,7 +17,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import ConfigModalFeatureList from './layout/ConfigModalFeatureList';
+import RichContent from '../../../../components/RichContent';
 
 export type VideoConfConfigModalProps = {
 	onClose: () => void;
@@ -40,10 +40,12 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 			<ModalContent>
 				<ModalHeroImage src='/images/conf-call-config.svg' />
 				<Text fontScale='h3'>{t('Premium_capabilities')}</Text>
-				<ConfigModalFeatureList>
-					<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
-					<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
-				</ConfigModalFeatureList>
+				<RichContent>
+					<ul>
+						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
+						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
+					</ul>
+				</RichContent>
 				<Stack gap='x12'>
 					<Text fontScale='h3'>{t('Conference_call_apps')}</Text>
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
