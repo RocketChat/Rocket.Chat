@@ -270,7 +270,6 @@
 	"apps/meteor/client/views/omnichannel/departments/EditDepartment.tsx": 2,
 	"apps/meteor/client/views/omnichannel/departments/EditDepartmentWithAllowedForwardData.tsx": 1,
 	"apps/meteor/client/views/omnichannel/departments/EditDepartmentWithData.tsx": 3,
-	"apps/meteor/client/views/omnichannel/directory/chats/ChatInfo/ChatInfo.tsx": 1,
 	"apps/meteor/client/views/omnichannel/directory/chats/ChatInfo/RoomEdit/RoomEditWithData.tsx": 2,
 	"apps/meteor/client/views/omnichannel/directory/chats/ChatsTable/ChatsTableFilter.tsx": 4,
 	"apps/meteor/client/views/omnichannel/directory/chats/ChatsTable/ChatsTableRow.tsx": 3,
