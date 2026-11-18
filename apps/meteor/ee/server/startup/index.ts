@@ -20,7 +20,8 @@ export const registerEEBroker = async (): Promise<void> => {
 			SystemLogger.warn(encryptionWarning);
 		}
 
-		const { startBroker } = await import('@rocket.chat/network-broker');
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports -- index.test.ts stubs this module through proxyquire, which only intercepts require
+		const { startBroker } = require('@rocket.chat/network-broker') as typeof import('@rocket.chat/network-broker');
 
 		api.setBroker(startBroker());
 		await api.start();
