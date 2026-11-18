@@ -107,36 +107,24 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 						<Label>{t('Format')}</Label>
 						<Field>
 							<FieldRow>
-								<FieldLabel htmlFor='JSONField'>{t('JSON')}</FieldLabel>
+								<FieldLabel htmlFor='json'>{t('JSON')}</FieldLabel>
 								<Controller
 									name='type'
 									control={control}
 									render={({ field: { value, onChange, ...field } }) => (
-										<RadioButton
-											id='json'
-											{...field}
-											onChange={() => onChange('json')}
-											aria-describedby='JSONField'
-											checked={value === 'json'}
-										/>
+										<RadioButton id='json' {...field} onChange={() => onChange('json')} checked={value === 'json'} />
 									)}
 								/>
 							</FieldRow>
 						</Field>
 						<Field>
 							<FieldRow>
-								<FieldLabel htmlFor='plainTextField'>{t('CSV')}</FieldLabel>
+								<FieldLabel htmlFor='csv'>{t('CSV')}</FieldLabel>
 								<Controller
 									name='type'
 									control={control}
 									render={({ field: { value, onChange, ...field } }) => (
-										<RadioButton
-											id='csv'
-											{...field}
-											onChange={() => onChange('csv')}
-											aria-describedby='plainTextField'
-											checked={value === 'csv'}
-										/>
+										<RadioButton id='csv' {...field} onChange={() => onChange('csv')} checked={value === 'csv'} />
 									)}
 								/>
 							</FieldRow>
@@ -146,36 +134,24 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 						<Label>{t('Export_most_recent_logs')}</Label>
 						<Field>
 							<FieldRow>
-								<FieldLabel htmlFor='maxLogsExport'>{t('Max_logs_export')}</FieldLabel>
+								<FieldLabel htmlFor='max'>{t('Max_logs_export')}</FieldLabel>
 								<Controller
 									name='count'
 									control={control}
 									render={({ field: { value, onChange, ...field } }) => (
-										<RadioButton
-											id='max'
-											{...field}
-											onChange={() => onChange('max')}
-											aria-describedby='maxLogsExport'
-											checked={value === 'max'}
-										/>
+										<RadioButton id='max' {...field} onChange={() => onChange('max')} checked={value === 'max'} />
 									)}
 								/>
 							</FieldRow>
 						</Field>
 						<Field>
 							<FieldRow>
-								<FieldLabel htmlFor='customMaxLogs'>{t('Limit_number_of_logs')}</FieldLabel>
+								<FieldLabel htmlFor='custom'>{t('Limit_number_of_logs')}</FieldLabel>
 								<Controller
 									name='count'
 									control={control}
 									render={({ field: { value, onChange, ...field } }) => (
-										<RadioButton
-											id='custom'
-											{...field}
-											onChange={() => onChange('custom')}
-											aria-describedby='customMaxLogs'
-											checked={value === 'custom'}
-										/>
+										<RadioButton id='custom' {...field} onChange={() => onChange('custom')} checked={value === 'custom'} />
 									)}
 								/>
 							</FieldRow>
@@ -192,7 +168,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 										disabled={count !== 'custom'}
 										placeholder='100'
 										{...field}
-										aria-describedby='limitNumber'
+										aria-label={t('Limit_number_of_logs')}
 									/>
 								)}
 							/>
