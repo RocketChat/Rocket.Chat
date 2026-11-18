@@ -23,8 +23,13 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 
 const makeRoom = () => ({ options: { videoCaptureDefaults: { deviceId: 'brio' } } }) as unknown as Room;
 
+// What a camera with a background effect sends has no device of its own; only the camera it reads from does.
 const makeTrack = (restartTrack = jest.fn().mockResolvedValue(undefined)) =>
-	({ restartTrack, mediaStreamTrack: { getSettings: () => ({ deviceId: 'brio', height: 720 }) } }) as unknown as LocalVideoTrack;
+	({
+		restartTrack,
+		getDeviceId: jest.fn().mockResolvedValue('brio'),
+		mediaStreamTrack: { getSettings: () => ({ height: 720 }) },
+	}) as unknown as LocalVideoTrack;
 
 beforeEach(() => {
 	persisted.mockClear();
