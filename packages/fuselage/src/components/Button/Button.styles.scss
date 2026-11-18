@@ -61,9 +61,11 @@ $inset-large: lengths.padding(24); // 24px
 
 		@include use-with-truncated-text();
 
-		// Icon is sized to the label's line-height, so top-aligning it keeps
-		// both centred (default `vertical-align: text-bottom` would not).
-		.rcx-icon {
+		// The icon is sized to the label's line-height, so top-aligning it keeps
+		// both centred (default `vertical-align: text-bottom` would not). Scoped
+		// to the button's own icon rather than every `.rcx-icon` below it, so a
+		// caller's icon inside `children` keeps whatever alignment it had.
+		.rcx-button__icon {
 			vertical-align: top;
 		}
 	}
