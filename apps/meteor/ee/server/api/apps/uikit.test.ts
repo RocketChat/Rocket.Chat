@@ -17,6 +17,13 @@ const { AppUIKitInteractionApi } = proxyquire.noCallThru().load('./uikit', {
 	'../../../../server/api/v1/middlewares/authentication': { authenticationMiddleware: () => () => undefined },
 	'../../../../server/api/v1/middlewares/logger': { nodeLoggerMiddleware: () => () => undefined },
 	'../../../../server/lib/http/httpServer': { httpApp: { use: sinon.stub() } },
+	'../../../../server/lib/uikit/confirmViewFiles': { confirmViewFiles: sinon.stub().resolves() },
+	'../../../../server/lib/uikit/interactionResponses': { 'withDefaultCloseTarget': sinon.stub().resolves(), '@noCallThru': false },
+	'../../../../server/lib/uikit/recordedViews': {
+		recordInteractionView: sinon.stub().resolves(true),
+		withRecordedView: async (view: unknown) => view,
+	},
+	'../../../../server/lib/uikit/reportInvalidBlocks': { reportInvalidInteractionBlocks: sinon.stub().returns(false) },
 	'../../../../server/settings': { settings: { watch: sinon.stub(), get: sinon.stub() } },
 	'../../lib/apps/orchestrator': { Apps: {} },
 });
@@ -272,7 +279,15 @@ describe('AppUIKitInteractionApi routeHandler', () => {
 			expect(triggerEvent.args).to.deep.equal([
 				[
 					'IUIKitInteractionHandler',
-					{ type: 'viewClosed', appId: 'app-id', user: appUser, room: appRoom, payload: { view, isCleared: true } },
+					{
+						type: 'viewClosed',
+						appId: 'app-id',
+						triggerId: 'trigger-id',
+						user: appUser,
+						visitor: undefined,
+						room: appRoom,
+						payload: { view, isCleared: true },
+					},
 				],
 			]);
 			expect(res.send.calledOnceWithExactly({ success: true })).to.equal(true);
@@ -321,7 +336,16 @@ describe('AppUIKitInteractionApi routeHandler', () => {
 			expect(triggerEvent.args).to.deep.equal([
 				[
 					'IUIKitInteractionHandler',
-					{ type: 'viewSubmit', appId: 'app-id', actionId: 'action-id', triggerId: 'trigger-id', payload, user: appUser, room: appRoom },
+					{
+						type: 'viewSubmit',
+						appId: 'app-id',
+						actionId: 'action-id',
+						triggerId: 'trigger-id',
+						payload,
+						user: appUser,
+						visitor: undefined,
+						room: appRoom,
+					},
 				],
 			]);
 			expect(res.send.calledOnceWithExactly({ success: true })).to.equal(true);
