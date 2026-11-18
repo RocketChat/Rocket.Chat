@@ -393,6 +393,12 @@ describe('richTextFromMarkdown', () => {
 		});
 	});
 
+	it('round-trips a nested list', () => {
+		const markdown = '- a\n  - b\n- c\n\n- d';
+
+		expect(richTextToMarkdown(richTextFromMarkdown(markdown), names)).toBe(markdown);
+	});
+
 	it('round-trips a block written as Markdown', () => {
 		const markdown = '**a** and _b_\n\n- one\n- two\n\n> q';
 

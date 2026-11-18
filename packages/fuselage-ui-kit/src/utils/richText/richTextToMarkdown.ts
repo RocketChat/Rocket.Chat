@@ -92,4 +92,15 @@ const containerToMarkdown = (container: UiKit.RichTextContainer, names: MentionN
 
 /** Writes a `rich_text` block as the Markdown a user would type to produce it. */
 export const richTextToMarkdown = (block: Pick<UiKit.RichTextBlock, 'elements'>, names: MentionNames): string =>
-	block.elements.map((container) => containerToMarkdown(container, names)).join('\n\n');
+	block.elements
+		.map((container, index) => {
+			const previous = block.elements[index - 1];
+			if (!previous) {
+				return containerToMarkdown(container, names);
+			}
+			// A nested list and its parent are one list in Markdown, so no blank line may separate them.
+			const isNesting =
+				previous.type === 'rich_text_list' && container.type === 'rich_text_list' && (previous.indent ?? 0) !== (container.indent ?? 0);
+			return `${isNesting ? '\n' : '\n\n'}${containerToMarkdown(container, names)}`;
+		})
+		.join('');
