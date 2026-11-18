@@ -175,7 +175,7 @@ $button-secondary-success-disabled-color: theme('button-secondary-success-disabl
 // empty
 $button-empty-background-color: theme('button-empty-background-color', colors.surface(light));
 $button-empty-border-color: theme('button-empty-border-color', colors.stroke(dark));
-$button-empty-color: theme('button-empty-color', colors.font(white));
+$button-empty-color: theme('button-empty-color', colors.font('white'));
 $button-empty-hover-background-color: theme('button-empty-hover-background-color', colors.surface(light));
 $button-empty-hover-border-color: theme('button-empty-hover-border-color', colors.stroke(extra-dark));
 $button-empty-active-background-color: theme('button-empty-active-background-color', colors.surface(light));
@@ -185,12 +185,12 @@ $button-empty-focus-border-color: theme('button-empty-focus-border-color', color
 $button-empty-focus-shadow-color: theme('button-empty-focus-shadow-color', colors.shadow(highlight));
 $button-empty-disabled-background-color: theme('button-empty-disabled-background-color', colors.button(secondary-disabled));
 $button-empty-disabled-border-color: theme('button-empty-disabled-border-color', colors.stroke(light));
-$button-empty-disabled-color: theme('button-empty-disabled-color', colors.font(white));
+$button-empty-disabled-color: theme('button-empty-disabled-color', colors.font('white'));
 
 // off
 $button-off-background-color: theme('button-off-background-color', colors.stroke(medium));
 $button-off-border-color: theme('button-off-border-color', colors.stroke(medium));
-$button-off-color: theme('button-off-color', colors.font(white));
+$button-off-color: theme('button-off-color', colors.font('white'));
 $button-off-hover-background-color: theme('button-off-hover-background-color', colors.font(hint));
 $button-off-hover-border-color: theme('button-off-hover-border-color', colors.font(hint));
 $button-off-active-background-color: theme('button-off-active-background-color', colors.stroke(dark));

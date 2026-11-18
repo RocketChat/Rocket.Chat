@@ -97,7 +97,7 @@ $-surfaces: (
 }
 
 $-font: (
-	white: token($font, white),
+	'white': token($font, 'white'),
 	disabled: token($font, disabled),
 	annotation: token($font, annotation),
 	hint: token($font, hint),

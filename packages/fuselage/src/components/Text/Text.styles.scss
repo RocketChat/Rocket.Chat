@@ -19,7 +19,7 @@
 		}
 	}
 
-	@each $color in (white, disabled, annotation, hint, secondary-info, default, titles-labels, info, danger, pure-black, pure-white) {
+	@each $color in ('white', disabled, annotation, hint, secondary-info, default, titles-labels, info, danger, pure-black, pure-white) {
 		&--color-#{$color} {
 			color: colors.font($color);
 		}

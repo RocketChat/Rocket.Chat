@@ -5,7 +5,7 @@
 
 $tooltip-border-radius: theme('tooltip-border-radius', lengths.border-radius(medium));
 $tooltip-dark-background-color: theme('tooltip-dark-background-color', colors.surface(dark));
-$tooltip-dark-text-color: theme('tooltip-dark-text-color', colors.font(white));
+$tooltip-dark-text-color: theme('tooltip-dark-text-color', colors.font('white'));
 $tooltip-light-background-color: theme('tooltip-light-background-color', colors.surface(neutral));
 $tooltip-light-text-color: theme('tooltip-light-text-color', colors.font(default));
 
