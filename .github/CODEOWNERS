@@ -6,39 +6,90 @@
 /packages/ui-contexts/ @RocketChat/frontend
 /packages/eslint-config/ @RocketChat/Architecture
 /packages/lint-config/ @RocketChat/Architecture
-/packages/livechat/ @RocketChat/frontend @RocketChat/Architecture
+/packages/livechat/ @RocketChat/frontend
+/packages/ddp-client/src/livechat/ @RocketChat/frontend
 /.vscode/ @RocketChat/Architecture
 /.github/ @RocketChat/Architecture
-/_templates/ @RocketChat/Architecture
 /apps/meteor/client/ @RocketChat/frontend
 /apps/meteor/tests/e2e @RocketChat/frontend
 /apps/meteor/tests/end-to-end @RocketChat/backend
 /apps/meteor/tests/mocks/server/modules/apps/ @RocketChat/apps
-/apps/meteor/app/livechat @RocketChat/omnichannel
-/apps/meteor/app/file-upload @RocketChat/backend
-/apps/meteor/app/integrations @RocketChat/backend
 /apps/meteor/server @RocketChat/backend
+/apps/meteor/ee/server @RocketChat/backend
 /apps/meteor/server/modules/apps/ @RocketChat/apps
-/apps/meteor/server/lib/omnichannel @RocketChat/omnichannel
-/apps/meteor/server/hooks/omnichannel @RocketChat/omnichannel
-/apps/meteor/server/api/v1/omnichannel @RocketChat/omnichannel
-/apps/meteor/server/meteor-methods/omnichannel @RocketChat/omnichannel
 /packages/models @RocketChat/Architecture
-apps/meteor/server/startup/migrations @RocketChat/Architecture
-/apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
-/apps/meteor/server/features/EmailInbox @RocketChat/omnichannel
+/apps/meteor/server/startup/migrations @RocketChat/Architecture
 /apps/meteor/ee/server/lib/apps/ @RocketChat/apps
 /apps/meteor/ee/server/api/apps/ @RocketChat/apps
 /apps/meteor/ee/server/cron/apps.ts @RocketChat/apps
 /apps/meteor/ee/server/cron/appRequests.ts @RocketChat/apps
 /apps/meteor/ee/server/startup/apps.ts @RocketChat/apps
-/apps/meteor/ee/server/lib/canned-responses @RocketChat/omnichannel
-/apps/meteor/ee/server/hooks/canned-responses @RocketChat/omnichannel
-/apps/meteor/ee/server/api/v1/canned-responses.ts @RocketChat/omnichannel
+
+# Omnichannel owns routing, the queue, the visitor-facing (public) API and analytics.
+# Agent/manager admin endpoints, contacts, canned responses, email inbox and integrations
+# fall back to @RocketChat/backend; omnichannel UI outside analytics falls back to @RocketChat/frontend.
+/packages/omni-core/ @RocketChat/omnichannel
+/ee/packages/omni-core-ee/ @RocketChat/omnichannel
+/ee/packages/omnichannel-services/ @RocketChat/omnichannel
+/ee/apps/omnichannel-transcript/ @RocketChat/omnichannel
+/ee/apps/queue-worker/ @RocketChat/omnichannel
+/apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
+/apps/meteor/lib/livechat @RocketChat/omnichannel
+/apps/meteor/server/services/omnichannel @RocketChat/omnichannel
+/apps/meteor/server/services/omnichannel-analytics @RocketChat/omnichannel
+
+# Routing and queue
+/apps/meteor/server/lib/omnichannel/RoutingManager.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/QueueManager.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/routing/ @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/business-hour/ @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/Helper.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/takeInquiry.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/transfer.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/conditionalLockAgent.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/closeRoom.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/closeLivechatRoom.ts @RocketChat/omnichannel
+/apps/meteor/server/hooks/omnichannel/saveLastMessageToInquiry.ts @RocketChat/omnichannel
+/apps/meteor/server/hooks/omnichannel/processRoomAbandonment.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/inquiries.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/queue.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/transfer.ts @RocketChat/omnichannel
 /apps/meteor/ee/server/lib/omnichannel @RocketChat/omnichannel
 /apps/meteor/ee/server/hooks/omnichannel @RocketChat/omnichannel
-/apps/meteor/ee/server/api/v1/omnichannel @RocketChat/omnichannel
-/apps/meteor/ee/server/meteor-methods/saveCannedResponse.ts @RocketChat/omnichannel
-/apps/meteor/ee/server/meteor-methods/removeCannedResponse.ts @RocketChat/omnichannel
-/apps/meteor/client/omnichannel @RocketChat/omnichannel
-/apps/meteor/client/components/omnichannel @RocketChat/omnichannel
+/apps/meteor/ee/server/api/v1/omnichannel/inquiries.ts @RocketChat/omnichannel
+
+# Public (visitor-facing) API
+/apps/meteor/server/api/v1/omnichannel/visitor.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/room.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/message.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/agent.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/config.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/customField.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/upload.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/transcript.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/offlineMessage.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/pageVisited.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/sms.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/lib/livechat.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/lib/visitors.ts @RocketChat/omnichannel
+/apps/meteor/ee/server/api/v1/omnichannel/triggers.ts @RocketChat/omnichannel
+/apps/meteor/server/meteor-methods/omnichannel @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/livechat.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/guests.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/Visitors.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/resolveVisitor.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/messages.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/roomAccessValidator.compatibility.ts @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/roomAccessValidator.internalService.ts @RocketChat/omnichannel
+/apps/meteor/tests/end-to-end/api-livechat @RocketChat/omnichannel
+
+# Analytics and reports
+/apps/meteor/server/lib/omnichannel/analytics/ @RocketChat/omnichannel
+/apps/meteor/server/lib/omnichannel/AnalyticsTyped.ts @RocketChat/omnichannel
+/apps/meteor/server/hooks/omnichannel/saveAnalyticsData.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/dashboards.ts @RocketChat/omnichannel
+/apps/meteor/server/api/v1/omnichannel/statistics.ts @RocketChat/omnichannel
+/apps/meteor/ee/server/api/v1/omnichannel/reports.ts @RocketChat/omnichannel
+/apps/meteor/client/views/omnichannel/analytics @RocketChat/omnichannel
+/apps/meteor/client/views/omnichannel/realTimeMonitoring @RocketChat/omnichannel
+/apps/meteor/client/views/omnichannel/reports @RocketChat/omnichannel
