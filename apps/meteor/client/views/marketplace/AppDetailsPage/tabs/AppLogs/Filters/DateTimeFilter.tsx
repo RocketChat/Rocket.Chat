@@ -14,7 +14,7 @@ const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Stack direction='row' gap='x8' id={id}>
+		<Stack direction='row' grow gap='x8' id={id}>
 			<Controller
 				control={control}
 				name={type === 'start' ? 'startDate' : 'endDate'}

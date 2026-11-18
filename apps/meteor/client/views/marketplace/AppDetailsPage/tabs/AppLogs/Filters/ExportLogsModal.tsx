@@ -20,7 +20,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
-import FilterField from './layout/FilterField';
 
 export type ExportLogsModalProps = {
 	onClose: () => void;
@@ -103,8 +102,8 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 			</ModalHeader>
 			<ModalContent>
 				<Stack gap='x24'>
-					<FilterField>
-						<Label>{t('Format')}</Label>
+					<Stack is='fieldset'>
+						<Label is='legend'>{t('Format')}</Label>
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor='json'>{t('JSON')}</FieldLabel>
@@ -129,9 +128,9 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 								/>
 							</FieldRow>
 						</Field>
-					</FilterField>
-					<FilterField>
-						<Label>{t('Export_most_recent_logs')}</Label>
+					</Stack>
+					<Stack is='fieldset'>
+						<Label is='legend'>{t('Export_most_recent_logs')}</Label>
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor='max'>{t('Max_logs_export')}</FieldLabel>
@@ -173,7 +172,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 								)}
 							/>
 						</Field>
-					</FilterField>
+					</Stack>
 				</Stack>
 			</ModalContent>
 			<ModalFooter>

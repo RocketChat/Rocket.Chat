@@ -1,10 +1,9 @@
-import { Label, Stack } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DateTimeFilter from './DateTimeFilter';
-import FilterField from './layout/FilterField';
 
 export type DateTimeModalFormData = {
 	startDate?: string;
@@ -45,14 +44,18 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 			onConfirm={handleSave}
 		>
 			<Stack gap='x24'>
-				<FilterField>
-					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
-					<DateTimeFilter control={control} type='start' />
-				</FilterField>
-				<FilterField>
-					<Label htmlFor='timeFilter'>{t('Until')}</Label>
-					<DateTimeFilter control={control} type='end' />
-				</FilterField>
+				<Field>
+					<FieldLabel htmlFor='timeFilter'>{t('Logs_from')}</FieldLabel>
+					<FieldRow>
+						<DateTimeFilter control={control} type='start' />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor='timeFilter'>{t('Until')}</FieldLabel>
+					<FieldRow>
+						<DateTimeFilter control={control} type='end' />
+					</FieldRow>
+				</Field>
 			</Stack>
 		</GenericModal>
 	);
