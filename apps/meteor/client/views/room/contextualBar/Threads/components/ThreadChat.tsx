@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
-import { CheckBox, FieldLabel } from '@rocket.chat/fuselage';
+import { CheckBox, Label } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -126,7 +126,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 									onChange={() => setSendToChannel((checked) => !checked)}
 									name='alsoSendThreadToChannel'
 								/>
-								<FieldLabel htmlFor={sendToChannelID}>{t('Also_send_to_channel')}</FieldLabel>
+								<Label htmlFor={sendToChannelID}>{t('Also_send_to_channel')}</Label>
 							</ThreadComposerOption>
 						</ComposerContainer>
 					</RoomComposer>
