@@ -30,8 +30,8 @@ export function formatModalInteraction(view: IUIKitModalViewParam, context: IUIK
 		view: {
 			appId: context.appId,
 			type: UIKitSurfaceType.MODAL,
-			id: view.id ? view.id : uuid(),
 			...view,
+			id: view.id || uuid(),
 			showIcon: true,
 		} as IUIKitSurface,
 	};
@@ -68,8 +68,8 @@ export function formatContextualBarInteraction(
 		view: {
 			appId: context.appId,
 			type: UIKitSurfaceType.CONTEXTUAL_BAR,
-			id: view.id ? view.id : uuid(),
 			...view,
+			id: view.id || uuid(),
 			showIcon: true,
 		} as IUIKitSurface,
 	};
