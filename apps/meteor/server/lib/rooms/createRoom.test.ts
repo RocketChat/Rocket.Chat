@@ -341,13 +341,20 @@ describe('createRoom', () => {
 
 		it('returns the members an ABAC room skipped', async () => {
 			const candidates = Object.assign([{ ...owner }, { ...alice }], { toArray: async () => [{ ...owner }, { ...alice }] });
-			Users.findUsersByUsernames.returns(candidates);
+			Users.findUsersByUsernames
+				.onFirstCall()
+				.returns(candidates)
+				.onSecondCall()
+				.returns([{ ...owner }]);
 			filterUsersAllowedInRoom.resolves([{ ...owner }]);
 
 			const result = await createRoom('p', 'secret', owner, ['alice'], false, false, { abacAttributes: [{ key: 'k', values: ['v'] }] });
 
 			expect(Users.findUsersByUsernames.secondCall.args[0]).to.deep.equal(['owner']);
 			expect(result.skippedMembers).to.deep.equal(['alice']);
+			expect(
+				Subscriptions.createWithRoomAndManyUsers.firstCall.args[1].map(({ user }: { user: { username: string } }) => user.username),
+			).to.deep.equal(['owner']);
 		});
 	});
 

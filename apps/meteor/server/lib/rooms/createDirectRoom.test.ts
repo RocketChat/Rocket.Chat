@@ -68,7 +68,7 @@ describe('createDirectRoom', () => {
 		expect(callbacksRun.called).to.be.false;
 	});
 
-	it('allows a single member when DirectMesssage_maxUsers is not set', async () => {
+	it('uses a default maximum of one when DirectMesssage_maxUsers is not set', async () => {
 		settingsGet.withArgs('DirectMesssage_maxUsers').returns(undefined);
 
 		const error = await createDirectRoom(['alice', 'bob'], {}, {}).catch((e: unknown) => e);

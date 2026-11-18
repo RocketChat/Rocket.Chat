@@ -4,6 +4,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import { UpdaterImpl } from '@rocket.chat/models';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import { set, unset } from 'lodash';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -70,7 +71,6 @@ const { saveUser, isUpdateUserData } = loadSaveUser();
 describe('saveUser', () => {
 	let Users: Record<string, sinon.SinonStub>;
 	let oldUser: Record<string, any>;
-	let updatedUser: Record<string, any>;
 	let updateFilter: Record<string, any> | undefined;
 
 	const performer = { _id: 'admin', username: 'admin' };
@@ -85,14 +85,16 @@ describe('saveUser', () => {
 			],
 			roles: ['user'],
 		};
-		updatedUser = { _id: 'uid', username: 'jane', emails: [{ address: 'jane@new.com', verified: true }] };
 		updateFilter = undefined;
 		Users = {
 			findOneById: sinon.stub().callsFake(async (id: string) => (id === 'admin' ? performer : oldUser)),
 			getUpdater: sinon.stub().callsFake(() => new UpdaterImpl()),
 			updateFromUpdater: sinon.stub().callsFake(async (_query: unknown, updater: UpdaterImpl<any>) => {
 				updateFilter = updater.getRawUpdateFilter();
-				oldUser = updatedUser;
+				const user = structuredClone(oldUser);
+				Object.entries(updateFilter.$set ?? {}).forEach(([path, value]) => set(user, path, value));
+				Object.keys(updateFilter.$unset ?? {}).forEach((path) => unset(user, path));
+				oldUser = user;
 			}),
 		};
 		mockModel('Users', Users);
@@ -640,20 +642,29 @@ describe('saveUser', () => {
 	describe('after commit', () => {
 		it('runs afterSaveUser and IPostUserUpdated with the saved user, then notifies the diff, and returns true', async () => {
 			const original = oldUser;
+			const emails = [
+				{ address: 'jane@old.com', verified: false },
+				{ address: 'jane@other.com', verified: true },
+			];
+			const savedUser = { _id: 'uid', username: 'jane', emails, roles: ['user'], statusText: 'x', language: 'pt' };
 
-			expect(await saveUser('admin', { _id: 'uid', email: 'jane@new.com', verified: true, statusText: 'x', language: 'pt' })).to.be.true;
+			expect(await saveUser('admin', { _id: 'uid', email: 'jane@other.com', verified: true, statusText: 'x', language: 'pt' })).to.be.true;
 
-			expect(callbacksRun.secondCall.args).to.deep.equal(['afterSaveUser', { user: updatedUser, oldUser: original }]);
-			expect(triggerEvent.calledOnceWith('IPostUserUpdated', { user: updatedUser, previousUser: original, performedBy: performer })).to.be
-				.true;
-			expect(
-				notifyOnUserChange.calledOnceWith({
+			expect(callbacksRun.secondCall.args).to.deep.equal(['afterSaveUser', { user: savedUser, oldUser: original }]);
+			expect(triggerEvent.firstCall.args).to.deep.equal([
+				'IPostUserUpdated',
+				{ user: savedUser, previousUser: original, performedBy: performer },
+			]);
+			expect(notifyOnUserChange.firstCall.args).to.deep.equal([
+				{
 					clientAction: 'updated',
 					id: 'uid',
-					diff: { _id: 'uid', email: 'jane@new.com', language: 'pt', emails: updatedUser.emails },
+					diff: { _id: 'uid', email: 'jane@other.com', language: 'pt', emails },
 					unset: {},
-				}),
-			).to.be.true;
+				},
+			]);
+			expect(triggerEvent.calledOnce).to.be.true;
+			expect(notifyOnUserChange.calledOnce).to.be.true;
 			expect(sendPasswordEmail.called).to.be.false;
 			sinon.assert.callOrder(callbacksRun, triggerEvent, notifyOnUserChange);
 		});
