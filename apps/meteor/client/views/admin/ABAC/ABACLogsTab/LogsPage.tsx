@@ -25,42 +25,60 @@ import DateRangePicker, { type DateRangePreset } from '../../moderation/helpers/
 
 type AbacAuditEvent = Serialized<OperationResult<'GET', '/v1/abac/audit'>>['events'][number];
 
-type ActionLabelGetter = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => string;
+const getActionLabel = (t: TFunction, action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
+	switch (action) {
+		case 'created':
+			return t('Created');
+		case 'updated':
+			return t('Updated');
+		case 'deleted':
+			return t('Deleted');
+		case 'all-deleted':
+			return t('ABAC_All_Attributes_deleted');
+		case 'key-removed':
+			return t('ABAC_Key_removed');
+		case 'key-renamed':
+			return t('ABAC_Key_renamed');
+		case 'value-removed':
+			return t('ABAC_Value_removed');
+		case 'key-added':
+			return t('ABAC_Key_added');
+		case 'key-updated':
+			return t('ABAC_Key_updated');
+		case 'revoked-object-access':
+			return t('ABAC_Revoked_Object_Access');
+		case 'granted-object-access':
+			return t('ABAC_Granted_Object_Access');
+		default:
+			return '';
+	}
+};
 
-const getBaseEventInfo = (event: AbacAuditEvent, t: TFunction, getActionLabel: ActionLabelGetter) => ({
+const getBaseEventInfo = (event: AbacAuditEvent, t: TFunction) => ({
 	id: event._id,
 	user: event.actor?.type === 'user' ? event.actor.username : t('System'),
 	...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
 	timestamp: new Date(event.ts),
 	element: t('ABAC_Room'),
-	action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
+	action: getActionLabel(t, event.data?.find((item) => item.key === 'change')?.value),
 	room: undefined,
 });
 
-type BaseEventInfo = ReturnType<typeof getBaseEventInfo>;
-
-const getActionPerformedEventInfo = (
-	event: Extract<AbacAuditEvent, { t: 'abac.action.performed' }>,
-	eventInfo: BaseEventInfo,
-	t: TFunction,
-	getActionLabel: ActionLabelGetter,
-) => ({
-	...eventInfo,
+const getActionPerformedFields = (event: Extract<AbacAuditEvent, { t: 'abac.action.performed' }>, t: TFunction) => ({
 	name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
-	action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+	action: getActionLabel(t, event.data?.find((item) => item.key === 'action')?.value),
 	room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
 	element: t('ABAC_room_membership'),
 });
 
-const getObjectAttributeChangedEventInfo = (
+const getObjectAttributeChangedFields = (
 	event: Extract<AbacAuditEvent, { t: 'abac.object.attribute.changed' }>,
-	eventInfo: BaseEventInfo,
+	user: string | undefined,
 	t: TFunction,
 ) => {
 	const app = event.data?.find((item) => item.key === 'app')?.value;
 	return {
-		...eventInfo,
-		...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+		...(app && { user: t('ABAC_User_via_App', { username: user, appName: app.name ?? app._id }) }),
 		name:
 			event.data
 				?.find((item) => item.key === 'current')
@@ -91,35 +109,6 @@ const LogsPage = () => {
 	const queryKey = ABACQueryKeys.logs.list(query);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
-	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
-		switch (action) {
-			case 'created':
-				return t('Created');
-			case 'updated':
-				return t('Updated');
-			case 'deleted':
-				return t('Deleted');
-			case 'all-deleted':
-				return t('ABAC_All_Attributes_deleted');
-			case 'key-removed':
-				return t('ABAC_Key_removed');
-			case 'key-renamed':
-				return t('ABAC_Key_renamed');
-			case 'value-removed':
-				return t('ABAC_Value_removed');
-			case 'key-added':
-				return t('ABAC_Key_added');
-			case 'key-updated':
-				return t('ABAC_Key_updated');
-			case 'revoked-object-access':
-				return t('ABAC_Revoked_Object_Access');
-			case 'granted-object-access':
-				return t('ABAC_Granted_Object_Access');
-			default:
-				return '';
-		}
-	};
-
 	const { data: logs, isLoading } = usePaginatedQuery({
 		query: {
 			queryKey,
@@ -133,7 +122,7 @@ const LogsPage = () => {
 	// TODO: Move this mapping from useQuery's old `select` into a usePaginatedQuery `combine`
 	const data = logs && {
 		events: logs.events.map((event) => {
-			const eventInfo = getBaseEventInfo(event, t, getActionLabel);
+			const eventInfo = getBaseEventInfo(event, t);
 			switch (event.t) {
 				case 'abac.attribute.changed':
 					return {
@@ -142,9 +131,9 @@ const LogsPage = () => {
 						name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
 					};
 				case 'abac.action.performed':
-					return getActionPerformedEventInfo(event, eventInfo, t, getActionLabel);
+					return { ...eventInfo, ...getActionPerformedFields(event, t) };
 				case 'abac.object.attribute.changed':
-					return getObjectAttributeChangedEventInfo(event, eventInfo, t);
+					return { ...eventInfo, ...getObjectAttributeChangedFields(event, eventInfo.user, t) };
 				case 'abac.object.attributes.removed':
 					return {
 						...eventInfo,
