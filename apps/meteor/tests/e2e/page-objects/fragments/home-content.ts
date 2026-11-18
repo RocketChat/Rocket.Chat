@@ -369,7 +369,7 @@ export class HomeContent {
 	}
 
 	get btnNewCannedResponse(): Locator {
-		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
+		return this.page.getByRole('dialog', { name: 'Canned responses', exact: true }).getByRole('button', { name: 'Create', exact: true });
 	}
 
 	get imageGallery(): Locator {
