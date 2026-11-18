@@ -561,8 +561,6 @@ export const createSearchIndexScheduler = ({
 		addPendingDecrypt(message) {
 			// Before the first start the runtime can still be emptying an out-of-date index: the message waits for its key too.
 			if ((!started && generation > 0) || removedRooms.has(message.rid)) return;
-			// A room that the user did not choose is never indexed, so its messages must not fill the pending set.
-			if (!getRooms().some(({ rid }) => rid === message.rid)) return;
 			crawler.addPendingDecrypt(message);
 			publish();
 		},

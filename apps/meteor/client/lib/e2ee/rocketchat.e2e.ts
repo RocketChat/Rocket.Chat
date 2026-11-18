@@ -832,7 +832,8 @@ class E2E extends Emitter {
 
 		indexDecrypted(decryptedMessageWithQuote);
 		// The room key is missing: the retry after E2E_ROOM_READY indexes the message. Only the crawler kept it before.
-		if (isDecryptFailed(decryptedMessageWithQuote)) e2eSearchIndexRuntime.onDecryptFailed(message);
+		// Only a room that the user chose is indexed, so only its messages wait for the key and use the pending slots.
+		if (isDecryptFailed(decryptedMessageWithQuote) && getChosenRids().has(message.rid)) e2eSearchIndexRuntime.onDecryptFailed(message);
 
 		return decryptedMessageWithQuote;
 	}

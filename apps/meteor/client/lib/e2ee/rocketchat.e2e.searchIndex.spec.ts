@@ -292,6 +292,36 @@ describe('E2E client and the local search index', () => {
 		await e2e.stopClient();
 	});
 
+	it('keeps a live message that failed to decrypt for a retry only in a room that the user chose', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const onDecryptFailed = jest.spyOn(e2eSearchIndexRuntime, 'onDecryptFailed');
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({
+			decryptMessage: jest.fn(async (message) => ({ ...message, e2e: 'done', msg: 'E2E_Key_Error', decryptFailed: true })),
+		} as never);
+		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		for (const rid of ['r1', 'r2']) {
+			await e2e.decryptMessage({
+				_id: `m-${rid}`,
+				rid,
+				t: 'e2e',
+				e2e: 'pending',
+				msg: 'ciphertext',
+				u: { _id: 'u2', username: 'bob' },
+				ts: new Date(),
+				_updatedAt: new Date(),
+			} as never);
+		}
+
+		expect(onDecryptFailed.mock.calls.map(([message]) => message.rid)).toEqual(['r1']);
+
+		await e2e.stopClient();
+	});
+
 	it('does not index a message whose decrypt ends after the user left its room (for example, a quoted message)', async () => {
 		const { privateKey } = await generate();
 		(e2e as unknown as { userId: string }).userId = 'u1';
