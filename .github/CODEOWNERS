@@ -25,9 +25,8 @@
 /apps/meteor/ee/server/cron/appRequests.ts @RocketChat/apps
 /apps/meteor/ee/server/startup/apps.ts @RocketChat/apps
 
-# Omnichannel owns routing, the queue, the visitor-facing (public) API and analytics.
-# Agent/manager admin endpoints, contacts, canned responses, email inbox and integrations
-# fall back to @RocketChat/backend; omnichannel UI outside analytics falls back to @RocketChat/frontend.
+# Omnichannel owns routing, the queue and the visitor-facing (public) API, not their tests.
+# Everything else in omnichannel falls back to @RocketChat/backend or @RocketChat/frontend.
 /packages/omni-core/ @RocketChat/omnichannel
 /ee/packages/omni-core-ee/ @RocketChat/omnichannel
 /ee/packages/omnichannel-services/ @RocketChat/omnichannel
@@ -36,7 +35,6 @@
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
 /apps/meteor/lib/livechat @RocketChat/omnichannel
 /apps/meteor/server/services/omnichannel @RocketChat/omnichannel
-/apps/meteor/server/services/omnichannel-analytics @RocketChat/omnichannel
 
 # Routing and queue
 /apps/meteor/server/lib/omnichannel/RoutingManager.ts @RocketChat/omnichannel
@@ -81,15 +79,14 @@
 /apps/meteor/server/lib/omnichannel/messages.ts @RocketChat/omnichannel
 /apps/meteor/server/lib/omnichannel/roomAccessValidator.compatibility.ts @RocketChat/omnichannel
 /apps/meteor/server/lib/omnichannel/roomAccessValidator.internalService.ts @RocketChat/omnichannel
-/apps/meteor/tests/end-to-end/api-livechat @RocketChat/omnichannel
 
-# Analytics and reports
-/apps/meteor/server/lib/omnichannel/analytics/ @RocketChat/omnichannel
-/apps/meteor/server/lib/omnichannel/AnalyticsTyped.ts @RocketChat/omnichannel
-/apps/meteor/server/hooks/omnichannel/saveAnalyticsData.ts @RocketChat/omnichannel
-/apps/meteor/server/api/v1/omnichannel/dashboards.ts @RocketChat/omnichannel
-/apps/meteor/server/api/v1/omnichannel/statistics.ts @RocketChat/omnichannel
-/apps/meteor/ee/server/api/v1/omnichannel/reports.ts @RocketChat/omnichannel
-/apps/meteor/client/views/omnichannel/analytics @RocketChat/omnichannel
-/apps/meteor/client/views/omnichannel/realTimeMonitoring @RocketChat/omnichannel
-/apps/meteor/client/views/omnichannel/reports @RocketChat/omnichannel
+# Tests next to omnichannel-owned code go back to the default owners
+/apps/meteor/server/lib/omnichannel/**/*.test.ts @RocketChat/backend
+/apps/meteor/server/lib/omnichannel/**/*.spec.ts @RocketChat/backend
+/apps/meteor/server/services/omnichannel/**/*.test.ts @RocketChat/backend
+/apps/meteor/ee/server/lib/omnichannel/**/*.test.ts @RocketChat/backend
+/apps/meteor/ee/server/hooks/omnichannel/**/*.test.ts @RocketChat/backend
+/apps/meteor/lib/livechat/**/*.test.ts
+/packages/omni-core/**/*.spec.ts @RocketChat/Architecture
+/ee/packages/omni-core-ee/**/*.spec.ts
+/ee/packages/omnichannel-services/**/*.spec.ts
