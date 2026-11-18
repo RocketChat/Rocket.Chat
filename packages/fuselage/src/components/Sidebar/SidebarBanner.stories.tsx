@@ -15,7 +15,7 @@ export default {
 				component:
 					'A notice at the top of the sidebar.\n\n' +
 					'**Rules**\n' +
-					'- Pass `linkProps.href` when the action navigates: it renders a link. Without an `href` the action renders a button, so it is reachable and operable from the keyboard.\n' +
+					'- Pass `linkProps` with an `href` when the action navigates: it renders a link. Pass `onAction` when it runs code: it renders a button, so it is reachable and operable from the keyboard.\n' +
 					'- Pass `closeLabel` with a translated label when the banner is dismissible.',
 			},
 		},
@@ -42,7 +42,7 @@ export const Variants: Story = {
 	render: (args) => (
 		<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 			{variants.map((variant) => (
-				<SidebarBanner key={variant} {...args} variant={variant} linkProps={{ onClick: action(`action ${variant}`) }} />
+				<SidebarBanner key={variant} {...args} variant={variant} onAction={action(`action ${variant}`)} />
 			))}
 		</div>
 	),
@@ -60,14 +60,14 @@ export const ButtonAction: Story = {
 		variant: 'warning',
 		title: 'Your status is offline because presence is disabled',
 		linkText: 'Learn more',
-		linkProps: { onClick: action('open modal') },
+		onAction: action('open modal'),
 	},
 };
 
 export const WithAddon: Story = {
 	args: {
 		variant: 'danger',
-		linkProps: { onClick: action('action') },
+		onAction: action('action'),
 		addon: <Icon name='warning' size='x24' />,
 	},
 };
@@ -76,7 +76,7 @@ export const CustomCloseLabel: Story = {
 	args: {
 		variant: 'success',
 		closeLabel: 'Dismiss notice',
-		linkProps: { onClick: action('action') },
+		onAction: action('action'),
 	},
 };
 
@@ -93,7 +93,7 @@ export const CustomBackgroundHooks: Story = {
 	render: (args) => (
 		<div style={{ ...backgroundOverrides, display: 'flex', flexDirection: 'column', gap: 8 }}>
 			{variants.map((variant) => (
-				<SidebarBanner key={variant} {...args} variant={variant} linkProps={{ onClick: action(`action ${variant}`) }} />
+				<SidebarBanner key={variant} {...args} variant={variant} onAction={action(`action ${variant}`)} />
 			))}
 		</div>
 	),

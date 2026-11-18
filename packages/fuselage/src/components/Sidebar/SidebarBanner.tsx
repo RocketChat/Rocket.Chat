@@ -1,4 +1,4 @@
-import type { AllHTMLAttributes, MouseEventHandler, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { IconButton } from '../Button';
@@ -8,8 +8,9 @@ export type SidebarBannerVariant = 'default' | 'info' | 'success' | 'warning' | 
 export type SidebarBannerProps = {
 	title?: ReactNode;
 	linkText?: string;
-	/** With an `href` the action is a link; without one it is a button, so it is activated from the keyboard. */
-	linkProps?: Omit<AllHTMLAttributes<HTMLAnchorElement>, 'onClick'> & { onClick?: MouseEventHandler<HTMLElement> };
+	linkProps?: AllHTMLAttributes<HTMLAnchorElement>;
+	/** Renders the action as a button instead of a link; takes precedence over `linkProps`. */
+	onAction?: () => void;
 	onClick?: () => void;
 	variant?: SidebarBannerVariant;
 	onClose?: () => void;
@@ -23,6 +24,7 @@ export const SidebarBanner = ({
 	title,
 	linkText,
 	linkProps,
+	onAction,
 	variant = 'default',
 	addon,
 	onClose,
@@ -35,21 +37,14 @@ export const SidebarBanner = ({
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__content'>
 			{title && <h5 className='rcx-box rcx-box--full rcx-sidebar-banner__title'>{title}</h5>}
 			{linkText &&
-				(linkProps?.href ? (
+				(onAction ? (
+					<button type='button' className='rcx-box rcx-box--full rcx-sidebar-banner__link' onClick={onAction}>
+						{linkText}
+					</button>
+				) : (
 					<a className='rcx-box rcx-box--full rcx-sidebar-banner__link' {...linkProps}>
 						{linkText}
 					</a>
-				) : (
-					<button
-						type='button'
-						className='rcx-box rcx-box--full rcx-sidebar-banner__link'
-						id={linkProps?.id}
-						title={linkProps?.title}
-						tabIndex={linkProps?.tabIndex}
-						onClick={linkProps?.onClick}
-					>
-						{linkText}
-					</button>
 				))}
 			{children}
 		</div>
