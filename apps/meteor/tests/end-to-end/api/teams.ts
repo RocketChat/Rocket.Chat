@@ -3052,3 +3052,93 @@ describe('/teams.update', () => {
 		});
 	});
 });
+
+describe('/teams.listRoomsOfUser', () => {
+	let member: TestUser<IUser>;
+	let memberCredentials: Credentials;
+	let team: ITeam;
+	let joinedRoom: IRoom;
+	let otherRoom: IRoom;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		member = await createUser();
+		memberCredentials = await login(member.username, password);
+		team = await createTeam(credentials, `team-rooms-of-user-${Date.now()}`, TeamType.PUBLIC, [member.username]);
+		joinedRoom = (await createRoom({ type: 'c', name: `team-joined-${Date.now()}`, members: [member.username] })).body.channel;
+		otherRoom = (await createRoom({ type: 'c', name: `team-other-${Date.now()}` })).body.channel;
+		await request
+			.post(api('teams.addRooms'))
+			.set(credentials)
+			.send({ teamId: team._id, rooms: [joinedRoom._id, otherRoom._id] })
+			.expect(200);
+	});
+
+	after(() =>
+		Promise.all([
+			deleteTeam(credentials, team.name),
+			deleteRoom({ type: 'c', roomId: joinedRoom._id }),
+			deleteRoom({ type: 'c', roomId: otherRoom._id }),
+			deleteUser(member),
+		]),
+	);
+
+	it('should list the team rooms the user belongs to', async () => {
+		const res = await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(memberCredentials)
+			.query({ teamId: team._id, userId: member._id })
+			.expect(200);
+
+		expect(res.body.rooms.map(({ _id }: IRoom) => _id)).to.deep.equal([joinedRoom._id]);
+		expect(res.body).to.have.property('total', 1);
+	});
+
+	it("should not allow a member to list another user's rooms without the view-all-team-channels permission", async () => {
+		await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(memberCredentials)
+			.query({ teamId: team._id, userId: credentials['X-User-Id'] })
+			.expect(403);
+	});
+
+	it('should list only the rooms the user can delete when canUserDelete is true', async () => {
+		const res = await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(credentials)
+			.query({ teamId: team._id, userId: member._id, canUserDelete: 'true' })
+			.expect(200);
+
+		expect(res.body.rooms).to.deep.equal([]);
+	});
+});
+
+describe('/teams.autocomplete', () => {
+	const prefix = `team-autocomplete-${Date.now()}`;
+	let outsider: TestUser<IUser>;
+	let outsiderCredentials: Credentials;
+	let publicTeam: ITeam;
+	let privateTeam: ITeam;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		outsider = await createUser();
+		outsiderCredentials = await login(outsider.username, password);
+		publicTeam = await createTeam(credentials, `${prefix}-public`, TeamType.PUBLIC);
+		privateTeam = await createTeam(credentials, `${prefix}-private`, TeamType.PRIVATE);
+	});
+
+	after(() => Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name), deleteUser(outsider)]));
+
+	const autocomplete = async (userCredentials: Credentials, name: string) => {
+		const res = await request.get(api('teams.autocomplete')).set(userCredentials).query({ name }).expect(200);
+		return res.body.teams.map(({ name }: { name: string }) => name);
+	};
+
+	it('should match teams by name prefix and show private teams only to their members', async () => {
+		expect(await autocomplete(credentials, prefix)).to.have.members([publicTeam.name, privateTeam.name]);
+		expect(await autocomplete(outsiderCredentials, prefix)).to.deep.equal([publicTeam.name]);
+	});
+});
