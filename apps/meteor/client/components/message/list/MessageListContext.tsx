@@ -1,11 +1,12 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { Options } from '@rocket.chat/message-parser';
 import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
+import type { MessageNormalizer } from '../../../lib/createMessageNormalizer';
+import { createMessageNormalizer } from '../../../lib/createMessageNormalizer';
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -32,7 +33,8 @@ export type MessageListContextValue = {
 		urlRegex: RegExp;
 	}[];
 	autoTranslateLanguage?: string;
-	parseOptions: Options;
+	/** Stable for the list: changes only when a setting or the room's auto-translate state does, never per message. */
+	normalizeMessage: MessageNormalizer;
 	jumpToMessageParam?: string;
 	username: string | undefined;
 	apiEmbedEnabled: boolean;
@@ -62,7 +64,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	showRoles: false,
 	showRealName: false,
 	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
-	parseOptions: { emoticons: true },
+	normalizeMessage: createMessageNormalizer({ emoticons: true }, { showAutoTranslate: () => false, autoTranslateEnabled: false }),
 	username: undefined,
 	apiEmbedEnabled: false,
 	readReceipts: {
@@ -101,7 +103,7 @@ export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 
-export const useMessageListParseOptions = (): MessageListContextValue['parseOptions'] => useContext(MessageListContext).parseOptions;
+export const useMessageListNormalizer = (): MessageListContextValue['normalizeMessage'] => useContext(MessageListContext).normalizeMessage;
 
 export const useMessageListReadReceipts = (): MessageListContextValue['readReceipts'] => useContext(MessageListContext).readReceipts;
 

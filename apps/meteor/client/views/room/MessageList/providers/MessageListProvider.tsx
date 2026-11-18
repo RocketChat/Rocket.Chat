@@ -10,6 +10,7 @@ import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { createMessageNormalizer } from '../../../../lib/createMessageNormalizer';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
@@ -73,6 +74,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		[showColors, autoLinkDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
 	);
 
+	const normalizeMessage = useMemo(() => createMessageNormalizer(parseOptions, autoTranslate), [parseOptions, autoTranslate]);
+
 	const parsedHighlights = useMemo(
 		() =>
 			highlights
@@ -100,7 +103,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
-			parseOptions,
+			normalizeMessage,
 			useUserHasReacted: username
 				? (message: IMessage) =>
 						(reaction: string): boolean =>
@@ -156,7 +159,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			showUsername,
 			parsedHighlights,
 			reactToMessage,
-			parseOptions,
+			normalizeMessage,
 			msgParameter,
 			chat?.emojiPicker,
 			readReceipts,
