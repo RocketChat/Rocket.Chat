@@ -15,13 +15,10 @@ import spacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
 import zIndex from '@rocket.chat/fuselage-tokens/dist/zIndex.json';
 import prettier from 'prettier';
 
+import { themeKey } from '../src/components/PaletteStyleTag/helpers/convertToCss';
 import { getThemePalette } from '../src/components/PaletteStyleTag/helpers/getPalette';
 
 const file = join(import.meta.dirname, '../src/tamagui.tokens.ts');
-
-// Tamagui cannot prefix the custom properties it writes for theme keys when it compiles to zero runtime, so the keys
-// carry the prefix themselves: `$rcx-font-default` compiles to `var(--rcx-font-default)`.
-const THEME_KEY_PREFIX = 'rcx-';
 
 // The base palette is left out of the `color` tokens: Tamagui adds every one of them to every theme as an unprefixed key,
 // which the palette writer would then have to supply too.
@@ -33,7 +30,7 @@ const radius = Object.fromEntries(Object.entries(border.radius).map(([name, valu
 
 /** The palette `PaletteStyleTag` writes as `--rcx-color-*`, under the keys a frame reads it by. */
 const theme = (name: Parameters<typeof getThemePalette>[0]) => {
-	const entries = Object.entries(getThemePalette(name)).map(([color, value]) => [`${THEME_KEY_PREFIX}${color.trim()}`, value]);
+	const entries = Object.entries(getThemePalette(name)).map(([color, value]) => [themeKey(color), value]);
 	const keys = new Set(entries.map(([key]) => key));
 	if (keys.size !== entries.length) {
 		throw new Error(`The ${name} palette names a color twice`);
