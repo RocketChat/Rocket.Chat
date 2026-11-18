@@ -18,7 +18,7 @@ export type IframeModalProps = {
 	url: string;
 	confirm: (data: any) => void;
 	cancel: () => void;
-	wrapperHeight?: string;
+	wrapperHeight?: ComponentProps<typeof Modal>['height'];
 } & ComponentProps<typeof Modal>;
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {
