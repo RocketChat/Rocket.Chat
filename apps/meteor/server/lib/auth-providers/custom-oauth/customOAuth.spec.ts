@@ -253,7 +253,7 @@ describe('CustomOAuthStrategy', () => {
 			(field) => {
 				const strategy = env.createStrategy({ [field]: undefined });
 				const identity = { id: 'external-id', username: 'alice', email: 'alice@example.com', name: 'Alice Smith' };
-				expect(strategy.normalizeIdentity({ ...identity })).toEqual(identity);
+				expect(strategy.normalizeIdentity({ ...identity })).toEqual({ ...identity, displayName: identity.name });
 			},
 		);
 
@@ -276,8 +276,22 @@ describe('CustomOAuthStrategy', () => {
 				username: 'alice',
 				email: 'alice@example.com',
 				name: 'Alice Smith',
+				displayName: 'Alice Smith',
 				avatarUrl: 'https://example.com/avatar',
 				custom_claim: [{ nested_claim: true }],
+			});
+		});
+
+		it('replaces the provider display name with the resolved name', () => {
+			const strategy = env.createStrategy({ nameField: '{{profile.first}} {{profile.last}}' });
+			const identity = { id: 'external-id', displayName: 'alice.smith', profile: { first: 'Alice', last: 'Smith' } };
+			expect(strategy.normalizeIdentity(identity)).toMatchObject({ name: 'Alice Smith', displayName: 'Alice Smith' });
+		});
+
+		it('keeps the provider display name when no name resolves', () => {
+			expect(env.createStrategy().normalizeIdentity({ id: 'external-id', displayName: 'Alice' })).toMatchObject({
+				name: undefined,
+				displayName: 'Alice',
 			});
 		});
 
@@ -784,6 +798,7 @@ describe('CustomOAuthStrategy', () => {
 				login: 'alice',
 				username: 'alice',
 				name: 'alice',
+				displayName: 'alice',
 				serverURL: 'https://identity.example.com',
 			});
 		});
