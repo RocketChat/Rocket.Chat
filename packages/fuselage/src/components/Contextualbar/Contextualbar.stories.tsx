@@ -37,15 +37,12 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A persistent UI element showing relevant information and actions for the current page context, letting users input data and act without the page disappearing.\n\n' +
-					'**Rules**\n' +
-					'- Title is mandatory.\n' +
-					'- Provide a mandatory empty state on both navigation levels.\n' +
-					'- Never disable the confirmation button — allow submit, then show required-field errors after confirm.\n' +
-					'- Prefer the contextual bar over a Modal for non-disruptive contextual input.',
-			},
+			usage: `
+- Always give the bar a \`ContextualbarTitle\`.
+- Show \`ContextualbarEmptyContent\` when there is nothing to show, at every navigation level of the bar.
+- Never disable the confirm button: let the user submit, then show the errors of the required fields.
+- Prefer a \`Contextualbar\` to a \`Modal\` for input that shouldn't interrupt the page.
+`,
 		},
 	},
 	decorators: [
@@ -58,18 +55,16 @@ export default {
 	argTypes: {
 		stretch: {
 			control: 'boolean',
-			description: 'Makes the bar as wide as its container.',
 			table: { category: 'Layout' },
 		},
 		position: {
 			control: 'select',
 			options: ['static', 'relative', 'absolute', 'fixed'],
-			description: 'CSS position of the contextual bar.',
 			table: { category: 'Layout' },
 		},
 		children: {
 			control: false,
-			description: 'Header, sections, content and footer of the contextual bar.',
+			description: 'A `ContextualbarHeader`, then any `ContextualbarSection`s, a `ContextualbarContent` and a `ContextualbarFooter`.',
 			table: { category: 'Content' },
 		},
 	},

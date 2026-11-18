@@ -6,6 +6,7 @@ export type ModalFooterProps = ElementProps<HTMLDivElement> & {
 	justify?: 'end' | 'space-between';
 };
 
+/** Bottom row of the modal, for its actions. */
 const ModalFooter = ({ justify = 'end', ...props }: ModalFooterProps) => (
 	<Box rcx-modal__footer rcx-modal__footer--justify={justify} {...props} />
 );

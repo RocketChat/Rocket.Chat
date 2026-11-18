@@ -12,14 +12,6 @@ export default {
 	title: 'Containers/CardGroup',
 	component: CardGroup,
 	parameters: {
-		docs: {
-			description: {
-				component:
-					'Arranges Cards together with consistent spacing.\n\n' +
-					'**Rules**\n' +
-					'- Vertical card groups use an 8px gap between cards; horizontal card groups use a 16px gap.',
-			},
-		},
 		backgrounds: { default: 'dark' },
 		layout: 'padded',
 		controls: { hideNoControlsWarning: true },
@@ -28,27 +20,22 @@ export default {
 		align: {
 			control: 'select',
 			options: ['start', 'center', 'end'],
-			description: 'Cross-axis alignment of the cards. Defaults to `start`.',
 			table: { category: 'Layout', defaultValue: { summary: 'start' } },
 		},
 		stretch: {
 			control: 'boolean',
-			description: 'Stretches the cards to fill the available space.',
 			table: { category: 'Layout' },
 		},
 		wrap: {
 			control: 'boolean',
-			description: 'Allows the cards to wrap onto multiple lines.',
 			table: { category: 'Layout' },
 		},
 		vertical: {
 			control: 'boolean',
-			description: 'Stacks the cards in a column instead of a row.',
 			table: { category: 'Layout' },
 		},
 		children: {
 			control: false,
-			description: 'Card items rendered inside the group.',
 			table: { category: 'Content' },
 		},
 	},

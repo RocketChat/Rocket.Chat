@@ -42,34 +42,28 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					"A powerful component that temporarily blocks interaction with the main view to capture and hold the user's undivided attention with a distinct prompt or information window.\n\n" +
-					'**Rules**\n' +
-					"- Use for critical information, gathering input when a contextual bar isn't applicable, confirmations/decisions, or interruptive workflows.\n" +
-					'- For low-priority information use a Toast instead; for non-disruptive contextual input prefer the Contextual bar.\n' +
-					'- Title must use sentence case and contain no question mark; keep titles concise.\n' +
-					'- Default the header to title only — hide any icon/thumbnail unless the modal is triggered by a Rocket.Chat app or the title strongly needs visual reinforcement.\n' +
-					'- Never disable the confirmation (Primary) button — allow submit, then show required-field errors after the user clicks confirm.\n' +
-					'- Footer actions use the Button component — typically one Primary (confirm) + one Secondary (cancel); for destructive confirmations the Primary becomes a danger button.',
-			},
+			usage: `
+- Use for critical information, a confirmation or decision, input a \`Contextualbar\` can't take, or a workflow that should interrupt the user.
+- For low-priority information, use a \`ToastBar\`; for input that shouldn't interrupt the page, prefer a \`Contextualbar\`.
+- Keep the header to the \`ModalTitle\` by default. Add a \`ModalIcon\` or \`ModalThumb\` only when a Rocket.Chat app opens the modal or the title strongly needs visual support.
+- Never disable the confirm button: let the user submit, then show the errors of the required fields.
+- Put the actions in \`ModalFooterControllers\`, usually a \`primary\` \`Button\` to confirm and a \`secondary\` one to cancel. When the action is destructive, make the confirm button \`danger\`.
+- Write the \`ModalTitle\` short, in sentence case, and without a question mark.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Modal sections (header, content, footer) rendered inside the dialog wrapper.',
+			description: 'A `ModalHeader`, a `ModalContent` and a `ModalFooter`.',
 			table: { category: 'Content' },
 		},
 		wrapper: {
 			control: false,
-			description:
-				'Component type used to wrap `children` inside the dialog; defaults to `Box`. Receives `elevation`, `className` and `children`.',
 			table: { category: 'Composition' },
 		},
 		wrapperFunction: {
 			control: false,
-			description: 'Function alternative to `wrapper` for rendering the inner wrapper; takes precedence over `wrapper` when provided.',
 			table: { category: 'Composition' },
 		},
 	},
@@ -335,6 +329,13 @@ const FormContainer = (props: BoxProps) => (
 );
 
 export const _WithForm: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: "A `form` as the `wrapper`, so the footer's submit button submits the fields in the content.",
+			},
+		},
+	},
 	render: () => (
 		<Modal wrapper={FormContainer}>
 			<ModalHeader>

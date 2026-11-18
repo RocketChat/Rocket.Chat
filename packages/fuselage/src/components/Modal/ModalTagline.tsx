@@ -6,6 +6,7 @@ export type ModalTaglineProps = ElementProps<HTMLDivElement> & {
 	subtle?: boolean;
 };
 
+/** Short line above the `ModalTitle`. */
 const ModalTagline = ({ subtle, children, ...props }: ModalTaglineProps) => (
 	<Box rcx-modal__tagline color={subtle ? 'annotation' : undefined} {...props}>
 		{children}

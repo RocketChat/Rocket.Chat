@@ -6,6 +6,7 @@ export type CardColProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 
+/** Stacks its content in a column, such as a `CardTitle` over a `CardBody` beside an icon. */
 const CardCol = ({ children, className, ...props }: CardColProps) => (
 	<div {...props} className={cx('rcx-card__col', className)}>
 		{children}

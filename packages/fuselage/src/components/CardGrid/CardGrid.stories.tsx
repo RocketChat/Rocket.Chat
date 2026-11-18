@@ -19,17 +19,14 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Card items rendered inside the grid.',
 			table: { category: 'Content' },
 		},
 		breakpoints: {
 			control: 'object',
-			description: 'Column span (`xs`, `sm`, `md`, `lg`, `xl`) applied to each grid item at each breakpoint.',
 			table: { category: 'Layout' },
 		},
 		minRowHeight: {
 			control: 'number',
-			description: 'Minimum height of each row in pixels, gutters included.',
 			table: { category: 'Layout' },
 		},
 	},

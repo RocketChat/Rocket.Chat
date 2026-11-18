@@ -10,6 +10,7 @@ export type ModalHeroImageProps = ElementProps<HTMLImageElement, ImgHTMLAttribut
 	height?: BoxProps['height'];
 };
 
+/** Full-width image at the top of the `ModalContent`. */
 const ModalHeroImage = ({ ...props }: ModalHeroImageProps) => (
 	<figure className='rcx-modal__hero-image-wrapper'>
 		<Box rcx-modal__hero-image is='img' {...props} />

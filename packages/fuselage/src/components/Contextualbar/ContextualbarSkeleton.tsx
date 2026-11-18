@@ -5,6 +5,7 @@ import ContextualbarHeader from './ContextualbarHeader';
 
 export type ContextualbarSkeletonProps = ContextualbarProps;
 
+/** Stands in for a `Contextualbar` while its content loads. */
 const ContextualbarSkeleton = (props: ContextualbarSkeletonProps) => (
 	<Contextualbar {...props}>
 		<ContextualbarHeader>
