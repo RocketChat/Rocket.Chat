@@ -70,7 +70,7 @@ Check every `evenodd` icon before committing:
 yarn workspace @rocket.chat/icons check:fill
 ```
 
-It rasterizes each icon as the SVG fills it and as the font glyph does, and flags as `BROKEN` any icon where the two differ in a single pixel of a 256×256 raster. It reads only `<path>` elements, inside `<g>` elements or not, with absolute `M`, `L`, `H`, `V`, `C` and `Z` commands, and reports anything else as an `ERROR`.
+It rasterizes each icon as the SVG fills it and as the font glyph does, and flags as `BROKEN` any icon where the two differ in a single pixel of a 256×256 raster. It expects a source cleaned as described in [Cleaning the SVG](#cleaning-the-svg): it reads `<path>` elements, inside `<g>` elements or not, with absolute `M`, `L`, `H`, `V`, `C` and `Z` commands, and reports any other element or command as an `ERROR`. Attributes other than `d` and `fill-rule`, such as `transform`, are ignored.
 
 ## Releasing
 
