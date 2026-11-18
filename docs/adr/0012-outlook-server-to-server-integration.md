@@ -35,7 +35,7 @@ The library was not rejected over authentication. Its transport is pluggable thr
 
 `@xmldom/xmldom` is already a production dependency of `apps/meteor`, used by the SAML response parsers, so parsing costs nothing new.
 
-Calendar uses `SyncFolderItems` as a change probe, `FindItem` with a `CalendarView` to expand recurring series over the window, and `GetItem` for the detail that `FindItem` returns by id only. Contacts use `FindFolder` to enumerate address books, `SyncFolderItems` per folder, `GetItem` for the detail, and `GetAttachment` for photos. `ResolveNames` verifies the service account during Test Connection.
+Calendar uses `SyncFolderItems` as a change probe, `FindItem` with a `CalendarView` to expand recurring series over the window, and `GetItem` for the detail that `FindItem` returns by id only. Contacts use `FindFolder` to enumerate address books, `SyncFolderItems` per folder, `GetItem` for the detail, and `GetAttachment` for photos. `ResolveNames` checks the service account during Test Connection. It is sent without the impersonation header, so it proves the endpoint, TLS and the credentials, not the impersonation role.
 
 Both calendar operations address `DistinguishedFolderId Id="calendar"` directly. An earlier draft resolved the folder id with `FindFolder` first, which returns the _subfolders_ of the parent it is given and therefore produced an unrelated, usually empty folder; the operation was removed rather than fixed.
 
@@ -48,7 +48,7 @@ That listing has to filter on `FolderClass`, and this part is EWS only. Exchange
 1. A SOAP fault, when the whole request was rejected. These arrive with HTTP 500, so the transport cannot tell them from a genuine server error and deliberately passes 5xx bodies through to the parser.
 2. A per-item `ResponseCode` inside an HTTP 200, when some items succeeded and others did not.
 
-One shared parser handles both for every operation, and maps recognised codes to typed errors so Test Connection can distinguish a wrong password from a missing impersonation role.
+One shared parser handles both for every operation, and maps recognised codes to typed errors, so a missing impersonation role reads as a refusal for that mailbox rather than as an unexpected response.
 
 Three guards were added after tests proved each necessary. Well formed HTML is also well formed XML, so a proxy error page returned with HTTP 200 parses cleanly, matches nothing, and reads as "the mailbox has no events"; the parser asserts the root element is a SOAP envelope. The fault element is matched by local name rather than by prefix, because Exchange sends `s:Fault` and a lookup for `soap:Fault` never saw it. And a fault carries its `ResponseCode` in the errors namespace rather than the messages one, so both are scanned; without that, an impersonation failure against an unknown mailbox parsed as a successful sync of zero events.
 
