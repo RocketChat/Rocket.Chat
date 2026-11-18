@@ -214,11 +214,11 @@ jobs:
       # every UI shard of a release reports into one Qase run, and a later CI run of the same release
       # picks up the run an earlier one left open; a failure here only skips the report
       - id: qase-release-run
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.event.number == 43806
         continue-on-error: true
         env:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || 'rehearsal-pr-43806' }}
         run: |
           title="UI E2E Tests - Release ${RELEASE_TAG}"
 
@@ -995,7 +995,7 @@ jobs:
       - name: Run federation integration tests
         working-directory: ./ee/packages/federation-matrix
         env:
-          QASE_TESTOPS_JEST_API_TOKEN: ${{ github.event_name == 'release' && secrets.QASE_TESTOPS_JEST_API_TOKEN || '' }}
+          QASE_TESTOPS_JEST_API_TOKEN: ${{ (github.event_name == 'release' || github.event.number == 43806) && secrets.QASE_TESTOPS_JEST_API_TOKEN || '' }}
           PR_NUMBER: ${{ github.event.number }}
         run: yarn test:integration --ci
 
