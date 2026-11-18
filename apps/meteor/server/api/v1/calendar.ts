@@ -1,5 +1,6 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	ajv,
 	isCalendarEventListProps,
@@ -52,6 +53,12 @@ const successSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+const isServerManaged = (): boolean => settings.get<string>('Exchange_Mode') === 'server';
+
+const isOutlookImported = (event: ICalendarEvent) => event.source === 'outlook';
+
+const hasOutlookLicense = (): boolean => License.hasModule('outlook-calendar');
+
 API.v1.get(
 	'calendar-events.list',
 	{
@@ -68,7 +75,7 @@ API.v1.get(
 		const { userId } = this;
 		const { date } = this.queryParams;
 
-		const data = await Calendar.list(userId, new Date(date));
+		const data = await Calendar.list(userId, new Date(date), { excludeOutlook: !hasOutlookLicense() });
 
 		return API.v1.success({ data });
 	},
@@ -92,7 +99,7 @@ API.v1.get(
 
 		const event = await Calendar.get(id);
 
-		if (event?.uid !== userId) {
+		if (event?.uid !== userId || (isOutlookImported(event) && !hasOutlookLicense())) {
 			return API.v1.failure();
 		}
 
@@ -114,6 +121,10 @@ API.v1.post(
 	async function action() {
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
+
+		if (externalId && isServerManaged()) {
+			return API.v1.failure('error-calendar-managed-by-server-sync');
+		}
 
 		const id = await Calendar.create({
 			uid,
@@ -146,8 +157,8 @@ API.v1.post(
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
-		if (settings.get<string>('Exchange_Mode') === 'server') {
-			return API.v1.failure('error-calendar-import-disabled-in-server-mode');
+		if (isServerManaged()) {
+			return API.v1.failure('error-calendar-managed-by-server-sync');
 		}
 
 		const id = await Calendar.import({
@@ -187,6 +198,10 @@ API.v1.post(
 			throw new Error('invalid-calendar-event');
 		}
 
+		if (isOutlookImported(event)) {
+			return API.v1.failure('error-calendar-event-owned-by-outlook-sync');
+		}
+
 		await Calendar.update(eventId, {
 			startTime: new Date(startTime),
 			...(endTime && { endTime: new Date(endTime) }),
@@ -220,6 +235,10 @@ API.v1.post(
 
 		if (event?.uid !== userId) {
 			throw new Error('invalid-calendar-event');
+		}
+
+		if (isOutlookImported(event)) {
+			return API.v1.failure('error-calendar-event-owned-by-outlook-sync');
 		}
 
 		await Calendar.delete(eventId);
