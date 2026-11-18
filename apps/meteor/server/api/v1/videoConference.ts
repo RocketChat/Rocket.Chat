@@ -109,7 +109,8 @@ const addParticipantsResponseSchema = ajv.compile<{ added: string[]; dial: { use
 				required: ['username', 'number'],
 				additionalProperties: false,
 			},
-			description: 'Numbers for the caller to dial into the call, for people who take calls on an external device; they are not added as members.',
+			description:
+				'Numbers for the caller to dial into the call, for people who take calls on an external device; they are not added as members.',
 		},
 		success: { type: 'boolean', enum: [true] },
 	},
