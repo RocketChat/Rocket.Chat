@@ -180,9 +180,12 @@ const RoomMembers = ({
 					</ContextualbarStatus>
 				)}
 				{error && (
-					<ContextualbarStatus>
-						<Callout type='danger'>{error.message}</Callout>
-					</ContextualbarStatus>
+					<ContextualbarEmptyContent
+						icon='circle-exclamation'
+						iconVariation='danger'
+						title={t('Something_went_wrong')}
+						subtitle={error.message}
+					/>
 				)}
 				{isSuccess && (
 					<>

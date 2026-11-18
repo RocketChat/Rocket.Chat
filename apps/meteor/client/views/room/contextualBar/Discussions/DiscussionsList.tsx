@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Icon, TextInput, Throbber } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -91,9 +91,12 @@ function DiscussionsList({
 					</ContextualbarStatus>
 				)}
 				{error instanceof Error && (
-					<ContextualbarStatus>
-						<Callout type='danger'>{error.toString()}</Callout>
-					</ContextualbarStatus>
+					<ContextualbarEmptyContent
+						icon='circle-exclamation'
+						iconVariation='danger'
+						title={t('Something_went_wrong')}
+						subtitle={error.toString()}
+					/>
 				)}
 				{isSuccess && (
 					<ListViewport id={discussionListId} ref={discussionListRef}>
