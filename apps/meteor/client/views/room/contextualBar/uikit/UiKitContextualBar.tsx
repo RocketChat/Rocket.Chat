@@ -42,6 +42,9 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (view.submit_disabled || contextValue.uploading) {
+			return;
+		}
 		closeTab();
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
@@ -59,6 +62,13 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const handleCancel = useStableCallback((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
+		if (view.notifyOnClose === false) {
+			actionManager.disposeView(view.id);
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -76,6 +86,13 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const handleClose = useStableCallback((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
+		if (view.notifyOnClose === false) {
+			actionManager.disposeView(view.id);
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -112,7 +129,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 						)}
 
 						{view.submit && (
-							<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
+							<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled || contextValue.uploading} onClick={handleSubmit}>
 								{contextualBarParser.renderTextObject(view.submit.text, 1)}
 							</Button>
 						)}

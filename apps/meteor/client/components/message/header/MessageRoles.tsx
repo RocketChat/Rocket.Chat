@@ -1,15 +1,13 @@
 import { MessageRole, MessageRoles as FuselageMessageRoles } from '@rocket.chat/fuselage';
-import type { MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type MessageRolesProps = {
 	workspaceRoles: string[];
 	roomRoles: string[];
 	isBot?: boolean;
-	onClick?: MouseEventHandler;
 };
 
-const MessageRoles = ({ workspaceRoles, roomRoles, isBot, onClick }: MessageRolesProps) => {
+const MessageRoles = ({ workspaceRoles, roomRoles, isBot }: MessageRolesProps) => {
 	const { t } = useTranslation();
 
 	const categoryTag = (label: string, roles: string[]) => {
@@ -19,11 +17,7 @@ const MessageRoles = ({ workspaceRoles, roomRoles, isBot, onClick }: MessageRole
 
 		const extra = roles.length > 1 ? ` +${roles.length - 1}` : '';
 
-		return (
-			<MessageRole title={`${label}: ${roles.join(', ')}`} onClick={onClick}>
-				{`${roles[0]}${extra}`}
-			</MessageRole>
-		);
+		return <MessageRole title={`${label}: ${roles.join(', ')}`}>{`${roles[0]}${extra}`}</MessageRole>;
 	};
 
 	return (

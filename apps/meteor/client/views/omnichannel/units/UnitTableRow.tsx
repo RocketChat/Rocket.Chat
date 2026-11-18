@@ -22,7 +22,7 @@ const UnitsTableRow = ({ _id, name, visibility }: UnitsTableRowProps) => {
 			<GenericTableCell>
 				<IconButton
 					icon='trash'
-					small
+					size='small'
 					title={t('Remove')}
 					onClick={(e) => {
 						e.stopPropagation();

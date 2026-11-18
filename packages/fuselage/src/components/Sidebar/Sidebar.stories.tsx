@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
 import {
@@ -64,30 +64,47 @@ export const Default: Story = {
 				/>
 				<SidebarSection>
 					<TextInput endAddon={<Icon name='magnifier' size='x20' />} small placeholder='Search' />
-					<IconButton icon='sort' title='Sort' medium />
+					<IconButton icon='sort' title='Sort' size='medium' />
 				</SidebarSection>
 				<SidebarAccordion>
 					<SidebarAccordionItem
 						title='Omnichannel'
-						badge={<SidebarItemBadge title='25 unred messages' children={25} variant='primary' />}
+						badge={
+							<SidebarItemBadge title='25 unred messages' variant='primary'>
+								25
+							</SidebarItemBadge>
+						}
 						defaultExpanded
 					>
 						<SidebarLink
 							icon='arrow-down-box'
 							href='#'
 							selected
-							badge={<SidebarItemBadge title='12 unread messages' children={12} variant='primary' />}
+							badge={
+								<SidebarItemBadge title='12 unread messages' variant='primary'>
+									12
+								</SidebarItemBadge>
+							}
 							menu={<MenuTemplate />}
 						>
 							All
 						</SidebarLink>
-						<SidebarLink icon='user' href='#' badge={<SidebarItemBadge title='10 unread messages' children={10} />} menu={<MenuTemplate />}>
+						<SidebarLink
+							icon='user'
+							href='#'
+							badge={<SidebarItemBadge title='10 unread messages'>10</SidebarItemBadge>}
+							menu={<MenuTemplate />}
+						>
 							Assigned to me
 						</SidebarLink>
 						<SidebarLink
 							icon='queue'
 							href='#'
-							badge={<SidebarItemBadge title='3 unread messages' children={3} variant='danger' />}
+							badge={
+								<SidebarItemBadge title='3 unread messages' variant='danger'>
+									3
+								</SidebarItemBadge>
+							}
 							menu={<MenuTemplate />}
 						>
 							Unassigned
@@ -99,12 +116,20 @@ export const Default: Story = {
 					<SidebarAccordionItem
 						title='Team chat'
 						defaultExpanded={true}
-						badge={<SidebarItemBadge title='99+ unread messages' children='99+' variant='danger' />}
+						badge={
+							<SidebarItemBadge title='99+ unread messages' variant='danger'>
+								99+
+							</SidebarItemBadge>
+						}
 					>
 						<SidebarCollapseGroup
 							title='Favorites'
 							defaultExpanded
-							badge={<SidebarItemBadge title='99+ unread messages' children='99+' variant='danger' />}
+							badge={
+								<SidebarItemBadge title='99+ unread messages' variant='danger'>
+									99+
+								</SidebarItemBadge>
+							}
 							menu={
 								<SidebarCollapseGroupMenu>
 									<MenuTemplate />
@@ -118,7 +143,11 @@ export const Default: Story = {
 						<SidebarCollapseGroup
 							title='Teams'
 							defaultExpanded
-							badge={<SidebarItemBadge title='99+ unread messages' children='99+' variant='danger' />}
+							badge={
+								<SidebarItemBadge title='99+ unread messages' variant='danger'>
+									99+
+								</SidebarItemBadge>
+							}
 							menu={
 								<SidebarCollapseGroupMenu>
 									<MenuTemplate />
@@ -133,7 +162,11 @@ export const Default: Story = {
 						<SidebarCollapseGroup
 							title='Discussions'
 							defaultExpanded
-							badge={<SidebarItemBadge title='99+ unread messages' children='99+' variant='danger' />}
+							badge={
+								<SidebarItemBadge title='99+ unread messages' variant='danger'>
+									99+
+								</SidebarItemBadge>
+							}
 							menu={
 								<SidebarCollapseGroupMenu>
 									<MenuTemplate />
@@ -150,9 +183,9 @@ export const Default: Story = {
 				<SidebarMedia>
 					<SidebarMediaTitle>3 calls in queue</SidebarMediaTitle>
 					<SidebarMediaController label='Call'>
-						<IconButton icon='user-arrow-right' small aria-label='user-forward' />
-						<IconButton icon='mic' small aria-label='mic' />
-						<IconButton icon='pause-unfilled' small aria-label='pause' />
+						<IconButton icon='user-arrow-right' size='small' aria-label='user-forward' />
+						<IconButton icon='mic' size='small' aria-label='mic' />
+						<IconButton icon='pause-unfilled' size='small' aria-label='pause' />
 					</SidebarMediaController>
 					{/* <GenericCallItem is='div' /> */}
 				</SidebarMedia>

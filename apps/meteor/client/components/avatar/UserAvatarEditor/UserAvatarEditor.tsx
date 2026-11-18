@@ -2,6 +2,7 @@ import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useSingleFileInput } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
@@ -10,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isSafeAvatarUrl } from '../../../lib/utils/isSafeAvatarUrl';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
@@ -118,7 +118,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<Button square disabled={disabled} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
-						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} onClick={clickUpload} />
+						<IconButton icon='upload' variant='secondary' disabled={disabled} title={t('Upload')} onClick={clickUpload} />
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
 					<Box paddingInlineStart={4} marginBlockStart={12}>
@@ -129,7 +129,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 									placeholder={t('Use_url_for_avatar')}
 									endAddonFlush
 									endAddon={
-										<IconButton icon='permalink' secondary small disabled={!canAddUrl} title={t('Add_URL')} onClick={handleAddUrl} />
+										<IconButton
+											icon='permalink'
+											variant='secondary'
+											size='small'
+											disabled={!canAddUrl}
+											title={t('Add_URL')}
+											onClick={handleAddUrl}
+										/>
 									}
 									disabled={disabled}
 									value={avatarFromUrl}

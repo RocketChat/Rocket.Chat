@@ -1,4 +1,5 @@
-import type { EmojiPackages } from '../emoji';
+import type { EmojiPackages } from '@rocket.chat/ui-emoji-picker';
+
 import { getEmojiConfig } from './getEmojiConfig';
 
 const buildEmojiPackages = (ascii: boolean): EmojiPackages =>

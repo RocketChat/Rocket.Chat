@@ -8,7 +8,9 @@ export type UserInfoActionProps = {
 
 const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps) => {
 	if (!label && icon && title) {
-		return <IconButton large secondary icon={<Icon name={icon} size='x20' />} title={title} aria-label={title} {...props} />;
+		return (
+			<IconButton size='large' variant='secondary' icon={<Icon name={icon} size='x20' />} title={title} aria-label={title} {...props} />
+		);
 	}
 
 	return (

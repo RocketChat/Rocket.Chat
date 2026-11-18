@@ -7,7 +7,7 @@ export default baseConfig({
 		// This is only needed because of Rocket.Chat's icon font.
 		config.resolve = {
 			...config.resolve,
-			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
+			roots: [...(config.resolve?.roots ?? []), resolve(import.meta.dirname, '../../../apps/meteor/public')],
 		};
 
 		return config;

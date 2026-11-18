@@ -1,18 +1,22 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { tamaguiPlugin } from '@tamagui/vite-plugin';
 import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
 import postcssCustomProperties from 'postcss-custom-properties';
 import postcssEasyImport from 'postcss-easy-import';
 import postcssMediaMinmax from 'postcss-media-minmax';
 import postcssNested from 'postcss-nested';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
+import { staticBox } from './staticBox/plugin';
 import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -43,7 +47,7 @@ const rocketchatInfo = (): Plugin => {
 				...JSON.parse(readFileSync(join(appRoot, 'rocketchat.info'), 'utf8')),
 				marketplaceApiVersion: require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, ''),
 				build: { date: new Date().toISOString() },
-				commit: { hash: git('rev-parse HEAD'), branch: git('rev-parse --abbrev-ref HEAD') },
+				commit: { hash: git('rev-parse HEAD'), branch: process.env.GITHUB_HEAD_REF || git('rev-parse --abbrev-ref HEAD') },
 			};
 
 			return `export const Info = ${JSON.stringify(info)};`;
@@ -51,11 +55,74 @@ const rocketchatInfo = (): Plugin => {
 	};
 };
 
-// Swaps the modules whose dev-server behaviour differs for their implementations in vite/native.
+// The Rocket.Chat server serves the client itself (`RC_CLIENT_TARGET=server`), or another host serves it in front of
+// a proxy to the server (the default, used by the dev server and ui-preview).
+const servedByServer = process.env.RC_CLIENT_TARGET === 'server';
+
+type Instrumenter = {
+	instrumentSync(code: string, filename: string, inputSourceMap?: unknown): string;
+	lastSourceMap(): unknown;
+};
+
+// Coverage builds (`BABEL_ENV=coverage`, as CI sets it) count which app code the e2e tests run, which they read from
+// `window.__coverage__`. Files are named by their absolute path, the form the coverage reports expect.
+const coverage = (): Plugin => {
+	const { createInstrumenter } = require('istanbul-lib-instrument') as {
+		createInstrumenter: (options: Record<string, unknown>) => Instrumenter;
+	};
+	const instrumenter = createInstrumenter({ esModules: true, compact: false, produceSourceMap: true });
+
+	return {
+		name: 'rocketchat-coverage',
+		apply: 'build',
+		enforce: 'post',
+		transform(code, id) {
+			const file = id.split('?')[0];
+			if (!file.startsWith(appRoot) || file.includes('/node_modules/') || !/\.[cm]?[jt]sx?$/.test(file)) {
+				return null;
+			}
+
+			return { code: instrumenter.instrumentSync(code, file, this.getCombinedSourcemap()), map: instrumenter.lastSourceMap() as never };
+		},
+	};
+};
+
+// A production install has the peer and dev dependencies of workspace packages only in the app, so an import a
+// package compiled from source cannot resolve from its own folder is resolved from the app, as Meteor's build does.
+const appFallbackResolve = (): Plugin => ({
+	name: 'rocketchat-app-fallback-resolve',
+	enforce: 'pre',
+	async resolveId(source, importer, options) {
+		if (!importer || source.startsWith('.') || source.startsWith('/') || source.startsWith('\0')) return null;
+
+		const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
+		return resolved ?? this.resolve(source, join(appRoot, 'package.json'), { ...options, skipSelf: true });
+	},
+});
+
+// A package reached through both `import` and `require` (Fuselage ships CommonJS only) would otherwise be bundled
+// twice, once per format, and the two copies don't share React contexts (react-aria's overlays, for one). Resolving
+// `require` like `import` loads each package once, as Meteor's build does.
+const singlePackageFormat = (): Plugin => ({
+	name: 'rocketchat-single-package-format',
+	apply: 'build',
+	enforce: 'pre',
+	async resolveId(source, importer, options) {
+		const { kind } = options as { kind?: string };
+		if (kind !== 'require-call' || !importer || source.startsWith('.') || source.startsWith('/') || source.startsWith('\0')) {
+			return null;
+		}
+
+		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true } as typeof options);
+	},
+});
+
+// Swaps the modules whose behaviour behind a proxy differs for their implementations in vite/native.
 const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
 			'client/lib/getURL.ts': 'getURL.ts',
+			'client/views/root/hooks/loggedIn/useRootUrlChange.tsx': 'useRootUrlChange.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 
@@ -71,21 +138,121 @@ const nativeModules = (): Plugin => {
 	};
 };
 
-// In dev the page is served by Vite instead of the Meteor server, which would otherwise inject this global.
-const devRuntimeConfig = (): Plugin => ({
-	name: 'rocketchat-dev-runtime-config',
+// Keeps the last copy of each identical top-level rule or `@media` block, which the zero stylesheet repeats once per
+// frame that uses them: the last copy is the one that wins the cascade, so the stylesheet resolves the same without
+// the others.
+const dedupeTopLevelRules = (css: string) => {
+	const root = postcss.parse(css);
+	const seen = new Set<string>();
+	for (const node of [...(root.nodes ?? [])].reverse()) {
+		const key = node.toString();
+		if (seen.has(key)) {
+			node.remove();
+		} else {
+			seen.add(key);
+		}
+	}
+	return root.toString();
+};
+
+// Vite serves component stylesheets as `<style>` tags appended to `<head>` in dev, after the zero stylesheet's link;
+// the built page lists the zero stylesheet last. Moving the link to the end of `<body>` gives dev the same order.
+const zeroStylesheetLastInDev = (): Plugin => ({
+	name: 'rocketchat-zero-stylesheet-last-in-dev',
 	apply: 'serve',
-	transformIndexHtml: () => [
-		{
-			tag: 'script',
-			children: `window.__meteor_runtime_config__ = { ROOT_URL: window.location.origin + '/', ROOT_URL_PATH_PREFIX: '' };`,
-			injectTo: 'head-prepend',
+	// Runs after Tamagui's own `post` plugin, which injects the link.
+	enforce: 'post',
+	transformIndexHtml: {
+		order: 'post',
+		handler(html) {
+			const link = html.match(/<link\b[^>]*href="[^"]*tamagui-zero\.css"[^>]*>/);
+			if (!link || !html.includes('</body>')) {
+				return html;
+			}
+			return html.replace(link[0], '').replace('</body>', `${link[0]}\n</body>`);
 		},
-	],
+	},
 });
+
+// Moves Tamagui's zero-runtime stylesheet into the bundle under a content hash, linked from `index.html` and listed
+// with the entry's stylesheets in the manifest, so `index.html` and the bundle load without anything else.
+const zeroStylesheetInBundle = (): Plugin => {
+	let config: ResolvedConfig;
+
+	return {
+		name: 'rocketchat-zero-stylesheet-in-bundle',
+		apply: 'build',
+		configResolved(resolved) {
+			config = resolved;
+		},
+		// Tamagui writes the stylesheet when the bundle closes.
+		closeBundle: {
+			order: 'post',
+			sequential: true,
+			handler() {
+				const { assetsDir } = config.build;
+				const outDir = resolve(config.root, config.build.outDir);
+				const written = join(outDir, 'tamagui-zero.css');
+				if (!existsSync(written)) {
+					throw new Error(`Tamagui's zero-runtime stylesheet is missing from ${outDir}`);
+				}
+
+				const css = dedupeTopLevelRules(readFileSync(written, 'utf8'));
+				const file = `${assetsDir}/tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
+				writeFileSync(join(outDir, file), css);
+				rmSync(written);
+
+				const indexHtml = join(outDir, 'index.html');
+				const html = readFileSync(indexHtml, 'utf8');
+				const href = `href="${config.base}tamagui-zero.css"`;
+				if (!html.includes(href)) {
+					throw new Error(`index.html does not link Tamagui's zero-runtime stylesheet as ${href}`);
+				}
+				writeFileSync(indexHtml, html.replace(href, `href="${config.base}${file}"`));
+
+				const manifestFile = join(outDir, '.vite/manifest.json');
+				const manifest = JSON.parse(readFileSync(manifestFile, 'utf8')) as Record<string, { isEntry?: boolean; css?: string[] }>;
+				for (const chunk of Object.values(manifest)) {
+					if (chunk.isEntry) chunk.css = [...(chunk.css ?? []), file];
+				}
+				writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+			},
+		},
+	};
+};
+
+const fuselageRoot = resolve(appRoot, '../../packages/fuselage');
 
 // Routes the running Rocket.Chat server answers; everything else is served by Vite.
 const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3100';
+
+// In dev the page is the one the local server renders, as in production, with Vite's entry in place of the built one.
+// A remote server renders its own built client, so against one (or while the local server is still starting) the page
+// is `index.html` with the runtime config the server would otherwise inject.
+const devPage = (): Plugin => ({
+	name: 'rocketchat-dev-page',
+	apply: 'serve',
+	transformIndexHtml: {
+		order: 'pre',
+		handler: async (html, { originalUrl }) => {
+			if (process.env.RC_DEV_SERVER_PAGE === '1') {
+				try {
+					const response = await fetch(new URL(originalUrl ?? '/', serverUrl), { headers: { accept: 'text/html' } });
+					if (response.ok) {
+						return (await response.text()).replace('</head>', '<script type="module" src="/entry.ts"></script>\n</head>');
+					}
+				} catch {
+					// The local server is not up yet.
+				}
+			}
+
+			return html.replace(
+				'<head>',
+				`<head>\n<script>window.__meteor_runtime_config__ = { ROOT_URL: window.location.origin + '/', ROOT_URL_PATH_PREFIX: '' };</script>`,
+			);
+		},
+	},
+});
 const serverRoutes = [
 	'/api',
 	'/_oauth',
@@ -107,6 +274,11 @@ const serverRoutes = [
 	'/robots.txt',
 	'^/css-theme',
 	'^/scripts_',
+	// What the page the server renders loads from Meteor itself: the runtime config and the files of its (empty)
+	// client program, all versioned by a query parameter, and the source maps of those files.
+	'^/[^?]*\\?(hash|meteor_js_resource|meteor_css_resource)=',
+	'^/(packages|app)/[0-9a-f]+\\.map$',
+	'/__meteor__',
 ];
 
 // Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.
@@ -117,6 +289,27 @@ const proxyTo = (options: { ws?: boolean } = {}) => ({
 	cookieDomainRewrite: '',
 	...options,
 });
+
+// Lazy modules every page loads as it starts, whatever the route: the routes the client imports on startup and the
+// layout the root renders. They ship together, and each keeps its own initialization.
+const bootModules = new Set(
+	[
+		'client/meteor/login/index.ts',
+		'client/startup/index.ts',
+		'client/views/omnichannel/index.ts',
+		'client/views/admin/index.ts',
+		'client/views/marketplace/index.ts',
+		'client/views/account/index.ts',
+		'client/providers/MeteorProvider.tsx',
+		'client/views/root/AppLayout.tsx',
+		'client/views/root/MainLayout/MainLayout.tsx',
+		'client/views/banners/BannerRegion.tsx',
+		'client/views/cloud/CloudAnnouncementsRegion.tsx',
+		'client/components/connectionStatus/ConnectionStatusBar.tsx',
+		'client/components/AppLayoutThemeWrapper.tsx',
+		'client/components/ActionManagerBusyState.tsx',
+	].map((file) => join(appRoot, file)),
+);
 
 const distOnly = new Set(distOnlyWorkspacePackages);
 
@@ -185,6 +378,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/gazzodown',
 	'@rocket.chat/gazzodown-alt',
 	'@rocket.chat/i18n',
+	'@rocket.chat/icons',
 	'@rocket.chat/layout',
 	'@rocket.chat/message-parser',
 	'@rocket.chat/message-types',
@@ -201,15 +395,38 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-conference',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
+	'@rocket.chat/ui-registration',
 	'@rocket.chat/ui-video-conf',
 	'@rocket.chat/ui-voip',
-	'@rocket.chat/web-ui-registration',
 ];
 
 export default defineConfig({
 	root: here,
 	publicDir: join(appRoot, 'public'),
-	plugins: [react(), rocketchatInfo(), nativeModules(), devRuntimeConfig()],
+	// Relative, so chunks, fonts and images resolve from wherever the entry is loaded: a CDN, a path prefix or the root.
+	base: './',
+	plugins: [
+		staticBox(),
+		react(),
+		appFallbackResolve(),
+		singlePackageFormat(),
+		rocketchatInfo(),
+		...(servedByServer ? [] : [nativeModules()]),
+		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
+		devPage(),
+		// Fuselage's `styled()` frames compile to static classes and CSS, so no Tamagui code ships to the browser.
+		// `components` stays empty: warming up Fuselage evaluates its stylesheets outside this config and fails.
+		tamaguiPlugin({
+			config: join(fuselageRoot, 'src/tamagui.config.ts'),
+			components: [],
+			// The compiler only transforms the JSX under Vite's root; Fuselage's sources sit outside it.
+			appSourceDirs: [join(fuselageRoot, 'src')],
+			outputCSS: './.tamagui/zero/tamagui-zero.css',
+			experimental: { zeroRuntime: true },
+		}),
+		zeroStylesheetLastInDev(),
+		zeroStylesheetInBundle(),
+	],
 	resolve: {
 		alias: [
 			{ find: /^meteor\/.*$/, replacement: join(here, 'shims/meteor.ts') },
@@ -227,6 +444,17 @@ export default defineConfig({
 		'process.env.MESSAGE_MAX_PARSE_LENGTH': JSON.stringify(process.env.MESSAGE_MAX_PARSE_LENGTH),
 	},
 	css: {
+		preprocessorOptions: {
+			scss: {
+				// Fuselage's stylesheets import the tokens as `~@rocket.chat/fuselage-tokens/...`, the webpack form.
+				importers: [
+					{
+						findFileUrl: (url: string) => (url.startsWith('~') ? pathToFileURL(require.resolve(url.slice(1))) : null),
+					},
+				],
+				charset: false,
+			},
+		},
 		postcss: {
 			plugins: [postcssEasyImport(), postcssCustomProperties({ preserve: true }), postcssMediaMinmax(), postcssNested(), autoprefixer()],
 		},
@@ -252,6 +480,33 @@ export default defineConfig({
 		emptyOutDir: true,
 		// Minify stylesheets without rewriting their values, so they render as the Meteor build ships them.
 		cssMinify: 'esbuild',
-		sourcemap: true,
+		// The server's images ship without the maps, so its chunks must not point browsers at them; the build tarball
+		// keeps them for loading by hand (see docs/features/web-client-hosting.md).
+		sourcemap: servedByServer ? 'hidden' : true,
+		// The server reads it to inject the entry and its preloads into the page it renders.
+		manifest: true,
+		// The polyfill is an inline script, which the server's Content-Security-Policy blocks.
+		modulePreload: { polyfill: false },
+		rolldownOptions: {
+			// Required by experimentalInlineCommonChunks.
+			preserveEntrySignatures: false,
+			output: {
+				strictExecutionOrder: true,
+				// What every page loads up front ships as a few chunks instead of dozens: the libraries apart, so their
+				// chunk stays cached across releases, then the app code, then the routes the client imports as it starts.
+				codeSplitting: {
+					// A small chunk shared by lazy screens ships inside each screen that uses it instead of as its own file,
+					// so opening a screen takes one request without downloading code it does not use.
+					experimentalInlineCommonChunks: { maxSize: 20_000, exclude: /\.(css|scss|sass|less|styl|stylus|pcss|postcss|sss)(\?|$)/ },
+					groups: [
+						// Its direct eval keeps the minifier from renaming anything in the chunk that holds it.
+						{ name: 'libphonenumber', test: /[\\/]google-libphonenumber[\\/]/, priority: 4 },
+						{ name: 'vendor', test: /node_modules/, tags: ['$initial'], priority: 3 },
+						{ name: 'app', tags: ['$initial'], priority: 2 },
+						{ name: 'boot', test: (id: string) => bootModules.has(id.split('?')[0]), priority: 1 },
+					],
+				},
+			},
+		},
 	},
 });

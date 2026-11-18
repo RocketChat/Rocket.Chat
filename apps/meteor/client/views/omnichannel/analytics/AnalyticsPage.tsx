@@ -35,8 +35,9 @@ const AnalyticsPage = () => {
 	const [department, setDepartment] = useState<string | null>(null);
 	const [dateRange, setDateRange] = useState({ start: '', end: '' });
 	const [chartName, setChartName] = useState<string | undefined>();
-	const typeLabelId = useId();
+	const typeField = useId();
 	const departmentsLabelId = useId();
+	const chartField = useId();
 
 	const typeOptions: SelectOption[] = useMemo(
 		() => [
@@ -60,9 +61,9 @@ const AnalyticsPage = () => {
 					<Box display='flex' flexWrap='wrap' flexGrow={1} columnGap={8}>
 						<Box flexGrow={1}>
 							<Field>
-								<FieldLabel id={typeLabelId}>{t('Type')}</FieldLabel>
+								<FieldLabel htmlFor={typeField}>{t('Type')}</FieldLabel>
 								<FieldRow>
-									<Select aria-labelledby={typeLabelId} options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
+									<Select id={typeField} options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
 								</FieldRow>
 							</Field>
 						</Box>
@@ -91,9 +92,9 @@ const AnalyticsPage = () => {
 				</Box>
 				<Box display='flex' paddingInline='x4'>
 					<Field>
-						<FieldLabel>{t('Chart')}</FieldLabel>
+						<FieldLabel htmlFor={chartField}>{t('Chart')}</FieldLabel>
 						<FieldRow>
-							<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
+							<Select id={chartField} options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
 						</FieldRow>
 					</Field>
 				</Box>

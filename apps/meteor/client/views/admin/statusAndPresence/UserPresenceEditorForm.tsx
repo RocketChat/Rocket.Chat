@@ -15,7 +15,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete, useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useId } from 'react';
@@ -28,7 +28,6 @@ import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { hasAdminStatusRules } from './useManagedPresenceUsers';
 import { useResetUserPresenceRules } from './useResetUserPresenceRules';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
 type UserPresenceEditorFormValues = {
@@ -254,7 +253,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 					{hasRules && (
 						<IconButton
 							icon={<Icon name='undo' size='x16' />}
-							secondary
+							variant='secondary'
 							title={t('Remove_user_status_settings')}
 							onClick={handleResetClick}
 						/>

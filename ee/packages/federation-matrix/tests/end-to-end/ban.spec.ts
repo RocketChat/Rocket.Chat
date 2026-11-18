@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import { Visibility } from 'matrix-js-sdk';
 
@@ -86,8 +88,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				'wait for RC user on Synapse',
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
-					expect(member).not.toBeNull();
-					expect(member!.membership).toBe('join');
+					expect(member?.membership).toBe('join');
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
@@ -121,8 +122,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				'wait for ban on Synapse',
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
-					expect(member).not.toBeNull();
-					expect(member!.membership).toBe('ban');
+					expect(member?.membership).toBe('ban');
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
@@ -161,7 +161,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
 					expect(member).not.toBeNull();
-					expect(member!.membership).not.toBe('ban');
+					expect(member?.membership).not.toBe('ban');
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
@@ -252,9 +252,9 @@ import { SynapseClient } from '../helper/synapse-client';
 				(room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId,
 			) as IRoomNativeFederated | null;
 
-			expect(rcRoom).not.toBeNull();
+			assert(rcRoom);
 
-			federatedChannelId = rcRoom!._id;
+			federatedChannelId = rcRoom._id;
 
 			// Accept invitation for the local RC user
 			await acceptRoomInvite(federatedChannelId, rc1User1RequestConfig);
@@ -265,8 +265,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				'wait for RC user on Synapse',
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
-					expect(member).not.toBeNull();
-					expect(member!.membership).toBe('join');
+					expect(member?.membership).toBe('join');
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
@@ -274,6 +273,15 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		it('should ban the RC user from Synapse', async () => {
 			await hs1AdminApp.banUser(synapseRoomId, rc1User1MatrixId, 'federation ban test');
+
+			await retry(
+				'wait for ban on Synapse',
+				async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
+					expect(member?.membership).toBe('ban');
+				},
+				{ retries: 10, delayMs: 2000 },
+			);
 		});
 
 		it('should reflect ban on RC side', async () => {
@@ -302,6 +310,15 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		it('should unban the RC user from Synapse', async () => {
 			await hs1AdminApp.unbanUser(synapseRoomId, rc1User1MatrixId);
+
+			await retry(
+				'wait for unban on Synapse',
+				async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
+					expect(member?.membership).toBe('leave');
+				},
+				{ retries: 10, delayMs: 2000 },
+			);
 		});
 
 		it('should reflect unban on RC side', async () => {
@@ -346,8 +363,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						(room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId,
 					) as IRoomNativeFederated | null;
 
-					expect(rcRoom).not.toBeNull();
-					federatedChannelId = rcRoom!._id;
+					assert(rcRoom);
+					federatedChannelId = rcRoom._id;
 				},
 				{ retries: 5, delayMs: 1000 },
 			);
@@ -359,8 +376,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				'wait for RC user join on Synapse',
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
-					expect(member).not.toBeNull();
-					expect(member!.membership).toBe('join');
+					expect(member?.membership).toBe('join');
 				},
 				{ retries: 5, delayMs: 1000 },
 			);
@@ -403,7 +419,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
 					expect(member).not.toBeNull();
-					expect(member!.membership).not.toBe('ban');
+					expect(member?.membership).not.toBe('ban');
 				},
 				{ retries: 5, delayMs: 1000 },
 			);
@@ -433,8 +449,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				'wait for RC user re-join on Synapse',
 				async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId);
-					expect(member).not.toBeNull();
-					expect(member!.membership).toBe('join');
+					expect(member?.membership).toBe('join');
 				},
 				{ retries: 5, delayMs: 1000 },
 			);

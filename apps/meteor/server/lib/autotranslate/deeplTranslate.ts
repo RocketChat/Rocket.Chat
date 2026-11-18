@@ -99,7 +99,6 @@ class DeeplAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		let result: (ISupportedLanguage & { supports_formality?: boolean })[] = [];
 
 		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(this.supportedLanguageEndpointUrl, {
@@ -113,7 +112,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			throw new Error('Failed to fetch supported languages');
 		}
 
-		result = (await request.json()) as typeof result;
+		const result = (await request.json()) as (ISupportedLanguage & { supports_formality?: boolean })[];
 
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];

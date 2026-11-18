@@ -13,7 +13,7 @@ export const FullWidget: StoryObj<typeof Widget> = {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title='Incoming Call...'>
-				<IconButton name='close' icon='cross' aria-label='Close' mini />
+				<IconButton name='close' icon='cross' aria-label='Close' size='mini' />
 			</WidgetHeader>
 			<WidgetInfo
 				slots={[

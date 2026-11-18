@@ -40,7 +40,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 		<Sidepanel role='tabpanel' aria-label={t('Side_panel')}>
 			<SidepanelHeader role='heading' aria-label={title}>
 				<Box withTruncatedText display='flex' alignItems='center' gap={8}>
-					{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+					{isTablet && <IconButton icon='arrow-back' title={t('Back')} size='small' onClick={closeSidePanel} />}
 					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				</Box>
 				<Box display='flex' alignItems='center'>

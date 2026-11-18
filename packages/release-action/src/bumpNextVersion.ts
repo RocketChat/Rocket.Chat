@@ -5,11 +5,19 @@ import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 
-import { createNpmFile } from './createNpmFile';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
-import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils';
-import { setupOctokit } from './setupOctokit';
-import { getChangelogEntry, bumpFileVersions, readPackageJson, getEngineVersionsMd, createTempReleaseNotes } from './utils';
+import { createNpmFile } from './createNpmFile.js';
+import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils.js';
+import { setupOctokit } from './setupOctokit.js';
+import {
+	MAX_RELEASE_BODY_LENGTH,
+	getChangelogEntry,
+	bumpFileVersions,
+	readPackageJson,
+	getEngineVersionsMd,
+	createTempReleaseNotes,
+	truncateReleaseNotes,
+} from './utils.js';
 
 export async function bumpNextVersion({
 	githubToken,
@@ -92,7 +100,7 @@ export async function bumpNextVersion({
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
-		body: prBody,
+		body: truncateReleaseNotes(prBody, MAX_RELEASE_BODY_LENGTH),
 		prerelease: newVersion.includes('-'),
 		...github.context.repo,
 	});

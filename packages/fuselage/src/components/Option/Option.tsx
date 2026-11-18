@@ -7,12 +7,14 @@ import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp
 import { Icon, type IconProps } from '../Icon';
 import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
 
-export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
+export type OptionProps<TLabel = ReactNode> = RefAttributes<HTMLElement> & {
 	is?: ElementType;
 	id?: string;
 	children?: ReactNode;
 	label?: TLabel;
 	focus?: boolean;
+	/** Shows the focus ring on the option when a script moves focus to it, such as a combobox's active descendant. */
+	focusVisible?: boolean;
 	selected?: boolean;
 	className?: string;
 	icon?: IconProps['name'];
@@ -32,6 +34,7 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
 		| 'id'
 		| 'children'
 		| 'label'
+		| 'focusVisible'
 		| 'selected'
 		| 'className'
 		| 'ref'
@@ -52,10 +55,12 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
  * It renders an `Item` row, so its content can also be composed from `Item` parts.
  */
 function Option<TLabel = ReactNode>({
+	ref,
 	is = 'li',
 	children,
 	label,
 	focus,
+	focusVisible,
 	selected,
 	className,
 	icon,
@@ -74,11 +79,12 @@ function Option<TLabel = ReactNode>({
 
 	return (
 		<Item
-			{...(props as Omit<typeof props, 'ref'>)}
-			ref={props.ref as RefAttributes<HTMLElement>['ref']}
+			{...props}
+			ref={ref}
 			is={is}
 			inset='md'
 			focused={focus}
+			focusVisible={focusVisible}
 			selected={selected}
 			disabled={disabled}
 			variant={variant === 'danger' ? 'danger' : undefined}

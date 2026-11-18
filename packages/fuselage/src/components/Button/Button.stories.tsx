@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
-import { PropsVariationSection } from '../../../.storybook/helpers';
+import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
 import { Box } from '../Box';
 import { ButtonGroup } from '../ButtonGroup';
 import { Margins } from '../Margins';
@@ -200,6 +200,7 @@ export const AsLink: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStatesWithFocusVisible },
 	render: () => (
 		<>
 			<PropsVariationSection
@@ -207,9 +208,9 @@ export const States: Story = {
 				common={{ onClick: action('click') }}
 				xAxis={{
 					default: {},
-					hover: { className: 'hover' },
-					active: { className: 'active' },
-					focus: { className: 'focus focus-visible' },
+					hover: {},
+					active: {},
+					focus: {},
 					disabled: { disabled: true },
 				}}
 				yAxis={{
@@ -262,9 +263,9 @@ export const States: Story = {
 				}}
 				xAxis={{
 					default: {},
-					hover: { className: 'hover' },
-					active: { className: 'active' },
-					focus: { className: 'focus focus-visible' },
+					hover: {},
+					active: {},
+					focus: {},
 					disabled: { disabled: true },
 				}}
 				yAxis={{

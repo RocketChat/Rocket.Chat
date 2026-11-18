@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { check } from 'meteor/check';
 import type { Meteor } from 'meteor/meteor';
 
 import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
@@ -8,8 +7,6 @@ import { setEmail } from '../../lib/users/setEmail';
 import { settings } from '../../settings';
 
 export const setEmailFunction = async (email: string, user: Meteor.User | IUser) => {
-	check(email, String);
-
 	if (!settings.get('Accounts_AllowEmailChange')) {
 		throw new ClientSafeError('error-action-not-allowed', 'Changing email is not allowed', {
 			method: 'setEmail',

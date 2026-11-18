@@ -115,7 +115,7 @@ export const ImageGallery = ({
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
-			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
+			const { scale, in: zoomIn } = swiperRef.current.swiper.zoom;
 			setZoomScale(scale + ratio);
 			return zoomIn(scale + ratio);
 		}
@@ -135,40 +135,47 @@ export const ImageGallery = ({
 					<div role='presentation' className='swiper-container image-gallery' onClick={onClose}>
 						<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
 							{zoomScale !== 1 && (
-								<IconButton name='resize' small icon='arrow-collapse' title={t('Resize')} secondary onClick={handleResize} />
+								<IconButton
+									name='resize'
+									size='small'
+									icon='arrow-collapse'
+									title={t('Resize')}
+									variant='secondary'
+									onClick={handleResize}
+								/>
 							)}
 							<IconButton
 								name='zoom-out'
-								small
+								size='small'
 								icon='h-bar'
 								title={t('Zoom_out')}
 								onClick={handleZoomOut}
-								secondary
+								variant='secondary'
 								disabled={zoomScale === 1}
 							/>
-							<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} secondary onClick={handleZoomIn} />
+							<IconButton name='zoom-in' size='small' icon='plus' title={t('Zoom_in')} variant='secondary' onClick={handleZoomIn} />
 							<IconButton
 								name='close'
-								small
+								size='small'
 								icon='cross'
 								aria-label={t('Close_gallery')}
 								className='rcx-swiper-close-button'
-								secondary
+								variant='secondary'
 								onClick={onClose}
 							/>
 						</ButtonGroup>
 						<IconButton
-							icon='chevron-right'
-							aria-label={t('Next_image')}
+							icon='chevron-left'
+							aria-label={t('Previous_image')}
 							className='rcx-swiper-prev-button'
-							secondary
+							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<IconButton
-							icon='chevron-left'
-							aria-label={t('Previous_image')}
+							icon='chevron-right'
+							aria-label={t('Next_image')}
 							className='rcx-swiper-next-button'
-							secondary
+							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<Swiper

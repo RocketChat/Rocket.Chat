@@ -5,7 +5,7 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 
 export const listInvites = async (userId: string) => {
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'listInvites' });
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'listInvites' });
 	}
 
 	if (!(await hasPermissionAsync(userId, 'create-invite-links'))) {

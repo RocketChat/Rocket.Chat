@@ -88,7 +88,7 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 			<Box is='span' position='absolute' insetInlineEnd={0} margin={8}>
 				<IconButton
 					icon='copy'
-					small
+					size='small'
 					className={onHoverClassName}
 					title={t('Copy')}
 					onClick={() => {

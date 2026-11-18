@@ -36,7 +36,7 @@ const UserInfoPhoneNumberItem = ({ number, label }: IUserPhoneNumber) => {
 			<Box display='flex' flexShrink={0} gap={4}>
 				{canCallFromWidget ? (
 					<IconButton
-						small
+						size='small'
 						icon='phone'
 						disabled={callInProgress}
 						title={callInProgress ? t('Call_in_progress') : t('Call')}
@@ -44,10 +44,10 @@ const UserInfoPhoneNumberItem = ({ number, label }: IUserPhoneNumber) => {
 						onClick={() => openWidget({ number })}
 					/>
 				) : (
-					<IconButton is='a' small icon='phone' href={`tel:${number}`} title={t('Call')} aria-label={callName} />
+					<IconButton is='a' size='small' icon='phone' href={`tel:${number}`} title={t('Call')} aria-label={callName} />
 				)}
 				<IconButton
-					small
+					size='small'
 					icon='copy'
 					title={t('Copy_phone_number')}
 					aria-label={t('Copy_phone_number__user_', { user: label || formattedNumber })}

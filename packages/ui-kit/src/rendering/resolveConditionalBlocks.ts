@@ -1,9 +1,9 @@
-import type { Conditions } from './Conditions';
-import type { Block } from '../blocks/Block';
-import { LayoutBlockType } from '../blocks/LayoutBlockType';
-import type { ConditionalBlock } from '../blocks/layout/ConditionalBlock';
+import type { Conditions } from './Conditions.js';
+import type { Block } from '../blocks/Block.js';
+import { LayoutBlockType } from '../blocks/LayoutBlockType.js';
+import type { ConditionalBlock } from '../blocks/layout/ConditionalBlock.js';
 
-const conditionsMatch = (conditions: Conditions | undefined = undefined, filters: ConditionalBlock['when'] = {}): boolean => {
+export const conditionsMatch = (conditions: Conditions | undefined = undefined, filters: ConditionalBlock['when'] = {}): boolean => {
 	if (!conditions) {
 		return true;
 	}

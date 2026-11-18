@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { emoji, heading, link, mentionChannel, paragraph, plain } from './helpers';
+import { emoji, heading, link, mentionChannel, paragraph, plain } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	['# h1', [heading([plain('h1')], 1)]],

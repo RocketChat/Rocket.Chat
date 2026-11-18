@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
 import { Box } from '../Box';
@@ -98,7 +98,7 @@ export const Default: Story = {
 					<ButtonGroup stretch='equal'>
 						<ContextualbarButton variant='secondary'>Cancel</ContextualbarButton>
 						<Button variant='primary'>Save</Button>
-						<IconButton title='More' icon='menu' secondary />
+						<IconButton title='More' icon='menu' variant='secondary' />
 					</ButtonGroup>
 				</ContextualbarFooter>
 			</Contextualbar>
@@ -156,7 +156,7 @@ export const WithLongTitle: Story = {
 					<ButtonGroup stretch='equal'>
 						<ContextualbarButton variant='secondary'>Cancel</ContextualbarButton>
 						<Button variant='primary'>Save</Button>
-						<IconButton title='More' icon='menu' secondary />
+						<IconButton title='More' icon='menu' variant='secondary' />
 					</ButtonGroup>
 				</ContextualbarFooter>
 			</Contextualbar>

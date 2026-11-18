@@ -1,6 +1,7 @@
 import { after, before, describe, it } from 'node:test';
 
-import type { ILivechatVisitor, IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { ILivechatVisitor, IOmnichannelRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -16,6 +17,9 @@ import {
 import { sleep } from '../../data/livechat/utils';
 import { getLivechatVisitorByToken } from '../../data/livechat/visitor';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('LIVECHAT - Integrations', () => {
 	before((_t, done) => getCredentials(done));
@@ -297,5 +301,32 @@ describe('LIVECHAT - Integrations', () => {
 				expect(response.body).to.have.property('success', false);
 			});
 		});
+	});
+});
+
+describe('LIVECHAT - Integrations without view-livechat-manager', () => {
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+	});
+
+	after(() => deleteUser(user));
+
+	it('should refuse omnichannel/integrations and keep the webhook URL', async () => {
+		const previous = await request.get(api('settings/Livechat_webhookUrl')).set(credentials).expect(200);
+
+		await request
+			.post(api('omnichannel/integrations'))
+			.set(userCredentials)
+			.send({ LivechatWebhookUrl: 'http://refused.test' })
+			.expect(403);
+
+		const current = await request.get(api('settings/Livechat_webhookUrl')).set(credentials).expect(200);
+		expect(current.body.value).to.equal(previous.body.value);
 	});
 });

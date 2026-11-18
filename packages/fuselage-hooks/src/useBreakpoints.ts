@@ -22,7 +22,7 @@ export const useBreakpoints = (unit: 'px' | 'em' = 'em'): string[] => {
 			() =>
 				breakpoints
 					.slice(1)
-					.map(({ minViewportWidth }) => `(min-width: ${unit === 'px' ? `${minViewportWidth}px` : `${minViewportWidth! / 16}em`})`),
+					.map(({ minViewportWidth }) => `(min-width: ${unit === 'px' ? `${minViewportWidth}px` : `${(minViewportWidth ?? 0) / 16}em`})`),
 			[unit],
 		),
 	);

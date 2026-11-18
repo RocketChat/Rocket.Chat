@@ -1,7 +1,9 @@
 import type { HTMLAttributes } from 'react';
 
-export const SidebarFooter = ({ children, ...props }: HTMLAttributes<HTMLElement>) => (
-	<footer className='rcx-sidebar-footer' {...props}>
+import { cx } from '../../../helpers/composeClassNames';
+
+export const SidebarFooter = ({ children, className, ...props }: HTMLAttributes<HTMLElement>) => (
+	<footer {...props} className={cx('rcx-sidebar-footer', className)}>
 		{children}
 	</footer>
 );

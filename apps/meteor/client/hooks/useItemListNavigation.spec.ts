@@ -82,11 +82,11 @@ describe('arrow keys between rows', () => {
 		rows[1].link.focus();
 
 		pressKey(rows[1].link, 'ArrowDown');
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 
 		pressKey(rows[2].link, 'ArrowUp');
 		pressKey(rows[1].link, 'ArrowUp');
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('skips the row actions', () => {
@@ -95,7 +95,7 @@ describe('arrow keys between rows', () => {
 
 		pressKey(rows[0].link, 'ArrowDown');
 
-		expect(document.activeElement).toBe(rows[1].link);
+		expect(rows[1].link).toHaveFocus();
 	});
 
 	it('prevents the default scroll and stops propagation', () => {
@@ -118,8 +118,8 @@ describe('arrow keys between rows', () => {
 
 		pressKey(other, 'ArrowUp');
 
-		expect(document.activeElement).toBe(other);
-		expect(rows[0].link).not.toBe(document.activeElement);
+		expect(other).toHaveFocus();
+		expect(rows[0].link).not.toHaveFocus();
 	});
 
 	it('stops listening when the ref is detached', () => {
@@ -129,7 +129,7 @@ describe('arrow keys between rows', () => {
 
 		pressKey(rows[0].link, 'ArrowDown');
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 });
 
@@ -168,42 +168,6 @@ describe('when the adjacent row is outside the render window', () => {
 	});
 });
 
-describe('arrow keys within a row', () => {
-	it('moves from the `ItemLink` to the first action and back', () => {
-		const { rows } = setup({ withAction: true });
-		rows[1].link.focus();
-
-		pressKey(rows[1].link, 'ArrowRight');
-		expect(document.activeElement).toBe(rows[1].action);
-
-		pressKey(rows[1].action!, 'ArrowLeft');
-		expect(document.activeElement).toBe(rows[1].link);
-	});
-
-	it('swaps the directions in right-to-left layouts', () => {
-		const { rows } = setup({ withAction: true });
-		// jsdom does not inherit `direction` into the computed style
-		rows[0].link.style.direction = 'rtl';
-		rows[0].link.focus();
-
-		pressKey(rows[0].link, 'ArrowRight');
-		expect(document.activeElement).toBe(rows[0].link);
-
-		pressKey(rows[0].link, 'ArrowLeft');
-		expect(document.activeElement).toBe(rows[0].action);
-	});
-
-	it('stays on the `ItemLink` when the row has no focusable action', () => {
-		const { rows } = setup();
-		rows[0].link.focus();
-
-		const event = pressKey(rows[0].link, 'ArrowRight');
-
-		expect(document.activeElement).toBe(rows[0].link);
-		expect(event.defaultPrevented).toBe(true);
-	});
-});
-
 describe('Escape', () => {
 	it('returns from a control to its row', () => {
 		const { rows } = setup({ withAction: true });
@@ -212,7 +176,7 @@ describe('Escape', () => {
 		const event = pressKey(rows[1].action!, 'Escape');
 
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(rows[1].link);
+		expect(rows[1].link).toHaveFocus();
 	});
 
 	it('leaves Escape on the row itself to the surroundings, such as closing a contextual bar', () => {
@@ -232,10 +196,10 @@ describe('Tab', () => {
 
 		const event = pressKey(rows[0].link, 'Tab');
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(rows[0].action);
+		expect(rows[0].action).toHaveFocus();
 
 		pressKey(rows[0].action!, 'Tab');
-		expect(document.activeElement).toBe(after);
+		expect(after).toHaveFocus();
 	});
 
 	it('walks back to the row, then leaves the list backwards', () => {
@@ -243,10 +207,10 @@ describe('Tab', () => {
 		rows[2].action!.focus();
 
 		pressKey(rows[2].action!, 'Tab', { shiftKey: true });
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 
 		pressKey(rows[2].link, 'Tab', { shiftKey: true });
-		expect(document.activeElement).toBe(before);
+		expect(before).toHaveFocus();
 	});
 
 	it('leaves the list at once from a row without controls', () => {
@@ -255,7 +219,7 @@ describe('Tab', () => {
 
 		pressKey(rows[1].link, 'Tab');
 
-		expect(document.activeElement).toBe(after);
+		expect(after).toHaveFocus();
 	});
 
 	it('wraps to the start of the page when nothing follows the list', () => {
@@ -266,7 +230,7 @@ describe('Tab', () => {
 		const event = pressKey(rows[0].link, 'Tab');
 
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(before);
+		expect(before).toHaveFocus();
 	});
 
 	it('wraps to the end of the page when nothing precedes the list', () => {
@@ -276,7 +240,7 @@ describe('Tab', () => {
 
 		pressKey(rows[0].link, 'Tab', { shiftKey: true });
 
-		expect(document.activeElement).toBe(after);
+		expect(after).toHaveFocus();
 	});
 
 	it('stays on the row instead of entering another one when nothing is focusable outside the list', () => {
@@ -288,7 +252,96 @@ describe('Tab', () => {
 		const event = pressKey(rows[0].link, 'Tab');
 
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
+	});
+
+	describe('on a video player', () => {
+		const addVideo = (row: HTMLElement) => {
+			const video = document.createElement('video');
+			video.controls = true;
+			video.tabIndex = 0;
+			row.appendChild(video);
+			return video;
+		};
+
+		const mockFocusVisible = (element: HTMLElement) => {
+			const { matches } = element;
+			jest.spyOn(element, 'matches').mockImplementation((selector) => selector === ':focus-visible' || matches.call(element, selector));
+		};
+
+		it('leaves Tab to the browser, which walks the native controls', () => {
+			const { rows } = setup();
+			const video = addVideo(rows[0].row);
+			video.focus();
+
+			const event = pressKey(video, 'Tab');
+
+			expect(event.defaultPrevented).toBe(false);
+		});
+
+		it('leaves the list once the browser moves past the controls into another row', () => {
+			const { after, rows } = setup();
+			const video = addVideo(rows[0].row);
+			video.focus();
+
+			pressKey(video, 'Tab');
+			mockFocusVisible(rows[1].link);
+			rows[1].link.focus();
+
+			expect(after).toHaveFocus();
+		});
+
+		it('keeps the focus where the browser moves it inside the row', () => {
+			const { rows } = setup();
+			const video = addVideo(rows[0].row);
+			video.focus();
+
+			pressKey(video, 'Tab', { shiftKey: true });
+			mockFocusVisible(rows[0].link);
+			rows[0].link.focus();
+
+			expect(rows[0].link).toHaveFocus();
+		});
+
+		it('keeps the focus where a click moves it after tabbing into the controls', () => {
+			const { rows } = setup();
+			const video = addVideo(rows[0].row);
+			const reaction = document.createElement('button');
+			rows[0].row.appendChild(reaction);
+			const composer = document.createElement('textarea');
+			document.body.appendChild(composer);
+			video.focus();
+
+			pressKey(video, 'Tab');
+			fireEvent.pointerDown(composer);
+			mockFocusVisible(composer);
+			composer.focus();
+
+			expect(composer).toHaveFocus();
+		});
+	});
+
+	it('reaches the actions of a group header', () => {
+		const list = document.createElement('div');
+		const header = document.createElement('div');
+		header.className = 'rcx-item-group-header';
+		const title = document.createElement('div');
+		title.className = 'rcx-item-group-title';
+		title.tabIndex = 0;
+		const menu = document.createElement('button');
+		header.append(title, menu);
+		list.appendChild(header);
+		document.body.appendChild(list);
+
+		const isTitle = (node: Element) => node.classList.contains('rcx-item-group-title');
+		const { result } = renderHook(() => useItemListNavigation({ isItem: isTitle }));
+		act(() => result.current(list));
+		detachers.push(() => act(() => result.current(null)));
+		title.focus();
+
+		pressKey(title, 'Tab');
+
+		expect(menu).toHaveFocus();
 	});
 });
 
@@ -312,11 +365,11 @@ describe('in a row matched as a whole, as a sidebar row is', () => {
 		action.focus();
 
 		pressKey(action, 'Tab', { shiftKey: true });
-		expect(document.activeElement).toBe(link);
+		expect(link).toHaveFocus();
 
 		action.focus();
 		pressKey(action, 'Escape');
-		expect(document.activeElement).toBe(link);
+		expect(link).toHaveFocus();
 	});
 });
 
@@ -335,7 +388,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[1].link);
+		expect(rows[1].link).toHaveFocus();
 	});
 
 	it('keeps a pointer focus where it lands', () => {
@@ -346,7 +399,7 @@ describe('coming back by keyboard', () => {
 
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('does not remember a row focused with the pointer', () => {
@@ -357,7 +410,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('keeps the focus where it lands when the last row is no longer rendered', () => {
@@ -370,7 +423,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('lands on the row of a control the keyboard enters', () => {
@@ -380,7 +433,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[2].action!);
 		rows[2].action!.focus();
 
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 	});
 
 	it('lands on the last row first with `enterAtLast`', () => {
@@ -394,7 +447,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 	});
 });
 
@@ -416,7 +469,7 @@ describe('onLeave', () => {
 
 		expect(onLeave).toHaveBeenCalledWith('next', list);
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(before);
+		expect(before).toHaveFocus();
 	});
 });
 
@@ -441,7 +494,7 @@ describe('with a custom `isItem`', () => {
 
 		pressKey(rows[0], 'ArrowDown');
 
-		expect(document.activeElement).toBe(rows[1]);
+		expect(rows[1]).toHaveFocus();
 	});
 
 	describe('in a row that is its own focus target and holds a toolbar', () => {
@@ -468,41 +521,16 @@ describe('with a custom `isItem`', () => {
 			return { row, link, actions, after };
 		};
 
-		it('walks the row with the arrow keys, entering the toolbar as one stop', () => {
-			const { row, link, actions } = setupToolbarRow();
-			row.focus();
-
-			pressKey(row, 'ArrowRight');
-			expect(document.activeElement).toBe(link);
-
-			pressKey(link, 'ArrowRight');
-			expect(document.activeElement).toBe(actions[0]);
-		});
-
-		it('leaves the arrow keys inside the toolbar to the toolbar', () => {
-			const { actions } = setupToolbarRow();
-			// Stands in for a toolbar's React `onKeyDownCapture`, which runs at the app root, after the list's listener
-			const toolbarKeyDown = jest.fn();
-			document.body.addEventListener('keydown', toolbarKeyDown, { capture: true });
-			actions[0].focus();
-
-			const event = pressKey(actions[0], 'ArrowRight');
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(toolbarKeyDown).toHaveBeenCalled();
-			document.body.removeEventListener('keydown', toolbarKeyDown, { capture: true });
-		});
-
 		it('tabs over the toolbar as one stop, coming back to the button it focused last', () => {
 			const { link, actions, after } = setupToolbarRow();
 			actions[1].focus();
 			link.focus();
 
 			pressKey(link, 'Tab');
-			expect(document.activeElement).toBe(actions[1]);
+			expect(actions[1]).toHaveFocus();
 
 			pressKey(actions[1], 'Tab');
-			expect(document.activeElement).toBe(after);
+			expect(after).toHaveFocus();
 		});
 
 		it('returns from the toolbar to the control before it with Shift+Tab', () => {
@@ -511,44 +539,7 @@ describe('with a custom `isItem`', () => {
 
 			pressKey(actions[1], 'Tab', { shiftKey: true });
 
-			expect(document.activeElement).toBe(link);
+			expect(link).toHaveFocus();
 		});
-	});
-});
-
-describe('rows with several actions', () => {
-	it('reaches each action in turn', () => {
-		const { rows } = setup({ withAction: true });
-		const second = document.createElement('button');
-		rows[0].action!.after(second);
-		rows[0].link.focus();
-
-		pressKey(rows[0].link, 'ArrowRight');
-		pressKey(rows[0].action!, 'ArrowRight');
-
-		expect(document.activeElement).toBe(second);
-	});
-
-	it('reaches the actions of a group header', () => {
-		const list = document.createElement('div');
-		const header = document.createElement('div');
-		header.className = 'rcx-item-group-header';
-		const title = document.createElement('div');
-		title.className = 'rcx-item-group-title';
-		title.tabIndex = 0;
-		const menu = document.createElement('button');
-		header.append(title, menu);
-		list.appendChild(header);
-		document.body.appendChild(list);
-
-		const isTitle = (node: Element) => node.classList.contains('rcx-item-group-title');
-		const { result } = renderHook(() => useItemListNavigation({ isItem: isTitle }));
-		act(() => result.current(list));
-		detachers.push(() => act(() => result.current(null)));
-		title.focus();
-
-		pressKey(title, 'ArrowRight');
-
-		expect(document.activeElement).toBe(menu);
 	});
 });

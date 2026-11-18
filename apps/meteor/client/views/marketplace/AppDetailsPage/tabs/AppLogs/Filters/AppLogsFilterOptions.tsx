@@ -24,7 +24,7 @@ const AppsLogsFilterOptions = ({ onExpandAll, onCollapseAll, ...props }: AppsLog
 		},
 	];
 
-	return <GenericMenu large title={t('Options')} items={items} {...props} />;
+	return <GenericMenu size='large' title={t('Options')} items={items} {...props} />;
 };
 
 export default AppsLogsFilterOptions;

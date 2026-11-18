@@ -77,7 +77,7 @@ const readResponseText = async (response: Response, responseBudget?: McpResponse
  * Execute the REST endpoint a tool maps to, as the authenticated user.
  *
  * Dispatch is done via a loopback HTTP call to the local REST API, forwarding the
- * caller's PAT headers. This guarantees identical behaviour to a real REST client —
+ * caller's credentials. This guarantees identical behaviour to a real REST client —
  * the same auth, permission checks, parameter validation and response shape — with
  * zero duplicated business logic. (An in-process Hono dispatch is a possible future
  * optimisation to avoid the loopback hop.)
@@ -103,8 +103,9 @@ export const dispatchTool = async (
 
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
-		'X-User-Id': auth.userId,
-		'X-Auth-Token': auth.authToken,
+		...('authToken' in auth
+			? { 'X-User-Id': auth.userId, 'X-Auth-Token': auth.authToken }
+			: { Authorization: `Bearer ${auth.accessToken}` }),
 		...(clientIp && { 'X-Real-IP': clientIp }),
 	};
 

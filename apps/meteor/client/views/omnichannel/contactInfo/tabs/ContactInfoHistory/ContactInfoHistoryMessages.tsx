@@ -20,6 +20,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import ListViewport from '../../../../../components/ListViewport';
 import { isMessageNewDay } from '../../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageSequential';
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
@@ -75,7 +76,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 							onChange={handleSearchChange}
 							endAddon={<Icon name='magnifier' size='x20' />}
 						/>
-						<IconButton title={t('Back')} small icon='back' onClick={onBack} />
+						<IconButton title={t('Back')} size='small' icon='back' onClick={onBack} />
 					</Stack>
 				</Box>
 				{isPending && (
@@ -91,7 +92,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					</States>
 				)}
 				{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
+				<ListViewport ref={ref}>
 					{!error && totalItemCount > 0 && messages.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -116,7 +117,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 			{onOpenRoom && (
 				<ContextualbarFooter>

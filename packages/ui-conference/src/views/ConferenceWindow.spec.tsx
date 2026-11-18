@@ -9,6 +9,8 @@ import type { CallState } from '../call/context';
 import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
+import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
+import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
@@ -49,13 +51,17 @@ const deviceSelection: DeviceSelection = {
 
 const videoQuality: VideoQualitySelection = { quality: 'auto', qualities: [], pending: false, select: jest.fn() };
 
+const noiseSuppression: NoiseSuppressionSelection = { method: 'browser', methods: ['none', 'browser'], pending: false, select: jest.fn() };
+
 /** What a provider running the call in this window provides around it. */
 const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
 	<CallStateProvider value={state}>
 		<CallActionsProvider value={actions}>
 			<DeviceSelectionProvider value={deviceSelection}>
 				<VideoQualityProvider value={videoQuality}>
-					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+					<NoiseSuppressionProvider value={noiseSuppression}>
+						<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+					</NoiseSuppressionProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</CallActionsProvider>

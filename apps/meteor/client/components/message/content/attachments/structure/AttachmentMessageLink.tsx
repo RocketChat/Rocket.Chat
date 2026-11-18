@@ -7,7 +7,7 @@ type AttachmentAuthorMessageLinkProps = Omit<ComponentPropsWithoutRef<typeof Ico
 const AttachmentAuthorMessageLink = ({ href, ...props }: AttachmentAuthorMessageLinkProps) => {
 	const { t } = useTranslation();
 
-	return <IconButton mini is='a' href={href} icon='jump' title={t('Jump_to_message')} {...props} />;
+	return <IconButton size='mini' is='a' href={href} icon='jump' title={t('Jump_to_message')} {...props} />;
 };
 
 export default AttachmentAuthorMessageLink;

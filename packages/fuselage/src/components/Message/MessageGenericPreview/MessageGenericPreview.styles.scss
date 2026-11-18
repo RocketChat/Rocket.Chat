@@ -4,7 +4,6 @@
 @use '../../../styles/mixins/link.scss' as *;
 @use '../../../styles/mixins/size.scss';
 @use '../../../styles/primitives/link.scss';
-@use '../../../styles/primitives/rich-text.scss';
 @use '../../../styles/typography.scss' as *;
 
 $message-generic-preview-border-color: theme('message-generic-preview-border-color', colors.stroke(extra-light));
@@ -34,9 +33,6 @@ $message-generic-preview-icon-background-color: theme('message-generic-preview-i
 
 	&__content {
 		display: flex;
-		flex-direction: row;
-
-		font-size: 0;
 
 		&-wrapper {
 			@include use-with-truncated-text();
@@ -51,14 +47,10 @@ $message-generic-preview-icon-background-color: theme('message-generic-preview-i
 	}
 
 	&__preview {
-		display: inline-block;
 		overflow: hidden;
 
 		width: 100%;
 		height: 100%;
-
-		white-space: nowrap;
-		text-indent: 100%;
 
 		background-repeat: no-repeat;
 		background-position: 50%;

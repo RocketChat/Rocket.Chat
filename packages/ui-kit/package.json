@@ -1,7 +1,18 @@
 {
 	"name": "@rocket.chat/ui-kit",
-	"version": "1.2.0",
+	"version": "2.0.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./validateLayoutBlocks": {
+			"types": "./validateLayoutBlocks.d.ts",
+			"default": "./validateLayoutBlocks.js"
+		}
+	},
 	"homepage": "https://rocket.chat",
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
@@ -19,7 +30,9 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
-		"/dist"
+		"/dist",
+		"/validateLayoutBlocks.js",
+		"/validateLayoutBlocks.d.ts"
 	],
 	"scripts": {
 		".:build:clean": "rimraf dist",
@@ -45,7 +58,7 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
-		"@rocket.chat/icons": "*"
+		"@rocket.chat/icons": "0.52.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

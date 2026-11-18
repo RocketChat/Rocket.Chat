@@ -5,7 +5,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import type { NextHandleFunction } from 'connect';
-import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import sharp from 'sharp';
 
@@ -395,14 +394,6 @@ void (async () => {
 		await addAssetToSetting(key, value, { ...settingOptions, wizard });
 	}
 })();
-
-Meteor.startup(() => {
-	setTimeout(() => {
-		process.emit('message', {
-			refresh: 'client',
-		});
-	}, 200);
-});
 
 export const refreshClients = async (userId: string) => {
 	if (!userId) {

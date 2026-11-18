@@ -3,6 +3,8 @@ export type { ConferenceContextValue, ConferencePanel } from './context/Conferen
 export { OngoingCallsContext, defaultOngoingCallsContextValue, useOngoingCalls } from './context/OngoingCallsContext';
 export type { OngoingCallsContextValue, CallRing } from './context/OngoingCallsContext';
 export { useConferenceChatPanel } from './context/ChatPanelContext';
+export { CallSoundsContext, defaultCallSoundsContextValue, useCallSounds } from './context/CallSoundsContext';
+export type { CallSoundsContextValue } from './context/CallSoundsContext';
 export type {
 	ConferenceActions,
 	ConferenceCall,
@@ -38,11 +40,12 @@ export {
 	useCallDevicesInitialState,
 	useCallRingPreference,
 	useVideoQualityPreference,
+	useNoiseSuppressionPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
 	callDeviceIdField,
 } from './hooks/useCallDevicesInitialState';
-export type { CallPreferences, CallRingPreference, CallDevices, VideoQuality } from './hooks/useCallDevicesInitialState';
+export type { CallPreferences, CallRingPreference, CallDevices, NoiseMethod, VideoQuality } from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 
@@ -87,6 +90,8 @@ export type {
 } from './call/context';
 export { VideoQualityProvider } from './devices/VideoQualityContext';
 export type { VideoQualitySelection } from './devices/VideoQualityContext';
+export { NoiseSuppressionProvider, supportsRnnoise } from './devices/NoiseSuppressionContext';
+export type { NoiseSuppressionSelection } from './devices/NoiseSuppressionContext';
 export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
 // Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
 export { PreviewVideoContext } from './call/previewVideo';

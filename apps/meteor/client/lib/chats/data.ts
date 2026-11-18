@@ -311,12 +311,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
 
-	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
-		return Subscriptions.state.find((record) => record.rid === message.rid);
-	};
-
-	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');
-
 	return {
 		composeMessage,
 		findMessageByID,
@@ -343,7 +337,5 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getDiscussionByID,
 		findSubscription,
 		getSubscription,
-		findSubscriptionFromMessage,
-		getSubscriptionFromMessage,
 	};
 };

@@ -178,7 +178,8 @@ const isSamePosition = (a: UsePositionResult, b: UsePositionResult) => {
 	return a.placement === b.placement && [...keys].every((key) => a.style[key] === b.style[key]);
 };
 
-// The fallback placement limits the target with `bottom`, which must not limit the size it is placed by.
+// The target is sized by where it was last placed: the fallback placement limits it with `bottom`, and a viewport edge
+// wraps it narrower. Neither may limit the size it is placed by.
 const measureTarget = (target: Element) => {
 	// Checked by shape, since a target in another window is not an instance of this window's element classes.
 	if (!('style' in target)) {
@@ -186,10 +187,12 @@ const measureTarget = (target: Element) => {
 	}
 
 	const { style } = target as Element & ElementCSSInlineStyle;
-	const { bottom } = style;
+	const { bottom, left } = style;
 	style.bottom = '';
+	style.left = '0px';
 	const rect = target.getBoundingClientRect();
 	style.bottom = bottom;
+	style.left = left;
 
 	return rect;
 };

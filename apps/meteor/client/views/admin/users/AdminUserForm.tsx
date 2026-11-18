@@ -2,30 +2,31 @@ import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@
 import {
 	Accordion,
 	AccordionItem,
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	MultiSelectFiltered,
 	Box,
-	ToggleSwitch,
-	Icon,
-	FieldGroup,
 	Button,
 	ButtonGroup,
 	Callout,
+	Divider,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Icon,
+	MultiSelectFiltered,
 	Skeleton,
 	Stack,
-	Divider,
+	Text,
+	TextAreaInput,
+	TextInput,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
 import { validateEmail } from '@rocket.chat/tools';
-import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter, useEndpointMutation } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -50,7 +51,6 @@ import PhoneNumberFieldList, { getInitialPhones, getPersistedPhones } from '../.
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
-import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
@@ -263,7 +263,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</Field>
 					)}
-					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
+					{isNewUserPage && <Text color='hint'>{t('Manually_created_users_briefing')}</Text>}
 					<Field>
 						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
 						<FieldRow>

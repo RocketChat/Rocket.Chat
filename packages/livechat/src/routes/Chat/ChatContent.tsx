@@ -5,7 +5,7 @@ import { useCallback, useContext, useState } from 'preact/hooks';
 import { useTranslation } from 'react-i18next';
 
 import Picker from './Picker';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { MessageList } from '../../components/Messages';
 import { ScreenContent } from '../../components/Screen';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';

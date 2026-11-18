@@ -10,7 +10,7 @@ export async function handleSuggestedGroupKey(
 	method: string,
 ): Promise<void> {
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method });
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method });
 	}
 
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);

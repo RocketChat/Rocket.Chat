@@ -64,7 +64,7 @@ const ChatAccessNotice = ({ access, onDismiss }: ChatAccessNoticeProps) => {
 					>
 						{t('Review')}
 					</Button>
-					{onDismiss && <IconButton small secondary icon='cross' aria-label={t('Dismiss')} onClick={onDismiss} />}
+					{onDismiss && <IconButton size='small' variant='secondary' icon='cross' aria-label={t('Dismiss')} onClick={onDismiss} />}
 				</Box>
 			</Box>
 		</AnnouncementBanner>

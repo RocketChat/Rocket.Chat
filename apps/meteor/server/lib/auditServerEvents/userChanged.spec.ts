@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { IAuditServerUserActor, IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { UpdaterImpl } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { UserChangedAuditStore } from './userChanged';
 import { createFakeUser } from '../../../tests/mocks/data';
@@ -34,15 +35,6 @@ const createEmailsField = (address?: string, verified = true) => {
 		],
 	};
 };
-
-jest.mock('@rocket.chat/models', () => {
-	return {
-		UpdaterImpl: jest.requireActual('@rocket.chat/models').UpdaterImpl,
-		ServerEvents: {
-			createAuditServerEvent: (...args: any) => args,
-		},
-	};
-});
 
 const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e2e' | 'oauth'> => {
 	return {
@@ -108,6 +100,12 @@ const getObfuscatedServices = (email2faState: { enabled: boolean; changedAt: Dat
 };
 
 describe('userChanged audit module', () => {
+	beforeAll(() => {
+		mockModel('ServerEvents', {
+			createAuditServerEvent: (...args: any) => args,
+		});
+	});
+
 	it('should build event with only name and username fields', async () => {
 		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
 
@@ -154,6 +152,31 @@ describe('userChanged audit module', () => {
 				user: { _id: user._id, username: user.username },
 				operation: { $set: { ...newEmailsField } },
 				user_data: { emails: user.emails },
+			},
+			{ ...actor, type: 'user' },
+		]);
+	});
+
+	it('should build event when the user did not have the changed field before', async () => {
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
+
+		const store = new UserChangedAuditStore(actor);
+
+		const phones = [{ number: faker.phone.number() }];
+
+		updater.set('phones', phones);
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
+
+		expect(event).toEqual([
+			'user.changed',
+			{
+				user: { _id: user._id, username: user.username },
+				operation: { $set: { phones } },
+				user_data: {},
 			},
 			{ ...actor, type: 'user' },
 		]);

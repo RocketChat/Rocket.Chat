@@ -77,7 +77,9 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		},
 		size: 2,
 		isMember,
-		reload: refetch,
+		reload: () => {
+			void refetch();
+		},
 	});
 
 	const menu = useMemo(() => {
@@ -87,7 +89,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 		return (
 			<GenericMenu
-				button={<IconButton icon='kebab' secondary small />}
+				button={<IconButton icon='kebab' variant='secondary' size='small' />}
 				title={t('More')}
 				key='menu'
 				sections={menuOptions}

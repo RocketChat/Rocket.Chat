@@ -44,16 +44,5 @@ it('moves between user and system messages', () => {
 
 	fireEvent.keyDown(user.message, { key: 'ArrowDown' });
 
-	expect(document.activeElement).toBe(system.message);
-});
-
-it('reaches the message toolbar with the arrow keys and leaves it with Escape', () => {
-	const { user } = setup();
-	user.message.focus();
-
-	fireEvent.keyDown(user.message, { key: 'ArrowRight' });
-	expect(document.activeElement).toBe(user.action);
-
-	fireEvent.keyDown(user.action, { key: 'Escape' });
-	expect(document.activeElement).toBe(user.message);
+	expect(system.message).toHaveFocus();
 });

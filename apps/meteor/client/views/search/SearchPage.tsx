@@ -1,6 +1,6 @@
 import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
 import { Box, Button, Callout, Skeleton } from '@rocket.chat/fuselage';
-import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview } from '@rocket.chat/ui-client';
+import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
@@ -13,7 +13,6 @@ import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
 import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();

@@ -11,16 +11,19 @@ import {
 	FieldError,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import {
+	GenericModal,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	useEndpointMutation,
+	useEndpointUploadMutation,
+	useSingleFileInput,
+} from '@rocket.chat/ui-client';
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useCallback, useId, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
-import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 export type EditCustomEmojiProps = {
 	close: () => void;
@@ -171,7 +174,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 					<Field>
 						<FieldRow>
 							<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
-							<IconButton aria-labelledby={emojiLabelId} icon='upload' secondary onClick={clickUpload} />
+							<IconButton aria-labelledby={emojiLabelId} icon='upload' variant='secondary' onClick={clickUpload} />
 						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>

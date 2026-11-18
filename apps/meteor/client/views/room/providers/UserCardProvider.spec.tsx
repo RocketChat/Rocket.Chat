@@ -9,9 +9,12 @@ jest.mock('../contexts/RoomContext', () => ({
 	useRoom: () => ({ _id: 'r1', t: 'c', uids: [] }),
 }));
 
+const mockOpenTab = jest.fn();
+let mockActions: { id: string }[] = [];
+
 jest.mock('@rocket.chat/ui-contexts', () => {
 	const actual = jest.requireActual('@rocket.chat/ui-contexts');
-	return { ...actual, useRoomToolbox: () => ({ openTab: jest.fn() }) };
+	return { ...actual, useRoomToolbox: () => ({ openTab: mockOpenTab, actions: mockActions }) };
 });
 
 jest.mock('../UserCard', () => ({
@@ -27,6 +30,9 @@ const Trigger = () => {
 		</button>
 	);
 };
+
+// oxlint-disable-next-line testing-library/no-node-access -- the hover handlers sit on the card's unlabelled wrapper
+const getCardContainer = () => screen.getByTestId('user-card').parentElement as HTMLElement;
 
 // Stands in for a contextual bar / search panel that closes on a bubbling Escape.
 const EscapeListener = ({ onEscape, children }: { onEscape: () => void; children: ReactNode }) => {
@@ -56,7 +62,7 @@ it('consumes Escape while the card is open so an underlying handler does not als
 	);
 
 	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 
@@ -79,7 +85,7 @@ it('does not consume Escape while a menu is open, leaving the card as it is', as
 	);
 
 	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 
@@ -194,6 +200,33 @@ it('keeps the context value stable when a card opens and closes', async () => {
 	expect(screen.getByText('open')).not.toHaveAttribute('aria-expanded');
 });
 
+it.each([
+	['the member list when it is available', [{ id: 'members-list' }], 'members-list'],
+	['the profile on its own when the member list is hidden', [{ id: 'thread' }], 'user-info'],
+])('opens a channel member info through %s', (_, actions, expectedTab) => {
+	mockActions = actions;
+	mockOpenTab.mockClear();
+
+	const InfoTrigger = () => {
+		const { openUserInfo } = useUserCard();
+		return (
+			<button type='button' onClick={() => openUserInfo('john')}>
+				info
+			</button>
+		);
+	};
+
+	render(
+		<UserCardProvider>
+			<InfoTrigger />
+		</UserCardProvider>,
+	);
+
+	fireEvent.click(screen.getByText('info'));
+
+	expect(mockOpenTab).toHaveBeenCalledWith(expectedTab, 'john');
+});
+
 const AuthorTrigger = ({ username }: { username: string }) => {
 	const { openUserCard } = useUserCard();
 	return (
@@ -220,7 +253,7 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 		const trigger = screen.getByText('author jane');
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
-		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// from the trigger into the card: it stays open
 		fireEvent.mouseLeave(trigger);
@@ -336,7 +369,7 @@ it('keeps the card open while its own menu is open, and closes once that menu cl
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
 		const content = screen.getByTestId('user-card');
-		const card = content.parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// the card's kebab opens its menu, portaled outside the card, and the pointer follows it there
 		fireEvent.mouseLeave(trigger);
@@ -410,7 +443,7 @@ it('stays open when the pointer jumps straight from the trigger onto the card', 
 		const trigger = screen.getByText('author jane');
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
-		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// a single fast move: the browser fires every pointer event before the matching mouse events
 		fireEvent.pointerLeave(trigger);

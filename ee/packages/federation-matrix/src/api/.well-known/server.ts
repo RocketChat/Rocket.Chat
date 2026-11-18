@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 const WellKnownServerResponseSchema = {
 	type: 'object',
@@ -22,8 +22,8 @@ const isWellKnownServerResponseProps = ajv.compile(WellKnownServerResponseSchema
 export const getWellKnownRoutes = () => {
 	// GET /.well-known/matrix/server
 	// https://spec.matrix.org/v1.19/server-server-api/#getwell-knownmatrixserver
-	return new Router('/matrix').get(
-		'/server',
+	return new Router('/server').get(
+		'/',
 		{
 			response: {
 				200: isWellKnownServerResponseProps,

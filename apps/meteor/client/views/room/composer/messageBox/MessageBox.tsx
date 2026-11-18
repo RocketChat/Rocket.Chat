@@ -1,12 +1,13 @@
 /* oxlint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useStableCallback, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerInputExpandable } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
@@ -18,7 +19,6 @@ import { emptySubscribe, getEmptyFalse, getEmptyArray, handleFormattingShortcut 
 import { handleSelectionWrapping } from './wrapSelection';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -69,7 +69,7 @@ const MessageBox = ({
 }: MessageBoxProps) => {
 	const chat = useChat();
 	const room = useRoom();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;

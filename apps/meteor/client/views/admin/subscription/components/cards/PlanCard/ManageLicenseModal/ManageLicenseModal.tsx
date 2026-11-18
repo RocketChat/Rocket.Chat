@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, backgroundColor, strokeColor, useStyle } from '@rocket.chat/fuselage';
+import { backgroundColor, Box, Button, ButtonGroup, strokeColor, Text, useStyle } from '@rocket.chat/fuselage';
 import { FieldLabel, Field, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, useInvalidateLicense } from '@rocket.chat/ui-client';
@@ -47,7 +47,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		margin-block-end: 8px !important;
 		width: 100% !important;
 		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
-		border-color: ${strokeColor(isDragOver ? 'stroke-highlight' : 'stroke-light')} !important;
+		border-color: ${strokeColor(isDragOver ? 'highlight' : 'light')} !important;
 		${isDragOver ? `background-color: ${backgroundColor('tint')} !important;` : ''}
 	`);
 
@@ -112,9 +112,9 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<Box display='flex' flexDirection='column' gap={16}>
 					<Box>{t('Remove_license_confirmation')}</Box>
 					<Box>{t('Are_you_sure_you_want_to_continue_question')}</Box>
-					<Box fontScale='c1' color='secondary-info'>
+					<Text fontScale='c1' color='secondary-info'>
 						{t('Remove_license_disclaimer')}
-					</Box>
+					</Text>
 				</Box>
 			</GenericModal>
 		);

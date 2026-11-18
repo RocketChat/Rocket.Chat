@@ -20,7 +20,7 @@ const ScreenShareThumb = ({ stream, label, onSpotlight }: ScreenShareThumbProps)
 				{label}
 			</Box>
 			<Box className={['rcx-screen-thumb-overlay', spotlightOverlayStyles]}>
-				<IconButton icon='arrow-expand' small primary onClick={onSpotlight} title={t('Spotlight_screen')} />
+				<IconButton icon='arrow-expand' size='small' variant='primary' onClick={onSpotlight} title={t('Spotlight_screen')} />
 			</Box>
 		</Box>
 	);

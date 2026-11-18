@@ -65,11 +65,13 @@ it("prefers the roles from the user's record and refetches the room roles on eve
 		.withEndpoint('GET', '/v1/rooms.roles', getRoomRoles)
 		.build();
 
-	const first = renderHook(() => useUserRolesByScope(uid, rid, { userRoleIds: ['guest'] }), { wrapper });
-	await waitFor(() => expect(first.result.current).toEqual({ workspaceRoles: ['Guest'], roomRoles: ['Owner'] }));
-	first.unmount();
+	const { result: firstResult, unmount: unmountFirst } = renderHook(() => useUserRolesByScope(uid, rid, { userRoleIds: ['guest'] }), {
+		wrapper,
+	});
+	await waitFor(() => expect(firstResult.current).toEqual({ workspaceRoles: ['Guest'], roomRoles: ['Owner'] }));
+	unmountFirst();
 
-	const second = renderHook(() => useUserRolesByScope(uid, rid, { userRoleIds: ['guest'] }), { wrapper });
+	const { result: secondResult } = renderHook(() => useUserRolesByScope(uid, rid, { userRoleIds: ['guest'] }), { wrapper });
 	await waitFor(() => expect(getRoomRoles).toHaveBeenCalledTimes(2));
-	expect(second.result.current).toEqual({ workspaceRoles: ['Guest'], roomRoles: ['Owner'] });
+	expect(secondResult.current).toEqual({ workspaceRoles: ['Guest'], roomRoles: ['Owner'] });
 });

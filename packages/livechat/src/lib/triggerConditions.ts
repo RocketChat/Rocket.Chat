@@ -7,6 +7,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 	const { parentUrl } = Triggers;
 
 	if (!parentUrl || !condition.value) {
+		// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- the reason is persisted to triggersRecords and logged as-is; an Error would serialize to {}
 		return Promise.reject(`condition ${condition.name} not met`);
 	}
 
@@ -16,6 +17,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 		return Promise.resolve();
 	}
 
+	// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- keeps the existing reasonless rejection: callers only need to know the condition failed
 	return Promise.reject();
 };
 
@@ -25,6 +27,7 @@ export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {
 		setTimeout(() => {
 			const { user } = store.state;
 			if (user?.token) {
+				// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- the reason is persisted to triggersRecords and logged as-is; an Error would serialize to {}
 				reject(`Condition "${condition.name}" is no longer valid`);
 				return;
 			}

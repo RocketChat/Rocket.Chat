@@ -122,7 +122,7 @@ const ConferencePreflight = ({
 								// Pressed while the device is on, whichever way it is drawn: a screen reader must not hear a live mic as idle.
 								aria-pressed={preferences.mic}
 								dangerWhenPressed
-								large
+								size='large'
 								onToggle={() => toggle('mic')}
 							/>
 						)}
@@ -134,7 +134,7 @@ const ConferencePreflight = ({
 								pressed={!preferences.cam}
 								aria-pressed={preferences.cam}
 								dangerWhenPressed
-								large
+								size='large'
 								onToggle={() => toggle('cam')}
 							/>
 						)}

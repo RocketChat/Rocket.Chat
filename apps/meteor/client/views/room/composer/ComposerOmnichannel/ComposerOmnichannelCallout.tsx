@@ -48,7 +48,7 @@ const ComposerOmnichannelCallout = () => {
 					<Button variant='secondary-danger' size='small' onClick={handleBlock}>
 						{currentChannel?.blocked ? t('Unblock') : t('Block')}
 					</Button>
-					<IconButton icon='cross' secondary small title={t('Dismiss')} onClick={() => setDismissed(true)} />
+					<IconButton icon='cross' variant='secondary' size='small' title={t('Dismiss')} onClick={() => setDismissed(true)} />
 				</ButtonGroup>
 			}
 		>

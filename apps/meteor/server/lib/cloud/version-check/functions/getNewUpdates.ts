@@ -1,11 +1,63 @@
 import os from 'node:os';
 
 import { Settings } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { check, Match } from 'meteor/check';
 
 import { getWorkspaceAccessToken } from '../..';
 import { Info } from '../../../../../rocketchat.info';
+
+type UpdatesResponse = {
+	versions: {
+		version: string;
+		security: boolean;
+		infoUrl: string;
+	}[];
+
+	alerts: {
+		id: string;
+		priority: number;
+		title: string;
+		text: string;
+		textArguments?: string[];
+		modifiers: string[];
+		infoUrl: string;
+	}[];
+};
+
+const isUpdatesResponse = ajv.compile<UpdatesResponse>({
+	type: 'object',
+	properties: {
+		versions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					version: { type: 'string' },
+					security: { type: 'boolean' },
+					infoUrl: { type: 'string' },
+				},
+				required: ['version', 'infoUrl'],
+			},
+		},
+		alerts: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					id: { type: 'string' },
+					title: { type: 'string' },
+					text: { type: 'string' },
+					textArguments: { type: 'array' },
+					modifiers: { type: 'array', items: { type: 'string' } },
+					infoUrl: { type: 'string' },
+				},
+				required: ['id', 'title', 'text', 'textArguments', 'modifiers', 'infoUrl'],
+			},
+		},
+	},
+	required: ['versions'],
+});
 
 /** @deprecated */
 
@@ -44,46 +96,11 @@ export const getNewUpdates = async () => {
 
 		const data = await response.json();
 
-		check(
-			data,
-			Match.ObjectIncluding({
-				versions: [
-					Match.ObjectIncluding({
-						version: String,
-						security: Match.Optional(Boolean),
-						infoUrl: String,
-					}),
-				],
-				alerts: Match.Optional([
-					Match.ObjectIncluding({
-						id: String,
-						title: String,
-						text: String,
-						textArguments: [Match.Any],
-						modifiers: [String] as [StringConstructor],
-						infoUrl: String,
-					}),
-				]),
-			}),
-		);
+		if (!isUpdatesResponse(data)) {
+			throw new Error('Invalid updates response');
+		}
 
-		return data as {
-			versions: {
-				version: string;
-				security: boolean;
-				infoUrl: string;
-			}[];
-
-			alerts: {
-				id: string;
-				priority: number;
-				title: string;
-				text: string;
-				textArguments?: string[];
-				modifiers: string[];
-				infoUrl: string;
-			}[];
-		};
+		return data;
 	} catch (error) {
 		// There's no need to log this error
 		// as it's pointless and the user

@@ -16,7 +16,7 @@ Meteor.methods<ServerMethods>({
 	async removeSlackBridgeChannelLinks() {
 		const user = await Meteor.userAsync();
 		if (!user) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 				method: 'removeSlackBridgeChannelLinks',
 			});
 		}

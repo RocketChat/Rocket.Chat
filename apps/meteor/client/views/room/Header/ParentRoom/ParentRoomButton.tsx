@@ -8,7 +8,7 @@ const ParentRoomButton = ({ loading, ...props }: ParentRoomButtonProps) => {
 		return <Skeleton variant='rect' width={28} height={28} />;
 	}
 
-	return <IconButton small icon='arrow-back-up' {...props} />;
+	return <IconButton size='small' icon='arrow-back-up' {...props} />;
 };
 
 export default ParentRoomButton;

@@ -19,15 +19,16 @@ import {
 	ContextualbarClose,
 	ContextualbarFooter,
 	ContextualbarScrollableContent,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 export type EditCustomFieldsFormData = {
@@ -60,7 +61,7 @@ const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | un
 });
 
 const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Serialized<ILivechatCustomField>; onClose: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 

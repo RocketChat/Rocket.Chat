@@ -36,8 +36,10 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
   - [layout.md](docs/frontend/layout.md) — screens compose named layout containers, never raw `Box` or styling props on Fuselage components; where a new container lives and when it gets promoted
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, the props a component accepts, layout containers, adding a variation, Storybook-first
+  - [fuselage-tamagui-components.md](docs/frontend/fuselage-tamagui-components.md) — migrating a Fuselage component to Tamagui: workflow and decision gate, rules, Definition of Done G0–G8, policies (z-index tokens, allowed CSS, hacks, text frames), semver, deviations and precedents
   - [list-keyboard-navigation.md](docs/frontend/list-keyboard-navigation.md) — the three keyboard models for lists (combobox, menu, composite list), the implementation of each, and how to test them
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
+  - [view-isolation.md](docs/frontend/view-isolation.md) — keeping screens free of Meteor and direct browser APIs: view-model hook vs view, `ui-contexts` only, browser APIs behind hooks, web-only widgets behind app components, `.native.tsx` twins, the CI ratchet
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
   - [adding-icons.md](docs/frontend/adding-icons.md) — adding an icon to `@rocket.chat/icons`: SVG cleanup, shape-based naming, directional icons, glyph mapping, changeset
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
@@ -47,6 +49,8 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Backend
 
 - [docs/backend-folder-structure.md](docs/backend-folder-structure.md) — how `apps/meteor/` server code is organized and where new code goes
+- [docs/features/http-server.md](docs/features/http-server.md) — the server's own HTTP server: base middlewares, routes on the root app, the Meteor fallback, where to add a route
+- [docs/features/ddp-sessions.md](docs/features/ddp-sessions.md) — DDP over the WebSocket with `@rocket.chat/ddp-server`: endpoints, what runs through Meteor, login, who follows a session
 - [docs/database-access.md](docs/database-access.md) — every query and write is a named model method; what callers may still pass, how to add a method, why models never call other models or validate input
 - [docs/api-endpoint-migration.md](docs/api-endpoint-migration.md) — migrating `API.v1.addRoute()` to the validated `API.v1.get()`/`.post()`/… pattern
 - [docs/ajv-instances.md](docs/ajv-instances.md) — when to use `ajv` vs `ajvQuery` in `@rocket.chat/rest-typings`
@@ -64,6 +68,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Testing
 
+- [Unit tests](docs/backend-folder-structure.md#tests) — where a spec goes, which runner, model mocks with `mockModel` in a `describe` hook
 - [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
 
 ### Other
@@ -72,4 +77,9 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [ee/packages/xmpp-server/docs/](ee/packages/xmpp-server/docs/README.md) — the XMPP server is developed spec-first; its specs, ADRs, plans and compliance matrix live in the package, not here; `/xmpp-intent`, `/xmpp-spec` and `/xmpp-plan` drive its authoring stages from any directory
 - [docs/features/](docs/features/) — per-feature notes
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
+  - [client-boot.md](docs/features/client-boot.md) — the path to the first screen, and why components on it must not suspend
+  - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
+  - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
+  - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
+  - [view-isolation-migration.md](docs/proposals/view-isolation-migration.md) — what still ties the views to Meteor and the browser, and the phases to apply the view isolation rules

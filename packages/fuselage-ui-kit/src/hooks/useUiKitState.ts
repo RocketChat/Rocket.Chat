@@ -1,8 +1,11 @@
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
-import { useContext, useMemo, useState } from 'react';
+import type { KeyboardEvent } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useStringFromTextObject } from './useStringFromTextObject';
 import { UiKitContext } from '../contexts/UiKitContext';
+import { askConfirmation } from '../utils/askConfirmation';
 import { getInitialValue } from '../utils/getInitialValue';
 
 const getElementValueFromState = (
@@ -22,6 +25,7 @@ type UiKitState<TElement extends UiKit.ActionableElement = UiKit.ActionableEleme
 	setLoading: (loading: boolean) => void;
 	error?: string;
 	value: UiKit.ActionOf<TElement>;
+	onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
 };
 
 export const useUiKitState = <TElement extends UiKit.ActionableElement>(
@@ -29,9 +33,13 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	context: UiKit.BlockContext,
 ): [
 	state: UiKitState<TElement>,
-	action: (pseudoEvent?: Event | { target: EventTarget } | { target: { value: UiKit.ActionOf<TElement> } }) => Promise<void>,
+	action: (
+		pseudoEvent?:
+			Event | { target: EventTarget; onConfirmed?: () => void } | { target: { value: UiKit.ActionOf<TElement> }; onConfirmed?: () => void },
+	) => Promise<void>,
 ] => {
-	const { blockId, actionId, appId, dispatchActionConfig } = element;
+	const { blockId, actionId, appId, dispatchActionConfig, confirm } = element;
+	const fromTextObjectToString = useStringFromTextObject();
 	const { action, appId: appIdFromContext = undefined, viewId = undefined, updateState } = useContext(UiKitContext);
 
 	const initialValue = getInitialValue(element);
@@ -93,7 +101,9 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 		setValue(value);
 
-		updateState && (await updateState({ blockId, appId, actionId, value, viewId }, e));
+		if (updateState) {
+			await updateState({ blockId, appId, actionId, value, viewId }, e);
+		}
 
 		await action(
 			{
@@ -114,6 +124,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 			target: { value },
 		} = e;
 
+		// This path never asks, so the value counts as accepted.
+		e?.onConfirmed?.();
 		setValue(value);
 
 		await updateState?.(
@@ -128,7 +140,65 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		);
 	});
 
-	const result: UiKitState = useMemo(() => ({ loading, setLoading, error, value }), [loading, setLoading, error, value]);
+	const identity = JSON.stringify([actionId, blockId, viewId]);
+	const identityRef = useRef<string | undefined>(identity);
+	useEffect(() => {
+		identityRef.current = identity;
+		return () => {
+			identityRef.current = undefined;
+		};
+	}, [identity]);
+
+	const isAccepted = async () => {
+		if (!confirm) {
+			return true;
+		}
+		const asked = identityRef.current;
+		const accepted = await askConfirmation({
+			title: fromTextObjectToString(confirm.title) ?? '',
+			text: fromTextObjectToString(confirm.text) ?? '',
+			confirm: fromTextObjectToString(confirm.confirm) ?? '',
+			deny: fromTextObjectToString(confirm.deny) ?? '',
+			style: confirm.style,
+		});
+		return accepted && identityRef.current === asked;
+	};
+
+	const confirmedAction = useStableCallback(async (e: any) => {
+		if (await isAccepted()) {
+			e?.onConfirmed?.();
+			await actionFunction(e);
+		}
+	});
+
+	const sendsOnEnter = Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_enter_pressed');
+
+	const onEnterKeyDown = useStableCallback(async (event: KeyboardEvent<HTMLElement>) => {
+		if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) {
+			return;
+		}
+
+		event.preventDefault();
+		if (!(await isAccepted())) {
+			return;
+		}
+		await action(
+			{
+				blockId,
+				appId: appId || appIdFromContext || 'core',
+				actionId,
+				value,
+				viewId,
+				dispatchActionConfig,
+			},
+			event as unknown as Parameters<typeof action>[1],
+		);
+	});
+
+	const result: UiKitState = useMemo(
+		() => ({ loading, setLoading, error, value, onKeyDown: sendsOnEnter ? onEnterKeyDown : undefined }),
+		[loading, setLoading, error, value, sendsOnEnter, onEnterKeyDown],
+	);
 
 	if (
 		element.type === 'plain_text_input' &&
@@ -139,11 +209,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	}
 
 	if (context === UiKit.BlockContext.SECTION || context === UiKit.BlockContext.ACTION) {
-		return [result, actionFunction];
+		return [result, confirmedAction];
 	}
 
 	if (Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected')) {
-		return [result, actionFunction];
+		return [result, confirmedAction];
 	}
 
 	return [result, stateFunction];

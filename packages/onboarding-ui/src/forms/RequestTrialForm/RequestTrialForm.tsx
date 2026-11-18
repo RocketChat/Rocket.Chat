@@ -15,6 +15,7 @@ import {
 	SelectFiltered,
 } from '@rocket.chat/fuselage';
 import { Form, FormFooter } from '@rocket.chat/layout';
+import { useId } from 'react';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation, Trans } from 'react-i18next';
@@ -49,6 +50,7 @@ export const RequestTrialForm = ({
 	policyHref = 'https://rocket.chat/privacy',
 }: RequestTrialFormProps) => {
 	const { t } = useTranslation();
+	const organizationSizeField = useId();
 
 	const {
 		handleSubmit,
@@ -87,7 +89,7 @@ export const RequestTrialForm = ({
 					{errors?.organizationName && <FieldError>{t('component.form.requiredField')}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel>{t('form.requestTrialForm.fields.organizationSize.label')}</FieldLabel>
+					<FieldLabel htmlFor={organizationSizeField}>{t('form.requestTrialForm.fields.organizationSize.label')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='organizationSize'
@@ -96,6 +98,7 @@ export const RequestTrialForm = ({
 							render={({ field }) => (
 								<Select
 									{...field}
+									id={organizationSizeField}
 									options={organizationSizeOptions}
 									placeholder={t('form.requestTrialForm.fields.organizationSize.placeholder')}
 									error={errors?.email?.message || undefined}

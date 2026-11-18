@@ -1,12 +1,10 @@
 import './appcache';
 import './callbacks';
 import { ensureMessagesTextIndex } from './ensureMessagesTextIndex';
-import './initialData';
-import './serverRunning';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';
 import './presenceTroubleshoot';
-import './httpSocketTimeout';
+import './disconnectGracePeriod';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';
@@ -24,6 +22,6 @@ export const startup = async () => {
 	setImmediate(() => ensureMessagesTextIndex());
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
-		require('./localServices');
+		await import('./localServices');
 	}
 };

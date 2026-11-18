@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 		const userId = Meteor.userId();
 		// Make sure the user is logged in before we initiate SAML Logout
 		if (!userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'samlLogout' });
 		}
 		const providerConfig = getSamlServiceProviderOptions(provider);
 

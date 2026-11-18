@@ -20,7 +20,6 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -194,7 +193,7 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 			throw new ClientSafeError('error-room-param-not-provided', 'Body param "roomId" is required');
 		}
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 				method: 'dm.close',
 			});
 		}
@@ -306,7 +305,7 @@ const dmSetTopicAction = <Path extends string>(_path: Path): TypedAction<typeof 
 			throw new ClientSafeError('error-room-param-not-provided', 'Body param "roomId" is required');
 		}
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 
 		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
@@ -377,7 +376,7 @@ const dmCountersEndpointsProps = {
 const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof dmCountersEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 
 		const access = await hasPermissionAsync(this.userId, 'view-room-administration');
@@ -393,7 +392,6 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		let msgs = null;
 		let latest = null;
 		let members = null;
-		let lm = null;
 
 		if (ruserId) {
 			if (!access) {
@@ -409,7 +407,7 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
 
-		lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
+		const lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
 
 		if (subscription) {
 			unreads = subscription.unread ?? null;
@@ -462,7 +460,7 @@ const dmFilesEndpointsProps = {
 const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmFilesEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 
 		const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
@@ -532,7 +530,7 @@ const dmMembersEndpointsProps = {
 const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof dmMembersEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 
 		const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
@@ -545,13 +543,6 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				status: Match.Maybe([String]),
-				filter: Match.Maybe(String),
-			}),
-		);
 		const { status, filter } = this.queryParams;
 
 		const hidden = await getUsersHiddenFrom(this.userId);
@@ -638,7 +629,7 @@ const dmMessagesEndpointsProps = {
 const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof dmMessagesEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 
 		const { roomId, username, mentionIds, starredIds, pinned } = this.queryParams as {
@@ -712,7 +703,7 @@ const dmHistoryEndpointsProps = {
 const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof dmHistoryEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 
 		const { offset = 0, count = 20 } = await getPaginationItems(this.queryParams);

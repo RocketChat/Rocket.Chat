@@ -1,5 +1,5 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { useLayoutEffect, useRef } from 'react';
 
 import { AnimatedVisibility } from '../AnimatedVisibility';
@@ -98,7 +98,7 @@ const AnchoredTooltip = ({ placement }: AnchoredTooltipProps) => {
 
 	return (
 		<Box display='inline-flex' paddingBlock='x56' paddingInline='x96'>
-			<IconButton ref={anchor} icon='home' small aria-label={placement} />
+			<IconButton ref={anchor} icon='home' size='small' aria-label={placement} />
 			<PositionAnimated anchor={anchor} placement={placement} margin={8} visible={AnimatedVisibility.VISIBLE}>
 				<Tooltip>{placement}</Tooltip>
 			</PositionAnimated>

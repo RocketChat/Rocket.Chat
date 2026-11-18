@@ -1,5 +1,4 @@
 import { Apps } from '@rocket.chat/apps';
-import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommand, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -242,6 +241,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	const fieldsToGet: F[] = [];
 
 	if (options.fields) {
+		// oxlint-disable-next-line typescript/no-for-in-array -- iterating field names would turn on a projection no caller uses; removal tracked in CORE-3042
 		for (const field in Object.keys(options.fields)) {
 			if (options.fields.hasOwnProperty(field as F)) {
 				if (options.fields[field as F] === 0) {
@@ -370,11 +370,6 @@ const commandsPreviewPostResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-const forbiddenErrors = ['error-not-authorized', 'error-not-allowed'];
-
-const isForbiddenError = (error: unknown): error is ClientSafeError =>
-	isClientSafeError(error) && forbiddenErrors.includes(String(error.error));
-
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.post(
 	'commands.run',
@@ -417,17 +412,9 @@ API.v1.post(
 
 		const { triggerId } = body;
 
-		try {
-			const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
+		const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
 
-			return API.v1.success({ result });
-		} catch (error) {
-			if (isForbiddenError(error)) {
-				throw new ClientSafeError('error-forbidden', error.reason, error.details);
-			}
-
-			throw error;
-		}
+		return API.v1.success({ result });
 	},
 );
 
@@ -458,22 +445,14 @@ API.v1.get(
 
 		const params = query.params ? query.params : '';
 
-		try {
-			const preview = await getSlashCommandPreviews({
-				cmd,
-				params,
-				msg: { rid: query.roomId },
-				userId: this.userId,
-			});
+		const preview = await getSlashCommandPreviews({
+			cmd,
+			params,
+			msg: { rid: query.roomId },
+			userId: this.userId,
+		});
 
-			return API.v1.success({ preview: preview ?? null });
-		} catch (error) {
-			if (isForbiddenError(error)) {
-				throw new ClientSafeError('error-forbidden', error.reason, error.details);
-			}
-
-			throw error;
-		}
+		return API.v1.success({ preview: preview ?? null });
 	},
 );
 
@@ -515,26 +494,18 @@ API.v1.post(
 			...(body.tmid && { tmid: body.tmid }),
 		};
 
-		try {
-			await executeSlashCommandPreview(
-				{
-					cmd,
-					params,
-					msg,
-					triggerId: body.triggerId,
-				},
-				body.previewItem,
-				this.userId,
-			);
+		await executeSlashCommandPreview(
+			{
+				cmd,
+				params,
+				msg,
+				triggerId: body.triggerId,
+			},
+			body.previewItem,
+			this.userId,
+		);
 
-			return API.v1.success();
-		} catch (error) {
-			if (isForbiddenError(error)) {
-				throw new ClientSafeError('error-forbidden', error.reason, error.details);
-			}
-
-			throw error;
-		}
+		return API.v1.success();
 	},
 );
 

@@ -79,7 +79,7 @@ class BotHelpers {
 
 		const userId = Meteor.userId();
 		if (!userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'addUserToRoom' });
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'addUserToRoom' });
 		}
 		await addUsersToRoomMethod(userId, {
 			rid: foundRoom._id,
@@ -95,7 +95,7 @@ class BotHelpers {
 		}
 		const userId = Meteor.userId();
 		if (!userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 		}
 		await removeUserFromRoomMethod(userId, { rid: foundRoom._id, username: userName });
 	}

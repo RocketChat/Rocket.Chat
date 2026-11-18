@@ -6,37 +6,45 @@ import {
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
+	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
+	links,
+	GenericError,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TriggersRow from './TriggersRow';
-import GenericError from '../../../components/GenericError';
-import { links } from '../../../lib/links';
 
 const TriggersTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const handleAddNew = useStableCallback(() => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+	const query = useMemo(() => ({}), []);
 
-	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
+	const queryKey = ['livechat-triggers', query];
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['livechat-triggers', query],
-		queryFn: async () => getTriggers(query),
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getTriggers({ ...query, ...page }),
+		},
+		itemsKey: 'triggers',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
 

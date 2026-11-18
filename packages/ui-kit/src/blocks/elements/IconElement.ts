@@ -1,4 +1,25 @@
-type AvailableIcons = 'phone' | 'phone-off' | 'phone-issue' | 'clock' | 'arrow-forward' | 'info' | 'phone-question-mark';
+type AvailableIcons =
+	| 'phone'
+	| 'phone-off'
+	| 'phone-issue'
+	| 'clock'
+	| 'arrow-forward'
+	| 'info'
+	| 'phone-question-mark'
+	| 'copy'
+	| 'flag'
+	| 'trash'
+	| 'edit'
+	| 'link'
+	| 'check'
+	| 'cross'
+	| 'star'
+	| 'pin'
+	| 'share'
+	| 'download'
+	| 'eye'
+	| 'bell'
+	| 'kebab';
 
 export type IconElement = {
 	type: 'icon';

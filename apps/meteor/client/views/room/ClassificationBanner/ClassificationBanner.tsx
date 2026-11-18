@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -33,9 +33,9 @@ const ClassificationBanner = () => {
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box is='span' withTruncatedText>
+			<Text is='span' truncate>
 				{banner.text}
-			</Box>
+			</Text>
 		</Box>
 	);
 };

@@ -18,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async sendSMTPTestEmail() {
 		if (!Meteor.userId()) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 				method: 'sendSMTPTestEmail',
 			});
 		}

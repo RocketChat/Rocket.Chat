@@ -28,7 +28,7 @@ export const saveNotificationSettingsMethod = async (
 	const getNotificationPrefValue = async (field: string, value: unknown) => {
 		if (value === 'default') {
 			if (!userId) {
-				throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+				throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 					method: 'saveNotificationSettings',
 				});
 			}

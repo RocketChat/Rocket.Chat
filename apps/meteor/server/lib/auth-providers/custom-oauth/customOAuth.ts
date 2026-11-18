@@ -15,6 +15,7 @@ import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
+import { validateUsername } from '../../users/validateUsername';
 
 const logger = new Logger('CustomOAuth');
 const BeforeUpdateOrCreateUserFromExternalService = new Map<
@@ -353,6 +354,9 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 		}
 
 		if (instance.usernameField) {
+			if (!validateUsername(service.username)) {
+				throw new ClientSafeError('error-invalid-username', `${service.username} is not a valid username`);
+			}
 			user.username = service.username;
 		}
 

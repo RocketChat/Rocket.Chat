@@ -67,7 +67,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 			$or: buildNonCompliantConditions(newAttributes),
 		};
 
-		return Users.find(query, { projection: { __rooms: 0 } }).toArray();
+		return Users.find(query).toArray();
 	}
 
 	needsEvaluation({ added }: AttributeSetChange): boolean {

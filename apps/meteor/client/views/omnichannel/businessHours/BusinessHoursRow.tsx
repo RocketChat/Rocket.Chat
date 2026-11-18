@@ -35,7 +35,7 @@ const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Seri
 				{name && (
 					<IconButton
 						icon='trash'
-						small
+						size='small'
 						title={t('Remove')}
 						onClick={(e) => {
 							e.stopPropagation();

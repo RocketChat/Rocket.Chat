@@ -34,13 +34,19 @@ const CallParticipantControls = ({ name, participant, isSelf = false, features, 
 		return (
 			<>
 				{offers('admit') && (
-					<IconButton small icon='check' title={t('Admit')} aria-label={t('Admit')} onClick={() => actions.admit(participant.uuid)} />
+					<IconButton
+						size='small'
+						icon='check'
+						title={t('Admit')}
+						aria-label={t('Admit')}
+						onClick={() => actions.admit(participant.uuid)}
+					/>
 				)}
 				{/* Turning someone away at the door is the same request as hanging up on them once they are in. */}
 				{offers('disconnect') && (
 					<IconButton
-						small
-						danger
+						size='small'
+						variant='danger'
 						icon='cross'
 						title={t('Reject')}
 						aria-label={t('Reject')}

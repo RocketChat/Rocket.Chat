@@ -2,7 +2,7 @@ import type { ComponentChildren, JSX as JSXInternal } from 'preact';
 import { useCallback, useEffect } from 'preact/hooks';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 import CloseIcon from '../../icons/close.svg';
 

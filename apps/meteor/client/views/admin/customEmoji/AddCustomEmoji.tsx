@@ -1,13 +1,10 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { ContextualbarScrollableContent, ContextualbarFooter, useEndpointUploadMutation, useSingleFileInput } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useCallback, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 export type AddCustomEmojiProps = {
 	close: () => void;
@@ -102,7 +99,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 				<Field>
 					<FieldRow>
 						<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
-						<IconButton aria-labelledby={emojiLabelId} secondary small icon='upload' onClick={clickUpload} />
+						<IconButton aria-labelledby={emojiLabelId} variant='secondary' size='small' icon='upload' onClick={clickUpload} />
 					</FieldRow>
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (

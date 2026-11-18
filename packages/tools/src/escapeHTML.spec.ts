@@ -1,4 +1,4 @@
-import { escapeHTML } from './escapeHTML';
+import { escapeHTML } from './escapeHTML.js';
 
 describe('escapeHTML', () => {
 	it('works', () => {

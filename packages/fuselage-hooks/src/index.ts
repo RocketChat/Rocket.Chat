@@ -1,3 +1,4 @@
+export * from './useActiveDescendant';
 export * from './useAutoFocus';
 export * from './useBorderBoxSize';
 export * from './useBreakpoints';

@@ -1,7 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -50,11 +49,11 @@ const cursorOf = (docs: unknown[]) => ({
 
 describe('cleanRoomHistory', () => {
 	before(() => {
-		registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
-		registerModel('IRoomsModel', modelsMock.Rooms as unknown as IRoomsModel);
-		registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
-		registerModel('IReadReceiptsModel', modelsMock.ReadReceipts as unknown as IReadReceiptsModel);
-		registerModel('IReadReceiptsArchiveModel', modelsMock.ReadReceiptsArchive as unknown as IReadReceiptsModel);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Rooms', modelsMock.Rooms);
+		mockModel('Subscriptions', modelsMock.Subscriptions);
+		mockModel('ReadReceipts', modelsMock.ReadReceipts);
+		mockModel('ReadReceiptsArchive', modelsMock.ReadReceiptsArchive);
 	});
 
 	beforeEach(() => {
@@ -70,7 +69,10 @@ describe('cleanRoomHistory', () => {
 
 		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
-		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => (args[7] as string[]).length);
+		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => ({
+			count: (args[7] as string[]).length,
+			deletedIds: args[7],
+		}));
 	});
 
 	it('deletes the whole backlog in bounded batches, together with their read receipts', async () => {
@@ -87,6 +89,18 @@ describe('cleanRoomHistory', () => {
 		expect(modelsMock.ReadReceipts.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
 		expect(modelsMock.ReadReceiptsArchive.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
 		expect(broadcastMock.getCalls().map((call) => call.args[2].ids)).to.deep.equal(batches);
+	});
+
+	it('keeps read receipts of selected messages that the delete spared', async () => {
+		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.onCall(0).resolves(['deleted', 'pinnedMeanwhile']);
+		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.resolves({ count: 1, deletedIds: ['deleted'] });
+
+		const count = await cleanRoomHistory({ rid: 'rid' });
+
+		expect(count).to.equal(1);
+		expect(modelsMock.ReadReceipts.removeByMessageIds.calledOnceWithExactly(['deleted'])).to.be.true;
+		expect(modelsMock.ReadReceiptsArchive.removeByMessageIds.calledOnceWithExactly(['deleted'])).to.be.true;
+		expect(broadcastMock.calledOnceWith('notify.deleteMessageBulk', 'rid', sinon.match({ ids: ['deleted'] }))).to.be.true;
 	});
 
 	it('never selects more messages than the requested limit', async () => {

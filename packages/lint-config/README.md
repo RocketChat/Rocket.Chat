@@ -46,9 +46,27 @@ npx oxlint
 
 Add your own `rules`, `overrides` and `ignorePatterns` after `extends`. Each linted TypeScript file must be included by a `tsconfig.json`, which the type-aware rules use.
 
+### Opt-in rules
+
+`@rocket.chat/lint-config/rules` exports a JS plugin with rules `oxlint.json` doesn't turn on:
+
+| Rule            | What it reports                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `spacing-scale` | Literal spacing values that aren't Fuselage spacing tokens. Only `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32`, `x40`, their negatives (`neg-x8` or `-x8`), `0`, `none` and `auto` are allowed, so numbers and `px` strings fail even when they match a scale step (`8` and `'8px'` are reported with a hint to use `'x8'`). It checks `margin*`, `padding*`, `gap`, `rowGap` and `columnGap` on capitalized JSX components, the `Margins` props, and `spacing()` calls, following ternary and `\|\|`/`??` branches. The `ignoreComponents` option skips components whose spacing props aren't Fuselage's. |
+
+Load the plugin through `jsPlugins` and turn the rule on:
+
+```json
+{
+	"extends": ["./node_modules/@rocket.chat/lint-config/oxlint.json"],
+	"jsPlugins": [{ "name": "rocket.chat", "specifier": "@rocket.chat/lint-config/rules" }],
+	"rules": { "rocket.chat/spacing-scale": ["error", { "ignoreComponents": ["ResponsiveBar"] }] }
+}
+```
+
 ## Development
 
-This package lives in the [Rocket.Chat monorepo](https://github.com/RocketChat/Rocket.Chat/tree/develop/packages/lint-config). The repository's root `.oxlintrc.json` extends `oxlint.json`, so a change here affects every package in the monorepo. From the repository root:
+This package lives in the [Rocket.Chat monorepo](https://github.com/RocketChat/Rocket.Chat/tree/develop/packages/lint-config). The repository's root `.oxlintrc.json` extends `oxlint.json`, so a change here affects every package in the monorepo. The opt-in rules live in `rules/`. From the repository root:
 
 ```sh
 yarn oxlint

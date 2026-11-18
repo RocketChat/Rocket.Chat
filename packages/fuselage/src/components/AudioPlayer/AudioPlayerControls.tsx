@@ -47,19 +47,17 @@ const AudioPlayerControls = ({
 	changePlaybackSpeedLabel = 'Change Playback Speed',
 	downloadAudioFileLabel = 'Download Audio File',
 }: AudioPlayerControlsProps) => (
-	<Box display='flex' alignItems='center' width='full'>
+	<Box className='rcx-audio-player__controls'>
 		<IconButton
-			primary
-			medium
+			variant='primary'
+			size='medium'
 			onClick={onTogglePlay}
 			aria-label={isPlaying ? pauseLabel : playLabel}
 			icon={isPlaying ? 'pause-shape-filled' : 'play-shape-filled'}
 		/>
-		<Box display='flex' alignItems='center' flexGrow={1} marginInline={8} gap={16}>
-			<Box fontScale='p2' color='secondary-info'>
-				{isPlaying || currentTime > 0 ? getMaskTime(currentTime) : getMaskTime(durationTime)}
-			</Box>
-			<Box width='full'>
+		<Box className='rcx-audio-player__track'>
+			<Box className='rcx-audio-player__time'>{isPlaying || currentTime > 0 ? getMaskTime(currentTime) : getMaskTime(durationTime)}</Box>
+			<Box className='rcx-audio-player__range'>
 				<Slider
 					aria-label={audioPlaybackRangeLabel}
 					showOutput={false}
@@ -69,14 +67,14 @@ const AudioPlayerControls = ({
 				/>
 			</Box>
 
-			<Button secondary small onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
+			<Button variant='secondary' size='small' onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
 				{playbackSpeed}x
 			</Button>
 		</Box>
 		{download && (
 			<IconButton
-				primary
-				medium
+				variant='primary'
+				size='medium'
 				is='a'
 				href={downloadHref}
 				download

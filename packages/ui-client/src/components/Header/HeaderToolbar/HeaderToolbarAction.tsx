@@ -10,7 +10,7 @@ const HeaderToolbarAction = forwardRef<HTMLButtonElement, HeaderToolbarActionPro
 	{ icon, title, tooltip, ...props },
 	ref,
 ) {
-	return <IconButton ref={ref} icon={icon} small title={tooltip ?? title} {...props} />;
+	return <IconButton ref={ref} icon={icon} size='small' title={tooltip ?? title} {...props} />;
 });
 
 export default HeaderToolbarAction;

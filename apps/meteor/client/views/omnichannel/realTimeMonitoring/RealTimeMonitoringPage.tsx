@@ -4,7 +4,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Key } from 'react';
-import { useId, useState, useMemo, useEffect, Fragment } from 'react';
+import { useId, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getDateRange } from '../../../lib/utils/getDateRange';
@@ -29,7 +29,7 @@ const RealTimeMonitoringPage = () => {
 	const [reloadFrequency, setReloadFrequency] = useState(5);
 	const [departmentId, setDepartment] = useState('');
 	const departmentsLabelId = useId();
-	const updateEveryLabelId = useId();
+	const updateEveryField = useId();
 
 	const queryClient = useQueryClient();
 
@@ -45,12 +45,12 @@ const RealTimeMonitoringPage = () => {
 		};
 	}, [reloadCharts, reloadFrequency]);
 
-	const reloadOptions = useMemo(
+	const reloadOptions = useMemo<SelectOption[]>(
 		() => [
-			[5, <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>] as unknown as SelectOption,
-			[10, <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>] as unknown as SelectOption,
-			[30, <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>] as unknown as SelectOption,
-			[60, <Fragment key='1 minute'>1 {t('minute')}</Fragment>] as unknown as SelectOption,
+			['5', `5 ${t('seconds')}`],
+			['10', `10 ${t('seconds')}`],
+			['30', `30 ${t('seconds')}`],
+			['60', `1 ${t('minute')}`],
 		],
 		[t],
 	);
@@ -81,13 +81,13 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 						<Box maxWidth='50%' flexGrow={1}>
 							<Field>
-								<FieldLabel id={updateEveryLabelId}>{t('Update_every')}</FieldLabel>
+								<FieldLabel htmlFor={updateEveryField}>{t('Update_every')}</FieldLabel>
 								<FieldRow>
 									<Select
-										aria-labelledby={updateEveryLabelId}
+										id={updateEveryField}
 										options={reloadOptions}
-										onChange={useStableCallback((val: Key) => setReloadFrequency(val as number))}
-										value={reloadFrequency}
+										onChange={useStableCallback((val: Key) => setReloadFrequency(Number(val)))}
+										value={String(reloadFrequency)}
 									/>
 								</FieldRow>
 							</Field>

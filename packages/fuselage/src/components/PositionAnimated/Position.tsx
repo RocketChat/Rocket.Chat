@@ -5,6 +5,7 @@ import { useRef, useMemo, cloneElement, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useOwnerDocument } from '../../contexts';
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 
 export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
@@ -16,7 +17,7 @@ export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
 	preventScroll?: boolean;
 };
 
-const Position = ({ anchor, children, placement, margin, preventScroll = false, className: _className, ...props }: PositionProps) => {
+const Position = ({ anchor, children, placement, margin, preventScroll = false, className, ...props }: PositionProps) => {
 	const target = useRef<Element>(null);
 	const { style: positionStyle, placement: positionPlacement } =
 		usePosition(
@@ -46,11 +47,12 @@ const Position = ({ anchor, children, placement, margin, preventScroll = false, 
 
 	useEffect(
 		() => () => {
-			if (portalContainer.childNodes.length === 0) {
-				ownerDocument.body.removeChild(portalContainer);
+			// Another positioned element leaving in the same commit may have removed the shared container already.
+			if (!portalContainer.hasChildNodes()) {
+				portalContainer.remove();
 			}
 		},
-		[portalContainer, ownerDocument],
+		[portalContainer],
 	);
 
 	return createPortal(
@@ -58,6 +60,7 @@ const Position = ({ anchor, children, placement, margin, preventScroll = false, 
 			ref: target,
 			style: { ...children.props.style, ...style },
 			...props,
+			className: cx(children.props.className, className) || undefined,
 			placement: positionPlacement,
 		}),
 		portalContainer,

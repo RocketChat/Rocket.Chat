@@ -1,15 +1,21 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
+import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import type { Request, Response } from 'express';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
+import { httpApp } from '../../../../server/lib/http/httpServer';
+import { confirmViewFiles } from '../../../../server/lib/uikit/confirmViewFiles';
+import { viewSubmitAnswer, withDefaultCloseTarget } from '../../../../server/lib/uikit/interactionResponses';
+import { recordInteractionView, withRecordedView } from '../../../../server/lib/uikit/recordedViews';
+import { reportInvalidInteractionBlocks } from '../../../../server/lib/uikit/reportInvalidBlocks';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
 
@@ -33,7 +39,9 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-WebApp.rawConnectHandlers.use(apiServer);
+const logger = new Logger('APPS');
+
+httpApp.use('/api/apps/ui.interaction/*', nodeHandler(nodeLoggerMiddleware(logger)), nodeHandler(apiServer));
 
 // oxlint-disable-next-line new-cap
 const router = express.Router();
@@ -44,7 +52,7 @@ const unauthorized = (res: Response): unknown =>
 		message: 'You must be logged in to do this.',
 	});
 
-Meteor.startup(() => {
+export const addUiKitRateLimiter = (): void => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
 	const apiLimiter = rateLimit({
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -55,16 +63,16 @@ Meteor.startup(() => {
 	});
 
 	router.use(apiLimiter);
-});
+};
 
 router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
 router.use(async (req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
-	if (visitorToken && typeof visitorToken === 'string') {
-		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
-	}
+	// The visitor comes only from the token header, never from the request body.
+	req.body.visitor =
+		visitorToken && typeof visitorToken === 'string' ? await Apps.getConverters()?.get('visitors').convertByToken(visitorToken) : undefined;
 
 	if (!req.user && !req.body.visitor) {
 		return unauthorized(res);
@@ -241,6 +249,34 @@ export class AppUIKitInteractionApi {
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					await withDefaultCloseTarget(result, container, appId, req.user?._id);
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
+				} catch (e) {
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
+				}
+				break;
+			}
+
+			case 'blockSuggestion': {
+				const { type, actionId, blockId, value, container, triggerId, rid } = req.body;
+				const mid = 'mid' in req.body ? req.body.mid : undefined;
+
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+				const action = { type, appId, actionId, blockId, value, container, triggerId, user, message, room };
+
+				try {
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -253,27 +289,47 @@ export class AppUIKitInteractionApi {
 				const {
 					type,
 					rid,
+					triggerId,
 					payload: { view, isCleared },
 				} = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const recordedView = await withRecordedView(view, appId, req.user?._id);
+				if (!recordedView) {
+					// A view the server no longer has still closes for the user.
+					res.send({});
+					break;
+				}
+
+				const { visitor } = req.body;
 				const action = {
 					type,
 					appId,
+					triggerId,
 					user,
+					visitor,
 					room,
 					payload: {
-						view,
+						view: recordedView,
 						isCleared,
 					},
 				};
 
 				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+					const result = await orch.triggerEvent(
+						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+						action,
+					);
 
-					res.send(result);
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -287,20 +343,42 @@ export class AppUIKitInteractionApi {
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const view = await withRecordedView(payload.view, appId, req.user?._id);
+				if (!view) {
+					res.status(400).send({ error: 'The view is no longer available' });
+					break;
+				}
+
+				const { visitor } = req.body;
 				const action = {
 					type,
 					appId,
 					actionId,
 					triggerId,
-					payload,
+					payload: { ...payload, view },
 					user,
+					visitor,
 					room,
 				};
 
 				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+					await confirmViewFiles(view, req.user?._id);
+					const result = await orch.triggerEvent(
+						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+						action,
+					);
 
-					res.send(result);
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					if (typeof view.id === 'string') {
+						await withDefaultCloseTarget(result, { type: 'view', id: view.id }, appId, req.user?._id);
+					}
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					const answer = viewSubmitAnswer(delivered, result);
+					res.status(answer.status).send(answer.body);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -341,7 +419,13 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
-					res.send(result);
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });

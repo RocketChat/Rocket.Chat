@@ -193,6 +193,10 @@ export class HomeContent {
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
+	get btnModalForward(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Forward', exact: true });
+	}
+
 	// TODO: use modal fragments -----------------------------------------
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
@@ -638,7 +642,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
-		await expect(this.btnModalConfirmDelete).toBeDisabled();
+		await expect(this.btnModalConfirmDelete).toBeHidden();
 	}
 
 	get btnClearSelection() {

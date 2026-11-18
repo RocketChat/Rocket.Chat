@@ -17,11 +17,11 @@ import {
 	Icon,
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -76,7 +76,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 						aria-label={t('Unverified')}
 						onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
 						icon='question-mark'
-						small
+						size='small'
 					/>
 				</ItemActions>
 			)}

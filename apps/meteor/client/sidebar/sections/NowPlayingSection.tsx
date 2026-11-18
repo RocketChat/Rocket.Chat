@@ -66,7 +66,7 @@ const NowPlayingSection = () => {
 						</Box>
 					</Box>
 				</Box>
-				<IconButton mini icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
+				<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
 			</Box>
 
 			<AudioPlayerControls

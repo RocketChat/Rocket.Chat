@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 
-import { parse } from '../src';
+import { parse } from '../src/index.js';
 
 const plainTextArbitrary = fc.stringMatching(/[a-zA-Z0-9 ]{1,20}/).filter((value) => value.length > 0);
 

@@ -1,6 +1,9 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
+	isPOSTOmnichannelContactProps,
+	isGETOmnichannelContactProps,
+	isGETOmnichannelContactSearchProps,
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
@@ -16,7 +19,6 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp, removeEmpty } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 
 import { API } from '../..';
 import { createContact } from '../../../lib/omnichannel/contacts/createContact';
@@ -35,31 +37,15 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
+		validateParams: { POST: isPOSTOmnichannelContactProps, GET: isGETOmnichannelContactProps },
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				token: String,
-				name: String,
-				email: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				username: Match.Maybe(String),
-				customFields: Match.Maybe(Object),
-				contactManager: Match.Maybe({
-					username: String,
-				}),
-			});
-
 			const contact = await registerContact(this.bodyParams, this.userId);
 
 			return API.v1.success({ contact });
 		},
 		async get() {
-			check(this.queryParams, {
-				contactId: String,
-			});
-
 			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId, { projection: { token: 0 } });
 
 			return API.v1.success({ contact });
@@ -72,14 +58,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
+		validateParams: isGETOmnichannelContactSearchProps,
 	},
 	{
 		async get() {
-			check(this.queryParams, {
-				email: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				custom: Match.Maybe(String),
-			});
 			const { email, phone, custom } = this.queryParams;
 
 			let customCF: { [k: string]: string } = {};

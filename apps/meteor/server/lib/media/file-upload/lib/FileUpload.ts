@@ -17,9 +17,8 @@ import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import { streamToBuffer } from '@rocket.chat/tools';
 import type { NextFunction } from 'connect';
+import { parseCookie } from 'cookie';
 import filesize from 'filesize';
-import { Match } from 'meteor/check';
-import { Cookies } from 'meteor/ostrio:cookies';
 import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
@@ -39,8 +38,6 @@ import { roomCoordinator } from '../../../rooms/roomCoordinator';
 import { getURL } from '../../../utils/getURL';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
-
-const cookie = new Cookies();
 
 // Caps GIF frames decoded per thumbnail; limitInputPixels doesn't bound frame count.
 const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
@@ -126,7 +123,7 @@ export const FileUpload = {
 	async validateFileUpload(file: IUpload, content?: Buffer | string) {
 		const isFederationUpload = Boolean(file.federation?.mxcUri);
 
-		if (!isFederationUpload && !Match.test(file.rid, String)) {
+		if (!isFederationUpload && typeof file.rid !== 'string') {
 			return false;
 		}
 
@@ -193,7 +190,7 @@ export const FileUpload = {
 	},
 
 	async validateAvatarUpload(file: IUpload) {
-		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
+		if (typeof file.rid !== 'string' && typeof file.userId !== 'string') {
 			return false;
 		}
 
@@ -451,8 +448,7 @@ export const FileUpload = {
 		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
+			({ rc_uid, rc_token } = parseCookie(headers.cookie));
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
@@ -477,10 +473,7 @@ export const FileUpload = {
 		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
-			rc_rid = cookie.get('rc_rid', headers.cookie);
-			rc_room_type = cookie.get('rc_room_type', headers.cookie);
+			({ rc_uid, rc_token, rc_rid, rc_room_type } = parseCookie(headers.cookie));
 		}
 
 		const isAuthorizedByRoom = async () =>
@@ -619,7 +612,7 @@ export const FileUpload = {
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
 				if (contents === false) {
-					return reject();
+					return reject(new Error('Failed to get file contents'));
 				}
 				resolve(contents);
 			});
@@ -900,12 +893,8 @@ export class FileUploadClass {
 			content = Buffer.from(content.buffer, content.byteOffset, content.byteLength);
 		}
 
-		try {
-			await filter.check(fileData, content);
-			return content;
-		} catch (e) {
-			throw e;
-		}
+		await filter.check(fileData, content);
+		return content;
 	}
 
 	async _doInsert(
@@ -916,34 +905,30 @@ export class FileUploadClass {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
-		try {
-			if (typeof content === 'string') {
-				await fs.promises.rename(content, tmpFile);
-			} else if (isArrayBufferView(content)) {
-				await fs.promises.writeFile(tmpFile, content);
-			} else if (content instanceof stream.Readable) {
-				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
-			} else {
-				throw new Error('Invalid file type');
-			}
-
-			const file = await ufsComplete(fileId, this.name, { session: options?.session });
-
-			// `/ufs` used to serve every store generically; it was replaced by per-store routes.
-			// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
-			// (apps, integrations, …) keeps getting a link that resolves.
-			const path = this.getPublicPath(file);
-			if (path) {
-				const url = getURL(path, { cdn: false, full: true });
-				await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
-				file.path = path;
-				file.url = url;
-			}
-
-			return file;
-		} catch (e) {
-			throw e;
+		if (typeof content === 'string') {
+			await fs.promises.rename(content, tmpFile);
+		} else if (isArrayBufferView(content)) {
+			await fs.promises.writeFile(tmpFile, content);
+		} else if (content instanceof stream.Readable) {
+			await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
+		} else {
+			throw new Error('Invalid file type');
 		}
+
+		const file = await ufsComplete(fileId, this.name, { session: options?.session });
+
+		// `/ufs` used to serve every store generically; it was replaced by per-store routes.
+		// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
+		// (apps, integrations, …) keeps getting a link that resolves.
+		const path = this.getPublicPath(file);
+		if (path) {
+			const url = getURL(path, { cdn: false, full: true });
+			await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
+			file.path = path;
+			file.url = url;
+		}
+
+		return file;
 	}
 
 	// The modern route depends on which store the file lives in (the old `/ufs` path served all of them).

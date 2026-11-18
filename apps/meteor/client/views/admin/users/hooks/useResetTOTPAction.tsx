@@ -1,12 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, usePermission, useSetting, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useSetting, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 
 export const useResetTOTPAction = (userId: IUser['_id']): AdminUserAction | undefined => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canResetTOTP = usePermission('edit-other-user-totp');

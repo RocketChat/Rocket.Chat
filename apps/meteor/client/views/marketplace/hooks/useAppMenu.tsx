@@ -1,6 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
 	useEndpoint,
@@ -21,8 +22,6 @@ import { useMarketplaceActions } from './useMarketplaceActions';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import WarningModal from '../../../components/WarningModal';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import type { AddonActionType } from '../AppsList/AddonRequiredModal';
 import AddonRequiredModal from '../AppsList/AddonRequiredModal';
 import IframeModal from '../IframeModal';
@@ -118,7 +117,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const openPermissionModal = useOpenAppPermissionsReviewModal({
 		app,
 		onCancel: closeModal,
-		onConfirm: (permissionsGranted) => installationSuccess(action, permissionsGranted),
+		onConfirm: (permissionsGranted) => {
+			void installationSuccess(action, permissionsGranted);
+		},
 	});
 
 	const appInstallationHandler = useAppInstallationHandler({
@@ -126,7 +127,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		isAppPurchased,
 		action,
 		onDismiss: closeModal,
-		onSuccess: installationSuccess,
+		onSuccess: (action, permissionsGranted) => {
+			void installationSuccess(action, permissionsGranted);
+		},
 		setIsPurchased: setPurchased,
 	});
 

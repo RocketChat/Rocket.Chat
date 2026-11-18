@@ -153,6 +153,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
 	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
@@ -275,7 +280,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		values: Record<string, unknown>,
 		clear?: string[],
 		extraFilter?: Filter<IUser>,
-	): Promise<IUser | null>;
+	): Promise<Pick<
+		IUser,
+		'_id' | 'username' | 'name' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles' | 'xmppFederation'
+	> | null>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
 
@@ -296,6 +304,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeBusinessHoursFromAllUsers(): any;
 
 	resetTOTPById(userId: any): any;
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken): Promise<UpdateResult>;
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	removeLoginTokensOlderThan(date: Date): Promise<UpdateResult>;
 
 	unsetLoginTokens(userId: any): any;
 
@@ -572,6 +589,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
+	setPasswordHash(_id: IUser['_id'], passwordHash: string): Promise<UpdateResult>;
+
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
 		requirePasswordChange: boolean,
@@ -595,6 +614,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
 	create(data: Partial<IUser>): Promise<InsertOneResult<IUser>>;
+	createIfNotExists(data: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult>;
 	removeById(userId: string): Promise<DeleteResult>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;

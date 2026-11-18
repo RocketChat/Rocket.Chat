@@ -1,9 +1,13 @@
 import { after, before, describe, it } from 'node:test';
 
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { sendMessage } from '../../data/chat.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -202,8 +206,8 @@ describe('[Push]', () => {
 				})
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -218,7 +222,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must have required property 'type'`);
 				});
 		});
@@ -234,7 +238,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must have required property 'value'`);
 				});
 		});
@@ -250,7 +254,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must have required property 'appName'`);
 				});
 		});
@@ -267,7 +271,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must be equal to one of the allowed values`);
 				});
 		});
@@ -284,7 +288,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must NOT have fewer than 1 characters`);
 				});
 		});
@@ -299,8 +303,8 @@ describe('[Push]', () => {
 				})
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -312,7 +316,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must have required property 'token'`);
 				});
 		});
@@ -327,7 +331,7 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes(`must NOT have fewer than 1 characters`);
 				});
 		});
@@ -446,8 +450,8 @@ describe('[Push]', () => {
 				.post(api('push.test'))
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -473,8 +477,8 @@ describe('[Push]', () => {
 				.get(api('push.info'))
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -499,6 +503,38 @@ describe('[Push]', () => {
 					expect(res.body).to.have.property('pushGatewayEnabled', false);
 					expect(res.body).to.have.property('defaultPushGateway', true);
 				});
+		});
+	});
+
+	describe('[/push.get]', () => {
+		let member: IUser;
+		let outsider: IUser;
+		let memberCredentials: Credentials;
+		let outsiderCredentials: Credentials;
+		let room: IRoom;
+		let message: IMessage;
+
+		before(async () => {
+			[member, outsider] = await Promise.all([createUser(), createUser()]);
+			[memberCredentials, outsiderCredentials] = await Promise.all([login(member.username, password), login(outsider.username, password)]);
+			room = (await createRoom({ type: 'p', name: `push-get-${Date.now()}`, members: [member.username as string] })).body.group;
+			message = (await sendMessage({ message: { rid: room._id, msg: 'push get message' } })).body.message;
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(member), deleteUser(outsider)]));
+
+		it('should return the notification a room member receives for the message', async () => {
+			const res = await request.get(api('push.get')).set(memberCredentials).query({ id: message._id }).expect(200);
+
+			expect(res.body.data.message).to.have.property('_id', message._id);
+			expect(res.body.data.notification).to.have.nested.property('payload.rid', room._id);
+			expect(res.body.data.notification.text).to.include('push get message');
+		});
+
+		it('should fail if the user cannot access the room', async () => {
+			const res = await request.get(api('push.get')).set(outsiderCredentials).query({ id: message._id }).expect(403);
+
+			expect(res.body).to.not.have.property('data');
 		});
 	});
 });

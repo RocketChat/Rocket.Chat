@@ -46,8 +46,8 @@ const DownloadDataButton = <H extends readonly string[]>({
 
 	return (
 		<IconButton
-			secondary
-			small
+			variant='secondary'
+			size='small'
 			disabled={!dataAvailable}
 			onClick={handleClick}
 			aria-label={t('Download_Info')}

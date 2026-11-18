@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
@@ -25,7 +26,7 @@ const applyDepartmentRestrictions = async (
 		}
 
 		if (!allowedDepartments.includes(filterDepartment)) {
-			throw new Error('error-not-authorized');
+			throw new ClientSafeError('error-not-authorized', 'Not authorized');
 		}
 		return filterDepartment;
 	}

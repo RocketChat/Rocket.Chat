@@ -78,6 +78,22 @@ it('measures the target at its own size, not at the size its fallback placement 
 	expect(target.style.bottom).toBe('8px');
 });
 
+it('measures the target at its own width, not at the width a viewport edge wraps it to', () => {
+	jest.spyOn(target, 'getBoundingClientRect').mockImplementation(() => createRect(0, 0, target.style.left === '0px' ? 120 : 60, 40));
+	anchorRect = createRect(window.innerWidth - 120, 200, 40, 40);
+	target.style.left = `${window.innerWidth - 76}px`;
+	const anchorRef = { current: anchor };
+	const targetRef = { current: target };
+	const { result } = renderHook(() => usePosition(anchorRef, targetRef, { margin: 4, placement: 'right-middle' }));
+
+	act(() => {
+		jest.advanceTimersByTime(16);
+	});
+
+	expect(result.current.placement).toBe('left-middle');
+	expect(target.style.left).toBe(`${window.innerWidth - 76}px`);
+});
+
 it('keeps the target in place once its anchor leaves the page', () => {
 	const { result } = renderPosition();
 
