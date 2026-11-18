@@ -60,6 +60,11 @@ type UseProviderPluginOptions = {
 	 * safe to act on alone — see the `disconnected` case below. A deliberate leave reaches `onLeave` instead.
 	 */
 	onDropped?: () => void;
+	/**
+	 * The only host pressed the provider's Leave button while others are still in the call, and the plugin held
+	 * the leave back so somebody can be handed the call first. The call goes on until `leave` is sent.
+	 */
+	onSelectNewHost?: () => void;
 };
 
 const isPluginFeature = (value: unknown): value is PluginFeature => PLUGIN_FEATURES.includes(value as PluginFeature);
@@ -150,6 +155,7 @@ export const useProviderPlugin = ({
 	onToggleParticipants,
 	onLeave,
 	onDropped,
+	onSelectNewHost,
 }: UseProviderPluginOptions): ProviderPluginControls => {
 	// Learned from the messages it sends, not from the iframe this page renders: a plugin may run in a frame
 	// *inside* the provider's page, where a message posted to the provider's own window would never reach it.
@@ -173,6 +179,8 @@ export const useProviderPlugin = ({
 	onLeaveRef.current = onLeave;
 	const onDroppedRef = useRef(onDropped);
 	onDroppedRef.current = onDropped;
+	const onSelectNewHostRef = useRef(onSelectNewHost);
+	onSelectNewHostRef.current = onSelectNewHost;
 
 	// `disconnected` also arrives from a prejoin screen, where nobody has joined: reporting a leave from there
 	// would end the call for everyone still on their way into it.
@@ -282,6 +290,10 @@ export const useProviderPlugin = ({
 					onDroppedRef.current?.();
 					break;
 
+				case 'select-new-host':
+					onSelectNewHostRef.current?.();
+					break;
+
 				case 'toggle-participants':
 					onToggleParticipantsRef.current(data.active === true);
 					break;
@@ -339,6 +351,7 @@ export const useProviderPlugin = ({
 			raiseHand: (participantUuid, raised) => postToPlugin('raise-hand', { participantUuid, raised }),
 			setRole: (participantUuid, role) => postToPlugin('set-role', { participantUuid, role }),
 			dialOut: (destination) => postToPlugin('dial-out', { ...DIAL_OUT_DEFAULTS, destination }),
+			leave: () => postToPlugin('leave'),
 		}),
 		[postToPlugin],
 	);

@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
@@ -28,6 +28,7 @@ import { useConferenceEmbedded } from '../hooks/useConferenceEmbedded';
 import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease';
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
+import { useLastHostHandover } from '../hooks/useLastHostHandover';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
 import { PEXIP_PROVIDER_NAME } from '../lib/callWindow';
@@ -116,6 +117,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	const hasUnread =
 		!chatVisible && ((showUnread && unreadCount.total > 0) || (Boolean(subscription?.alert) && !subscription?.hideUnreadStatus));
 
+	// The handover reads the plugin's roster and the plugin asks for the handover, so one of the two is wired late.
+	const selectNewHostRef = useRef<() => void>(undefined);
+
 	// Keeps the provider's own controls and this window's panels saying the same thing, and hands back who the
 	// provider has in the call and what may be asked of them — which is what the people panel renders from.
 	// Inert for a provider that speaks none of it.
@@ -130,7 +134,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
 		onLeave: leaveNow,
 		onDropped: handleDropped,
+		onSelectNewHost: () => selectNewHostRef.current?.(),
 	});
+	selectNewHostRef.current = useLastHostHandover(provider);
 
 	// A provider that runs the call in here wraps the window from before the join, so joining connects it rather than
 	// mounting anything. Without one registered, a join with no URL has nothing to show.

@@ -20,6 +20,7 @@ const actions = {
 	raiseHand: jest.fn(),
 	setRole: jest.fn(),
 	dialOut: jest.fn(),
+	leave: jest.fn(),
 };
 
 const buildParticipant = (overrides: Partial<PluginParticipant> & Pick<PluginParticipant, 'uuid'>): PluginParticipant => ({

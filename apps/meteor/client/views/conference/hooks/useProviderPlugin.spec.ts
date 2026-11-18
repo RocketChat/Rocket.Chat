@@ -21,6 +21,7 @@ const onToggleChat = jest.fn();
 const onToggleParticipants = jest.fn();
 const onLeave = jest.fn();
 const onDropped = jest.fn();
+const onSelectNewHost = jest.fn();
 
 const render = (
 	props: { chatVisible?: boolean; participantsVisible?: boolean; hasUnread?: boolean; conferenceUrl?: string | undefined } = {},
@@ -36,6 +37,7 @@ const render = (
 				onToggleParticipants,
 				onLeave,
 				onDropped,
+				onSelectNewHost,
 			}),
 		{
 			initialProps: {
@@ -68,6 +70,7 @@ beforeEach(() => {
 	onToggleChat.mockClear();
 	onLeave.mockClear();
 	onDropped.mockClear();
+	onSelectNewHost.mockClear();
 });
 
 describe('useProviderPlugin', () => {
@@ -248,6 +251,17 @@ describe('useProviderPlugin', () => {
 
 			expect(onLeave).toHaveBeenCalledTimes(1);
 		});
+
+		// The plugin held the leave back, so the user is still in the call: nothing is reported until they choose.
+		it('asks for a new host when the last one tries to leave, and reports no leave yet', () => {
+			render();
+
+			fromPlugin(message('connected'));
+			fromPlugin(message('select-new-host'));
+
+			expect(onSelectNewHost).toHaveBeenCalledTimes(1);
+			expect(onLeave).not.toHaveBeenCalled();
+		});
 	});
 
 	/**
@@ -405,6 +419,7 @@ describe('useProviderPlugin', () => {
 			actions.spotlight('p1', true);
 			actions.setRole('p1', 'host');
 			actions.dialOut('alice@example.com');
+			actions.leave();
 
 			expect(posted()).toEqual([
 				{ action: 'rocketchat:videoconf/mute', participantUuid: 'p1', muted: true },
@@ -415,6 +430,7 @@ describe('useProviderPlugin', () => {
 				{ action: 'rocketchat:videoconf/set-role', participantUuid: 'p1', role: 'host' },
 				// The plugin forwards these to a request that requires all three, so none can be left to it.
 				{ action: 'rocketchat:videoconf/dial-out', role: 'GUEST', protocol: 'auto', call_type: 'audio', destination: 'alice@example.com' },
+				{ action: 'rocketchat:videoconf/leave' },
 			]);
 		});
 

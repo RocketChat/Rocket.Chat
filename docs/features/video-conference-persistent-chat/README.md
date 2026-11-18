@@ -812,6 +812,8 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | plugin → window | `toggle-participants` | `{ active }` | The same for the people panel, which the provider's own participant list is hidden in favour of |
 | plugin → window | `connected` | — | Past the provider's own prejoin screen and into the call |
 | plugin → window | `disconnected` | `{ userInitiated }` | Left the call from inside the provider's page. A deliberate leave reports the departure and closes the window, exactly as hanging up does; an involuntary drop is left to the provider's page to recover from |
+| plugin → window | `select-new-host` | — | The call's only host pressed the provider's Leave button while others are still in it. The plugin held the leave back; see [Handing the call over](#handing-the-call-over-before-leaving) |
+| window → plugin | `leave` | — | Leave the call as the provider's own Leave button does. The answer to `select-new-host`; the plugin then reports `disconnected` as usual |
 | window → plugin | `participants-state` | `{ active }` | The same for the people panel, so its control follows the panel however it was opened |
 | window → plugin | `chat-state` | `{ active }` | Pushed whenever the panel changes, so all three ways of opening it — the top bar, the panel's close button, the plugin's own control — keep that control honest |
 | plugin → window | `self` | `{ participantUuid, micMuted, camMuted, clientMuted, isHost, canControl }` | Where the viewer stands in the call; `canControl` is what offers the call-wide controls |
@@ -830,6 +832,29 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 window sends none of them — they are not features we support yet. They stay named so a plugin announcing one is
 understood rather than discarded, and so turning one on later is a control and a caller rather than a change to
 the protocol.
+
+#### Handing the call over before leaving
+
+A Pexip conference whose last host leaves is left with guests nobody can admit, mute or hang up on. So when the
+only host presses the provider's own Leave button with someone else still in the call (the lobby does not count),
+the plugin stops the leave and sends `select-new-host`, and `useLastHostHandover` asks the user who takes over:
+
+- **Make host and leave** sends `set-role` for the chosen participant, then waits for the roster to show them as a
+  host before sending `leave`. Nothing answers a promotion, and leaving while it is still in flight could leave the
+  call without a host after all. If the roster has not shown it after ten seconds, the user stays in the call and is
+  told so.
+- **Leave without a host** sends `leave` straight away.
+- Closing the dialog sends nothing, and the user stays in the call.
+
+The candidates are everyone else the roster has in the call who is not already a host. A provider whose plugin does
+not announce `leave` never sends `select-new-host`, and its Leave button behaves as it always did.
+
+Closing the window is the other way out, and it never reaches the plugin. A page that is closing cannot open a
+dialog of its own, so when the roster says the user is the last host, `beforeunload` asks the browser to show its
+generic "Leave site?" prompt and opens the picker behind it. A user who stays finds the picker waiting. A user who
+leaves anyway closes the window without a handover. Browsers show that prompt only on a page the user has
+interacted with, and the call frame counts, so in practice it shows. Once a promotion is in flight, the prompt is
+not shown again.
 
 Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
 
@@ -1191,6 +1216,7 @@ as the last read. A member removed from the room *during* a call still has the r
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
 | Reaching a call | `apps/meteor/client/components/OngoingCalls/` (`CallListItem` over the sidebar's own room item, its two rows, `OngoingCallsList` and `useOngoingCalls`), `client/sidebar/hooks/useRoomList.ts` and `RoomList/RoomList.tsx` (where the group is), `client/navbar/NavBarItemOngoingCalls.tsx` (the stand-in), `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
+| Last host leaving | `apps/meteor/client/views/conference/hooks/useLastHostHandover.tsx`, `ConferenceSelectNewHostModal.tsx` |
 | Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/cron/videoConferences.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |

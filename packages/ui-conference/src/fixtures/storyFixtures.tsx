@@ -364,6 +364,7 @@ export const speakingProvider = ({
 		spotlight: action('spotlight'),
 		setRole: action('setRole'),
 		dialOut: action('dialOut'),
+		leave: action('leave'),
 		raiseHand: action('raiseHand'),
 	},
 });
