@@ -72,12 +72,12 @@
 		"displayContents": 0
 	},
 	"Button/Button.styles.scss": {
-		"rules": 41,
-		"nested": 37,
+		"rules": 43,
+		"nested": 39,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"ButtonGroup/ButtonGroup.styles.scss": {
