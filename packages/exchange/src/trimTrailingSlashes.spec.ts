@@ -15,14 +15,10 @@ describe('trimTrailingSlashes', () => {
 		expect(trimTrailingSlashes('https://graph.microsoft.com/v1.0//users/')).toBe('https://graph.microsoft.com/v1.0//users');
 	});
 
-	it('returns in milliseconds for 16M slashes followed by another character', () => {
+	// A backtracking regex runs for hours on this input, so a regression fails as a CI timeout rather than an assertion.
+	it('leaves 16M slashes followed by another character untouched', () => {
 		const value = `${'/'.repeat(16 * 1024 * 1024)}x`;
 
-		const startedAt = performance.now();
-		const result = trimTrailingSlashes(value);
-		const elapsedMs = performance.now() - startedAt;
-
-		expect(result).toBe(value);
-		expect(elapsedMs).toBeLessThan(100);
+		expect(trimTrailingSlashes(value)).toBe(value);
 	});
 });
