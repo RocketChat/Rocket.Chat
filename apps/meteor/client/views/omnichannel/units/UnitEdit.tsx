@@ -13,6 +13,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,7 +21,6 @@ import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMonitors from '../components/AutoCompleteMonitors';
 

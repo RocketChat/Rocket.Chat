@@ -141,6 +141,26 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
 		});
 
+		test('expect thread message actions to show on hover after resizing the window', async ({ page }) => {
+			await poHomeChannel.content.sendMessageInThread('thread reply for resizing');
+			const reply = poHomeChannel.content.lastUserThreadMessage;
+			await expect(reply).toContainText('thread reply for resizing');
+
+			const toolbar = reply.getByRole('toolbar', { name: 'Message actions', includeHidden: true });
+			const addReaction = poHomeChannel.content.getLastThreadMessageActionButton('Add reaction');
+
+			// 2552 lays the thread panel out on a fractional pixel, the case the toolbar must survive.
+			for (const width of [1440, 2552, 1920]) {
+				// Clear hover and focus so an already open toolbar cannot mask the next size's visibility check.
+				await poHomeChannel.threadComposer.inputMessage.click();
+				await expect(toolbar).not.toBeAttached();
+				await page.setViewportSize({ width, height: 1000 });
+				await reply.hover();
+
+				await expect(addReaction).toBeVisible();
+			}
+		});
+
 		test('expect star the thread message', async () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await poHomeChannel.content.btnOptionStarMessage.click();

@@ -1,10 +1,8 @@
 import type { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
+import { useEndpointMutation, useEndpointUploadMutation } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useEndpointMutation } from './useEndpointMutation';
-import { useEndpointUploadMutation } from './useEndpointUploadMutation';
 
 const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => avatarObj === 'reset';
 const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject =>
