@@ -14,7 +14,7 @@ const SAMPLES = 24;
 const ARITY = { M: 2, L: 2, H: 1, V: 1, C: 6, Z: 0 };
 
 const parseSubpaths = (d) => {
-	const tokens = d.match(/[a-zA-Z]|-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?/g);
+	const tokens = d.match(/[a-zA-Z]|[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?/g);
 	const subpaths = [];
 	let command;
 	let x = 0;
