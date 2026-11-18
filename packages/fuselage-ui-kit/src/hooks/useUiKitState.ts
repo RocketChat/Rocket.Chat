@@ -169,12 +169,6 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		}
 	});
 
-	const confirmedNoLoadStateAction = useStableCallback(async (e: any) => {
-		if (!confirm || (await isAccepted())) {
-			await noLoadStateActionFunction(e);
-		}
-	});
-
 	const sendsOnEnter = Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_enter_pressed');
 
 	const onEnterKeyDown = useStableCallback(async (event: KeyboardEvent<HTMLElement>) => {
@@ -209,7 +203,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		Array.isArray(element?.dispatchActionConfig) &&
 		element.dispatchActionConfig.includes('on_character_entered')
 	) {
-		return [result, confirmedNoLoadStateAction];
+		return [result, noLoadStateActionFunction];
 	}
 
 	if (context === UiKit.BlockContext.SECTION || context === UiKit.BlockContext.ACTION) {

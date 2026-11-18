@@ -67,3 +67,24 @@ it('does not send on Enter without the config', async () => {
 
 	expect(action).not.toHaveBeenCalled();
 });
+
+it('sends each character without a confirm dialog, and asks once on Enter', async () => {
+	const action = jest.fn();
+	const confirm = {
+		title: { type: 'plain_text', text: 'Are you sure?' },
+		text: { type: 'plain_text', text: 'Send it' },
+		confirm: { type: 'plain_text', text: 'Yes' },
+		deny: { type: 'plain_text', text: 'No' },
+	};
+	renderElement({ ...base, type: 'plain_text_input', confirm, dispatchActionConfig: ['on_character_entered', 'on_enter_pressed'] }, action);
+
+	await userEvent.type(screen.getByRole('textbox'), 'hi');
+
+	expect(screen.queryByText('Are you sure?')).not.toBeInTheDocument();
+	expect(screen.getByRole('textbox')).toHaveValue('hi');
+	expect(action).toHaveBeenCalledTimes(2);
+
+	await userEvent.type(screen.getByRole('textbox'), '{Enter}');
+
+	expect(await screen.findByText('Are you sure?')).toBeInTheDocument();
+});
