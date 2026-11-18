@@ -15,16 +15,21 @@ export class UiKitViewsRaw extends BaseRaw<IUiKitView> implements IUiKitViewsMod
 	override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
+			{ key: { appId: 1, userId: 1, viewId: 1 }, unique: true },
 			{ key: { 'appId': 1, 'userId': 1, 'view.external_id': 1 }, sparse: true },
 		];
 	}
 
-	async saveView({ _id, appId, userId, type, view }: Pick<IUiKitView, '_id' | 'appId' | 'userId' | 'type' | 'view'>): Promise<void> {
-		await this.updateOne({ _id, appId, userId }, { $set: { type, view, expireAt: new Date(Date.now() + VIEW_TTL_MS) } }, { upsert: true });
+	async saveView({ viewId, appId, userId, type, view }: Pick<IUiKitView, 'viewId' | 'appId' | 'userId' | 'type' | 'view'>): Promise<void> {
+		await this.updateOne(
+			{ viewId, appId, userId },
+			{ $set: { type, view, expireAt: new Date(Date.now() + VIEW_TTL_MS) } },
+			{ upsert: true },
+		);
 	}
 
-	findOneByIdForUser(viewId: IUiKitView['_id'], appId: IUiKitView['appId'], userId: IUiKitView['userId']): Promise<IUiKitView | null> {
-		return this.findOne({ _id: viewId, appId, userId, expireAt: { $gt: new Date() } });
+	findOneByIdForUser(viewId: IUiKitView['viewId'], appId: IUiKitView['appId'], userId: IUiKitView['userId']): Promise<IUiKitView | null> {
+		return this.findOne({ viewId, appId, userId, expireAt: { $gt: new Date() } });
 	}
 
 	findOneByExternalIdForUser(externalId: string, appId: IUiKitView['appId'], userId: IUiKitView['userId']): Promise<IUiKitView | null> {

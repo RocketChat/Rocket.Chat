@@ -27,7 +27,7 @@ describe('recordInteractionView', () => {
 		await recordInteractionView({ type: 'modal.open', view: { ...appView } }, 'app', 'user');
 
 		expect(mockSaveView).toHaveBeenCalledWith({
-			_id: 'view',
+			viewId: 'view',
 			appId: 'app',
 			userId: 'user',
 			type: 'modal',
@@ -54,14 +54,14 @@ describe('recordInteractionView', () => {
 
 	it('updates the view found by external_id, whatever id the update carries', async () => {
 		mockFindOneByIdForUser.mockResolvedValue(null);
-		mockFindOneByExternalIdForUser.mockResolvedValue({ _id: 'view', view: { ...appView, external_id: 'x' } });
+		mockFindOneByExternalIdForUser.mockResolvedValue({ viewId: 'view', view: { ...appView, external_id: 'x' } });
 		const interaction = { type: 'modal.update', view: { id: 'random', external_id: 'x', blocks: [] } };
 
 		expect(await recordInteractionView(interaction, 'app', 'user')).toBe(true);
 
 		expect(mockFindOneByExternalIdForUser).toHaveBeenCalledWith('x', 'app', 'user');
 		expect(interaction.view.id).toBe('view');
-		expect(mockSaveView).toHaveBeenCalledWith(expect.objectContaining({ _id: 'view' }));
+		expect(mockSaveView).toHaveBeenCalledWith(expect.objectContaining({ viewId: 'view' }));
 	});
 
 	it('skips an update whose external_id matches no view', async () => {
@@ -132,7 +132,7 @@ describe('recordInteractionView', () => {
 		await recordInteractionView(interaction, 'app', 'user');
 
 		expect(mockSaveView).toHaveBeenCalledWith({
-			_id: 'b1',
+			viewId: 'b1',
 			appId: 'app',
 			userId: 'user',
 			type: 'banner',
@@ -148,7 +148,7 @@ describe('recordInteractionView', () => {
 
 		expect(mockFindOneByIdForUser).toHaveBeenCalledWith('b1', 'app', 'user');
 		expect(mockSaveView).toHaveBeenCalledWith(
-			expect.objectContaining({ _id: 'b1', type: 'banner', view: { viewId: 'b1', blocks: [], title: 'New', hash: 'new-hash' } }),
+			expect.objectContaining({ viewId: 'b1', type: 'banner', view: { viewId: 'b1', blocks: [], title: 'New', hash: 'new-hash' } }),
 		);
 	});
 

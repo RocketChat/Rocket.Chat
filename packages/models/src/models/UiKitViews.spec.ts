@@ -19,10 +19,10 @@ describe('UiKitViewsRaw.saveView', () => {
 		Object.defineProperty(model, 'updateOne', { value: updateOne });
 		const view = { id: 'view', blocks: [] } as never;
 
-		await model.saveView({ _id: 'view', appId: 'app', userId: 'user', type: 'modal', view });
+		await model.saveView({ viewId: 'view', appId: 'app', userId: 'user', type: 'modal', view });
 
 		const [filter, update, options] = updateOne.mock.calls[0];
-		expect(filter).toEqual({ _id: 'view', appId: 'app', userId: 'user' });
+		expect(filter).toEqual({ viewId: 'view', appId: 'app', userId: 'user' });
 		expect(update.$set).not.toHaveProperty('appId');
 		expect(update.$set).not.toHaveProperty('userId');
 		expect(options).toEqual({ upsert: true });
