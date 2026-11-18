@@ -4,14 +4,19 @@ import type { BoxProps } from '../Box';
 import { StylingBox } from '../Box';
 
 export type SkeletonProps = ElementProps<HTMLSpanElement> & {
+	/** `text` is as tall as a line of the surrounding text; `rect` and `circle` are as tall as `height`. */
 	variant?: 'text' | 'rect' | 'circle';
-	/** Whether the placeholder sits on a dark surface, such as a tooltip */
+	/** For a placeholder on a dark surface, such as a tooltip. */
 	inverted?: boolean;
-	/** The size of the content the placeholder stands in for */
+	/** Width of the content the placeholder stands in for; it fills the available width by default. */
 	width?: BoxProps['width'];
+	/** Height of the content the placeholder stands in for. */
 	height?: BoxProps['height'];
 };
 
+/**
+ * Holds the place of content that is still loading, in its shape and size, so the layout doesn't shift when it arrives.
+ */
 const Skeleton = ({ variant = 'text', inverted, ...props }: SkeletonProps) => (
 	<StylingBox {...props}>
 		<span

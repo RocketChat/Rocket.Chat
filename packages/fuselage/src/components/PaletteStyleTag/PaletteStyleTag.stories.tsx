@@ -18,12 +18,10 @@ export default {
 		theme: {
 			control: 'select',
 			options: ['light', 'dark', 'high-contrast'],
-			description: 'Theme whose palette is rendered as CSS custom properties.',
 			table: { category: 'Theme', defaultValue: { summary: 'light' } },
 		},
 		tagId: {
 			control: 'text',
-			description: 'Id of the style tag element the palette CSS is written to.',
 			table: {
 				category: 'Advanced',
 				defaultValue: { summary: 'main-palette' },
@@ -31,7 +29,6 @@ export default {
 		},
 		prefix: {
 			control: 'text',
-			description: 'Prefix used for the generated CSS custom property names.',
 			table: {
 				category: 'Advanced',
 				defaultValue: { summary: '--rcx-color' },
@@ -39,12 +36,10 @@ export default {
 		},
 		selector: {
 			control: 'text',
-			description: 'CSS selector the generated custom properties are scoped to.',
 			table: { category: 'Advanced', defaultValue: { summary: ':root' } },
 		},
 		palette: {
 			control: 'text',
-			description: 'Custom palette CSS to use instead of the one generated from `theme`.',
 			table: { category: 'Advanced' },
 		},
 	},
@@ -86,7 +81,7 @@ export const _PaletteStyleTag: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Another description on the story, overriding the comments',
+				story: 'Change `theme` in the controls to see the colors change.',
 			},
 		},
 	},

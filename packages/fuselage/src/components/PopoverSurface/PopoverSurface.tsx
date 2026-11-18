@@ -4,9 +4,12 @@ import { Box } from '../Box';
 
 export type PopoverSurfaceProps = Omit<HTMLAttributes<HTMLElement>, 'color' | 'is'> &
 	RefAttributes<HTMLElement> & {
-		/** Caps the height at a share of the viewport; the content scrolls past it. */
+		/**
+		 * Caps the height at half (`half-screen`) or 80% (`most-of-screen`) of the viewport, and the content scrolls past
+		 * it. Without it the surface grows with its content.
+		 */
 		maxHeight?: 'half-screen' | 'most-of-screen';
-		/** Drops the block padding, for content that reaches the surface's edges. */
+		/** Drops the padding above and below the content, for content that reaches the surface's edges. */
 		flush?: boolean;
 		/** How far the surface is raised above the page. */
 		elevation?: '1' | '2';

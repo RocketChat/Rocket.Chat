@@ -11,12 +11,12 @@ export default {
 		visibility: {
 			control: 'inline-radio',
 			options: [AnimatedVisibility.VISIBLE, AnimatedVisibility.HIDDEN, AnimatedVisibility.HIDING, AnimatedVisibility.UNHIDING],
-			description: 'Current visibility state; transitions between these values play the show/hide animation.',
+			description:
+				'Changing it to `visible` slides the children in; changing it to `hidden` slides them out and then unmounts them. Defaults to `hidden`, so nothing renders until it is set.',
 			table: { category: 'State' },
 		},
 		children: {
 			control: false,
-			description: 'Content to render while visible; unmounted entirely once fully hidden.',
 			table: { category: 'Content' },
 		},
 	},

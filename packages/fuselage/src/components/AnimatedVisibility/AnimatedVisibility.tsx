@@ -20,6 +20,10 @@ export type AnimatedVisibilityProps = {
 	visibility?: VisibilityType;
 };
 
+/**
+ * Brings its children in and out of view with a short fade and slide, instead of having them appear or vanish at once.
+ * Each child must accept `className` and `onAnimationEnd`.
+ */
 const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 	const propVisibility = props.visibility || AnimatedVisibility.HIDDEN;
 

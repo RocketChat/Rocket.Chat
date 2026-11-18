@@ -5,13 +5,6 @@ import Box from './Box';
 export default {
 	title: 'Layout/Box/Rich content/Block',
 	component: Box,
-	parameters: {
-		docs: {
-			description: {
-				component: 'Here is how rich content will be rendered, in details.',
-			},
-		},
-	},
 } satisfies Meta<typeof Box>;
 
 type Story = StoryObj<typeof Box>;

@@ -19,52 +19,43 @@ export default {
 	component: Stack,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Lays out its children in a row or a column, spaced by `gap`. It takes no `Box` styling props: the space between children is the `gap`, and anything else stays on a `Box`.\n\n' +
-					'It lines up with the Tamagui stacks: `direction="row"` is `XStack` and `direction="column"` is `YStack`; `align`, `justify`, `wrap`, `grow` and `gap` become their `alignItems`, `justifyContent`, `flexWrap`, `flexGrow` and `gap`.',
-			},
+			usage: `
+- Use it inside a layout container; in a screen, a \`Stack\` that only spaces the screen's blocks is a container that needs a name.
+- Pass it no \`Box\` styling props: the space between children is the \`gap\`, and anything else stays on a \`Box\`.
+`,
 		},
 	},
 	argTypes: {
 		is: {
 			control: 'select',
 			options: ['div', 'section', 'ul', 'li', 'form', 'fieldset', 'span'],
-			description:
-				'The element it renders. `ul` and `fieldset` drop their default markers, indentation, border and spacing, so they lay out like any other stack.',
 			table: { category: 'Semantics', defaultValue: { summary: 'div' } },
 		},
 		direction: {
 			control: 'inline-radio',
 			options: ['row', 'column'],
-			description: 'Main axis.',
 			table: { category: 'Layout', defaultValue: { summary: 'column' } },
 		},
 		gap: {
 			control: 'number',
-			description: 'Space between children, in the units of `Box` `gap`.',
 			table: { category: 'Layout' },
 		},
 		align: {
 			control: 'select',
 			options: ['start', 'center', 'end', 'stretch', 'baseline'],
-			description: 'Alignment of the children on the cross axis (`align-items`).',
 			table: { category: 'Layout' },
 		},
 		justify: {
 			control: 'select',
 			options: ['start', 'center', 'end', 'space-between'],
-			description: 'Distribution of the children on the main axis (`justify-content`).',
 			table: { category: 'Layout' },
 		},
 		wrap: {
 			control: 'boolean',
-			description: 'Lets children wrap onto new lines.',
 			table: { category: 'Layout' },
 		},
 		grow: {
 			control: 'boolean',
-			description: 'Takes the free space of a flex parent (`flex-grow: 1`).',
 			table: { category: 'Layout' },
 		},
 	},
@@ -130,6 +121,13 @@ export const Form: Story = {
 };
 
 export const Inline: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: '`is="span"` keeps the markup valid inside a `label`, which only takes inline content.',
+			},
+		},
+	},
 	render: () => (
 		<FieldLabel>
 			<Stack is='span' direction='row' align='center' gap='x4'>

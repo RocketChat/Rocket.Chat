@@ -9,47 +9,33 @@ import Margins from './Margins';
 export default {
 	title: 'Layout/Margins',
 	component: Margins,
-	parameters: {
-		docs: {
-			description: {
-				component: 'Add margins to the wrapped component.',
-			},
-		},
-	},
 	argTypes: {
 		all: {
 			control: 'text',
-			description: 'Margin applied on every side (a Box `margin` value).',
 			table: { category: 'Spacing' },
 		},
 		block: {
 			control: 'text',
-			description: 'Margin applied on the block start and end sides.',
 			table: { category: 'Spacing' },
 		},
 		blockStart: {
 			control: 'text',
-			description: 'Margin applied on the block-start side.',
 			table: { category: 'Spacing' },
 		},
 		blockEnd: {
 			control: 'text',
-			description: 'Margin applied on the block-end side.',
 			table: { category: 'Spacing' },
 		},
 		inline: {
 			control: 'text',
-			description: 'Margin applied on the inline start and end sides.',
 			table: { category: 'Spacing' },
 		},
 		inlineStart: {
 			control: 'text',
-			description: 'Margin applied on the inline-start side.',
 			table: { category: 'Spacing' },
 		},
 		inlineEnd: {
 			control: 'text',
-			description: 'Margin applied on the inline-end side.',
 			table: { category: 'Spacing' },
 		},
 	},
@@ -746,6 +732,13 @@ export const WithNoneValue: Story = {
 
 export const WithNonBoxChildren: Story = {
 	name: 'With non-Box children',
+	parameters: {
+		docs: {
+			description: {
+				story: 'An element other than a `Box` gets the margins through a class name, so it must accept `className`.',
+			},
+		},
+	},
 	render: () => (
 		<div style={{ border: '1px solid red' }}>
 			<Margins block='x16' inline='x32'>

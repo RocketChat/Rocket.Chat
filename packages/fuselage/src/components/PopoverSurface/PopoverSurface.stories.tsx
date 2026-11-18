@@ -11,26 +11,22 @@ export default {
 	component: PopoverSurface,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'The raised surface of a dropdown or popover. It fills its positioner and scrolls its content; position, offset and stacking stay on the positioner, a `Box` or `usePosition`.',
-			},
+			usage: `
+- Keep position, offset and stacking on the positioner (a \`Box\` or \`usePosition\`), not on the surface.
+`,
 		},
 	},
 	argTypes: {
 		maxHeight: {
 			control: 'inline-radio',
 			options: [undefined, 'half-screen', 'most-of-screen'],
-			description: 'Caps the height at 50vh (`half-screen`) or 80vh (`most-of-screen`); without it the surface grows with its content.',
 		},
 		flush: {
 			control: 'boolean',
-			description: 'Drops the 12px block padding.',
 		},
 		elevation: {
 			control: 'inline-radio',
 			options: ['1', '2'],
-			description: 'How far the surface is raised above the page; defaults to `2`.',
 		},
 	},
 	decorators: [

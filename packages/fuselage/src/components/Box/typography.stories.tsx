@@ -6,6 +6,15 @@ import Box from './Box';
 export default {
 	title: 'Layout/Box/Typography',
 	component: Box,
+	argTypes: {
+		fontScale: {
+			description:
+				'Sets the font size, weight, letter spacing and line height from a step of the type scale, over the props that set them one by one.',
+		},
+		withTruncatedText: {
+			description: 'Keeps the text on one line and cuts it short with an ellipsis.',
+		},
+	},
 } satisfies Meta<typeof Box>;
 
 type Story = StoryObj<typeof Box>;

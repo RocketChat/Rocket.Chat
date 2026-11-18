@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import type { PropsWithChildren } from 'react';
+import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
@@ -10,19 +10,25 @@ import type { BoxProps } from '../Box';
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
 import type { BoxTransformProps } from '../Box/BoxTransforms';
 
-export type MarginsProps = PropsWithChildren<{
+export type MarginsProps = {
+	children?: ReactNode;
+	/** Margin on every side, as a spacing token (`x8`, `neg-x8`), a number of pixels, `auto` or `none`. */
 	all?: BoxProps['margin'];
+	/** Margin above and below. */
 	block?: BoxProps['marginBlock'];
 	blockStart?: BoxProps['marginBlockStart'];
 	blockEnd?: BoxProps['marginBlockEnd'];
+	/** Margin on the start and end sides, which swap in a right-to-left layout. */
 	inline?: BoxProps['marginInline'];
 	inlineStart?: BoxProps['marginInlineStart'];
 	inlineEnd?: BoxProps['marginInlineEnd'];
+	/** Class name added to each child, as `Margins` renders no element of its own. */
 	className?: string;
-}>;
+};
 
 /**
- * Add margins to the wrapped component.
+ * Gives each element it wraps the same margins; a margin set on a wrapped `Box` itself wins. Inside a layout
+ * container, prefer a `Stack` and its `gap`: the space between blocks belongs to their parent.
  */
 const Margins = (props: MarginsProps) => {
 	const { children, className, all, block, blockStart, blockEnd, inline, inlineStart, inlineEnd } = props;

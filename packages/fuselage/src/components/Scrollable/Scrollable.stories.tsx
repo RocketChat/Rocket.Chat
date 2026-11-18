@@ -11,27 +11,22 @@ export default {
 	argTypes: {
 		horizontal: {
 			control: 'boolean',
-			description: 'Forces horizontal-only scrolling (`overflow-x: auto`).',
 			table: { category: 'Direction' },
 		},
 		vertical: {
 			control: 'boolean',
-			description: 'Forces vertical-only scrolling (`overflow-y: auto`).',
 			table: { category: 'Direction' },
 		},
 		smooth: {
 			control: 'boolean',
-			description: 'Enables smooth scrolling behavior.',
 			table: { category: 'Behavior' },
 		},
 		onScrollContent: {
 			control: false,
-			description: 'Called with which edges (top/bottom/left/right) are currently touching whenever the scroll position settles.',
 			table: { category: 'Events' },
 		},
 		children: {
 			control: false,
-			description: 'Scrollable content; receives the scroll container styling and scroll handler via `BoxTransforms`.',
 			table: { category: 'Content' },
 		},
 	},

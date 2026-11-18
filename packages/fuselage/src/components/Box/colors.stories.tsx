@@ -8,13 +8,6 @@ import Box from './Box';
 export default {
 	title: 'Layout/Box/Colors',
 	component: Box,
-	parameters: {
-		docs: {
-			description: {
-				component: 'Here are the available color props and values.',
-			},
-		},
-	},
 } satisfies Meta<typeof Box>;
 
 type Story = StoryObj<typeof Box>;

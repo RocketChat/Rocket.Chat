@@ -9,11 +9,21 @@ import Box from './Box';
 export default {
 	title: 'Layout/Box/Layout',
 	component: Box,
-	parameters: {
-		docs: {
-			description: {
-				component: 'Here is how rich content will be rendered, in details.',
-			},
+	argTypes: {
+		elevation: {
+			description: 'Raises the box above the page with a shadow and a border; `1nb` and `2nb` leave out the border.',
+		},
+		invisible: {
+			description: 'Hides the box but keeps its space in the layout.',
+		},
+		size: {
+			description: 'Sets the width and the height to the same value, over `width` and `height`.',
+		},
+		minSize: {
+			description: 'Sets the minimum width and the minimum height to the same value.',
+		},
+		maxSize: {
+			description: 'Sets the maximum width and the maximum height to the same value.',
 		},
 	},
 } satisfies Meta<typeof Box>;
