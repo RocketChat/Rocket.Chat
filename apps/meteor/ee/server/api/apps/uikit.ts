@@ -70,9 +70,9 @@ router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 router.use(async (req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
-	if (visitorToken && typeof visitorToken === 'string') {
-		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
-	}
+	// The visitor comes only from the token header, never from the request body.
+	req.body.visitor =
+		visitorToken && typeof visitorToken === 'string' ? await Apps.getConverters()?.get('visitors').convertByToken(visitorToken) : undefined;
 
 	if (!req.user && !req.body.visitor) {
 		return unauthorized(res);
