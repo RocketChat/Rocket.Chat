@@ -20,39 +20,41 @@ export class ResponseParser {
 	}
 
 	private mapExpiration(assertion: Element, profile: Record<string, any>): void {
-		const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
-		if (conditions?.hasAttribute('NotOnOrAfter')) {
-			const notOnOrAfter = conditions.getAttribute('NotOnOrAfter');
-			if (notOnOrAfter) {
-				profile.expireAt = new Date(notOnOrAfter);
-			}
+		const notOnOrAfter = assertion
+			.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0]
+			?.getAttribute('NotOnOrAfter');
+		if (notOnOrAfter) {
+			profile.expireAt = new Date(notOnOrAfter);
 		}
 	}
 
 	private mapNameID(subject: XmlParent, profile: Record<string, any>): void {
 		const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
-		if (nameID) {
-			profile.nameID = nameID.textContent;
+		if (!nameID) {
+			return;
+		}
 
-			if (nameID.hasAttribute('Format')) {
-				profile.nameIDFormat = nameID.getAttribute('Format');
-			}
+		profile.nameID = nameID.textContent;
+		if (nameID.hasAttribute('Format')) {
+			profile.nameIDFormat = nameID.getAttribute('Format');
 		}
 	}
 
 	private mapSessionIndex(assertion: Element, profile: Record<string, any>): void {
 		const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
 
-		if (authnStatement) {
-			if (authnStatement.hasAttribute('SessionIndex')) {
-				profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
-				SAMLUtils.log({ msg: 'Session Index Found', sessionIndex: profile.sessionIndex });
-			} else {
-				SAMLUtils.log('No Session Index Found');
-			}
-		} else {
+		if (!authnStatement) {
 			SAMLUtils.log('No AuthN Statement found');
+			return;
 		}
+
+		if (!authnStatement.hasAttribute('SessionIndex')) {
+			SAMLUtils.log('No Session Index Found');
+			return;
+		}
+
+		profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
+		SAMLUtils.log({ msg: 'Session Index Found', sessionIndex: profile.sessionIndex });
 	}
 
 	public validate(envelope: SAMLPOSTEnvelope<'SAMLResponse'>, callback: IResponseValidateCallback): void {
