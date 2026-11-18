@@ -21,7 +21,9 @@ export const ensureUploadTempDirectory = (): void => {
 		} else {
 			// Set directory permissions
 			fs.chmod(path, mode, (err) => {
-				err && console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
+				if (err) {
+					console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
+				}
 			});
 		}
 	});

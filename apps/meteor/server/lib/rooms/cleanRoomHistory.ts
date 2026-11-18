@@ -122,7 +122,9 @@ export async function cleanRoomHistory({
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
-		document.files && (await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id))));
+		if (document.files) {
+			await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id)));
+		}
 
 		fileCount++;
 		if (originIds.has(document._id)) {

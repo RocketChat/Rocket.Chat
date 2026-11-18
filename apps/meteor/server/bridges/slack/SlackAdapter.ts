@@ -113,6 +113,7 @@ export default class SlackAdapter {
 		}
 
 		if (RTMClient != null) {
+			// oxlint-disable-next-line eslint/no-unused-expressions -- no-op kept until its removal, tracked in CORE-3058
 			RTMClient.disconnect;
 		}
 		this.slackAPI = new SlackAPI(this.apiToken);
