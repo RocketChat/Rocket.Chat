@@ -8,41 +8,33 @@ export default {
 	component: Badge,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Indicates the type and quantity of notifications, highlighting key events and facilitating user navigation.\n\n' +
-					'**Rules**\n' +
-					'- Pick `variant` by the EVENT semantics it represents (e.g. `primary` for a thread reply, `danger` for a user mention), not by color preference — the options are named by color, but each maps to a specific semantic meaning.\n' +
-					'- Never exceed 3 characters; show "99+" for anything above 99.\n' +
-					"- Use the small dot variant (empty content) when you only need to signal that something new exists, or when the quantity can't be shown.",
-			},
+			usage: `
+- Pick the \`variant\` by the type of event, not by color: \`primary\` for a thread reply, \`danger\` for a mention of the user.
+- Keep the content to 3 characters or fewer; show "99+" for anything above 99.
+- Leave the badge empty and set \`small\` to signal only that something new exists, or when the count can't be shown.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Badge content, typically a short label or count.',
 			table: { category: 'Content' },
 		},
 		title: {
 			control: 'text',
-			description: 'Native `title` attribute shown as a tooltip on hover.',
 			table: { category: 'Content' },
 		},
 		variant: {
 			control: 'select',
 			options: ['secondary', 'primary', 'danger', 'warning'],
-			description: 'Color kind of the badge.',
 			table: { category: 'Kind', defaultValue: { summary: 'secondary' } },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the badge in a smaller size.',
 			table: { category: 'Size' },
 		},
 		is: {
 			control: false,
-			description: 'Underlying element or component rendered.',
 			table: { category: 'Polymorphism', defaultValue: { summary: 'span' } },
 		},
 	},

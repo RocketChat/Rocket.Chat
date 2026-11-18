@@ -22,32 +22,25 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Displays tabular data with sortable columns, selectable rows, and cell content (title/subtitle, tags, actions).\n\n' +
-					'**Rules**\n' +
-					"- Match the header column count to the row's column count.\n" +
-					'- Supports multi-row selection (e.g. "3 items selected") and row actions.\n' +
-					'- Typically paired with Pagination.',
-			},
+			usage: `
+- Give the header row as many cells as each row of data.
+- For selecting several rows, mark them \`selected\` and show a \`TableSelection\` with how many are selected, such as "3 items selected", and the actions for them.
+- Usually pair it with a \`Pagination\`.
+`,
 		},
 	},
 	argTypes: {
 		striped: {
 			control: 'boolean',
-			description: 'Applies alternating row background stripes.',
 		},
 		sticky: {
 			control: 'boolean',
-			description: 'Keeps the table header fixed while the body scrolls.',
 		},
 		fixed: {
 			control: 'boolean',
-			description: 'Uses a fixed table layout algorithm for column widths.',
 		},
 		columns: {
 			control: 'object',
-			description: "Declares the width of each column, in order: a size token like `'x36'`, or `'auto'`.",
 		},
 	},
 } satisfies Meta<typeof Table>;

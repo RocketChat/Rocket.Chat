@@ -11,48 +11,38 @@ export default {
 	component: Tag,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A quickly recognizable component used to display set values.\n\n' +
-					'**Rules**\n' +
-					'- Use the Primary type sparingly — it draws the most attention.\n' +
-					'- A leading icon helps recognition and lowers cognitive load — add only when it clarifies the tag.',
-			},
+			usage: `
+- Use \`variant='primary'\` sparingly: it draws the most attention.
+- Add a leading \`icon\` only when it makes the tag easier to recognize.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Tag label content.',
 		},
 		variant: {
 			control: 'select',
 			options: ['primary', 'secondary', 'danger', 'warning', 'secondary-danger', 'secondary-warning', 'secondary-info', 'featured'],
-			description: 'Color kind applied to the tag.',
 		},
 		medium: {
 			control: 'boolean',
-			description: 'Medium size scale.',
 			table: { category: 'Size' },
 		},
 		large: {
 			control: 'boolean',
-			description: 'Large size scale.',
 			table: { category: 'Size' },
 		},
 		pill: {
 			control: 'boolean',
-			description: 'Fully rounded shape. Use for interactive tags such as filters.',
 			table: { category: 'Shape' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Renders the disabled visual style.',
 			table: { category: 'State' },
 		},
 		icon: {
 			control: false,
-			description: 'Element rendered before the tag label.',
 			table: { category: 'Content' },
 		},
 		href: {
@@ -62,7 +52,7 @@ export default {
 		},
 		onClick: {
 			control: false,
-			description: 'Called when the tag is clicked; also marks it as clickable.',
+			description: 'Called when the tag is clicked; with it, the tag looks clickable.',
 			table: { category: 'Events' },
 		},
 	},

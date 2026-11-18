@@ -8,14 +8,13 @@ import Offline from './icons/Offline';
 import Online from './icons/Online';
 
 export type StatusBulletProps = {
+	/** The user's status; `loading` while it isn't known yet. */
 	status?: 'loading' | 'online' | 'busy' | 'away' | 'offline' | 'disabled';
 	/** `'large'` renders the same as the default size and is deprecated. */
 	size?: 'small' | 'large';
 } & Omit<AllHTMLAttributes<SVGElement>, 'size'>;
 
-/**
- * The `StatusBullet` is used to inform the user status.
- */
+/** Shows a user's status with a round icon whose color and shape both change with it, so color is never the only cue. */
 const StatusBullet = ({ status = 'loading', ...props }: StatusBulletProps) => {
 	switch (status) {
 		case 'online':

@@ -7,18 +7,15 @@ import { Box } from '../Box';
 export type TagProps = {
 	medium?: boolean;
 	large?: boolean;
-	/**
-	 * Fully rounded shape. Use for interactive tags such as filters
-	 */
+	/** Fully rounded, for tags the user interacts with, such as filters. */
 	pill?: boolean;
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'secondary-danger' | 'secondary-warning' | 'secondary-info' | 'featured';
 	disabled?: boolean;
+	/** Shown before the label, usually an `Icon` at size `x12`. */
 	icon?: ReactNode;
 } & ElementProps<HTMLElement, AnchorHTMLAttributes<HTMLElement>>;
 
-/**
- * Used for mentions
- */
+/** A short label for a value, such as a username or a room type, that the eye picks out at a glance. */
 const Tag = ({ large, medium, pill, className, disabled, onClick, variant, children, icon, href, ...props }: TagProps) => {
 	const modifiers = [
 		variant,

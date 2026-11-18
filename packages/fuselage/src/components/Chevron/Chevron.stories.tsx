@@ -9,37 +9,30 @@ export default {
 	argTypes: {
 		up: {
 			control: 'boolean',
-			description: 'Points the chevron upward.',
 			table: { category: 'Direction' },
 		},
 		right: {
 			control: 'boolean',
-			description: 'Points the chevron rightward.',
 			table: { category: 'Direction' },
 		},
 		down: {
 			control: 'boolean',
-			description: 'Points the chevron downward (default direction).',
 			table: { category: 'Direction' },
 		},
 		left: {
 			control: 'boolean',
-			description: 'Points the chevron leftward.',
 			table: { category: 'Direction' },
 		},
 		top: {
 			control: 'boolean',
-			description: 'Declared on the component type but currently unused by the rendered output.',
 			table: { category: 'Direction' },
 		},
 		bottom: {
 			control: 'boolean',
-			description: 'Declared on the component type but currently unused by the rendered output.',
 			table: { category: 'Direction' },
 		},
 		size: {
 			control: 'text',
-			description: 'Icon size, forwarded to the underlying `Icon`.',
 			table: { category: 'Size' },
 		},
 	},

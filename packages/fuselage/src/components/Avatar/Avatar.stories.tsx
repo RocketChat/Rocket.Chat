@@ -15,43 +15,35 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A visual, thumbnail representation of a single user or entity.\n\n' +
-					'**Rules**\n' +
-					'- Represents a SINGLE user or entity (not groups).\n' +
-					'- Always provide meaningful alt text for images — critical for screen readers.\n' +
-					'- Choose the size to match the surrounding context.\n' +
-					'- Use the letter (initials) fallback when no image is available.',
-			},
+			usage: `
+- Give each \`Avatar\` a single user or entity, not a group.
+- Always set a meaningful \`alt\`: screen readers read it in place of the image.
+- Pick the \`size\` that matches the surrounding content.
+`,
 		},
 	},
 	argTypes: {
 		url: {
 			control: 'text',
-			description: 'Image source URL rendered inside the avatar.',
 			table: { category: 'Content' },
 		},
 		alt: {
 			control: 'text',
-			description: 'Alternative text for the avatar image.',
+			description: 'Text that assistive technology reads in place of the image. Without it, the image is marked as decorative.',
 			table: { category: 'Content' },
 		},
 		size: {
 			control: 'select',
 			options: ['x16', 'x18', 'x20', 'x24', 'x28', 'x32', 'x36', 'x40', 'x48', 'x124', 'x200', 'x332'],
-			description: 'Size scale of the avatar.',
 			table: { category: 'Size', defaultValue: { summary: 'x36' } },
 		},
 		rounded: {
 			control: 'boolean',
-			description: 'Renders the avatar with fully rounded corners instead of the default squared shape.',
 			table: { category: 'Shape' },
 		},
 		objectFit: {
 			control: 'select',
 			options: ['fill', 'contain', 'cover', 'none', 'scale-down'],
-			description: 'CSS `object-fit` applied to the inner image element.',
 			table: { category: 'Content' },
 		},
 	},

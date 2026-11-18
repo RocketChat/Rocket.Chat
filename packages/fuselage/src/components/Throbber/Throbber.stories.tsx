@@ -11,27 +11,21 @@ export default {
 	component: Throbber,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A visual loading indicator (spinner), used to indicate in-progress loading.\n\n' +
-					'**Rules**\n' +
-					'- Use a spinner for brief, indeterminate waits.',
-			},
+			usage: `
+- Use it for brief waits of unknown length.
+`,
 		},
 	},
 	argTypes: {
 		circleCount: {
 			control: 'number',
-			description: 'Number of circles rendered in the animation.',
 			table: { defaultValue: { summary: '3' } },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Renders the disabled visual style.',
 		},
 		inheritColor: {
 			control: 'boolean',
-			description: "Makes the circles inherit the surrounding text's color.",
 		},
 	},
 } satisfies Meta<typeof Throbber>;

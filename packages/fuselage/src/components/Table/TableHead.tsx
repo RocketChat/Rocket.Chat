@@ -7,6 +7,7 @@ export const TableHeadContext = createContext(false);
 
 export type TableHeadProps = ElementProps<HTMLTableSectionElement>;
 
+/** Holds the header rows of a `Table`; the cells in it are column headers. */
 const TableHead = (props: TableHeadProps) => (
 	<TableHeadContext.Provider value={true}>
 		<Box is='thead' rcx-table__head {...props} />

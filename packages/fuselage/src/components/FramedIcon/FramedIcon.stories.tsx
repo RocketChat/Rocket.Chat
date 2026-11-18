@@ -7,45 +7,36 @@ export default {
 	component: FramedIcon,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Draws attention to a specific UI element with an icon inside a rectangular frame; communicates system state.\n\n' +
-					'**Rules**\n' +
-					'- Always use alongside text, never standalone.\n' +
-					'- Not for user actions — use the Icon button for actions.\n' +
-					'- Do not mix multiple color types in the same context.',
-			},
+			usage: `
+- Always place it beside text, never on its own.
+- Don't use it for actions: use an \`IconButton\` instead.
+- Don't mix colors in the same context.
+`,
 		},
 	},
 	argTypes: {
 		icon: {
 			control: 'text',
-			description: 'Name of the Fuselage icon rendered inside the frame.',
 			table: { category: 'Content' },
 		},
 		info: {
 			control: 'boolean',
-			description: 'Applies the info (blue) color kind to the frame.',
 			table: { category: 'Kind' },
 		},
 		success: {
 			control: 'boolean',
-			description: 'Applies the success (green) color kind to the frame.',
 			table: { category: 'Kind' },
 		},
 		warning: {
 			control: 'boolean',
-			description: 'Applies the warning (yellow) color kind to the frame.',
 			table: { category: 'Kind' },
 		},
 		danger: {
 			control: 'boolean',
-			description: 'Applies the danger (red) color kind to the frame.',
 			table: { category: 'Kind' },
 		},
 		neutral: {
 			control: 'boolean',
-			description: 'Applies the neutral color kind explicitly; used by default when no other kind is set.',
 			table: { category: 'Kind' },
 		},
 	},

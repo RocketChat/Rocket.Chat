@@ -11,6 +11,7 @@ export type TableCellProps = Omit<
 > & {
 	is?: 'td' | 'th';
 	align?: 'start' | 'center' | 'end' | 'justify' | object;
+	/** Shows a pointer over the cell, for a cell that does something when clicked. */
 	clickable?: boolean;
 	/** Renders the cell as the header of its row, like the label of a key/value pair. */
 	rowHeader?: boolean;
@@ -22,6 +23,7 @@ export type TableCellProps = Omit<
 	strong?: boolean;
 };
 
+/** A cell of a `Table`, or a column header inside a `TableHead`. An empty data cell shows a short dash. */
 const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, children, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
 

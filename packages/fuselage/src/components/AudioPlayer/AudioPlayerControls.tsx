@@ -24,11 +24,8 @@ export type AudioPlayerControlsProps = {
 };
 
 /**
- * Presentational, fully controlled audio controls (play/pause, seek, elapsed
- * time, playback speed and optional download). It owns no `<audio>` element and
- * no playback state, so it can be driven by any source — a local element or a
- * shared/persistent one. `AudioPlayer` wraps this with its own element for the
- * common self-contained case.
+ * The controls of an `AudioPlayer` without its audio, driven entirely by props, for audio played elsewhere, such as a
+ * player that keeps playing across screens.
  */
 const AudioPlayerControls = ({
 	isPlaying,

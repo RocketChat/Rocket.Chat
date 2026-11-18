@@ -5,6 +5,7 @@ import { prependClassName } from '../../helpers/prependClassName';
 
 export type AvatarStackProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
+/** Shows several avatars as one overlapping row, with the first one on top. */
 const AvatarStack = ({ children, ...props }: AvatarStackProps) => {
 	props.className = prependClassName(props.className, 'rcx-avatar-stack');
 	return <div {...props}>{flattenChildren(children).reverse()}</div>;

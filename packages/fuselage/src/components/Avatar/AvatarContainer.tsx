@@ -3,9 +3,11 @@ import type { HTMLAttributes } from 'react';
 import { prependClassName } from '../../helpers/prependClassName';
 
 export type AvatarContainerProps = {
+	/** Side of the avatar's square, in pixels at the default font size. */
 	size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';
 } & HTMLAttributes<HTMLElement>;
 
+/** Puts content other than an image, such as an emoji, in the square of an avatar of the same `size`. */
 const AvatarContainer = ({ size = 'x36', children, ...props }: AvatarContainerProps) => {
 	props.className = prependClassName(
 		props.className,
