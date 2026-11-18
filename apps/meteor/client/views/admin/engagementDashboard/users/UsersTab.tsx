@@ -6,8 +6,8 @@ import ActiveUsersSection from './ActiveUsersSection';
 import BusiestChatTimesSection from './BusiestChatTimesSection';
 import NewUsersSection from './NewUsersSection';
 import UsersByTimeOfTheDaySection from './UsersByTimeOfTheDaySection';
+import EngagementDashboardCard from '../EngagementDashboardCard';
 import DashboardColumns from '../layout/DashboardColumns';
-import EngagementDashboardCard from '../layout/EngagementDashboardCard';
 
 export type UsersTabProps = {
 	timezone: 'utc' | 'local';
