@@ -20,6 +20,8 @@ export type MessageListContextValue = {
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
 	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
+	/** Whether the list's room is a broadcast room the user is subscribed to. */
+	isBroadcast: boolean;
 	/** Role labels of the authors of messages in room `rid`; absent when the list does not resolve them. */
 	userRoles?: {
 		rid: string;
@@ -62,6 +64,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 			date.toString(),
 	useOpenEmojiPicker: () => (): void => undefined,
 	showRoles: false,
+	isBroadcast: false,
 	showRealName: false,
 	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
 	normalizeMessage: createMessageNormalizer({ emoticons: true }, { showAutoTranslate: () => false, autoTranslateEnabled: false }),
@@ -86,6 +89,7 @@ export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (..
 	useContext(MessageListContext).useShowFollowing(...args);
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useMessageListIsBroadcast = (): MessageListContextValue['isBroadcast'] => useContext(MessageListContext).isBroadcast;
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListUserRoles = (uid: string, rid: string) => {
 	const { userRoles } = useContext(MessageListContext);

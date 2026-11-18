@@ -14,7 +14,7 @@ import { createMessageNormalizer } from '../../../../lib/createMessageNormalizer
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription, useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useAutoLinkDomains } from '../hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
@@ -40,6 +40,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const uid = user?._id;
 	const username = user?.username;
 	const subscription = useRoomSubscription();
+	const subscribed = useUserIsSubscribed();
+	const isBroadcast = subscribed && Boolean(room.broadcast);
 
 	const { isMobile } = useLayout();
 
@@ -124,6 +126,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				(date: Date): string =>
 					date.toLocaleString(),
 			apiEmbedEnabled,
+			isBroadcast,
 			showRoles,
 			userRoles,
 			showRealName,
@@ -153,6 +156,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			uid,
 			autoTranslate,
 			hasSubscription,
+			isBroadcast,
 			showRoles,
 			userRoles,
 			showRealName,
