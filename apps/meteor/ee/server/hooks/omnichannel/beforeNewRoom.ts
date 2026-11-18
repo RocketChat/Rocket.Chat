@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOmnichannelRoomInfo, IOmnichannelRoomExtraData, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { beforeNewRoom } from '../../../../server/lib/omnichannel/hooks';
@@ -23,7 +23,7 @@ export const beforeNewRoomPatched = async (
 
 	const sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm);
 	if (!sla) {
-		throw new Meteor.Error('error-invalid-sla', 'Invalid sla', {
+		throw new ClientSafeError('error-invalid-sla', 'Invalid sla', {
 			function: 'livechat.beforeRoom',
 		});
 	}

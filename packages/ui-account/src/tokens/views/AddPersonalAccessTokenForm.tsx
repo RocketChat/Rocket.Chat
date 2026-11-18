@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, TextInput, Button, Margins, Select, FieldError, FieldGroup, Field, FieldRow } from '@rocket.chat/fuselage';
+import { Box, TextInput, Button, Select, FieldError, FieldGroup, Field, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -42,11 +42,11 @@ const AddPersonalAccessTokenForm = ({ onCreate }: AddPersonalAccessTokenFormProp
 	};
 
 	return (
-		<Box is='form' onSubmit={handleSubmit(handleAddToken)}>
-			<FieldGroup marginBlock={8}>
+		<Box is='form' onSubmit={handleSubmit(handleAddToken)} paddingBlock={8}>
+			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<Margins inlineEnd={4}>
+						<Stack is='span' direction='row' align='center' gap='x4' grow>
 							<Controller
 								name='name'
 								control={control}
@@ -68,10 +68,10 @@ const AddPersonalAccessTokenForm = ({ onCreate }: AddPersonalAccessTokenFormProp
 									render={({ field }) => <Select {...field} aria-label={t('Two Factor Authentication')} options={twoFactorAuthOptions} />}
 								/>
 							</Box>
-						</Margins>
-						<Button primary type='submit'>
-							{t('Add')}
-						</Button>
+							<Button variant='primary' type='submit'>
+								{t('Add')}
+							</Button>
+						</Stack>
 					</FieldRow>
 					{errors?.name && (
 						<FieldError id={nameErrorId} role='alert'>

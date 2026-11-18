@@ -1,5 +1,5 @@
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
-import { AppMethod } from '../metadata';
+import type { AppMethod } from '../metadata';
 import type { ILivechatTransferEventContext } from './ILivechatTransferEventContext';
 
 export interface IPostLivechatRoomTransferred {

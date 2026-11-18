@@ -1,24 +1,12 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		updateOutgoingIntegration(
-			integrationId: string,
-			integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
-		): IIntegration | null;
-	}
-}
 
 export const updateOutgoingIntegration = async (
 	userId: string,
@@ -28,7 +16,7 @@ export const updateOutgoingIntegration = async (
 	const integration = await validateOutgoingIntegration(_integration, userId);
 
 	if (!integration.token || integration.token.trim() === '') {
-		throw new Meteor.Error('error-invalid-token', 'Invalid token', {
+		throw new ClientSafeError('error-invalid-token', 'Invalid token', {
 			method: 'updateOutgoingIntegration',
 		});
 	}
@@ -43,13 +31,13 @@ export const updateOutgoingIntegration = async (
 			'_createdBy._id': userId,
 		});
 	} else {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'updateOutgoingIntegration',
 		});
 	}
 
 	if (!currentIntegration) {
-		throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
+		throw new ClientSafeError('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 	}
 
 	const oldScriptEngine = currentIntegration.scriptEngine;
@@ -59,7 +47,7 @@ export const updateOutgoingIntegration = async (
 		(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
 	) {
 		wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
-			throw new Meteor.Error(e.message);
+			throw new ClientSafeError(e.message);
 		});
 	}
 
@@ -117,16 +105,3 @@ export const updateOutgoingIntegration = async (
 
 	return updatedIntegration;
 };
-
-Meteor.methods<ServerMethods>({
-	async updateOutgoingIntegration(integrationId, _integration) {
-		methodDeprecationLogger.method('updateOutgoingIntegration', '9.0.0', '/v1/integrations.update');
-		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
-			});
-		}
-
-		return updateOutgoingIntegration(this.userId, integrationId, _integration);
-	},
-});

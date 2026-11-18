@@ -7,8 +7,8 @@ import { useMemo } from 'react';
 import type { SubscriptionLicenseLayout } from './UiKitSubscriptionLicenseSurface';
 import { UiKitSubscriptionLicenseSurface } from './UiKitSubscriptionLicenseSurface';
 import MarkdownText from '../../../../components/MarkdownText';
-import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
-import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
+import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
+import { useUiKitView } from '../../../../hooks/uikit/useUiKitView';
 
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }) => <MarkdownText variant='inline' content={text} />;

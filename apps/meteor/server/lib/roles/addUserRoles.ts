@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 
@@ -12,7 +12,7 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roles: IRole['_id'
 	}
 
 	if (!(await validateRoleList(roles))) {
-		throw new MeteorError('error-invalid-role', 'Invalid role');
+		throw new ClientSafeError('error-invalid-role', 'Invalid role');
 	}
 
 	if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
@@ -24,7 +24,7 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roles: IRole['_id'
 		process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
 	}
 
-	for await (const roleId of roles) {
+	for (const roleId of roles) {
 		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 		if (!role) {

@@ -6,8 +6,8 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
-import RoomListItem from './RoomListItem';
 import { RoomIcon, useRoomIconLabel } from '../../../../components/RoomIcon';
+import RoomListItem from '../../../../components/RoomListItem/RoomListItem';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';
@@ -46,8 +46,20 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 		() =>
 			videoConfActions && (
 				<SidebarItemActions>
-					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
-					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+					<IconButton
+						onClick={videoConfActions.acceptCall}
+						size='mini'
+						variant='secondary-success'
+						icon='phone'
+						aria-label={t('Accept_Call')}
+					/>
+					<IconButton
+						onClick={videoConfActions.rejectCall}
+						size='mini'
+						variant='secondary-danger'
+						icon='phone-off'
+						aria-label={t('Reject_call')}
+					/>
 				</SidebarItemActions>
 			),
 		[videoConfActions, t],

@@ -1,6 +1,5 @@
 import { Users } from '@rocket.chat/models';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
-import { check } from 'meteor/check';
 
 import { API } from '../..';
 import { findAgents, findManagers } from './lib/users';
@@ -21,9 +20,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			check(this.urlParams, {
-				type: String,
-			});
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;

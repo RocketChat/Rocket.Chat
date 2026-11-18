@@ -1,16 +1,34 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
-import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
-import type { Preview } from '@storybook/react-webpack5';
-import { themes } from 'storybook/theming';
+import type { Preview } from '@storybook/react';
+import { useLayoutEffect, useSyncExternalStore } from 'react';
 
-import manifest from '../package.json';
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
-import logo from './logo.svg';
+import { globalTypes, initialGlobals } from './globals';
+import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
+
+// A Docs page mounts several stories at once, so the document's direction is held while any RTL story is mounted
+let rtlStories = 0;
+let dirBeforeRtl: string | null = null;
+
+const holdRtl = () => {
+	const root = document.documentElement;
+	if (rtlStories++ === 0) {
+		dirBeforeRtl = root.getAttribute('dir');
+		root.dir = 'rtl';
+	}
+	return () => {
+		if (--rtlStories > 0) return;
+		if (dirBeforeRtl === null) {
+			root.removeAttribute('dir');
+		} else {
+			root.dir = dirBeforeRtl;
+		}
+	};
+};
 
 export default {
 	parameters: {
@@ -44,33 +62,27 @@ export default {
 				]),
 			),
 		},
-		darkMode: {
-			dark: {
-				...themes.dark,
-				appBg: surface.dark.sidebar,
-				appContentBg: surface.dark.light,
-				appPreviewBg: 'transparent',
-				barBg: surface.dark.light,
-				brandTitle: manifest.name,
-				brandImage: logo,
-				brandUrl: manifest.homepage,
-			},
-			light: {
-				...themes.normal,
-				appPreviewBg: 'transparent',
-				brandTitle: manifest.name,
-				brandImage: logo,
-				brandUrl: manifest.homepage,
-			},
-		},
 	},
+	globalTypes,
+	initialGlobals,
+	// Stories that place elements by their measured size, like tooltips, must be measured in the final fonts,
+	// or the visual regression snapshots render where the fallback font left them.
+	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
-		(Story) => {
-			const dark = useDarkMode();
+		function PaletteDecorator(Story, { globals }) {
+			// Only the rtl global touches `dir`, so a story that sets its own direction keeps it
+			useLayoutEffect(() => (globals.direction === 'rtl' ? holdRtl() : undefined), [globals.direction]);
+
+			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
 
 			return (
 				<>
-					<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
+					<style>{`
+						body {
+							background-color: var(--rcx-color-surface-light);
+						}
+					`}</style>
+					<PaletteStyleTag theme={mode} />
 					<Story />
 				</>
 			);

@@ -1,15 +1,16 @@
 import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import type { ComponentType, ElementType, MouseEvent, ReactNode, RefAttributes } from 'react';
-import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { prevent } from '../../helpers/prevent';
+import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { CheckOption, Option } from '../Option';
-import { Tile } from '../Tile';
+import { PopoverSurface } from '../PopoverSurface';
+import { Empty } from './Empty';
 
-export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
+export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
 		multiple?: boolean;
 		options: { value: string | number; label: string; selected?: boolean }[];
@@ -30,9 +31,7 @@ export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 		endReached?: (start?: number, end?: number) => void;
 	};
 
-export const Empty = memo(() => <Option label='Empty' />);
-
-export { CheckOption };
+export { CheckOption, Empty };
 
 /**
  * An input for selection of options.
@@ -72,7 +71,7 @@ export function OptionsPaginated({
 
 	return (
 		<Box rcx-options {...props} ref={ref}>
-			<Tile padding={0} paddingBlock='x12' paddingInline={0} elevation='2'>
+			<PopoverSurface>
 				{!options.length ? (
 					<EmptyComponent />
 				) : (
@@ -86,7 +85,7 @@ export function OptionsPaginated({
 						itemContent={(index, data) => <OptionsComponentWithData index={index} data={data} />}
 					/>
 				)}
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 }

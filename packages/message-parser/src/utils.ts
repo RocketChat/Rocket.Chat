@@ -23,12 +23,11 @@ import type {
 	Table,
 	TableRow,
 	TableCell,
-} from './definitions';
+} from './definitions.js';
 
 const generate =
 	<Type extends keyof Types>(type: Type) =>
-	(value: Types[Type]['value']): Types[Type] =>
-		({ type, value }) as any;
+	(value: Types[Type]['value']): { type: Type; value: Types[Type]['value'] } => ({ type, value });
 
 export const paragraph = generate('PARAGRAPH');
 

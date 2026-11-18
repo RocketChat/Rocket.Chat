@@ -9,6 +9,12 @@ export type AppLogsFilterFormData = {
 	severity?: 'all' | '0' | '1' | '2';
 	event?: string;
 	timeFilter?: string;
+	lastCustomRange?: {
+		startDate: string;
+		startTime: string;
+		endDate: string;
+		endTime: string;
+	};
 };
 
 export const useAppLogsFilterForm = () =>

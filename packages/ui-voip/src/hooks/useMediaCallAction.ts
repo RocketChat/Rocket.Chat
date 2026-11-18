@@ -2,6 +2,7 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { getPeerDisplayName } from '../components/PeerInfo/usePeerDisplayName';
 import type { PeerInfo } from '../context';
 import { usePeekMediaSessionPeerInfo } from '../context/usePeekMediaSessionPeerInfo';
 import { usePeekMediaSessionState } from '../context/usePeekMediaSessionState';
@@ -21,13 +22,9 @@ export const useMediaCallAction = (
 			return undefined;
 		}
 
-		const getDisplayName = (peerInfo: { displayName?: string; number?: string }) => {
-			return peerInfo.displayName || peerInfo.number;
-		};
-
 		if (state === 'ongoing' && peerInfo) {
 			return {
-				title: t('Voice_call__user__hangup', { user: getDisplayName(peerInfo) }),
+				title: t('Voice_call__user__hangup', { user: getPeerDisplayName(t, peerInfo) }),
 				icon: 'phone-off',
 				action: () => endCall(),
 			};
@@ -35,7 +32,7 @@ export const useMediaCallAction = (
 
 		if (state === 'calling' && peerInfo) {
 			return {
-				title: t('Voice_call__user__cancel', { user: getDisplayName(peerInfo) }),
+				title: t('Voice_call__user__cancel', { user: getPeerDisplayName(t, peerInfo) }),
 				icon: 'phone-off',
 				action: () => endCall(),
 			};
@@ -43,7 +40,7 @@ export const useMediaCallAction = (
 
 		if (state === 'ringing' && peerInfo) {
 			return {
-				title: t('Voice_call__user__reject', { user: getDisplayName(peerInfo) }),
+				title: t('Voice_call__user__reject', { user: getPeerDisplayName(t, peerInfo) }),
 				icon: 'phone-off',
 				action: () => endCall(),
 			};
@@ -51,7 +48,7 @@ export const useMediaCallAction = (
 
 		if (callee) {
 			return {
-				title: t('Voice_call__user_', { user: getDisplayName(callee) }),
+				title: t('Voice_call__user_', { user: getPeerDisplayName(t, callee) }),
 				icon: 'phone',
 				action: () => toggleWidget(callee),
 			};

@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
+import { expect } from '../../utils/test';
 import { MenuOptions } from '../fragments';
 import { Listbox } from '../fragments/listbox';
 import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
@@ -28,6 +29,11 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		this.listbox = new Listbox(page);
 		this.menOptions = new MenuOptions(page);
 		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
+	}
+
+	override async search(text: string) {
+		await super.search(text);
+		await this.table.waitForSettled(this.emptyState);
 	}
 
 	async createNew() {
@@ -62,6 +68,12 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		return this.page.getByRole('tab', { name: 'Archived' });
 	}
 
+	async openArchivedTab() {
+		await this.tabArchivedDepartments.click();
+		await expect(this.tabArchivedDepartments).toHaveAttribute('aria-selected', 'true');
+		await this.table.waitForSettled(this.emptyState);
+	}
+
 	getDepartmentMenuByName(name: string) {
 		return this.table.findRowByName(name).getByRole('button', { name: 'Options' });
 	}
@@ -89,7 +101,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get inputUnit(): Locator {
-		return this.page.getByLabel('Unit').getByRole('textbox', { name: 'Select an option' });
+		return this.page.getByRole('textbox', { name: 'Unit' });
 	}
 
 	btnTag(tagName: string) {
@@ -102,11 +114,6 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	findOption(optionText: string) {
 		return this.listbox.getOption(optionText);
-	}
-
-	async selectUnit(unitName: string) {
-		await this.inputUnit.click();
-		await this.listbox.selectOption(unitName);
 	}
 
 	get inputAgents() {

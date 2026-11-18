@@ -2,9 +2,10 @@ import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRoute, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type CustomUserStatusFormFormData = {
 	name: string;
@@ -18,12 +19,13 @@ export type CustomUserStatusFormProps = {
 };
 
 const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFormProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { _id } = status || {};
 	const setModal = useSetModal();
 	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const formId = useId();
+	const presenceField = useId();
 
 	const {
 		register,
@@ -97,39 +99,41 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<FieldGroup id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
-					<Field>
-						<FieldLabel>{t('Name')}</FieldLabel>
-						<FieldRow>
-							<TextInput {...register('name', { required: t('Required_field', { field: t('Name') }) })} placeholder={t('Name')} />
-						</FieldRow>
-						{errors.name && <FieldError>{errors.name.message}</FieldError>}
-					</Field>
-					<Field>
-						<FieldLabel>{t('Presence')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='statusType'
-								control={control}
-								rules={{ required: t('Required_field', { field: t('Presence') }) }}
-								render={({ field }) => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
-							/>
-						</FieldRow>
-						{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
-					</Field>
-				</FieldGroup>
+				<Box id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel>{t('Name')}</FieldLabel>
+							<FieldRow>
+								<TextInput {...register('name', { required: t('Required_field', { field: t('Name') }) })} placeholder={t('Name')} />
+							</FieldRow>
+							{errors.name && <FieldError>{errors.name.message}</FieldError>}
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={presenceField}>{t('Presence')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='statusType'
+									control={control}
+									rules={{ required: t('Required_field', { field: t('Presence') }) }}
+									render={({ field }) => <Select id={presenceField} {...field} placeholder={t('Presence')} options={presenceOptions} />}
+								/>
+							</FieldRow>
+							{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
+						</Field>
+					</FieldGroup>
+				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={handleDeleteStatus}>
+							<Button icon='trash' variant='danger' onClick={handleDeleteStatus}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

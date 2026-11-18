@@ -1,9 +1,10 @@
 import type { IOutgoingIntegration, OutgoingIntegrationEvent, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { GenericModal, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import OutgoingWebhookForm from './OutgoingWebhookForm';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
@@ -66,7 +67,7 @@ export type EditOutgoingWebhookProps = {
 };
 
 const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();
 
@@ -132,7 +133,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 						<Button onClick={() => router.navigate(`/admin/integrations/history/outgoing/${webhookData._id}`)}>{t('History')}</Button>
 					)}
 					{webhookData?._id && (
-						<Button danger onClick={handleDeleteIntegration}>
+						<Button variant='danger' onClick={handleDeleteIntegration}>
 							{t('Delete')}
 						</Button>
 					)}
@@ -158,7 +159,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
 					</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

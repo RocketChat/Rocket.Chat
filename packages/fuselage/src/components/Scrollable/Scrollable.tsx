@@ -1,11 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { PropsWithChildren, MouseEvent, RefObject } from 'react';
+import type { PropsWithChildren, RefObject, UIEvent } from 'react';
 import { useRef, useCallback } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { useStyle } from '../../hooks/useStyle';
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type ScrollableProps = PropsWithChildren<{
 	horizontal?: boolean;
@@ -49,7 +50,7 @@ const Scrollable = ({ children, horizontal, vertical, smooth, onScrollContent }:
 	const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 	const touchingEdgesRef = useRef({});
 
-	const handleScroll = useStableCallback((event: MouseEvent) => {
+	const handleScroll = useStableCallback((event: UIEvent<HTMLElement>) => {
 		const element = event.currentTarget;
 
 		if (!scrollTimeoutRef.current) {
@@ -111,14 +112,14 @@ const Scrollable = ({ children, horizontal, vertical, smooth, onScrollContent }:
 	);
 
 	const transformFn = useCallback(
-		(props: any) => {
-			props.className = className && appendClassName(props.className, className);
+		(boxProps: BoxTransformProps) => {
+			boxProps.className = className && appendClassName(boxProps.className, className);
 
-			if (onScrollContent !== undefined && props.onScroll === undefined) {
-				props.onScroll = handleScroll;
+			if (onScrollContent !== undefined && boxProps.onScroll === undefined) {
+				boxProps.onScroll = handleScroll;
 			}
 
-			return props;
+			return boxProps;
 		},
 		[className, handleScroll, onScrollContent],
 	);

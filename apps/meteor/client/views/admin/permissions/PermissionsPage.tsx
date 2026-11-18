@@ -1,4 +1,4 @@
-import { Margins, Tabs, TabsItem, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
@@ -9,6 +9,7 @@ import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import PermissionsContextBar from './PermissionsContextBar';
 import PermissionsTable from './PermissionsTable';
 import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
+import { PageTabs } from '../../../components/PageTabs';
 
 export type PermissionsPageProps = { isEnterprise: boolean };
 
@@ -18,26 +19,13 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 	const canViewPermission = usePermission('access-permissions');
 	const canViewSettingPermission = usePermission('access-setting-permissions');
 	const defaultType = canViewPermission ? 'permissions' : 'settings';
+	// TODO: evaluate switching to the other tab when the selected tab's permission is revoked mid-session
 	const [type, setType] = useState(defaultType);
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
 
 	const paginationData = usePagination();
 	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, paginationData.itemsPerPage, paginationData.current);
-
-	const handlePermissionsTab = useStableCallback(() => {
-		if (type === 'permissions') {
-			return;
-		}
-		setType('permissions');
-	});
-
-	const handleSettingsTab = useStableCallback(() => {
-		if (type === 'settings') {
-			return;
-		}
-		setType('settings');
-	});
 
 	const handleAdd = useStableCallback(() => {
 		if (!isEnterprise) {
@@ -53,34 +41,26 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Permissions')}>
-					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
+					<Button variant='primary' onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
 						{t('New_role')}
 					</Button>
 				</PageHeader>
-				<Margins blockEnd={16}>
-					<Tabs>
-						<TabsItem
-							selected={type === 'permissions'}
-							onClick={canViewPermission ? handlePermissionsTab : undefined}
-							disabled={!canViewPermission}
-						>
-							{t('Permissions')}
-						</TabsItem>
-						<TabsItem selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
-							{t('Settings')}
-						</TabsItem>
-					</Tabs>
-				</Margins>
-				<PageContent marginBlock='neg-x8'>
-					<Margins block={8}>
-						<PermissionsTable
-							roleList={roleList}
-							permissions={permissions}
-							total={total}
-							setFilter={setFilter}
-							paginationData={paginationData}
-						/>
-					</Margins>
+				<PageTabs
+					items={[
+						{ id: 'permissions', label: t('Permissions'), disabled: !canViewPermission },
+						{ id: 'settings', label: t('Settings'), disabled: !canViewSettingPermission },
+					]}
+					selected={type}
+					onSelect={setType}
+				/>
+				<PageContent marginBlockStart='x8' gap='x8'>
+					<PermissionsTable
+						roleList={roleList}
+						permissions={permissions}
+						total={total}
+						setFilter={setFilter}
+						paginationData={paginationData}
+					/>
 				</PageContent>
 			</Page>
 			<PermissionsContextBar />

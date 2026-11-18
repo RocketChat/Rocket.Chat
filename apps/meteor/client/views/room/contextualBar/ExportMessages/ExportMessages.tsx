@@ -191,7 +191,7 @@ const ExportMessages = () => {
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent paddingBlockEnd='x32'>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
 						<Field>
@@ -385,7 +385,7 @@ const ExportMessages = () => {
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button loading={isSubmitting} form={formId} primary type='submit'>
+					<Button loading={isSubmitting} form={formId} variant='primary' type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>

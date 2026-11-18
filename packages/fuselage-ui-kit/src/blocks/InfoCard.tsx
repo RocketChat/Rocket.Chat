@@ -13,9 +13,8 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 			display='flex'
 			flexDirection='column'
 			borderWidth='default'
-			borderRadius='medium'
+			borderRadius='large'
 			borderColor='extra-light'
-			maxWidth='345px'
 			backgroundColor='surface-tint'
 			overflow='hidden'
 			color='default'
@@ -32,18 +31,18 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 						justifyContent='space-between'
 						flexDirection='row'
 					>
-						<Box display='flex' alignItems='center' flexDirection='row' marginInline={-4}>
+						<Box display='flex' alignItems='center' flexDirection='row' gap='x8'>
 							{elements.map((element, index) => {
 								if (element.type === 'icon') {
 									return (
-										<Box key={index} marginInline={4}>
+										<Box key={index}>
 											<IconElement block={element} context={context} surfaceRenderer={surfaceRenderer} index={index} />
 										</Box>
 									);
 								}
 								if (element.type === 'plain_text' || element.type === 'mrkdwn') {
 									return (
-										<Box key={index} marginInline={4}>
+										<Box key={index}>
 											<>{surfaceRenderer.renderTextObject(element, index, UiKit.BlockContext.NONE)}</>
 										</Box>
 									);

@@ -1,12 +1,12 @@
-import type { RefAttributes } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type TabsItemProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLButtonElement> & {
-		selected?: boolean;
-		disabled?: boolean;
-	};
+export type TabsItemProps = ElementProps<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>> & {
+	selected?: boolean;
+	disabled?: boolean;
+};
 
 function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 	return (
@@ -18,6 +18,7 @@ function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 			rcx-tabs__item--selected--disabled={selected && disabled}
 			aria-selected={selected ? 'true' : 'false'}
 			role='tab'
+			disabled={disabled}
 			{...props}
 		/>
 	);

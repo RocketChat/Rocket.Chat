@@ -1,8 +1,9 @@
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { FieldContext } from './Field';
 
-export type FieldDescriptionProps = BoxProps;
+export type FieldDescriptionProps = ElementProps<HTMLSpanElement>;
 
 const FieldDescription = (props: FieldDescriptionProps) => {
 	const component = <Box is='span' rcx-field__description {...props} />;

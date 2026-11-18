@@ -1,11 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageToolbarWrapper } from '@rocket.chat/fuselage';
+import { useIsVisible } from '@rocket.chat/ui-client';
 import { useQuery } from '@tanstack/react-query';
 import { Suspense, lazy, memo, useState } from 'react';
 
 import type { MessageActionContext } from '../../lib/MessageAction';
 import { useChat } from '../../views/room/contexts/ChatContext';
-import { useIsVisible } from '../../views/room/hooks/useIsVisible';
 
 export type MessageToolbarHolderProps = {
 	message: IMessage;

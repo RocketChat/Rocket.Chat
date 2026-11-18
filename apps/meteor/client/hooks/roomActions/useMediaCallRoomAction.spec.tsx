@@ -168,7 +168,7 @@ describe('useMediaCallRoomAction', () => {
 
 		it('should return the action when SIP routing is enabled and the peer has an extension', async () => {
 			getUserInfoMocked.mockResolvedValue({
-				user: createFakeUser({ _id: 'peer-uid', username: 'peer-username', freeSwitchExtension: '1001' }),
+				user: createFakeUser({ _id: 'peer-uid', username: 'peer-username', sipExtension: '1001' }),
 			});
 
 			const { result } = renderHook(() => useMediaCallRoomAction(), {

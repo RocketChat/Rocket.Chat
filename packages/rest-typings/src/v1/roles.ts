@@ -96,10 +96,6 @@ const RolesGetUsersInRolePropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['role'],
 	additionalProperties: false,
@@ -111,10 +107,13 @@ type RoleSyncProps = {
 	updatedSince?: string;
 };
 
+// Public mirror of the implementation-derived routes (apps/meteor/server/api/v1/roles.ts,
+// `ExtractRoutesFromAPI<typeof rolesRoutes>`). Kept identical so the two declarations merge
+// without TS2320, and so SDK/external consumers that don't compile apps/meteor keep these routes.
 export type RolesEndpoints = {
 	'/v1/roles.list': {
-		GET: () => {
-			roles: IRole[];
+		GET: (params?: never) => {
+			roles: Omit<IRole, '_updatedAt'>[];
 		};
 	};
 	'/v1/roles.sync': {
@@ -140,11 +139,11 @@ export type RolesEndpoints = {
 	};
 
 	'/v1/roles.delete': {
-		POST: (prop: RoleDeleteProps) => void;
+		POST: (params: RoleDeleteProps) => void;
 	};
 
 	'/v1/roles.removeUserFromRole': {
-		POST: (props: RoleRemoveUserFromRoleProps) => {
+		POST: (params: RoleRemoveUserFromRoleProps) => {
 			role: IRole;
 		};
 	};

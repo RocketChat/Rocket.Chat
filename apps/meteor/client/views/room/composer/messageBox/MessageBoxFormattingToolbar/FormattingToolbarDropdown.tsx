@@ -2,6 +2,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
+import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 import { isLinePrefixButton, isPromptButton, type FormattingButton } from '../../../../../lib/messageBoxFormatting';
 import { toggleLinePrefix } from '../../../../../lib/toggleLinePrefix';
@@ -14,6 +15,7 @@ export type FormattingToolbarDropdownProps = {
 
 const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingToolbarDropdownProps) => {
 	const { t } = useTranslation();
+	const openExternalLink = useExternalLink();
 
 	const formattingItems: GenericMenuItemProps[] = items.map((formatter) => {
 		const handleFormattingAction = () => {
@@ -24,7 +26,7 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 				return toggleLinePrefix(composer, formatter.linePrefix);
 			}
 			if ('link' in formatter) {
-				window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
+				openExternalLink(formatter.link);
 				return;
 			}
 			composer.wrapSelection(formatter.pattern);

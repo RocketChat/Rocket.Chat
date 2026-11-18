@@ -10,7 +10,7 @@ declare module 'meteor/accounts-base' {
 
 		function _getLoginToken(connectionId: string): string | undefined;
 
-		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): Promise<string>;
 
 		function _generateStampedLoginToken(): { token: string; when: Date };
 
@@ -36,8 +36,6 @@ declare module 'meteor/accounts-base' {
 
 		function config(options: { clientStorage: 'session' | 'local' }): void;
 
-		class ConfigError extends Error {}
-
 		class LoginCancelledError extends Error {
 			public static readonly numericError: number;
 		}
@@ -51,17 +49,6 @@ declare module 'meteor/accounts-base' {
 		}
 
 		export const _options: AccountsServerOptions;
-
-		namespace oauth {
-			function credentialRequestCompleteHandler(
-				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-				totpCode?: string,
-			): (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
-
-			function registerService(name: string): void;
-
-			function serviceNames(): string[];
-		}
 
 		const connection: {
 			userId(): string | null;

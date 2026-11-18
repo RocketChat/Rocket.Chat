@@ -64,7 +64,7 @@ const CreateNewPassword = ({ onSubmit, validatePassword, validatePasswordConfirm
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+					<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 						{t('form.createPasswordForm.button.text')}
 					</Button>
 				</ButtonGroup>

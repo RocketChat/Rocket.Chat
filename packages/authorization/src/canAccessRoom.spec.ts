@@ -1,28 +1,9 @@
 import { Authorization, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { canAccessRoom } from './canAccessRoom';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
-
-jest.mock('@rocket.chat/models', () => ({
-	Subscriptions: {
-		findOneBannedSubscription: jest.fn(),
-		countByRoomIdAndUserId: jest.fn(),
-	},
-	Rooms: {
-		findOneById: jest.fn(),
-	},
-	TeamMember: {
-		findOneByUserIdAndTeamId: jest.fn(),
-	},
-	Team: {
-		findOneById: jest.fn(),
-	},
-	Users: {
-		findOneById: jest.fn(),
-	},
-}));
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Authorization: {
@@ -44,11 +25,16 @@ jest.mock('./canAccessRoomLivechat', () => ({
 	canAccessRoomLivechat: jest.fn(),
 }));
 
-const findOneUserById = jest.mocked(Users.findOneById);
+const findOneUserById = jest.fn();
 const hasPermission = jest.mocked(Authorization.hasPermission);
 const getSetting = jest.mocked(Settings.get);
 
 describe('canAccessRoom', () => {
+	beforeAll(() => {
+		mockModel('Subscriptions', { findOneBannedSubscription: jest.fn(), countByRoomIdAndUserId: jest.fn() });
+		mockModel('Users', { findOneById: findOneUserById });
+	});
+
 	beforeEach(() => {
 		jest.resetAllMocks();
 

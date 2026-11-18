@@ -3,8 +3,8 @@ import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import type { Dispatch, MutableRefObject, RefObject, SetStateAction } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -25,6 +25,10 @@ import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
+import { getDistanceFromBottom } from './lib/getDistanceFromBottom';
+import { isMessageNewDay } from './lib/isMessageNewDay';
+
+const AT_BOTTOM_THRESHOLD_PX = 60;
 
 export type MessageListProps = {
 	rid: IRoom['_id'];
@@ -37,6 +41,7 @@ export type MessageListProps = {
 	hasMoreNextMessages: boolean;
 	shouldJumpToBottom: boolean;
 	isAtBottom: MutableRefObject<boolean>;
+	scrollerRef: RefObject<HTMLElement | null>;
 	isJumpingToMessage: boolean;
 	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	setUnreadCount: Dispatch<SetStateAction<number>>;
@@ -60,6 +65,7 @@ export const MessageList = function MessageList({
 	shouldJumpToBottom,
 	setShouldJumpToBottom,
 	isAtBottom,
+	scrollerRef,
 	isJumpingToMessage,
 	setIsJumpingToMessage,
 	setUnreadCount,
@@ -105,9 +111,9 @@ export const MessageList = function MessageList({
 		});
 	}, [messagesLength, setKeepAtBottom]);
 
-	const keepMountedMessages = useKeepMountedMessages(messages, canPreview);
+	const keepMountedMessages = useKeepMountedMessages(messages, canPreview ? 1 : 0);
 
-	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages });
+	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages, leadingRows: canPreview ? 1 : 0 });
 
 	const handlePrepend = useCallback(
 		(offset: number) => {
@@ -121,29 +127,43 @@ export const MessageList = function MessageList({
 				isPrepend.current = true;
 			}
 
-			const scrollSize = virtualizerRef.current?.scrollSize ?? 0;
-			const viewportSize = virtualizerRef.current?.viewportSize ?? 0;
-
 			if (hasMoreNextMessages) {
 				isAtBottom.current = false;
 				return;
 			}
 
-			if (scrollSize >= viewportSize) {
-				isAtBottom.current = true;
+			const virtualizer = virtualizerRef.current;
+			if (!virtualizer) {
+				return;
 			}
 
-			isAtBottom.current = offset - scrollSize + viewportSize >= -60;
+			isAtBottom.current = getDistanceFromBottom(scrollerRef.current, virtualizer, offset) <= AT_BOTTOM_THRESHOLD_PX;
 			if (shouldJumpToBottom && isAtBottom.current) {
 				setShouldJumpToBottom(false);
 			}
 		},
-		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
+		[isAtBottom, scrollerRef, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
 	);
 
 	const isRoomInitialized = useRef<boolean>(false);
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
+	const subscription = useRoomSubscription();
+	// The first unread id may only be computed after the room is initialized, so the messages already listed are checked too.
+	const hasUnseenMessages = useMemo(() => {
+		const lastSeen = subscription?.ls?.getTime();
+		if (lastSeen === undefined) {
+			return false;
+		}
+		for (let i = messages.length - 1; i >= 0 && messages[i].ts.getTime() > lastSeen; i--) {
+			const message = messages[i];
+			if (message.u._id !== user?._id && (!message.tmid || message.tshow)) {
+				return true;
+			}
+		}
+		return false;
+	}, [messages, subscription?.ls, user?._id]);
+	const hasUnreadMessages = Boolean(firstUnreadMessageId || hasUnseenMessages);
 
 	const messageJumpParam = useSearchParameter('msg');
 
@@ -167,7 +187,7 @@ export const MessageList = function MessageList({
 
 			if (!store?.atBottom && store?.scroll !== undefined) {
 				// When unreads are present, always scroll to bottom
-				if (firstUnreadMessageId) {
+				if (hasUnreadMessages) {
 					isRoomInitialized.current = true;
 					setShouldJumpToBottom(true);
 					return;
@@ -208,13 +228,12 @@ export const MessageList = function MessageList({
 		isLoadingMoreMessages,
 		messageJumpParam,
 		rid,
-		firstUnreadMessageId,
+		hasUnreadMessages,
 		setShouldJumpToBottom,
 	]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef, messagesLength: messages.length });
 
-	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const { t } = useTranslation();
@@ -246,8 +265,18 @@ export const MessageList = function MessageList({
 		}
 	}, [chat, isUnreadMarkVisible]);
 
-	const handleTopVisibleMessage = useDebouncedCallback(
-		(topMessage: IMessage | undefined) => {
+	const getTopVisibleMessage = useCallback((): IMessage | undefined => {
+		const handle = virtualizerRef.current;
+		if (!handle) {
+			return undefined;
+		}
+		const viewportTopPadding = 21; // TODO: we should derive this value from somewhere else.
+		return messages[handle.findItemIndex(handle.scrollOffset - viewportTopPadding) - (canPreview ? 1 : 0)];
+	}, [messages, canPreview]);
+
+	const updateTopVisibleMessage = useDebouncedCallback(
+		() => {
+			const topMessage = getTopVisibleMessage();
 			if (!topMessage) {
 				setUnreadCount(0);
 				return;
@@ -255,8 +284,13 @@ export const MessageList = function MessageList({
 			setLastMessageDate(topMessage.ts);
 		},
 		300,
-		[setUnreadCount, setLastMessageDate],
+		[getTopVisibleMessage, setUnreadCount, setLastMessageDate],
 	);
+
+	// The unread bubble must be counted even when the list settles without the user scrolling.
+	useEffect(() => {
+		updateTopVisibleMessage();
+	}, [messages, firstUnreadMessageId, updateTopVisibleMessage]);
 
 	unreadMarkIndex.current = null;
 
@@ -278,13 +312,8 @@ export const MessageList = function MessageList({
 						storeScrollPosition();
 						debouncedClearNewMessagesOnScroll();
 
-						const handle = virtualizerRef.current;
-						const viewportTopPadding = 21; // TODO: we should derive this value from somewhere else.
-						const topMessage = handle
-							? messages[handle.findItemIndex(handle.scrollOffset - viewportTopPadding) - (canPreview ? 1 : 0)]
-							: undefined;
-						handleTopVisibleMessage(topMessage);
-						handleDateScroll(topMessage, offset);
+						updateTopVisibleMessage();
+						handleDateScroll(getTopVisibleMessage(), offset);
 						debouncedMessageRead();
 					}}
 				>
@@ -316,12 +345,15 @@ export const MessageList = function MessageList({
 							<Fragment key={message._id}>
 								<MessageListItem
 									message={message}
-									previous={previous}
+									newDay={isMessageNewDay(message, previous)}
 									showUnreadDivider={showUnreadDivider}
 									showUserAvatar={showUserAvatar}
 									sequential={sequential}
 									visible={visible}
-									subscription={subscription}
+									unread={!!subscription?.tunread?.includes(message._id)}
+									mention={!!subscription?.tunreadUser?.includes(message._id)}
+									all={!!subscription?.tunreadGroup?.includes(message._id)}
+									ignoredUser={!!subscription?.ignored?.includes(message.u._id)}
 									system={system}
 								/>
 							</Fragment>

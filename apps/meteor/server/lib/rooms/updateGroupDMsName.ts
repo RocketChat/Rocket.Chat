@@ -34,7 +34,7 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: GroupDMMember) {
 }
 
 function sortUsersAlphabetically(u1: GroupDMMember, u2: GroupDMMember): number {
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 	return (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!);
 }
 

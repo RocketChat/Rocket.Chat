@@ -19,7 +19,7 @@ const EmailInboxPage = () => {
 			<Page>
 				<PageHeader title={t('Email_Inboxes')} onClickBack={context ? () => router.navigate('/admin/email-inboxes') : undefined}>
 					{!context && (
-						<Button primary onClick={() => router.navigate('/admin/email-inboxes/new')}>
+						<Button variant='primary' onClick={() => router.navigate('/admin/email-inboxes/new')}>
 							{t('New_Email_Inbox')}
 						</Button>
 					)}

@@ -1,7 +1,6 @@
-import { Room } from '@rocket.chat/core-services';
+import { Room, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { isObject } from '../../../lib/utils/isObject';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
@@ -50,7 +49,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 			// so return out based upon errorOnEmpty
 			if (!isObject(roomUser)) {
 				if (errorOnEmpty) {
-					throw new Meteor.Error('invalid-channel');
+					throw new ClientSafeError('invalid-channel');
 				} else {
 					return null;
 				}
@@ -67,7 +66,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 
 	// If no room was found, handle the room return based upon errorOnEmpty
 	if (!room && errorOnEmpty) {
-		throw new Meteor.Error('invalid-channel');
+		throw new ClientSafeError('invalid-channel');
 	}
 
 	if (room === null) {
@@ -79,7 +78,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	// the return based upon errorOnEmpty
 	if (type && room.t !== type) {
 		if (errorOnEmpty) {
-			throw new Meteor.Error('invalid-channel');
+			throw new ClientSafeError('invalid-channel');
 		} else {
 			return null;
 		}

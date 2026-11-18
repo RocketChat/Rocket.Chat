@@ -1,8 +1,7 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -35,7 +34,7 @@ slashCommands.add({
 
 		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 		if (!user || !isRegisterUser(user)) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
 
 		if (!room) {
@@ -50,11 +49,11 @@ slashCommands.add({
 		}
 
 		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
-			throw new Meteor.Error('error-room-type-not-archivable', `Room type: ${room.t} can not be archived`);
+			throw new ClientSafeError('error-room-type-not-archivable', `Room type: ${room.t} can not be archived`);
 		}
 
 		if (!(await hasPermissionAsync(userId, 'archive-room', room._id))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized');
+			throw new ClientSafeError('error-not-authorized', 'Not authorized');
 		}
 
 		if (room.archived) {

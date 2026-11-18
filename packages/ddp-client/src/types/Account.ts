@@ -9,6 +9,21 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
+export type LoginResult = {
+	id: string;
+	token: string;
+	// A Date when the client decodes EJSON, the raw `{ $date }` otherwise.
+	tokenExpires?: Date | { $date: number | string };
+};
+
+const toDate = (value: LoginResult['tokenExpires']): Date | undefined => {
+	if (value === undefined || value instanceof Date) {
+		return value;
+	}
+	const { $date } = value;
+	return new Date(typeof $date === 'string' && /^\d+$/.test($date) ? Number($date) : $date);
+};
+
 type AccountEvents = {
 	uid: string | undefined;
 	user: User;
@@ -23,9 +38,13 @@ export interface Account extends Emitter<AccountEvents> {
 	loginWithToken(token: string): Promise<{
 		id: string;
 		token: string;
-		tokenExpires: Date;
+		tokenExpires?: Date;
 	}>;
 	logout(): Promise<void>;
+	/** Adopts credentials from a login made outside the SDK, as if the SDK had logged in. */
+	setCredentials(credentials: LoginResult): void;
+	/** Forgets the logged-in user locally without telling the server. */
+	clearCredentials(): void;
 	onLogin(fn: () => void): () => void;
 	onLogout(fn: () => void): () => void;
 	onEmailVerificationLink(fn: (token: string) => void): () => void;
@@ -63,32 +82,38 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 				return;
 			}
 
+			// Meteor prefixes string ids that could pass for an ObjectID with '-' on the wire.
+			const id = data.id.startsWith('-') ? data.id.slice(1) : data.id;
+
+			// The logged-in user's document may arrive before the login result sets uid.
+			if (this.uid !== undefined && id !== this.uid) {
+				return;
+			}
+
 			this.user = {
 				...this.user,
-				id: data.id,
+				id,
 				username: data.fields.username,
 			};
 			this.emit('user', this.user);
 		});
 	}
 
-	private saveCredentials(id: string, token: string, tokenExpires: string) {
+	private saveCredentials({ id, token, tokenExpires }: LoginResult) {
+		const expires = toDate(tokenExpires);
 		this.user = {
 			...this.user,
 			token,
-			tokenExpires: new Date(tokenExpires),
+			tokenExpires: expires,
 			id,
 		};
 		this.uid = id;
 		this.emit('user', this.user);
+		return { id, token, tokenExpires: expires };
 	}
 
 	async loginWithPassword(username: string, password: string): Promise<void> {
-		const {
-			id,
-			token: resultToken,
-			tokenExpires: { $date },
-		} = await this.client.callAsyncWithOptions(
+		const result: LoginResult = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -99,11 +124,11 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 			},
 		);
 
-		this.saveCredentials(id, resultToken, $date);
+		this.saveCredentials(result);
 	}
 
 	async loginWithToken(token: string) {
-		const result = await this.client.callAsyncWithOptions(
+		const result: LoginResult = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -113,20 +138,21 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 			},
 		);
 
-		const {
-			id,
-			token: resultToken,
-			tokenExpires: { $date },
-		} = result;
-		this.saveCredentials(id, resultToken, $date);
-
-		return result;
+		return this.saveCredentials(result);
 	}
 
 	async logout(): Promise<void> {
 		await this.client.callAsyncWithOptions('logout', {
 			wait: true,
 		});
+		this.clearCredentials();
+	}
+
+	setCredentials(credentials: LoginResult): void {
+		this.saveCredentials(credentials);
+	}
+
+	clearCredentials(): void {
 		this.user = undefined;
 		this.uid = undefined;
 	}

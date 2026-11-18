@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { FlexTab } from './flextab';
 import { MenuMore } from '../menu';
@@ -27,6 +28,14 @@ export class UserInfoFlexTab extends FlexTab {
 
 	get username(): Locator {
 		return this.root.getByLabel('Username');
+	}
+
+	phoneLinkWithLabel(phoneNumber: string, label: string): Locator {
+		return this.root.getByRole('listitem').filter({ hasText: new RegExp(`${escapeRegExp(label)}.*${escapeRegExp(phoneNumber)}`) });
+	}
+
+	get phoneLinks(): Locator {
+		return this.root.locator('dl:has-text("Phone Numbers")').getByRole('list').getByRole('listitem');
 	}
 
 	async openMoreActions() {

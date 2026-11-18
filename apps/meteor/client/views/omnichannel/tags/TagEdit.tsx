@@ -6,6 +6,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,7 +15,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveTag } from './useRemoveTag';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type TagEditPayload = {
@@ -131,14 +131,14 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
+							<Button icon='trash' variant='danger' onClick={() => handleDeleteTag(_id)}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

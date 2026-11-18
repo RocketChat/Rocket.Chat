@@ -30,7 +30,7 @@ const RoomInviteBody = ({ inviter, infoLink, isLoading, onAccept, onReject }: Ro
 					</Chip>
 				</StatesSubtitle>
 				<StatesActions>
-					<Button secondary danger loading={isLoading} onClick={onReject}>
+					<Button variant='secondary-danger' loading={isLoading} onClick={onReject}>
 						{t('Reject')}
 					</Button>
 					<Button loading={isLoading} onClick={onAccept}>

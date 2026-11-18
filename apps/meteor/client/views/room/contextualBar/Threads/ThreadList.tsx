@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -12,14 +12,17 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState, useCallback, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
@@ -28,8 +31,9 @@ type ThreadType = 'all' | 'following' | 'unread';
 
 // TODO: Refactor this component to isolate the data from the visual
 const ThreadList = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const threadListId = useId();
+	const threadListRef = useMessageRowListNavigation();
 
 	const { closeTab } = useRoomToolbox();
 
@@ -127,25 +131,21 @@ const ThreadList = () => {
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					aria-label={t('Search_Messages')}
-					aria-controls={isSuccess ? threadListId : undefined}
-					placeholder={t('Search_Messages')}
-					endAddon={<Icon name='magnifier' size='x20' />}
-					ref={autoFocusRef}
-					value={searchText}
-					onChange={handleSearchTextChange}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select
+				<FilterBar compact>
+					<FilterBarSearch
+						aria-label={t('Search_Messages')}
 						aria-controls={isSuccess ? threadListId : undefined}
-						options={typeOptions}
-						value={type}
-						onChange={(value) => handleTypeChange(String(value))}
+						placeholder={t('Search_Messages')}
+						ref={autoFocusRef}
+						value={searchText}
+						onChange={handleSearchTextChange}
 					/>
-				</Box>
+					<FilterBarFilters>
+						<Select aria-label={t('Filter')} options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
@@ -153,12 +153,12 @@ const ThreadList = () => {
 					</Box>
 				)}
 				{error && (
-					<Callout marginInline={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>
@@ -178,6 +178,7 @@ const ThreadList = () => {
 											unreadUser={subscription?.tunreadUser ?? []}
 											unreadGroup={subscription?.tunreadGroup ?? []}
 											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
+											ignoredUser={Boolean(subscription?.ignored?.includes(data.u._id))}
 											onClick={handleThreadClick}
 										/>
 									)}

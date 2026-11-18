@@ -22,7 +22,7 @@ export const useBannedUsersRoomAction = () => {
 			title: 'Banned_Users',
 			icon: 'ban',
 			tabComponent: BannedUsers,
-			order: 13,
+			order: 14,
 			type: 'moderation',
 		};
 	}, [hasPermissionToBan]);

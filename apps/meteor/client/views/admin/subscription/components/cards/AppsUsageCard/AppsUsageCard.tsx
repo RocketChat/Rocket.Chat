@@ -53,7 +53,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 		...(marketplaceAppsAboveWarning && {
 			upgradeButton: (
-				<UpgradeButton target='app-usage-card' action='upgrade' small>
+				<UpgradeButton target='app-usage-card' action='upgrade' size='small'>
 					{t('Upgrade')}
 				</UpgradeButton>
 			),

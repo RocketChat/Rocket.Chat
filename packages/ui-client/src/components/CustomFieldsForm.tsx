@@ -77,8 +77,8 @@ const CustomField = <T extends FieldValues>({
 			defaultValue={defaultValue ?? ''}
 			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
-				<Field rcx-field-group__item>
-					<FieldLabel is='span' id={fieldId} required={required}>
+				<Field className='rcx-field-group__item'>
+					<FieldLabel id={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
 					</FieldLabel>
 					<FieldRow>
@@ -89,7 +89,6 @@ const CustomField = <T extends FieldValues>({
 							aria-describedby={errorMessage && `${fieldId}-error`}
 							error={errorMessage}
 							options={selectOptions as SelectOption[]}
-							flexGrow={1}
 						/>
 					</FieldRow>
 					{errorMessage ? (
@@ -103,7 +102,7 @@ const CustomField = <T extends FieldValues>({
 	);
 };
 
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => {
 	const { t } = useTranslation();
 

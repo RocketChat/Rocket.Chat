@@ -29,8 +29,8 @@ const MessageActions = ({ message, actions }: MessageActionsProps) => {
 	const alignment = actions[0]?.actionLinksAlignment || 'center';
 
 	return (
-		<Box display='flex' marginBlock={4} marginInline={-4} width='full' justifyContent={alignment}>
-			<ButtonGroup align='center'>
+		<Box display='flex' marginBlock={4} marginInline={-4} paddingInline={4} width='full' justifyContent={alignment}>
+			<ButtonGroup align='center' large>
 				{actions.map((action, key) => (
 					<MessageAction key={key} runAction={runAction} {...action} />
 				))}

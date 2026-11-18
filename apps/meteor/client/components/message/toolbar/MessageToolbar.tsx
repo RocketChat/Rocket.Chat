@@ -2,9 +2,9 @@ import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ElementType } from 'react';
 import { memo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
@@ -43,7 +43,12 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 
 const itemsByContext: Record<
 	MessageActionContext,
-	ElementType<{ message: IMessage; room: IRoom; subscription: ISubscription | undefined }>
+	ElementType<{
+		message: IMessage;
+		room: IRoom;
+		subscription: ISubscription | undefined;
+		onChangeMenuVisibility?: (visible: boolean) => void;
+	}>
 > = {
 	'message': DefaultItems,
 	'message-mobile': MobileItems,
@@ -67,7 +72,7 @@ export type MessageToolbarProps = {
 } & ComponentProps<typeof FuselageMessageToolbar>;
 
 const MessageToolbar = ({ message, messageContext, room, subscription, onChangeMenuVisibility, ...props }: MessageToolbarProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const toolbarRef = useRef(null);
 	const { toolbarProps } = useToolbar(props, toolbarRef);
@@ -78,7 +83,7 @@ const MessageToolbar = ({ message, messageContext, room, subscription, onChangeM
 
 	return (
 		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
-			<MessageToolbarItems message={message} room={room} subscription={subscription} />
+			<MessageToolbarItems message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<MessageToolbarStarsActionMenu message={message} context={context} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<MessageToolbarActionMenu
 				message={message}

@@ -10,19 +10,19 @@ import {
 	GenericTableRow,
 	GenericTableCell,
 	GenericTableLoadingRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { QueueListFilter } from './QueueListFilter';
 
 const QueueListTable = () => {
-	const t = useTranslation();
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'servedBy' | 'department' | 'total' | 'status'>('servedBy');
 
 	const [filters, setFilters] = useState<{
@@ -68,11 +68,8 @@ const QueueListTable = () => {
 			includeOfflineAgents?: 'true' | 'false';
 			departmentId?: string;
 			sort: string;
-			count: number;
 		} = {
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		};
 
 		if (filters.status !== 'online') {
@@ -86,7 +83,16 @@ const QueueListTable = () => {
 		}
 
 		return query;
-	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
+	}, [sortBy, sortDirection, filters.status, filters.departmentId, filters.servedBy]);
+
+	const queryKey = ['livechat-queue', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
 
 	const getUserStatus = (status?: string) => {
 		if (!status) {
@@ -108,9 +114,14 @@ const QueueListTable = () => {
 	};
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery({
-		queryKey: ['livechat-queue', query],
-		queryFn: async () => getLivechatQueue(query),
+	const { data, isSuccess, isLoading } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getLivechatQueue({ ...query, ...page }),
+		},
+		itemsKey: 'queue',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	return (
@@ -132,17 +143,17 @@ const QueueListTable = () => {
 						<GenericTableBody>
 							{data?.queue.map(({ user, department, chats }) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
-									<GenericTableCell withTruncatedText>
-										<Box display='flex' alignItems='center' marginBlock='5px'>
+									<GenericTableCell truncate>
+										<Box display='flex' alignItems='center' marginBlock='x4'>
 											<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
 											<Box display='flex' marginInline={8}>
 												{user.username}
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{chats}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{getUserStatus(user?.status)}</GenericTableCell>
+									<GenericTableCell truncate>{department ? department.name : ''}</GenericTableCell>
+									<GenericTableCell truncate>{chats}</GenericTableCell>
+									<GenericTableCell truncate>{getUserStatus(user?.status)}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

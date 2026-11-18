@@ -1,5 +1,5 @@
-import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock';
-import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock.js';
+import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 
 /** Layout blocks a contextual bar accepts; every contextual bar renderer must allow exactly these. */
 export const contextualBarSurfaceLayoutBlockTypes = [
@@ -14,6 +14,8 @@ export const contextualBarSurfaceLayoutBlockTypes = [
 	'preview',
 	'section',
 	'tab_navigation',
+	'table',
+	'video',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 
 type ContextualBarSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof contextualBarSurfaceLayoutBlockTypes)[number] }>;

@@ -26,7 +26,7 @@ const InfoTextIconModal = ({ title, infoText }: InfoTextIconModalProps) => {
 		);
 	};
 
-	return <IconButton icon='info' aria-label={t('Click_here_for_more_info')} mini onClick={() => handleInfoClick()} />;
+	return <IconButton icon='info' aria-label={t('Click_here_for_more_info')} size='mini' onClick={() => handleInfoClick()} />;
 };
 
 export default memo(InfoTextIconModal);

@@ -6,7 +6,7 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
-import type { IServerEventsModel } from '@rocket.chat/model-typings';
+import type { InsertionModel, IServerEventsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -85,14 +85,31 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		data: ExtractDataToParams<E>,
 		actor: IAuditServerActor,
 	): Promise<void> {
-		await this.insertOne({
-			t: key,
-			ts: new Date(),
-			actor,
-			data: Object.entries(data).map(([key, value]) => ({ key, value })),
-			// deprecated just to keep backward compatibility
-			ip: '0.0.0.0',
-			...(actor.type === 'user' && { ip: actor?.ip || '0.0.0.0', u: { _id: actor._id, username: actor.username } }),
-		});
+		await this.insertOne(toAuditServerEvent(key, data, actor));
 	}
+
+	async createAuditServerEvents<K extends keyof IServerEvents>(
+		events: Array<{ key: K; data: ExtractDataToParams<IServerEvents[K]>; actor: IAuditServerActor }>,
+	): Promise<void> {
+		await this.insertMany(
+			events.map(({ key, data, actor }) => toAuditServerEvent(key, data, actor)),
+			{ ordered: false },
+		);
+	}
+}
+
+function toAuditServerEvent<K extends keyof IServerEvents, E extends IServerEvents[K]>(
+	key: K,
+	data: ExtractDataToParams<E>,
+	actor: IAuditServerActor,
+): InsertionModel<IServerEvent> {
+	return {
+		t: key,
+		ts: new Date(),
+		actor,
+		data: Object.entries(data).map(([key, value]) => ({ key, value })),
+		// deprecated just to keep backward compatibility
+		ip: '0.0.0.0',
+		...(actor.type === 'user' && { ip: actor?.ip || '0.0.0.0', u: { _id: actor._id, username: actor.username } }),
+	};
 }

@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { CredentialTokens, Users } from '@rocket.chat/models';
 import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';
@@ -16,7 +16,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 
 	const credentials = await CredentialTokens.removeNotExpiredById(options.cas.credentialToken);
 	if (credentials === undefined || credentials === null) {
-		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
+		throw new ClientSafeError(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
 
 	const result = credentials.userInfo;
@@ -44,7 +44,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	// Import response attributes
 	if (casVersion >= 2.0) {
 		// Clean & import external attributes
-		for await (const [externalName, value] of Object.entries(credentialsAttributes)) {
+		for (const [externalName, value] of Object.entries(credentialsAttributes)) {
 			if (value) {
 				externalAttributes[externalName] = value[0];
 			}
@@ -60,13 +60,13 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 			throw err;
 		});
 
-		for await (const [internalName, source] of Object.entries(attributeMap)) {
+		for (const [internalName, source] of Object.entries(attributeMap)) {
 			if (!source || typeof source.valueOf() !== 'string') {
 				continue;
 			}
 
 			let replacedValue = source as string;
-			for await (const externalName of getObjectKeys(externalAttributes)) {
+			for (const externalName of getObjectKeys(externalAttributes)) {
 				replacedValue = replacedValue.replace(`%${externalName}%`, externalAttributes[externalName]);
 			}
 
@@ -108,7 +108,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	if (!userCreationEnabled) {
 		// Should fail as no user exist and can't be created
 		logger.debug({ msg: 'User does not exist yet, will fail as no user creation is enabled', username });
-		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching user account found');
+		throw new ClientSafeError(Accounts.LoginCancelledError.numericError, 'no matching user account found');
 	}
 
 	const newUser = await createNewUser(username, {

@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { FindCursor } from 'mongodb';
 
-import { LDAPEEManager } from '../../lib/ldap/Manager';
+import { LDAPEEManager } from '../../lib/ldap/EEManager';
 
 export class LDAPEEService extends ServiceClassInternal implements ILDAPEEService {
 	protected name = 'ldap-enterprise';
@@ -33,6 +33,6 @@ export class LDAPEEService extends ServiceClassInternal implements ILDAPEEServic
 	}
 
 	async syncUsersAbacAttributesByIds(userIds: string[]): Promise<void> {
-		return LDAPEEManager.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ ids: userIds }));
+		return LDAPEEManager.syncUsersAbacAttributes(Users.findActiveLDAPUsersByIds(userIds));
 	}
 }

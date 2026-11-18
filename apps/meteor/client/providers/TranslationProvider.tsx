@@ -19,7 +19,7 @@ import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { i18n } from '../../lib/i18n';
-import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../lib/apps/orchestrator';
 import { getURL } from '../lib/getURL';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
@@ -242,7 +242,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps) => {
  * the only way to invalidate after changing the language in a safe way is using the useTranslation from i8next
  * and invalidating the provider content
  */
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 const TranslationProviderInner = ({
 	children,
 	availableLanguages,

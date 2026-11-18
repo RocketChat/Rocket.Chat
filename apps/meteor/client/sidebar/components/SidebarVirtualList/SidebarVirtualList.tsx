@@ -1,11 +1,9 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
+import { CustomVirtuaScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import type { Key, ReactNode, Ref } from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Virtualizer } from 'virtua';
 import type { VirtualizerHandle, VirtualizerProps } from 'virtua';
-
-import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 
 const scrollViewportStyle = {
 	height: '100%',

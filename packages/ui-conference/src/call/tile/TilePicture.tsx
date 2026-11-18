@@ -1,4 +1,4 @@
-/* eslint-disable no-nested-ternary */
+/* oxlint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';

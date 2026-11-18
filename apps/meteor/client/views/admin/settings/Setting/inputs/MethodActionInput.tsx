@@ -9,7 +9,8 @@ export type MethodActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
 };
 
 function MethodActionInput({ value, ...rest }: MethodActionInputProps) {
-	const actionMethod = useMethod(value);
+	// The method name comes from the setting value at runtime, so its result type is the action contract, not inferred
+	const actionMethod = useMethod(value) as ActionInputBaseProps['onAction'];
 	return <ActionInputBase onAction={actionMethod} {...rest} />;
 }
 

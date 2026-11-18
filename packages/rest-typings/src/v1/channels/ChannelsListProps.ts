@@ -4,8 +4,6 @@ import { paginationQueryProperties } from '../pagination';
 
 export type ChannelsListProps = PaginatedRequest<{
 	_id?: string;
-	/* deprecated */
-	fields?: string;
 }>;
 
 const channelsListPropsSchema = {
@@ -14,14 +12,8 @@ const channelsListPropsSchema = {
 		_id: {
 			type: 'string',
 		},
-		query: {
-			type: 'string',
-		},
 		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-		},
-		fields: {
 			type: 'string',
 		},
 	},

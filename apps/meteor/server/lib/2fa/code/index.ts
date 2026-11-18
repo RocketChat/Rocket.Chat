@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { TwoFactorChallenges, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { EmailCheck } from './EmailCheck';
 import type { ICodeCheck, TwoFactorUser } from './ICodeCheck';
@@ -16,6 +16,7 @@ export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
 	disableRememberMe?: boolean;
 	requireSecondFactor?: boolean; // whether any two factor should be required
+	issueResendChallenge?: boolean;
 }
 
 const totpCheck = new TOTPCheck();
@@ -130,7 +131,7 @@ function isAuthorizedForToken(connection: IMethodConnection, user: TwoFactorUser
 export async function rememberAuthorizationByToken(token: string, userId: IUser['_id'], connection: IMethodConnection): Promise<void> {
 	const user = await Users.findOneByIdAndLoginHashedToken(userId, token, { projection: { _id: 1, services: 1 } });
 	if (!user) {
-		throw new Meteor.Error('error-user-not-found', 'user not found');
+		throw new ClientSafeError('error-user-not-found', 'user not found');
 	}
 
 	const expires = getRememberDate();
@@ -210,7 +211,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	}
 
 	if (!existingUser) {
-		throw new Meteor.Error('totp-user-not-found', 'TOTP User not found');
+		throw new ClientSafeError('totp-user-not-found', 'TOTP User not found');
 	}
 
 	const headers = normalizeHeaders(connection?.httpHeaders);
@@ -235,10 +236,14 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	const availableMethods = getAvailableMethodNames(existingUser);
 
 	if (!code) {
-		throw new Meteor.Error('totp-required', 'TOTP Required', {
+		throw new ClientSafeError('totp-required', 'TOTP Required', {
 			method: selectedMethod.name,
 			...data,
 			availableMethods,
+			...(options.issueResendChallenge &&
+				selectedMethod === emailCheck && {
+					challengeId: await TwoFactorChallenges.createTwoFactorChallenge(existingUser._id, 'email', 'resend'),
+				}),
 		});
 	}
 
@@ -246,14 +251,14 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	if (!valid) {
 		const tooManyFailedAttempts = await selectedMethod.maxFaildedAttemtpsReached(existingUser);
 		if (tooManyFailedAttempts) {
-			throw new Meteor.Error('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached', {
+			throw new ClientSafeError('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached', {
 				method: selectedMethod.name,
 				...data,
 				availableMethods,
 			});
 		}
 
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
+		throw new ClientSafeError('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
 			...data,
 			availableMethods,

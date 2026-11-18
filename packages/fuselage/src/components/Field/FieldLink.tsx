@@ -1,8 +1,11 @@
+import type { AnchorHTMLAttributes } from 'react';
+
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { FieldContext } from './Field';
 
-export type FieldLinkProps = BoxProps;
+export type FieldLinkProps = ElementProps<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement>>;
 
 const FieldLink = (props: FieldLinkProps) => {
 	const component = <Box is='a' rcx-field__link {...props} />;

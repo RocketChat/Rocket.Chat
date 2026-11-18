@@ -2,9 +2,11 @@ export { AttachmentContext, type AttachmentContextValue } from './AttachmentCont
 export { type AuthenticationContextValue, AuthenticationContext, type LoginService } from './AuthenticationContext';
 export { AuthorizationContext, type AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, type AvatarUrlContextValue } from './AvatarUrlContext';
+export { ConnectionStatusContext, type ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, type LayoutContextValue } from './LayoutContext';
 export { ModalContext, type ModalContextValue } from './ModalContext';
+export { NotificationSoundsContext, type NotificationSoundsContextValue } from './NotificationSoundsContext';
 export * from './RouterContext';
 export {
 	RoomToolboxContext,
@@ -52,7 +54,6 @@ export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
-export { useLoginWithCustomOauth } from './hooks/useLoginWithCustomOauth';
 export { useLoginWithIframe } from './hooks/useLoginWithIframe';
 export { useLoginWithToken } from './hooks/useLoginWithToken';
 export { useLoginWithTokenRoute } from './hooks/useLoginWithTokenRoute';
@@ -60,6 +61,7 @@ export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
+export { useNotificationSounds } from './hooks/useNotificationSounds';
 export { usePermission } from './hooks/usePermission';
 export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useRole } from './hooks/useRole';

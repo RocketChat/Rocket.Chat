@@ -13,6 +13,8 @@ const categories = [
 	'stroke',
 	'surface',
 	'border',
+	'spacing',
+	'zIndex',
 ];
 
 const filterByCategory = (root) => (token) => token.attributes.category === root;

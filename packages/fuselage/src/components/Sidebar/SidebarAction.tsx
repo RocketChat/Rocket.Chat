@@ -6,7 +6,7 @@ import type { IconButtonProps } from '../Button/IconButton';
 export type SidebarActionProps = Omit<IconButtonProps, 'ref'> & RefAttributes<HTMLElement>;
 
 function SidebarAction(props: SidebarActionProps) {
-	return <IconButton small {...props} />;
+	return <IconButton size='small' {...props} />;
 }
 
 export default SidebarAction;

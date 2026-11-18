@@ -9,7 +9,7 @@ type StoryArgs = ChatProps & Partial<StoreState>;
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
-const normalizeMessages = (messages: any[] = []) =>
+const normalizeMessages = (messages: Record<string, unknown>[] = []) =>
 	messages.map((message, i) => ({
 		...message,
 		ts: new Date(now.getTime() - (15 - i) * 60000 - (i < 5 ? 24 * 60 * 60 * 1000 : 0)).toISOString(),
@@ -22,7 +22,7 @@ const agent = {
 	status: 'online',
 	username: 'guilherme.gazzo',
 	emails: [{ address: 'guilherme.gazzo@rocket.chat' }],
-	phone: [{ phoneNumber: '+55 99 99999 9999' }],
+	phones: [{ number: '+55 99 99999 9999' }],
 };
 
 export default {

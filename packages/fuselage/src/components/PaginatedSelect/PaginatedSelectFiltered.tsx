@@ -1,7 +1,7 @@
 import type { ChangeEvent, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { Input } from '../InputBox';
+import { Input, type InputProps } from '../InputBox';
 import type { PaginatedSelectProps } from './PaginatedSelect';
 import { PaginatedSelect } from './PaginatedSelect';
 
@@ -13,18 +13,15 @@ export type PaginatedSelectFilteredProps = Omit<PaginatedSelectProps, 'setFilter
 const PaginatedSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedSelectFilteredProps) => {
 	const anchor = useMemo(
 		() =>
-			({ filter, onChange: _onChange, ...props }: PaginatedSelectFilteredProps) => (
+			({ filter, onChange: _onChange, ...props }: InputProps<HTMLInputElement> & { filter?: string }) => (
 				<Input
-					marginInline={4}
-					flexGrow={1}
-					className='rcx-select__focus'
+					className='rcx-select__focus rcx-select__filter rcx-input-box--undecorated'
 					placeholder={placeholder}
 					value={filter}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => {
 						setFilter(e.currentTarget.value);
 					}}
 					{...props}
-					rcx-input-box--undecorated
 				/>
 			),
 		[placeholder, setFilter],

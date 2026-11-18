@@ -44,6 +44,14 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		return existing._id;
 	}
 
+	async removeAll(): Promise<LoginServiceConfiguration['_id'][]> {
+		const ids = await this.find({}, { projection: { _id: 1 } })
+			.map(({ _id }) => _id)
+			.toArray();
+		await this.removeByIds(ids);
+		return ids;
+	}
+
 	removeByService(serviceName: LoginServiceConfiguration['service']): Promise<Pick<LoginServiceConfiguration, '_id'> | null> {
 		return this.findOneAndDelete({ service: serviceName.toLowerCase() }, { projection: { _id: 1 } });
 	}

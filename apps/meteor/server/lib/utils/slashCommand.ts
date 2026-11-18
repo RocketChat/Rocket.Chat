@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	IMessage,
 	SlashCommand,
@@ -7,11 +7,8 @@ import type {
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermissionAsync } from '../authorization/hasPermission';
-import { methodDeprecationLogger } from '../deprecationWarningLogger';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
@@ -27,7 +24,7 @@ interface ISlashCommandAddParams<T extends string> {
 
 const assertCanUseCommand = async ({ permission }: SlashCommand, userId: string, rid: string): Promise<void> => {
 	if (permission && !(await hasAtLeastOnePermissionAsync(userId, ([] as string[]).concat(permission), rid))) {
-		throw new MeteorError('error-not-authorized', 'Not authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 };
 
@@ -80,7 +77,7 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new ClientSafeError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
 		await assertCanUseCommand(cmd, userId, message.rid);
@@ -99,7 +96,7 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new ClientSafeError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
 		await assertCanUseCommand(cmd, userId, message.rid);
@@ -131,12 +128,12 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new ClientSafeError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
 		// { id, type, value }
 		if (!preview.id || !preview.type || !preview.value) {
-			throw new MeteorError('error-invalid-preview', 'Preview Item must have an id, type, and value.');
+			throw new ClientSafeError('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
 		await assertCanUseCommand(cmd, userId, message.rid);
@@ -144,36 +141,3 @@ export const slashCommands = {
 		return cmd.previewCallback(command, params, message, preview, userId, triggerId);
 	},
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		slashCommand(params: { cmd: string; params: string; msg: IMessage; triggerId: string }): unknown;
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async slashCommand(command) {
-		methodDeprecationLogger.method('slashCommand', '9.0.0', '/v1/commands.run');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'slashCommand',
-			});
-		}
-
-		if (!command?.cmd || !slashCommands.commands[command.cmd]) {
-			throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
-				method: 'executeSlashCommandPreview',
-			});
-		}
-
-		return slashCommands.run({
-			command: command.cmd,
-			params: command.params,
-			message: command.msg,
-			triggerId: command.triggerId,
-			userId,
-		});
-	},
-});

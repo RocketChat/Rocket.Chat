@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
@@ -69,15 +69,15 @@ const DeviceManagementAdminRow = ({
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
-					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
+					{deviceName && <Text truncate>{deviceName}</Text>}
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell>{rcVersion}</GenericTableCell>
 			<GenericTableCell>{deviceOSName}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{username}</GenericTableCell>
+			<GenericTableCell truncate>{username}</GenericTableCell>
 			{mediaQuery && <GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{_id}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{ip}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{_id}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{ip}</GenericTableCell>}
 			<GenericTableCell onClick={(e) => e.stopPropagation()}>
 				<GenericMenu detached placement='bottom-end' title={t('Options')} items={menuItems} />
 			</GenericTableCell>

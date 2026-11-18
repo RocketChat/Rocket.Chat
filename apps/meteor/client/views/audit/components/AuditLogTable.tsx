@@ -1,5 +1,5 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, type TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -8,9 +8,10 @@ import {
 	GenericTableHeader,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AuditLogEntry from './AuditLogEntry';
 import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
@@ -18,7 +19,7 @@ import type { DateRange } from '../utils/dateRange';
 import DateRangePicker from './forms/DateRangePicker';
 
 const AuditLogTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [dateRange, setDateRange] = useState<DateRange>(() => ({
 		start: createStartOfToday(),
@@ -54,26 +55,28 @@ const AuditLogTable = () => {
 		},
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 80];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell>{t('User')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Looked_for')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('When')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width={80}>{t('Results')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Results')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Filters_applied')}</GenericTableHeaderCell>
 		</>
 	);
 
 	return (
 		<>
-			<Field alignSelf='stretch'>
+			<Field>
 				<FieldLabel>{t('Date')}</FieldLabel>
 				<FieldRow>
-					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
+					<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
 				</FieldRow>
 			</Field>
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={4} />
@@ -82,7 +85,7 @@ const AuditLogTable = () => {
 			)}
 			{isSuccess && data.length === 0 && <GenericNoResults />}
 			{isSuccess && data.length > 0 && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((auditLog) => (

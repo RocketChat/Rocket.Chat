@@ -1,4 +1,4 @@
-import { Box, Margins, ProgressBar } from '@rocket.chat/fuselage';
+import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { BackgroundLayer, LayoutLogo } from '@rocket.chat/layout';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +28,7 @@ const LoaderPage = ({ title, subtitles, isReady = false, loadingSeconds = 90 }: 
 		return () => {
 			clearInterval(timer);
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [isReady]);
 
 	const subtitleIndex = Math.floor(percentage / timeFraction);
@@ -42,18 +42,18 @@ const LoaderPage = ({ title, subtitles, isReady = false, loadingSeconds = 90 }: 
 				textAlign='center'
 				width='100%'
 				maxWidth={768}
-				paddingBlock={32}
+				paddingBlockStart={32}
+				paddingBlockEnd={64}
 				paddingInline={16}
+				gap={32}
 			>
-				<Margins blockEnd={32}>
-					<LayoutLogo />
+				<LayoutLogo />
 
-					<Box fontScale='hero'>{title}</Box>
+				<Box fontScale='hero'>{title}</Box>
 
-					<Box fontScale='p1b'>{subtitles[subtitleIndex]}</Box>
+				<Box fontScale='p1b'>{subtitles[subtitleIndex]}</Box>
 
-					<ProgressBar percentage={percentage} />
-				</Margins>
+				<ProgressBar percentage={percentage} />
 			</Box>
 		</BackgroundLayer>
 	);

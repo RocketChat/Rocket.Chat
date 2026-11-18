@@ -19,7 +19,7 @@
 	@if $value == 'none' {
 		@return 0;
 	} @else if math.abs($value) == 1 or math.abs($value) == 2 or $value % 4 == 0 {
-		@return to-rem($value);
+		@return to-px($value);
 	} @else {
 		@error 'value must be none, ±1, ±2, or a multiple of ±4';
 	}
@@ -29,7 +29,7 @@
 	@if $value == 'none' {
 		@return 0;
 	} @else if $value == 1 or $value == 2 or (meta.type-of($value) == number and $value > 0 and $value % 4 == 0) {
-		@return to-rem($value);
+		@return to-px($value);
 	} @else {
 		@error 'value must be none, or a multiple of 4. You passed `#{$value}`';
 	}

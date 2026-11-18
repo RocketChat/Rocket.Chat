@@ -4,7 +4,8 @@ import { useDebugValue, useInsertionEffect, useMemo } from 'react';
 
 import { useOwnerDocument } from '../contexts';
 
-export const useStyle = (cssFn: cssFn | undefined, arg: unknown) => {
+/** Attaches a `css` style to the document and returns its class name, for a `className` that takes strings only. */
+export const useStyle = (cssFn: cssFn | undefined, arg?: unknown) => {
 	const content = useMemo(() => (cssFn ? cssFn(arg) : undefined), [arg, cssFn]);
 
 	const className = useMemo(() => {

@@ -6,6 +6,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
 import { ActionForm } from './actions/ActionForm';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type TriggersPayload = {
 	name: string;
@@ -138,7 +138,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 				<ContextualbarTitle>{triggerData?._id ? t('Edit_Trigger') : t('New_Trigger')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent paddingBlockEnd='x32'>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<FieldGroup>
 						<Field>
@@ -211,7 +211,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary loading={isSubmitting}>
+					<Button form={formId} type='submit' variant='primary' loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

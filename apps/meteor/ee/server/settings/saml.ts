@@ -1,3 +1,4 @@
+import { settingsRegistry } from '../../../server/settings';
 import {
 	defaultAuthnContextTemplate,
 	defaultAuthRequestTemplate,
@@ -8,8 +9,7 @@ import {
 	defaultAuthnContext,
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
-} from '../../../server/lib/saml/lib/constants';
-import { settingsRegistry } from '../../../server/settings';
+} from '../lib/saml/lib/constants';
 
 export const addSettings = async function (name: string): Promise<void> {
 	await settingsRegistry.addGroup('SAML', async function () {

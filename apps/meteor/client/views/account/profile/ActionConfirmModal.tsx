@@ -1,8 +1,10 @@
-import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel } from '@rocket.chat/fuselage';
+import { PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
+import ModalForm from '../../../components/ModalForm';
 
 export type ActionConfirmModalProps = {
 	isPassword: boolean;
@@ -37,13 +39,13 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSave)} {...props} />}
+			wrapperFunction={(props) => <ModalForm onSubmit={handleSubmit(handleSave)} {...props} />}
 			onCancel={onCancel}
 			variant='danger'
 			title={t('Delete_account?')}
 			confirmText={t('Delete_account')}
 		>
-			<FieldGroup width='full'>
+			<FieldGroup>
 				<Field>
 					<FieldLabel required htmlFor={credentialFieldId}>
 						{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}

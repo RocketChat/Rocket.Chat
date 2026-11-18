@@ -39,6 +39,7 @@ import {
 } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { keepPublicAuthorFields } from './messages/keepPublicAuthorFields';
 import { shouldHideSystemMessage } from './systemMessage/hideSystemMessage';
 import { subscriptionFields } from '../../lib/publishFields';
 
@@ -458,6 +459,8 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		return;
 	}
 
+	keepPublicAuthorFields(message);
+
 	const useRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
 	if (useRealName) {
 		if (message.u?._id) {
@@ -468,7 +471,7 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		}
 
 		if (message.mentions?.length) {
-			for await (const mention of message.mentions) {
+			for (const mention of message.mentions) {
 				const name = await getUserNameCached(mention._id);
 				if (name) {
 					mention.name = name;

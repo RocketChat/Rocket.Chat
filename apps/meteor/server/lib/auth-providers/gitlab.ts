@@ -1,11 +1,9 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 import _ from 'underscore';
 
-import { addPassportCustomOAuth } from '../oauth/addPassportCustomOAuth';
-import { CustomOAuth } from './custom-oauth/custom_oauth_server';
 import { settings } from '../../settings';
+import { addPassportCustomOAuth } from '../oauth/addPassportCustomOAuth';
 
 const config: Partial<OAuthConfiguration> = {
 	serverURL: 'https://gitlab.com',
@@ -20,8 +18,6 @@ const config: Partial<OAuthConfiguration> = {
 	},
 	accessTokenParam: 'access_token',
 };
-
-const Gitlab = new CustomOAuth('gitlab', config);
 
 const configureGitlabOAuth = () => {
 	passport.unuse('gitlab');
@@ -41,29 +37,19 @@ const configureGitlabOAuth = () => {
 		return;
 	}
 
-	const completeConfig = { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers };
-
-	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
-		addPassportCustomOAuth('gitlab', completeConfig);
-		return;
-	}
-
-	Gitlab.configure(completeConfig);
+	addPassportCustomOAuth('gitlab', { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers });
 };
 
-Meteor.startup(() => {
-	const updateConfig = _.debounce(configureGitlabOAuth, 300);
+const updateConfig = _.debounce(configureGitlabOAuth, 300);
 
-	settings.watchMultiple(
-		[
-			'Accounts_OAuth_Gitlab',
-			'API_Gitlab_URL',
-			'Accounts_OAuth_Gitlab_id',
-			'Accounts_OAuth_Gitlab_secret',
-			'Accounts_OAuth_Gitlab_identity_path',
-			'Accounts_OAuth_Gitlab_merge_users',
-			'Accounts_OAuth_Use_Modern_Flow',
-		],
-		updateConfig,
-	);
-});
+settings.watchMultiple(
+	[
+		'Accounts_OAuth_Gitlab',
+		'API_Gitlab_URL',
+		'Accounts_OAuth_Gitlab_id',
+		'Accounts_OAuth_Gitlab_secret',
+		'Accounts_OAuth_Gitlab_identity_path',
+		'Accounts_OAuth_Gitlab_merge_users',
+	],
+	updateConfig,
+);

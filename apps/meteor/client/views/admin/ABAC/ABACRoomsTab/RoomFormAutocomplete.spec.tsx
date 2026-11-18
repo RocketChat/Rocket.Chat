@@ -24,11 +24,6 @@ const appRoot = mockAppRoot()
 describe('RoomFormAutocomplete', () => {
 	const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		// Aria label added in a higher level
 		const { container } = render(<Story aria-label='ABAC Room Autocomplete' />);

@@ -11,7 +11,7 @@ export const useStarredMessagesRoomAction = () => {
 			title: 'Starred_Messages',
 			icon: 'star',
 			tabComponent: StarredMessagesTab,
-			order: 10,
+			order: 11,
 			type: 'organization',
 		}),
 		[],

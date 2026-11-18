@@ -7,6 +7,7 @@ import ChannelToTeamSelection from './ChannelToTeamSelection';
 export type ChannelToTeamModalProps = {
 	onCancel: () => void;
 	onConfirm: (teamId: IRoom['_id']) => void;
+	removesAbacAttributes?: boolean;
 };
 
 const CHANNEL_TO_TEAM_STEPS = {
@@ -14,12 +15,14 @@ const CHANNEL_TO_TEAM_STEPS = {
 	CONFIRMATION: 'confirmation',
 };
 
-const ChannelToTeamModal = ({ onCancel, onConfirm }: ChannelToTeamModalProps) => {
+const ChannelToTeamModal = ({ onCancel, onConfirm, removesAbacAttributes }: ChannelToTeamModalProps) => {
 	const [step, setStep] = useState(CHANNEL_TO_TEAM_STEPS.SELECTION);
 	const [teamId, setTeamId] = useState<string>();
 
 	if (step === CHANNEL_TO_TEAM_STEPS.CONFIRMATION && teamId) {
-		return <ChannelToTeamConfirmation onCancel={onCancel} onConfirm={() => onConfirm(teamId)} />;
+		return (
+			<ChannelToTeamConfirmation onCancel={onCancel} onConfirm={() => onConfirm(teamId)} removesAbacAttributes={removesAbacAttributes} />
+		);
 	}
 
 	const handleChange = (value: string | string[]) => {

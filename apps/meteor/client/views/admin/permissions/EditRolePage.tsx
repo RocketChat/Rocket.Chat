@@ -1,5 +1,5 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -100,21 +100,19 @@ const EditRolePage = ({ role, isEnterprise }: EditRolePageProps) => {
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<Box width='full' alignSelf='center' marginBlock='neg-x8'>
-					<Margins block={8}>
-						<FormProvider {...methods}>
-							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} isDisabled={!isEnterprise} />
-						</FormProvider>
-					</Margins>
+				<Box width='full' alignSelf='center' display='flex' flexDirection='column' gap='x8'>
+					<FormProvider {...methods}>
+						<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} isDisabled={!isEnterprise} />
+					</FormProvider>
 				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup vertical stretch>
-					<Button primary disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (
-						<Button secondary danger onClick={handleDelete}>
+						<Button variant='secondary-danger' onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

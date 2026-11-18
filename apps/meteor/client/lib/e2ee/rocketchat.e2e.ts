@@ -806,7 +806,7 @@ class E2E extends Emitter {
 		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
 
 		const sampleIds: string[] = [];
-		for await (const roomId of randomRoomIds) {
+		for (const roomId of randomRoomIds) {
 			const e2eroom = await this.getInstanceByRoomId(roomId);
 			if (!e2eroom?.hasSessionKey()) {
 				continue;
@@ -878,6 +878,8 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+window.__rocketChatE2E = e2e;
 
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();

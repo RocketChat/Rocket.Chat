@@ -52,7 +52,7 @@ const AgentField = ({ control, agents, canAssignAgent, disabled = false, isLoadi
 				/>
 			</FieldRow>
 			{agentFieldError && (
-				<FieldError aria-live='assertive' id={`${agentFieldId}-error`} display='flex' alignItems='center'>
+				<FieldError aria-live='assertive' id={`${agentFieldId}-error`}>
 					{agentFieldError.message}
 				</FieldError>
 			)}

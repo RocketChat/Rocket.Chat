@@ -1,7 +1,6 @@
 import { Icon, Tag } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export type OmnichannelVerificationTagProps = {
 	verified?: boolean;
@@ -17,7 +16,7 @@ const OmnichannelVerificationTag = ({ verified, onClick }: OmnichannelVerificati
 		<Tag
 			variant={isVerified ? 'primary' : undefined}
 			onClick={!isVerified && onClick ? onClick : undefined}
-			icon={<Icon size='x12' marginInlineEnd={4} name={isVerified ? 'success-circle' : 'question-mark'} />}
+			icon={<Icon size='x12' name={isVerified ? 'success-circle' : 'question-mark'} />}
 		>
 			{isVerified ? t('Verified') : t('Unverified')}
 		</Tag>

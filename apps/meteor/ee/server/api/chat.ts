@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import {
@@ -6,7 +7,6 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../server/api/api';
 import { getReadReceiptsFunction } from '../meteor-methods/getReadReceipts';
@@ -16,7 +16,6 @@ type GetMessageReadReceiptsProps = {
 };
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/chat.getMessageReadReceipts': {
 			GET: (params: GetMessageReadReceiptsProps) => {
@@ -49,7 +48,7 @@ API.v1.get(
 	},
 	async function action() {
 		if (!License.hasModule('message-read-receipt')) {
-			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
+			throw new ClientSafeError('error-action-not-allowed', 'This is an enterprise feature');
 		}
 
 		const { messageId } = this.queryParams;

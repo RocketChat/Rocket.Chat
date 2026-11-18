@@ -1,4 +1,4 @@
-import type { LayoutBlock } from './LayoutBlock';
+import type { LayoutBlock } from './LayoutBlock.js';
 
 export const LayoutBlockType = {
 	SECTION: 'section',
@@ -15,4 +15,7 @@ export const LayoutBlockType = {
 	CALLOUT: 'callout',
 	TAB_NAVIGATION: 'tab_navigation',
 	INFO_CARD: 'info_card',
+	CONTEXT_ACTIONS: 'context_actions',
+	VIDEO: 'video',
+	TABLE: 'table',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;

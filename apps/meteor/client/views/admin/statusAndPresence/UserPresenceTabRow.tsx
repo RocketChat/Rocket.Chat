@@ -1,5 +1,5 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
@@ -47,23 +47,21 @@ const UserPresenceTabRow = ({ user, onClick }: UserPresenceTabRowProps) => {
 
 	return (
 		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x28' username={username ?? ''} />
 					<Box display='flex' alignItems='center' marginInline={8} withTruncatedText>
 						<Box marginInlineEnd={8}>
 							<UserStatus status={presenceDisabledByAdmin ? Status.OFFLINE : status || Status.OFFLINE} />
 						</Box>
-						<Box fontScale='p2' withTruncatedText color='default'>
+						<Text fontScale='p2' truncate color='default'>
 							{name || username}
-						</Box>
+						</Text>
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{presenceDisabledByAdmin ? t('Hidden') : t('Visible')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
-				{presenceDisabledByAdmin ? t('Everyone') : statusVisibilityDeniedByAdmin.join(', ')}
-			</GenericTableCell>
+			<GenericTableCell truncate>{presenceDisabledByAdmin ? t('Hidden') : t('Visible')}</GenericTableCell>
+			<GenericTableCell truncate>{presenceDisabledByAdmin ? t('Everyone') : statusVisibilityDeniedByAdmin.join(', ')}</GenericTableCell>
 			<GenericTableCell onClick={stopPropagation} onKeyDown={stopPropagation}>
 				<Box display='flex' justifyContent='flex-end'>
 					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuItems }]} placement='bottom-end' />

@@ -1,12 +1,12 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpointMutation } from '@rocket.chat/ui-client';
 import { usePermission, useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ConvertToChannelModal from './ConvertToChannelModal';
-import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 
-export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
+export const useConvertToChannel = ({ _id, teamId, abacAttributes }: IRoom) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const userId = useUserId();
@@ -41,6 +41,7 @@ export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 				onConfirm={onConfirm}
 				teamId={teamId}
 				userId={userId}
+				removesAbacAttributes={!!abacAttributes?.length}
 			/>,
 		);
 	});

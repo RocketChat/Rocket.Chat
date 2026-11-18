@@ -1,4 +1,5 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
+import type { TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -20,11 +21,11 @@ export type PrioritiesTableProps = {
 export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps) => {
 	const { t } = useTranslation();
 
+	const columns: TableColumnWidth[] = ['100px'];
+
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='icon' width='100px'>
-				{t('Icon')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='icon'>{t('Icon')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
 		</>
 	);
@@ -32,7 +33,7 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 	return (
 		<>
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -41,7 +42,7 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 			)}
 			{priorities?.length === 0 && <GenericNoResults />}
 			{priorities && priorities?.length > 0 && (
-				<GenericTable aria-label={t('Priorities')}>
+				<GenericTable columns={columns} aria-label={t('Priorities')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{priorities?.map(({ _id, name, i18n, sortItem, dirty }) => (

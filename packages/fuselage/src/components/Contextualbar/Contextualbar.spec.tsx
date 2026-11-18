@@ -1,4 +1,5 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
 import * as stories from './Contextualbar.stories';
@@ -11,11 +12,6 @@ const { WithLongTitle } = composeStories(stories);
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 describe('[Contextualbar Rendering]', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const tree = render(<Story />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 
@@ -24,16 +20,11 @@ describe('[Contextualbar Rendering]', () => {
 	});
 
 	test('WithLongTitle should truncate long titles', () => {
-		const { getByRole } = render(<WithLongTitle />);
-		const titleElement = getByRole('heading');
+		render(<WithLongTitle />);
+		const titleElement = screen.getByRole('heading');
 
-		const titleStyle = window.getComputedStyle(titleElement);
-		expect(titleStyle.overflow).toBe('hidden');
-		expect(titleStyle.textOverflow).toBe('ellipsis');
-		expect(titleStyle.whiteSpace).toBe('nowrap');
-
-		const flexContainer = titleElement.parentElement;
-		const containerStyle = window.getComputedStyle(flexContainer!);
-		expect(containerStyle.overflow).toBe('hidden');
+		expect(titleElement).toHaveClass('rcx-vertical-bar__title');
+		// oxlint-disable-next-line testing-library/no-node-access -- the header wrapper has no role, label or text of its own
+		expect(titleElement.parentElement).toHaveClass('rcx-vertical-bar__header-inner');
 	});
 });

@@ -1,4 +1,4 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Stack } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 export type CardWidgetContainerProps = {
@@ -6,11 +6,7 @@ export type CardWidgetContainerProps = {
 };
 
 const CardWidgetContainer = ({ children }: CardWidgetContainerProps) => {
-	return (
-		<Box marginBlock={-8}>
-			<Margins block={8}>{children}</Margins>
-		</Box>
-	);
+	return <Stack gap='x8'>{children}</Stack>;
 };
 
 export default CardWidgetContainer;

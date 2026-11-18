@@ -19,6 +19,5 @@ export function useExperimentalEndpoint<
 	TPath extends keyof ExperimentalEndpoints,
 	TMethod extends keyof ExperimentalEndpoints[TPath] & string,
 >(method: TMethod, path: TPath): (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>> {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (useEndpoint as any)(method, path) as (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>>;
 }

@@ -6,7 +6,7 @@ import { canAccessRoomAsync } from '../authorization/canAccessRoom';
 
 export const reportMessage = async (messageId: IMessage['_id'], description: string, uid: IUser['_id']) => {
 	if (!uid) {
-		throw new Error('error-invalid-user');
+		throw new Error('error-unauthenticated');
 	}
 
 	if (!description.trim()) {

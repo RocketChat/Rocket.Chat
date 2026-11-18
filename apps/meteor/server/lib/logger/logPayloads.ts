@@ -10,14 +10,6 @@ export const getMethodArgs =
 		: (method: string, args: any[]): { arguments: any } => {
 				const params = method === 'ufsWrite' ? args.slice(1) : args;
 
-				if (method === 'saveSettings') {
-					return { arguments: [args[0].map((arg: any) => omit(arg, 'value'))] };
-				}
-
-				if (method === 'saveSetting') {
-					return { arguments: [args[0], args[2]] };
-				}
-
 				return {
 					arguments: params.map((arg) => (typeof arg !== 'object' ? arg : omit(arg, 'password', 'msg', 'pass', 'username', 'message'))),
 				};

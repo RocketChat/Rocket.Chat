@@ -1,5 +1,11 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
-import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { Box, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
+import {
+	GenericModal,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	useEndpointUploadMutation,
+	useSingleFileInput,
+} from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ChangeEvent } from 'react';
@@ -8,8 +14,6 @@ import { useTranslation } from 'react-i18next';
 
 import { validate } from './lib';
 import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
-import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 export type EditSoundProps = {
 	close: () => void;
@@ -123,25 +127,23 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center'>
-						<Margins inline={4}>
-							<IconButton secondary small icon='upload' onClick={clickUpload} />
-							{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
-						</Margins>
+					<FieldLabel>{t('Sound File')}</FieldLabel>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center' gap={4} paddingInlineStart={4}>
+						<IconButton variant='secondary' size='small' icon='upload' onClick={clickUpload} />
+						{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
 					</Box>
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+					<Button variant='primary' onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						<Button icon='trash' variant='danger' onClick={handleDeleteButtonClick}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

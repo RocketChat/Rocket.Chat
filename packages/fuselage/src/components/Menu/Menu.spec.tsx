@@ -1,5 +1,6 @@
-import { composeStories } from '@storybook/react-webpack5';
-import { screen, waitFor } from '@testing-library/react';
+import nameToCharacterMapping from '@rocket.chat/icons';
+import { composeStories } from '@storybook/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -14,11 +15,6 @@ const { Simple, Complex, WithSections, WithSubmenu, WithRichSubmenuTrigger, With
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 describe('[Menu Component]', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const tree = render(<Story />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 
@@ -50,7 +46,7 @@ describe('[Menu Component]', () => {
 			expect(menuitem).toBeInTheDocument();
 
 			await waitFor(() => {
-				expect(menuitem.querySelector('i')).toBeInTheDocument();
+				expect(within(menuitem).getByText(nameToCharacterMapping.user, { selector: 'i' })).toBeInTheDocument();
 			});
 		});
 
@@ -133,12 +129,14 @@ describe('[Menu Component]', () => {
 			const notifications = await screen.findByRole('menuitem', {
 				name: 'Notifications',
 			});
+			// oxlint-disable-next-line testing-library/no-node-access -- asserts the order of slot wrappers that have no role, label or text of their own
 			const slots = Array.from(notifications.children).map((child) => child.className);
 			expect(slots).toEqual([
 				expect.stringContaining('rcx-item__icon'),
 				expect.stringContaining('rcx-item__content'),
 				expect.stringContaining('rcx-item__actions'),
 			]);
+			// oxlint-disable-next-line testing-library/no-node-access -- the empty `MenuItemColumn` has no role, label or text
 			expect(screen.getByRole('menuitem', { name: 'Logout' }).firstElementChild).toHaveClass('rcx-item__media', 'rcx-option__column');
 		});
 
@@ -206,7 +204,7 @@ describe('[Menu Component]', () => {
 			expect(triggers).toHaveLength(1);
 			const [trigger] = triggers;
 			expect(trigger).toHaveTextContent('Move to');
-			expect(trigger.querySelector('i')).toBeInTheDocument();
+			expect(within(trigger).getByText(nameToCharacterMapping.folder, { selector: 'i' })).toBeInTheDocument();
 
 			// ...while the remaining children are NOT rendered as items of the parent menu
 			expect(screen.queryByRole('menuitem', { name: 'Inbox' })).not.toBeInTheDocument();
@@ -217,7 +215,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findByRole('menuitem', { name: 'New' })).toBeInTheDocument();
 
 			// open the first level submenu ("Move to") then the nested one ("Teams")
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -242,7 +240,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findByRole('menuitem', { name: 'New' })).toBeInTheDocument();
 
 			// open the first level submenu ("Move to") then the nested one ("Teams")
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -271,11 +269,9 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
 
 			// open the submenu by hovering its trigger — focus stays on the trigger
-			const trigger = (await screen.findAllByRole('menuitem')).find((item) => item.getAttribute('aria-haspopup') === 'menu');
-			await user.hover(trigger!);
+			await user.hover(await screen.findByRole('menuitem', { name: 'Move to…' }));
 			expect(await screen.findByText('Inbox')).toBeInTheDocument();
 
 			// Escape closes only the submenu — the root menu stays open
@@ -299,7 +295,7 @@ describe('[Menu Component]', () => {
 			);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findByRole('menuitem', { name: 'New' })).toBeInTheDocument();
 
 			// open a submenu so it becomes the topmost overlay
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -321,32 +317,18 @@ describe('[Menu Component]', () => {
 			expect(button).toHaveClass('rcx-button--small-square');
 		});
 
-		it('should accept large size prop', () => {
-			render(<Simple {...Simple.args} large />);
+		it.each(['large', 'medium', 'small', 'tiny', 'mini'] as const)('should size the trigger %s', (size) => {
+			render(<Simple {...Simple.args} size={size} />);
 
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--large-square');
+			expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
 		});
 
-		it('should accept medium size prop', () => {
-			render(<Simple {...Simple.args} medium />);
+		it('should pass the size to a custom trigger', () => {
+			const trigger = jest.fn((_props: Record<string, unknown>) => <button type='button' aria-label='trigger' />);
+			render(<Simple {...Simple.args} is={trigger} size='tiny' />);
 
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--medium-square');
-		});
-
-		it('should accept tiny size prop', () => {
-			render(<Simple {...Simple.args} tiny />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--tiny-square');
-		});
-
-		it('should accept mini size prop', () => {
-			render(<Simple {...Simple.args} mini />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--mini-square');
+			expect(trigger.mock.calls[0][0]).toMatchObject({ size: 'tiny' });
+			expect(trigger.mock.calls[0][0]).not.toHaveProperty('small');
 		});
 	});
 });

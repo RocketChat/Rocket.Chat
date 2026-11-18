@@ -1,11 +1,22 @@
-import type { Root, Paragraph, Blocks, Inlines, UserMention, ChannelMention, Task, ListItem, BigEmoji } from '@rocket.chat/message-parser';
+import type {
+	Root,
+	Paragraph,
+	Blocks,
+	Inlines,
+	UserMention,
+	ChannelMention,
+	Task,
+	ListItem,
+	NestedList,
+	BigEmoji,
+} from '@rocket.chat/message-parser';
 
 type ExtractedMentions = {
 	mentions: string[];
 	channels: string[];
 };
 
-type MessageNode = Paragraph | Blocks | Inlines | Task | ListItem | BigEmoji;
+type MessageNode = Paragraph | Blocks | Inlines | Task | ListItem | NestedList | BigEmoji;
 
 function isUserMention(node: MessageNode): node is UserMention {
 	return node.type === 'MENTION_USER';
@@ -37,6 +48,11 @@ function traverse(node: MessageNode, mentions: Set<string>, channels: Set<string
 	if (hasArrayValue(node)) {
 		for (const child of node.value) {
 			traverse(child, mentions, channels);
+		}
+		if ('nested' in node && node.nested) {
+			for (const list of node.nested) {
+				traverse(list, mentions, channels);
+			}
 		}
 		return;
 	}

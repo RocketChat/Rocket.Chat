@@ -1,10 +1,15 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings';
 import { prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
 
 prepareCreateRoomCallback.add(({ type, extraData }) => {
 	if (!settings.get<boolean>('E2E_Enable')) {
+		return;
+	}
+
+	// XMPP federated rooms cannot be encrypted (hosted-muc R1)
+	if ((extraData as { xmppFederated?: boolean }).xmppFederated) {
 		return;
 	}
 
@@ -16,7 +21,7 @@ prepareCreateRoomCallback.add(({ type, extraData }) => {
 	}
 	if (type === 'p' && extraData.federated !== true && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')) {
 		if (extraData.encrypted === false) {
-			throw new MeteorError('error-encrypted-private-rooms-enforced', 'Workspace policy requires all private rooms to be encrypted.');
+			throw new ClientSafeError('error-encrypted-private-rooms-enforced', 'Workspace policy requires all private rooms to be encrypted.');
 		}
 		extraData.encrypted = true;
 	}

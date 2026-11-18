@@ -44,7 +44,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 				<PruneMessagesDateTimeRow label={t('Newer_than')} field='newer' />
 				<PruneMessagesDateTimeRow label={t('Older_than')} field='older' />
 				<Field>
-					<FieldLabel flexGrow={0}>{t('Only_from_users')}</FieldLabel>
+					<FieldLabel>{t('Only_from_users')}</FieldLabel>
 					<Controller
 						control={control}
 						name='users'
@@ -108,7 +108,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button danger disabled={Boolean(validateText)} onClick={onClickPrune}>
+					<Button variant='danger' disabled={Boolean(validateText)} onClick={onClickPrune}>
 						{t('Prune')}
 					</Button>
 				</ButtonGroup>

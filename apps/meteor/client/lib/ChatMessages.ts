@@ -39,7 +39,7 @@ export class ChatMessages implements ChatAPI {
 	public ActionManager: any;
 
 	public emojiPicker: {
-		open(el: Element, cb: (emoji: string) => void): void;
+		open(el: Element, cb: (emoji: string) => void, onClose?: () => void): void;
 		close(): void;
 	};
 
@@ -155,13 +155,13 @@ export class ChatMessages implements ChatAPI {
 		};
 
 		this.action = {
-			start: async (action: 'typing') => {
+			start: (action: 'typing') => {
 				UserAction.start(params.rid, `user-${action}`, { tmid: params.tmid });
 			},
-			performContinuously: async (action: 'recording' | 'uploading' | 'playing') => {
+			performContinuously: (action: 'recording' | 'uploading' | 'playing') => {
 				UserAction.performContinuously(params.rid, `user-${action}`, { tmid: params.tmid });
 			},
-			stop: async (action: 'typing' | 'recording' | 'uploading' | 'playing') => {
+			stop: (action: 'typing' | 'recording' | 'uploading' | 'playing') => {
 				UserAction.stop(params.rid, `user-${action}`, { tmid: params.tmid });
 			},
 		};

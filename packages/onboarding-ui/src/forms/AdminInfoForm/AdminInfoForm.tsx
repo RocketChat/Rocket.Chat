@@ -214,7 +214,7 @@ const AdminInfoForm = ({
 					</Field>
 					{keepPosted && (
 						<Box marginBlockEnd={8} display='block' color='info' fontScale='c1'>
-							<CheckBox id='keepPosted' marginInlineEnd={8} {...register('keepPosted')} />
+							<CheckBox id='keepPosted' {...register('keepPosted')} />
 							<label htmlFor='keepPosted'>{t('form.adminInfoForm.fields.keepPosted.label')}</label>
 						</Box>
 					)}
@@ -222,7 +222,7 @@ const AdminInfoForm = ({
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' primary loading={isValidating || isSubmitting}>
+					<Button type='submit' variant='primary' loading={isValidating || isSubmitting}>
 						{t('component.form.action.next')}
 					</Button>
 				</ButtonGroup>

@@ -3,10 +3,11 @@ import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../../hooks/useDownloadFromServiceWorker';
+import { callDesktopBridge } from '../../../../../../lib/utils/callDesktopBridge';
 
 export const useOpenEncryptedPdf = () => {
 	const getURL = useMediaUrl();
-	const pdfPreviewSizeLimit = window.RocketChatDesktop?.getE2ePdfPreviewSizeLimit?.() ?? 10;
+	const pdfPreviewSizeLimit = callDesktopBridge((desktop) => desktop.getE2ePdfPreviewSizeLimit?.()) ?? 10;
 	const pdfPreviewSizeLimitInBytes = pdfPreviewSizeLimit * 1024 * 1024;
 	const uid = useId();
 	const { t } = useTranslation();

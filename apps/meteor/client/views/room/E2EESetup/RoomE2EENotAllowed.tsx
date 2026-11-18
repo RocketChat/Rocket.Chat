@@ -10,10 +10,9 @@ import {
 	StatesTitle,
 } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { links } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
-
-import { links } from '../../../lib/links';
 
 const DOCS_URL = links.go.e2eeGuide;
 
@@ -40,10 +39,10 @@ const RoomE2EENotAllowed = ({ title, subTitle, action, btnText, icon }: RoomE2EE
 				<StatesSubtitle>{subTitle}</StatesSubtitle>
 				{action && (
 					<StatesActions>
-						<Button secondary={true} role='link' onClick={handleGoHomeClick}>
+						<Button variant='secondary' role='link' onClick={handleGoHomeClick}>
 							{t('Back_to_home')}
 						</Button>
-						<StatesAction primary onClick={action} role='button'>
+						<StatesAction variant='primary' onClick={action} role='button'>
 							{btnText}
 						</StatesAction>
 					</StatesActions>

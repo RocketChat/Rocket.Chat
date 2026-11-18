@@ -19,6 +19,7 @@ import type { ImEndpoints, DmEndpoints } from './v1/dm';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
+import type { ExchangeEndpoints } from './v1/exchange';
 import type { FederationEndpoints } from './v1/federation';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImportEndpoints } from './v1/import';
@@ -47,7 +48,6 @@ import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
 	extends
 		AISearchEndpoints,
@@ -65,6 +65,7 @@ export interface Endpoints
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,
+		ExchangeEndpoints,
 		LDAPEndpoints,
 		RoomsEndpoints,
 		PushEndpoints,
@@ -219,6 +220,7 @@ export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/aiSearch';
+export { abacCreationAttributesSchema } from './v1/abacCreationAttributes';
 export * from './v1/channels';
 export * from './v1/customSounds';
 export type * from './v1/customUserStatus';
@@ -242,6 +244,7 @@ export type * from './helpers/ReplacePlaceholders';
 export type * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
 export type * from './v1/instances';
+export type * from './v1/exchange';
 export * from './v1/ldap';
 export * from './v1/saml';
 export * from './v1/users';
@@ -267,7 +270,7 @@ export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
-export * from './v1/federation';
+export type * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
 export * from './v1/chat';

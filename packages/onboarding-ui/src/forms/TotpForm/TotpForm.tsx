@@ -66,7 +66,7 @@ const TotpForm = ({ onSubmit, initialValues, isBackupCode = false, onChangeTotpF
 			</FormContainer>
 			<FormFooter>
 				<TotpActionsWrapper>
-					<Button type='submit' loading={isValidating || isSubmitting} primary>
+					<Button type='submit' loading={isValidating || isSubmitting} variant='primary'>
 						{t('form.totpForm.button.text')}
 					</Button>
 					<ActionLink fontScale='p2' onClick={onChangeTotpForm}>

@@ -1,11 +1,13 @@
+import assert from 'node:assert/strict';
+
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import { Visibility } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { acceptRoomInvite } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
@@ -99,8 +101,8 @@ const localUser = {
 						(room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId,
 					) as IRoomNativeFederated | null;
 
-					expect(rcRoom).toBeTruthy();
-					federatedRoomId = rcRoom!._id;
+					assert(rcRoom);
+					federatedRoomId = rcRoom._id;
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
@@ -149,8 +151,7 @@ const localUser = {
 				async () => {
 					const member = await hs1FirstContactApp.findRoomMember(channelName, localUser.matrixUserId);
 
-					expect(member).not.toBeNull();
-					expect(member!.membership).toBe('join');
+					expect(member?.membership).toBe('join');
 				},
 				{ retries: 10, delayMs: 2000 },
 			);

@@ -1,16 +1,23 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { CustomSounds } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import type { ICustomSoundData } from '../../../../meteor-methods/media/insertOrUpdateSound';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+
+export type ICustomSoundData = {
+	_id?: string;
+	name: string;
+	extension: string;
+	previousName?: string;
+	previousExtension?: string;
+	newFile?: boolean;
+};
 
 export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<string> => {
 	// silently strip colon; this allows for uploading :soundname: as soundname
 	soundData.name = (soundData.name || '').replace(/:/g, '');
 
 	if (!soundData.name.trim()) {
-		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
+		throw new ClientSafeError('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateSound',
 			field: 'Name',
 		});
@@ -21,7 +28,7 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 	const nameValidation = /[\s,:><&"'\/\\\(\)]/;
 
 	if (nameValidation.test(soundData.name)) {
-		throw new Meteor.Error('error-input-is-not-a-valid-field', `${soundData.name} is not a valid name`, {
+		throw new ClientSafeError('error-input-is-not-a-valid-field', `${soundData.name} is not a valid name`, {
 			method: 'insertOrUpdateSound',
 			input: soundData.name,
 			field: 'Name',
@@ -31,7 +38,7 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 	const conflictingSound = await CustomSounds.findOneByName(soundData.name, soundData._id, { projection: { _id: 1 } });
 
 	if (conflictingSound) {
-		throw new Meteor.Error('Custom_Sound_Error_Name_Already_In_Use', 'The custom sound name is already in use', {
+		throw new ClientSafeError('Custom_Sound_Error_Name_Already_In_Use', 'The custom sound name is already in use', {
 			method: 'insertOrUpdateSound',
 		});
 	}

@@ -17,7 +17,7 @@ const TabNavigationBlock = (blockProps: TabNavigationBlockProps) => {
 	const [selected, select] = useState<number>();
 
 	return (
-		<Tabs marginBlock={24}>
+		<Tabs>
 			{tabs.map((innerBlock, idx) => {
 				if (selected !== undefined) {
 					innerBlock.selected = idx === selected;

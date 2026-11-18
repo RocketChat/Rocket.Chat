@@ -1,6 +1,5 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
-import type { IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import bcrypt from 'bcrypt';
 
 import { EmailCheck } from './EmailCheck';
@@ -10,7 +9,6 @@ import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
 import * as Mailer from '../../notifications/email/api';
 
-jest.mock('meteor/accounts-base', () => ({ Accounts: { _bcryptRounds: () => 4 } }), { virtual: true });
 jest.mock('../../../settings', () => ({ settings: { get: jest.fn() } }));
 jest.mock('../../notifications/email/api', () => ({ send: jest.fn() }));
 
@@ -21,7 +19,6 @@ const users = {
 	incrementInvalidEmailCodeAttempt: jest.fn(),
 	maxInvalidEmailCodeAttemptsReached: jest.fn(),
 };
-registerModel('IUsersModel', users as unknown as IUsersModel);
 
 const NOW = new Date('2026-10-15T12:00:00.000Z');
 const FIVE_MINUTES = 5 * 60 * 1000;
@@ -47,6 +44,10 @@ const withStoredCode = async (code: string, expire: Date, attempts = 0): Promise
 const sentEmails = () => jest.mocked(Mailer.send).mock.calls.map(([email]) => email);
 
 describe('EmailCheck', () => {
+	beforeAll(() => {
+		mockModel('Users', users);
+	});
+
 	let emailCheck: EmailCheck;
 
 	beforeEach(() => {
@@ -60,6 +61,7 @@ describe('EmailCheck', () => {
 			From_Email: 'no-reply@example.com',
 		};
 		jest.mocked(settings.get).mockImplementation((key: string) => workspaceSettings[key]);
+		users.addEmailCodeByUserId.mockResolvedValue({ modifiedCount: 1 });
 
 		emailCheck = new EmailCheck();
 	});
@@ -114,6 +116,13 @@ describe('EmailCheck', () => {
 			await expect(emailCheck.verify(user, ' 123-456 ')).resolves.toBe(true);
 			expect(users.removeEmailCodeOfUserId).toHaveBeenCalledWith(user._id);
 			expect(users.incrementInvalidEmailCodeAttempt).not.toHaveBeenCalled();
+		});
+
+		it('rejects a matching code once the failed-attempt limit is reached', async () => {
+			const user = await withStoredCode('123456', new Date(NOW.getTime() + FIVE_MINUTES), 5);
+
+			await expect(emailCheck.verify(user, '123456')).resolves.toBe(false);
+			expect(users.removeEmailCodeOfUserId).not.toHaveBeenCalled();
 		});
 
 		it('rejects a wrong code and counts the failed attempt', async () => {
@@ -173,6 +182,14 @@ describe('EmailCheck', () => {
 			expect(html).toContain(i18n.t('Do_not_provide_this_code_to_anyone', { lng: expected }));
 		});
 
+		it('does not email a code when one was sent in the last minute', async () => {
+			users.addEmailCodeByUserId.mockResolvedValue({ modifiedCount: 0 });
+
+			await expect(emailCheck.sendEmailCode(makeUser())).resolves.toBe(false);
+			expect(users.addEmailCodeByUserId.mock.calls[0][3]).toEqual(new Date(NOW.getTime() - 60_000));
+			expect(Mailer.send).not.toHaveBeenCalled();
+		});
+
 		it('fails when the email cannot be delivered', async () => {
 			const error = new Error('SMTP unavailable');
 			jest.mocked(Mailer.send).mockRejectedValueOnce(error);
@@ -218,6 +235,15 @@ describe('EmailCheck', () => {
 
 			await expect(emailCheck.processInvalidCode(user)).resolves.toEqual({ emailOrUsername: 'alice', codeGenerated: true });
 			expect(Mailer.send).toHaveBeenCalledTimes(1);
+		});
+
+		it('reports that no code was generated when one was sent in the last minute', async () => {
+			attempts = 5;
+			users.addEmailCodeByUserId.mockResolvedValue({ modifiedCount: 0 });
+			const user = await withStoredCode('123456', new Date(NOW.getTime() + FIVE_MINUTES), attempts);
+
+			await expect(emailCheck.processInvalidCode(user)).resolves.toEqual({ emailOrUsername: 'alice', codeGenerated: false });
+			expect(Mailer.send).not.toHaveBeenCalled();
 		});
 
 		// This is wrong: the cutoff sits five minutes in the past, so a code that already expired is reused,

@@ -16,7 +16,6 @@ import { cachedFunction } from './cachedFunction';
 import { mappedDecodeAsync, type AsyncFieldMap } from './codecs/mappedData';
 import { convertMessageFiles } from './convertMessageFiles';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface Orchestrator {
 	rooms: () => {
 		convertById: IAppRoomsConverter['convertById'];
@@ -118,7 +117,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
-					user = await convertToApp(message.u as unknown as IUser);
+					user = convertToApp(message.u as unknown as IUser);
 				}
 
 				return user;

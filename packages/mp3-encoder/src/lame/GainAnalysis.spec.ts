@@ -1,5 +1,5 @@
-import { GainAnalysis } from './GainAnalysis';
-import { ReplayGain } from './ReplayGain';
+import { GainAnalysis } from './GainAnalysis.js';
+import { ReplayGain } from './ReplayGain.js';
 
 const titleGainOfSine = (amplitude: number) => {
 	const ga = new GainAnalysis();

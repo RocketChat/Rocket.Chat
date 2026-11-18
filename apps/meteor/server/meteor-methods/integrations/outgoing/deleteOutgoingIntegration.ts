@@ -1,21 +1,12 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		deleteOutgoingIntegration(integrationId: string): Promise<boolean>;
-	}
-}
 
 export const deleteOutgoingIntegration = async (integrationId: string, userId: string): Promise<void> => {
 	if (!userId) {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'deleteOutgoingIntegration',
 		});
 	}
@@ -24,7 +15,7 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 	const canManageOwnIntegrations = !canManageAllIntegrations && (await hasPermissionAsync(userId, 'manage-own-outgoing-integrations'));
 
 	if (!canManageAllIntegrations && !canManageOwnIntegrations) {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'deleteOutgoingIntegration',
 		});
 	}
@@ -35,7 +26,7 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 	});
 
 	if (!integration) {
-		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
+		throw new ClientSafeError('error-invalid-integration', 'Invalid integration', {
 			method: 'deleteOutgoingIntegration',
 		});
 	}
@@ -44,19 +35,3 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 	await IntegrationHistory.removeByIntegrationId(integrationId);
 	void notifyOnIntegrationChanged(integration, 'removed');
 };
-
-Meteor.methods<ServerMethods>({
-	async deleteOutgoingIntegration(integrationId) {
-		methodDeprecationLogger.method('deleteOutgoingIntegration', '9.0.0', '/v1/integrations.remove');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', {
-				method: 'deleteOutgoingIntegration',
-			});
-		}
-
-		await deleteOutgoingIntegration(integrationId, userId);
-
-		return true;
-	},
-});

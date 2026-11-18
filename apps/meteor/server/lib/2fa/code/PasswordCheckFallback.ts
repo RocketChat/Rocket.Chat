@@ -1,8 +1,6 @@
-import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
-
 import type { ICodeCheck, IProcessInvalidCodeResult, TwoFactorUser } from './ICodeCheck';
 import { settings } from '../../../settings';
+import { compareUserPassword } from '../../compareUserPassword';
 
 export class PasswordCheckFallback implements ICodeCheck {
 	public readonly name = 'password';
@@ -24,16 +22,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 			return false;
 		}
 
-		const passCheck = await Accounts._checkPasswordAsync(user as Meteor.User, {
-			digest: code.toLowerCase(),
-			algorithm: 'sha-256',
-		});
-
-		if (passCheck.error) {
-			return false;
-		}
-
-		return true;
+		return compareUserPassword(user, { sha256: code });
 	}
 
 	public async processInvalidCode(): Promise<IProcessInvalidCodeResult> {

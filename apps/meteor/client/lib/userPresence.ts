@@ -1,11 +1,12 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* oxlint-disable react-hooks/rules-of-hooks */
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { useConnectionStatus, useIsLoggingIn, useMethod, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { withDebouncing } from '../../lib/utils/highOrderFunctions';
 import { Users } from '../stores';
+import { callDesktopBridge } from './utils/callDesktopBridge';
 
 // TODO: merge this with the current React-based implementation of idle detection
 
@@ -113,8 +114,10 @@ export class UserPresence {
 		const enableAutoAway = useUserPreference<boolean>('enableAutoAway');
 		const idleTimeLimit = useUserPreference<number>('idleTimeLimit') ?? 300;
 		const { RocketChatDesktop } = window;
+		// The desktop app detects idleness itself; when it cannot, the browser's own detection takes over.
+		const [desktopDetectsIdle, setDesktopDetectsIdle] = useState(() => Boolean(RocketChatDesktop));
 
-		const awayTime = enableAutoAway && !RocketChatDesktop ? idleTimeLimit * 1000 : undefined;
+		const awayTime = enableAutoAway && !desktopDetectsIdle ? idleTimeLimit * 1000 : undefined;
 
 		this.user = user;
 		this.connected = connected;
@@ -125,27 +128,39 @@ export class UserPresence {
 		useEffect(() => {
 			if (!RocketChatDesktop) return;
 
-			RocketChatDesktop.setUserPresenceDetection({
-				isAutoAwayEnabled: enableAutoAway ?? false,
-				idleThreshold: idleTimeLimit,
-				setUserOnline: (online) => {
-					this.idle = !online;
-					this.setStatus.cancel();
-					this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
-				},
-			});
+			const registered =
+				callDesktopBridge((desktop) => {
+					desktop.setUserPresenceDetection({
+						isAutoAwayEnabled: enableAutoAway ?? false,
+						idleThreshold: idleTimeLimit,
+						setUserOnline: (online) => {
+							this.idle = !online;
+							this.setStatus.cancel();
+							this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
+						},
+					});
+					return true;
+				}) === true;
+			setDesktopDetectsIdle(registered);
+			if (!registered) {
+				// The browser saw no activity while the desktop app detected it, so its countdown starts now for an active user.
+				if (!this.idle) this.lastActivityAt = Date.now();
+				return;
+			}
 
 			return () => {
-				RocketChatDesktop.setUserPresenceDetection({
-					isAutoAwayEnabled: false,
-					idleThreshold: null,
-					setUserOnline: () => undefined,
-				});
+				callDesktopBridge((desktop) =>
+					desktop.setUserPresenceDetection({
+						isAutoAwayEnabled: false,
+						idleThreshold: null,
+						setUserOnline: () => undefined,
+					}),
+				);
 			};
 		}, [RocketChatDesktop, enableAutoAway, idleTimeLimit]);
 
 		useEffect(() => {
-			if (RocketChatDesktop) return;
+			if (desktopDetectsIdle) return;
 
 			const documentEvents = ['mousemove', 'mousedown', 'touchend', 'keydown'] as const;
 			documentEvents.forEach((key) => document.addEventListener(key, this.registerActivity));
@@ -155,7 +170,7 @@ export class UserPresence {
 				documentEvents.forEach((key) => document.removeEventListener(key, this.registerActivity));
 				window.removeEventListener('focus', this.registerActivity);
 			};
-		}, [RocketChatDesktop]);
+		}, [desktopDetectsIdle]);
 
 		useEffect(() => {
 			this.awayTime = awayTime;

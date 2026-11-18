@@ -1,4 +1,4 @@
-import { States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericModal,
@@ -12,14 +12,15 @@ import {
 	PageContent,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import InviteRow from './InviteRow';
 
 const InvitesPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
@@ -68,16 +69,18 @@ const InvitesPage = () => {
 
 	const notSmall = useMediaQuery('(min-width: 768px)');
 
+	const columns: TableColumnWidth[] = [notSmall ? '20%' : '80%', ...(notSmall ? (['35%', '20%', '10%', '10%'] as const) : [])];
+
 	const headers = useMemo(
 		() => (
 			<>
-				<GenericTableHeaderCell width={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
+				<GenericTableHeaderCell>{t('Token')}</GenericTableHeaderCell>
 				{notSmall && (
 					<>
-						<GenericTableHeaderCell width='35%'>{t('Created_at')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell width='20%'>{t('Expiration')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell width='10%'>{t('Uses')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell width='10%'>{t('Uses_left')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Created_at')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Expiration')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Uses')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Uses_left')}</GenericTableHeaderCell>
 						<GenericTableHeaderCell />
 					</>
 				)}
@@ -92,7 +95,7 @@ const InvitesPage = () => {
 			<PageContent>
 				<>
 					{isLoading && (
-						<GenericTable>
+						<GenericTable columns={columns}>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>
 								<GenericTableLoadingTable headerCells={4} />
@@ -100,7 +103,7 @@ const InvitesPage = () => {
 						</GenericTable>
 					)}
 					{isSuccess && data && data.length > 0 && (
-						<GenericTable>
+						<GenericTable columns={columns}>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>
 								{isLoading && <GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />}

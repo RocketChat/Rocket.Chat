@@ -43,7 +43,7 @@ export class OutboundMessageProvider {
 			return result as T;
 		} catch (e) {
 			if (e?.message === 'error-invalid-provider') {
-				throw new Error('error-provider-not-registered');
+				throw new Error('error-provider-not-registered', { cause: e });
 			}
 			throw new AppOutboundProcessError(e.message, method);
 		}

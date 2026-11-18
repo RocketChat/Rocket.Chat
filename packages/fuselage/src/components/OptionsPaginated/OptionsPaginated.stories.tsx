@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { createRef } from 'react';
 
 import { Box } from '../Box';
@@ -91,7 +91,6 @@ export const CheckOptionStory: Story = {
 	name: 'CheckOption',
 	args: {
 		cursor: 0,
-		value: ['1'],
 		renderItem: CheckOption,
 	},
 	render: (args) => (

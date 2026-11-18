@@ -126,7 +126,7 @@ export const useActiveSpeakerId = (
 			}
 			void ctx.close().catch(() => undefined);
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [participantsKey]);
 
 	return activeSpeakerId ?? fallbackId;

@@ -700,11 +700,12 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 
 File name: `uikit-components-test_0.0.1.zip`
 
-An app that renders the UIKit blocks and elements whose options or values come from the server: the user, channel and conversation selects (single and multi), the number, email and URL inputs, the date-time picker, and the header and markdown blocks. It provides a slash command (`open-uikit-components-test`) with three actions:
+An app that renders the UIKit blocks and elements whose options or values come from the server: the user, channel and conversation selects (single and multi), the number, email and URL inputs, the date-time picker, and the header and markdown blocks. It also sends the display blocks: table, video, and context actions with feedback buttons. It provides a slash command (`open-uikit-components-test`) with four actions:
 
 - `modal` - Opens a modal with every element, most of them in input blocks, plus a users select as a section accessory
 - `ctx` - Opens a contextual bar with the same blocks
 - `message` - Sends a message with the header and markdown blocks, and a users select in an actions block
+- `display` - Sends a message with a table, a video, and a `context_actions` block holding feedback buttons and an icon button
 
 It also takes a second argument with a random "seed" used to identify the current execution context. The view id is `<action>-<seed>`.
 
@@ -715,7 +716,7 @@ Each input block has a fixed `blockId` and `actionId`, so a test can read a valu
 - `executeViewSubmitHandler`: `view_submit_id`, and `view_submit_state` (the view state, as JSON)
 - `executeBlockActionHandler`: `block_action_actionId`, `block_action_value` (as JSON), `block_action_room`, `block_action_container`, and `block_action_view` (the container id)
 
-The block literals are cast to `LayoutBlock[]`, because the `@rocket.chat/ui-kit` element types require the `appId` and `blockId` that the engine fills in.
+The block literals are cast to `LayoutBlock[]` through `unknown`, because the `@rocket.chat/ui-kit` element types require the `appId` and `blockId` that the engine fills in.
 
 <details>
 <summary>App source code</summary>
@@ -838,7 +839,55 @@ const viewBlocks = () =>
 				placeholder: { type: 'plain_text', text: 'Accessory user' },
 			},
 		},
-	] as LayoutBlock[];
+	] as unknown as LayoutBlock[];
+
+// Message blocks that only display content, plus the context actions that rate or act on the message.
+const displayBlocks = () =>
+	[
+		{
+			type: 'table',
+			blockId: 'table',
+			column_settings: [null, { align: 'right' }],
+			rows: [
+				[
+					{ type: 'raw_text', text: 'Service' },
+					{ type: 'raw_text', text: 'Uptime' },
+				],
+				[
+					{ type: 'mrkdwn', text: '**API**' },
+					{ type: 'raw_text', text: '99.98%' },
+				],
+			],
+		},
+		{
+			type: 'video',
+			blockId: 'video',
+			video_url: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
+			thumbnail_url: 'https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg',
+			alt_text: 'Big Buck Bunny, an animated short film',
+			title: { type: 'plain_text', text: 'Big Buck Bunny' },
+			provider_name: 'YouTube',
+		},
+		{
+			type: 'context_actions',
+			blockId: 'context_actions',
+			elements: [
+				{
+					type: 'feedback_buttons',
+					actionId: 'feedback',
+					positive_button: { text: { type: 'plain_text', text: 'Good answer' }, value: 'good' },
+					negative_button: { text: { type: 'plain_text', text: 'Bad answer' }, value: 'bad' },
+				},
+				{
+					type: 'icon_button',
+					actionId: 'details',
+					icon: { type: 'icon', icon: 'info', variant: 'default' },
+					label: 'Show details',
+					value: 'details',
+				},
+			],
+		},
+	] as unknown as LayoutBlock[];
 
 const messageBlocks = () =>
 	[
@@ -855,7 +904,7 @@ const messageBlocks = () =>
 				},
 			],
 		},
-	] as LayoutBlock[];
+	] as unknown as LayoutBlock[];
 
 export class UiKitComponentsTestApp extends App implements IUIKitInteractionHandler {
 	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
@@ -924,8 +973,12 @@ export class UiKitComponentsTestApp extends App implements IUIKitInteractionHand
 					);
 				}
 
-				if (action === 'message') {
-					const msg = modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(messageBlocks());
+				if (action === 'message' || action === 'display') {
+					const msg = modify
+						.getCreator()
+						.startMessage()
+						.setRoom(context.getRoom())
+						.setBlocks(action === 'message' ? messageBlocks() : displayBlocks());
 
 					await modify.getCreator().finish(msg);
 				}
@@ -1253,6 +1306,109 @@ function describeOutcome(context: IMediaCallEndedContext): string {
 	}
 
 	return 'unreachable';
+}
+```
+
+</details>
+
+#### ABAC room creation
+
+File name: `abac-room-creation-test_0.0.1.zip`
+
+An app that creates a room through `IModifyCreator.finish()`, passing `abacAttributes` in the room it builds, and sends a message to a room as its app user. `tests/end-to-end/apps/abac-room-creation.ts` installs it once with the `abac.write` permission granted and once without, through the `permissions` field of the install request.
+
+**Endpoints:**
+
+- `POST /api/apps/public/:appId/create-room` with `{ "type", "name", "creatorUsername"?, "members"?, "abacAttributes"? }`. Without `creatorUsername` the room is created by the app user. It returns `{ "roomId" }`, or a 400 with `{ "error" }` holding the message of the error `finish()` threw, which is what the tests assert on.
+- `POST /api/apps/public/:appId/send-message` with `{ "roomId", "text" }`. The message is sent as the app user. It returns `{ "messageId" }`, or a 400 with `{ "error" }` as above.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IAppAccessors, IConfigurationExtend, IHttp, ILogger, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+
+class CreateRoomEndpoint extends ApiEndpoint {
+	public path = 'create-room';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { type, name, creatorUsername, members = [], abacAttributes } = request.content;
+
+		const creator = creatorUsername
+			? await read.getUserReader().getByUsername(creatorUsername)
+			: await read.getUserReader().getAppUser();
+
+		if (!creator) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'creator-not-found' } };
+		}
+
+		const room = modify
+			.getCreator()
+			.startRoom({ type, slugifiedName: name, displayName: name, creator, abacAttributes } as IRoom)
+			.setMembersToBeAddedByUsernames(members);
+
+		try {
+			return { status: HttpStatusCode.OK, content: { roomId: await modify.getCreator().finish(room) } };
+		} catch (error) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: error instanceof Error ? error.message : String(error) } };
+		}
+	}
+}
+
+class SendMessageEndpoint extends ApiEndpoint {
+	public path = 'send-message';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { roomId, text } = request.content;
+
+		const room = await read.getRoomReader().getById(roomId);
+
+		if (!room) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'room-not-found' } };
+		}
+
+		const message = modify.getCreator().startMessage().setRoom(room).setText(text);
+
+		try {
+			return { status: HttpStatusCode.OK, content: { messageId: await modify.getCreator().finish(message) } };
+		} catch (error) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: error instanceof Error ? error.message : String(error) } };
+		}
+	}
+}
+
+export class AbacRoomCreationTestApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new CreateRoomEndpoint(this), new SendMessageEndpoint(this)],
+		});
+	}
 }
 ```
 

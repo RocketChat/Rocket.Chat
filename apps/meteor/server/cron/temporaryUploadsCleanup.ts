@@ -6,7 +6,7 @@ import { FileUpload } from '../lib/media/file-upload';
 async function temporaryUploadCleanup(): Promise<void> {
 	const files = await Uploads.findExpiredTemporaryFiles({ projection: { _id: 1 } }).toArray();
 
-	for await (const file of files) {
+	for (const file of files) {
 		await FileUpload.getStore('Uploads').deleteById(file._id);
 	}
 }

@@ -40,7 +40,6 @@ import { TestsAppBridges } from './bridges/appBridges';
 import { TestSourceStorage } from './storage/TestSourceStorage';
 import { TestsAppLogStorage } from './storage/logStorage';
 import { TestsAppStorage } from './storage/storage';
-import type { AppOutboundCommunicationProviderManager } from '../../server/managers/AppOutboundCommunicationProviderManager';
 import type { AppManager } from '../../src/server/AppManager';
 import { ProxiedApp } from '../../src/server/ProxiedApp';
 import type { AppBridges } from '../../src/server/bridges';
@@ -53,6 +52,7 @@ import type {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 } from '../../src/server/managers';
+import type { AppOutboundCommunicationProviderManager } from '../../src/server/managers/AppOutboundCommunicationProviderManager';
 import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { IMarketplaceInfo, IMarketplaceSubscriptionInfo } from '../../src/server/marketplace';

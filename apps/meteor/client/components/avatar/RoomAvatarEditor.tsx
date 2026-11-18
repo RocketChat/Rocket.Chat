@@ -4,11 +4,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { useSingleFileInput } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
@@ -62,13 +62,19 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 				margin={12}
 			>
 				<ButtonGroup>
-					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
+					<Button
+						icon='upload'
+						disabled={isRoomFederated(room) || disabled}
+						size='small'
+						title={t('Upload_user_avatar')}
+						onClick={clickUpload}
+					>
 						{t('Upload')}
 					</Button>
 
 					<Button
-						small
-						danger
+						size='small'
+						variant='danger'
 						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
 						disabled={!roomAvatar || isRoomFederated(room) || disabled}

@@ -1,5 +1,5 @@
 import { Divider } from '@rocket.chat/fuselage';
 
-const HeaderToolbarDivider = () => <Divider marginInline={4} vertical />;
+const HeaderToolbarDivider = () => <Divider vertical small />;
 
 export default HeaderToolbarDivider;

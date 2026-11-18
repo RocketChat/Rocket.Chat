@@ -1,4 +1,5 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
+import type { TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -49,6 +50,8 @@ const DeviceManagementAdminTable = () => {
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', ...(mediaQuery ? (['auto', 'auto', 'auto'] as const) : []), '5%'];
+
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell key='client' direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
@@ -68,7 +71,7 @@ const DeviceManagementAdminTable = () => {
 			),
 			mediaQuery && <GenericTableHeaderCell key='_id'>{t('Device_ID')}</GenericTableHeaderCell>,
 			mediaQuery && <GenericTableHeaderCell key='ip'>{t('IP_Address')}</GenericTableHeaderCell>,
-			<GenericTableHeaderCell width='5%' key='menu' />,
+			<GenericTableHeaderCell key='menu' />,
 		],
 		[t, mediaQuery, setSort, sortDirection, sortBy],
 	);
@@ -79,6 +82,7 @@ const DeviceManagementAdminTable = () => {
 			<DeviceManagementTable
 				{...queryResult}
 				headers={headers}
+				columns={columns}
 				renderRow={(session) => (
 					<DeviceManagementAdminRow
 						key={session._id}

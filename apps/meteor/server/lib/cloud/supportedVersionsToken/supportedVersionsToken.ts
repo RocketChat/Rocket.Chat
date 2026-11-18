@@ -107,7 +107,7 @@ const getSupportedVersionsFromCloud = async () => {
 	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {
 		return {
 			success: true,
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			result: JSON.parse(process.env.CLOUD_SUPPORTED_VERSIONS!),
 		};
 	}
@@ -147,10 +147,10 @@ const getSupportedVersionsToken = async (retry = 0) => {
 	 * Gets the latest version
 	 * return the token
 	 */
-	const [versionsFromLicense, cloudResponse] = await Promise.all([
-		License.getLicense(),
-		License.hasOfflineLicense() ? ({ success: true, result: undefined } as const) : getSupportedVersionsFromCloud(),
-	]);
+	const versionsFromLicense = License.getLicense();
+	const cloudResponse = await (License.hasOfflineLicense()
+		? ({ success: true, result: undefined } as const)
+		: getSupportedVersionsFromCloud());
 
 	const supportedVersions = await supportedVersionsChooseLatest(
 		supportedVersionsFromBuild,

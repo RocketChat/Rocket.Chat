@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
@@ -30,7 +30,7 @@ class ExternalQueue implements IRoutingMethod {
 		try {
 			const results = (await Promise.all(promises)).filter(Boolean);
 			if (!results.length) {
-				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+				throw new ClientSafeError('no-agent-online', 'Sorry, no online agents');
 			}
 			return results[0];
 		} catch (err) {

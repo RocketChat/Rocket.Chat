@@ -1,13 +1,21 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import type express from 'express';
-import { Meteor } from 'meteor/meteor';
+import rateLimit from 'express-rate-limit';
 import { WebApp } from 'meteor/webapp';
 
+import { registerOAuthClient } from './registerOAuthClient';
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api';
+import { nodeLoggerMiddleware } from '../../../api/v1/middlewares/logger';
+import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
+import { settings } from '../../../settings/cached';
+import { httpApp } from '../../http/httpServer';
+import { getWorkspaceURL } from '../../utils/getURL';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true
@@ -67,8 +75,35 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 		birthdate: '',
 		preffered_username: user.username,
 		updated_at: user._updatedAt,
-		picture: `${Meteor.absoluteUrl()}avatar/${user.username}`,
+		picture: getWorkspaceURL(`avatar/${user.username}`),
 	});
+});
+
+// The registration limiter keys on `req.ip`, which must be the client rather than a reverse proxy; the proxies are counted
+// the way the REST API counts them.
+oauth2server.app.set('trust proxy', parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0);
+
+const registrationRateLimiter = rateLimit({
+	windowMs: 60_000,
+	max: () => settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	skip: () =>
+		process.env.TEST_MODE === 'true' ||
+		process.env.TEST_MODE === 'api' ||
+		settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
+		(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
+	handler: (_req, res) => {
+		res.status(429).send({ error: 'too_many_requests', error_description: 'Too many registrations. Please try again later.' });
+	},
+});
+
+oauth2server.app.post('/oauth/register', registrationRateLimiter, async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { statusCode, body } = await registerOAuthClient(req.body);
+		res.set('Cache-Control', 'no-store');
+		res.status(statusCode).send(body);
+	} catch (error) {
+		next(error);
+	}
 });
 
 API.v1.addAuthMethod((routeContext) => {
@@ -83,3 +118,8 @@ API.v1.addAuthMethod((routeContext) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
+httpApp.get(
+	'/.well-known/oauth-authorization-server/*',
+	nodeHandler(nodeLoggerMiddleware(new Logger('OAuth'))),
+	serveAuthorizationServerMetadata,
+);

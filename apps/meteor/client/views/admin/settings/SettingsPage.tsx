@@ -31,7 +31,6 @@ const SettingsPage = () => {
 						md: 4,
 						lg: 6,
 						xl: 4,
-						padding: 8,
 					}}
 				>
 					{!!groups.length &&

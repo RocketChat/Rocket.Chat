@@ -1,3 +1,3 @@
-export type * from './IMediaStreamManager';
-export type * from './IMediaStreamWrapper';
-export type * from './MediaStreamIdentification';
+export type * from './IMediaStreamManager.js';
+export type * from './IMediaStreamWrapper.js';
+export type * from './MediaStreamIdentification.js';

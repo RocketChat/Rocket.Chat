@@ -439,7 +439,7 @@ const e2eEndpoints = API.v1
 		async function action() {
 			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
 			if (!(await hasPermissionAsync(this.user, 'toggle-room-e2e-encryption', rid))) {
-				return API.v1.forbidden('error-not-allowed');
+				return API.v1.forbidden('User does not have the permissions required for this action');
 			}
 			if (LockMap.has(rid)) {
 				throw new Error('error-e2e-key-reset-in-progress');
@@ -528,6 +528,6 @@ const e2eEndpoints = API.v1
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends E2eEndpoints {}
 }

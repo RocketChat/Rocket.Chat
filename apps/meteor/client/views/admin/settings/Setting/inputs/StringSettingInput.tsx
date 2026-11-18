@@ -27,7 +27,7 @@ function StringSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: StringSettingInputProps) {
-	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+	const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 

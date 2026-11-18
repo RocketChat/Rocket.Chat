@@ -1,8 +1,7 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { SHA256 } from '@rocket.chat/sha256';
-import { hash as bcryptHash } from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
@@ -281,12 +280,12 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-				...(this._options.syncVoipExtension && userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
+				...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
 			}),
 			...(this._options.syncVoipExtension &&
 				!userData.voipExtension && {
 					$unset: {
-						freeSwitchExtension: 1,
+						sipExtension: 1,
 					},
 				}),
 		});
@@ -329,7 +328,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	async hashPassword(password: string): Promise<string> {
-		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
+		return hashPassword(password);
 	}
 
 	generateTempPassword(userData: IImportUser): string {
@@ -361,7 +360,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(userData.importIds?.length && { importIds: userData.importIds }),
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
-			...(this._options.syncVoipExtension && userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
+			...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
 			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}

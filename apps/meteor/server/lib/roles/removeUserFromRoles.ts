@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Roles } from '@rocket.chat/models';
 
@@ -13,18 +13,18 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roles: IRol
 
 	const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 	if (!user) {
-		throw new MeteorError('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	if (!(await validateRoleList(roles))) {
-		throw new MeteorError('error-invalid-role', 'Invalid role');
+		throw new ClientSafeError('error-invalid-role', 'Invalid role');
 	}
 
 	if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 		throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
 	}
 
-	for await (const roleId of roles) {
+	for (const roleId of roles) {
 		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 		if (!role) {
 			continue;

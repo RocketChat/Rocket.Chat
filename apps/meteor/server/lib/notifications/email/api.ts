@@ -1,14 +1,14 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML, validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
-import { Email } from 'meteor/email';
-import { Meteor } from 'meteor/meteor';
 import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';
+import { sendMail } from './transport';
 import { strLeft, strRightBack } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
@@ -155,7 +155,7 @@ export const sendNoWrap = async ({
 	headers?: string;
 }) => {
 	if (!checkAddressFormat(to)) {
-		throw new Meteor.Error('invalid email');
+		throw new ClientSafeError('invalid email');
 	}
 
 	if (!text) {
@@ -175,7 +175,7 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
-	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
+	setImmediate(() => sendMail(eventResult || email).catch((e) => console.error(e)));
 };
 
 export const send = async ({
@@ -214,7 +214,7 @@ export const checkAddressFormatAndThrow: Assert = (from: string, func: string): 
 		return;
 	}
 
-	throw new Meteor.Error('error-invalid-from-address', 'Invalid from address', {
+	throw new ClientSafeError('error-invalid-from-address', 'Invalid from address', {
 		function: func,
 	});
 };

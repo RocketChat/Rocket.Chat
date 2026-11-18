@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
-import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../../hooks/uikit/useUiKitActionManager';
 
 export type CloudAnnouncementHandlerProps = Pick<IBanner, 'dictionary' | 'surface' | 'view'>;
 

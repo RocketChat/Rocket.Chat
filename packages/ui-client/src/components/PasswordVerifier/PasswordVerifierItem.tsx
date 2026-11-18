@@ -35,6 +35,7 @@ export const PasswordVerifierItem = ({ isValid, ...props }: PasswordVerifierItem
 			display='flex'
 			flexBasis={props.vertical ? '100%' : '50%'}
 			alignItems='center'
+			gap={4}
 			marginBlockEnd={8}
 			fontScale='c1'
 			color={icon.color}
@@ -42,7 +43,7 @@ export const PasswordVerifierItem = ({ isValid, ...props }: PasswordVerifierItem
 			aria-hidden='false'
 			aria-labelledby={`${iconId} ${textId}`}
 		>
-			<Icon id={iconId} aria-hidden='false' size='x16' marginInlineEnd={4} {...icon} />
+			<Icon id={iconId} aria-hidden='false' size='x16' {...icon} />
 			<span id={textId}>{requirementText}</span>
 		</Box>
 	);

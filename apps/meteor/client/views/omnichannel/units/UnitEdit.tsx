@@ -13,13 +13,14 @@ import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMonitors from '../components/AutoCompleteMonitors';
 
@@ -40,13 +41,13 @@ export type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
-	onUpdate?: (params: OmnichannelBusinessUnitPayload) => void;
+	onUpdate?: (params: OmnichannelBusinessUnitPayload) => void | Promise<unknown>;
 	onDelete?: () => void;
 	onClose: () => void;
 };
 
 const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete, onClose }: UnitEditProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const saveUnit = useEndpoint('POST', '/v1/livechat/units');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -265,14 +266,14 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={() => onDelete?.()}>
+							<Button icon='trash' variant='danger' onClick={() => onDelete?.()}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

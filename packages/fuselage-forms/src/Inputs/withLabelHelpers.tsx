@@ -1,5 +1,5 @@
 // Disabled this flag since we need to wrap multiple components
-/* eslint-disable react/no-multi-comp */
+/* oxlint-disable react/no-multi-comp */
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ComponentType, Ref, RefAttributes } from 'react';
 import { VisuallyHidden } from 'react-aria';

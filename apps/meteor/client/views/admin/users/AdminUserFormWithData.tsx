@@ -1,17 +1,17 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import AdminUserForm from './AdminUserForm';
-import { FormSkeleton } from '../../../components/Skeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 export type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	context: string;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	roleError: Error | null;
 };
 
@@ -34,17 +34,17 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 
 	if (isError) {
 		return (
-			<Callout margin={16} type='danger'>
-				{t('User_not_found')}
-			</Callout>
+			<Box padding={16}>
+				<Callout type='danger'>{t('User_not_found')}</Callout>
+			</Box>
 		);
 	}
 
 	if (data?.user && !!data.user.federated) {
 		return (
-			<Callout margin={16} type='danger'>
-				{t('Edit_Federated_User_Not_Allowed')}
-			</Callout>
+			<Box padding={16}>
+				<Callout type='danger'>{t('Edit_Federated_User_Not_Allowed')}</Callout>
+			</Box>
 		);
 	}
 

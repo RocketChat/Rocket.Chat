@@ -29,7 +29,6 @@ import {
 	LivechatRooms,
 	AbacAttributes,
 } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
 import { getAppsStatistics } from './getAppsStatistics';
@@ -39,6 +38,7 @@ import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { Info } from '../../../../rocketchat.info';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { db } from '../../../database/utils';
 import { getMatrixFederationStatistics } from '../../../services/federation/infrastructure/rocket-chat/adapters/Statistics';
 import { settings } from '../../../settings';
 import { isRunningMs } from '../../isRunningMs';
@@ -64,8 +64,6 @@ const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: nu
 	return languages;
 };
 
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
 export const statistics = {
 	get: async (): Promise<IStats> => {
 		const readPreference = readSecondaryPreferred(db);
@@ -74,7 +72,7 @@ export const statistics = {
 		const statsPms = [];
 
 		// Setup Wizard
-		const [organizationType, industry, size, country, language, serverType, registerServer] = await Promise.all([
+		const [organizationType, industry, size, country, language, serverType, registerServer] = [
 			settings.get<string>('Organization_Type'),
 			settings.get<string>('Industry'),
 			settings.get<string>('Size'),
@@ -82,7 +80,7 @@ export const statistics = {
 			settings.get<string>('Language'),
 			settings.get<string>('Server_Type'),
 			settings.get<boolean>('Register_Server'),
-		]);
+		];
 
 		statistics.wizard = {
 			organizationType,
@@ -192,10 +190,10 @@ export const statistics = {
 		);
 
 		// Number of custom fields
-		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.estimatedDocumentCount()));
+		statistics.totalCustomFields = await LivechatCustomField.estimatedDocumentCount();
 
 		// Number of public custom fields
-		statsPms.push((statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true })));
+		statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true });
 
 		// Livechat Automatic forwarding feature enabled
 		statistics.livechatAutomaticForwardingUnansweredChats = settings.get<number>('Livechat_auto_transfer_chat_timeout') !== 0;
@@ -560,8 +558,6 @@ export const statistics = {
 				}),
 			);
 		}
-
-		statistics.allowUnsafeQueryAndFieldsApiParamsEnabled = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
 
 		await Promise.all(statsPms).catch(log);
 

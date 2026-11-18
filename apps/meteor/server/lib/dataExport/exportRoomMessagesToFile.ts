@@ -159,6 +159,9 @@ export const getMessageData = (
 		case 'abac-removed-user-from-room':
 			messageObject.msg = i18n.t('abac_removed_user_from_the_room');
 			break;
+		case 'abac-removed-users-from-room':
+			messageObject.msg = i18n.t('abac_removed_users_from_the_room', { count: Number(msg.msg) });
+			break;
 	}
 
 	return messageObject;
@@ -274,7 +277,7 @@ export const exportRoomMessagesToFile = async function (
 
 	const limit =
 		settings.get<number>('UserData_MessageLimitPerRequest') > 0 ? settings.get<number>('UserData_MessageLimitPerRequest') : 1000;
-	for await (const exportOpRoomData of roomList) {
+	for (const exportOpRoomData of roomList) {
 		if (!('targetFile' in exportOpRoomData)) {
 			continue;
 		}

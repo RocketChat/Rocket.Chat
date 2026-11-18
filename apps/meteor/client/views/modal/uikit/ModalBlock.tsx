@@ -173,8 +173,8 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 	}, [handleKeyDown, onClose]);
 
 	return (
-		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
-			<FocusScope contain restoreFocus autoFocus>
+		<FocusScope contain restoreFocus autoFocus>
+			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal aria-labelledby={`${id}-title`} open id={id} ref={ref}>
 					<ModalHeader>
 						{view.showIcon ? <ModalThumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
@@ -189,7 +189,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					<ModalFooter>
 						<ModalFooterControllers>
 							{view.close && (
-								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+								<Button variant={view.close.style === 'danger' ? 'danger' : undefined} onClick={onCancel}>
 									{modalParser.renderTextObject(view.close.text, 0)}
 								</Button>
 							)}
@@ -201,8 +201,8 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 						</ModalFooterControllers>
 					</ModalFooter>
 				</Modal>
-			</FocusScope>
-		</AnimatedVisibility>
+			</AnimatedVisibility>
+		</FocusScope>
 	);
 };
 

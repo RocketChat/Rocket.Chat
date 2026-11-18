@@ -1,19 +1,18 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 
-describe('[SetupWizard]', function () {
-	this.retries(0);
-
-	before((done) => getCredentials(done));
+describe('[SetupWizard]', () => {
+	before((_t, done) => getCredentials(done));
 
 	describe('[/setupWizard.parameters]', () => {
 		it('should return the wizard parameters without authentication', async () => {
-			return request
+			await request
 				.get(api('setupWizard.parameters'))
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -25,7 +24,7 @@ describe('[SetupWizard]', function () {
 		});
 
 		it('should only return settings that belong to the wizard', async () => {
-			return request
+			await request
 				.get(api('setupWizard.parameters'))
 				.expect(200)
 				.expect((res: Response) => {
@@ -38,7 +37,7 @@ describe('[SetupWizard]', function () {
 		});
 
 		it('should return the wizard parameters when authenticated', async () => {
-			return request
+			await request
 				.get(api('setupWizard.parameters'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -60,7 +59,7 @@ describe('[SetupWizard]', function () {
 			after(async () => updateSetting('Show_Setup_Wizard', previousState));
 
 			it('should not expose the wizard parameters to unauthenticated requests', async () => {
-				return request
+				await request
 					.get(api('setupWizard.parameters'))
 					.expect('Content-Type', 'application/json')
 					.expect(403)
@@ -72,7 +71,7 @@ describe('[SetupWizard]', function () {
 			});
 
 			it('should not expose the wizard parameters to authenticated requests', async () => {
-				return request
+				await request
 					.get(api('setupWizard.parameters'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')

@@ -8,7 +8,7 @@ export type TooltipContainerProps = {
 };
 
 type TooltipContainerState = {
-	tooltip: any;
+	tooltip: ComponentChildren;
 	activeChild: number | null;
 	event: any;
 	placement: Placement;
@@ -27,7 +27,7 @@ class TooltipContainer extends Component<TooltipContainerProps, TooltipContainer
 		event: any,
 		{ content, placement = 'bottom', childIndex }: { content: any; placement?: Placement; childIndex: number | null },
 	) => {
-		const triggerBounds = event.target.getBoundingClientRect();
+		const triggerBounds = (event.target as Element).getBoundingClientRect();
 		this.setState({
 			tooltip: (
 				<Tooltip floating placement={placement} triggerBounds={triggerBounds}>

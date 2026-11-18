@@ -28,7 +28,7 @@ test.describe.parallel('Mention User Card [To Member]', () => {
 
 	test('should show correct userinfo actions for a member of the room to a non-privileged member', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`);
+		const mentionSpan = page.locator(`span[data-uid="${Users.user1.data._id}"]`);
 		await mentionSpan.hover();
 
 		await expect(page.locator('div[aria-label="User card actions"]')).toBeVisible();
@@ -59,7 +59,7 @@ test.describe.parallel('Mention User Card [To Member]', () => {
 
 	test('should show correct userinfo actions for a non-member of the room to a non-privileged member', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`);
+		const mentionSpan = page.locator(`span[data-uid="${Users.user2.data._id}"]`);
 		await mentionSpan.hover();
 
 		await expect(page.locator('div[aria-label="User card actions"]')).toBeVisible();

@@ -1,5 +1,5 @@
-/* eslint-disable complexity */
-import { MeteorError } from '@rocket.chat/core-services';
+/* oxlint-disable complexity */
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
@@ -18,8 +18,8 @@ export const canEditExtension = async (newExtension?: string) => {
 		return false;
 	}
 
-	if (newExtension && (await Users.findOneByFreeSwitchExtension(newExtension, { projection: { _id: 1 } }))) {
-		throw new MeteorError('error-extension-not-available', 'Extension is already assigned to another user');
+	if (newExtension && (await Users.findOneBySipExtension(newExtension, { projection: { _id: 1 } }))) {
+		throw new ClientSafeError('error-extension-not-available', 'Extension is already assigned to another user');
 	}
 
 	return true;
@@ -39,28 +39,28 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 	const user = await Users.findOneById(userData._id);
 
 	if (!user) {
-		throw new MeteorError('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	if (
 		(userData.presenceDisabledByAdmin !== undefined || userData.statusVisibilityDeniedByAdmin !== undefined) &&
 		(!canEditOtherUserInfo || !isAdminHidingAllowed())
 	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user presence is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !(await hasPermissionAsync(userId, 'assign-roles'))) {
-		throw new MeteorError('error-action-not-allowed', 'Assign roles is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Assign roles is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_role',
 		});
 	}
 
 	if (!settings.get('Accounts_AllowUserProfileChange') && !canEditOtherUserInfo && !canEditOtherUserPassword) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user profile is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user profile is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
@@ -71,7 +71,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		!settings.get('Accounts_AllowUsernameChange') &&
 		(editingMyself ? user.username : !canEditOtherUserInfo)
 	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit username is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
@@ -82,7 +82,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		!settings.get('Accounts_AllowUserStatusMessageChange') &&
 		(!canEditOtherUserInfo || editingMyself)
 	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user status is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user status is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
@@ -93,7 +93,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		!settings.get('Accounts_AllowRealNameChange') &&
 		(!canEditOtherUserInfo || editingMyself)
 	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user real name is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
@@ -105,7 +105,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		!settings.get('Accounts_AllowEmailChange') &&
 		(!canEditOtherUserInfo || editingMyself)
 	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user email is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user email is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
@@ -116,17 +116,14 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		!settings.get('Accounts_AllowPasswordChange') &&
 		(editingMyself ? user.services?.password || !user.requirePasswordChange : !canEditOtherUserPassword)
 	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user password is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (
-		isEditingField(user.freeSwitchExtension ?? '', userData.freeSwitchExtension) &&
-		!(await canEditExtension(userData.freeSwitchExtension))
-	) {
-		throw new MeteorError('error-action-not-allowed', 'Edit user voice call extension is not allowed', {
+	if (isEditingField(user.sipExtension ?? '', userData.sipExtension) && !(await canEditExtension(userData.sipExtension))) {
+		throw new ClientSafeError('error-action-not-allowed', 'Edit user voice call extension is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});

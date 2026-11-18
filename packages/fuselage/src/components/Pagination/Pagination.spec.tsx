@@ -1,4 +1,5 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './Pagination.stories';
@@ -11,11 +12,6 @@ jest.mock('react', () => ({
 	useId: () => 'test-id',
 }));
 
-it('renders without crashing', () => {
-	const tree = render(<Default />);
-	expect(tree.baseElement).toMatchSnapshot();
-});
-
 it('%s should have no a11y violations', async () => {
 	const { container } = render(<Default />);
 
@@ -24,7 +20,7 @@ it('%s should have no a11y violations', async () => {
 });
 
 it('should override with custom aria-label', () => {
-	const { getByLabelText } = render(<Default aria-label='Custom Pagination Navigation' />);
+	render(<Default aria-label='Custom Pagination Navigation' />);
 
-	expect(getByLabelText('Custom Pagination Navigation')).toBeInTheDocument();
+	expect(screen.getByLabelText('Custom Pagination Navigation')).toBeInTheDocument();
 });

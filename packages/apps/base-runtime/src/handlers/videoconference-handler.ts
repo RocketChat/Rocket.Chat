@@ -33,7 +33,7 @@ export default async function videoConferenceHandler(request: RequestContext): P
 	const args = [...(videoconf ? [videoconf] : []), ...(user ? [user] : []), ...(options ? [options] : [])];
 
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+		// oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
 		const result = await (method as Function).apply(wrapComposedApp(provider, request), [
 			...args,
 			AppAccessorsInstance.getReader(),
@@ -44,6 +44,7 @@ export default async function videoConferenceHandler(request: RequestContext): P
 
 		logger.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- result of the app's provider method invoked as a bare Function, passed through to the host as the JSON-RPC result
 		return result;
 	} catch (e) {
 		logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);

@@ -19,8 +19,8 @@ const Load = ({ load, ...props }: LoadProps) => {
 		}
 	`;
 	return (
-		<ImageBox className={clickable} {...props} onClick={load}>
-			<Icon name='image' color='hint' size='x64' />
+		<ImageBox className={clickable} color='hint' {...props} onClick={load}>
+			<Icon name='image' size='x64' />
 			<Box fontScale='h2' color='default'>
 				{t('Click_to_load')}
 			</Box>

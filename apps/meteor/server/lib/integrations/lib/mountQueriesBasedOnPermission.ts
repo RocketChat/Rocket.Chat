@@ -1,12 +1,12 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { DeepWritable } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 
 export const mountIntegrationQueryBasedOnPermissions = async (userId: string) => {
 	if (!userId) {
-		throw new Meteor.Error('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" function.');
+		throw new ClientSafeError('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" function.');
 	}
 	const canViewAllOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
 	const canViewAllIncomingIntegrations = await hasPermissionAsync(userId, 'manage-incoming-integrations');
@@ -40,10 +40,10 @@ export const mountIntegrationQueryBasedOnPermissions = async (userId: string) =>
 
 export const mountIntegrationHistoryQueryBasedOnPermissions = async (userId: string, integrationId: string) => {
 	if (!userId) {
-		throw new Meteor.Error('You must provide the userId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
+		throw new ClientSafeError('You must provide the userId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
 	}
 	if (!integrationId) {
-		throw new Meteor.Error('You must provide the integrationId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
+		throw new ClientSafeError('You must provide the integrationId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
 	}
 
 	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');

@@ -1,5 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 import type { SaveUserData } from './saveUser';
 import { settings } from '../../../settings';
@@ -7,14 +6,12 @@ import * as Mailer from '../../notifications/email/api';
 
 let html = '';
 let passwordChangedHtml = '';
-Meteor.startup(() => {
-	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
-		html = template;
-	});
+Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
+	html = template;
+});
 
-	Mailer.getTemplate('Password_Changed_Email', (template) => {
-		passwordChangedHtml = template;
-	});
+Mailer.getTemplate('Password_Changed_Email', (template) => {
+	passwordChangedHtml = template;
 });
 
 export async function sendUserEmail(subject: string, html: string, userData: SaveUserData): Promise<void> {
@@ -39,7 +36,7 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 	} catch (error) {
 		const errorMessage = typeof error === 'object' && error && 'message' in error ? error.message : '';
 
-		throw new MeteorError('error-email-send-failed', `Error trying to send email: ${errorMessage}`, {
+		throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${errorMessage}`, {
 			function: 'RocketChat.saveUser',
 			message: errorMessage,
 		});

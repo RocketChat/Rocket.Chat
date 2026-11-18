@@ -41,7 +41,7 @@ const TeamsChannelItemMenu = ({ room, mainRoom, reload }: { room: IRoom; mainRoo
 
 	return (
 		<GenericMenu
-			tiny
+			size='tiny'
 			title={t('More')}
 			placement='bottom-end'
 			sections={[

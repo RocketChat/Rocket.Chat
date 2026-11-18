@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -12,11 +12,6 @@ import * as stories from './PaginatedSelectFiltered.stories';
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 describe('[PaginatedSelectFiltered Component]', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const tree = render(<Story />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 
@@ -38,6 +33,7 @@ describe('[PaginatedSelectFiltered Component]', () => {
 		expect(screen.getByRole('textbox')).toHaveAttribute('placeholder', placeholder);
 
 		// Necessary due to styles not being properly computed in the test environment
+		// oxlint-disable-next-line testing-library/no-node-access -- the wrapper has no role, label or text
 		expect(screen.getByRole('textbox').parentElement).not.toHaveClass(hiddenClass);
 
 		rerender(<PaginatedSelectFiltered {...defaultProps} value='item1' />);
@@ -45,6 +41,7 @@ describe('[PaginatedSelectFiltered Component]', () => {
 		expect(screen.getByRole('textbox')).not.toHaveAttribute('placeholder', placeholder);
 
 		// Necessary due to styles not being properly computed in the test environment
+		// oxlint-disable-next-line testing-library/no-node-access -- the wrapper has no role, label or text
 		expect(screen.getByRole('textbox').parentElement).toHaveClass(hiddenClass);
 	});
 

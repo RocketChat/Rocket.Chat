@@ -9,12 +9,13 @@ import {
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const OAuthAppsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const uid = { uid: useUserId() || '' };
@@ -73,11 +74,11 @@ const OAuthAppsTable = () => {
 								action
 								qa-oauth-app-id={_id}
 							>
-								<GenericTableCell withTruncatedText color='default' fontScale='p2m'>
+								<GenericTableCell truncate color='default' strong>
 									{name}
 								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{createdBy}</GenericTableCell>
-								<GenericTableCell withTruncatedText>{formatDateAndTime(_createdAt)}</GenericTableCell>
+								<GenericTableCell truncate>{createdBy}</GenericTableCell>
+								<GenericTableCell truncate>{formatDateAndTime(_createdAt)}</GenericTableCell>
 							</GenericTableRow>
 						))}
 					</GenericTableBody>

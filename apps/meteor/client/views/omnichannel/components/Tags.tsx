@@ -1,4 +1,4 @@
-import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, TextInput, Chip, Button, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -67,7 +67,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	return (
 		<>
-			<FieldLabel htmlFor={tagsFieldId} required={tagRequired} marginBlock={4}>
+			<FieldLabel htmlFor={tagsFieldId} required={tagRequired}>
 				{t('Tags')}
 			</FieldLabel>
 
@@ -86,28 +86,31 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			) : (
 				<>
 					<FieldRow>
-						<TextInput
-							error={error}
-							value={tagValue}
-							id={tagsFieldId}
-							onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
-							flexGrow={1}
-							placeholder={t('Enter_a_tag')}
-						/>
-						<Button disabled={!tagValue} marginInlineStart={8} title={t('Add')} onClick={handleTagTextSubmit}>
-							{t('Add')}
-						</Button>
+						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+							<TextInput
+								error={error}
+								value={tagValue}
+								id={tagsFieldId}
+								onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
+								placeholder={t('Enter_a_tag')}
+							/>
+							<Button disabled={!tagValue} title={t('Add')} onClick={handleTagTextSubmit}>
+								{t('Add')}
+							</Button>
+						</Stack>
 					</FieldRow>
 				</>
 			)}
 
 			{customTags.length > 0 && (
-				<FieldRow justifyContent='flex-start'>
-					{customTags?.map((tag, i) => (
-						<Chip key={i} onClick={(): void => removeTag(tag)} marginInlineEnd={8}>
-							{tag}
-						</Chip>
-					))}
+				<FieldRow>
+					<Box display='flex' alignItems='center' minWidth={0} gap={8} paddingInlineEnd={8}>
+						{customTags?.map((tag, i) => (
+							<Chip key={i} onClick={(): void => removeTag(tag)}>
+								{tag}
+							</Chip>
+						))}
+					</Box>
 				</FieldRow>
 			)}
 		</>

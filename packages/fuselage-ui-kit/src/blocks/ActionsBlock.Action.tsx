@@ -15,13 +15,11 @@ const Action = ({ element, parser, index }: ActionProps) => {
 		return null;
 	}
 
+	// Inputs share the row; buttons and the overflow menu keep their own size.
+	const grows = element.type !== UiKit.BlockElementType.BUTTON && element.type !== UiKit.BlockElementType.OVERFLOW;
+
 	return (
-		<Box
-			display='flex'
-			margin={4}
-			flexGrow={element.type !== UiKit.BlockElementType.BUTTON ? 1 : undefined}
-			flexBasis={element.type !== UiKit.BlockElementType.BUTTON ? '45%' : undefined}
-		>
+		<Box display='flex' flexGrow={grows ? 1 : undefined} flexBasis={grows ? '45%' : undefined}>
 			{renderedElement}
 		</Box>
 	);

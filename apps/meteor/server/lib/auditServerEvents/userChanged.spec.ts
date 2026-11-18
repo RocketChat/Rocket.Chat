@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { IAuditServerUserActor, IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { UpdaterImpl } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { UserChangedAuditStore } from './userChanged';
 import { createFakeUser } from '../../../tests/mocks/data';
@@ -11,7 +12,7 @@ const makeFakeActor = (): Omit<IAuditServerUserActor, 'type'> => {
 		ip: faker.internet.ip(),
 		useragent: faker.internet.userAgent(),
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 	};
 };
 
@@ -35,21 +36,12 @@ const createEmailsField = (address?: string, verified = true) => {
 	};
 };
 
-jest.mock('@rocket.chat/models', () => {
-	return {
-		UpdaterImpl: jest.requireActual('@rocket.chat/models').UpdaterImpl,
-		ServerEvents: {
-			createAuditServerEvent: (...args: any) => args,
-		},
-	};
-});
-
 const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e2e' | 'oauth'> => {
 	return {
 		services: {
 			password: {
 				bcrypt: faker.string.uuid(),
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore this field is not in IUser, but is present in DB
 				enroll: {
 					token: faker.string.uuid(),
@@ -108,12 +100,18 @@ const getObfuscatedServices = (email2faState: { enabled: boolean; changedAt: Dat
 };
 
 describe('userChanged audit module', () => {
+	beforeAll(() => {
+		mockModel('ServerEvents', {
+			createAuditServerEvent: (...args: any) => args,
+		});
+	});
+
 	it('should build event with only name and username fields', async () => {
 		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
 
 		const store = new UserChangedAuditStore(actor);
 
-		const [newUsername, newName] = [faker.internet.userName(), faker.person.fullName()];
+		const [newUsername, newName] = [faker.internet.username(), faker.person.fullName()];
 
 		updater.set('username', newUsername);
 		updater.set('name', newName);
@@ -154,6 +152,31 @@ describe('userChanged audit module', () => {
 				user: { _id: user._id, username: user.username },
 				operation: { $set: { ...newEmailsField } },
 				user_data: { emails: user.emails },
+			},
+			{ ...actor, type: 'user' },
+		]);
+	});
+
+	it('should build event when the user did not have the changed field before', async () => {
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
+
+		const store = new UserChangedAuditStore(actor);
+
+		const phones = [{ number: faker.phone.number() }];
+
+		updater.set('phones', phones);
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
+
+		expect(event).toEqual([
+			'user.changed',
+			{
+				user: { _id: user._id, username: user.username },
+				operation: { $set: { phones } },
+				user_data: {},
 			},
 			{ ...actor, type: 'user' },
 		]);

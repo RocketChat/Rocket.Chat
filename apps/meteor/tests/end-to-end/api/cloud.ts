@@ -1,14 +1,25 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Cloud]', function () {
-	this.retries(0);
+describe('[Cloud]', () => {
+	before((_t, done) => getCredentials(done));
 
-	before((done) => getCredentials(done));
+	describe('[/cloud.registerPreIntent]', () => {
+		it('should fail when user does not have the manage-cloud permission', async (t) => {
+			const user = await createUser();
+			t.after(() => deleteUser(user));
+			const userCredentials = await login(user.username, password);
+
+			await request.post(api('cloud.registerPreIntent')).set(userCredentials).expect(403);
+		});
+	});
 
 	describe('[/cloud.manualRegister]', () => {
 		before(async () => {
@@ -20,7 +31,7 @@ describe('[Cloud]', function () {
 		});
 
 		it('should fail if user is not authenticated', async () => {
-			return request
+			await request
 				.post(api('cloud.manualRegister'))
 				.expect('Content-Type', 'application/json')
 				.send({
@@ -28,27 +39,27 @@ describe('[Cloud]', function () {
 				})
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
 		it('should fail when cloudBlob property is not provided', async () => {
-			return request
+			await request
 				.post(api('cloud.manualRegister'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', "must have required property 'cloudBlob'");
 				});
 		});
 
 		it('should fail when user does not have the register-on-cloud permission', async () => {
 			await updatePermission('register-on-cloud', []);
-			return request
+			await request
 				.post(api('cloud.manualRegister'))
 				.set(credentials)
 				.send({
@@ -58,7 +69,7 @@ describe('[Cloud]', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -73,7 +84,7 @@ describe('[Cloud]', function () {
 		});
 
 		it('should fail if user is not authenticated', async () => {
-			return request
+			await request
 				.post(api('cloud.createRegistrationIntent'))
 				.expect('Content-Type', 'application/json')
 				.send({
@@ -82,13 +93,13 @@ describe('[Cloud]', function () {
 				})
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
 		it('should fail when resend property is not provided', async () => {
-			return request
+			await request
 				.post(api('cloud.createRegistrationIntent'))
 				.set(credentials)
 				.send({
@@ -98,13 +109,13 @@ describe('[Cloud]', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', "must have required property 'resend'");
 				});
 		});
 
 		it('should fail when email property is not provided', async () => {
-			return request
+			await request
 				.post(api('cloud.createRegistrationIntent'))
 				.set(credentials)
 				.send({
@@ -114,14 +125,14 @@ describe('[Cloud]', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', "must have required property 'email'");
 				});
 		});
 
 		it('should fail when user does not have the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', []);
-			return request
+			await request
 				.post(api('cloud.createRegistrationIntent'))
 				.set(credentials)
 				.send({
@@ -132,7 +143,7 @@ describe('[Cloud]', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -147,7 +158,7 @@ describe('[Cloud]', function () {
 		});
 
 		it('should fail if user is not authenticated', async () => {
-			return request
+			await request
 				.get(api('cloud.confirmationPoll'))
 				.query({
 					deviceCode: 'test-code',
@@ -155,13 +166,13 @@ describe('[Cloud]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
 		it('should fail when deviceCode property is not provided', async () => {
-			return request
+			await request
 				.get(api('cloud.confirmationPoll'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -175,7 +186,7 @@ describe('[Cloud]', function () {
 
 		it('should fail when user does not have the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', []);
-			return request
+			await request
 				.get(api('cloud.confirmationPoll'))
 				.set(credentials)
 				.query({
@@ -185,7 +196,7 @@ describe('[Cloud]', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -200,19 +211,19 @@ describe('[Cloud]', function () {
 		});
 
 		it('should fail if user is not authenticated', async () => {
-			return request
+			await request
 				.get(api('cloud.registrationStatus'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
 		it('should fail when user does not have the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', []);
-			return request
+			await request
 				.get(api('cloud.registrationStatus'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -224,7 +235,7 @@ describe('[Cloud]', function () {
 
 		it('should return registration status when user has the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', ['admin']);
-			return request
+			await request
 				.get(api('cloud.registrationStatus'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -246,18 +257,19 @@ describe('[Cloud]', function () {
 		});
 
 		it('should fail if user is not authenticated', async () => {
-			return request
+			await request
 				.get(api('cloud.workspaceRegisterData'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
 		it('should fail when user does not have the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', []);
-			return request
+			await request
 				.get(api('cloud.workspaceRegisterData'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -269,7 +281,7 @@ describe('[Cloud]', function () {
 
 		it('should return a base64 encoded registration payload when user has the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', ['admin']);
-			return request
+			await request
 				.get(api('cloud.workspaceRegisterData'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -295,19 +307,20 @@ describe('[Cloud]', function () {
 		});
 
 		it('should fail if user is not authenticated', async () => {
-			return request
+			await request
 				.post(api('cloud.connectWorkspace'))
 				.send({ token: 'invalid-token' })
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
 		it('should fail when user does not have the manage-cloud permission', async () => {
 			await updatePermission('manage-cloud', []);
-			return request
+			await request
 				.post(api('cloud.connectWorkspace'))
 				.set(credentials)
 				.send({ token: 'invalid-token' })

@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomXMPPFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
 
@@ -15,7 +15,7 @@ export const useRoomIcon = (
 		return { name: 'hash-shield' };
 	}
 
-	if (isRoomFederated(room)) {
+	if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
 		return { name: 'globe' };
 	}
 

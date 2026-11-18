@@ -1,12 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 
 export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolean, onChange: () => void): AdminUserAction | undefined => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const confirmOwnerChanges = useConfirmOwnerChanges();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const changeActiveStatusRequest = useEndpoint('POST', '/v1/users.setActiveStatus');
@@ -29,13 +30,9 @@ export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolea
 					activeStatusQuery.confirmRelinquish = confirm;
 				}
 
-				try {
-					await changeActiveStatusRequest(activeStatusQuery);
-					dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
-					onChange();
-				} catch (error) {
-					throw error;
-				}
+				await changeActiveStatusRequest(activeStatusQuery);
+				dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+				onChange();
 			},
 			{
 				confirmText: t('Yes_deactivate_it'),

@@ -9,7 +9,7 @@ Draft — v2. Supersedes the earlier `CloudConnection`-only draft: the single-pu
 License enforcement today is a runtime side-condition the compiler knows nothing about, in two distinct places:
 
 1. **Module entitlements.** `License.hasModule('auditing')` returns a `boolean`. Nothing ties that boolean to the code it guards: a feature entry point can be called without any check, a check for the *wrong* module still typechecks, and a refactor that moves code out from under its `if` block breaks enforcement silently.
-2. **Offline (air-gapped) licenses.** When `license.information.offline` is true, the workspace must never initiate outbound connections to Rocket.Chat-owned endpoints. This is enforced by ~15 scattered `hasOfflineLicense()` checks (sync, marketplace, telemetry, push gateway, Gravatar). Any new feature can `import { serverFetch }` and ship a compliance violation no type error catches — and two real bugs of exactly this class were found during QA (a startup race in the usage report, and a stale verdict held by the push retry chain).
+2. **Offline (air-gapped) licenses.** When `license.information.offline` is true, the workspace must never initiate outbound connections to Rocket.Chat-owned endpoints. This is enforced by ~15 scattered `hasOfflineLicense()` checks (sync, marketplace, telemetry, push gateway). Any new feature can `import { serverFetch }` and ship a compliance violation no type error catches — and two real bugs of exactly this class were found during QA (a startup race in the usage report, and a stale verdict held by the push retry chain).
 
 Both are the same underlying flaw: **the license check produces no evidence**. Nothing forces the check to happen, to happen for the right entitlement, or to happen at the right time.
 
@@ -104,7 +104,7 @@ Rules, to be stated in the proofs' JSDoc and enforced in review:
 
 ## Migration
 
-1. **Cloud egress first** (the offline license feature, already enforced at runtime in ~27 files): introduce `proveCloudEgress()` and `cloudFetch(proof, ...)`, then convert the four established patterns — interactive flows (`OrThrow`), background jobs (`undefined` → keep side effects, skip), the marketplace client (proof acquired per `fetch()` call, never stored on the instance), and retry closures (per-attempt). The existing `hasOfflineLicense()` helpers remain for behavior gates that don't perform I/O themselves (`shouldUseGateway()`, cron-body skips, Gravatar suggestion filtering).
+1. **Cloud egress first** (the offline license feature, already enforced at runtime in ~27 files): introduce `proveCloudEgress()` and `cloudFetch(proof, ...)`, then convert the four established patterns — interactive flows (`OrThrow`), background jobs (`undefined` → keep side effects, skip), the marketplace client (proof acquired per `fetch()` call, never stored on the instance), and retry closures (per-attempt). The existing `hasOfflineLicense()` helpers remain for behavior gates that don't perform I/O themselves (`shouldUseGateway()`, cron-body skips).
 2. **Module proofs opportunistically**: as EE features are touched, their server entry points gain `ModuleProof<'...'>` parameters, starting with features whose checks have historically drifted from their code. No big-bang rewrite; the boolean API keeps working throughout.
 
 ## Limitations

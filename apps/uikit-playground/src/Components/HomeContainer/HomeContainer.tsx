@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Label } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useContext } from 'react';
 
 import ProjectsList from './ProjectsList/ProjectsList';
@@ -9,7 +9,7 @@ import CreateNewScreenButton from '../ScreenThumbnail/CreateNewScreenButton';
 const HomeContainer = () => {
 	const { dispatch } = useContext(context);
 	return (
-		<Box minWidth='100%' display='flex' justifyContent='center' height='var(--content-height)' paddingBlockStart='30px'>
+		<Box minWidth='100%' display='flex' justifyContent='center' height='var(--content-height)' paddingBlockStart='x32'>
 			<Box
 				width='max-content'
 				minWidth='70%'
@@ -19,10 +19,10 @@ const HomeContainer = () => {
 					gap: 30px;
 				`}
 			>
-				<Label fontScale='h1'>Projects</Label>
-				<Label fontScale='h3'>Start a new project</Label>
+				<Box fontScale='h1'>Projects</Box>
+				<Box fontScale='h3'>Start a new project</Box>
 				<CreateNewScreenButton name='plus' onClick={() => dispatch(createNewProjectAction())} />
-				<Label fontScale='h4'>Existing Projects</Label>
+				<Box fontScale='h4'>Existing Projects</Box>
 				<ProjectsList />
 			</Box>
 		</Box>

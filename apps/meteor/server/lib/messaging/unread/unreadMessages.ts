@@ -1,18 +1,9 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
-import { methodDeprecationLogger } from '../../deprecationWarningLogger';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../notifyListener';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		unreadMessages(firstUnreadMessage?: Pick<IMessage, '_id'>, room?: IRoom['_id']): void;
-	}
-}
 
 export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<IMessage, '_id'>, room?: IRoom['_id']): Promise<void> => {
 	if (room && typeof room === 'string') {
@@ -24,7 +15,7 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		)[0];
 
 		if (!lastMessage) {
-			throw new Meteor.Error('error-no-message-for-unread', 'There are no messages to mark unread', {
+			throw new ClientSafeError('error-no-message-for-unread', 'There are no messages to mark unread', {
 				method: 'unreadMessages',
 				action: 'Unread_messages',
 			});
@@ -39,7 +30,7 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 	}
 
 	if (typeof firstUnreadMessage?._id !== 'string') {
-		throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Not allowed', {
 			method: 'unreadMessages',
 			action: 'Unread_messages',
 		});
@@ -53,14 +44,14 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		},
 	});
 	if (!originalMessage || userId === originalMessage.u._id) {
-		throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Not allowed', {
 			method: 'unreadMessages',
 			action: 'Unread_messages',
 		});
 	}
 	const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId))?.ls;
 	if (!lastSeen) {
-		throw new Meteor.Error('error-subscription-not-found', 'Subscription not found', {
+		throw new ClientSafeError('error-subscription-not-found', 'Subscription not found', {
 			method: 'unreadMessages',
 			action: 'Unread_messages',
 		});
@@ -79,17 +70,3 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(originalMessage.rid, userId);
 	}
 };
-
-Meteor.methods<ServerMethods>({
-	async unreadMessages(firstUnreadMessage, room) {
-		methodDeprecationLogger.method('unreadMessages', '9.0.0', '/v1/subscriptions.unread');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'unreadMessages',
-			});
-		}
-
-		return unreadMessages(userId, firstUnreadMessage, room);
-	},
-});

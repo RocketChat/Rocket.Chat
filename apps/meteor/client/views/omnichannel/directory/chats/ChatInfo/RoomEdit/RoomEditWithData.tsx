@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import RoomEdit from './RoomEdit';
-import { FormSkeleton } from '../../../components';
 import { useOmnichannelRoomInfo } from '../../../hooks/useOmnichannelRoomInfo';
 import { useVisitorInfo } from '../../../hooks/useVisitorInfo';
 

@@ -1,7 +1,6 @@
 import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
-import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../logger/system';
 import { sendEmailFromData } from '../message/email';
@@ -37,14 +36,14 @@ class NotificationClass {
 		this.running = false;
 	}
 
-	executeWorkerLater(): void {
+	executeWorkerLater(delay = this.cyclePause): void {
 		if (!this.running) {
 			return;
 		}
 
 		setTimeout(async () => {
 			try {
-				const continueLater = await tracerSpan(
+				const queueEmpty = await tracerSpan(
 					'NotificationWorker',
 					{
 						attributes: {
@@ -54,16 +53,15 @@ class NotificationClass {
 					() => this.worker(),
 				);
 
-				if (continueLater) {
-					this.executeWorkerLater();
-				}
+				this.executeWorkerLater(queueEmpty ? this.cyclePause : 0);
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
 			}
-		}, this.cyclePause);
+		}, delay);
 	}
 
+	// Resolves true when the queue has nothing left to send, false when the batch limit stopped it first.
 	async worker(counter = 0): Promise<boolean> {
 		const notification = await this.getNextNotification();
 
@@ -99,7 +97,7 @@ class NotificationClass {
 		}
 
 		if (counter >= this.maxBatchSize) {
-			return true;
+			return false;
 		}
 
 		return this.worker(++counter);
@@ -176,7 +174,3 @@ class NotificationClass {
 }
 
 export const Notification = new NotificationClass();
-
-Meteor.startup(() => {
-	Notification.initWorker();
-});

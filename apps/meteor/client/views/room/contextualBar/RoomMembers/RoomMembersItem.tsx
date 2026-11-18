@@ -22,7 +22,7 @@ import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
+export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'sipExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;
@@ -34,7 +34,7 @@ const RoomMembersItem = ({
 	name,
 	username,
 	federated,
-	freeSwitchExtension,
+	sipExtension,
 	onClickView,
 	rid,
 	subscription,
@@ -69,7 +69,7 @@ const RoomMembersItem = ({
 					</ItemLink>
 				</ItemTitle>
 			</ItemContent>
-			{isInvited && <InvitationBadge size='x20' invitationDate={subscription.ts} />}
+			{invitationDate && <InvitationBadge size='x20' invitationDate={invitationDate} />}
 			<ItemActions reveal='hover'>
 				{menuVisibility ? (
 					<UserActions
@@ -77,13 +77,13 @@ const RoomMembersItem = ({
 						name={name}
 						rid={rid}
 						_id={_id}
-						freeSwitchExtension={freeSwitchExtension}
+						sipExtension={sipExtension}
 						federated={federated}
 						isInvited={isInvited}
 						reload={reload}
 					/>
 				) : (
-					<IconButton tiny icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
+					<IconButton size='tiny' icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
 				)}
 			</ItemActions>
 		</Item>

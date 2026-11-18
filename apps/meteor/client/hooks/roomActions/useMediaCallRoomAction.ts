@@ -41,7 +41,7 @@ export const useMediaCallRoomAction = () => {
 	// no extension is required.
 	const sipEnabled = useSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 	const routeInternalCallsViaSip = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls', false);
-	const peerHasExtension = Boolean(data?.user?.freeSwitchExtension);
+	const peerHasExtension = Boolean(data?.user?.sipExtension);
 
 	const peerInfo = useMemo<PeerInfo | undefined>(() => {
 		if (!data?.user?._id) {

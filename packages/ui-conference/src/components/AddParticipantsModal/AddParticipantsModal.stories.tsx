@@ -1,4 +1,4 @@
-import { MultiSelect } from '@rocket.chat/fuselage';
+import { Box, MultiSelect } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
@@ -30,7 +30,9 @@ const meta = {
 		withConference({
 			slots: {
 				renderUserPicker: ({ value, onChange, placeholder }) => (
-					<MultiSelect options={options} value={value} placeholder={placeholder} onChange={(next) => onChange(next)} width='100%' />
+					<Box display='flex'>
+						<MultiSelect options={options} value={value} placeholder={placeholder} onChange={(next) => onChange(next)} />
+					</Box>
 				),
 			},
 		}),

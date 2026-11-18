@@ -1,4 +1,4 @@
-import { Random } from './main.client';
+import { Random } from './main.client.js';
 
 it('which should generate the same sequence in all environments', () => {
 	const random = Random.createWithSeeds(0);
@@ -37,11 +37,7 @@ describe('Alea', () => {
 	it('should be undefined if window.crypto?.getRandomValues is available', () => {
 		const useGetRandomValues = !!(typeof window !== 'undefined' && window.crypto?.getRandomValues);
 
-		if (useGetRandomValues) {
-			expect(Random).not.toHaveProperty('alea');
-		} else {
-			expect(Random).toHaveProperty('alea');
-		}
+		expect('alea' in Random).toBe(!useGetRandomValues);
 	});
 });
 

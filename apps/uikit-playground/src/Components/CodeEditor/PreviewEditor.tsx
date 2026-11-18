@@ -18,7 +18,7 @@ const PreviewEditor = ({ extensions }: CodeMirrorProps) => {
 
 	useEffect(() => {
 		setValue(intendCode(screens[activeScreen]?.actionPreview), {});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [screens[activeScreen]?.actionPreview]);
 
 	return (

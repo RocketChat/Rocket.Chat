@@ -1,7 +1,7 @@
+import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
-import type { TableProps } from './Table';
 
-export type TableFootProps = TableProps;
+export type TableFootProps = ElementProps<HTMLTableSectionElement>;
 
 const TableFoot = (props: TableFootProps) => <Box is='tfoot' rcx-table__foot {...props} />;
 

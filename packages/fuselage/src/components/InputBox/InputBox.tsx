@@ -1,50 +1,57 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, ReactNode, RefAttributes } from 'react';
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import type { AllHTMLAttributes, ReactNode } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { Icon } from '../Icon';
 import Input from './Input';
 import InputBoxAddon from './InputBoxAddon';
 import InputBoxWrapper from './InputBoxWrapper';
 
-export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = any> = Omit<BoxProps, 'ref'> &
-	RefAttributes<T> & {
-		startAddon?: ReactNode;
-		endAddon?: ReactNode;
-		input?: ReactNode;
-		multiple?: boolean;
-		error?: string;
-		placeholder?: string;
-		placeholderVisible?: boolean;
-		small?: boolean;
-		type:
-			| 'button'
-			| 'checkbox'
-			| 'color'
-			| 'date'
-			| 'datetime'
-			| 'datetime-local'
-			| 'email'
-			| 'file'
-			| 'hidden'
-			| 'image'
-			| 'month'
-			| 'number'
-			| 'password'
-			| 'radio'
-			| 'range'
-			| 'reset'
-			| 'search'
-			| 'submit'
-			| 'tel'
-			| 'text'
-			| 'time'
-			| 'url'
-			| 'week'
-			| 'textarea'
-			| 'select';
-	};
+export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = any> = Omit<
+	ElementProps<T, AllHTMLAttributes<T>>,
+	'type'
+> & {
+	/** Lands on the wrapper when there is an addon, and on the input otherwise. */
+	className?: string;
+	invisible?: boolean;
+	startAddon?: ReactNode;
+	endAddon?: ReactNode;
+	/** Reduces the end padding so a button in `endAddon` sits flush with the input's edge. */
+	endAddonFlush?: boolean;
+	input?: ReactNode;
+	multiple?: boolean;
+	error?: string;
+	placeholder?: string;
+	placeholderVisible?: boolean;
+	small?: boolean;
+	type:
+		| 'button'
+		| 'checkbox'
+		| 'color'
+		| 'date'
+		| 'datetime'
+		| 'datetime-local'
+		| 'email'
+		| 'file'
+		| 'hidden'
+		| 'image'
+		| 'month'
+		| 'number'
+		| 'password'
+		| 'radio'
+		| 'range'
+		| 'reset'
+		| 'search'
+		| 'submit'
+		| 'tel'
+		| 'text'
+		| 'time'
+		| 'url'
+		| 'week'
+		| 'textarea'
+		| 'select';
+};
 
 /**
  * A decorated input control with support for addons.
@@ -52,12 +59,12 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
  * Usually you'll perfer to use `-Input` (e.g. <LinkTo kind='Forms/TextInput' story='Default'>`TextInput`</LinkTo>)
  * components over this one because it works as a construction block for them.
  */
-// eslint-disable-next-line complexity
 function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
 	ref,
 	className,
 	startAddon,
 	endAddon,
+	endAddonFlush,
 	error,
 	hidden,
 	invisible,
@@ -65,7 +72,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	placeholderVisible,
 	type = 'text',
 	small,
-	onChange,
 	...props
 }: InputBoxProps<T>) {
 	const innerRef = useRef<T>(null);
@@ -73,27 +79,10 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	let defaultAddon = endAddon;
 
 	useLayoutEffect(() => {
-		if (innerRef.current && innerRef.current.setCustomValidity) {
+		if (innerRef.current?.setCustomValidity) {
 			innerRef.current.setCustomValidity(error || '');
 		}
 	}, [error]);
-
-	useLayoutEffect(() => {
-		if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-			innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
-		}
-	}, [defaultAddon, error]);
-
-	const handleChange = useCallback(
-		(event: ChangeEvent<HTMLElement>) => {
-			if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-				innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
-			}
-
-			onChange?.call(event.currentTarget, event);
-		},
-		[defaultAddon, onChange],
-	);
 
 	const handleAddonClick = () => (innerRef.current as HTMLInputElement).showPicker();
 
@@ -104,19 +93,23 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 		defaultAddon = <Icon name='clock' size='x20' onClick={handleAddonClick} />;
 	}
 
+	const is = (type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input';
+	const cols = (type === 'textarea' && 1) || (type === 'select' && 0) || 0;
+	const htmlSize = (type === 'textarea' && undefined) || (type === 'select' && 1) || 1;
+	const inputType = type === 'textarea' || type === 'select' ? undefined : type;
+
 	if (!defaultAddon && !startAddon) {
 		return (
 			<Input
-				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
+				is={is}
 				className={className}
-				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
+				cols={cols}
 				hidden={hidden}
 				invisible={invisible}
 				multiple={multiple}
 				ref={mergedRef}
-				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
-				type={type === 'textarea' || type === 'select' ? undefined : type}
-				onChange={handleChange}
+				htmlSize={htmlSize}
+				type={inputType}
 				rcx-input-box--multiple={multiple}
 				rcx-input-box--placeholder-visible={placeholderVisible}
 				rcx-input-box--type={type}
@@ -127,21 +120,15 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	}
 
 	return (
-		<InputBoxWrapper
-			className={[props.disabled && 'disabled', ...(Array.isArray(className) ? className : [className])]}
-			hidden={hidden}
-			invisible={invisible}
-		>
+		<InputBoxWrapper className={className} hidden={hidden} invisible={invisible} rcx-input-box__wrapper--end-addon-flush={endAddonFlush}>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input
-				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
-				className={className}
-				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
+				is={is}
+				cols={cols}
 				multiple={multiple}
 				ref={mergedRef}
-				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
-				type={type === 'textarea' || type === 'select' ? undefined : type}
-				onChange={handleChange}
+				htmlSize={htmlSize}
+				type={inputType}
 				rcx-input-box--multiple={multiple}
 				rcx-input-box--placeholder-visible={placeholderVisible}
 				rcx-input-box--type={type}

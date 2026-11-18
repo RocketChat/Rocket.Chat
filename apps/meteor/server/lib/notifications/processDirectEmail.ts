@@ -3,9 +3,11 @@ import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ParsedMail } from 'mailparser';
 import moment from 'moment';
 
+import { beforeSendMessageToRoom } from '../../hooks/rooms/beforeSendMessageToRoom';
 import { settings } from '../../settings';
 import { canAccessRoomAsync } from '../authorization';
 import { hasPermissionAsync } from '../authorization/hasPermission';
+import { SystemLogger } from '../logger/system';
 import { sendMessage } from '../messages/sendMessage';
 import { metrics } from '../metrics';
 
@@ -78,18 +80,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 		msg = `@${prevMessage.u.username} ${msg}`;
 	}
 
-	// reply message link WE HA THREADS KNOW DONT NEED TO QUOTE THE previous message
-	// let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
-	// if (roomInfo.t === 'c') {
-	// 	prevMessageLink += `/channel/${ roomInfo.name }?msg=${ mid }) `;
-	// } else if (roomInfo.t === 'd') {
-	// 	prevMessageLink += `/direct/${ prevMessage.u.username }?msg=${ mid }) `;
-	// } else if (roomInfo.t === 'p') {
-	// 	prevMessageLink += `/group/${ roomInfo.name }?msg=${ mid }) `;
-	// }
-	// // add reply message link
-	// msg = prevMessageLink + msg;
-
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
 		// room is blocked
@@ -109,6 +99,13 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 				return;
 			}
 		}
+	}
+
+	try {
+		await beforeSendMessageToRoom(roomInfo);
+	} catch (err) {
+		SystemLogger.info({ msg: 'Direct reply email dropped', rid: roomInfo._id, err });
+		return;
 	}
 
 	const message: Pick<IMessage, 'ts' | 'msg' | 'groupable' | 'rid' | 'sentByEmail' | 'tmid'> = {

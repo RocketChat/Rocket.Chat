@@ -1,13 +1,14 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
-import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useState, useSyncExternalStore, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageBoxProps } from './MessageBox';
 import MessageBoxBase from './MessageBoxBase';
@@ -30,7 +31,6 @@ import {
 import { handleRichTextSelectionWrapping } from './wrapSelection';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
@@ -80,7 +80,7 @@ const RichTextMessageBox = ({
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
@@ -443,14 +443,17 @@ const RichTextMessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useCallback((node: HTMLDivElement) => {
-		const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-		node.addEventListener('keydown', eventHandler);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: HTMLDivElement) => {
+			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+			node.addEventListener('keydown', eventHandler);
 
-		return () => {
-			node.removeEventListener('keydown', eventHandler);
-		};
-	}, []);
+			return () => {
+				node.removeEventListener('keydown', eventHandler);
+			};
+		},
+		[keyboardEventHandler],
+	);
 
 	const beforeInputHandlerCallbackRef = useCallback(
 		(node: HTMLDivElement) => {

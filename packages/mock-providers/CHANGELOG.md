@@ -1,5 +1,77 @@
 # @rocket.chat/mock-providers
 
+## 0.6.0
+
+### Minor Changes
+
+- ([#42976](https://github.com/RocketChat/Rocket.Chat/pull/42976)) Stops re-rendering every component that talks to the server whenever the connection status changes, including on each reconnection attempt
+
+### Patch Changes
+
+- ([#42599](https://github.com/RocketChat/Rocket.Chat/pull/42599)) Bumps `@faker-js/faker` from 8.0.2 to 10.5.0 to fix CVE-2026-73231. Updates tests to the faker 10 API and makes the Jest presets transform the ESM-only package.
+
+- ([#42369](https://github.com/RocketChat/Rocket.Chat/pull/42369)) Removes the legacy Meteor OAuth login flow and the `Accounts_OAuth_Use_Modern_Flow` setting. OAuth logins (Apple, GitHub, GitLab, Google, Nextcloud and custom OAuth) now always use the server-side Passport flow, with PKCE/state validation.
+
+  Also removes `Accounts_OAuth_Proxy_host` and `Accounts_OAuth_Proxy_services` settings and support for OAuth login through proxies.
+
+- <details><summary>Updated dependencies [1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 80223cb35a1bbd2b7026f70cfbd3e80ddc4935c5, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, 53bf8feb0c2075ee243d90c42ca2934098b93709, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 60102b6e0ae410a45631ee494a3a302b9c863b48, 9c39b5dbfb3f2269e355802d44c9ea64ab85d2ec, 58eacc4ba44053744df9a32b4a70a44c37428265, 86decd8694ca09043ac5c6b7b50efc8a4278e113, 2aea648f6431c710fc022c8ec37946a368abe6a2, 588311c49bfce08e7106e7c0bb32741334fa5321, 467d8139d2bf33f23f5792fa364bf16c65a24bda, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, c12e5836df7fc5a4c9ee7a760c6101cb0ee8474a, 2f77d817051c919f29615babbb3ecd1964575b52, 05bbcccf3779fe8df3c96c6d80c4ce0d56bf6e9c, 9277d940be7fbca8b5a2cc890b368d0e803e1130, 9277d940be7fbca8b5a2cc890b368d0e803e1130, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, 0c244a62b0e632a55cf87a84e1b321ba6e48f6c2, 80223cb35a1bbd2b7026f70cfbd3e80ddc4935c5, bb69cb6c2e190cc3dffe33c3970f0e7c706d24a1, 52fdf8ea1b17b08482cf8cb21156f1be7b80844c, eaf5cedcce9f8e800415b4c49bce242f661462ea, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, a10c48ca6e4fd76f4d8ce4435e04e70c1e89d771, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, daa677895dad92d6aab1e84a09f190efd2755ef9, 07a2ddb3dc22c4046e5cd66897a2f9232a717d3f, 642d9e528a8572208e2f0bb51f45ea78400bcea3, e729e558908abfb9915a9dc7fb6ed14ac79c51df, 034260ee3eec49db0a2a86572bacf5e14490815d, a39b03fe5c248079365162e31994e1dece63e7c2, 94a22a577e6f160b687b9ddffeade19417c66f1e, 982270a515cc061aafccb82a0605a36ce929d56c, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 3f26ea55ffb1b571247a5da12e1b74d3ee65a17c, 202de9fa4953c6c984e893567f9c03178551bf5a, ae9c28d6ebe0d3f7be1b474ebd2c15eb73c461a6]:</summary>
+  - @rocket.chat/i18n@5.0.0
+  - @rocket.chat/ui-contexts@36.0.0
+  - @rocket.chat/emitter@0.33.1
+
+  </details>
+
+## 0.6.0-rc.0
+
+### Minor Changes
+
+- ([#42976](https://github.com/RocketChat/Rocket.Chat/pull/42976)) Stops re-rendering every component that talks to the server whenever the connection status changes, including on each reconnection attempt
+
+### Patch Changes
+
+- ([#42599](https://github.com/RocketChat/Rocket.Chat/pull/42599)) Bumps `@faker-js/faker` from 8.0.2 to 10.5.0 to fix CVE-2026-73231. Updates tests to the faker 10 API and makes the Jest presets transform the ESM-only package.
+
+- ([#42369](https://github.com/RocketChat/Rocket.Chat/pull/42369)) Removes the legacy Meteor OAuth login flow and the `Accounts_OAuth_Use_Modern_Flow` setting. OAuth logins (Apple, GitHub, GitLab, Google, Nextcloud and custom OAuth) now always use the server-side Passport flow, with PKCE/state validation.
+
+  Also removes `Accounts_OAuth_Proxy_host` and `Accounts_OAuth_Proxy_services` settings and support for OAuth login through proxies.
+
+- <details><summary>Updated dependencies [1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 80223cb35a1bbd2b7026f70cfbd3e80ddc4935c5, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, 53bf8feb0c2075ee243d90c42ca2934098b93709, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 60102b6e0ae410a45631ee494a3a302b9c863b48, 9c39b5dbfb3f2269e355802d44c9ea64ab85d2ec, 58eacc4ba44053744df9a32b4a70a44c37428265, 86decd8694ca09043ac5c6b7b50efc8a4278e113, 2aea648f6431c710fc022c8ec37946a368abe6a2, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, c12e5836df7fc5a4c9ee7a760c6101cb0ee8474a, 2f77d817051c919f29615babbb3ecd1964575b52, 05bbcccf3779fe8df3c96c6d80c4ce0d56bf6e9c, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, 0c244a62b0e632a55cf87a84e1b321ba6e48f6c2, 80223cb35a1bbd2b7026f70cfbd3e80ddc4935c5, bb69cb6c2e190cc3dffe33c3970f0e7c706d24a1, 52fdf8ea1b17b08482cf8cb21156f1be7b80844c, eaf5cedcce9f8e800415b4c49bce242f661462ea, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, a10c48ca6e4fd76f4d8ce4435e04e70c1e89d771, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, daa677895dad92d6aab1e84a09f190efd2755ef9, 07a2ddb3dc22c4046e5cd66897a2f9232a717d3f, 642d9e528a8572208e2f0bb51f45ea78400bcea3, e729e558908abfb9915a9dc7fb6ed14ac79c51df, 034260ee3eec49db0a2a86572bacf5e14490815d, a39b03fe5c248079365162e31994e1dece63e7c2, 94a22a577e6f160b687b9ddffeade19417c66f1e, 982270a515cc061aafccb82a0605a36ce929d56c, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 3f26ea55ffb1b571247a5da12e1b74d3ee65a17c, 202de9fa4953c6c984e893567f9c03178551bf5a]:</summary>
+  - @rocket.chat/i18n@5.0.0-rc.0
+  - @rocket.chat/ui-contexts@36.0.0-rc.0
+  - @rocket.chat/emitter@0.33.1-rc.0
+
+  </details>
+
+## 0.5.0
+
+### Minor Changes
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eeca122b913518d2231f9d9568a10873705845ee, 17dfc71b4ad7294655e7fab9043cddbea23cb071, 38ea6ba80fd0e8d7c41a44278d54703b5d70da56, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 71cb69992cf9f6a85fff7278dbf5481b64b5c735, 6843a962e18a7c37986bc08e8a7cc9bbd8072b77, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/i18n@4.1.0
+  - @rocket.chat/ui-contexts@35.0.0
+
+  </details>
+
 ## 0.5.0-rc.0
 
 ### Minor Changes

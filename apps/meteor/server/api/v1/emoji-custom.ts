@@ -1,15 +1,16 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, ClientSafeError } from '@rocket.chat/core-services';
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import {
 	ajv,
+	ajvQuery,
 	isEmojiCustomList,
 	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
 import type { EmojiData } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
@@ -23,7 +24,7 @@ import { findEmojisCustom } from '../lib/emoji-custom';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
-const emojiDeleteBodySchema = ajv.compile({
+const emojiDeleteBodySchema = ajv.compile<{ emojiId: string }>({
 	type: 'object',
 	properties: { emojiId: { type: 'string', minLength: 1 } },
 	required: ['emojiId'],
@@ -60,7 +61,7 @@ function validateDateParam(paramName: string, paramValue: string | undefined): D
 
 	const date = new Date(paramValue);
 	if (isNaN(date.getTime())) {
-		throw new Meteor.Error('error-roomId-param-invalid', `The "${paramName}" query parameter must be a valid date.`);
+		throw new ClientSafeError('error-roomId-param-invalid', `The "${paramName}" query parameter must be a valid date.`);
 	}
 
 	return date;
@@ -98,7 +99,6 @@ const emojiCustomCreateEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { query } = await this.parseJsonQuery();
 			const { updatedSince, _updatedAt, _id } = this.queryParams;
 
 			const updatedSinceDate = validateDateParam('updatedSince', updatedSince);
@@ -107,7 +107,6 @@ const emojiCustomCreateEndpoints = API.v1
 			if (updatedSinceDate) {
 				const [update, remove] = await Promise.all([
 					EmojiCustom.find({
-						...query,
 						...(_id ? { _id } : {}),
 						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
 						_updatedAt: { $gt: updatedSinceDate },
@@ -126,7 +125,6 @@ const emojiCustomCreateEndpoints = API.v1
 			return API.v1.success({
 				emojis: {
 					update: await EmojiCustom.find({
-						...query,
 						...(_id ? { _id } : {}),
 						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
 					}).toArray(),
@@ -139,6 +137,16 @@ const emojiCustomCreateEndpoints = API.v1
 		'emoji-custom.all',
 		{
 			authRequired: true,
+			// open schema (no additionalProperties: false): pagination/query helpers travel alongside `name`
+			query: ajvQuery.compile<PaginatedRequest<{ name?: string }, 'name'>>({
+				type: 'object',
+				properties: {
+					name: { type: 'string' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					sort: { type: 'string' },
+				},
+			}),
 			response: {
 				200: emojiCustomAllResponseSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -146,7 +154,7 @@ const emojiCustomCreateEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 			const { name } = this.queryParams;
 
 			return API.v1.success(
@@ -158,7 +166,7 @@ const emojiCustomCreateEndpoints = API.v1
 									$options: 'i',
 								},
 							}
-						: query,
+						: {},
 					pagination: {
 						offset,
 						count,
@@ -203,7 +211,7 @@ const emojiCustomCreateEndpoints = API.v1
 
 			const isUploadable = await Media.isImage(fileBuffer);
 			if (!isUploadable) {
-				throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+				throw new ClientSafeError('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 			}
 
 			const [, extension] = mimetype.split('/');
@@ -227,7 +235,7 @@ const emojiCustomCreateEndpoints = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile({
+				200: ajv.compile<void>({
 					type: 'object',
 					properties: { success: { type: 'boolean', enum: [true] } },
 					required: ['success'],
@@ -248,14 +256,14 @@ const emojiCustomCreateEndpoints = API.v1
 			const { fields, fileBuffer, mimetype } = emoji;
 
 			if (!fields._id) {
-				throw new Meteor.Error('The required "_id" query param is missing.');
+				throw new ClientSafeError('The required "_id" query param is missing.');
 			}
 
 			const emojiToUpdate = await EmojiCustom.findOneById<Pick<IEmojiCustom, 'name' | 'extension'>>(fields._id, {
 				projection: { name: 1, extension: 1 },
 			});
 			if (!emojiToUpdate) {
-				throw new Meteor.Error('Emoji not found.');
+				throw new ClientSafeError('Emoji not found.');
 			}
 
 			const emojiData: EmojiData = {
@@ -273,7 +281,7 @@ const emojiCustomCreateEndpoints = API.v1
 				emojiData.newFile = isNewFile;
 				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
-					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+					throw new ClientSafeError('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 				}
 
 				const [, extension] = mimetype.split('/');
@@ -317,6 +325,6 @@ type EmojiCustomCreateEndpoints = ExtractRoutesFromAPI<typeof emojiCustomCreateE
 export type EmojiCustomEndpoints = EmojiCustomCreateEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends EmojiCustomCreateEndpoints {}
 }

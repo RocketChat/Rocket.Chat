@@ -1,14 +1,15 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Palette } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadListMessage from './ThreadListMessage';
+import { clickableItem } from '../../../../../lib/clickableItem';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
 import { useDecryptedMessage } from '../hooks/useDecryptedMessage';
+
+const ClickableThreadListMessage = clickableItem(ThreadListMessage);
 
 export type ThreadListItemProps = {
 	thread: IThreadMainMessage;
@@ -16,10 +17,11 @@ export type ThreadListItemProps = {
 	unreadUser: string[];
 	unreadGroup: string[];
 	hasDraft?: boolean;
+	ignoredUser?: boolean;
 	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
-const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onClick }: ThreadListItemProps) => {
+const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, ignoredUser, onClick }: ThreadListItemProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
@@ -41,16 +43,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 	);
 
 	return (
-		<ThreadListMessage
-			className={css`
-				cursor: pointer;
-				&:hover,
-				&:focus {
-					background: ${Palette.surface['surface-hover']};
-				}
-				border-bottom: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
-			`}
-			tabIndex={0}
+		<ClickableThreadListMessage
 			_id={thread._id}
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}
@@ -63,6 +56,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 			all={unreadGroup.includes(thread._id)}
 			following={following}
 			hasDraft={hasDraft}
+			ignored={ignoredUser}
 			data-id={thread._id}
 			msg={msg ?? ''}
 			rid={thread.rid}

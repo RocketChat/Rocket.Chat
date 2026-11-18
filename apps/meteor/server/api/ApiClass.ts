@@ -1,19 +1,20 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
-// eslint-disable-next-line import-x/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-// eslint-disable-next-line import-x/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -52,10 +53,26 @@ import { authenticationMiddlewareForHono } from './v1/middlewares/authentication
 import { permissionsMiddleware } from './v1/middlewares/permissions';
 import { license } from '../../ee/server/api/v1/middlewares/license';
 import { licenseRequired } from '../../ee/server/api/v1/middlewares/licenseRequired';
+import { createMeteorInvocation } from '../lib/utils/createMeteorInvocation';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
 
 const logger = new Logger('API');
+
+// error codes that mean the caller was refused, answered with 403
+export const refusalErrorCodes = new Set([
+	'unauthorized',
+	'error-unauthorized',
+	'not-authorized',
+	'not_authorized',
+	'error-not-authorized',
+	'error-not-allowed',
+	'not-allowed',
+	'no-permission',
+	'error-not-authorized-federation',
+	'forbidden',
+	'error-forbidden',
+]);
 
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
@@ -90,7 +107,9 @@ type ConvertToRoute<TRoute extends MinimalRoute> = {
 				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
 			: K2 extends 'POST' | 'PUT'
 				? (
-						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+						...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>] extends [never]
+							? [params?: never]
+							: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>]
 					) => ExtractValidation<
 						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
 							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
@@ -113,7 +132,7 @@ interface IAPIProperties {
 interface IAPIDefaultFieldsToExclude {
 	avatarOrigin: number;
 	emails: number;
-	phone: number;
+	phones: number;
 	statusConnection: number;
 	createdAt: number;
 	lastLogin: number;
@@ -151,7 +170,7 @@ export const generateConnection = (
 	httpHeaders: Record<string, any>;
 } => ({
 	id: Random.id(),
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	// oxlint-disable-next-line @typescript-eslint/no-empty-function
 	close() {},
 	httpHeaders,
 	clientAddress: ipAddress,
@@ -167,8 +186,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public authMethods: ((routeContext: APIActionContext) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
-
-	public fieldSeparator: string;
 
 	public defaultFieldsToExclude: {
 		joinCode: number;
@@ -195,7 +212,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		this.apiPath = [properties.apiPath, properties.version].filter(Boolean).join('/').replaceAll('//', '/');
 		this.authMethods = [];
-		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			members: 0,
@@ -205,7 +221,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
-			phone: 0,
+			phones: 0,
 			statusConnection: 0,
 			createdAt: 0,
 			lastLogin: 0,
@@ -385,19 +401,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden(): ForbiddenResult<string>;
-
-	public forbidden<T>(msg: T): ForbiddenResult<T>;
-
-	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+	public forbidden(message = 'You are not allowed to do this'): ForbiddenResult {
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
-				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
-				// but thanks to the semver check tests should break as soon we bump to a new version
-				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
+				error: message,
+				errorType: 'error-forbidden',
 			},
 		};
 	}
@@ -446,7 +456,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
 
 		if (!attemptResult.allowed) {
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				'error-too-many-requests',
 				`Error, too many requests. Please slow down. You must wait ${timeToResetAttempsInSeconds} seconds before trying this endpoint again.`,
 				{
@@ -517,13 +527,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		endpoints: Record<string, string> | string[];
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
-			throw new Meteor.Error('"rateLimiterOptions" must be an object');
+			throw new ClientSafeError('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new Meteor.Error(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new Meteor.Error(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {
@@ -598,7 +608,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				} & Omit<TOptions, 'response'>
 		  >
 	> {
-		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		// any thrown refusal answers 403, so every typed route can answer it
+		const response = options.response && { ...options.response, 403: validateForbiddenErrorResponse };
+		this.addRoute([subpath], { tags: [], ...options, response, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		return this;
 	}
 
@@ -767,19 +779,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
 
 				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
-					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+					throw new ClientSafeError('error-deprecated', `The endpoint ${route} should be removed`);
 				}
 
-				// eslint-disable-next-line @typescript-eslint/no-this-alias
+				// oxlint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						this.queryOperations = options.queryOperations;
-						this.queryFields = options.queryFields;
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');
-						this.token = Accounts._hashLoginToken(String(authToken))!;
+						this.token = hashLoginToken(String(authToken));
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
@@ -804,7 +814,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new ClientSafeError('error-invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -822,32 +832,28 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
 							if (options.applyMeteorContext) {
-								const invocation = APIClass.createMeteorInvocation(connection, this.userId, this.token);
-								result = await invocation
-									.applyInvocation(() => originalAction.apply(this))
-									.finally(() => invocation[Symbol.asyncDispose]());
+								result = await createMeteorInvocation(connection, this.userId, this.token).applyInvocation(() =>
+									originalAction.apply(this),
+								);
 							} else {
 								result = await originalAction.apply(this);
 							}
 						} catch (e: any) {
 							result = ((e: any) => {
-								switch (e.error) {
+								// plain `Error`s carry the code in `message`
+								const code = typeof e === 'string' ? e : (e.error ?? e.message);
+								const message: string = typeof e === 'string' ? e : e.message;
+								if (refusalErrorCodes.has(code)) {
+									// a ClientSafeError's message ends in a `[code]` suffix; its reason is the readable part
+									return api.forbidden(isClientSafeError(e) ? e.reason : message);
+								}
+								switch (code) {
 									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
-									case 'unauthorized':
-									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
-									case 'forbidden':
-									case 'error-forbidden':
-										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
-										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.tooManyRequests(message);
+									case 'error-unauthenticated':
+										return api.unauthorized(message);
 									default:
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.failure(message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
 							})(e);
 						} finally {
@@ -888,7 +894,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		if (userId && userToken) {
 			return Users.findOne(
 				{
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+					'services.resume.loginTokens.hashedToken': hashLoginToken(userToken),
 					'_id': userId,
 				},
 				{
@@ -981,7 +987,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			return auth;
 		};
 
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		// oxlint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
 		(this as APIClass<'/v1'>).addRoute(
@@ -1020,24 +1026,23 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							},
 						});
 					} catch (error) {
-						if (!(error instanceof Meteor.Error)) {
+						if (!isClientSafeError(error)) {
 							return self.internalError();
 						}
 
 						const result = self.unauthorized();
 
-						if (!applyBreakingChanges) {
-							Object.assign(result.body, {
-								status: 'error',
-								error: error.error,
-								details: error.details,
-								message: error.reason || error.message,
-								...(error.reason === 'User not found' && {
-									error: 'Unauthorized',
-									message: 'Unauthorized',
-								}),
-							});
-						}
+						// Clients read these to drive 2FA prompts and explain refused logins
+						Object.assign(result.body, {
+							...(!applyBreakingChanges && { status: 'error' }),
+							error: error.error,
+							details: error.details,
+							message: error.reason || error.message,
+							...(error.reason === 'User not found' && {
+								error: 'Unauthorized',
+								message: 'Unauthorized',
+							}),
+						});
 						return result;
 					}
 				},
@@ -1110,39 +1115,5 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			},
 		);
-	}
-
-	static createMeteorInvocation(
-		connection: {
-			id: string;
-			close: () => void;
-			clientAddress: string;
-			httpHeaders: Record<string, any>;
-		},
-		userId?: string,
-		token?: string,
-	) {
-		const invocation = new DDPCommon.MethodInvocation({
-			connection,
-			isSimulation: false,
-			userId,
-		});
-
-		Accounts._accountData[connection.id] = {
-			connection,
-		};
-		if (token) {
-			Accounts._setAccountData(connection.id, 'loginToken', token);
-		}
-
-		return {
-			invocation,
-			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
-				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
-			},
-			[Symbol.asyncDispose]() {
-				return Promise.resolve();
-			},
-		};
 	}
 }

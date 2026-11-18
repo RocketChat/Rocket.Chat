@@ -1,4 +1,4 @@
-import { censorUrl } from './censorUrl';
+import { censorUrl } from './censorUrl.js';
 
 describe('censorUrl', () => {
 	it('returns the original value when URL parsing fails', () => {
@@ -34,6 +34,12 @@ describe('censorUrl', () => {
 	it('redacts access_token even when query is absent', () => {
 		expect(censorUrl('https://example.com/path?access_token=token&foo=bar')).toBe(
 			'https://example.com/path?access_token=*Redacted*&foo=bar',
+		);
+	});
+
+	it('redacts the OAuth authorization code', () => {
+		expect(censorUrl('https://example.com/_oauth/google?code=secret&state=abc')).toBe(
+			'https://example.com/_oauth/google?code=*Redacted*&state=abc',
 		);
 	});
 

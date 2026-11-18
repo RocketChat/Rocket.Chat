@@ -15,23 +15,6 @@ jest.mock(
 	{ virtual: true },
 );
 
-jest.mock(
-	'meteor/meteor',
-	() => ({
-		Meteor: {
-			Error: class extends Error {
-				constructor(
-					public error: number,
-					public reason: string,
-				) {
-					super(reason);
-				}
-			},
-		},
-	}),
-	{ virtual: true },
-);
-
 jest.mock('../../../settings', () => ({
 	settings: {
 		get: jest.fn(),
@@ -46,7 +29,7 @@ describe('Apple OAuth loginHandler', () => {
 	let loginHandlerCallback: Parameters<typeof Accounts.registerLoginHandler>[1];
 
 	beforeAll(() => {
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		require('./loginHandler');
 		loginHandlerCallback = jest.mocked(Accounts.registerLoginHandler).mock.calls[0][1];
 	});

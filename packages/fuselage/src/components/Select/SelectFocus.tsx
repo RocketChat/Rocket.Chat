@@ -1,11 +1,12 @@
-import type { RefAttributes } from 'react';
+import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-type SelectFocusProps = Omit<BoxProps, 'ref'> & RefAttributes<Element>;
+type SelectFocusProps = Omit<ElementProps<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>, 'ref'> & RefAttributes<Element>;
 
 function SelectFocus(props: SelectFocusProps) {
-	return <Box fontScale='p2m' color='hint' rcx-select__focus is='button' type='button' {...props} />;
+	return <Box rcx-select__focus rcx-select__focus--button is='button' type='button' {...props} />;
 }
 
 export default SelectFocus;

@@ -9,26 +9,25 @@ import { configureIRC } from './configureIRC';
 import { configureLogLevel } from './configureLogLevel';
 import { configurePassport } from './configurePassport';
 import { configureSMTP } from './configureSMTP';
-import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureServer(settings: ICachedSettings) {
+	configureBoilerplate(settings);
+	configureSMTP(settings);
+	configurePassport(settings);
+
 	await Promise.all([
 		configureLogLevel(settings),
 		configureAccounts(),
 		configureCAS(settings),
-		configureLDAP(settings),
 		configureOAuth(settings),
 		configureAssets(settings),
 		configureCORS(settings),
 		configureCDN(settings),
 		configurePushNotifications(settings),
-		configureBoilerplate(settings),
 		configureDirectReply(settings),
-		configureSMTP(settings),
 		configureIRC(settings),
-		configurePassport(settings),
 	]);
 }

@@ -1,11 +1,11 @@
-import { UiKitParserAttachment, attachmentSurfaceLayoutBlockTypes } from './attachment/UiKitParserAttachment';
-import { UiKitParserBanner, bannerSurfaceLayoutBlockTypes } from './banner/UiKitParserBanner';
-import { UiKitParserContextualBar, contextualBarSurfaceLayoutBlockTypes } from './contextualBar/UiKitParserContextualBar';
-import { UiKitParserMessage, messageSurfaceLayoutBlockTypes } from './message/UiKitParserMessage';
-import { UiKitParserModal, modalSurfaceLayoutBlockTypes } from './modal/UiKitParserModal';
-import type { Block } from '../blocks/Block';
-import { LayoutBlockType } from '../blocks/LayoutBlockType';
-import type { SurfaceRenderer } from '../rendering/SurfaceRenderer';
+import { UiKitParserAttachment, attachmentSurfaceLayoutBlockTypes } from './attachment/UiKitParserAttachment.js';
+import { UiKitParserBanner, bannerSurfaceLayoutBlockTypes } from './banner/UiKitParserBanner.js';
+import { UiKitParserContextualBar, contextualBarSurfaceLayoutBlockTypes } from './contextualBar/UiKitParserContextualBar.js';
+import { UiKitParserMessage, messageSurfaceLayoutBlockTypes } from './message/UiKitParserMessage.js';
+import { UiKitParserModal, modalSurfaceLayoutBlockTypes } from './modal/UiKitParserModal.js';
+import type { Block } from '../blocks/Block.js';
+import { LayoutBlockType } from '../blocks/LayoutBlockType.js';
+import type { SurfaceRenderer } from '../rendering/SurfaceRenderer.js';
 
 type ParserClass = abstract new () => SurfaceRenderer<unknown, any>;
 

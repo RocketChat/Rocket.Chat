@@ -31,6 +31,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			role='button'
 			tabIndex={0}
 			display='flex'
+			flexGrow={1}
 			justifyContent='space-between'
 			alignItems='center'
 			height='x40'
@@ -38,7 +39,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			{...props}
 		>
 			{isDirty ? `${t(selectedOptionsTitle as TranslationKey)} (${selectedOptionsCount})` : t(defaultTitle as TranslationKey)}
-			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} fontSize='x20' color='hint' />
+			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} size='x20' color='hint' />
 		</Box>
 	);
 });

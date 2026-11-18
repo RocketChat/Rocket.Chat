@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../notifyListener';
@@ -9,11 +9,11 @@ export const blockUserMethod = async (userId: string, { rid, blocked }: { rid: s
 	const room = await Rooms.findOne({ _id: rid });
 
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 	}
 
 	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, userId))) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 	}
 
 	const [blockedUser, blockerUser] = await Promise.all([
@@ -22,7 +22,7 @@ export const blockUserMethod = async (userId: string, { rid, blocked }: { rid: s
 	]);
 
 	if (!blockedUser || !blockerUser) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 	}
 
 	const [blockedResponse, blockerResponse] = await Subscriptions.setBlockedByRoomId(rid, blocked, userId);

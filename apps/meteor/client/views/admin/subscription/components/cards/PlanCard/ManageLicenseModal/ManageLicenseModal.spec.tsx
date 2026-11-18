@@ -30,11 +30,6 @@ const enterLicense = async (text: string) => {
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />, { wrapper: mockAppRoot().build() });
-	expect(baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 

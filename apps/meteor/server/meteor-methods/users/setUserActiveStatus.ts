@@ -1,16 +1,7 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { setUserActiveStatus } from '../../lib/users/setUserActiveStatus';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		setUserActiveStatus(userId: string, active: boolean, confirmRelinquish?: boolean): boolean;
-	}
-}
 
 export const executeSetUserActiveStatus = async (
 	fromUserId: string,
@@ -18,11 +9,14 @@ export const executeSetUserActiveStatus = async (
 	active: boolean,
 	confirmRelinquish?: boolean,
 ): Promise<boolean> => {
-	check(userId, String);
-	check(active, Boolean);
+	if (typeof active !== 'boolean') {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'setUserActiveStatus',
+		});
+	}
 
 	if (!fromUserId || (await hasPermissionAsync(fromUserId, 'edit-other-user-active-status')) !== true) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'setUserActiveStatus',
 		});
 	}
@@ -31,16 +25,3 @@ export const executeSetUserActiveStatus = async (
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async setUserActiveStatus(userId, active, confirmRelinquish) {
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'setUserActiveStatus',
-			});
-		}
-
-		return executeSetUserActiveStatus(uid, userId, active, confirmRelinquish);
-	},
-});

@@ -9,11 +9,17 @@ $tile-border-radius: theme('tile-border-radius', lengths.border-radius(medium));
 .rcx-tile {
 	display: block;
 
+	padding: lengths.padding(16);
+
 	color: colors.font(default);
 	border-radius: $tile-border-radius;
 	background-color: colors.surface(light);
 
 	@include use-font-scale(p2);
+
+	&--flush {
+		padding: lengths.padding(none);
+	}
 
 	&--elevation-0 {
 		box-shadow: none;

@@ -1,11 +1,11 @@
 import { randomUUID } from 'crypto';
 import fs from 'fs';
+import { after, before, describe, it } from 'node:test';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
@@ -50,7 +50,7 @@ describe('[CustomSounds]', () => {
 	let fileId2: string;
 	let uploadDate: string | undefined;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		fileId = await createCustomSound(fileName, mockWavAudioPath);

@@ -4,4 +4,5 @@ export interface ITwoFactorChallenge {
 	method: 'email' | 'totp';
 	expireAt: Date;
 	createdAt: Date;
+	purpose?: 'login' | 'resend';
 }

@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
-import { Message, Omnichannel } from '@rocket.chat/core-services';
+import { Message, Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatDepartment,
 	IOmnichannelRoomInfo,
@@ -16,8 +16,6 @@ import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { LivechatContacts, LivechatDepartment, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepareLivechatRoom } from './Helper';
 import { RoutingManager } from './RoutingManager';
@@ -303,17 +301,6 @@ export class QueueManager {
 		extraData?: IOmnichannelRoomExtraData;
 	}) {
 		logger.debug({ msg: 'Requesting room for guest', guestId: guest._id });
-		check(
-			guest,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				status: Match.Maybe(String),
-				department: Match.Maybe(String),
-				name: Match.Maybe(String),
-				activity: Match.Maybe([String]),
-			}),
-		);
 
 		const defaultAgent =
 			(await beforeDelegateAgent(agent, {
@@ -342,15 +329,15 @@ export class QueueManager {
 
 		if (!settings.get('Livechat_accept_chats_with_no_agents')) {
 			if (agent && !defaultAgent) {
-				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+				throw new ClientSafeError('no-agent-online', 'Sorry, no online agents');
 			}
 
 			if (!defaultAgent && guest.department && !department) {
-				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+				throw new ClientSafeError('no-agent-online', 'Sorry, no online agents');
 			}
 
 			if (!agent && !guest.department && !(await checkOnlineAgents())) {
-				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+				throw new ClientSafeError('no-agent-online', 'Sorry, no online agents');
 			}
 		}
 
@@ -363,7 +350,7 @@ export class QueueManager {
 			await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, insertionRoom);
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw new ClientSafeError('error-app-prevented', error.message);
 			}
 
 			throw error;
