@@ -4,7 +4,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import AppPermissionsList from './components/AppPermissionsList';
-import PermissionsList from './components/layout/PermissionsList';
+import RichContent from '../../components/RichContent';
 
 export type AppPermissionsReviewModalProps = {
 	appPermissions: App['permissions'];
@@ -28,9 +28,11 @@ const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppP
 				<Text is='p' fontScale='p2'>
 					{t('Apps_Permissions_Review_Modal_Subtitle')}
 				</Text>
-				<PermissionsList>
-					<AppPermissionsList appPermissions={appPermissions} />
-				</PermissionsList>
+				<RichContent>
+					<ol>
+						<AppPermissionsList appPermissions={appPermissions} />
+					</ol>
+				</RichContent>
 			</Stack>
 		</GenericModal>
 	);

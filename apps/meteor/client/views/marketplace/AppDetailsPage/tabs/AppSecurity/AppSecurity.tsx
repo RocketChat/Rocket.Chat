@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import AppSecurityLabel from './AppSecurityLabel';
 import ContentColumn from '../../../../../components/ContentColumn';
+import RichContent from '../../../../../components/RichContent';
 import AppPermissionsList from '../../../components/AppPermissionsList';
-import PermissionsList from '../../../components/layout/PermissionsList';
 import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 import AppInfoSection from '../../layout/AppInfoSection';
 
@@ -31,9 +31,11 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 					</AppInfoSection>
 
 					<AppInfoSection title={<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>}>
-						<PermissionsList>
-							<AppPermissionsList appPermissions={appPermissions} />
-						</PermissionsList>
+						<RichContent>
+							<ol>
+								<AppPermissionsList appPermissions={appPermissions} />
+							</ol>
+						</RichContent>
 					</AppInfoSection>
 
 					<AppInfoSection title={<AppSecurityLabel>{t('Policies')}</AppSecurityLabel>}>
