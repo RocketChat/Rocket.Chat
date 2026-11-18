@@ -612,7 +612,7 @@ export const FileUpload = {
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
 				if (contents === false) {
-					return reject();
+					return reject(new Error('Failed to get file contents'));
 				}
 				resolve(contents);
 			});

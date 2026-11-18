@@ -11,7 +11,7 @@ import {
 	original,
 	code,
 	filterMarkdown,
-	createMarkdownMessageRenderer,
+	createMarkdownMessageRenderer as createMarkdownMessageFormatter,
 	createMarkdownNotificationRenderer,
 	markup,
 } from '../../tests/mocks/lib/markdown/markdown.mocks';
@@ -103,7 +103,7 @@ describe('Markdown token restoration', () => {
 });
 
 describe('Markdown renderers', () => {
-	const renderMessage = createMarkdownMessageRenderer({
+	const renderMessage = createMarkdownMessageFormatter({
 		rootUrl: 'http://localhost:3000/',
 		supportSchemesForLink: 'http,https',
 		headers: true,

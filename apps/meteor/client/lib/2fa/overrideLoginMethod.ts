@@ -68,7 +68,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 		return login(...loginArgs)
 			.catch(async (error: MeteorErrorLike | undefined) => {
 				if (!isTotpRequiredError(error)) {
-					return Promise.reject(error);
+					throw error;
 				}
 
 				const { process2faAsyncReturn } = await import('./process2faReturn');
