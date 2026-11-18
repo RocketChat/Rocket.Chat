@@ -4,7 +4,6 @@ import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';
-import AppContactRow from './layout/AppContactRow';
 import { normalizeUrl } from './normalizeUrl';
 import ContentColumn from '../../../../../components/ContentColumn';
 import RichContent from '../../../../../components/RichContent';
@@ -119,24 +118,28 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					</AppInfoSection>
 
 					<AppInfoSection title={<Text fontScale='h4'>{t('Contact')}</Text>}>
-						<AppContactRow>
-							<>
+						<Stack gap='x24'>
+							<Stack direction='row' wrap gap='x12'>
+								<Stack grow align='start'>
+									<Text fontScale='h4' color='hint'>
+										{t('Author_Site')}
+									</Text>
+									{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
+								</Stack>
+								<Stack grow align='start'>
+									<Text fontScale='h4' color='hint'>
+										{t('Support')}
+									</Text>
+									{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
+								</Stack>
+							</Stack>
+							<Stack align='start'>
 								<Text fontScale='h4' color='hint'>
-									{t('Author_Site')}
+									{t('Documentation')}
 								</Text>
-								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
-							</>
-							<>
-								<Text fontScale='h4' color='hint'>
-									{t('Support')}
-								</Text>
-								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
-							</>
-						</AppContactRow>
-						<Text fontScale='h4' color='hint'>
-							{t('Documentation')}
-						</Text>
-						{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+								{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+							</Stack>
+						</Stack>
 					</AppInfoSection>
 
 					{apis?.length ? <AppDetailsAPIs apis={apis} /> : null}
