@@ -13,9 +13,13 @@ import { Empty } from './Empty';
 export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
 		multiple?: boolean;
+		/** The entries; only those scrolled into view render. */
 		options: { value: string | number; label: string; selected?: boolean }[];
+		/** Index of the option the arrow keys reached, highlighted. */
 		cursor: number;
+		/** Shows each label as its option's tooltip, for labels that may be cut short. */
 		withTitle?: boolean;
+		/** Renders each option, such as `CheckOption` for a multiple selection. */
 		renderItem?: ComponentType<{
 			role?: string;
 			label?: ReactNode;
@@ -26,15 +30,19 @@ export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | '
 			value?: string | number;
 			onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
 		}>;
+		/** Shown in place of the list when there are no `options`. */
 		renderEmpty?: ElementType<object>;
+		/** Called with `[value, label]` of the option that was picked. */
 		onSelect: (option: [unknown, string]) => void;
+		/** Called when the list is scrolled to its end, to load the next page of `options`. */
 		endReached?: (start?: number, end?: number) => void;
 	};
 
 export { CheckOption, Empty };
 
 /**
- * An input for selection of options.
+ * The floating list of a select or an autocomplete with too many options to load at once: it renders only the ones in
+ * view and asks for more as the user scrolls.
  */
 export function OptionsPaginated({
 	ref,

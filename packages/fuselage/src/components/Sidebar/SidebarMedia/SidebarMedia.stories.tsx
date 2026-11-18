@@ -9,11 +9,9 @@ export default {
 	argTypes: {
 		collapsed: {
 			control: 'boolean',
-			description: 'Renders the sidebar in its collapsed (narrow) state.',
 		},
 		children: {
 			control: false,
-			description: 'Content of the sidebar.',
 		},
 	},
 } satisfies Meta<typeof Sidebar>;
@@ -21,6 +19,13 @@ export default {
 type Story = StoryObj<typeof Sidebar>;
 
 export const Default: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'A `SidebarMedia` panel with its `SidebarMediaTitle`, a `SidebarMediaController` and a call row, inside a `Sidebar`.',
+			},
+		},
+	},
 	render: () => (
 		<Box>
 			<Sidebar>

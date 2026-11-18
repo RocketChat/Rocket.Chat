@@ -4,6 +4,7 @@ import { ButtonGroup } from '../ButtonGroup';
 
 export type NavBarGroupProps = ButtonGroupProps;
 
+/** A set of related `NavBarItem`s. */
 function NavBarGroup({ className, ...props }: NavBarGroupProps) {
 	return <ButtonGroup {...props} className={cx('rcx-navbar-group', className)} />;
 }

@@ -30,7 +30,6 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'NavBar sections rendered inside the underlying `<nav>` element.',
 			table: { category: 'Content' },
 		},
 	},

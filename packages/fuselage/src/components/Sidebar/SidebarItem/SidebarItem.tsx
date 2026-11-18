@@ -27,7 +27,8 @@ export type SidebarItemProps = {
 	AllHTMLAttributes<HTMLAnchorElement>;
 
 /**
- * A sidebar row. It renders an `Item`, so its content can also be composed from `Item` parts.
+ * A room's row in the sidebar, leading to the room. It renders an `Item`, so its content can also be composed from `Item`
+ * parts.
  */
 export const SidebarItem = ({
 	selected,

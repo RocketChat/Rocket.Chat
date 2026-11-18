@@ -25,23 +25,18 @@ export default {
 	decorators,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A single room row within the chat sidebar.\n\n' +
-					'**Rules**\n' +
-					'- Use the unread status to highlight rooms with new activity; use badges for counts.\n' +
-					'- Shows the room name, an optional avatar/icon, and a trailing timestamp/status.',
-			},
+			usage: `
+- Set \`highlighted\` on the row of a room with unread activity, and show counts with a \`SidebarItemBadge\`.
+- Show the room name in a \`SidebarItemTitle\`, with an optional avatar or \`SidebarItemIcon\` before it and a \`SidebarItemTimestamp\` or status after it.
+`,
 		},
 	},
 	argTypes: {
 		selected: {
 			control: 'boolean',
-			description: 'Marks the list item as the currently selected entry.',
 		},
 		children: {
 			control: false,
-			description: 'Content of the list item.',
 		},
 	},
 } satisfies Meta<typeof SidebarListItem>;

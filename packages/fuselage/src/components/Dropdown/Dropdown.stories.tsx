@@ -12,7 +12,6 @@ export default {
 	argTypes: {
 		reference: {
 			control: false,
-			description: 'Ref to the anchor element the dropdown is positioned against.',
 			table: { category: 'Positioning' },
 		},
 		placement: {
@@ -35,7 +34,6 @@ export default {
 				'right-middle',
 				'right-end',
 			],
-			description: 'Position of the dropdown relative to the anchor. Defaults to `bottom-start`.',
 			table: {
 				category: 'Positioning',
 				defaultValue: { summary: 'bottom-start' },
@@ -43,7 +41,6 @@ export default {
 		},
 		children: {
 			control: false,
-			description: 'Dropdown items, typically `Option` elements.',
 			table: { category: 'Content' },
 		},
 	},

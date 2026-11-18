@@ -7,12 +7,18 @@ import { Chevron } from '../Chevron';
 export type ItemsPerPage = 25 | 50 | 100;
 
 export type PaginationProps = {
+	/** Total number of items across all pages. */
 	count: number;
+	/** Zero-based index of the first item on the current page, not the page number. */
 	current?: number;
+	/** Draws a line along the top, to separate the pagination from the content above it. */
 	divider?: boolean;
 	itemsPerPage?: ItemsPerPage;
+	/** Text before the items-per-page choices, such as a translated "Items per page:". */
 	itemsPerPageLabel?: (context: { count: number; current: number; itemsPerPage: ItemsPerPage }) => string;
+	/** Text before the page links, such as a translated "Showing results 1 - 25 of 500". */
 	showingResultsLabel?: (context: { count: number; current: number; itemsPerPage: ItemsPerPage }) => string;
+	/** Called with the new `current` when the user moves to another page. */
 	onSetCurrent?: Dispatch<SetStateAction<number>>;
 	onSetItemsPerPage?: Dispatch<SetStateAction<ItemsPerPage>>;
 } & HTMLAttributes<HTMLElement>;
@@ -24,6 +30,10 @@ const defaultShowingResultsLabel = ({ count, current, itemsPerPage }: { count: n
 
 const itemsPerPageOptions = [25, 50, 100] as const;
 
+/**
+ * Splits a long set of results, usually a table's, into pages, and lets the user move between pages and pick how many
+ * items each one shows.
+ */
 const Pagination = ({
 	count,
 	current = 0,

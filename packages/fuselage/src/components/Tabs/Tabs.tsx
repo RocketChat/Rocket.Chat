@@ -2,13 +2,14 @@ import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
 export type TabsProps = ElementProps<HTMLDivElement> & {
+	/** Draws a line under the tabs, separating them from the content below. */
 	divider?: boolean;
 	/** Grows the items to fill the whole width. */
 	stretch?: boolean;
 };
 
 /**
- * Tabs is a component to navigate around the UI using buttons arranged together with the selected tab highlighted.
+ * Lets the user move back and forth between groups of related content on the same page, one group at a time.
  */
 function Tabs({ children, divider = true, stretch, ...props }: TabsProps) {
 	return (

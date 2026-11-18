@@ -34,7 +34,6 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Content of the sidepanel.',
 		},
 	},
 } satisfies Meta<typeof Sidepanel>;

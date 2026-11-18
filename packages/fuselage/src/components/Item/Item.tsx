@@ -41,6 +41,7 @@ export type ItemProps = {
 	 * Dims the row and ignores clicks. Set the matching ARIA state through props.
 	 */
 	disabled?: boolean;
+	/** Colors the row for a destructive choice, such as a menu's "Delete". */
 	variant?: 'danger';
 	/**
 	 * Declares that the content takes two lines, which widens the gap, without waiting for the browser to match the content.
@@ -81,7 +82,8 @@ export type ItemProps = {
 const skipRegistration = () => () => undefined;
 
 /**
- * A list row composed from slots: media, icon, content and actions.
+ * A row in a list such as the sidebar, search results, a contextual bar list, a menu or a select, composed from slots:
+ * media, icon, content and actions.
  */
 const Item = ({
 	is: Tag = 'div',

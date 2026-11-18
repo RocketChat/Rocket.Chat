@@ -28,23 +28,18 @@ export default {
 	component: Sidebar,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'The room-list sidebar — rows for rooms (channels/teams/discussions/DMs) grouped into collapsible categories.\n\n' +
-					'**Rules**\n' +
-					'- Build a room list from sidebar items grouped under collapsible categories.\n' +
-					'- Use the unread status to highlight rooms with new activity; use badges for counts.',
-			},
+			usage: `
+- Build a room list from \`SidebarItem\` rows grouped under collapsible \`SidebarCollapseGroup\` categories.
+- Set \`highlighted\` on the row of a room with unread activity, and show counts with a \`SidebarItemBadge\`.
+`,
 		},
 	},
 	argTypes: {
 		collapsed: {
 			control: 'boolean',
-			description: 'Renders the sidebar in its collapsed (narrow) state.',
 		},
 		children: {
 			control: false,
-			description: 'Content of the sidebar.',
 		},
 	},
 } satisfies Meta<typeof Sidebar>;
