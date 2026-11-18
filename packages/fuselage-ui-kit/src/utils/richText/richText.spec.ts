@@ -350,6 +350,15 @@ describe('richTextFromMarkdown', () => {
 		]);
 	});
 
+	it('keeps the text of a block spoiler and a table', () => {
+		const { elements } = richTextFromMarkdown('||\nsecret\n||\n\n| a | b |\n|---|---|\n| 1 | 2 |');
+
+		expect(elements).toEqual([
+			{ type: 'rich_text_section', elements: [text('secret')] },
+			{ type: 'rich_text_preformatted', elements: [text('a | b\n1 | 2')] },
+		]);
+	});
+
 	it('keeps the checked state of each task', () => {
 		const { elements } = richTextFromMarkdown('- [x] a\n- [ ] b');
 

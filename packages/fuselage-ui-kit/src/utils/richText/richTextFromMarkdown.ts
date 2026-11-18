@@ -50,10 +50,14 @@ const inlinesFromAst = (nodes: readonly MessageParser.Inlines[], style: Style = 
 		}
 	});
 
-function labelText(label: MessageParser.Link['value']['label']): string {
-	return inlinesFromAst([label].flat())
+function inlineText(nodes: readonly MessageParser.Inlines[]): string {
+	return inlinesFromAst(nodes)
 		.map((element) => ('text' in element && element.text ? element.text : ''))
 		.join('');
+}
+
+function labelText(label: MessageParser.Link['value']['label']): string {
+	return inlineText([label].flat());
 }
 
 const section = (nodes: readonly MessageParser.Inlines[]): UiKit.RichTextSection => ({
@@ -119,6 +123,25 @@ const containersFromAst = (node: MessageParser.Root[number]): UiKit.RichTextCont
 
 		case 'BIG_EMOJI':
 			return [section(node.value)];
+
+		// The rich text model has no spoiler or table, so their text is kept without that structure.
+		case 'SPOILER_BLOCK':
+			return [{ type: 'rich_text_section', elements: joinParagraphs(node.value) }];
+
+		case 'TABLE':
+			return [
+				{
+					type: 'rich_text_preformatted',
+					elements: [
+						{
+							type: 'text',
+							text: [node.value.header, ...node.value.rows.map((row) => row.value)]
+								.map((cells) => cells.map((cell) => inlineText(cell.value)).join(' | '))
+								.join('\n'),
+						},
+					],
+				},
+			];
 
 		default:
 			return [];
