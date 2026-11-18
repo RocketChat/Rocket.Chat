@@ -2811,6 +2811,7 @@ describe('[Chat]', () => {
 				expect(s).to.have.property('tunread');
 				expect(s.tunread).to.be.an('array');
 				expect(s.tunread).to.deep.equal([]);
+				expect(s.tunreadSince ?? {}).to.deep.equal({});
 			};
 
 			it('should reset the unread counter if the message was removed', async () => {
@@ -5207,6 +5208,34 @@ describe('Threads', () => {
 
 			const subscription = await getSubscriptionByRoomId(testChannel._id);
 			expect(subscription.tunread ?? []).to.not.include(parentMessage._id);
+		});
+
+		it('should keep the time of the first unread reply until the thread is read', async () => {
+			const firstReply = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'First reply',
+					tmid: parentMessage._id,
+					userCredentials: replierCredentials,
+				})
+			).body.message;
+			const secondReply = await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Second reply',
+				tmid: parentMessage._id,
+				userCredentials: replierCredentials,
+			});
+			expect(secondReply.status).to.equal(200);
+
+			await retry('caller subscription keeps the first unread reply time', async () => {
+				const subscription = await getSubscriptionByRoomId(testChannel._id);
+				expect(subscription.tunreadSince?.[parentMessage._id]).to.equal(firstReply.ts);
+			});
+
+			await request.post(api('chat.readThread')).set(credentials).send({ tmid: parentMessage._id }).expect(200);
+
+			const subscription = await getSubscriptionByRoomId(testChannel._id);
+			expect(subscription.tunreadSince ?? {}).to.not.have.property(parentMessage._id);
 		});
 	});
 
