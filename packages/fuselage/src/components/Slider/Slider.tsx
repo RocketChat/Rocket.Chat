@@ -15,9 +15,7 @@ export type SliderProps<T extends number | number[]> = AriaAttributes &
 		 * The display format of the value output.
 		 */
 		formatOptions?: Intl.NumberFormatOptions;
-		/**
-		 * The id of the slider input element, used to connect with an external label.
-		 */
+		/** Lands on the slider's group, not on an input, so a `label` pointing at it doesn't name the slider. */
 		id?: string;
 		className?: string;
 		style?: CSSProperties;
@@ -51,6 +49,9 @@ export type SliderProps<T extends number | number[]> = AriaAttributes &
 		  }
 	);
 
+/**
+ * Picks a number, or a range with `multiThumb`, by moving a thumb along a track between a minimum and a maximum.
+ */
 function Slider<T extends number | [min: number, max: number]>({
 	ref,
 	className,

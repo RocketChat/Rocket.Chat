@@ -47,14 +47,18 @@ const isSelectedValid =
  * @deprecated Use `SelectFilteredProps` or `MultiSelectFilteredProps` instead.
  */
 export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'is'> & {
+	/** The text typed into the input. The options aren't narrowed down by it: pass only the matching ones. */
 	filter: string;
+	/** Called with the text as the user types it, and with an empty string once an option is picked. */
 	setFilter?: (filter: string) => void;
 	options?: AutoCompleteOption<TLabel>[];
+	/** Renders each selected option, in place of a chip; `onRemove` deselects it. */
 	renderSelected?: ComponentType<{
 		selected: AutoCompleteOption<TLabel>;
 		onRemove?: (event: MouseEvent<HTMLButtonElement>) => void;
 	}>;
 	onChange: (value: string | string[]) => void;
+	/** Renders each option in the list. */
 	renderItem?: ComponentType<{
 		role?: string;
 		label: TLabel;
@@ -63,18 +67,21 @@ export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLI
 		focus?: boolean;
 		onMouseDown: MouseEventHandler;
 	}>;
+	/** Renders what the list shows when there are no options. */
 	renderEmpty?: ComponentType<{
 		customEmpty?: string;
 	}>;
 	placeholder?: string;
 	error?: boolean;
 	disabled?: boolean;
+	/** Lets the user pick several options; `value` and `onChange` then take an array. */
 	multiple?: boolean;
 	value?: string | string[];
 } & RefAttributes<HTMLInputElement>;
 
 /**
- * An input for selection of options.
+ * Picks one option, or with `multiple` several, from a list the user searches by typing. Each one picked shows as a
+ * chip, which deselects it when clicked.
  *
  * @deprecated Use `SelectFiltered` or `MultiSelectFiltered` instead.
  */

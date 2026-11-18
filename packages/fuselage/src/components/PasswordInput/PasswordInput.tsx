@@ -7,6 +7,9 @@ import { InputBox, type InputBoxProps } from '../InputBox';
 
 export type PasswordInputProps = Omit<InputBoxProps<HTMLInputElement>, 'type'>;
 
+/**
+ * Takes a password, hidden as it is typed, with an eye icon to show or hide it.
+ */
 function PasswordInput(props: PasswordInputProps) {
 	const [hidden, toggle] = useToggle(true);
 	const handleAddonClick = () => {

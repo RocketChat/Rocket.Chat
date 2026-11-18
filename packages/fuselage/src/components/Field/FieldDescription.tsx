@@ -5,6 +5,9 @@ import { FieldContext } from './Field';
 
 export type FieldDescriptionProps = ElementProps<HTMLSpanElement>;
 
+/**
+ * Clarifies the label with context or instructions about the expected input.
+ */
 const FieldDescription = (props: FieldDescriptionProps) => {
 	const component = <Box is='span' rcx-field__description {...props} />;
 

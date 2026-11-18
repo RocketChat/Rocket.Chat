@@ -5,6 +5,9 @@ import { LabelInfo } from '../Label/LabelInfo';
 
 export type FieldLabelInfoProps = LabelInfoProps;
 
+/**
+ * An info icon in a field's label, explaining the field in a tooltip.
+ */
 const FieldLabelInfo = (props: FieldLabelInfoProps) => {
 	const component = <LabelInfo {...props} />;
 

@@ -5,6 +5,9 @@ import { FieldContext } from './Field';
 
 export type FieldErrorProps = ElementProps<HTMLSpanElement>;
 
+/**
+ * Says what is wrong with the value entered, and how to fix it.
+ */
 const FieldError = (props: FieldErrorProps) => {
 	const component = <Box is='span' rcx-field__error {...props} />;
 

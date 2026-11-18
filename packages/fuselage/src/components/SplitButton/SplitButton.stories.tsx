@@ -13,18 +13,13 @@ export default {
 	component: SplitButton,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Fuses a menu trigger and its primary action into a single control, with no gap and group-level rounded corners.\n\n' +
-					'The `SplitButtonTrigger` is a **ghost** segment: it stays transparent so the translucent group background (the secondary button background at 70% opacity) shows through. Pass it as the `Menu` `button`, next to the primary action.\n\n' +
-					"A variant set on the group (`danger`, `warning`, `success`, `primary`) keeps its identity on the ghost segment: the group background, the trigger glyph and its hover/active/focus feedback use the variant's own tokens at the same 70% translucency.\n\n" +
-					'**Rules**\n' +
-					'- Exactly two children: a `Menu` whose `button` is a `SplitButtonTrigger`, and the primary action.\n' +
-					'- Set `danger` on the group when the action is destructive, and make the action `secondary danger`. Likewise, match `warning`, `success` or `primary` on the group to the action variant.\n' +
-					'- Name the group with `aria-label` (or `aria-labelledby`) — it is announced when focus enters it.\n' +
-					'- For toggles (microphone, camera), set `aria-pressed` on the action.\n' +
-					'- Keep both segments the same size.',
-			},
+			usage: `
+- Put exactly two children in a \`SplitButton\`: a \`Menu\` whose \`button\` is a \`SplitButtonTrigger\`, and the action.
+- Give both segments the same \`size\`.
+- For a destructive action, set \`danger\` on the group and \`variant='secondary-danger'\` on the action. Likewise, match \`warning\`, \`success\` or \`primary\` on the group to the action's variant.
+- Name the group with \`aria-label\` or \`aria-labelledby\`: it is announced when focus enters it.
+- For a toggle, such as a microphone or a camera, set \`aria-pressed\` on the action.
+`,
 		},
 	},
 } satisfies Meta<typeof SplitButton>;
@@ -45,6 +40,13 @@ const devices = [
 
 export const Default: Story = {
 	decorators: [withLightSurface],
+	parameters: {
+		docs: {
+			description: {
+				story: 'Click the microphone to toggle it, and the trigger to pick a device.',
+			},
+		},
+	},
 	render: function Render() {
 		const [enabled, setEnabled] = useState(true);
 		const [device, setDevice] = useState('built-in');
@@ -161,8 +163,7 @@ export const Variants: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story:
-					"The ghost trigger keeps the variant set on the group: its background, glyph and state feedback use the variant's own tokens at the same translucency as the default (secondary) ghost.",
+				story: 'The variant set on the group tints the trigger to match the action beside it.',
 			},
 		},
 	},
@@ -251,7 +252,7 @@ export const CallControls: Story = {
 		docs: {
 			description: {
 				story:
-					'Video-call controls: `SplitButton`s for the microphone and camera (each device toggle paired with a ghost menu segment that opens the device selection), laid out in a `ButtonGroup` next to standalone toggles, a regular `Menu` and the leave action. Only the split buttons are fused; the group keeps its 8px gap between controls.',
+					'Microphone and camera `SplitButton`s in a `ButtonGroup`, beside standalone toggles, a `Menu` and the leave action. Only the split buttons are fused; the group keeps its gap between the other controls.',
 			},
 		},
 	},

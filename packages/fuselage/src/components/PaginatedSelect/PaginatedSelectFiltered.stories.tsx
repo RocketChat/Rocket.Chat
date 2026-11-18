@@ -21,70 +21,62 @@ export default {
 	argTypes: {
 		options: {
 			control: false,
-			description: 'List of `{ value, label }` options rendered in the paginated dropdown list.',
 			table: { category: 'Content' },
 		},
 		value: {
 			control: false,
-			description: 'Currently selected value; must match the `value` of one of the `options`.',
 			table: { category: 'State' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown in the filter input when no filter text has been typed.',
 			table: { category: 'Content' },
 		},
 		withTitle: {
 			control: 'boolean',
-			description: 'Sets the `title` attribute on the rendered options, used to show the full label on hover when truncated.',
+			description: "Sets each option's label as its `title`, so a label cut short can be read in full on hover.",
 			table: { category: 'Content' },
 		},
 		filter: {
 			control: 'text',
-			description: 'Current filter text used to narrow down the list of options shown in the dropdown.',
+			description: "The text typed into the filter input. The options aren't narrowed down by it: pass only the matching ones.",
 			table: { category: 'State' },
 		},
 		setFilter: {
 			control: false,
-			description: 'Called with the new text whenever the user types into the filter input.',
 			table: { category: 'Events' },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message; when set, the field is rendered with the invalid style state.',
+			description:
+				"Shows the select as invalid; set `aria-invalid` too, for assistive technology. The message isn't shown: show it in a `FieldError`.",
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the field and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called with the newly selected option value when an item is chosen from the list.',
 			table: { category: 'Events' },
 		},
 		endReached: {
 			control: false,
-			description:
-				'Called with the current option index when the dropdown list is scrolled near its end, used to fetch more paginated options.',
+			description: 'Called when the list is scrolled to its end, to load the next page of `options`.',
 			table: { category: 'Events' },
 		},
 		anchor: {
 			control: false,
-			description:
-				'Overrides the trigger element rendered inside the field (defaults to `SelectFocus`); `PaginatedSelectFiltered` replaces it internally with a filter `Input`.',
+			description: 'Not used: the filter input always takes its place.',
 			table: { category: 'Content' },
 		},
 		renderOptions: {
 			control: false,
-			description: 'Overrides the component that renders the dropdown list of options (defaults to `OptionsPaginated`).',
+			description: 'Replaces the list of options.',
 			table: { category: 'Content' },
 		},
 		renderItem: {
 			control: false,
-			description:
-				'Overrides the component used to render each option row (defaults to `Option`); used by the `WithRenderItem` story to show extra option details.',
+			description: 'Renders each option in the list.',
 			table: { category: 'Content' },
 		},
 	},

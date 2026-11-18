@@ -8,7 +8,7 @@ export const FieldContext = createContext(false);
 export type FieldProps = ElementProps<HTMLDivElement>;
 
 /**
- * A `Field` is a wrapper representing an entry in a form.
+ * Holds one entry of a form: its label, the input, and the description, hint, error and link that support it.
  */
 function Field(props: FieldProps) {
 	return (

@@ -13,6 +13,13 @@ export default {
 		InputBoxSkeleton,
 		Input,
 	},
+	parameters: {
+		docs: {
+			usage: `
+- Follows the \`TextInput\` usage.
+`,
+		},
+	},
 	argTypes: {
 		type: {
 			control: 'select',
@@ -43,72 +50,58 @@ export default {
 				'textarea',
 				'select',
 			],
-			description: 'HTML input type (or `textarea`/`select`) to render.',
 			table: { category: 'Kind' },
 		},
 		startAddon: {
 			control: false,
-			description: 'Content rendered before the input, inside its border.',
 			table: { category: 'Content' },
 		},
 		endAddon: {
 			control: false,
-			description: 'Content rendered after the input, inside its border.',
 			table: { category: 'Content' },
 		},
 		endAddonFlush: {
 			control: 'boolean',
-			description: 'Reduces the end padding so a button in `endAddon` sits flush with the input edge.',
 			table: { category: 'Content' },
 		},
 		input: {
 			control: false,
-			description: 'Overrides the rendered input element entirely.',
 			table: { category: 'Content' },
 		},
 		multiple: {
 			control: 'boolean',
-			description: 'Allows multiple values to be entered/selected.',
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown when the input is empty.',
 			table: { category: 'Content' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the input at a smaller size scale.',
 			table: { category: 'Size' },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message that marks the input as invalid and styles it accordingly.',
 			table: { category: 'State' },
 		},
 		placeholderVisible: {
 			control: 'boolean',
-			description: 'Keeps the placeholder visible even when there is a value.',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the input and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		value: {
 			control: 'text',
-			description: 'Controlled value of the input.',
 			table: { category: 'Content' },
 		},
 		defaultValue: {
 			control: 'text',
-			description: 'Initial, uncontrolled value of the input.',
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the input value changes.',
 			table: { category: 'Events' },
 		},
 	},
@@ -131,6 +124,13 @@ export const Date: Story = {
 		'onChange': action('change'),
 		'type': 'date',
 	},
+	parameters: {
+		docs: {
+			description: {
+				story: "Click the calendar icon to open the browser's date picker.",
+			},
+		},
+	},
 };
 
 export const Time: Story = {
@@ -139,6 +139,13 @@ export const Time: Story = {
 		'defaultValue': 'Value',
 		'onChange': action('change'),
 		'type': 'time',
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: "Click the clock icon to open the browser's time picker.",
+			},
+		},
 	},
 };
 

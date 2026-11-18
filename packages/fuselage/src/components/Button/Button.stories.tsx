@@ -13,66 +13,60 @@ export default {
 	component: Button,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Triggers events and actions. Use for actions that change data or how it is displayed, change a state, trigger an action, or navigate the user within the app or to a different site. Buttons can also link to external URLs.\n\n' +
-					'**Rules**\n' +
-					'- When more than one button is side by side, always wrap them in a Button group with an 8px gap; a lone button needs no group.\n' +
-					'- In a button group, use Primary when the next step is evident, and Secondary when it is unclear; exactly one Primary per group, the rest Secondary.\n' +
-					'- For destructive flows, initiate with a Secondary danger button, then confirm with a Primary danger button.\n' +
-					'- Never rely on color alone to signal danger — keep a clear label (and icon if used).\n' +
-					'- Set a leading icon only when the label needs visual support; skip it when redundant.\n' +
-					'- Do not pair a regular Button with an Icon button — use Icon Only on a regular Button instead if a label-less button is needed beside text buttons.\n' +
-					'- Loading: replace the icon with a spinner, disable the button, and keep the label copy unchanged.\n' +
-					'- Labels: sentence case, no title case, no exclamation marks; avoid vague stand-alone verbs (e.g. "Create channel", not "Create").\n' +
-					'- For lightweight in-text navigation, use a link instead of a Button.',
-			},
+			usage: `
+- Wrap buttons that sit side by side in a \`ButtonGroup\`; a lone button needs no group.
+- In a group, use \`primary\` when the next step is evident and \`secondary\` when it is unclear; one \`primary\` at most.
+- Start a destructive flow with a \`secondary-danger\` button and confirm it with a \`danger\` one.
+- Don't rely on color alone to signal danger: keep a clear label.
+- Add a leading \`icon\` only when it closely represents the action and the label needs visual support.
+- Prefer a labelled button to an icon-only one: an icon alone is harder to understand and to reach with assistive technology.
+- Don't pair a \`Button\` with an \`IconButton\`; use a \`square\` \`Button\` beside other buttons instead.
+- While \`loading\`, keep the label unchanged.
+- For in-text navigation, use a link, not a button.
+
+**Labels**
+
+- Lead with a clear verb, followed by a noun for less common actions ("Create channel", not "Create"). Common actions such as "Cancel", "Done", "Close" and "OK" need no noun.
+- Use sentence case, and no exclamation marks.
+- Keep labels short, but understandable.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Button label content.',
 		},
 		variant: {
 			control: 'select',
 			options: ['primary', 'secondary', 'danger', 'secondary-danger', 'warning', 'secondary-warning', 'success', 'secondary-success'],
-			description: 'Visual style of the button.',
 		},
 		size: {
 			control: 'select',
 			options: ['small', 'medium', 'large'],
-			description: 'Size scale of the button.',
 		},
 		square: {
 			control: 'boolean',
-			description: 'Renders as a square icon-only footprint instead of the default pill shape.',
 			table: { category: 'Shape' },
 		},
 		compact: {
 			control: 'boolean',
-			description: 'Lowers the minimum width so a label of one or two characters fits.',
 			table: { category: 'Shape' },
 		},
 		icon: {
 			control: 'text',
-			description: 'Name of the Fuselage icon rendered before the label.',
 			table: { category: 'Content' },
 		},
 		loading: {
 			control: 'boolean',
-			description: 'Shows a spinner in place of the icon and blocks interaction.',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the button and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		is: {
 			control: 'select',
 			options: ['button', 'a'],
-			description: 'Underlying element rendered.',
 			table: { category: 'Polymorphism', defaultValue: { summary: 'button' } },
 		},
 		href: {
@@ -82,12 +76,10 @@ export default {
 		},
 		external: {
 			control: 'boolean',
-			description: 'When `is="a"`, opens the link in a new tab with `rel="noopener noreferrer"`.',
 			table: { category: 'Polymorphism' },
 		},
 		onClick: {
 			control: false,
-			description: 'Called when the button is activated.',
 			table: { category: 'Events' },
 		},
 	},
@@ -132,6 +124,13 @@ export const LoadingInteraction: Story = {
 };
 
 export const Truncated: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'A label wider than the space the button gets is cut short with an ellipsis.',
+			},
+		},
+	},
 	render: () => (
 		<Box maxWidth={160} display='flex' justifyContent='center'>
 			<Button onClick={action('click')}>Button with loooooooooooong text</Button>
@@ -195,7 +194,14 @@ export const AsLink: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStatesWithFocusVisible },
+	parameters: {
+		pseudo: variationPseudoStatesWithFocusVisible,
+		docs: {
+			description: {
+				story: 'Every variant in each interaction state, at the default size and at `small`.',
+			},
+		},
+	},
 	render: () => (
 		<>
 			<PropsVariationSection

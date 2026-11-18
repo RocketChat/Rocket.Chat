@@ -16,37 +16,30 @@ export default {
 	argTypes: {
 		options: {
 			control: false,
-			description: 'The full list of selectable options as `[value, label]` tuples rendered as items.',
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Text shown in the trigger when no option is selected.',
 			table: { category: 'Content' },
 		},
 		value: {
 			control: false,
-			description: 'Controlled key of the currently selected option.',
 			table: { category: 'Selection' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called with the newly selected option key.',
 			table: { category: 'Selection' },
 		},
 		error: {
 			control: 'text',
-			description: 'Displays the invalid style and error state on the select trigger.',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the select and blocks interaction.',
 			table: { category: 'State' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the select trigger at a smaller size scale.',
 			table: { category: 'Size' },
 		},
 	},
@@ -59,6 +52,13 @@ export const Default: Story = {
 		'placeholder': 'Placeholder here...',
 		options,
 		'aria-label': 'Select',
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'Open the list with a click, the arrow keys, Enter or Space, and type the start of a label to jump to its option.',
+			},
+		},
 	},
 };
 
@@ -100,7 +100,14 @@ export const NoPlaceholder: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Each interaction state, with and without a placeholder, at the default size and at `small`.',
+			},
+		},
+	},
 	render: () => (
 		<>
 			<PropsVariationSection

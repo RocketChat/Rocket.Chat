@@ -8,19 +8,29 @@ import { Icon, type IconProps } from '../Icon';
 export type ButtonProps = {
 	/** Renders a link instead of a button, for actions that navigate or download. */
 	is?: 'button' | 'a';
+	/**
+	 * `primary` calls attention to the evident next step; `secondary` keeps a neutral presence when the next step is
+	 * unclear. The other variants carry the same pair for danger, warning and success.
+	 */
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
+	/** Match the size of the surrounding buttons and inputs. */
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	disabled?: boolean;
+	/** Replaces the icon with a spinner and disables the button, with the label left as it is. */
 	loading?: boolean;
+	/** Renders a squared, label-less button, to sit beside other buttons and inputs of the same height. */
 	square?: boolean;
 	/** Lowers the minimum width so a label of one or two characters fits. */
 	compact?: boolean;
+	/** With `is='a'`, opens the link in a new tab. */
 	external?: boolean;
+	/** Leading icon, for a label that needs visual support. */
 	icon?: IconProps['name'];
 } & ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>;
 
 /**
- * Indicates an actionable user action.
+ * Triggers an action: changes data or how it is displayed, changes a state, or takes the user somewhere else in the
+ * app or on another site.
  */
 function Button({
 	ref,

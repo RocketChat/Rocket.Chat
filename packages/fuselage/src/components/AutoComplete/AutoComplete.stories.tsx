@@ -20,62 +20,50 @@ export default {
 	argTypes: {
 		value: {
 			control: 'text',
-			description: 'Currently selected option value(s); a string for single selection or an array of strings when `multiple`.',
 			table: { category: 'State' },
 		},
 		filter: {
 			control: 'text',
-			description: 'Current text typed into the input, used to filter the options list.',
 			table: { category: 'State' },
 		},
 		setFilter: {
 			control: false,
-			description: 'Called when the input text changes, to update `filter`.',
 			table: { category: 'Events' },
 		},
 		options: {
 			control: false,
-			description: 'List of selectable options (`{ value, label }`) shown in the dropdown.',
 			table: { category: 'Content' },
 		},
 		renderSelected: {
 			control: false,
-			description: 'Custom renderer for each selected value.',
 			table: { category: 'Content' },
 		},
 		renderItem: {
 			control: false,
-			description: 'Custom renderer for each option row in the dropdown.',
 			table: { category: 'Content' },
 		},
 		renderEmpty: {
 			control: false,
-			description: 'Custom renderer shown when no options match the filter.',
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called with the new selected value(s) when the selection changes.',
 			table: { category: 'Events' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown in the input when it is empty.',
 			table: { category: 'Content' },
 		},
 		error: {
 			control: 'boolean',
-			description: 'Renders the input in an invalid/error state.',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the input and blocks interaction.',
 			table: { category: 'State' },
 		},
 		multiple: {
 			control: 'boolean',
-			description: 'Allows selecting more than one option at a time.',
 			table: { category: 'Kind' },
 		},
 	},
@@ -129,6 +117,13 @@ export const Multiple: Story = {
 	args: {
 		value: ['1', '3'],
 		multiple: true,
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'Click a chip to deselect its option.',
+			},
+		},
 	},
 	render: (args) => <AutoCompleteDemo {...args} />,
 };

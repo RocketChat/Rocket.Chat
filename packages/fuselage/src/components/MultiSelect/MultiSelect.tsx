@@ -22,17 +22,29 @@ export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onCha
 		name?: string;
 		disabled?: boolean;
 		placeholder?: string;
+		/** Hides the options whose label doesn't contain this text, ignoring case. */
 		filter?: string;
 		value?: SelectOption[0][];
+		/**
+		 * Shows the select as invalid; set `aria-invalid` too, for assistive technology. The message isn't shown: show it
+		 * in a `FieldError`.
+		 */
 		error?: string;
+		/** The options, as `[value, label]` tuples. Which ones are selected comes from `value`, not from a third item. */
 		options: SelectOption[];
 		onChange: (params: SelectOption[0][]) => void;
+		/** Gives the label a selected option shows in its chip. */
 		getLabel?: (params: SelectOption) => SelectOption[1];
 		getValue?: (params: SelectOption) => SelectOption[0];
+		/** What the list says when it has no option to show, in place of "Empty". */
 		customEmpty?: string;
+		/** Replaces the element that takes the focus and the keys, such as with a text input that filters the options. */
 		anchor?: ElementType<MultiSelectAnchorParams>;
+		/** Replaces the list of options. */
 		renderOptions?: ElementType;
+		/** Renders each option in the list, in place of an option with a checkbox. */
 		renderItem?: ElementType;
+		/** Renders each selected option, in place of a chip; the `onClick` it gets deselects the option. */
 		renderSelected?: ElementType<{
 			value: SelectOption[0];
 			label: SelectOption[1];
@@ -40,12 +52,14 @@ export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onCha
 			onClick: MouseEventHandler;
 			children: ReactNode;
 		}>;
+		/** Replaces the chevron shown while the list is closed. */
 		addonIcon?: IconProps['name'];
+		/** Called with an empty string once an option is picked, to clear `filter`. */
 		setFilter?: (filter: string) => void;
 	};
 
 /**
- * An input for selection of options.
+ * Picks several options from a list. Each one picked shows as a chip, which deselects it when clicked.
  */
 function MultiSelect({
 	ref,

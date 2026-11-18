@@ -20,20 +20,35 @@ export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'>
 		name?: string;
 		disabled?: boolean;
 		placeholder?: string;
+		/** Replaces the element that takes the focus and the keys, such as with a text input that filters the options. */
 		anchor?: ElementType;
+		/**
+		 * Shows the select as invalid; set `aria-invalid` too, for assistive technology. The message isn't shown: show it
+		 * in a `FieldError`.
+		 */
 		error?: string;
 		options: SelectOption[];
 		onChange: (value: SelectOption[0]) => void;
 		getLabel?: (params: SelectOption) => SelectOption[1];
 		getValue?: (params: SelectOption) => SelectOption[0];
+		/** Hides the options whose label doesn't contain this text, ignoring case. */
 		filter?: string;
+		/** Replaces the list of options. */
 		renderOptions?: ElementType;
+		/** Renders each option in the list. */
 		renderItem?: ElementType;
+		/** Renders the selected option in the select, in place of its label. */
 		renderSelected?: ElementType;
+		/** What the list says when it has no option to show, in place of "Empty". */
 		customEmpty?: string;
+		/** Replaces the chevron shown while the list is closed. */
 		addonIcon?: IconProps['name'];
 	};
 
+/**
+ * The earlier `Select`, whose parts can be replaced through `anchor` and the render props. `SelectFiltered` builds on
+ * it.
+ */
 function SelectLegacy({
 	ref,
 	value,

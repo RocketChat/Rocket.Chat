@@ -7,6 +7,9 @@ import { FieldContext } from './Field';
 
 export type FieldLinkProps = ElementProps<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement>>;
 
+/**
+ * A link to more help with the field, such as a way to recover a forgotten password.
+ */
 const FieldLink = (props: FieldLinkProps) => {
 	const component = <Box is='a' rcx-field__link {...props} />;
 

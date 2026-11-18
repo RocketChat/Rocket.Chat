@@ -8,7 +8,7 @@ import { Box } from '../Box';
 export type FieldGroupProps = ElementProps<HTMLFieldSetElement, FieldsetHTMLAttributes<HTMLFieldSetElement>>;
 
 /**
- * A container for grouping fields that semantically share a common data context.
+ * Stacks the fields of one section of a form, 24px apart, in a `fieldset`.
  */
 const FieldGroup = ({ children, ...props }: FieldGroupProps) => (
 	<Box is='fieldset' rcx-field-group role='group' {...props}>
