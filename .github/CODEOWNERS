@@ -32,7 +32,6 @@
 /ee/packages/omnichannel-services/ @RocketChat/omnichannel
 /ee/apps/omnichannel-transcript/ @RocketChat/omnichannel
 /ee/apps/queue-worker/ @RocketChat/omnichannel
-/apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
 /apps/meteor/lib/livechat @RocketChat/omnichannel
 /apps/meteor/server/services/omnichannel @RocketChat/omnichannel
 
