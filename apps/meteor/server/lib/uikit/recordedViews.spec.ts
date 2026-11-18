@@ -74,6 +74,13 @@ describe('recordInteractionView', () => {
 		expect(mockSaveView).not.toHaveBeenCalled();
 	});
 
+	it('skips an update to a view the user has no record of', async () => {
+		mockFindOneByIdForUser.mockResolvedValue(null);
+
+		expect(await recordInteractionView({ type: 'modal.update', view: { id: 'gone', blocks: [] } }, 'app', 'user')).toBe(false);
+		expect(mockSaveView).not.toHaveBeenCalled();
+	});
+
 	it('skips a stale update, whose hash is not the saved one', async () => {
 		mockFindOneByIdForUser.mockResolvedValue({ view: { ...appView, hash: 'saved' } });
 

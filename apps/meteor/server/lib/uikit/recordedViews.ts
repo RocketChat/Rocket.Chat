@@ -61,6 +61,11 @@ export const recordInteractionView = async (interaction: unknown, appId: string,
 			return true;
 		}
 
+		if (isUpdate && !recorded) {
+			logger.warn({ msg: 'UiKit update names a view the user has no record of; skipped', viewId: view[idKey], appId });
+			return false;
+		}
+
 		const recordedHash = recorded && 'hash' in recorded.view ? recorded.view.hash : undefined;
 		if (recordedHash && typeof view.hash === 'string' && view.hash !== recordedHash) {
 			logger.warn({ msg: 'Stale UiKit view update skipped: its hash does not match the saved view', viewId: view[idKey], appId });
