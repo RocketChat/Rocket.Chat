@@ -166,10 +166,10 @@ const compareFill = async (source) => {
 const rows = [];
 const failures = [];
 for (const path of await listFiles('./src/**/*.svg')) {
-	const source = await readSource(path);
-	if (!source.includes('evenodd')) continue;
 	const name = relative('./src', path);
 	try {
+		const source = await readSource(path);
+		if (!source.includes('evenodd')) continue;
 		rows.push({ name, ...(await compareFill(source)) });
 	} catch (error) {
 		failures.push({ name, message: error.message });
