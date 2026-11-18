@@ -30,18 +30,6 @@ $sidepanel-color-default: colors.font(default);
 		padding: lengths.padding(16);
 	}
 
-	&-search {
-		@extend %section-base;
-		padding: lengths.padding(16);
-
-		&--rooms-list {
-			flex-shrink: 0;
-
-			padding-block: lengths.padding(8);
-			padding-inline: lengths.padding(12);
-		}
-	}
-
 	&-header {
 		@extend %section-base;
 		height: lengths.size(44);
