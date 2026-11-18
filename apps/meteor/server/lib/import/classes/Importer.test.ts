@@ -1,10 +1,10 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IImport, IImportChannel, IImportRecord, IImportUser, IImporterShortSelection } from '@rocket.chat/core-typings';
-import type { IImportDataModel, IImportsModel, ISettingsModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 import { ImporterSelection } from './ImporterSelection';
 import { SelectionChannel } from './ImporterSelectionChannel';
@@ -12,8 +12,8 @@ import { SelectionUser } from './ImporterSelectionUser';
 import { RecordConverter } from './converters/RecordConverter';
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 
-let imported: string[] = [];
-let onRecordImported: (id: string) => void = () => undefined;
+let imported: string[];
+let onRecordImported: (id: string) => void;
 
 const fakeConverter = (dataType: IImportRecord['dataType']) =>
 	class extends RecordConverter<IImportRecord> {
@@ -49,8 +49,8 @@ const { Importer } = proxyquire.noCallThru().load('./Importer', {
 
 let importRecord: IImport;
 let settings: Map<string, unknown>;
-let failContactCount = false;
-let hasDirectMessages = false;
+const incrementValueById = sinon.stub();
+const checkIfDirectMessagesExists = sinon.stub();
 
 const user = (id: string): IImportUser => ({ importIds: [id], emails: [], username: id, type: 'user', roles: ['user'] });
 const channel = (id: string, t: IImportChannel['t'] = 'c'): IImportChannel => ({ importIds: [id], name: id, t, users: [] });
@@ -76,30 +76,25 @@ const runImport = async (importer: InstanceType<typeof Importer>, selection: IIm
 
 describe('Importer', () => {
 	before(() => {
-		registerModel('ISettingsModel', {
+		mockModel('Settings', {
 			findOneById: async (_id: string) => (settings.has(_id) ? { _id, value: settings.get(_id) } : null),
 			updateValueById: async (_id: string, value: unknown) => {
 				settings.set(_id, value);
 				return { modifiedCount: 1 };
 			},
-			incrementValueById: async () => {
-				if (failContactCount) {
-					throw new Error('write failed');
-				}
-				return null;
-			},
-		} as unknown as ISettingsModel);
-		registerModel('IImportsModel', {
+			incrementValueById,
+		});
+		mockModel('Imports', {
 			update: async () => undefined,
 			findOne: async () => importRecord,
-		} as unknown as IImportsModel);
-		registerModel('IImportDataModel', {
+		});
+		mockModel('ImportData', {
 			getAllUsersForSelection: async () => [],
 			getAllChannelsForSelection: async () => [{ data: channel('general') }],
 			getAllContactsForSelection: async () => [],
-			checkIfDirectMessagesExists: async () => hasDirectMessages,
+			checkIfDirectMessagesExists,
 			countMessages: async () => 1,
-		} as unknown as IImportDataModel);
+		});
 	});
 
 	beforeEach(() => {
@@ -112,8 +107,8 @@ describe('Importer', () => {
 			['FileUpload_MediaTypeWhiteList', ''],
 			['FileUpload_MediaTypeBlackList', 'text/html'],
 		]);
-		failContactCount = false;
-		hasDirectMessages = false;
+		incrementValueById.reset();
+		checkIfDirectMessagesExists.reset();
 	});
 
 	[
@@ -176,7 +171,7 @@ describe('Importer', () => {
 
 	it('should report an error and restore the settings when the import fails', async () => {
 		const importer = await createImporter({ users: [user('alice')], channels: [channel('general')] });
-		failContactCount = true;
+		incrementValueById.rejects(new Error('write failed'));
 
 		await runImport(importer, { users: { all: true }, channels: { all: true } });
 
@@ -190,7 +185,7 @@ describe('Importer', () => {
 		{ directMessages: true, expected: ['general', '__directMessages__'] },
 	].forEach(({ directMessages, expected }) => {
 		it(`should ${directMessages ? '' : 'not '}list a direct messages entry when the import ${directMessages ? 'has' : 'has no'} direct messages`, async () => {
-			hasDirectMessages = directMessages;
+			checkIfDirectMessagesExists.resolves(directMessages);
 			const importer = await createImporter({});
 
 			const selection = await importer.buildSelection();
