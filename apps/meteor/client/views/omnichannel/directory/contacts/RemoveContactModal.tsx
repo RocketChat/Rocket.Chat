@@ -3,7 +3,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ChangeEvent, SubmitEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,8 +23,7 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 	const dispatchToast = useToastMessageDispatch();
 	const contactDeleteModalId = useId();
 
-	const handleSubmit = useStableCallback((event: SubmitEvent<HTMLFormElement>): void => {
-		event.preventDefault();
+	const handleSubmit = useStableCallback((): void => {
 		removeContactMutation.mutate();
 	});
 
@@ -52,7 +51,7 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit} {...props} />}
+			onSubmit={handleSubmit}
 			onCancel={onClose}
 			confirmText={t('Delete')}
 			title={t('Delete_Contact')}
