@@ -25,6 +25,15 @@ export type DeviceMenuChoice = {
 /** A section of choices about the devices, shown under the devices themselves. */
 export type DeviceMenuChoices = { title: string; choices: DeviceMenuChoice[] };
 
+/** Something to do about the devices that is not a choice between options, such as opening their settings. */
+export type DeviceMenuAction = {
+	id: string;
+	name: string;
+	onSelect: () => void;
+};
+
+const actionKey = (id: string) => `action:${id}`;
+
 /** Keeps a choice's id apart from the device ids, which are the browser's to pick. */
 const choiceKey = (sectionIndex: number, id: string) => `choice:${sectionIndex}:${id}`;
 
@@ -52,10 +61,12 @@ export type DeviceMenuProps = {
 	button: ReactElement;
 	/** Sections of choices about these devices, after them. */
 	choices?: DeviceMenuChoices[];
+	/** Last of all, in a section of their own. */
+	actions?: DeviceMenuAction[];
 };
 
 /** A menu of the devices of the given kinds, choosing through the nearest `DeviceSelectionProvider`. */
-const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] }: DeviceMenuProps) => {
+const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [], actions = [] }: DeviceMenuProps) => {
 	const { t } = useTranslation();
 	const selection = useDeviceSelection();
 	const [isOpen, setIsOpen] = useSafely(useState(false));
@@ -108,6 +119,20 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 		}),
 	}));
 
+	const actionsByKey = new Map(actions.map((action) => [actionKey(action.id), action]));
+	const actionSections =
+		actions.length > 0
+			? [
+					{
+						items: actions.map((action): GenericMenuItemProps => ({
+							id: actionKey(action.id),
+							textValue: action.name,
+							content: rowContent(action.name),
+						})),
+					},
+				]
+			: [];
+
 	const onOpenChange = (open: boolean) => {
 		if (!open || !beforeOpen) {
 			setIsOpen(open);
@@ -122,13 +147,18 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 	return (
 		<GenericMenu
 			title={disabled ? t('Device_settings_not_supported_by_browser') : title}
-			sections={[...sections, ...choiceSections]}
+			sections={[...sections, ...choiceSections, ...actionSections]}
 			disabled={disabled}
 			placement={placement}
 			selectionMode={kinds.length > 1 ? 'multiple' : 'single'}
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			onAction={(key) => {
+				const action = actionsByKey.get(String(key));
+				if (action) {
+					action.onSelect();
+					return;
+				}
 				const choice = choiceActions.get(String(key));
 				if (choice) {
 					if (!choice.selected && !choice.disabled) {
