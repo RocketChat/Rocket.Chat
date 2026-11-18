@@ -211,7 +211,8 @@ jobs:
             echo "actions-changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # every UI shard of a release reports into this one Qase run; a failure here only skips the report
+      # every UI shard of a release reports into one Qase run, and a later CI run of the same release
+      # picks up the run an earlier one left open; a failure here only skips the report
       - id: qase-release-run
         if: github.event_name == 'release'
         continue-on-error: true
@@ -219,12 +220,25 @@ jobs:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          response="$(curl -sS --fail-with-body https://api.qase.io/v1/run/RC \
+          title="UI E2E Tests - Release ${RELEASE_TAG}"
+
+          open_runs="$(curl -sS --fail-with-body --max-time 30 -G https://api.qase.io/v1/run/RC \
             -H "Token: ${QASE_API_TOKEN}" \
-            -H 'Content-Type: application/json' \
-            -d "$(jq -n --arg title "UI E2E Tests - Release ${RELEASE_TAG}" '{title: $title}')")"
-          run_id="$(jq -er '.result.id' <<< "$response")"
-          echo "Created Qase run ${run_id}"
+            --data-urlencode "search=${title}" \
+            -d status=active -d limit=100)"
+          run_id="$(jq -r --arg title "$title" 'first(.result.entities[] | select(.title == $title) | .id) // empty' <<< "$open_runs")"
+
+          if [[ -n "$run_id" ]]; then
+            echo "Reusing open Qase run ${run_id}"
+          else
+            response="$(curl -sS --fail-with-body --max-time 30 https://api.qase.io/v1/run/RC \
+              -H "Token: ${QASE_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              -d "$(jq -n --arg title "$title" '{title: $title}')")"
+            run_id="$(jq -er '.result.id' <<< "$response")"
+            echo "Created Qase run ${run_id}"
+          fi
+
           echo "id=${run_id}" >> "$GITHUB_OUTPUT"
 
   test-guard:
@@ -1128,7 +1142,7 @@ jobs:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_RUN_ID: ${{ needs.release-versions.outputs.qase-release-run-id }}
         run: |
-          curl -sS --fail-with-body -X POST "https://api.qase.io/v1/run/RC/${QASE_RUN_ID}/complete" -H "Token: ${QASE_API_TOKEN}"
+          curl -sS --fail-with-body --max-time 30 -X POST "https://api.qase.io/v1/run/RC/${QASE_RUN_ID}/complete" -H "Token: ${QASE_API_TOKEN}"
 
   deploy:
     name: 🚀 Publish build assets
