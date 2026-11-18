@@ -8,6 +8,7 @@ import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 import { FileUpload } from '../../../lib/media/file-upload';
 import { sendFileMessage } from '../../../meteor-methods/messages/sendFileMessage';
 import { sendFileLivechatMessage } from '../../../meteor-methods/omnichannel/sendFileLivechatMessage';
+import { settings } from '../../../settings';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	const { threadId, ...rest } = details;
@@ -24,6 +25,9 @@ const assertValidThread = async ({ threadId, rid, visitorToken }: IUploadDetails
 	}
 	if (visitorToken) {
 		throw new Error('Uploads by a Livechat visitor cannot target a thread');
+	}
+	if (!settings.get<boolean>('Threads_enabled')) {
+		throw new Error('Threads are disabled');
 	}
 	const parent = await Messages.findOneById(threadId, { projection: { rid: 1 } });
 	if (!parent) {

@@ -8,6 +8,7 @@ const findOneById = sinon.stub();
 const insert = sinon.stub();
 const sendFileMessage = sinon.stub();
 const sendFileLivechatMessage = sinon.stub();
+const getSetting = sinon.stub();
 
 const { AppUploadBridge } = proxyquire.noCallThru().load('./uploads', {
 	'@rocket.chat/apps/dist/server/bridges/UploadBridge': { UploadBridge: class {} },
@@ -16,6 +17,7 @@ const { AppUploadBridge } = proxyquire.noCallThru().load('./uploads', {
 	'../../../lib/media/file-upload': { FileUpload: { getStore: () => ({ insert }) } },
 	'../../../meteor-methods/messages/sendFileMessage': { sendFileMessage },
 	'../../../meteor-methods/omnichannel/sendFileLivechatMessage': { sendFileLivechatMessage },
+	'../../../settings': { settings: { get: getSetting } },
 });
 
 const orchestrator = {
@@ -30,10 +32,11 @@ describe('AppUploadBridge.createUpload', () => {
 	let bridge: any;
 
 	beforeEach(() => {
-		for (const stub of [findOneById, insert, sendFileMessage, sendFileLivechatMessage]) {
+		for (const stub of [findOneById, insert, sendFileMessage, sendFileLivechatMessage, getSetting]) {
 			stub.reset();
 		}
 		insert.resolves({ _id: 'file-id' });
+		getSetting.withArgs('Threads_enabled').returns(true);
 		bridge = new AppUploadBridge(orchestrator);
 	});
 
@@ -64,6 +67,13 @@ describe('AppUploadBridge.createUpload', () => {
 
 	it('throws when the parent message does not exist', async () => {
 		findOneById.resolves(null);
+		await expect(bridge.createUpload({ ...baseDetails, threadId: 'tm1' }, buffer, 'app-id')).to.be.rejectedWith(Error);
+		expectNoUpload();
+	});
+
+	it('throws when threads are disabled', async () => {
+		getSetting.withArgs('Threads_enabled').returns(false);
+		findOneById.resolves({ _id: 'tm1', rid: 'room-id' });
 		await expect(bridge.createUpload({ ...baseDetails, threadId: 'tm1' }, buffer, 'app-id')).to.be.rejectedWith(Error);
 		expectNoUpload();
 	});
