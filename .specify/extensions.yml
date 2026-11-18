@@ -1,0 +1,5 @@
+installed:
+- assess
+settings:
+  auto_execute_hooks: true
+hooks: {}
