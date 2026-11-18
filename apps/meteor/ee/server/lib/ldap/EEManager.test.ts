@@ -1,6 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -141,7 +141,7 @@ describe('LDAPEEManager updateExistingUsers', () => {
 		const ldap = { findOneByUsername: sinon.stub() };
 		const converter = { addObjectToMemory: sinon.stub() };
 
-		usersStub.findLDAPUsers.returns({ toArray: async () => [brokenUser, validUser] });
+		usersStub.findLDAPUsers.returns(fakeCursor([brokenUser, validUser]));
 		ldap.findOneByUsername.withArgs('broken').resolves(brokenEntry);
 		ldap.findOneByUsername.withArgs('valid').resolves(validEntry);
 		LDAPManagerStub.mapUserData.withArgs(brokenEntry).throws(mapError);
@@ -161,7 +161,7 @@ describe('LDAPEEManager updateExistingUsers', () => {
 		const ldap = { findOneByUsername: sinon.stub().resolves(brokenEntry) };
 		const converter = { addObjectToMemory: sinon.stub() };
 
-		usersStub.findLDAPUsers.returns({ toArray: async () => [brokenUser] });
+		usersStub.findLDAPUsers.returns(fakeCursor([brokenUser]));
 		LDAPManagerStub.mapUserData.withArgs(brokenEntry).throws(new Error('Failed to get email address from LDAP user'));
 		settingsStub.get.reset();
 		settingsStub.get.withArgs('LDAP_Sync_User_Active_State').returns('disable');
@@ -184,7 +184,7 @@ describe('LDAPEEManager updateExistingUsers', () => {
 		const ldap = { findOneByUsername: sinon.stub() };
 		const converter = { addObjectToMemory: sinon.stub() };
 
-		usersStub.findLDAPUsers.returns({ toArray: async () => [brokenUser, validUser] });
+		usersStub.findLDAPUsers.returns(fakeCursor([brokenUser, validUser]));
 		ldap.findOneByUsername.withArgs('broken').resolves(brokenEntry);
 		ldap.findOneByUsername.withArgs('valid').resolves(validEntry);
 		LDAPManagerStub.mapUserData.withArgs(brokenEntry).throws(new Error('Failed to get email address from LDAP user'));
