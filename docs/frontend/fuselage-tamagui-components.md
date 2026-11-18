@@ -37,6 +37,8 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | Compiled output looks like the runtime output | visual regression, runtime and zero legs against the same baselines |
 | `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` |
 | Values come from `fuselage-tokens`; generated sections are in sync | `generate:frame-values --check` (arrives with L1, not yet available) |
+| The tokens and themes of the Tamagui config match `fuselage-tokens` | `generate:tamagui-tokens --check`, run by `yarn workspace @rocket.chat/fuselage test:verify` |
+| No token or theme key the config lacks reaches the zero stylesheet, and each theme class declares every theme key under the name a frame reads | [`zero-stylesheet.mjs`](../../packages/fuselage/scripts/verify/zero-stylesheet.mjs), called by `build:vite` and the livechat build |
 | No text node directly in a `View` | jest dev-mode check ([`textNodes.spec.tsx`](../../packages/fuselage/src/testing/textNodes.spec.tsx)) |
 | Raw layout and style props don't grow | `scripts/scan-raw-layout.mjs`, `scripts/scan-style-props.mjs` ratchets |
 | No new override of a migrated part without `[class]`; CSS hacks don't grow | selector inventory and CSS-hack ratchets ([`selector-inventory.mjs`](../../packages/fuselage/scripts/verify/selector-inventory.mjs), [`css-hacks.mjs`](../../packages/fuselage/scripts/verify/css-hacks.mjs)), run by `yarn lint` |
