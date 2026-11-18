@@ -5,10 +5,10 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
+import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
 import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubText } from '../../scrub';
-import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
 
 export const MAX_EVENT_PAGES = 50;
 

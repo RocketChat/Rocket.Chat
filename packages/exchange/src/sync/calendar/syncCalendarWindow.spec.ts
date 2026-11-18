@@ -1,8 +1,8 @@
-import { ExchangeError } from '../../errors';
+import { MAX_EVENT_PAGES, syncCalendarWindow } from './syncCalendarWindow';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { DateRange, EventPage, ExchangeEvent, ExchangeEventUpsert } from '../../definition/types';
+import { ExchangeError } from '../../errors';
 import type { ExchangeErrorCode } from '../../errors';
-import { MAX_EVENT_PAGES, syncCalendarWindow } from './syncCalendarWindow';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();
