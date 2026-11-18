@@ -8,6 +8,7 @@ import { PreviewMediaContextProvider } from './PreviewMediaContext';
 import { useCallDevicePreview } from './useCallDevicePreview';
 import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
 import type { PreflightMedia } from '../context/definitions';
+import { BackgroundEffectContext } from '../devices/BackgroundEffectContext';
 import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
 import { NoiseSuppressionProvider, supportsRnnoise } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
@@ -69,12 +70,16 @@ const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaPro
 			<DeviceSelectionProvider value={deviceSelection}>
 				<VideoQualityProvider value={videoQualitySelection}>
 					<NoiseSuppressionProvider value={noiseSuppression}>
-						{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
-						<Suspense fallback={children}>
-							<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
-								{children}
-							</media.PreviewVideoProvider>
-						</Suspense>
+						{/* The call's own camera, mounted around a preflight before the join, is not the one shown here: only the
+						    preview's provider says what background it can take. */}
+						<BackgroundEffectContext.Provider value={undefined}>
+							{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
+							<Suspense fallback={children}>
+								<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
+									{children}
+								</media.PreviewVideoProvider>
+							</Suspense>
+						</BackgroundEffectContext.Provider>
 					</NoiseSuppressionProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>

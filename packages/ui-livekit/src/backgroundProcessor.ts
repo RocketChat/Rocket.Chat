@@ -1,5 +1,5 @@
 import type { BackgroundEffect } from '@rocket.chat/ui-conference';
-import type { LocalVideoTrack } from 'livekit-client';
+import type { LocalVideoTrack, Room, Track, TrackProcessor } from 'livekit-client';
 
 const BLUR_RADIUS = 10;
 
@@ -78,4 +78,44 @@ export const applyBackgroundEffect = async (track: LocalVideoTrack, effect: Back
 	}
 
 	await track.setProcessor(await createBackgroundProcessor(effect, segmentationBaseUrl));
+};
+
+type BackgroundProcessor = Awaited<ReturnType<typeof createBackgroundProcessor>>;
+
+/**
+ * `processor`, made to let the camera go when it cannot start on it: a camera it was meant to cover then stays off
+ * rather than going out with the room behind it. What is thrown instead is `onFailure`'s.
+ */
+export const failClosed = (processor: BackgroundProcessor, onFailure: (err: unknown) => Error): BackgroundProcessor => {
+	const init = processor.init.bind(processor);
+	processor.init = async (options) => {
+		try {
+			await init(options);
+		} catch (err) {
+			options.track.stop();
+			throw onFailure(err);
+		}
+	};
+	return processor;
+};
+
+/**
+ * A processor that never lets the camera go out, for an effect that could not be made: the camera stays off, as it
+ * would for one that cannot start on it. What is thrown is `onFailure`'s, given `err`.
+ */
+export const refuseCamera = (err: unknown, onFailure: (err: unknown) => Error): TrackProcessor<Track.Kind.Video> => ({
+	name: PROCESSOR_NAME,
+	init: async ({ track }) => {
+		track.stop();
+		throw onFailure(err);
+	},
+	restart: async () => undefined,
+	destroy: async () => undefined,
+});
+
+/** What the room puts on the next camera it opens, before anything of it is sent; nothing, without a processor. */
+export const setCaptureProcessor = (room: Room, processor: TrackProcessor<Track.Kind.Video> | undefined) => {
+	const defaults = { ...room.options.videoCaptureDefaults };
+	delete defaults.processor;
+	room.options.videoCaptureDefaults = processor ? { ...defaults, processor } : defaults;
 };

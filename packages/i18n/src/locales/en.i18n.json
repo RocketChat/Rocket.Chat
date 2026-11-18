@@ -1343,6 +1343,7 @@
   "Camera_appearance": "Appearance",
   "Camera_background": "Background",
   "Camera_background_blur": "Blur",
+  "Camera_background_failed_camera_off": "Your background could not be applied, so your camera stayed off.",
   "Camera_background_image": "Image {{number}}",
   "Camera_background_image_unreadable": "That image could not be opened. Try a JPEG or PNG.",
   "Camera_background_none": "None",

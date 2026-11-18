@@ -23,13 +23,16 @@ export type BackgroundEffectSelection = {
 	cameraSource?: MediaStream;
 	/** An image effect is only taken for one of `presets` or `images`. */
 	select: (effect: BackgroundEffect) => void;
-	/** Keeps the image for the rest of the call and puts it behind the reader, unless the browser cannot read it. */
-	uploadImage: (file: File) => void;
+	/**
+	 * Keeps the image for the rest of the call and puts it behind the reader, unless the browser cannot read it. Absent
+	 * where an image could not outlive the screen it was added on.
+	 */
+	uploadImage?: (file: File) => void;
 	/** Removing the image in use takes the background off. */
-	removeImage: (imageUrl: string) => void;
+	removeImage?: (imageUrl: string) => void;
 };
 
-/** Filled only by a call whose camera can take an effect; without one, there is nothing to offer. */
+/** Filled only by a camera that can take an effect, the call's or the preflight's; without one, there is nothing to offer. */
 export const BackgroundEffectContext = createContext<BackgroundEffectSelection | undefined>(undefined);
 
 export const useBackgroundEffectSelection = (): BackgroundEffectSelection | undefined => useContext(BackgroundEffectContext);

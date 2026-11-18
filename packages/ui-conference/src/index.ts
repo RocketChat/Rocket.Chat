@@ -39,11 +39,19 @@ export {
 	useCallRingPreference,
 	useVideoQualityPreference,
 	useNoiseSuppressionPreference,
+	useBackgroundPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
 	callDeviceIdField,
 } from './hooks/useCallDevicesInitialState';
-export type { CallPreferences, CallRingPreference, CallDevices, NoiseMethod, VideoQuality } from './hooks/useCallDevicesInitialState';
+export type {
+	BackgroundPreference,
+	CallPreferences,
+	CallRingPreference,
+	CallDevices,
+	NoiseMethod,
+	VideoQuality,
+} from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 

@@ -9,6 +9,7 @@ import { conferenceAppRoot, embeddedCapabilities, storeCallPreferences, withConf
 const meta = {
 	component: PreflightDevices,
 	parameters: { layout: 'centered' },
+	args: { backgroundsOpen: false, onBackgroundsOpenChange: () => undefined },
 	decorators: [
 		(Story) => (
 			<div style={{ width: 640 }}>

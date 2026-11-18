@@ -1,11 +1,12 @@
 import { MAX_BACKGROUND_IMAGES } from '@rocket.chat/ui-conference';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import type { LocalVideoTrack } from 'livekit-client';
+import type { LocalVideoTrack, Room } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
 
-import { useBackgroundEffect } from './useBackgroundEffect';
+import { PRESETS_WAIT_MS } from './presetBackgrounds';
+import { useBackgroundEffect as useCallBackgroundEffect } from './useBackgroundEffect';
 
 let processorsSupported = true;
 
@@ -13,9 +14,13 @@ let imagesLoad = true;
 
 const mockSwitchTo = jest.fn(async () => undefined);
 
+const mockInit = jest.fn(async (_options: unknown) => undefined);
+
 jest.mock('@livekit/track-processors', () => {
 	class BackgroundProcessorWrapper {
 		switchTo = mockSwitchTo;
+
+		init = mockInit;
 
 		constructor(public options: unknown) {}
 	}
@@ -28,14 +33,27 @@ jest.mock('@livekit/track-processors', () => {
 
 const dispatchToastMessage = jest.fn();
 
+const mockListBackgrounds = jest.fn(async (): Promise<unknown> => ({ backgrounds: [{ id: 'office', url: '/backgrounds/office' }] }));
+
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useToastMessageDispatch: () => dispatchToastMessage,
-	useEndpoint: () => async () => ({ backgrounds: [{ id: 'office', url: '/backgrounds/office' }] }),
+	useEndpoint: () => () => mockListBackgrounds(),
+	useUserId: () => 'reader',
 }));
 
 const wrapper = ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client: new QueryClient() }, children);
 
 const { BackgroundProcessor } = jest.requireMock('@livekit/track-processors');
+
+const makeRoom = () => ({ options: { videoCaptureDefaults: { deviceId: 'brio' } } }) as unknown as Room;
+
+const remember = (background: unknown) => localStorage.setItem('videoconf-call-preferences/reader', JSON.stringify({ background }));
+
+const remembered = () => JSON.parse(localStorage.getItem('videoconf-call-preferences/reader') ?? '{}').background;
+
+/** The call's selection, for a call already joined. */
+const useBackgroundEffect = (track: LocalVideoTrack | undefined, segmentationBaseUrl: string, room = makeRoom()) =>
+	useCallBackgroundEffect(room, track, segmentationBaseUrl, true).selection;
 
 const makeTrack = ({ setProcessorFails = false } = {}) => {
 	let processor: unknown;
@@ -60,6 +78,7 @@ beforeEach(() => {
 	jest.clearAllMocks();
 	processorsSupported = true;
 	jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+	localStorage.clear();
 	URL.createObjectURL = jest.fn(() => 'blob:uploaded');
 	URL.revokeObjectURL = jest.fn();
 	globalThis.createImageBitmap = jest.fn(async () => ({ width: 1280, height: 720, close: jest.fn() }) as unknown as ImageBitmap);
@@ -269,4 +288,117 @@ it('takes no more images than the panel offers', async () => {
 	}
 
 	expect(result.current.images).toHaveLength(MAX_BACKGROUND_IMAGES);
+});
+
+it('arrives with the background chosen before joining, already on the camera the room opens', async () => {
+	remember({ mode: 'preset', id: 'office' });
+	const room = makeRoom();
+	const { result } = renderHook(() => useCallBackgroundEffect(room, undefined, '/segmentation', true), { wrapper });
+
+	await waitFor(() => expect(result.current.ready).toBe(true));
+
+	expect(result.current.selection.current).toEqual({ mode: 'image', imageUrl: '/backgrounds/office' });
+	expect(room.options.videoCaptureDefaults).toMatchObject({
+		deviceId: 'brio',
+		processor: expect.objectContaining({ options: expect.objectContaining({ imagePath: '/backgrounds/office' }) }),
+	});
+});
+
+it('holds the call back until it is joined, then until the arrival effect is ready', async () => {
+	remember({ mode: 'blur' });
+	const room = makeRoom();
+	const { result, rerender } = renderHook(({ arriving }) => useCallBackgroundEffect(room, undefined, '/segmentation', arriving), {
+		initialProps: { arriving: false },
+		wrapper,
+	});
+	await act(async () => undefined);
+	expect(result.current.ready).toBe(false);
+	expect(room.options.videoCaptureDefaults?.processor).toBeUndefined();
+
+	rerender({ arriving: true });
+
+	await waitFor(() => expect(result.current.ready).toBe(true));
+	expect(room.options.videoCaptureDefaults?.processor).toBeDefined();
+});
+
+// A camera the effect cannot cover stays off rather than showing the room it was meant to hide.
+it('lets the camera go when the arrival effect cannot start, and arrives without one', async () => {
+	remember({ mode: 'blur' });
+	const room = makeRoom();
+	const { result } = renderHook(() => useCallBackgroundEffect(room, undefined, '/segmentation', true), { wrapper });
+	await waitFor(() => expect(result.current.ready).toBe(true));
+
+	const camera = { stop: jest.fn() };
+	mockInit.mockRejectedValueOnce(new Error('no webgl'));
+	const processor = room.options.videoCaptureDefaults?.processor as unknown as { init: (options: unknown) => Promise<void> };
+
+	await act(async () => {
+		await expect(processor.init({ track: camera })).rejects.toThrow('Camera_background_failed_camera_off');
+	});
+	expect(camera.stop).toHaveBeenCalled();
+	await waitFor(() => expect(result.current.selection.current).toEqual({ mode: 'none' }));
+	await waitFor(() => expect(room.options.videoCaptureDefaults?.processor).toBeUndefined());
+});
+
+it('keeps the camera off when the arrival effect cannot be made, rather than sending it without one', async () => {
+	remember({ mode: 'preset', id: 'office' });
+	imagesLoad = false;
+	const room = makeRoom();
+	const { result } = renderHook(() => useCallBackgroundEffect(room, undefined, '/segmentation', true), { wrapper });
+	await waitFor(() => expect(result.current.ready).toBe(true));
+
+	const camera = { stop: jest.fn() };
+	const processor = room.options.videoCaptureDefaults?.processor as unknown as { init: (options: unknown) => Promise<void> };
+
+	await act(async () => {
+		await expect(processor.init({ track: camera })).rejects.toThrow('Camera_background_failed_camera_off');
+	});
+	expect(camera.stop).toHaveBeenCalled();
+	await waitFor(() => expect(result.current.selection.current).toEqual({ mode: 'none' }));
+});
+
+it('joins without the remembered preset when the presets are slow to be listed', async () => {
+	jest.useFakeTimers();
+	try {
+		remember({ mode: 'preset', id: 'office' });
+		mockListBackgrounds.mockImplementationOnce(() => new Promise(() => undefined));
+		const { result } = renderHook(() => useCallBackgroundEffect(makeRoom(), undefined, '/segmentation', true), { wrapper });
+		await act(async () => undefined);
+		expect(result.current.ready).toBe(false);
+
+		await act(async () => {
+			jest.advanceTimersByTime(PRESETS_WAIT_MS);
+		});
+
+		await waitFor(() => expect(result.current.ready).toBe(true));
+		expect(result.current.selection.current).toEqual({ mode: 'none' });
+		expect(remembered()).toEqual({ mode: 'preset', id: 'office' });
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('remembers a preset by its id, and an uploaded image as none', async () => {
+	const track = makeTrack();
+	const { result } = renderHook(() => useBackgroundEffect(track, '/segmentation'), { wrapper });
+	await waitFor(() => expect(result.current.presets).toEqual(['/backgrounds/office']));
+
+	await act(async () => result.current.select({ mode: 'image', imageUrl: '/backgrounds/office' }));
+	await settled(result);
+	expect(remembered()).toEqual({ mode: 'preset', id: 'office' });
+
+	await act(async () => result.current.uploadImage?.(new File([''], 'beach.png')));
+	await settled(result);
+	expect(remembered()).toEqual({ mode: 'none' });
+});
+
+it('does not remember an effect that could not start', async () => {
+	remember({ mode: 'none' });
+	const track = makeTrack({ setProcessorFails: true });
+	const { result } = renderHook(() => useBackgroundEffect(track, '/segmentation'), { wrapper });
+
+	await act(async () => result.current.select({ mode: 'blur' }));
+	await settled(result);
+
+	expect(remembered()).toEqual({ mode: 'none' });
 });

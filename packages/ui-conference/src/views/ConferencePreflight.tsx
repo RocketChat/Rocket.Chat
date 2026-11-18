@@ -13,6 +13,7 @@ import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder
 import type { PreflightMedia } from '../context/definitions';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
+import PreflightBackgroundButton from '../preflight/PreflightBackgroundButton';
 import PreflightDevices from '../preflight/PreflightDevices';
 import PreflightPreview from '../preflight/PreflightPreview';
 import PreviewMediaProvider from '../preflight/PreviewMediaProvider';
@@ -88,6 +89,7 @@ const ConferencePreflight = ({
 	const deviceMedia = capabilities.embedded ? media : null;
 
 	const [title, setTitle] = useState(defaultName ?? name);
+	const [backgroundsOpen, setBackgroundsOpen] = useState(false);
 
 	const previewColumn = (
 		<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x700' minWidth={0}>
@@ -138,13 +140,16 @@ const ConferencePreflight = ({
 								onToggle={() => toggle('cam')}
 							/>
 						)}
+						{deviceMedia && capabilities.cam && (
+							<PreflightBackgroundButton open={backgroundsOpen} onToggle={() => setBackgroundsOpen(!backgroundsOpen)} />
+						)}
 					</ButtonGroup>
 				</Box>
 			</Box>
 
 			{/* Below the preview rather than on it: which device is a setting, not a control reached for mid-thought,
 					    and a device's name needs more room than the tile's corner has. */}
-			{deviceMedia && <PreflightDevices />}
+			{deviceMedia && <PreflightDevices backgroundsOpen={backgroundsOpen} onBackgroundsOpenChange={setBackgroundsOpen} />}
 		</Box>
 	);
 

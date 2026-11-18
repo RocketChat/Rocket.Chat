@@ -28,7 +28,7 @@ const BackgroundPicker = ({ effect, cameraStream }: BackgroundPickerProps) => {
 		// Cleared so that choosing the same file again still counts as a choice.
 		event.target.value = '';
 		if (file) {
-			effect.uploadImage(file);
+			effect.uploadImage?.(file);
 		}
 	};
 
@@ -61,20 +61,20 @@ const BackgroundPicker = ({ effect, cameraStream }: BackgroundPickerProps) => {
 					<BackgroundTile
 						key={imageUrl}
 						label={t('Camera_background_image', { number: index + 1 })}
-						removeLabel={t('Camera_background_remove_image')}
-						onRemove={() => effect.removeImage(imageUrl)}
+						removeLabel={effect.removeImage && t('Camera_background_remove_image')}
+						onRemove={effect.removeImage && (() => effect.removeImage?.(imageUrl))}
 						{...tileState({ mode: 'image', imageUrl })}
 					>
 						<BackgroundTileImage src={imageUrl} />
 					</BackgroundTile>
 				))}
-				{effect.images.length < MAX_BACKGROUND_IMAGES && (
+				{effect.uploadImage && effect.images.length < MAX_BACKGROUND_IMAGES && (
 					<BackgroundTile label={t('Camera_background_upload_image')} caption disabled={busy} onClick={() => fileInput.current?.click()}>
 						<Icon name='plus' size='x20' />
 					</BackgroundTile>
 				)}
 			</BackgroundTileGrid>
-			<input ref={fileInput} type='file' accept='image/*' hidden onChange={onFileChange} />
+			{effect.uploadImage && <input ref={fileInput} type='file' accept='image/*' hidden onChange={onFileChange} />}
 		</>
 	);
 };

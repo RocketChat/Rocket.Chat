@@ -37,17 +37,43 @@ export type NoiseMethod = 'none' | 'browser' | 'rnnoise';
 
 export type CallNoiseSuppressionPreference = { noiseMethod: NoiseMethod };
 
+/**
+ * What is behind the reader, by what outlives a call: a preset by its id, since its URL depends on where the workspace
+ * is served. An uploaded image does not outlive the call, so it is not one of these.
+ */
+export type BackgroundPreference = { mode: 'none' } | { mode: 'blur' } | { mode: 'preset'; id: string };
+
+export type CallBackgroundPreference = { background: BackgroundPreference };
+
 type StoredCallPreferences = CallPreferences &
 	CallDevices &
 	CallRingPreference &
 	CallVideoQualityPreference &
-	CallNoiseSuppressionPreference;
+	CallNoiseSuppressionPreference &
+	CallBackgroundPreference;
 
 /**
  * Muted and unseen is the safe way in: it can only surprise in the harmless direction. The browser's filter is what
  * every call had before there was a choice, so nobody's voice changes until they ask for it.
  */
-const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, videoQuality: 'auto', noiseMethod: 'browser' };
+const DEFAULTS: StoredCallPreferences = {
+	mic: true,
+	cam: false,
+	ring: true,
+	videoQuality: 'auto',
+	noiseMethod: 'browser',
+	background: { mode: 'none' },
+};
+
+const isBackgroundPreference = (value: unknown): value is BackgroundPreference => {
+	if (typeof value !== 'object' || value === null || !('mode' in value)) {
+		return false;
+	}
+	if (value.mode === 'preset') {
+		return 'id' in value && typeof value.id === 'string';
+	}
+	return value.mode === 'none' || value.mode === 'blur';
+};
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
@@ -77,6 +103,10 @@ const sanitise = (value: unknown): StoredCallPreferences => {
 
 	if (!choicesOf(NOISE_METHOD_LABELS).includes(stored.noiseMethod as NoiseMethod)) {
 		stored.noiseMethod = DEFAULTS.noiseMethod;
+	}
+
+	if (!isBackgroundPreference(stored.background)) {
+		stored.background = DEFAULTS.background;
 	}
 
 	// Optional, so they have no default to fall back to: one that is not a device id is no choice at all.
@@ -195,6 +225,19 @@ export const useNoiseSuppressionPreference = () => {
 	);
 
 	return { noiseMethod, selectNoiseMethod };
+};
+
+/** What to put behind the reader, remembered like the rest of it. */
+export const useBackgroundPreference = () => {
+	const [stored, setStored] = useStoredCallPreferences();
+
+	const { background } = stored;
+	const selectBackground = useCallback(
+		(next: BackgroundPreference) => setStored((current) => ({ ...current, background: next })),
+		[setStored],
+	);
+
+	return { background, selectBackground };
 };
 
 /** Which resolution to ask the camera for, remembered like the rest of it. */

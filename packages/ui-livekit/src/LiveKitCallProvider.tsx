@@ -111,19 +111,6 @@ export const LiveKitCallProvider = ({
 	const [startedAt, setStartedAt] = useState(() => new Date());
 	const onConnected = useCallback(() => setStartedAt(new Date()), []);
 
-	useLiveKitRoom({
-		room,
-		token: credentials?.token,
-		serverUrl: credentials?.serverUrl,
-		connect: connect && Boolean(credentials),
-		// Whether to arrive with each track published; which device each opens is `arrival`, below.
-		audio: arrival?.mic ?? true,
-		video: arrival?.cam ?? false,
-		onConnected,
-		onDisconnected: onEnded,
-		onError: onCallError,
-	});
-
 	const roomState = useConnectionState(room);
 	const connected = roomState === ConnectionState.Connected;
 	const connectionState = connectionStateFor(roomState);
@@ -162,7 +149,20 @@ export const LiveKitCallProvider = ({
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
 	const localCameraTrack = localCameraPub?.videoTrack;
 
-	const backgroundEffect = useBackgroundEffect(localCameraTrack, segmentationBaseUrl);
+	const { selection: backgroundEffect, ready: backgroundReady } = useBackgroundEffect(room, localCameraTrack, segmentationBaseUrl, connect);
+
+	useLiveKitRoom({
+		room,
+		token: credentials?.token,
+		serverUrl: credentials?.serverUrl,
+		connect: connect && Boolean(credentials) && backgroundReady,
+		// Whether to arrive with each track published; which device each opens is `arrival`, below.
+		audio: arrival?.mic ?? true,
+		video: arrival?.cam ?? false,
+		onConnected,
+		onDisconnected: onEnded,
+		onError: onCallError,
+	});
 
 	// What the camera sends, so the reader sees the background others see.
 	const cameraMediaTrack = camEnabled ? localCameraTrack?.mediaStreamTrack : undefined;

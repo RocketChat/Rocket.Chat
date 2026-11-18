@@ -113,6 +113,17 @@ just the reader.
 - **A change that fails keeps the effect that was running**, and only takes the background off when that cannot be
   put back either. An image that cannot be loaded counts as a change that fails, rather than an effect left running
   with nothing behind the reader.
+- **The preflight offers it too**, from a button on the preview, next to the microphone and camera, and from its
+  camera menu: the backgrounds open under the preview, which shows each one on the preview's own track. There is no
+  upload there, since an image added on the start page would not reach the call.
+- **The choice is remembered** with the other call preferences, once it is on the camera: none, blur, or a preset by
+  its id (`video-conference.backgrounds` returns the id with the URL). An uploaded image is remembered as none. A
+  preset the workspace no longer offers starts the call with none, and the remembered one is left as it was. So does
+  a preset list that cannot be had within a few seconds: the call does not wait for it.
+- **No frame of the room is sent when the effect was meant to hide it.** The call puts a processor in the room's
+  camera capture defaults, so a camera it opens, on arrival or turned on later, has the effect before it is
+  published; the room is not joined until that processor is ready. If the effect cannot be made, or cannot start on
+  that camera, the camera is stopped and the reader told, rather than it going out without one.
 - **Uploaded images are read before the camera gets them.** One the browser cannot decode is turned away with a
   message, since the processor would only find out once it was already in use and leave no background at all. Images
   larger than 1920 pixels on their longer side are scaled down first. They are kept for the call only, at most
