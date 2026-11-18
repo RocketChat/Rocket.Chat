@@ -1,6 +1,7 @@
 import { ExchangeError } from '../errors';
 import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
+import { trimTrailingSlashes } from '../trimTrailingSlashes';
 
 export type GraphTokenClientConfig = {
 	tenantId: string;
@@ -96,7 +97,7 @@ export class GraphTokenClient {
 	}
 
 	public get tokenEndpoint(): string {
-		return `${this.authorityHost.replace(/\/+$/, '')}/${encodeURIComponent(this.config.tenantId)}/oauth2/v2.0/token`;
+		return `${trimTrailingSlashes(this.authorityHost)}/${encodeURIComponent(this.config.tenantId)}/oauth2/v2.0/token`;
 	}
 
 	/**
@@ -104,7 +105,7 @@ export class GraphTokenClient {
 	 * already granted to this app registration". Individual permission names belong to delegated flows.
 	 */
 	public get scope(): string {
-		return `${this.graphHost.replace(/\/+$/, '')}/.default`;
+		return `${trimTrailingSlashes(this.graphHost)}/.default`;
 	}
 
 	private assertRecognizedEndpoints(): void {
