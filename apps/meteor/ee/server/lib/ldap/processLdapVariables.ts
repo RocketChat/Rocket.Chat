@@ -17,7 +17,7 @@ export function processLdapVariables(entry: ILDAPEntry, variableMap: LDAPVariabl
 	}
 
 	for (const variableName in variableMap) {
-		if (!variableMap.hasOwnProperty(variableName)) {
+		if (!Object.hasOwn(variableMap, variableName)) {
 			continue;
 		}
 
