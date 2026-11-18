@@ -32,6 +32,7 @@
 	"scripts": {
 		"build": "rm -rf dist && vite build --mode development && vite build --mode production && node scripts/check-dist-env.mjs && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"build-storybook": "NODE_ENV=production storybook build",
+		"generate:tamagui-tokens": "yarn run -T tsx scripts/generate-tamagui-tokens.mts",
 		"lint": "yarn run -T oxlint && yarn run stylelint && yarn verify:css-hacks:check && yarn verify:selectors:check",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.{scss,css}'",
 		"stylelint": "stylelint --allow-empty-input '**/*.{scss,css}'",
@@ -39,7 +40,7 @@
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"test:stories": "node scripts/test-stories.mjs",
-		"test:verify": "node --test scripts/verify/frame-platform.test.mjs scripts/verify/component-class.test.mjs",
+		"test:verify": "node --test scripts/verify/frame-platform.test.mjs scripts/verify/component-class.test.mjs scripts/verify/zero-stylesheet.test.mjs && yarn generate:tamagui-tokens --check",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit",
 		"verify:box-usage": "node scripts/verify/box-usage.mjs",
