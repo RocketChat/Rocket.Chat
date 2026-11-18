@@ -68,7 +68,6 @@
 /apps/meteor/server/api/v1/omnichannel/pageVisited.ts @RocketChat/omnichannel
 /apps/meteor/server/api/v1/omnichannel/sms.ts @RocketChat/omnichannel
 /apps/meteor/server/api/v1/omnichannel/lib/livechat.ts @RocketChat/omnichannel
-/apps/meteor/server/api/v1/omnichannel/lib/visitors.ts @RocketChat/omnichannel
 /apps/meteor/ee/server/api/v1/omnichannel/triggers.ts @RocketChat/omnichannel
 /apps/meteor/server/meteor-methods/omnichannel @RocketChat/omnichannel
 /apps/meteor/server/lib/omnichannel/livechat.ts @RocketChat/omnichannel
