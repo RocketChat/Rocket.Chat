@@ -37,7 +37,7 @@ import type {
 	AnyBulkWriteOperation,
 } from 'mongodb';
 
-import { Rooms, Subscriptions } from '../index';
+import { Rooms, Subscriptions } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 

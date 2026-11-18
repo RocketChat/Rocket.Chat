@@ -2,7 +2,7 @@ import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/tools';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, useEndpointMutation } from '@rocket.chat/ui-client';
 import {
 	usePermission,
 	useSetModal,
@@ -16,7 +16,6 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';

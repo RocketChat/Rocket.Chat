@@ -66,9 +66,9 @@ function closeOlderRooms() {
 	return Array.from(roomsToClose).map((roomToClose) => close(roomToClose.typeName));
 }
 
-async function closeAllRooms() {
-	for await (const openedRoom of Object.values(openedRooms)) {
-		await close(openedRoom.typeName);
+function closeAllRooms() {
+	for (const openedRoom of Object.values(openedRooms)) {
+		close(openedRoom.typeName);
 	}
 }
 
@@ -208,7 +208,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 
 			// when we receive a messages imported event we just clear the room history and fetch it again
 			sdk.stream('notify-room', [`${record.rid}/messagesImported`], async () => {
-				await RoomHistoryManager.clear(record.rid);
+				RoomHistoryManager.clear(record.rid);
 				await RoomHistoryManager.getMore(record.rid);
 			}),
 			sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {

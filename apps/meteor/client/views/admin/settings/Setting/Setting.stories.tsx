@@ -38,7 +38,7 @@ export const WithCallout: StoryObj<typeof MemoizedSetting> = {
 	},
 };
 
-export const types = () => (
+export const Types = () => (
 	<FieldGroup>
 		<MemoizedSetting packageValue _id='setting-id-1' label='Label' type='action' actionText='Action text' />
 		<MemoizedSetting packageValue='' _id='setting-id-2' label='Label' type='asset' />
