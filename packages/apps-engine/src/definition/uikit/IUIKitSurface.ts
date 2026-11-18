@@ -19,4 +19,12 @@ export interface IUIKitSurface {
 	state?: object;
 	clearOnClose?: boolean;
 	notifyOnClose?: boolean;
+	/** Data the app gets back when the view is submitted or closed; kept on the server, never shown to the user. */
+	private_metadata?: string;
+	callback_id?: string;
+	/** Lets the app update the view without knowing its `id`; unique among the views the app opened for a user. */
+	external_id?: string;
+	submit_disabled?: boolean;
+	/** Set by the host on every save; an update carrying a different `hash` is stale and is dropped. */
+	hash?: string;
 }
