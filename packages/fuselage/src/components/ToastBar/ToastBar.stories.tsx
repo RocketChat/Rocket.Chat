@@ -8,49 +8,43 @@ export default {
 	component: ToastBar,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A user-level, time-based notification that communicates the status of a performed action. Can be dismissed and may contain links. Disappears after a minimum of 5 seconds.\n\n' +
-					'**Rules**\n' +
-					'- Use only for brief action feedback — never for a persistent condition or a decision.\n' +
-					'- Keep copy concise.\n' +
-					'- For success, be explicit about the action and avoid "successfully"/exclamation marks (e.g. "Link copied", not "Copied!").\n' +
-					'- For errors, include how to resolve the issue in a second line.',
-			},
+			usage: `
+- Use only for brief feedback on an action, never for a lasting condition or a decision.
+- Keep a toast on screen for at least 5 seconds.
+
+**Messages**
+
+- Keep them short.
+- For \`success\`, name the action, without "successfully" or exclamation marks ("Link copied", not "Copied!").
+- For \`error\`, add a second line that says how to resolve the issue.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Message content shown inside the toast.',
 		},
 		variant: {
 			control: 'select',
 			options: ['info', 'success', 'error'],
-			description: "Color kind and icon used for the toast; also determines the announcement role ('alert' for error, 'status' otherwise).",
 			table: { defaultValue: { summary: 'info' } },
 		},
 		time: {
 			control: 'number',
-			description: 'Duration, in seconds, of the progress bar animation.',
 			table: { defaultValue: { summary: '5' } },
 		},
 		isPaused: {
 			control: 'boolean',
-			description: 'Pauses the progress bar animation.',
 		},
 		id: {
 			control: 'text',
-			description: 'Identifier passed to `onClose` when the toast is dismissed.',
 		},
 		buttonLabel: {
 			control: 'text',
-			description: 'Accessible label for the close button.',
 			table: { defaultValue: { summary: 'Dismiss alert' } },
 		},
 		onClose: {
 			control: false,
-			description: 'Called with the toast id when the close button is clicked; renders the close button when provided.',
 			table: { category: 'Events' },
 		},
 	},

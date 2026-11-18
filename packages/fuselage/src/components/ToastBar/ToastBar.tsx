@@ -5,18 +5,28 @@ import { IconButton } from '../Button';
 import { Icon } from '../Icon';
 
 export type ToastBarProps = {
+	/**
+	 * Sets the color and the icon. Assistive technology announces an `error` right away, and the others when the user
+	 * is idle.
+	 */
 	variant?: 'info' | 'success' | 'error';
 	className?: string;
 	children?: ReactNode;
+	/** Seconds the progress bar takes to run out; match it to how long the toast stays on screen. */
 	time?: number;
+	/** Stops the progress bar, as while the pointer is over the toast. */
 	isPaused?: boolean;
+	/** Passed to `onClose`; without it, `onClose` gets a generated one. */
 	id?: string;
+	/** Shows a close button that calls it with the toast's `id`. */
 	onClose?: (id: string) => void;
+	/** Accessible name of the close button. */
 	buttonLabel?: string;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
 
 /**
- * Shows alerts in a toast component.
+ * Reports the outcome of an action the user just took, for a few seconds. The bar along its bottom shows the time
+ * left; removing the toast when it runs out is up to the code that shows it.
  */
 function ToastBar({
 	children,

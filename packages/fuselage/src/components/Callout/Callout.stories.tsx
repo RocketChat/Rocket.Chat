@@ -1,49 +1,40 @@
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import { Button, ButtonGroup, Callout } from '../..';
-import { setStoryDescription } from '../../helpers/setStoryDescription';
 
 export default {
 	title: 'Feedback/Callout',
 	component: Callout,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A non-time-based notification (system- or user-level) that cannot be dismissed by the user and persists until its status changes. May contain links.\n\n' +
-					'**Rules**\n' +
-					'- Cannot be dismissed by the user — use only for status that persists until it changes.\n' +
-					'- Description is mandatory; icon and title are optional.\n' +
-					'- Make copy concise while explicitly naming the event and the affected object.\n' +
-					'- A Callout CAN carry action buttons — use it (not a Banner) when the notification needs a decision.',
-			},
+			usage: `
+- Use only for a status that lasts until it changes: the user can't dismiss a \`Callout\`.
+- Always give it a description (\`children\`); the \`title\` is optional.
+- Name the event and the object it affects, in as few words as possible.
+- When the notification needs a decision, use a \`Callout\` with \`actions\`, not a \`Banner\`.
+`,
 		},
 	},
 	argTypes: {
 		type: {
 			control: 'select',
 			options: ['info', 'success', 'warning', 'danger'],
-			description: 'Semantic kind of the callout. Drives the default icon and color styling.',
 			table: { category: 'Kind' },
 		},
 		title: {
 			control: 'text',
-			description: 'Title shown above the callout content.',
 			table: { category: 'Content' },
 		},
 		children: {
 			control: 'text',
-			description: 'Description content of the callout.',
 			table: { category: 'Content' },
 		},
 		icon: {
 			control: 'text',
-			description: 'Name of the icon rendered instead of the `type`-based default icon.',
 			table: { category: 'Content' },
 		},
 		actions: {
 			control: false,
-			description: 'Content (e.g. a ButtonGroup) rendered in the actions area.',
 			table: { category: 'Content' },
 		},
 	},
@@ -78,7 +69,6 @@ export const Success: Story = {
 		type: 'success',
 		title: 'This is a success message',
 	},
-	parameters: setStoryDescription('Communicates that an important aspect of the system is working as expected.'),
 };
 
 export const Warning: Story = {
@@ -87,7 +77,6 @@ export const Warning: Story = {
 		type: 'warning',
 		title: 'This is a warning message',
 	},
-	parameters: setStoryDescription('Communicates that an important aspect of the system needs attention.'),
 };
 
 export const Danger: Story = {
@@ -96,9 +85,6 @@ export const Danger: Story = {
 		type: 'danger',
 		title: 'This is a danger message',
 	},
-	parameters: setStoryDescription(
-		'Communicates that an important aspect of the system is not working as expected and requires urgent action.',
-	),
 };
 
 export const CustomIcon: Story = {

@@ -6,17 +6,25 @@ import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 
 export type CalloutProps = ElementProps<HTMLElement> & {
+	/**
+	 * Sets the border color and the default icon by what the callout reports: `success` when something important
+	 * works as expected, `warning` when it needs attention, `danger` when it fails and needs urgent action.
+	 */
 	type?: 'info' | 'success' | 'warning' | 'danger';
+	/** Shown above the description, on one line cut short with an ellipsis. */
 	title?: ReactNode;
 	children?: ReactNode;
+	/** Replaces the icon `type` sets. */
 	icon?: IconProps['name'];
+	/** Buttons for what the user can do about it: beside the content from 420px wide, below it when narrower. */
 	actions?: ReactNode;
 };
 
 const WRAPPER_LIMIT_SIZE = 420;
 
 /**
- * The `Callout` is used to get the user's attention explaining something important in the content of the current page.
+ * Draws attention to something important about the content of the current page. It stays until its status changes:
+ * the user can't dismiss it.
  */
 const Callout = ({ type, title, children, icon, className, actions, ...props }: CalloutProps) => {
 	const { ref, borderBoxSize } = useResizeObserver();
