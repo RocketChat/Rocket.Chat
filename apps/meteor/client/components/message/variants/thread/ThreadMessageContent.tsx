@@ -1,11 +1,12 @@
-import type { IThreadMainMessage, IThreadMessage, MessageAttachment } from '@rocket.chat/core-typings';
-import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { splitQuoteAttachments } from '../../../../lib/utils/splitQuoteAttachments';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -22,14 +23,6 @@ export type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
 };
 
-const splitQuotesFromAttachments = (messageAttachments: MessageAttachment[] | undefined) => {
-	const quotes = messageAttachments?.filter(isQuoteAttachment) || [];
-
-	const attachments = messageAttachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
-
-	return { quotes, attachments };
-};
-
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const oembedEnabled = useMessageListOembedEnabled();
@@ -44,7 +37,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
-	const { quotes, attachments } = splitQuotesFromAttachments(normalizedMessage?.attachments);
+	const { quotes, attachments } = splitQuoteAttachments(normalizedMessage.attachments);
 
 	return (
 		<>

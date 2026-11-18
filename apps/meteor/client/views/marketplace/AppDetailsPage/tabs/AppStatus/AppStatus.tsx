@@ -22,14 +22,11 @@ export type AppStatusProps = {
 	installed?: boolean;
 };
 
-const isAppUpdatable = (app: App, installed: boolean | undefined) =>
-	installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
-
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps) => {
 	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
-	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
+	const [isAppPurchased, setPurchased] = useSafely(useState(!!app.isPurchased));
 	const setModal = useSetModal();
 	const isAdminUser = usePermission('manage-apps');
 	const context = useRouteParameter('context');
@@ -38,7 +35,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly && !installed;
-	const canUpdate = isAppUpdatable(app, installed);
+	const canUpdate = installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
 	const { data } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise ?? false;
@@ -48,8 +45,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
-	const totalSeenRequests = app?.appRequestStats?.totalSeen;
-	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
+	const totalSeenRequests = app.appRequestStats?.totalSeen;
+	const totalUnseenRequests = app.appRequestStats?.totalUnseen;
 
 	const action = button?.action;
 
@@ -155,7 +152,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						variant='primary'
 						size='small'
 						loading={loading}
-						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
+						disabled={action === 'request' && (app.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
 					>
 						{t(button.label)}

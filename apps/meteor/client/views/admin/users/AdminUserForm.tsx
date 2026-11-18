@@ -1,4 +1,4 @@
-import type { AvatarObject, IRole, ISetting, IUser, IUserPhoneNumber, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	AccordionItem,
@@ -16,7 +16,6 @@ import {
 	Icon,
 	MultiSelectFiltered,
 	Skeleton,
-	Stack,
 	Text,
 	TextAreaInput,
 	TextInput,
@@ -25,7 +24,6 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter, useEndpointMutation } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -38,10 +36,10 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
-import type { Control, FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
+import AdminUserEmailField from './AdminUserEmailField';
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
@@ -119,242 +117,6 @@ const getInitialValue = ({
 	avatar: '' as AvatarObject,
 	passwordConfirmation: '',
 });
-
-type TranslateFunction = ReturnType<typeof useTranslation>;
-
-type AdminUserEmailFieldProps = {
-	control: Control<UserFormProps>;
-	errors: FieldErrors<UserFormProps>;
-	t: TranslateFunction;
-	emailId: string;
-	verifiedId: string;
-	isLoadingSmtpStatus: boolean;
-	isSmtpEnabled: boolean;
-	isVerificationNeeded: ISetting['value'] | undefined;
-};
-
-const renderEmailField = ({
-	control,
-	errors,
-	t,
-	emailId,
-	verifiedId,
-	isLoadingSmtpStatus,
-	isSmtpEnabled,
-	isVerificationNeeded,
-}: AdminUserEmailFieldProps) => (
-	<Field>
-		<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
-		<FieldRow>
-			<Controller
-				control={control}
-				name='email'
-				rules={{
-					required: t('Required_field', { field: t('Email') }),
-					validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
-				}}
-				render={({ field }) => (
-					<TextInput
-						{...field}
-						id={emailId}
-						aria-invalid={errors.email ? 'true' : 'false'}
-						aria-describedby={`${emailId}-error`}
-						error={errors.email?.message}
-					/>
-				)}
-			/>
-		</FieldRow>
-		{errors?.email && (
-			<FieldError aria-live='assertive' id={`${emailId}-error`}>
-				{errors.email.message}
-			</FieldError>
-		)}
-		{isLoadingSmtpStatus ? (
-			<Skeleton width='full' height={26} />
-		) : (
-			<>
-				<FieldRow>
-					<Stack direction='row' align='center' gap={4}>
-						<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded}>
-							{t('Mark_email_as_verified')}
-						</FieldLabel>
-						<Icon name='info-circled' size='x20' title={t('Enable_to_bypass_email_verification')} />
-					</Stack>
-					<Controller
-						control={control}
-						name='verified'
-						render={({ field: { onChange, value } }) => (
-							<ToggleSwitch id={verifiedId} checked={value} onChange={onChange} disabled={!isSmtpEnabled || !isVerificationNeeded} />
-						)}
-					/>
-				</FieldRow>
-				{isVerificationNeeded && !isSmtpEnabled && (
-					<FieldHint id={`${verifiedId}-hint`}>
-						<Trans
-							i18nKey='Send_Email_SMTP_Warning'
-							components={{
-								// oxlint-disable-next-line jsx-a11y/anchor-has-content
-								a: <a href='/admin/settings/Email' />,
-							}}
-						/>
-					</FieldHint>
-				)}
-				{!isVerificationNeeded && (
-					<FieldHint id={`${verifiedId}-hint`}>
-						<Trans
-							i18nKey='Email_verification_isnt_required'
-							components={{
-								// oxlint-disable-next-line jsx-a11y/anchor-has-content
-								a: <a href='/admin/settings/Accounts' />,
-							}}
-						/>
-					</FieldHint>
-				)}
-			</>
-		)}
-	</Field>
-);
-
-type AdminUserPasswordFieldProps = {
-	control: Control<UserFormProps>;
-	errors: FieldErrors<UserFormProps>;
-	t: TranslateFunction;
-	passwordId: string;
-	setRandomPasswordId: string;
-	isLoadingSmtpStatus: boolean;
-	isNewUserPage: boolean;
-	isSmtpEnabled: boolean;
-	setValue: UseFormSetValue<UserFormProps>;
-	setRandomPassword: UserFormProps['setRandomPassword'];
-	password: UserFormProps['password'];
-};
-
-const renderPasswordField = ({
-	control,
-	errors,
-	t,
-	passwordId,
-	setRandomPasswordId,
-	isLoadingSmtpStatus,
-	isNewUserPage,
-	isSmtpEnabled,
-	setValue,
-	setRandomPassword,
-	password,
-}: AdminUserPasswordFieldProps) => (
-	<Field>
-		{isLoadingSmtpStatus ? (
-			<PasswordFieldSkeleton />
-		) : (
-			<>
-				<FieldLabel htmlFor={passwordId}>{t('Password')}</FieldLabel>
-				<AdminUserSetRandomPasswordRadios
-					isNewUserPage={isNewUserPage}
-					setRandomPasswordId={setRandomPasswordId}
-					control={control}
-					isSmtpEnabled={isSmtpEnabled}
-					setValue={setValue}
-				/>
-				{!setRandomPassword && (
-					<AdminUserSetRandomPasswordContent
-						control={control}
-						setRandomPassword={setRandomPassword}
-						isNewUserPage={isNewUserPage}
-						passwordId={passwordId}
-						errors={errors}
-						password={password}
-					/>
-				)}
-			</>
-		)}
-	</Field>
-);
-
-type AdminUserRolesFieldProps = {
-	control: Control<UserFormProps>;
-	errors: FieldErrors<UserFormProps>;
-	t: TranslateFunction;
-	rolesId: string;
-	roleError: Error | null;
-	availableRoles: SelectOption[];
-};
-
-const renderRolesField = ({ control, errors, t, rolesId, roleError, availableRoles }: AdminUserRolesFieldProps) => (
-	<Field>
-		<FieldLabel htmlFor={rolesId}>{t('Roles')}</FieldLabel>
-		<FieldRow>
-			{roleError && <Callout>{roleError.message}</Callout>}
-			{!roleError && (
-				<Controller
-					control={control}
-					name='roles'
-					rules={{ required: t('Required_field', { field: t('Roles') }) }}
-					render={({ field: { onChange, value } }) => (
-						<MultiSelectFiltered id={rolesId} value={value} onChange={onChange} placeholder={t('Select_role')} options={availableRoles} />
-					)}
-				/>
-			)}
-		</FieldRow>
-		{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
-	</Field>
-);
-
-type AdminUserSendWelcomeEmailFieldProps = {
-	control: Control<UserFormProps>;
-	t: TranslateFunction;
-	sendWelcomeEmailId: string;
-	isLoadingSmtpStatus: boolean;
-	isSmtpEnabled: boolean;
-};
-
-const renderSendWelcomeEmailField = ({
-	control,
-	t,
-	sendWelcomeEmailId,
-	isLoadingSmtpStatus,
-	isSmtpEnabled,
-}: AdminUserSendWelcomeEmailFieldProps) => (
-	<Field>
-		{isLoadingSmtpStatus ? (
-			<Skeleton width='full' height={26} />
-		) : (
-			<>
-				<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
-					<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
-						{t('Send_welcome_email')}
-					</FieldLabel>
-					<FieldRow>
-						<Controller
-							control={control}
-							name='sendWelcomeEmail'
-							defaultValue={isSmtpEnabled}
-							render={({ field: { onChange, value } }) => (
-								<ToggleSwitch
-									id={sendWelcomeEmailId}
-									aria-describedby={`${sendWelcomeEmailId}-hint`}
-									onChange={onChange}
-									checked={value}
-									disabled={!isSmtpEnabled}
-								/>
-							)}
-						/>
-					</FieldRow>
-				</Box>
-				{!isSmtpEnabled && (
-					<FieldHint id={`${sendWelcomeEmailId}-hint`}>
-						<Trans
-							i18nKey='Send_Email_SMTP_Warning'
-							components={{
-								// oxlint-disable-next-line jsx-a11y/anchor-has-content
-								a: <a href='/admin/settings/Email' />,
-							}}
-						/>
-					</FieldHint>
-				)}
-			</>
-		)}
-	</Field>
-);
 
 const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleData, roleError, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
@@ -472,8 +234,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const nameId = useId();
 	const usernameId = useId();
 	const voiceExtensionId = useId();
-	const emailId = useId();
-	const verifiedId = useId();
 	const statusTextId = useId();
 	const userStatusId = useId();
 	const hiddenFromId = useId();
@@ -513,7 +273,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</Field>
 					)}
 					{isNewUserPage && <Text color='hint'>{t('Manually_created_users_briefing')}</Text>}
-					{renderEmailField({ control, errors, t, emailId, verifiedId, isLoadingSmtpStatus, isSmtpEnabled, isVerificationNeeded })}
+					<AdminUserEmailField
+						control={control}
+						errors={errors}
+						isLoadingSmtpStatus={isLoadingSmtpStatus}
+						isSmtpEnabled={isSmtpEnabled}
+						isVerificationNeeded={isVerificationNeeded}
+					/>
 					<Field>
 						<FieldLabel htmlFor={nameId}>{t('Name')}</FieldLabel>
 						<FieldRow>
@@ -532,7 +298,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								)}
 							/>
 						</FieldRow>
-						{errors?.name && (
+						{errors.name && (
 							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
 							</FieldError>
@@ -556,7 +322,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								)}
 							/>
 						</FieldRow>
-						{errors?.username && (
+						{errors.username && (
 							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
 							</FieldError>
@@ -570,20 +336,55 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldRow>
 						</Field>
 					)}
-					{renderPasswordField({
-						control,
-						errors,
-						t,
-						passwordId,
-						setRandomPasswordId,
-						isLoadingSmtpStatus,
-						isNewUserPage,
-						isSmtpEnabled,
-						setValue,
-						setRandomPassword,
-						password,
-					})}
-					{renderRolesField({ control, errors, t, rolesId, roleError, availableRoles })}
+					<Field>
+						{isLoadingSmtpStatus ? (
+							<PasswordFieldSkeleton />
+						) : (
+							<>
+								<FieldLabel htmlFor={passwordId}>{t('Password')}</FieldLabel>
+								<AdminUserSetRandomPasswordRadios
+									isNewUserPage={isNewUserPage}
+									setRandomPasswordId={setRandomPasswordId}
+									control={control}
+									isSmtpEnabled={isSmtpEnabled}
+									setValue={setValue}
+								/>
+								{!setRandomPassword && (
+									<AdminUserSetRandomPasswordContent
+										control={control}
+										setRandomPassword={setRandomPassword}
+										isNewUserPage={isNewUserPage}
+										passwordId={passwordId}
+										errors={errors}
+										password={password}
+									/>
+								)}
+							</>
+						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={rolesId}>{t('Roles')}</FieldLabel>
+						<FieldRow>
+							{roleError && <Callout>{roleError.message}</Callout>}
+							{!roleError && (
+								<Controller
+									control={control}
+									name='roles'
+									rules={{ required: t('Required_field', { field: t('Roles') }) }}
+									render={({ field: { onChange, value } }) => (
+										<MultiSelectFiltered
+											id={rolesId}
+											value={value}
+											onChange={onChange}
+											placeholder={t('Select_role')}
+											options={availableRoles}
+										/>
+									)}
+								/>
+							)}
+						</FieldRow>
+						{errors.roles && <FieldError>{errors.roles.message}</FieldError>}
+					</Field>
 					{isNewUserPage && (
 						<Field>
 							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
@@ -600,7 +401,46 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</Box>
 						</Field>
 					)}
-					{renderSendWelcomeEmailField({ control, t, sendWelcomeEmailId, isLoadingSmtpStatus, isSmtpEnabled })}
+					<Field>
+						{isLoadingSmtpStatus ? (
+							<Skeleton width='full' height={26} />
+						) : (
+							<>
+								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
+									<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
+										{t('Send_welcome_email')}
+									</FieldLabel>
+									<FieldRow>
+										<Controller
+											control={control}
+											name='sendWelcomeEmail'
+											defaultValue={isSmtpEnabled}
+											render={({ field: { onChange, value } }) => (
+												<ToggleSwitch
+													id={sendWelcomeEmailId}
+													aria-describedby={`${sendWelcomeEmailId}-hint`}
+													onChange={onChange}
+													checked={value}
+													disabled={!isSmtpEnabled}
+												/>
+											)}
+										/>
+									</FieldRow>
+								</Box>
+								{!isSmtpEnabled && (
+									<FieldHint id={`${sendWelcomeEmailId}-hint`}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
+								)}
+							</>
+						)}
+					</Field>
 					{!showUserStatusSection && (
 						<Field>
 							<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
@@ -618,14 +458,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											{...field}
 											id={statusTextId}
 											disabled={statusFieldsDisabled}
-											error={errors?.statusText?.message}
+											error={errors.statusText?.message}
 											aria-invalid={errors.statusText ? 'true' : 'false'}
 											aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 										/>
 									)}
 								/>
 							</FieldRow>
-							{errors?.statusText && (
+							{errors.statusText && (
 								<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 									{errors.statusText.message}
 								</FieldError>
@@ -645,7 +485,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										{...field}
 										id={bioId}
 										rows={3}
-										error={errors?.bio?.message}
+										error={errors.bio?.message}
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
 										endAddon={<Icon name='edit' size='x20' />}
@@ -653,7 +493,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								)}
 							/>
 						</FieldRow>
-						{errors?.bio && (
+						{errors.bio && (
 							<FieldError aria-live='assertive' id={`${bioId}-error`}>
 								{errors.bio.message}
 							</FieldError>
@@ -731,14 +571,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 													{...field}
 													id={statusTextId}
 													disabled={statusFieldsDisabled}
-													error={errors?.statusText?.message}
+													error={errors.statusText?.message}
 													aria-invalid={errors.statusText ? 'true' : 'false'}
 													aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.statusText && (
+									{errors.statusText && (
 										<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 											{errors.statusText.message}
 										</FieldError>

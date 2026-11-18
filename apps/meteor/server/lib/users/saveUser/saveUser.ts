@@ -159,18 +159,6 @@ const setSipExtension = (updater: Updater<IUser>, userData: SaveUserData, oldUse
 	}
 };
 
-const setPhones = (updater: Updater<IUser>, userData: SaveUserData, unset: Record<string, number>): void => {
-	if (Array.isArray(userData.phones)) {
-		if (userData.phones.length === 0) {
-			updater.unset('phones');
-			delete userData.phones;
-			unset.phones = 1;
-		} else {
-			updater.set('phones', userData.phones);
-		}
-	}
-};
-
 const setEmailVerification = (updater: Updater<IUser>, userData: SaveUserData, oldUserData: IUser): void => {
 	if (typeof userData.verified === 'boolean') {
 		if (oldUserData && 'emails' in oldUserData && oldUserData.emails?.some(({ address }) => address === userData.email)) {
@@ -278,7 +266,15 @@ const _saveUser = (session?: ClientSession) =>
 
 		const unset: Record<string, number> = {};
 
-		setPhones(updater, userData, unset);
+		if (Array.isArray(userData.phones)) {
+			if (userData.phones.length === 0) {
+				updater.unset('phones');
+				delete userData.phones;
+				unset.phones = 1;
+			} else {
+				updater.set('phones', userData.phones);
+			}
+		}
 
 		setEmailVerification(updater, userData, oldUserData);
 

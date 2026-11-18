@@ -22,27 +22,23 @@ type RegisterContactProps = {
 };
 
 async function renameVisitorRooms(rooms: IOmnichannelRoom[], name: string) {
-	if (rooms?.length) {
-		for (const room of rooms) {
-			const { _id: rid } = room;
+	for (const { _id: rid } of rooms) {
+		const responses = await Promise.all([
+			Rooms.setFnameById(rid, name),
+			LivechatInquiry.setNameByRoomId(rid, name),
+			Subscriptions.updateDisplayNameByRoomId(rid, name),
+		]);
 
-			const responses = await Promise.all([
-				Rooms.setFnameById(rid, name),
-				LivechatInquiry.setNameByRoomId(rid, name),
-				Subscriptions.updateDisplayNameByRoomId(rid, name),
-			]);
+		if (responses[0]?.modifiedCount) {
+			void notifyOnRoomChangedById(rid);
+		}
 
-			if (responses[0]?.modifiedCount) {
-				void notifyOnRoomChangedById(rid);
-			}
+		if (responses[1]?.modifiedCount) {
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+		}
 
-			if (responses[1]?.modifiedCount) {
-				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
-			}
-
-			if (responses[2]?.modifiedCount) {
-				void notifyOnSubscriptionChangedByRoomId(rid);
-			}
+		if (responses[2]?.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid);
 		}
 	}
 }

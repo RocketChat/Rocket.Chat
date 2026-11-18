@@ -1,23 +1,15 @@
-import type { IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	InfoPanelField,
-	InfoPanelLabel,
-	InfoPanelText,
-	useFormatDateAndTime,
-} from '@rocket.chat/ui-client';
+import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ChatTimingFields from './ChatTimingFields';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
-import { useFormatDuration } from './useFormatDuration';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormattedRelativeTime } from '../../../../../hooks/useFormattedRelativeTime';
 import CustomField from '../../../components/CustomField';
@@ -32,55 +24,9 @@ export type ChatInfoProps = {
 	route: keyof IRouterPaths;
 };
 
-type ChatTimingFieldsParams = Partial<Pick<Serialized<IOmnichannelRoom>, 'ts' | 'closedAt' | 'servedBy' | 'metrics'>> & {
-	t: TFunction;
-	formatDuration: ReturnType<typeof useFormatDuration>;
-	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
-};
-
-function renderChatTimingFields({ ts, closedAt, servedBy, metrics, t, formatDuration, formatDateAndTime }: ChatTimingFieldsParams) {
-	return (
-		<>
-			{closedAt && ts && (
-				<InfoPanelField>
-					<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-					<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
-				</InfoPanelField>
-			)}
-			{ts && (
-				<InfoPanelField>
-					<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
-					<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
-				</InfoPanelField>
-			)}
-			{closedAt && (
-				<InfoPanelField>
-					<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
-					<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
-				</InfoPanelField>
-			)}
-			{servedBy?.ts && (
-				<InfoPanelField>
-					<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
-					<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
-				</InfoPanelField>
-			)}
-			{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-				<InfoPanelField>
-					<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
-					<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
-				</InfoPanelField>
-			)}
-		</>
-	);
-}
-
 function ChatInfo({ id, route }: ChatInfoProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const formatDateAndTime = useFormatDateAndTime();
-	const formatDuration = useFormatDuration();
 
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
@@ -177,7 +123,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 						<InfoPanelText>{queueTime}</InfoPanelText>
 					</InfoPanelField>
 				)}
-				{renderChatTimingFields({ ts, closedAt, servedBy, metrics, t, formatDuration, formatDateAndTime })}
+				<ChatTimingFields ts={ts} closedAt={closedAt} servedBy={servedBy} metrics={metrics} />
 				{!waitingResponse && responseBy?.lastMessageTs && (
 					<InfoPanelField>
 						<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>

@@ -56,14 +56,6 @@ const AppMenuOptionLabel = ({ icon, color, children }: AppMenuOptionLabelProps) 
 	</Box>
 );
 
-const canEnableApp = (app: App, isAdminUser: boolean, isAppEnabled: boolean, isEnterpriseLicense: boolean) =>
-	app.installed &&
-	isAdminUser &&
-	!isAppEnabled &&
-	// If the app is migrated, it can be enabled regardless of other validations
-	// If not, and the app isEnterpriseOnly, we need to check the workspace's license
-	(app.migrated || !app.isEnterpriseOnly || isEnterpriseLicense);
-
 export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -375,13 +367,19 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				},
 		];
 
-		const isPossibleToEnableApp = canEnableApp(app, isAdminUser, isAppEnabled, isEnterpriseLicense);
+		const isPossibleToEnableApp =
+			app.installed &&
+			isAdminUser &&
+			!isAppEnabled &&
+			// If the app is migrated, it can be enabled regardless of other validations
+			// If not, and the app isEnterpriseOnly, we need to check the workspace's license
+			(app.migrated || !app.isEnterpriseOnly || isEnterpriseLicense);
 
 		const doesItReachedTheLimit =
 			!app.migrated &&
-			!appCountQuery?.data?.hasUnlimitedApps &&
-			appCountQuery?.data?.enabled !== undefined &&
-			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
+			!appCountQuery.data?.hasUnlimitedApps &&
+			appCountQuery.data?.enabled !== undefined &&
+			appCountQuery.data.enabled >= appCountQuery.data.limit;
 
 		const installedAppOptions = [
 			context !== 'details' &&
@@ -461,9 +459,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		handleAcquireApp,
 		isEnterpriseLicense,
 		isAppEnabled,
-		appCountQuery?.data?.hasUnlimitedApps,
-		appCountQuery?.data?.enabled,
-		appCountQuery?.data?.limit,
+		appCountQuery.data?.hasUnlimitedApps,
+		appCountQuery.data?.enabled,
+		appCountQuery.data?.limit,
 		context,
 		handleViewLogs,
 		canUpdate,

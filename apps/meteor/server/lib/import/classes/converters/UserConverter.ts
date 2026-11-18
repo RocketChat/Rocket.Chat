@@ -254,7 +254,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	private buildUserUpdateData(userData: IImportUser): Record<string, any> {
-		const updateData: Record<string, any> = Object.assign(Object.create(null), {
+		return Object.assign(Object.create(null), {
 			$set: Object.assign(Object.create(null), {
 				...(userData.roles && { roles: userData.roles }),
 				...(userData.type && { type: userData.type }),
@@ -271,8 +271,6 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 					},
 				}),
 		});
-
-		return updateData;
 	}
 
 	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {

@@ -23,7 +23,7 @@ const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserBio(user: IUser, bio: string | undefined) {
-	if (user && (bio || bio === '')) {
+	if (bio || bio === '') {
 		if (typeof bio !== 'string') {
 			throw new ClientSafeError('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
@@ -39,7 +39,7 @@ async function saveUserBio(user: IUser, bio: string | undefined) {
 }
 
 async function saveUserNickname(user: IUser, nickname: string | undefined) {
-	if (user && (nickname || nickname === '')) {
+	if (nickname || nickname === '') {
 		if (typeof nickname !== 'string') {
 			throw new ClientSafeError('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
@@ -54,19 +54,19 @@ async function saveUserNickname(user: IUser, nickname: string | undefined) {
 	}
 }
 
-async function saveUserPassword(this: AuthenticatedContext, user: IUser, newPassword: string | undefined, unset: UpdateFilter<IUser>) {
+async function saveUserPassword(user: IUser, newPassword: string | undefined, unset: UpdateFilter<IUser>, token: string) {
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
-	if (canChangePasswordForOAuth || user?.services?.password) {
+	if (canChangePasswordForOAuth || user.services?.password) {
 		// Should be the last check to prevent error when trying to check password for users without password
-		if (newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
+		if (newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user.services?.password?.bcrypt) {
 			// don't let user change to same password
-			if (user && (await compareUserPassword(user, { plain: newPassword }))) {
+			if (await compareUserPassword(user, { plain: newPassword })) {
 				throw new ClientSafeError('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: newPassword }))) {
+			if (user.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: newPassword }))) {
 				throw new ClientSafeError('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
@@ -74,7 +74,7 @@ async function saveUserPassword(this: AuthenticatedContext, user: IUser, newPass
 
 			passwordPolicy.validate(newPassword);
 
-			await Users.setPasswordHash(this.userId, await hashPassword(newPassword));
+			await Users.setPasswordHash(user._id, await hashPassword(newPassword));
 
 			if (user.requirePasswordChange) {
 				await Users.unsetRequirePasswordChange(user._id);
@@ -83,15 +83,15 @@ async function saveUserPassword(this: AuthenticatedContext, user: IUser, newPass
 			}
 
 			await Users.addPasswordToHistory(
-				this.userId,
+				user._id,
 				user.services?.password.bcrypt,
 				rcSettings.get<number>('Accounts_Password_History_Amount'),
 			);
 
 			try {
-				await Users.removeNonLoginTokensExcept(this.userId, this.token);
+				await Users.removeNonLoginTokensExcept(user._id, token);
 			} catch (e) {
-				await Users.unsetLoginTokens(this.userId);
+				await Users.unsetLoginTokens(user._id);
 			}
 		}
 	}
@@ -174,7 +174,7 @@ async function saveUserProfile(
 		await setEmailFunction(settings.email, user);
 	}
 
-	await saveUserPassword.call(this, user, settings.newPassword, unset);
+	await saveUserPassword(user, settings.newPassword, unset, this.token);
 
 	await Users.setProfile(this.userId, {});
 

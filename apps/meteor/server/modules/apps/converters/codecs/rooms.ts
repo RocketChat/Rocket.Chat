@@ -213,7 +213,7 @@ async function getDepartment({ department }: any) {
 }
 
 function mapAppRoomBaseFields(room: any): Record<string, unknown> {
-	const fields: Record<string, unknown> = {
+	return {
 		...(room.id && { _id: room.id }),
 		...(typeof room.type !== 'undefined' && { t: room.type }),
 		...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
@@ -226,7 +226,6 @@ function mapAppRoomBaseFields(room: any): Record<string, unknown> {
 		...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
 		...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
 	};
-	return fields;
 }
 
 /**
