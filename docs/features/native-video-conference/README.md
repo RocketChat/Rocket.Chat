@@ -98,6 +98,46 @@ had before there was a choice.
 - **A browser that cannot run RNNoise** (no AudioWorklet) never tries: a remembered *Advanced* runs, and shows, as
   *Standard*.
 
+## Background effects
+
+The camera menu's **Appearance** entry opens a panel beside the call: a preview of the reader's own camera, and the
+backgrounds to put behind them: none, blur, one of the workspace's preset images, or an image they upload.
+`@livekit/track-processors` runs MediaPipe's segmenter on the camera track, so the people watching see the effect, not
+just the reader.
+
+- **The browser is asked up front.** The library is loaded when the call starts, only to ask whether this browser can
+  run an effect (WebGL2 and the insertable streams the processor needs). A browser that cannot is never offered the
+  entry.
+- **The segmenter is loaded the first time an effect is chosen**, and switched in place after that, so changing
+  effect does not restart the camera. A new camera track gets the effect that was running.
+- **A change that fails keeps the effect that was running**, and only takes the background off when that cannot be
+  put back either. An image that cannot be loaded counts as a change that fails, rather than an effect left running
+  with nothing behind the reader.
+- **Uploaded images are read before the camera gets them.** One the browser cannot decode is turned away with a
+  message, since the processor would only find out once it was already in use and leave no background at all. Images
+  larger than 1920 pixels on their longer side are scaled down first. They are kept for the call only, at most
+  `MAX_BACKGROUND_IMAGES`.
+- **The workspace serves the files** at `/video-conference/segmentation/`: MediaPipe's runtime from the installed
+  `@mediapipe/tasks-vision`, and the model from `apps/meteor/private/video-conference/`. They are compressed, about
+  3 MB for the runtime, and revalidated like RNNoise's.
+- **Preset images are the workspace's**, in `apps/meteor/private/video-conference/backgrounds/`.
+  `video-conference.backgrounds` lists the ones present, each by id with the URL it is served at,
+  `/video-conference/backgrounds/<id>`, so the client never names a file.
+- **`@livekit/track-processors` comes from GitHub**, at a commit of livekit/track-processors-js main (`67aca1a`), for
+  confidence masks and temporal smoothing, which make the edges steadier than the published release.
+  That archive has no build, so a patch (`.yarn/patches/`) points the package at its TypeScript source. Both go once a
+  release carries them.
+
+The model is `selfie_multiclass_256x256_fp16.tflite`, derived from Google's MediaPipe multiclass selfie segmenter
+(`selfie_multiclass_256x256`, float32), as published at
+https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite.
+Its weights are converted to float16, which halves the file to 8.3 MB with no visible difference
+(SHA-256 `3e3b6ae9c1c1cd2307c9355d2075998fdca8e1a2f95936634169d4f544127830`). It keeps fingers whole and chairs in the
+background more reliably than the selfie segmenter. The model is licensed under the Apache License 2.0, as stated in
+its
+[model card](https://storage.googleapis.com/mediapipe-assets/Model%20Card%20Multiclass%20Segmentation.pdf); a copy of the
+license and a notice of the change sit beside it (`LICENSE`, `NOTICE`).
+
 ## Data-channel messages
 
 | Type | Reliable | Payload | Meaning |
@@ -134,4 +174,3 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
-- Background blur ships in a follow-up.

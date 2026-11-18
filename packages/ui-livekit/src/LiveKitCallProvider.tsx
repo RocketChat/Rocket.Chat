@@ -10,6 +10,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
+	BackgroundEffectContext,
 	CallActionsProvider,
 	CallDiagnosticsProvider,
 	CallStateProvider,
@@ -27,6 +28,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useBackgroundEffect } from './useBackgroundEffect';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
@@ -46,6 +48,7 @@ export type LiveKitCallProviderProps = {
 	onEnded: () => void;
 	/** Where the workspace serves RNNoise's worklet and WebAssembly from. */
 	rnnoiseBaseUrl: string;
+	segmentationBaseUrl: string;
 	children: ReactNode;
 };
 
@@ -68,7 +71,15 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnnoiseBaseUrl, children }: LiveKitCallProviderProps) => {
+export const LiveKitCallProvider = ({
+	callId,
+	connect,
+	preferences,
+	onEnded,
+	rnnoiseBaseUrl,
+	segmentationBaseUrl,
+	children,
+}: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 	const [room] = useState(() => new Room());
@@ -151,7 +162,11 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
 	const localCameraTrack = localCameraPub?.videoTrack;
 
-	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
+	const backgroundEffect = useBackgroundEffect(localCameraTrack, segmentationBaseUrl);
+
+	// What the camera sends, so the reader sees the background others see.
+	const cameraMediaTrack = camEnabled ? localCameraTrack?.mediaStreamTrack : undefined;
+	const cameraStream = useMemo(() => (cameraMediaTrack ? new MediaStream([cameraMediaTrack]) : undefined), [cameraMediaTrack]);
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
@@ -265,10 +280,12 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnn
 				<DeviceSelectionProvider value={deviceSelection}>
 					<VideoQualityProvider value={videoQuality}>
 						<NoiseSuppressionProvider value={noiseSuppression}>
-							<CallDiagnosticsProvider value={diagnostics ?? null}>
-								{children}
-								<RoomAudioRenderer room={room} />
-							</CallDiagnosticsProvider>
+							<BackgroundEffectContext.Provider value={backgroundEffect}>
+								<CallDiagnosticsProvider value={diagnostics ?? null}>
+									{children}
+									<RoomAudioRenderer room={room} />
+								</CallDiagnosticsProvider>
+							</BackgroundEffectContext.Provider>
 						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>

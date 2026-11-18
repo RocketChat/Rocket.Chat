@@ -1,7 +1,9 @@
 import './avatar';
+import './cameraBackgrounds';
 import './health';
 import './i18n';
 import './rnnoise';
+import './segmentation';
 import './timesync';
 import './fileDecrypt';
 import './userDataDownload';

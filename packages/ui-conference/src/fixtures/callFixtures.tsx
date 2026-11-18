@@ -8,6 +8,8 @@ import { action } from 'storybook/actions';
 import { JOHN_DOE_ID } from './storyFixtures';
 import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
 import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { BackgroundEffectSelection } from '../devices/BackgroundEffectContext';
+import { BackgroundEffectContext } from '../devices/BackgroundEffectContext';
 import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
 import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
@@ -93,6 +95,28 @@ export const buildNoiseSuppression = (overrides: Partial<NoiseSuppressionSelecti
 	...overrides,
 });
 
+export const buildBackgroundEffect = (overrides: Partial<BackgroundEffectSelection> = {}): BackgroundEffectSelection => ({
+	current: { mode: 'none' },
+	presets: [],
+	images: [],
+	supported: true,
+	select: action('selectBackgroundEffect'),
+	uploadImage: action('uploadBackgroundImage'),
+	removeImage: action('removeBackgroundImage'),
+	...overrides,
+});
+
+/** Pictures a reader might have uploaded, drawn rather than fetched so a story needs no network. */
+export const backgroundImageSamples = [
+	['#89c2d9', '#f2cc8f'],
+	['#2a9d8f', '#e9c46a'],
+].map(
+	([from, to]) =>
+		`data:image/svg+xml,${encodeURIComponent(
+			`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9"><linearGradient id="g" x2="0" y2="1"><stop stop-color="${from}"/><stop offset="1" stop-color="${to}"/></linearGradient><rect width="16" height="9" fill="url(#g)"/></svg>`,
+		)}`,
+);
+
 export const diagnosticsSample: CallDiagnosticsData = {
 	serverUrl: 'wss://livekit.example.com',
 	connectionState: 'connected',
@@ -129,6 +153,8 @@ export type CallFixture = {
 	videoQuality?: Partial<VideoQualitySelection>;
 	noiseSuppression?: Partial<NoiseSuppressionSelection>;
 	diagnostics?: CallDiagnosticsData | null;
+	/** Left out, the call offers no background effects. */
+	backgroundEffect?: Partial<BackgroundEffectSelection>;
 };
 
 const CallContexts = ({
@@ -137,6 +163,7 @@ const CallContexts = ({
 	videoQuality,
 	noiseSuppression,
 	diagnostics = null,
+	backgroundEffect,
 	children,
 }: CallFixture & { children: ReactNode }) => {
 	// Built on mount, so the call starts when the story does and the timer in a snapshot always reads zero.
@@ -145,6 +172,7 @@ const CallContexts = ({
 	const [devices] = useState(() => buildDeviceSelection(deviceSelection));
 	const [quality] = useState(() => buildVideoQuality(videoQuality));
 	const [noise] = useState(() => buildNoiseSuppression(noiseSuppression));
+	const [effect] = useState(() => backgroundEffect && buildBackgroundEffect(backgroundEffect));
 
 	return (
 		<CallStateProvider value={callState}>
@@ -152,7 +180,9 @@ const CallContexts = ({
 				<DeviceSelectionProvider value={devices}>
 					<VideoQualityProvider value={quality}>
 						<NoiseSuppressionProvider value={noise}>
-							<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+							<BackgroundEffectContext.Provider value={effect}>
+								<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+							</BackgroundEffectContext.Provider>
 						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>
@@ -172,6 +202,7 @@ export const withCall =
 			videoQuality={fixture.videoQuality}
 			noiseSuppression={fixture.noiseSuppression}
 			diagnostics={fixture.diagnostics}
+			backgroundEffect={fixture.backgroundEffect}
 		>
 			<Story />
 		</CallContexts>

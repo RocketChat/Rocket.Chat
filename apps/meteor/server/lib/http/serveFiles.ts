@@ -20,7 +20,7 @@ export const resolveInstalledFile = (specifier: string): string => nodeRequire.r
 
 export type ServedFile = () => string;
 
-const CONTENT_TYPES: Record<string, string> = { '.js': 'text/javascript', '.wasm': 'application/wasm' };
+const CONTENT_TYPES: Record<string, string> = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.jpg': 'image/jpeg' };
 
 const isUnchanged = (ifModifiedSince: string | undefined, mtime: Date) => {
 	const since = ifModifiedSince ? Date.parse(ifModifiedSince) : NaN;
