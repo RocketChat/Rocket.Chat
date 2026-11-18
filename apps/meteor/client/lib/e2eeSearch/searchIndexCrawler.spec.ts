@@ -785,6 +785,29 @@ describe('createSearchIndexCrawler', () => {
 			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 1 });
 			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
 		});
+
+		const noMore = { next: null, previous: null };
+
+		it('saves the progress kept in memory once the room has its key, so the next start does not read the room again', async () => {
+			let hasKey = false;
+			const { crawler, backend } = await setup({
+				pages: [
+					{ updated: [encrypted('m3', NOW - 1000), encrypted('m2', NOW - 2000)], deleted: [], cursor: noMore },
+					{ updated: [encrypted('m4', NOW + 5000)], deleted: [], cursor: noMore },
+					{ updated: [], deleted: [], cursor: noMore },
+				],
+				undecryptable: new Set(['m2', 'm4']),
+				hasRoomKey: async () => hasKey,
+			});
+			await crawler.backfillRoomPage('room1', { waitForKey: false });
+			await untilDone(() => crawler.catchUpRoomPage('room1', { waitForKey: false }));
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW - 1000, backfillDone: false });
+
+			// A key without the old one: m2 and m4 still fail, and they never decrypt in this room.
+			hasKey = true;
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 0 });
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW + 5000, backfillDone: true });
+		});
 	});
 
 	describe('addPendingDecrypt', () => {

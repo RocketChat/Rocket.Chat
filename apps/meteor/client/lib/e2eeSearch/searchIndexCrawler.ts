@@ -195,6 +195,25 @@ export const createSearchIndexCrawler = ({
 		return ids.length;
 	};
 
+	// Once the room has its key, a message that still fails needs an old key that does not come back: the progress kept in memory is saved.
+	const saveProgressOnceKeyed = async (rid: string) => {
+		const backfill = unsavedBackfill.get(rid);
+		const lastUpdate = unsavedLastUpdate.get(rid);
+		if (backfill === undefined && lastUpdate === undefined) return;
+		if (!(await hasRoomKey(rid))) return;
+
+		const { backfillCursor, ...state }: E2EESearchRoomState = (await backend.getRoomState(rid)) ?? { backfillDone: false };
+		const cursor = backfill ? !backfill.done && backfill.cursor : backfillCursor;
+		await backend.setRoomState(rid, {
+			...state,
+			...(lastUpdate !== undefined && { lastUpdate }),
+			...(backfill && { backfillDone: backfill.done }),
+			...(cursor && { backfillCursor: cursor }),
+		});
+		unsavedBackfill.delete(rid);
+		unsavedLastUpdate.delete(rid);
+	};
+
 	return {
 		async backfillRoomPage(rid, { waitForKey = false } = {}) {
 			const state: E2EESearchRoomState = (await backend.getRoomState(rid)) ?? { backfillDone: false };
@@ -314,8 +333,9 @@ export const createSearchIndexCrawler = ({
 
 		async retryPendingDecrypt(rid) {
 			const pending = pendingOf(rid);
-			if (!pending.length) return { indexed: 0 };
-			return { indexed: (await decryptAll(pending)).indexed };
+			const { indexed } = pending.length ? await decryptAll(pending) : { indexed: 0 };
+			await saveProgressOnceKeyed(rid);
+			return { indexed };
 		},
 
 		addPendingDecrypt(message) {
