@@ -1,5 +1,5 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
+import { Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
-import CallHistoryState from './layout/CallHistoryState';
 import ContextualbarStatus from '../../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../../components/ListViewport';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
@@ -50,23 +49,17 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						<Throbber size='x12' />
 					</ContextualbarStatus>
 				)}
-				{(total === 0 || error) && (
-					<CallHistoryState>
-						{error && (
-							<States>
-								<StatesIcon name='circle-exclamation' variation='danger' />
-								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
-							</States>
-						)}
-						{!loading && total === 0 && (
-							<ContextualbarEmptyContent
-								icon='phone'
-								title={t('No_history')}
-								subtitle={t('There_is_no_video_conference_history_in_this_room')}
-							/>
-						)}
-					</CallHistoryState>
+				{error && (
+					<ContextualbarStatus>
+						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
+					</ContextualbarStatus>
+				)}
+				{!loading && total === 0 && (
+					<ContextualbarEmptyContent
+						icon='phone'
+						title={t('No_history')}
+						subtitle={t('There_is_no_video_conference_history_in_this_room')}
+					/>
 				)}
 				<ListViewport>
 					{videoConfs.length > 0 && (
