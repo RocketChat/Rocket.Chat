@@ -103,6 +103,7 @@ Departures from the documented Tamagui way. Empty is the goal; every row is a de
 | What | Why the documented way can't do it | Alternative considered | Decision | PR |
 | --- | --- | --- | --- | --- |
 | The Vite build dedupes the zero stylesheet (`dedupeTopLevelRules` in `apps/meteor/vite/vite.config.mts` keeps the last copy of each identical top-level rule) | Tamagui's compiler emits the same atomic rules once per module | No dedupe: about +7 kB gzip on the pilot (25.7 to 19.0 kB, 3851 to 1621 rules) | Keep; parity proven on all 581 pilot stories | On `develop` |
+| `@tamagui/web` is patched so a theme or token variable keeps its full name (`createVariable`, `getThemeCSSRules`, `helpers/variables`) | Tamagui shortens the name a theme rule declares at 41 characters and the name a compiled class reads at 61, so a key in between is declared under a name nothing reads | Restrict theme keys to 41 characters or fewer: only keys of 42 to 61 characters hit the mismatch, but renaming them would stop them matching the token names. Left as a future task, which lets the patch go | Keep for now | With the dual-client foundation |
 
 ## Precedents
 
