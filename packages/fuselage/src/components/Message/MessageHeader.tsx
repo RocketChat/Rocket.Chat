@@ -1,12 +1,15 @@
 import type { HTMLAttributes } from 'react';
 
+import { MessageHeaderContext } from './MessageContext';
 import { cx } from '../../helpers/composeClassNames';
 import ItemRow from '../Item/ItemRow';
 
 export type MessageHeaderProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageHeader = ({ className, ...props }: MessageHeaderProps) => (
-	<ItemRow {...props} className={cx('rcx-message-header', className)} />
+	<MessageHeaderContext.Provider value>
+		<ItemRow {...props} className={cx('rcx-message-header', className)} />
+	</MessageHeaderContext.Provider>
 );
 
 export default MessageHeader;
