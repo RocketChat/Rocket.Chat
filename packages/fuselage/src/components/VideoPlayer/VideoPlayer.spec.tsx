@@ -53,4 +53,14 @@ describe('[VideoPlayer Component]', () => {
 		expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
 	});
+
+	it('reloads when the source changes', () => {
+		const { container, rerender } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		expect(HTMLMediaElement.prototype.load).not.toHaveBeenCalled();
+		rerender(<Default src='https://example.com/other.mp4' />);
+		expect(HTMLMediaElement.prototype.load).toHaveBeenCalledTimes(1);
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+	});
 });

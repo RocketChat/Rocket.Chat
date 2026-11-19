@@ -89,6 +89,17 @@ const VideoPlayer = ({
 		return () => ownerDocument.removeEventListener('fullscreenchange', onChange);
 	}, [ownerDocument]);
 
+	// A changed `<source>` is ignored until the element reloads.
+	const loadedSource = useRef({ src, type });
+	useEffect(() => {
+		if (loadedSource.current.src === src && loadedSource.current.type === type) return;
+		loadedSource.current = { src, type };
+		setStarted(false);
+		setLoading(false);
+		setError(false);
+		videoRef.current?.load();
+	}, [src, type]);
+
 	const wakeControls = () => {
 		setPointerActive(true);
 		clearTimeout(hideTimer.current);
