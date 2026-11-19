@@ -20,6 +20,7 @@ The agent reuses the `users` collection. The existing fields `_id`, `username`, 
 | `agent.status` | `'active' \| 'suspended'` | Default `active` (FR-046). |
 | `agent.credentialIssuedAt` | `Date` | Set at registration and at each rotation. |
 | `agent.postWindow` | `{ start: Date; count: number }` | The FR-050 counter (RQ-3). Internal. No endpoint returns it. |
+| `agent.refusalAuditAt` | `{ rest?: Date; 'ddp-method'?: Date; 'ddp-subscription'?: Date }` | The last audited refusal per entry point (FR-055, D-17). Internal. No endpoint returns it. |
 
 ### State transitions
 
@@ -51,6 +52,8 @@ issued ──revoke──▶ none ──rotate──▶ issued
 | `unsetAgentOwnerByOwnerId(ownerId)` | Runs on owner deletion (D-11). |
 | `replaceAgentCredential(id, hashedToken, issuedAt)` | Removes every login token and adds one PAT (rotation). |
 | `incrementAgentPostCount(id, windowStart)` | Counts a post inside the window atomically, and returns the new count. It resets the count when the window changes. |
+| `claimAgentRefusalAuditSlot(id, entryPoint, now)` | Sets `agent.refusalAuditAt.<entryPoint>` to `now` only when it is unset or older than 60 s. It returns `true` when it wrote (D-17). |
+| `findAgentIds(options)` | Lists every agent id, for the forced logout when the MCP server turns off (D-18). |
 
 Revocation reuses `Users.unsetLoginTokens(userId)`.
 
@@ -79,6 +82,26 @@ effectiveScope(agent) =
 ```
 
 Room check per call: `room ∈ agent.allowedRoomIds`, or the room is a direct message and the agent is a member.
+
+The computation and `AGENT_TOOLS` live in `packages/authorization/src/agents/`, so the REST guard and the DDP stream checks in both deployments use one rule (D-16).
+
+## Entry points (FR-053, FR-054)
+
+| Entry point | Agent credential | Check |
+|-------------|------------------|-------|
+| `POST /api/v1/mcp` | Accepted | The MCP route checks, then the guard on each loopback call. |
+| Any other REST route | Refused with `error-agent-mcp-only`, unless the request carries the dispatch secret | The guard (D-15). |
+| REST `login`, the login screen | Refused | `canAgentLogIn` (D-13). |
+| DDP `login` with `resume` | Accepted | `canAgentLogIn` (D-13). |
+| DDP methods other than `login` | Refused with `error-agent-mcp-only` | `checkAgentDdpCall` (D-16). |
+| DDP `stream-room-messages`, `stream-notify-room` | Accepted per room | `Authorization.canAgentReadRoomEvents` (D-16). |
+| Other DDP subscriptions | Refused | `checkAgentDdpCall` (D-16). |
+
+## DDP session field
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `Session.userType` | `string \| undefined` | In `@rocket.chat/ddp-server`. The login method sets it from the login result. It is not stored. |
 
 ## Agent tool table entry (`AGENT_TOOLS`, code constant)
 
@@ -152,6 +175,7 @@ The reply-mode filter (D-10) runs in the endpoint, not in the model.
 | `agent.suspended`, `agent.reactivated` | agent id | admin or owner |
 | `agent.deleted` | agent id | admin |
 | `agent.call.denied` | agent id, route, tool, reason (`capability`, `room`, `suspended`, `rate`), room id | system |
+| `agent.entry.refused` | agent id, entry point (`rest`, `ddp-method`, `ddp-subscription`), route, method, or stream name | system. At most one per agent per entry point per minute (FR-055). |
 | `agent.approval.created` | approval id, agent id, room id | the agent |
 | `agent.approval.decided` | approval id, decision | the approver |
 | `agent.approval.expired` | approval id | system |
