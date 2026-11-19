@@ -1,0 +1,31 @@
+apps/meteor/server/configuration/configureSMTP.test.ts
+  s_7a7122163f9515::t_a63e655b1e2ac1 8,14-15,49-50,54,56
+.changeset/account-emails-through-mailer.md
+  s_7a7122163f9515::t_140480558b618a 1-5
+apps/meteor/server/configuration/configureSMTP.ts
+  s_7a7122163f9515::t_c1c8f34d938d3a 4-5,9-11,13
+packages/model-typings/src/models/IUsersModel.ts
+  s_7a7122163f9515::t_0745ad360be1d6 596-599,661
+  s_7a7122163f9515::t_8941b6b115acf1 13-14
+packages/models/src/models/Users.ts
+  s_7a7122163f9515::t_0745ad360be1d6 3146-3153,3539-3541
+  s_7a7122163f9515::t_282a02f91f4748 5,13,3542
+packages/core-typings/src/IUser.ts
+  s_7a7122163f9515::t_0745ad360be1d6 67-79,84-85,89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d33a39acee7649aa7da68980e3f3e71d55eca858",
+  "prompts": {},
+  "sessions": {
+    "s_7a7122163f9515": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bdfd6493-c52f-495a-9a97-ab6ed25f84d1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
