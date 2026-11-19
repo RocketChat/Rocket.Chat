@@ -65,7 +65,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await exportMessages();
 
 	const promises: Promise<void>[] = [];
-	for await (const attachmentData of fullFileList) {
+	for (const attachmentData of fullFileList) {
 		promises.push(copyFileUpload(attachmentData, assetsPath));
 	}
 	await Promise.all(promises);

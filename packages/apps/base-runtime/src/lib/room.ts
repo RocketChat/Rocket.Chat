@@ -98,7 +98,7 @@ export class Room {
 	public async getUsernames(): Promise<Array<string>> {
 		// Get usernames
 		if (typeof this._USERNAMES === 'undefined') {
-			this._USERNAMES = this[PrivateManager]?.getBridges().getInternalBridge().doGetUsernamesOfRoomById(this.id!);
+			this._USERNAMES = this[PrivateManager]?.getBridges().getInternalBridge().doGetUsernamesOfRoomById(this.id);
 		}
 
 		return (await this._USERNAMES) || [];

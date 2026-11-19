@@ -1,5 +1,5 @@
 import { Field, FieldLabel, FieldRow, TextInput, Box, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { ContextualbarScrollableContent, ContextualbarFooter, useEndpointUploadMutation, useSingleFileInput } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, type UploadResult } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ChangeEvent } from 'react';
@@ -8,8 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import { validate } from './lib';
 import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
-import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 export type AddCustomSoundProps = {
 	goToNew: (_id: string) => () => void;

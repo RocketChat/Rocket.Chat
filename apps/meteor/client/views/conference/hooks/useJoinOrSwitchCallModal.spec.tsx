@@ -20,7 +20,7 @@ const leave = jest.fn(() => ({ success: true }) as any);
  * The hook decides from the joinable list, so a test that fires before that list arrives proves nothing — it
  * would take the "no other call" path every time. This waits for the data, then hands back the join function.
  */
-const renderJoin = async (calls: JoinableVideoConference[]) => {
+const prepareJoin = async (calls: JoinableVideoConference[]) => {
 	const { result } = renderHook(
 		() => {
 			// Through `useJoinableCalls` rather than handed the fixture directly: what the hook is given is what a
@@ -58,7 +58,7 @@ beforeEach(() => {
 });
 
 it('joins straight away when the user is in no other call', async () => {
-	const join = await renderJoin([call({ callId: 'wanted' })]);
+	const join = await prepareJoin([call({ callId: 'wanted' })]);
 
 	await join('wanted');
 
@@ -72,7 +72,7 @@ describe('when the user is already in another call', () => {
 	const calls = [call({ callId: 'current', name: 'Standup', joined: true }), call({ callId: 'wanted' })];
 
 	it('asks first, naming the call it would leave', async () => {
-		const join = await renderJoin(calls);
+		const join = await prepareJoin(calls);
 
 		await join('wanted');
 
@@ -97,7 +97,7 @@ describe('when the user is already in another call', () => {
 				}) as any,
 		);
 
-		const join = await renderJoin(calls);
+		const join = await prepareJoin(calls);
 
 		await join('wanted');
 
@@ -114,7 +114,7 @@ describe('when the user is already in another call', () => {
 	});
 
 	it('does nothing at all if the user changes their mind', async () => {
-		const join = await renderJoin(calls);
+		const join = await prepareJoin(calls);
 
 		await join('wanted');
 
@@ -129,7 +129,7 @@ describe('when the user is already in another call', () => {
 	it('stays put, and says so where it was asked, when the leave fails', async () => {
 		leave.mockRejectedValueOnce(new Error('nope'));
 
-		const join = await renderJoin([call({ callId: 'current', joined: true, name: 'Daily standup' }), call({ callId: 'wanted' })]);
+		const join = await prepareJoin([call({ callId: 'current', joined: true, name: 'Daily standup' }), call({ callId: 'wanted' })]);
 
 		await join('wanted');
 		await userEvent.click(screen.getByRole('button', { name: 'Join' }));
@@ -152,7 +152,7 @@ describe('when the user is already in another call', () => {
 				}) as any,
 		);
 
-		const join = await renderJoin(calls);
+		const join = await prepareJoin(calls);
 
 		await join('wanted');
 		await userEvent.click(await screen.findByRole('button', { name: 'Join' }));
@@ -181,7 +181,7 @@ describe('when the user is already in another call', () => {
 				}) as any,
 		);
 
-		const join = await renderJoin([
+		const join = await prepareJoin([
 			call({ callId: 'current', name: 'Standup', joined: true }),
 			call({ callId: 'wanted' }),
 			call({ callId: 'other' }),
@@ -205,7 +205,7 @@ describe('when the user is already in another call', () => {
 
 	// Clicking the call they are already in shouldn't offer to leave it in order to rejoin it.
 	it('does not ask when the call being joined is the one they are in', async () => {
-		const join = await renderJoin(calls);
+		const join = await prepareJoin(calls);
 
 		await join('current');
 

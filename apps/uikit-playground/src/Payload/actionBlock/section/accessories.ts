@@ -30,3 +30,11 @@ export const sectionWithUsersSelect: readonly LayoutBlock[] = [
 		accessory: { ...ids, type: 'users_select', initial_user: 'rocket.cat' },
 	},
 ];
+
+export const sectionWithExternalSelect: readonly LayoutBlock[] = [
+	{
+		type: 'section',
+		text: { type: 'mrkdwn', text: 'Which project?' },
+		accessory: { ...ids, type: 'external_select', min_query_length: 2 },
+	},
+];

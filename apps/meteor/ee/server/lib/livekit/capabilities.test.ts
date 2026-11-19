@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 
 import { LIVEKIT_CAPABILITIES } from './capabilities';
 
@@ -11,7 +12,6 @@ import { LIVEKIT_CAPABILITIES } from './capabilities';
  *
  * The registry reads `server/settings`, whose top-level await this runner cannot load, hence the stub.
  */
-const proxyquire = require('proxyquire');
 
 const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire
 	.noCallThru()

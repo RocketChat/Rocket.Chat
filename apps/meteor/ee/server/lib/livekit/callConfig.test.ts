@@ -1,9 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-const proxyquire = require('proxyquire');
 
 const findOneById = sinon.stub();
 const canAccessConference = sinon.stub();
@@ -19,7 +19,6 @@ const { getCallConfig } = proxyquire.noCallThru().load('./callConfig', {
 			error = sinon.stub();
 		},
 	},
-	'@rocket.chat/models': { VideoConference: { findOneById } },
 	'./config': { isLiveKitFullyConfigured, isLiveKitLicensed, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
 	'./token': { createLiveKitAccessToken },
 	'../../../../server/settings': { settings: { get: settingsGet } },
@@ -28,6 +27,10 @@ const { getCallConfig } = proxyquire.noCallThru().load('./callConfig', {
 const user = { _id: 'uid', name: 'Real Name', username: 'user.name' };
 
 describe('getCallConfig', () => {
+	before(() => {
+		mockModel('VideoConference', { findOneById });
+	});
+
 	beforeEach(() => {
 		[findOneById, canAccessConference, isLiveKitFullyConfigured, isLiveKitLicensed, createLiveKitAccessToken, settingsGet].forEach((stub) =>
 			stub.reset(),

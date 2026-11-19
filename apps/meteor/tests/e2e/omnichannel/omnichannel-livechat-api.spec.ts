@@ -8,7 +8,10 @@ import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
+import { createCustomField } from '../utils/omnichannel/custom-field';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
+import { createMonitor } from '../utils/omnichannel/monitors';
+import { createOrUpdateUnit } from '../utils/omnichannel/units';
 import { test, expect } from '../utils/test';
 
 // TODO: Use official widget typing once that is merged
@@ -34,7 +37,7 @@ declare const window: Window & {
 			registerGuest: (visitor: { name: string; email: string; token: string }) => void;
 			setAgent: (agent: { username: string; _id: string }) => void;
 			setBusinessUnit: (businessUnit?: string) => void;
-			setCustomField: (field: { key: string; value: string }) => void;
+			setCustomField: (key: string, value: string, overwrite?: boolean) => void;
 			setDepartment: (dep: string) => void;
 			setGuestEmail: (email: string) => void;
 			setGuestName: (name: string) => void;
@@ -127,15 +130,6 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
-		test.skip('OC - Livechat API - setAgent', async () => {
-			// Set agent does not actually set the agent, it just sets the default agent on the widget state
-			// Maybe that is used in an integration? Since as it is now, when the user starts a chat, the agent will be overriden
-			// TODO: Find the use case of the setAgent method
-			await test.step('Expect setAgent to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setAgent({ username: 'user1', _id: 'user1' }));
-			});
-		});
-
 		test('OC - Livechat API - setLanguage', async () => {
 			await test.step('Expect language to be pt-BR', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -222,13 +216,6 @@ test.describe('OC - Livechat API', () => {
 			// 	await expect(page.frameLocator('#rocketchat-iframe').getByText('CustomTitle')).toBeVisible();
 			// });
 		});
-
-		test.skip('OC - Livechat API - setParentUrl', async () => {
-			// TODO: check how to test this, not sure there is a clear indication of parent url changes
-			await test.step('Expect setParentUrl to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setParentUrl('http://localhost:3000'));
-			});
-		});
 	});
 
 	test.describe('Complex Widget Interactions', () => {
@@ -305,32 +292,160 @@ test.describe('OC - Livechat API', () => {
 		// setParentUrl
 		// setTheme
 
-		test.skip('OC - Livechat API - clearBusinessUnit', async () => {
-			// TODO: check how to test this, and if this is working as intended
-			await test.step('Expect clearBusinessUnit to do something', async () => {
+		test.describe('OC - Livechat API - business unit', () => {
+			let unitDepartment: Awaited<ReturnType<typeof createDepartment>>;
+			let otherDepartment: Awaited<ReturnType<typeof createDepartment>>;
+			let unit: Awaited<ReturnType<typeof createOrUpdateUnit>>;
+			let monitor: Awaited<ReturnType<typeof createMonitor>>;
+
+			test.beforeAll(async ({ api }) => {
+				[unitDepartment, otherDepartment] = await Promise.all([
+					createDepartment(api, { showOnRegistration: true }),
+					createDepartment(api, { showOnRegistration: true }),
+				]);
+				await Promise.all(
+					[unitDepartment, otherDepartment].map(({ data }) => addAgentToDepartment(api, { department: data, agentId: agent.data._id })),
+				);
+				monitor = await createMonitor(api, 'user2');
+				unit = await createOrUpdateUnit(api, {
+					monitors: [{ monitorId: 'user2', username: 'user2' }],
+					departments: [{ departmentId: unitDepartment.data._id }],
+				});
+			});
+
+			test.afterAll(async ({ api }) => {
+				await unit?.delete();
+				await monitor?.delete();
+				await api.post('/settings/Omnichannel_enable_department_removal', { value: true });
+				await Promise.all([unitDepartment?.delete(), otherDepartment?.delete()]);
+				await api.post('/settings/Omnichannel_enable_department_removal', { value: false });
+			});
+
+			test('OC - Livechat API - setBusinessUnit', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(1);
+
+				await poLiveChat.page.evaluate((unitId) => window.RocketChat.livechat.setBusinessUnit(unitId), unit.data._id);
+
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(0);
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: unitDepartment.data.name })).toHaveCount(1);
+			});
+
+			test('OC - Livechat API - clearBusinessUnit', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(1);
+				await poLiveChat.page.evaluate((unitId) => window.RocketChat.livechat.setBusinessUnit(unitId), unit.data._id);
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(0);
+
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearBusinessUnit());
+
+				await expect(poLiveChat.selectDepartment.getByRole('option', { name: otherDepartment.data.name })).toHaveCount(1);
 			});
 		});
 
-		test.skip('OC - Livechat API - setBusinessUnit', async () => {
-			// TODO
-			await test.step('Expect setBusinessUnit to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setBusinessUnit());
+		test('OC - Livechat API - setAgent', async ({ browser }) => {
+			const { page: agent2Page } = await createAuxContext(browser, Users.user2);
+			pageContext = agent2Page;
+			const poAgent2 = new HomeOmnichannel(agent2Page);
+			const visitor = createFakeVisitor();
+			const departmentA = departments[0].data;
+
+			await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.setDepartment(depId), departmentA._id);
+			await poLiveChat.page.evaluate(({ _id, username }) => window.RocketChat.livechat.setAgent({ _id, username }), {
+				_id: agent2.data._id,
+				username: agent2.data.username,
+			});
+			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+			await poLiveChat.sendMessage(visitor, false);
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+			await test.step('Expect the chat to go to the agent that was set', async () => {
+				await poAgent2.navbar.openChat(visitor.name);
+				await expect(poAgent2.content.channelHeader).toContainText(visitor.name);
+			});
+
+			await test.step('Expect the department agent not to get the chat', async () => {
+				await poAuxContext.poHomeOmnichannel.navbar.typeSearch(visitor.name);
+				await expect(poAuxContext.poHomeOmnichannel.navbar.getSearchRoomByName(visitor.name)).not.toBeVisible();
 			});
 		});
 
-		test.skip('OC - Livechat API - setCustomField', async () => {
-			// TODO
-			await test.step('Expect setCustomField to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField({ key: 'test', value: 'test' }));
-			});
+		test('OC - Livechat API - setCustomField', async ({ api }) => {
+			const { customField, delete: deleteCustomField } = await createCustomField(api, { field: `field_${faker.string.alpha(8)}` });
+			const registerGuestVisitor = createFakeVisitorRegistration();
+
+			try {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start chat')).not.toBeVisible();
+
+				const customFieldResponse = page.waitForResponse('**/api/v1/livechat/custom.field');
+				await poLiveChat.page.evaluate((key) => window.RocketChat.livechat.setCustomField(key, 'custom-value'), customField._id);
+				await customFieldResponse;
+
+				const response = await api.get(`/livechat/visitor/${registerGuestVisitor.token}`);
+				const { visitor } = await response.json();
+				expect(visitor.livechatData?.[customField._id]).toBe('custom-value');
+			} finally {
+				await deleteCustomField();
+			}
 		});
 
-		test.skip('OC - Livechat API - clearDepartment', async () => {
-			// TODO
-			await test.step('Expect clearDepartment to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearDepartment());
+		test('OC - Livechat API - setParentUrl', async ({ api }) => {
+			const triggerMessage = `Trigger for ${faker.string.uuid()}`;
+			const triggerResponse = await api.post('/livechat/triggers', {
+				name: triggerMessage,
+				description: '',
+				enabled: true,
+				runOnce: false,
+				conditions: [{ name: 'page-url', value: 'integration-page' }],
+				actions: [{ name: 'send-message', params: { name: '', msg: triggerMessage, sender: 'queue' } }],
 			});
+			expect(triggerResponse.status()).toBe(200);
+			const { triggers } = await (await api.get('/livechat/triggers')).json();
+			const trigger = triggers.find(({ name }: { name: string }) => name === triggerMessage);
+			expect(trigger).toBeDefined();
+
+			try {
+				await poLiveChat.goto();
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setParentUrl('http://localhost/integration-page'));
+
+				await expect(page.frameLocator('#rocketchat-iframe').getByText(triggerMessage)).toBeVisible();
+			} finally {
+				await api.delete(`/livechat/triggers/${trigger._id}`);
+			}
+		});
+
+		test('OC - Livechat API - clearDepartment keeps the department of a registered guest', async ({ api, browser }) => {
+			const { page: agent2Page } = await createAuxContext(browser, Users.user2);
+			pageContext = agent2Page;
+			const departmentB = departments[1].data;
+			const registerGuestVisitor = createFakeVisitorRegistration({ department: departmentB._id });
+
+			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+			await poLiveChat.page.evaluate(
+				(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+				registerGuestVisitor,
+			);
+			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
+
+			const visitorResponse = page.waitForResponse(
+				(response) => response.url().endsWith('/api/v1/livechat/visitor') && response.request().postDataJSON()?.visitor?.department === '',
+			);
+			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearDepartment());
+			await visitorResponse;
+
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+
+			const response = await api.get('/livechat/rooms', { roomName: registerGuestVisitor.name });
+			const { rooms } = await response.json();
+			expect(rooms[0]?.departmentId).toBe(departmentB._id);
 		});
 
 		test.describe('OC - Livechat API - setDepartment', () => {
@@ -600,7 +715,7 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
-		test.skip('OC - Livechat API - setGuestEmail', async () => {
+		test('OC - Livechat API - setGuestEmail', async () => {
 			const registerGuestVisitor = createFakeVisitorRegistration();
 			// Start chat
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -613,22 +728,27 @@ test.describe('OC - Livechat API', () => {
 
 			await expect(page.frameLocator('#rocketchat-iframe').getByText('Start chat')).not.toBeVisible();
 
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 			await test.step('Expect setGuestEmail to change a guest email', async () => {
+				const visitorResponse = page.waitForResponse(
+					(response) =>
+						response.url().endsWith('/api/v1/livechat/visitor') &&
+						response.request().postDataJSON()?.visitor?.email === `changed${registerGuestVisitor.email}`,
+				);
 				await poLiveChat.page.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.setGuestEmail(`changed${registerGuestVisitor.email}`),
 					registerGuestVisitor,
 				);
+				await visitorResponse;
 			});
 
-			await test.step('Expect registered guest to have valid info', async () => {
+			await test.step('Expect the agent to see the new email in the contact info', async () => {
 				await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
-				// For some reason the guest info email information is being set to lowercase
-				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.infoContactEmail).toHaveText(
+				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.textContactEmails).toContainText(
 					`changed${registerGuestVisitor.email}`.toLowerCase(),
 				);
 			});
@@ -909,20 +1029,6 @@ test.describe('OC - Livechat API', () => {
 							window.RocketChat.livechat.showWidget();
 						}),
 				);
-			});
-		});
-
-		test.skip('OC - Livechat API - onServiceOffline', async () => {
-			// TODO: Not sure how to test this, need to check if playwright has a way to mock a server disconnect
-			await test.step('Expect onServiceOffline to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.onServiceOffline(() => console.log('onServiceOffline')));
-			});
-		});
-
-		test.skip('OC - Livechat API - onQueuePositionChange', async () => {
-			// TODO
-			await test.step('Expect onQueuePositionChange to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.onQueuePositionChange(() => console.log('onQueuePositionChange')));
 			});
 		});
 	});

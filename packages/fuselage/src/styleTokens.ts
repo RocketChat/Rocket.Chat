@@ -91,7 +91,7 @@ const paletteColorRegex = /^(neutral|blue|green|yellow|red|orange|purple)-(\d+)(
 
 /** Resolves a stroke color that is only known at runtime, such as a `Box` prop; anything else falls back to `color`. */
 export const resolveStrokeColor = memoize((value) => {
-	const colorName = `stroke-${value}`;
+	const colorName = `stroke-${String(value)}`;
 	if (isStrokeColor(colorName)) {
 		return strokeColors[colorName].toString();
 	}
@@ -100,7 +100,7 @@ export const resolveStrokeColor = memoize((value) => {
 
 /** Resolves a background color that is only known at runtime, such as a `Box` prop; anything else falls back to `color`. */
 export const resolveBackgroundColor = memoize((value) => {
-	const colorName = `surface-${value}`;
+	const colorName = `surface-${String(value)}`;
 
 	if (isSurfaceColor(value)) {
 		return surfaceColors[value].toString();
@@ -130,7 +130,7 @@ export const resolveBackgroundColor = memoize((value) => {
 
 /** Resolves a text color that is only known at runtime, such as a `Box` prop; anything else falls back to `color`. */
 export const resolveFontColor = memoize((value) => {
-	const colorName = `font-${value}`;
+	const colorName = `font-${String(value)}`;
 	if (isTextIconColor(colorName)) {
 		return textIconColors[colorName].toString();
 	}

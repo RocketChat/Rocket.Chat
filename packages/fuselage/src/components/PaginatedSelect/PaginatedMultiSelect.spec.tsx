@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { createRef } from 'react';
 
 import PaginatedMultiSelect from './PaginatedMultiSelect';
@@ -10,8 +10,8 @@ describe('[PaginatedMultiSelect Component]', () => {
 	it('should attach the consumer ref to its root', () => {
 		const ref = createRef<HTMLDivElement>();
 
-		const { container } = render(<PaginatedMultiSelect ref={ref} options={[]} onChange={jest.fn()} />);
+		render(<PaginatedMultiSelect ref={ref} data-testid='root' options={[]} onChange={jest.fn()} />);
 
-		expect(ref.current).toBe(container.firstElementChild);
+		expect(ref.current).toBe(screen.getByTestId('root'));
 	});
 });

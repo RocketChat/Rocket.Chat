@@ -1,8 +1,7 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { SHA256 } from '@rocket.chat/sha256';
-import { hash as bcryptHash } from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
@@ -109,7 +108,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	private async insertUserBatch(users: IUser[], { afterBatchFn }: IConversionCallbacks): Promise<string[]> {
-		let newIds: string[] | null = null;
+		let newIds: string[];
 
 		try {
 			newIds = Object.values((await Users.insertMany(users, { ordered: false })).insertedIds);
@@ -329,7 +328,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	async hashPassword(password: string): Promise<string> {
-		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
+		return hashPassword(password);
 	}
 
 	generateTempPassword(userData: IImportUser): string {

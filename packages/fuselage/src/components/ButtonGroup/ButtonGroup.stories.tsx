@@ -52,31 +52,6 @@ const Template: StoryFn<typeof ButtonGroup> = (args) => (
 	</ButtonGroup>
 );
 
-const TemplateMultiple: StoryFn<typeof ButtonGroup> = (args) => (
-	<ButtonGroup {...args}>
-		<Button>Button 1</Button>
-		<Button>Button 2</Button>
-		<Button>Button 3</Button>
-		<Button>Button 4</Button>
-		<Button>Button 5</Button>
-		<Button>Button 6</Button>
-		<Button>Button 7</Button>
-		<Button>Button 8</Button>
-		<Button>Button 9</Button>
-		<Button>Button 10</Button>
-		<Button>Button 11</Button>
-		<Button>Button 12</Button>
-		<Button>Button 13</Button>
-		<Button>Button 14</Button>
-		<Button>Button 15</Button>
-		<Button>Button 16</Button>
-		<Button>Button 17</Button>
-		<Button>Button 18</Button>
-		<Button>Button 19</Button>
-		<Button>Button 20</Button>
-	</ButtonGroup>
-);
-
 export const Default: Story = {
 	render: Template,
 };
@@ -96,7 +71,13 @@ export const Small: Story = {
 };
 
 export const Wrap: Story = {
-	render: TemplateMultiple,
+	render: (args) => (
+		<ButtonGroup {...args}>
+			{Array.from({ length: 20 }, (_, i) => (
+				<Button key={i}>Button {i + 1}</Button>
+			))}
+		</ButtonGroup>
+	),
 	args: {
 		wrap: true,
 	},

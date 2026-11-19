@@ -1,16 +1,19 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { tamaguiPlugin } from '@tamagui/vite-plugin';
 import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
 import postcssCustomProperties from 'postcss-custom-properties';
 import postcssEasyImport from 'postcss-easy-import';
 import postcssMediaMinmax from 'postcss-media-minmax';
 import postcssNested from 'postcss-nested';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
 import { staticBox } from './staticBox/plugin';
@@ -135,6 +138,91 @@ const nativeModules = (): Plugin => {
 	};
 };
 
+// Keeps the last copy of each identical top-level rule or `@media` block, which the zero stylesheet repeats once per
+// frame that uses them: the last copy is the one that wins the cascade, so the stylesheet resolves the same without
+// the others.
+const dedupeTopLevelRules = (css: string) => {
+	const root = postcss.parse(css);
+	const seen = new Set<string>();
+	for (const node of [...(root.nodes ?? [])].reverse()) {
+		const key = node.toString();
+		if (seen.has(key)) {
+			node.remove();
+		} else {
+			seen.add(key);
+		}
+	}
+	return root.toString();
+};
+
+// Vite serves component stylesheets as `<style>` tags appended to `<head>` in dev, after the zero stylesheet's link;
+// the built page lists the zero stylesheet last. Moving the link to the end of `<body>` gives dev the same order.
+const zeroStylesheetLastInDev = (): Plugin => ({
+	name: 'rocketchat-zero-stylesheet-last-in-dev',
+	apply: 'serve',
+	// Runs after Tamagui's own `post` plugin, which injects the link.
+	enforce: 'post',
+	transformIndexHtml: {
+		order: 'post',
+		handler(html) {
+			const link = html.match(/<link\b[^>]*href="[^"]*tamagui-zero\.css"[^>]*>/);
+			if (!link || !html.includes('</body>')) {
+				return html;
+			}
+			return html.replace(link[0], '').replace('</body>', `${link[0]}\n</body>`);
+		},
+	},
+});
+
+// Moves Tamagui's zero-runtime stylesheet into the bundle under a content hash, linked from `index.html` and listed
+// with the entry's stylesheets in the manifest, so `index.html` and the bundle load without anything else.
+const zeroStylesheetInBundle = (): Plugin => {
+	let config: ResolvedConfig;
+
+	return {
+		name: 'rocketchat-zero-stylesheet-in-bundle',
+		apply: 'build',
+		configResolved(resolved) {
+			config = resolved;
+		},
+		// Tamagui writes the stylesheet when the bundle closes.
+		closeBundle: {
+			order: 'post',
+			sequential: true,
+			handler() {
+				const { assetsDir } = config.build;
+				const outDir = resolve(config.root, config.build.outDir);
+				const written = join(outDir, 'tamagui-zero.css');
+				if (!existsSync(written)) {
+					throw new Error(`Tamagui's zero-runtime stylesheet is missing from ${outDir}`);
+				}
+
+				const css = dedupeTopLevelRules(readFileSync(written, 'utf8'));
+				const file = `${assetsDir}/tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
+				writeFileSync(join(outDir, file), css);
+				rmSync(written);
+
+				const indexHtml = join(outDir, 'index.html');
+				const html = readFileSync(indexHtml, 'utf8');
+				const href = `href="${config.base}tamagui-zero.css"`;
+				if (!html.includes(href)) {
+					throw new Error(`index.html does not link Tamagui's zero-runtime stylesheet as ${href}`);
+				}
+				writeFileSync(indexHtml, html.replace(href, `href="${config.base}${file}"`));
+
+				const manifestFile = join(outDir, '.vite/manifest.json');
+				const manifest = JSON.parse(readFileSync(manifestFile, 'utf8')) as Record<string, { isEntry?: boolean; css?: string[] }>;
+				for (const chunk of Object.values(manifest)) {
+					if (chunk.isEntry) chunk.css = [...(chunk.css ?? []), file];
+				}
+				writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+			},
+		},
+	};
+};
+
+const fuselageRoot = resolve(appRoot, '../../packages/fuselage');
+
 // Routes the running Rocket.Chat server answers; everything else is served by Vite.
 const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3100';
 
@@ -191,6 +279,9 @@ const serverRoutes = [
 	'^/[^?]*\\?(hash|meteor_js_resource|meteor_css_resource)=',
 	'^/(packages|app)/[0-9a-f]+\\.map$',
 	'/__meteor__',
+	// Federation: other homeservers reach the server through the dev origin.
+	'/_matrix',
+	'/.well-known/matrix',
 ];
 
 // Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.
@@ -307,9 +398,9 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-conference',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
+	'@rocket.chat/ui-registration',
 	'@rocket.chat/ui-video-conf',
 	'@rocket.chat/ui-voip',
-	'@rocket.chat/web-ui-registration',
 ];
 
 export default defineConfig({
@@ -326,6 +417,18 @@ export default defineConfig({
 		...(servedByServer ? [] : [nativeModules()]),
 		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
 		devPage(),
+		// Fuselage's `styled()` frames compile to static classes and CSS, so no Tamagui code ships to the browser.
+		// `components` stays empty: warming up Fuselage evaluates its stylesheets outside this config and fails.
+		tamaguiPlugin({
+			config: join(fuselageRoot, 'src/tamagui.config.ts'),
+			components: [],
+			// The compiler only transforms the JSX under Vite's root; Fuselage's sources sit outside it.
+			appSourceDirs: [join(fuselageRoot, 'src')],
+			outputCSS: './.tamagui/zero/tamagui-zero.css',
+			experimental: { zeroRuntime: true },
+		}),
+		zeroStylesheetLastInDev(),
+		zeroStylesheetInBundle(),
 	],
 	resolve: {
 		alias: [
@@ -366,6 +469,8 @@ export default defineConfig({
 		port: Number(process.env.PORT) || 3000,
 		// Same default as the Meteor server this replaces in dev.
 		host: process.env.BIND_IP || '0.0.0.0',
+		// Comma-separated hostnames to accept behind a reverse proxy (e.g. a federation test domain).
+		allowedHosts: process.env.RC_DEV_ALLOWED_HOSTS?.split(','),
 		strictPort: true,
 		proxy: {
 			...Object.fromEntries(serverRoutes.map((route) => [route, proxyTo()])),

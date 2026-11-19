@@ -1,4 +1,4 @@
-import { removeEmpty } from './removeEmpty';
+import { removeEmpty } from './removeEmpty.js';
 
 describe('removeEmpty', () => {
 	it('should remove null props', () => {

@@ -3,6 +3,8 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import { MediaCallProvider as MediaCallProviderBase } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 
+import VoipSoundsProvider from './VoipSoundsProvider';
+
 export type MediaCallProviderProps = { children: ReactNode };
 
 const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
@@ -13,7 +15,11 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const enabled = hasModule && (canMakeInternalCall || canMakeExternalCall);
 
-	return <MediaCallProviderBase enabled={enabled}>{children}</MediaCallProviderBase>;
+	return (
+		<VoipSoundsProvider>
+			<MediaCallProviderBase enabled={enabled}>{children}</MediaCallProviderBase>
+		</VoipSoundsProvider>
+	);
 };
 
 export default MediaCallProvider;

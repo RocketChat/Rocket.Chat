@@ -193,6 +193,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		ts: Filter<IMessage>['ts'],
 		users: string[],
 		ignoreThreads: boolean,
+		excludeIds: string[],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	findVisibleByRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -337,6 +338,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,
+		excludeIds?: string[],
 	): Promise<string[]>;
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined>;
@@ -368,4 +370,17 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	countStarred(options?: CountDocumentsOptions): Promise<number>;
 	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment): Promise<Document | UpdateResult>;
 	clearFilesByMessageIds(_ids: string[]): Promise<Document | UpdateResult>;
+	findByDiscussionIdsOrQuotingInRoomIds<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		drids: IRoom['_id'][],
+		messageLinkPattern: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	replaceQuotedFileAttachmentsByMessageIds(
+		_ids: string[],
+		messageLinkPattern: string,
+		replaceWith: MessageAttachment,
+	): Promise<Document | UpdateResult>;
 }

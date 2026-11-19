@@ -44,6 +44,7 @@ export default async function videoConferenceHandler(request: RequestContext): P
 
 		logger.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- result of the app's provider method invoked as a bare Function, passed through to the host as the JSON-RPC result
 		return result;
 	} catch (e) {
 		logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);

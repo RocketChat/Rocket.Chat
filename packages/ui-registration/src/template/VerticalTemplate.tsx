@@ -1,0 +1,35 @@
+import { LayoutLogoImage, VerticalWizardLayout, VerticalWizardLayoutTitle, VerticalWizardLayoutFooter } from '@rocket.chat/layout';
+import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
+
+import LoginPoweredBy from '../components/LoginPoweredBy';
+import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
+import LoginTerms from '../components/LoginTerms';
+import { RegisterTitle } from '../components/RegisterTitle';
+
+export type VerticalTemplateProps = { children: ReactNode };
+
+const VerticalTemplate = ({ children }: VerticalTemplateProps) => {
+	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
+	const customLogo = useAssetWithDarkModePath('logo');
+	const customBackground = useAssetWithDarkModePath('background');
+
+	return (
+		<VerticalWizardLayout
+			background={customBackground}
+			logo={!hideLogo && customLogo ? <LayoutLogoImage src={customLogo} alt='Logo' /> : <></>}
+		>
+			<VerticalWizardLayoutTitle>
+				<RegisterTitle />
+			</VerticalWizardLayoutTitle>
+			<LoginPoweredBy />
+			{children}
+			<VerticalWizardLayoutFooter>
+				<LoginTerms />
+				<LoginSwitchLanguageFooter />
+			</VerticalWizardLayoutFooter>
+		</VerticalWizardLayout>
+	);
+};
+
+export default VerticalTemplate;

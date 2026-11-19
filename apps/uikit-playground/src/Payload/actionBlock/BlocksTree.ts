@@ -16,9 +16,15 @@ import {
 	actionWithDateTimePicker,
 	actionWithLinearScale,
 } from './action';
+import { alert } from './alert';
+import { card, carousel } from './card';
+import { container, containerCollapsed, containerWithHeaderDivider, layoutThreeColumns, layoutWithGridLines } from './containerLayout';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { contextActions, contextActionsWithFeedback } from './contextActions';
+import { dataTable } from './dataTable';
+import { dataVisualizationPie, dataVisualizationBar, dataVisualizationArea, dataVisualizationLine } from './dataVisualization';
 import { divider } from './divider';
+import { file, inputWithFileInput } from './file';
 import { header } from './header';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import { infoCardPlain, infoCardMultipleRows } from './infoCard';
@@ -38,6 +44,7 @@ import {
 } from './input';
 import { markdown } from './markdown';
 import { previewPlain, previewWithImage, previewWithUrl, previewWithImageAndUrl } from './preview';
+import { richText, inputWithRichTextInput } from './richText';
 import {
 	sectionWithPlainText,
 	sectionWithMrkdwn,
@@ -55,8 +62,10 @@ import {
 	sectionWithRadioButtons,
 	sectionWithCheckbox,
 	sectionWithUsersSelect,
+	sectionWithExternalSelect,
 } from './section';
 import { table } from './table';
+import { taskCard, plan } from './taskCard';
 import { video } from './video';
 import { actionWithCheckbox } from '../action/checkbox';
 import { actionWithRadioButton } from '../action/radioButton';
@@ -230,6 +239,10 @@ const BlocksTree: Item = [
 				label: 'users select',
 				payload: sectionWithUsersSelect,
 			},
+			{
+				label: 'external select',
+				payload: sectionWithExternalSelect,
+			},
 		],
 	},
 	{
@@ -252,6 +265,10 @@ const BlocksTree: Item = [
 				payload: previewWithImageAndUrl,
 			},
 		],
+	},
+	{
+		label: 'file',
+		payload: file,
 	},
 	{
 		label: 'info card',
@@ -304,6 +321,10 @@ const BlocksTree: Item = [
 				payload: inputWithLinearSelect,
 			},
 			{
+				label: 'file',
+				payload: inputWithFileInput,
+			},
+			{
 				label: 'number',
 				payload: inputWithNumberInput,
 			},
@@ -314,6 +335,10 @@ const BlocksTree: Item = [
 			{
 				label: 'url',
 				payload: inputWithUrlInput,
+			},
+			{
+				label: 'rich text',
+				payload: inputWithRichTextInput,
 			},
 			{
 				label: 'date time Picker',
@@ -353,11 +378,38 @@ const BlocksTree: Item = [
 		],
 	},
 	{
+		label: 'rich text',
+		branches: [
+			{
+				label: 'Release notes',
+				payload: richText,
+			},
+		],
+	},
+	{
 		label: 'table',
 		branches: [
 			{
 				label: 'Service uptime',
 				payload: table,
+			},
+		],
+	},
+	{
+		label: 'task card',
+		branches: [
+			{
+				label: 'Completed task',
+				payload: taskCard,
+			},
+		],
+	},
+	{
+		label: 'plan',
+		branches: [
+			{
+				label: 'Deployment checklist',
+				payload: plan,
 			},
 		],
 	},
@@ -369,6 +421,46 @@ const BlocksTree: Item = [
 				payload: video,
 			},
 		],
+	},
+	{
+		label: 'alert',
+		branches: [{ label: 'All levels', payload: alert }],
+	},
+	{
+		label: 'card',
+		branches: [{ label: 'Card', payload: card }],
+	},
+	{
+		label: 'data table',
+		branches: [{ label: 'Support tickets', payload: dataTable }],
+	},
+	{
+		label: 'data visualization',
+		branches: [
+			{ label: 'Pie chart', payload: dataVisualizationPie },
+			{ label: 'Bar chart', payload: dataVisualizationBar },
+			{ label: 'Area chart', payload: dataVisualizationArea },
+			{ label: 'Line chart', payload: dataVisualizationLine },
+		],
+	},
+	{
+		label: 'container',
+		branches: [
+			{ label: 'Collapsible', payload: container },
+			{ label: 'Collapsed', payload: containerCollapsed },
+			{ label: 'Header divider', payload: containerWithHeaderDivider },
+		],
+	},
+	{
+		label: 'layout',
+		branches: [
+			{ label: 'Three columns', payload: layoutThreeColumns },
+			{ label: 'Grid lines', payload: layoutWithGridLines },
+		],
+	},
+	{
+		label: 'carousel',
+		branches: [{ label: 'Carousel', payload: carousel }],
 	},
 	{
 		label: 'context_actions',

@@ -1,11 +1,17 @@
 import { after, before, beforeEach, describe, it } from 'node:test';
 
+import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IModerationAudit, IModerationReport, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { createUser, deleteUser } from '../../data/users.helper';
+import { sendSimpleMessage } from '../../data/chat.helper';
+import { updatePermission } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 const makeModerationApiRequest = async (
 	url: 'moderation.reportUser' | 'moderation.user.reportsByUserId',
@@ -811,6 +817,122 @@ describe('[Moderation]', () => {
 					expect(res.body).to.have.property('error');
 					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
+		});
+	});
+});
+
+describe('[Moderation permissions]', () => {
+	let author: TestUser<IUser>;
+	let moderator: TestUser<IUser>;
+	let moderatorCredentials: Credentials;
+	let roomId: string;
+	let dismissedMessage: IMessage;
+	let deletedMessage: IMessage;
+	let reportId: string;
+
+	const reportMessage = (messageId: string) =>
+		request.post(api('chat.reportMessage')).set(credentials).send({ messageId, description: 'permission test' }).expect(200);
+
+	const readQueries = {
+		'moderation.reportsByUsers': () => ({}),
+		'moderation.userReports': () => ({}),
+		'moderation.user.reportedMessages': () => ({ userId: author._id }),
+		'moderation.user.reportsByUserId': () => ({ userId: author._id }),
+		'moderation.reports': () => ({ msgId: dismissedMessage._id }),
+		'moderation.reportInfo': () => ({ reportId }),
+	} as const;
+
+	const readRoutes = Object.keys(readQueries) as (keyof typeof readQueries)[];
+
+	const read = (route: keyof typeof readQueries) => request.get(api(route)).set(moderatorCredentials).query(readQueries[route]());
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		author = await createUser();
+		moderator = await createUser();
+		moderatorCredentials = await login(moderator.username, password);
+
+		const room = await createRoom({ type: 'c', name: `moderation-permissions-${Date.now()}`, members: [author.username] });
+		roomId = room.body.channel._id;
+
+		const authorCredentials = await login(author.username, password);
+		dismissedMessage = (await sendSimpleMessage({ roomId, userCredentials: authorCredentials })).body.message;
+		deletedMessage = (await sendSimpleMessage({ roomId, userCredentials: authorCredentials })).body.message;
+
+		await reportMessage(dismissedMessage._id);
+		await reportMessage(deletedMessage._id);
+		await request
+			.post(api('moderation.reportUser'))
+			.set(credentials)
+			.send({ userId: author._id, description: 'permission test' })
+			.expect(200);
+
+		const reports = await request.get(api('moderation.reports')).set(credentials).query({ msgId: dismissedMessage._id }).expect(200);
+		reportId = reports.body.reports[0]._id;
+	});
+
+	after(async () => {
+		await deleteRoom({ type: 'c', roomId });
+		await deleteUser(author);
+		await deleteUser(moderator);
+	});
+
+	describe('without view-moderation-console', () => {
+		readRoutes.forEach((route) => {
+			it(`should refuse ${route}`, async () => {
+				await read(route).expect(403);
+			});
+		});
+	});
+
+	describe('with view-moderation-console and without manage-moderation-actions', () => {
+		before(() => updatePermission('view-moderation-console', ['admin', 'user']));
+
+		after(() => updatePermission('view-moderation-console', ['admin']));
+
+		readRoutes.forEach((route) => {
+			it(`should answer ${route}`, async () => {
+				await read(route).expect(200);
+			});
+		});
+
+		it('should refuse moderation.dismissReports and keep the message reports', async () => {
+			await request.post(api('moderation.dismissReports')).set(moderatorCredentials).send({ msgId: dismissedMessage._id }).expect(403);
+
+			const res = await request.get(api('moderation.reports')).set(credentials).query({ msgId: dismissedMessage._id }).expect(200);
+			expect(res.body.total).to.equal(1);
+		});
+
+		it('should refuse moderation.dismissUserReports and keep the user reports', async () => {
+			await request.post(api('moderation.dismissUserReports')).set(moderatorCredentials).send({ userId: author._id }).expect(403);
+
+			const res = await request.get(api('moderation.user.reportsByUserId')).set(credentials).query({ userId: author._id }).expect(200);
+			expect(res.body.total).to.equal(1);
+		});
+
+		it('should refuse moderation.user.deleteReportedMessages and keep the messages', async () => {
+			await request.post(api('moderation.user.deleteReportedMessages')).set(moderatorCredentials).send({ userId: author._id }).expect(403);
+
+			await request.get(api('chat.getMessage')).set(credentials).query({ msgId: deletedMessage._id }).expect(200);
+		});
+	});
+
+	describe('with manage-moderation-actions and without view-moderation-console', () => {
+		before(() => updatePermission('manage-moderation-actions', ['admin', 'user']));
+
+		after(() => updatePermission('manage-moderation-actions', ['admin']));
+
+		it('should answer moderation.dismissReports', async () => {
+			await request.post(api('moderation.dismissReports')).set(moderatorCredentials).send({ msgId: dismissedMessage._id }).expect(200);
+		});
+
+		it('should answer moderation.user.deleteReportedMessages', async () => {
+			await request.post(api('moderation.user.deleteReportedMessages')).set(moderatorCredentials).send({ userId: author._id }).expect(200);
+		});
+
+		it('should answer moderation.dismissUserReports', async () => {
+			await request.post(api('moderation.dismissUserReports')).set(moderatorCredentials).send({ userId: author._id }).expect(200);
 		});
 	});
 });

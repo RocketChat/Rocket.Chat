@@ -1,6 +1,8 @@
 export type * from './definitions';
 export { MediaCallInstanceContext, useMediaCallInstance } from './MediaCallInstanceContext';
 export { useMediaCallView } from './MediaCallViewContext';
+export { VoipSoundsContext, useVoipSounds } from './VoipSoundsContext';
+export type { VoipSoundsContextValue } from './VoipSoundsContext';
 export { usePeerAutocomplete, isFirstPeerAutocompleteOption } from './usePeerAutocomplete';
 export { useWidgetExternalControls } from './useWidgetExternalControls';
 export { usePeekMediaSessionState } from './usePeekMediaSessionState';

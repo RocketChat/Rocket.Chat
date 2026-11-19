@@ -325,7 +325,7 @@ describe('subscribe procedures', () => {
 			}),
 		);
 
-		expect(unsubPromise).resolves.toEqual({
+		await expect(unsubPromise).resolves.toEqual({
 			msg: 'nosub',
 			id: subscription.id,
 		});

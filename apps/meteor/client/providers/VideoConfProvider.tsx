@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallSoundsProvider from './CallSoundsProvider';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
@@ -53,8 +54,8 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 
 	useEffect(
 		() =>
-			VideoConfManager.on('error', (props) => {
-				const message = t(props.error?.startsWith('error-') ? props.error : 'error-videoconf-unexpected');
+			VideoConfManager.on('error', (payload) => {
+				const message = t(payload.error?.startsWith('error-') ? payload.error : 'error-videoconf-unexpected');
 				dispatchToastMessage({ type: 'error', message });
 			}),
 		[dispatchToastMessage, t],
@@ -98,7 +99,9 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			dismissOutgoing: () => setOutgoing(undefined),
 			startCall,
 			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
-			joinCall: (callId) => VideoConfManager.joinCall(callId),
+			joinCall: (callId) => {
+				void VideoConfManager.joinCall(callId);
+			},
 			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
 			rejectIncomingCall: (callId) => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: () => VideoConfManager.abortCall(),
@@ -114,10 +117,12 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	);
 
 	return (
-		<VideoConfContext.Provider value={contextValue}>
-			{children}
-			<VideoConfPopups>{outgoing}</VideoConfPopups>
-		</VideoConfContext.Provider>
+		<CallSoundsProvider>
+			<VideoConfContext.Provider value={contextValue}>
+				{children}
+				<VideoConfPopups>{outgoing}</VideoConfPopups>
+			</VideoConfContext.Provider>
+		</CallSoundsProvider>
 	);
 };
 

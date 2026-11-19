@@ -21,10 +21,10 @@ export default {
 
 export const Default: StoryObj<typeof SecurityLogDisplayModal> = {};
 
-export const system: StoryObj<typeof SecurityLogDisplayModal> = {
+export const System: StoryObj<typeof SecurityLogDisplayModal> = {
 	render: (args) => <SecurityLogDisplayModal {...args} actor={{ type: 'system', reason: 'update' }} />,
 };
 
-export const app: StoryObj<typeof SecurityLogDisplayModal> = {
+export const App: StoryObj<typeof SecurityLogDisplayModal> = {
 	render: (args) => <SecurityLogDisplayModal {...args} actor={{ type: 'app', _id: 'app-id' }} />,
 };

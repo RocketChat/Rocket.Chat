@@ -23,9 +23,10 @@ import {
 	links,
 	useCreateFontStyleElement,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useLocationHash } from '@rocket.chat/ui-contexts';
+import { useLocationHash } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { fontSizes } from './fontSizes';
 import { themeItems as themes } from './themeItems';
@@ -36,7 +37,7 @@ export type AccessibilityViewProps = {
 };
 
 const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnabled, save } }: AccessibilityViewProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const breakSpacesClassName = useStyle(css`
 		white-space: break-spaces;
 	`);

@@ -8,8 +8,9 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import OutlookSettingItem from './OutlookSettingItem';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
@@ -20,7 +21,7 @@ export type OutlookSettingsListProps = {
 };
 
 const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const notifyCalendarEvents = useUserPreference('notifyCalendarEvents') as boolean;

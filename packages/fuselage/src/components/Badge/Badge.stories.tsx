@@ -86,10 +86,30 @@ export const WithValue: Story = {
 		<Box display='inline-flex' alignItems='flex-start' gap='x16'>
 			{(
 				[
-					['secondary', <Badge variant='secondary'>99</Badge>],
-					['primary', <Badge variant='primary'>99</Badge>],
-					['danger', <Badge variant='danger'>99</Badge>],
-					['warning', <Badge variant='warning'>99</Badge>],
+					[
+						'secondary',
+						<Badge key='secondary' variant='secondary'>
+							99
+						</Badge>,
+					],
+					[
+						'primary',
+						<Badge key='primary' variant='primary'>
+							99
+						</Badge>,
+					],
+					[
+						'danger',
+						<Badge key='danger' variant='danger'>
+							99
+						</Badge>,
+					],
+					[
+						'warning',
+						<Badge key='warning' variant='warning'>
+							99
+						</Badge>,
+					],
 				] as const
 			).map(([label, badge]) => (
 				<Box key={label} display='flex' flexDirection='column' alignItems='center' gap='x4'>

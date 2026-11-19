@@ -4,6 +4,7 @@ import Form from './Form';
 import FormContainer from './FormContainer';
 import FormFooter from './FormFooter';
 import FormHeader from './FormHeader';
+import FormSkeleton from './FormSkeleton';
 import FormSteps from './FormSteps';
 import FormSubtitle from './FormSubtitle';
 import FormTitle from './FormTitle';
@@ -34,3 +35,5 @@ export const Default: StoryFn<typeof Form> = () => (
 		<FormFooter>footer</FormFooter>
 	</Form>
 );
+
+export const Skeleton: StoryFn<typeof Form> = () => <FormSkeleton />;

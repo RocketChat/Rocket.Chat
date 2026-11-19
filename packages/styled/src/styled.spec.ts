@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 
-import styled from './styled';
+import styled from './styled.js';
 
 it('should create a styled component', () => {
 	const component = styled('div')`

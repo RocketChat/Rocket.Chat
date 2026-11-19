@@ -37,7 +37,7 @@ import type {
 	IAISearchService,
 } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import { isBannedSubscription, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, type IMessage, type IRoom, type ISubscription, type IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { serverFetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
@@ -329,7 +329,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		return roomIds.filter((rid): rid is string => Boolean(rid));
 	}
 
-	private async getSubscribedRoomIdSet(userId: string, roomIds: string[]): Promise<Set<string>> {
+	private async getSubscriptionsByRoomId(userId: string, roomIds: string[]): Promise<Map<string, Pick<ISubscription, 'name' | 'fname'>>> {
 		const uniqueRoomIdSet = new Set<string>();
 		for (const roomId of roomIds) {
 			if (roomId) {
@@ -338,20 +338,20 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		}
 		const uniqueRoomIds = [...uniqueRoomIdSet];
 		if (!uniqueRoomIds.length) {
-			return new Set();
+			return new Map();
 		}
 
 		const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
-			projection: { rid: 1, status: 1 },
+			projection: { rid: 1, status: 1, name: 1, fname: 1 },
 		}).toArray();
 
-		const subscribedRoomIds = new Set<string>();
+		const subscriptionsByRoomId = new Map<string, Pick<ISubscription, 'name' | 'fname'>>();
 		for (const subscription of subscriptions) {
 			if (!isBannedSubscription(subscription)) {
-				subscribedRoomIds.add(subscription.rid);
+				subscriptionsByRoomId.set(subscription.rid, subscription);
 			}
 		}
-		return subscribedRoomIds;
+		return subscriptionsByRoomId;
 	}
 
 	private async normalizeIntelligentResults(
@@ -384,9 +384,9 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		}
 
 		const resultRoomIds = Array.from(messageMap.values(), ({ rid }) => rid);
-		const [rooms, subscribedRoomIds] = await Promise.all([
+		const [rooms, subscriptionsByRoomId] = await Promise.all([
 			this.getRoomMap(resultRoomIds),
-			this.getSubscribedRoomIdSet(userId, resultRoomIds),
+			this.getSubscriptionsByRoomId(userId, resultRoomIds),
 		]);
 
 		const normalizedResults: AISearchResult[] = [];
@@ -399,11 +399,18 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			}
 
 			const { rid } = dbMessage;
-			if (!rid || !subscribedRoomIds.has(rid)) {
+			const subscription = rid ? subscriptionsByRoomId.get(rid) : undefined;
+			if (!rid || !subscription) {
 				continue;
 			}
 
 			const room = rooms.get(rid);
+
+			if (room?.t === 'd') {
+				room.name = subscription.name;
+				room.fname = subscription.fname;
+			}
+
 			normalizedResults.push({
 				_id: result.msgId || result._id,
 				rid,
@@ -428,7 +435,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	private async getSubscribedRoomIds(userId: string, roomIds: string[]): Promise<string[]> {
-		return [...(await this.getSubscribedRoomIdSet(userId, roomIds))];
+		return [...(await this.getSubscriptionsByRoomId(userId, roomIds)).keys()];
 	}
 
 	private async getSubscribedRoomIdsByName(userId: string, roomNames: string[] = []): Promise<string[]> {

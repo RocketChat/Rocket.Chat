@@ -2,9 +2,9 @@ import { cssSupports } from '@rocket.chat/css-supports';
 import type { Element, Middleware } from 'stylis';
 import { node, RULESET, serialize } from 'stylis';
 
-import type { RuleSet } from './elements';
-import { attachDeclaration, isDeclaration, isRuleSet } from './elements';
-import { compileOperations } from './operations';
+import type { RuleSet } from './elements.js';
+import { attachDeclaration, isDeclaration, isRuleSet } from './elements.js';
+import { compileOperations } from './operations.js';
 
 export const createLogicalPropertiesMiddleware = ({
 	isPropertySupported = (property: string): boolean => cssSupports(`${property}:inherit`),

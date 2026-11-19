@@ -21,6 +21,7 @@ export const TriggerMessage = (_: TriggerMessageProps) => {
 	const handleStartChatClick = async () => {
 		parentCall('setFullScreenDocumentMobile');
 		parentCall('openWidget');
+		// oxlint-disable-next-line typescript/await-thenable -- the tick lets the restored state render before route('/') swaps the screen
 		await onRestore();
 		route('/');
 	};

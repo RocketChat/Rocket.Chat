@@ -1,4 +1,5 @@
 import type { IImport, IImportUser } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { ObjectId } from 'mongodb';
 
 const mockImportsInvalidateAllOperations = jest.fn();
@@ -13,23 +14,6 @@ const mockImportDataInsertMany = jest.fn();
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClassInternal: class {
 		protected name = '';
-	},
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	Imports: {
-		invalidateAllOperations: (...args: unknown[]) => mockImportsInvalidateAllOperations(...args),
-		insertOne: (...args: unknown[]) => mockImportsInsertOne(...args),
-		findOneById: (...args: unknown[]) => mockImportsFindOneById(...args),
-		findLastImport: (...args: unknown[]) => mockImportsFindLastImport(...args),
-		increaseTotalCount: (...args: unknown[]) => mockImportsIncreaseTotalCount(...args),
-		setOperationStatus: (...args: unknown[]) => mockImportsSetOperationStatus(...args),
-	},
-	ImportData: {
-		col: {
-			deleteMany: (...args: unknown[]) => mockImportDataDeleteMany(...args),
-			insertMany: (...args: unknown[]) => mockImportDataInsertMany(...args),
-		},
 	},
 }));
 
@@ -73,6 +57,23 @@ const createMockOperation = (overrides?: Partial<IImport>): IImport => ({
 });
 
 describe('ImportService', () => {
+	beforeAll(() => {
+		mockModel('Imports', {
+			invalidateAllOperations: (...args: unknown[]) => mockImportsInvalidateAllOperations(...args),
+			insertOne: (...args: unknown[]) => mockImportsInsertOne(...args),
+			findOneById: (...args: unknown[]) => mockImportsFindOneById(...args),
+			findLastImport: (...args: unknown[]) => mockImportsFindLastImport(...args),
+			increaseTotalCount: (...args: unknown[]) => mockImportsIncreaseTotalCount(...args),
+			setOperationStatus: (...args: unknown[]) => mockImportsSetOperationStatus(...args),
+		});
+		mockModel('ImportData', {
+			col: {
+				deleteMany: (...args: unknown[]) => mockImportDataDeleteMany(...args),
+				insertMany: (...args: unknown[]) => mockImportDataInsertMany(...args),
+			},
+		});
+	});
+
 	let service: ImportService;
 
 	beforeEach(() => {

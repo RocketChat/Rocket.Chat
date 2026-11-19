@@ -33,6 +33,7 @@ async function job(): Promise<void> {
 	const filesOnly = settings.get<boolean>('RetentionPolicy_FilesOnly');
 	const excludePinned = settings.get<boolean>('RetentionPolicy_DoNotPrunePinned');
 	const ignoreDiscussion = settings.get<boolean>('RetentionPolicy_DoNotPruneDiscussion');
+	const ignoreDiscussionOrigin = !settings.get<boolean>('RetentionPolicy_DeleteDiscussionOrigin');
 	const ignoreThreads = settings.get<boolean>('RetentionPolicy_DoNotPruneThreads');
 
 	const ignoreDiscussionQuery = ignoreDiscussion ? { prid: { $exists: false } } : {};
@@ -52,7 +53,7 @@ async function job(): Promise<void> {
 			{ projection: { _id: 1 } },
 		).toArray();
 
-		for await (const { _id: rid } of rooms) {
+		for (const { _id: rid } of rooms) {
 			await cleanRoomHistory({
 				rid,
 				latest,
@@ -60,6 +61,7 @@ async function job(): Promise<void> {
 				filesOnly,
 				excludePinned,
 				ignoreDiscussion,
+				ignoreDiscussionOrigin,
 				ignoreThreads,
 			}).catch((err) => logger.error({ msg: 'Failed to prune room', rid, err }));
 		}
@@ -75,7 +77,7 @@ async function job(): Promise<void> {
 		{ projection: { _id: 1, retention: 1 } },
 	).toArray();
 
-	for await (const { _id: rid, retention } of rooms) {
+	for (const { _id: rid, retention } of rooms) {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
 		await cleanRoomHistory({
@@ -85,6 +87,7 @@ async function job(): Promise<void> {
 			filesOnly,
 			excludePinned,
 			ignoreDiscussion,
+			ignoreDiscussionOrigin,
 			ignoreThreads,
 		}).catch((err) => logger.error({ msg: 'Failed to prune room', rid, err }));
 	}

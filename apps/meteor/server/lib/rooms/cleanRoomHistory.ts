@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { deleteRoom } from './deleteRoom';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
@@ -8,9 +9,10 @@ import { i18n } from '../i18n';
 import { SystemLogger } from '../logger/system';
 import { FileUpload } from '../media/file-upload';
 import { updateAndNotifyParentRoomWithParentMessage } from '../messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../notifyListener';
+import { notifyOnMessageChange, notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../notifyListener';
 
 const FILE_CLEANUP_BATCH_SIZE = 1000;
+const DISCUSSION_QUOTE_BATCH_SIZE = 500;
 
 async function refreshDiscussionMetadataOnParentRoom(rid: IRoom['_id']): Promise<void> {
 	try {
@@ -25,6 +27,22 @@ async function refreshDiscussionMetadataOnParentRoom(rid: IRoom['_id']): Promise
 	}
 }
 
+async function showDeletedFilesInDiscussionQuotes(
+	discussions: Pick<IRoom, '_id' | 'pmid'>[],
+	replaceWith: MessageAttachment,
+): Promise<void> {
+	const drids = discussions.map(({ _id }) => _id);
+	const messageLinkPattern = `\\?msg=(${discussions.map(({ pmid = '' }) => escapeRegExp(pmid)).join('|')})$`;
+	const quoteIds = (
+		await Messages.findByDiscussionIdsOrQuotingInRoomIds(drids, messageLinkPattern, { projection: { _id: 1 } }).toArray()
+	).map(({ _id }) => _id);
+	if (!quoteIds.length) {
+		return;
+	}
+	await Messages.replaceQuotedFileAttachmentsByMessageIds(quoteIds, messageLinkPattern, replaceWith);
+	quoteIds.forEach((id) => void notifyOnMessageChange({ id }));
+}
+
 export async function cleanRoomHistory({
 	rid = '',
 	latest = new Date(),
@@ -36,6 +54,7 @@ export async function cleanRoomHistory({
 	filesOnly = false,
 	fromUsers = [],
 	ignoreThreads = true,
+	ignoreDiscussionOrigin = false,
 }: {
 	rid?: IRoom['_id'];
 	latest?: Date;
@@ -47,6 +66,7 @@ export async function cleanRoomHistory({
 	filesOnly?: boolean;
 	fromUsers?: string[];
 	ignoreThreads?: boolean;
+	ignoreDiscussionOrigin?: boolean;
 }): Promise<number> {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
@@ -57,10 +77,24 @@ export async function cleanRoomHistory({
 
 	let fileCount = 0;
 
-	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
-		projection: { pinned: 1, files: 1 },
-		limit,
-	});
+	const discussions = await Rooms.findDiscussionsWithOriginMessageByParentRoomId(rid, { projection: { pmid: 1 } }).toArray();
+	const originIds = new Set(discussions.flatMap(({ pmid }) => (pmid ? [pmid] : [])));
+	const discussionOriginIds = ignoreDiscussion && ignoreDiscussionOrigin ? [...originIds] : [];
+	const prunedOriginIds = new Set<string>();
+
+	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion,
+		ts,
+		fromUsers,
+		ignoreThreads,
+		discussionOriginIds,
+		{
+			projection: { pinned: 1, files: 1 },
+			limit,
+		},
+	);
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
 	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
@@ -91,6 +125,9 @@ export async function cleanRoomHistory({
 		document.files && (await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id))));
 
 		fileCount++;
+		if (originIds.has(document._id)) {
+			prunedOriginIds.add(document._id);
+		}
 		if (filesOnly) {
 			targetMessageIdsForAttachmentRemoval.add(document._id);
 		}
@@ -102,6 +139,11 @@ export async function cleanRoomHistory({
 
 	if (targetMessageIdsForAttachmentRemoval.size > 0) {
 		await performFileAttachmentCleanupBatch();
+	}
+
+	const prunedDiscussions = discussions.filter(({ pmid }) => pmid && prunedOriginIds.has(pmid));
+	for (let i = 0; i < prunedDiscussions.length; i += DISCUSSION_QUOTE_BATCH_SIZE) {
+		await showDeletedFilesInDiscussionQuotes(prunedDiscussions.slice(i, i + DISCUSSION_QUOTE_BATCH_SIZE), pruneMessageAttachment);
 	}
 
 	if (filesOnly) {
@@ -158,6 +200,7 @@ export async function cleanRoomHistory({
 				Math.min(FILE_CLEANUP_BATCH_SIZE, remaining),
 				fromUsers,
 				ignoreThreads,
+				discussionOriginIds,
 			);
 			if (!batch.length) {
 				break;

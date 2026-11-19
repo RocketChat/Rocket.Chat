@@ -42,7 +42,7 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
 
 		return (
-			<Option {...props} avatar={<UserAvatar title={label} username={label} size={ITEM_MEDIA_SIZE.condensed} />}>
+			<Option {...props} avatar={<UserAvatar username={label} size={ITEM_MEDIA_SIZE.condensed} />}>
 				<Box is={OptionContent} marginInlineEnd='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
 					{label}
 				</Box>

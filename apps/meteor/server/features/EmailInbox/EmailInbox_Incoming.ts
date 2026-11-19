@@ -218,7 +218,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			}
 
 			const attachments = [];
-			for await (const attachment of email.attachments) {
+			for (const attachment of email.attachments) {
 				if (attachment.type !== 'attachment') {
 					continue;
 				}

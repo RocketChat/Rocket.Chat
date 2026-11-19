@@ -13,7 +13,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 			display='flex'
 			flexDirection='column'
 			borderWidth='default'
-			borderRadius='medium'
+			borderRadius='large'
 			borderColor='extra-light'
 			backgroundColor='surface-tint'
 			overflow='hidden'
