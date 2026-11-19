@@ -24,7 +24,7 @@ const TemplatePlaceholderSelector = ({ contact, disabled, onSelect, onOpenChange
 			onOpenChange={onOpenChange}
 			title=''
 			disabled={disabled}
-			maxWidth='100%'
+			maxWidth='full'
 			sections={[...contactSection, ...customFieldsSection, ...agentSection]}
 			placement='bottom-end'
 		/>

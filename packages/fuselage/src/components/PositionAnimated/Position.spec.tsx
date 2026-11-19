@@ -38,3 +38,29 @@ test('unmounts together with another positioned element', () => {
 	expect(unmount).not.toThrow();
 	expect(document.getElementById('position-container')).toBeNull();
 });
+
+test('gives the positioned element the width of its anchor when asked to', () => {
+	const anchor = createRef<HTMLDivElement>();
+	const tree = (positioned: boolean) => (
+		<>
+			<div ref={anchor} />
+			{positioned && (
+				<Position anchor={anchor} width='anchor'>
+					<div data-testid='as-wide' />
+				</Position>
+			)}
+			{positioned && (
+				<Position anchor={anchor}>
+					<div data-testid='own-width' />
+				</Position>
+			)}
+		</>
+	);
+
+	const { rerender } = render(tree(false));
+	Object.defineProperty(anchor.current, 'offsetWidth', { value: 240 });
+	rerender(tree(true));
+
+	expect(document.querySelector<HTMLElement>('[data-testid="as-wide"]')?.style.width).toBe('240px');
+	expect(document.querySelector<HTMLElement>('[data-testid="own-width"]')?.style.width).toBe('');
+});

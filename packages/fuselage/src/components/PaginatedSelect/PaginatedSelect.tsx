@@ -1,4 +1,4 @@
-import { useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { type ElementType, useState, useRef } from 'react';
 
 import type { OptionType, SelectOption, SelectProps } from '..';
@@ -62,7 +62,7 @@ export const PaginatedSelect = ({
 
 	const ref = useRef<HTMLInputElement>(null);
 
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const containerRef = useRef<HTMLElement>(null);
 
 	const valueLabel = option?.label;
 
@@ -114,10 +114,9 @@ export const PaginatedSelect = ({
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
 				</SelectAddon>
 			</Box>
-			<PositionAnimated visible={visible} anchor={containerRef}>
+			<PositionAnimated visible={visible} anchor={containerRef} width='anchor'>
 				<_Options
 					withTitle={withTitle}
-					width={borderBoxSize.inlineSize}
 					role='listbox'
 					filter={filter}
 					options={options}
