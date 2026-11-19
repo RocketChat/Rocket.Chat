@@ -31,6 +31,10 @@ const labelFrame = {
 	minHeight: 'auto',
 	cursor: 'default',
 	color: '$rcx-font-default',
+	fontSize: '0.875rem',
+	lineHeight: '1.25rem',
+	fontWeight: '500',
+	letterSpacing: 0,
 } as const;
 
 const labelDisabled = {

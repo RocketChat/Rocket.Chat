@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { literal } from './lib/literal.mts';
 import type { Target } from './lib/target.mts';
 import { textFrameDefaults } from './lib/textFrameDefaults.mts';
-import { offScale, space, themed } from './lib/tokens.mts';
+import { fontScale, offScale, space, themed } from './lib/tokens.mts';
 
 const component = (file: string) => join(import.meta.dirname, '../../src/components/Label', file);
 
@@ -18,6 +18,7 @@ const generateLabel = () => {
 		minHeight: 'auto',
 		cursor: 'default',
 		color: themed('font-default'),
+		...fontScale('p2m'),
 	};
 
 	const required = {

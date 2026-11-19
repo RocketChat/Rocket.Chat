@@ -29,6 +29,10 @@ const fieldHintFrame = {
 	minHeight: 'auto',
 	marginBlock: 2,
 	color: '$rcx-font-secondary-info',
+	fontSize: '0.75rem',
+	lineHeight: '1rem',
+	fontWeight: '400',
+	letterSpacing: 0,
 } as const;
 
 // end of generated
