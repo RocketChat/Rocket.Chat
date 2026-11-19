@@ -2,10 +2,10 @@ import { hashPassword } from '@rocket.chat/account-utils';
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
+import { insertUser } from '../../../auth/insertUser';
 import { callbacks as systemCallbacks } from '../../../callbacks';
 import { notifyOnUserChange } from '../../../notifyListener';
 import { addUserToDefaultChannels } from '../../../rooms/addUserToDefaultChannels';
@@ -400,10 +400,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	async insertUser(userData: IImportUser): Promise<IUser['_id']> {
 		const user = await this.buildNewUserObject(userData);
 
-		return Accounts.insertUserDoc(
+		return insertUser(
 			{
 				joinDefaultChannels: false,
-				skipEmailValidation: true,
 				skipAdminCheck: true,
 				skipAdminEmail: true,
 				skipOnCreateUserCallback: this._options.skipUserCallbacks,

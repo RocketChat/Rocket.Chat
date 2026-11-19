@@ -357,7 +357,7 @@ export class CustomOAuthStrategy extends Strategy {
 	}
 }
 
-Accounts.validateNewUser((user: IUser & { email: string }) => {
+export const applyCustomOAuthUserFields = (user: Partial<IUser> & { email?: string }) => {
 	for (const [name, instance] of CustomOAuthInstances) {
 		const service = user.services?.[name as keyof NonNullable<IUser['services']>];
 		if (!service?.id) {
@@ -379,9 +379,7 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 			user.name = service.name;
 		}
 	}
-
-	return true;
-});
+};
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 
