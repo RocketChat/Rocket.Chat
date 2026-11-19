@@ -14,7 +14,7 @@ const loginErrorCallback = sandbox.stub();
 let configureOAuthServices: any;
 
 before(async () => {
-	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } });
+	mock.module('../auth/updateOrCreateUserFromExternalService', { exports: { updateOrCreateUserFromExternalService } });
 	mock.module('passport', { exports: { default: { use: sandbox.stub(), unuse: sandbox.stub(), authenticate } } });
 	mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sandbox.stub() } });
 	mock.module('./passportOAuthCallback', {
