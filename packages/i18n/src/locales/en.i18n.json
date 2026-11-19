@@ -3069,6 +3069,7 @@
   "File_URL": "File URL",
   "Files": "Files",
   "files": "files",
+  "Files_cannot_be_attached_while_editing": "Files can't be attached while editing a message",
   "Files_list": "Files list",
   "Files_only": "Only remove the attached files, keep messages",
   "FileSize_Bytes": "{{fileSize}} Bytes",

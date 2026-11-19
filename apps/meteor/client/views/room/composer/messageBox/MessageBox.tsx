@@ -3,7 +3,7 @@ import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscripti
 import { useContentBoxSize, useStableCallback, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerInputExpandable } from '@rocket.chat/ui-composer';
-import { useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
@@ -70,6 +70,7 @@ const MessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
@@ -338,7 +339,12 @@ const MessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			handleUploadFiles?.(files);
+
+			if (isEditing) {
+				dispatchToastMessage({ type: 'error', message: t('Files_cannot_be_attached_while_editing') });
+			} else {
+				handleUploadFiles?.(files);
+			}
 		}
 	});
 
