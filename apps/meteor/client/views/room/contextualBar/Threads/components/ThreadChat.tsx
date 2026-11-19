@@ -95,11 +95,10 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 
 	return (
-		// The caller's own props before the drop target's, so no caller can take `onDragEnter` off it by accident.
-		<ContextualbarContent flush {...boxProps} {...fileUploadTriggerProps}>
+		<ContextualbarContent flush {...boxProps}>
 			<DateListProvider>
 				<DropTargetOverlay {...fileUploadOverlayProps} />
-				<ThreadChatSection>
+				<ThreadChatSection onDragEnter={fileUploadTriggerProps.onDragEnter} onDragLeave={fileUploadTriggerProps.onDragLeave}>
 					<MessageListErrorBoundary>
 						<ThreadMessageList
 							mainMessage={mainMessage}

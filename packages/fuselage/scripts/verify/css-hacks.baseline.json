@@ -144,12 +144,12 @@
 		"displayContents": 0
 	},
 	"Contextualbar/Contextualbar.styles.scss": {
-		"rules": 16,
-		"nested": 15,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Divider/Divider.styles.scss": {
