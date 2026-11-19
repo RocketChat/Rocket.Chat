@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode, Ref } from 'react';
 import { createRef } from 'react';
 
+import Item from './components/Item/Item';
 import './tamagui.config';
 
 const Frame = styled(View, { render: 'div' });
@@ -52,6 +53,21 @@ describe('a ref on the render element of a frame', () => {
 		render(<Row elementRef={(node) => void seen.push(node)} tick={0} />);
 
 		expect(seen[0]).toBe(screen.getByTestId('el'));
+	});
+});
+
+describe('a ref on an Item', () => {
+	it('is attached once for a stable callback ref, however often the parent renders', () => {
+		const calls: (string | null)[] = [];
+		const ref = (node: HTMLElement | null) => {
+			calls.push(node ? 'el' : null);
+		};
+
+		const { rerender } = render(<Item ref={ref}>Row</Item>);
+		rerender(<Item ref={ref}>Row again</Item>);
+		rerender(<Item ref={ref}>Row once more</Item>);
+
+		expect(calls).toEqual(['el']);
 	});
 });
 

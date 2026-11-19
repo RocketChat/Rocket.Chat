@@ -22,7 +22,7 @@ const OngoingCallItem = ({ href, icon, title, subtitle, time, actions, onOpen }:
 	};
 
 	return (
-		<Item inset='md'>
+		<Item inset='md' interactive>
 			<ItemContent>
 				<ItemRow>
 					{icon}

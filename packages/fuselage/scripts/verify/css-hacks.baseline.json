@@ -234,12 +234,12 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 92,
-		"nested": 61,
-		"combinators": 10,
+		"rules": 24,
+		"nested": 7,
+		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 6,
-		"negativeMargins": 2,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Listbox/Listbox.styles.scss": {
@@ -306,11 +306,11 @@
 		"displayContents": 0
 	},
 	"Message/MessageSystem/MessageSystem.styles.scss": {
-		"rules": 4,
+		"rules": 5,
 		"nested": 3,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -328,16 +328,16 @@
 		"nested": 37,
 		"combinators": 10,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 4,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 9,
+		"rules": 10,
 		"nested": 8,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
@@ -373,7 +373,7 @@
 		"nested": 23,
 		"combinators": 1,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -423,11 +423,11 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 46,
-		"nested": 45,
+		"rules": 50,
+		"nested": 49,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 7,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -445,7 +445,7 @@
 		"nested": 21,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -472,7 +472,7 @@
 		"nested": 6,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
