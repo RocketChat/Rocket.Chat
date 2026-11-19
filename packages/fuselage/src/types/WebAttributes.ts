@@ -61,3 +61,8 @@ export type WebButtonProps<TContract> = WebProps<TContract, HTMLButtonElement> &
 	WebPressAlias<HTMLButtonElement> &
 	WebInteractionHandlers<HTMLButtonElement> &
 	Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'title' | 'name' | 'value' | 'tabIndex'>;
+
+/** A contract as a web renderer that is always a `span` and only shows something takes it. */
+export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & {
+	title?: string;
+};
