@@ -2,6 +2,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../lib/SDKClient';
+import { forgetSavedUploads } from '../lib/chats/uploads';
 import { onLoggedIn } from '../lib/loggedIn';
 import { clearStoredCredentials, ensureConnectedAndAuthenticated, getDdpSdk, isAuthError } from '../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem } from '../lib/sdk/storage';
@@ -115,6 +116,7 @@ Users.use.subscribe(() => {
 
 getDdpSdk().account.onLogout(() => {
 	removeLocalUserData();
+	forgetSavedUploads();
 	status = undefined;
 });
 
