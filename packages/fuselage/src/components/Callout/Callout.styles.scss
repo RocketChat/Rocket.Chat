@@ -91,6 +91,9 @@ $callout-border-radius: theme('callout-border-radius', lengths.border-radius(med
 		overflow: hidden;
 		flex-flow: column nowrap;
 
+		// The large wrapper is a row: without this, content that spreads across its width stops at its own size.
+		flex-grow: 1;
+
 		> :nth-child(2) {
 			margin-block-start: lengths.margin(4);
 		}

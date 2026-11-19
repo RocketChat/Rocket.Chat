@@ -3,6 +3,7 @@ import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } fro
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
+import { subscriptionRemovals } from '../lib/e2eeSearch/subscriptionRemovals';
 import { Rooms, Subscriptions } from '../stores';
 
 class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
@@ -74,6 +75,11 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 
 			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
 		};
+	}
+
+	// A removal that the live stream already applied is not in the store any more, so it has no rid and is not sent twice.
+	protected override handleSyncEvent(action: 'removed' | 'changed', record: SubscriptionWithRoom): void {
+		if (action === 'removed' && record.rid) subscriptionRemovals.emit('removed', { rid: record.rid });
 	}
 
 	async upsertSubscription(record: ISubscription): Promise<void> {

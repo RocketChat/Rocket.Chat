@@ -11,6 +11,8 @@ export const useResetE2EPasswordMutation = ({ options }: { options?: MutationOpt
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
+		// The local search index is not wiped here. The new key cannot open it, and the desktop app replaces it at the next
+		// open, when the server has another public key for the user. This also covers a reset on another device.
 		mutationFn: async () => resetE2eKey({}),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('E2EE_password_reset') });

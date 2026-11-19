@@ -285,11 +285,13 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
+						// A removal can carry only `_id` and `_deletedAt`: the stored record gives the listener the rest.
+						const removed = this.store.getState().get(newRecord._id) ?? newRecord;
 						this.store.getState().delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
-						this.handleSyncEvent('removed', newRecord);
+						this.handleSyncEvent('removed', removed);
 					},
 					timestamp: actionTime.getTime(),
 				});

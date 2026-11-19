@@ -97,6 +97,8 @@ export class E2ERoom extends Emitter {
 
 	sessionKeyExported: Aes.Jwk | undefined;
 
+	private oldRoomKeysLoaded: Promise<void> = Promise.resolve();
+
 	constructor(userId: string, room: IRoom) {
 		super();
 
@@ -106,13 +108,19 @@ export class E2ERoom extends Emitter {
 		this.roomKeyId = room.e2eKeyId;
 
 		this.once('READY', async () => {
-			await this.decryptOldRoomKeys();
+			this.oldRoomKeysLoaded = this.decryptOldRoomKeys();
+			await this.oldRoomKeysLoaded;
 			return this.decryptPendingMessages();
 		});
 		this.once('READY', () => this.decryptSubscription());
 		this.on('STATE_CHANGED', () => this.handshake());
 
 		this.setState('NOT_STARTED');
+	}
+
+	/** Resolves when the old room keys, which the first `READY` loads, are in memory. */
+	whenOldRoomKeysLoaded(): Promise<void> {
+		return this.oldRoomKeysLoaded;
 	}
 
 	hasSessionKey() {
@@ -228,7 +236,11 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
+		// The client has no message stream for a room that is not open. Its last message is how a new message of that room
+		// reaches the local search index as it arrives.
+		const indexDecrypted = e2e.bindSearchIndex();
 		const message = await this.decryptMessage(lastMessage);
+		indexDecrypted(message);
 
 		if (message.msg !== subscription.lastMessage?.msg) {
 			span.info('decryptSubscriptions updating lastMessage');
@@ -759,10 +771,14 @@ export class E2ERoom extends Emitter {
 			...message,
 			msg: typeof data.msg === 'string' ? data.msg : message.msg,
 			e2e: 'done' as const,
+			...(data.decryptFailed && { decryptFailed: true as const }),
 		};
 	}
 
-	async decrypt(message: string | EncryptedContent): Promise<Pick<Partial<IMessage>, 'attachments' | 'files' | 'file' | 'msg'>> {
+	/** `decryptFailed` is set when the key is missing or wrong: `msg` is then the placeholder text, not the message. */
+	async decrypt(
+		message: string | EncryptedContent,
+	): Promise<Pick<Partial<IMessage>, 'attachments' | 'files' | 'file' | 'msg'> & { decryptFailed?: true }> {
 		const span = log.span('decrypt').set('rid', this.roomId);
 		const payload = decodeEncryptedContent(message);
 		span.set('payload', payload);
@@ -772,7 +788,7 @@ export class E2ERoom extends Emitter {
 
 		if (!key) {
 			span.error('No decryption key found.');
-			return { msg: t('E2E_indecipherable') };
+			return { msg: t('E2E_indecipherable'), decryptFailed: true };
 		}
 		span.set('algorithm', key.algorithm.name);
 		span.set('extractable', key.extractable);
@@ -780,11 +796,14 @@ export class E2ERoom extends Emitter {
 		span.set('usages', key.usages.toString());
 		try {
 			const result = await Aes.decrypt(key, { iv, ciphertext });
-			const ret: unknown = EJSON.parse(result);
-			if (typeof ret !== 'object' || ret === null) {
+			const parsed: unknown = EJSON.parse(result);
+			if (typeof parsed !== 'object' || parsed === null) {
 				span.error('Decrypted message is not an object');
-				return { msg: t('E2E_indecipherable') };
+				return { msg: t('E2E_indecipherable'), decryptFailed: true };
 			}
+
+			// `decryptFailed` is this client's marker of a failed decrypt. A field of the same name in the payload must not set it.
+			const { decryptFailed: _payloadMarker, ...ret } = parsed as { decryptFailed?: unknown };
 
 			if ('text' in ret && typeof ret.text === 'string' && !('msg' in ret)) {
 				const { text, ...rest } = ret;
@@ -799,7 +818,7 @@ export class E2ERoom extends Emitter {
 			return { ...ret };
 		} catch (error) {
 			span.set('error', error).error('Error decrypting message');
-			return { msg: t('E2E_Key_Error') };
+			return { msg: t('E2E_Key_Error'), decryptFailed: true };
 		}
 	}
 

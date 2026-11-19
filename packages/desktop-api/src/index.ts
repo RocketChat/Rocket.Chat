@@ -49,6 +49,107 @@ export type DesktopUserStatusChangeRequest = {
 	customStatusId?: string;
 };
 
+export type E2EESearchDocKind = 'text' | 'file' | 'attachment';
+
+/** One decrypted message, attachment or file name of an end-to-end encrypted room, as the local search index stores it. */
+export type E2EESearchDoc = {
+	id: string;
+	rid: string;
+	tmid?: string;
+	uid: string;
+	username: string;
+	ts: number;
+	updatedAt: number;
+	kind: E2EESearchDocKind;
+	body: string;
+};
+
+export type E2EESearchQuery = {
+	text: string;
+	rid?: string;
+	uid?: string;
+	/** The author by username, without case: for a `from:` username that the client knows no user id for. */
+	username?: string;
+	from?: number;
+	to?: number;
+	order?: 'relevance' | 'recent';
+	limit?: number;
+};
+
+export type E2EESearchHit = {
+	id: string;
+	rid: string;
+	tmid?: string;
+	/** The author, as the indexed document stores it. */
+	uid: string;
+	username: string;
+	ts: number;
+	/** HTML: the message text is escaped, and only `<mark>` tags are added. */
+	snippet: string;
+};
+
+export type E2EESearchRoomState = {
+	lastUpdate?: number;
+	backfillCursor?: string;
+	backfillDone: boolean;
+};
+
+/** `lost`: rows of the open index are gone. `changed`: the index changed outside this page. */
+export type E2EESearchIndexEvent = { type: 'lost' } | { type: 'changed' };
+
+export type E2EESearchStats = { docs: number; bytes: number; rooms: number };
+
+export type E2EESearchOpenResult = {
+	schemaVersion: number;
+	encryptedAtRest: boolean;
+	/**
+	 * True when the open had no wrap key and the server holds an E2EE key for the user (or cannot tell): the desktop app
+	 * opened no index and wrote nothing. Each index call fails until an open with the wrap key (after E2EE unlock).
+	 */
+	locked?: true;
+};
+
+export type E2EESearchScope = {
+	userId: string;
+	/**
+	 * 32 bytes derived from the user's E2EE private key, never the private key itself. With it, the index opens only for
+	 * the same key, so it survives a logout and no server can open it for another user.
+	 */
+	wrapKey?: Uint8Array;
+};
+
+/** A local full-text index of decrypted end-to-end encrypted messages. The plaintext never leaves the user's device. */
+export interface ISearchIndexBackend {
+	open(scope: E2EESearchScope): Promise<E2EESearchOpenResult>;
+	upsert(docs: E2EESearchDoc[]): Promise<void>;
+	remove(ids: string[]): Promise<void>;
+	removeRoom(rid: string): Promise<void>;
+	/**
+	 * The rooms that have rows in the index, sorted. The web client removes the rooms that the user left while the index was
+	 * closed.
+	 */
+	listRooms(): Promise<string[]>;
+	search(query: E2EESearchQuery): Promise<E2EESearchHit[]>;
+	getRoomState(rid: string): Promise<E2EESearchRoomState | undefined>;
+	setRoomState(rid: string, state: E2EESearchRoomState): Promise<void>;
+	stats(): Promise<E2EESearchStats>;
+	/**
+	 * Deletes the open index. With a scope and no open index (E2EE locked), deletes the index of that user, whom the
+	 * desktop app checks against the login session.
+	 */
+	wipe(scope?: { userId: string }): Promise<void>;
+	/**
+	 * Closes the open index and keeps it on disk, so the same user opens it again at the next login. Desktop versions
+	 * without it close the index themselves at logout.
+	 */
+	close?(): Promise<void>;
+	/**
+	 * Calls the listener when the desktop app lost rows of the open index: the user cleared it, or the index process
+	 * stopped before it saved. The web client then reads the room states again. Desktop versions without it send no event.
+	 */
+	onIndexEvent?(listener: (event: E2EESearchIndexEvent) => void): () => void;
+}
+
 /**
  * The version of this contract the web client implements. A web client that announces version 1 pushes the server info,
  * URL resolver, title, favicon, user roles, badge, login state, unread alert preference, git commit hash and Outlook
@@ -118,6 +219,8 @@ export interface IRocketChatDesktop {
 	 * nothing of the main window's but no-op setters.
 	 */
 	videoCall?: IVideoCallWindow;
+	/** Present only in desktop versions that keep a local search index of end-to-end encrypted messages. */
+	e2eeSearch?: ISearchIndexBackend;
 }
 
 /** What the desktop app's video call window offers the page loaded in it. */
