@@ -16,7 +16,7 @@ export type PrioritiesTableRowProps = {
 const PrioritiesTableRow = ({ id, name, i18n, sortItem, dirty, onClick }: PrioritiesTableRowProps) => {
 	const { t } = useTranslation();
 	return (
-		<GenericTableRow tabIndex={0} onClick={onClick} action qa-row-id={id}>
+		<GenericTableRow tabIndex={0} onClick={onClick} action data-qa-row-id={id}>
 			<GenericTableCell truncate>
 				<PriorityIcon level={sortItem} />
 			</GenericTableCell>
