@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { mediaObjectToString } from '@tamagui/web';
+
 import { tamaguiConfig } from './tamagui.config';
 
 type ParsedToken = { variable: string; val: string | number };
@@ -34,6 +36,38 @@ describe('the tokens stylesheet, which declares the tokens where no zero build d
 
 			expect(value).toBe(String(val));
 			expect(value).toMatch(/^(0|[\d.]+rem)$/);
+		}
+	});
+});
+
+describe('the conditions of a frame value', () => {
+	it('are the queries the stylesheets they replace asked, with the narrow width in rem so it follows the font size of the user', () => {
+		const queries = Object.fromEntries(Object.entries(tamaguiConfig.media).map(([name, query]) => [name, mediaObjectToString(query)]));
+
+		expect(queries).toEqual({
+			pointerCoarse: '(pointer: coarse)',
+			hoverNone: '(hover: none)',
+			reducedMotion: '(prefers-reduced-motion: reduce)',
+			narrow: '(max-width: 20rem)',
+		});
+	});
+
+	it('measure a narrow group in density-independent pixels on native, which has no rem', async () => {
+		const target = process.env.TAMAGUI_TARGET;
+		process.env.TAMAGUI_TARGET = 'native';
+
+		try {
+			await jest.isolateModulesAsync(async () => {
+				const { media } = await import('./tamagui.media');
+
+				expect(media.narrow).toEqual({ maxWidth: 320 });
+			});
+		} finally {
+			if (target === undefined) {
+				delete process.env.TAMAGUI_TARGET;
+			} else {
+				process.env.TAMAGUI_TARGET = target;
+			}
 		}
 	});
 });
