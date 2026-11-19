@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const getRoleIds = sinon.stub();
@@ -11,7 +12,7 @@ const isAdminHidingAllowed = sinon.stub();
 const checkEmailAvailability = sinon.stub();
 const checkUsernameAvailability = sinon.stub();
 
-const { validateUserData } = proxyquire.noCallThru().load('./validateUserData', {
+const { validateUserData } = loadWithMocks('./validateUserData', {
 	'./saveUser': { isUpdateUserData: (params: { _id?: string }) => '_id' in params && !!params._id },
 	'../../../settings': { settings: { get: settingsGet } },
 	'../../authorization/getRoles': { getRoleIds },
