@@ -1,0 +1,124 @@
+@use 'sass:list';
+@use 'sass:map';
+@use '../colors.scss';
+@use '../lengths.scss';
+
+$-palettes: (
+	empty: (
+		default: (
+			color: colors.font(white),
+			border: colors.stroke(dark),
+			background: colors.surface(light),
+		),
+		hover: (
+			border: colors.stroke(extra-dark),
+			background: colors.surface(light),
+		),
+		active: (
+			border: colors.stroke(extra-dark),
+			background: colors.surface(light),
+		),
+		focus: (
+			border: colors.stroke(extra-dark),
+			background: colors.surface(light),
+		),
+		disabled: (
+			color: colors.font(white),
+			border: colors.stroke(light),
+			background: colors.button(secondary-disabled),
+		),
+	),
+	off: (
+		default: (
+			color: colors.font(white),
+			border: colors.stroke(medium),
+			background: colors.stroke(medium),
+		),
+		hover: (
+			border: colors.font(hint),
+			background: colors.font(hint),
+		),
+		active: (
+			border: colors.stroke(dark),
+			background: colors.stroke(dark),
+		),
+		focus: (
+			border: colors.stroke(extra-dark),
+			background: colors.stroke(medium),
+		),
+		disabled: (
+			color: colors.button(on-secondary-disabled),
+			border: colors.button(secondary-disabled),
+			background: colors.button(secondary-disabled),
+		),
+	),
+	primary: (
+		default: (
+			color: colors.button(on-primary),
+			border: colors.button(primary-default),
+			background: colors.button(primary-default),
+		),
+		hover: (
+			border: colors.button(primary-hover),
+			background: colors.button(primary-hover),
+		),
+		active: (
+			border: colors.button(primary-press),
+			background: colors.button(primary-press),
+		),
+		focus: (
+			border: colors.stroke(extra-dark),
+			background: colors.button(primary-focus),
+		),
+		disabled: (
+			color: colors.button(on-primary-disabled),
+			border: colors.button(primary-disabled),
+			background: colors.button(primary-disabled),
+		),
+	),
+);
+
+$-states: (
+	default: '',
+	hover: ':hover',
+	active: ':active',
+	focus: ':focus',
+	disabled: ':disabled',
+);
+
+@mixin -fake-colors($palette, $values) {
+	@each $state, $pseudo-class in $-states {
+		$colors: map.get($-palettes, $palette, $state);
+		$selectors: ();
+
+		@each $value in $values {
+			$selectors: list.append($selectors, '#{&}__input#{$value}#{$pseudo-class} + #{&}__fake', comma);
+		}
+
+		@at-root #{$selectors} {
+			@if $state == disabled {
+				cursor: not-allowed;
+			}
+
+			color: map.get($colors, color);
+			border-color: map.get($colors, border);
+			background-color: map.get($colors, background);
+
+			@if $state == hover or $state == active {
+				box-shadow: none;
+			}
+
+			@if $state == focus {
+				box-shadow: 0 0 0 #{lengths.border-width(medium)} colors.shadow(highlight);
+			}
+		}
+	}
+}
+
+/// Web only. Category: the state of a hidden native input, `input:<pseudo> + fake`. The colors of the fake of a
+/// CheckBox, RadioButton or ToggleSwitch, which its frame leaves unset: `$unchecked` is `empty` or `off`, and
+/// `$checked` lists the input pseudo-classes that draw the primary palette.
+@mixin selection-states($unchecked, $checked) {
+	@include -fake-colors($unchecked, (''));
+	@include -fake-colors(primary, $checked);
+}
