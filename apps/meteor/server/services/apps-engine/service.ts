@@ -158,10 +158,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 				return;
 			}
 
-			await Apps.self
-				?.getManager()
-				?.getSettingsManager()
-				.updateAppSetting(appId, setting as any);
+			await Apps.self?.getManager()?.getSettingsManager().updateAppSetting(appId, setting);
 		});
 	}
 

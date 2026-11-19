@@ -26,7 +26,7 @@ export const useMediaPermissions = (name: MediaDevices): [isPermissionDenied: bo
 		queryFn: async () => {
 			if (navigator.permissions) {
 				try {
-					const permissionStatus = await navigator.permissions.query({ name: name as PermissionName });
+					const permissionStatus = await navigator.permissions.query({ name });
 					permissionStatus.onchange = (): void => {
 						queryClient.setQueryData(queryKey, permissionStatus.state === 'denied');
 					};
