@@ -88,7 +88,7 @@ const CreateNewScreenContainer = () => {
 									disableDelete={projects[activeProject]?.screens.map((id) => screens[id]).length <= 1}
 								/>
 							))}
-						<Icon onClick={createNewScreenhandler} size='60px' name='plus' className={plusIconClassName} />
+						<Icon onClick={createNewScreenhandler} size='x60' name='plus' className={plusIconClassName} />
 					</Box>
 				)}
 			</Box>
