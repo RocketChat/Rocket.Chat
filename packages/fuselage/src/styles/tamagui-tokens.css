@@ -40,4 +40,8 @@
 	--t-zIndex-overlap: 2;
 	--t-zIndex-sticky: 10;
 	--t-zIndex-overlay: 100;
+	--t-zIndex-dropTarget: 9996;
+	--t-zIndex-dragShield: 9997;
+	--t-zIndex-dragPreview: 9999;
+	--t-zIndex-dropIndicator: 10000;
 }
