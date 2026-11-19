@@ -1,4 +1,6 @@
-import type { AnchorHTMLAttributes, InputHTMLAttributes, MouseEvent, Ref } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, InputHTMLAttributes, MouseEvent, Ref } from 'react';
+
+import type { WebInteractionHandlers } from '../helpers/pickWebInteractionHandlers';
 
 /** The `data-*` attributes tests and the app select elements by. */
 export type WebDataAttributes = {
@@ -50,3 +52,12 @@ export type WebInputProps<TContract> = WebProps<TContract, HTMLInputElement> &
 		| 'onClick'
 		| 'onKeyDown'
 	>;
+
+/**
+ * A contract as a web renderer that is always a `button` takes it: the deprecated press alias, the handlers a trigger
+ * hands it, and the button's title, focus order and form name and value.
+ */
+export type WebButtonProps<TContract> = WebProps<TContract, HTMLButtonElement> &
+	WebPressAlias<HTMLButtonElement> &
+	WebInteractionHandlers<HTMLButtonElement> &
+	Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'title' | 'name' | 'value' | 'tabIndex'>;
