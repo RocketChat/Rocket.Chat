@@ -9,8 +9,8 @@
 		"displayContents": 0
 	},
 	"AudioPlayer/AudioPlayer.styles.scss": {
-		"rules": 7,
-		"nested": 6,
+		"rules": 5,
+		"nested": 4,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -33,15 +33,6 @@
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Badge/Badge.styles.scss": {
-		"rules": 6,
-		"nested": 5,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Banner/Banner.styles.scss": {
@@ -72,26 +63,17 @@
 		"displayContents": 0
 	},
 	"Button/Button.styles.scss": {
-		"rules": 26,
-		"nested": 22,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Button/IconButton.styles.scss": {
-		"rules": 20,
-		"nested": 12,
-		"combinators": 0,
+		"rules": 19,
+		"nested": 11,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"ButtonGroup/ButtonGroup.styles.scss": {
-		"rules": 12,
-		"nested": 11,
+		"rules": 5,
+		"nested": 4,
 		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
@@ -135,9 +117,9 @@
 		"displayContents": 0
 	},
 	"CheckBox/CheckBox.styles.scss": {
-		"rules": 10,
-		"nested": 9,
-		"combinators": 3,
+		"rules": 8,
+		"nested": 7,
+		"combinators": 2,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -153,8 +135,8 @@
 		"displayContents": 0
 	},
 	"Chip/Chip.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -233,6 +215,15 @@
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
+	"Icon/Icon.styles.css": {
+		"rules": 1,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"InputBox/InputBox.styles.scss": {
 		"rules": 35,
 		"nested": 26,
@@ -252,8 +243,8 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 92,
-		"nested": 61,
+		"rules": 88,
+		"nested": 60,
 		"combinators": 10,
 		"important": 0,
 		"specificityBumps": 6,
@@ -297,12 +288,12 @@
 		"displayContents": 0
 	},
 	"Message/MessageMetrics/MessageMetrics.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+		"rules": 5,
+		"nested": 4,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Message/MessageReactions/MessageReactions.styles.scss": {
@@ -342,9 +333,9 @@
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 39,
-		"nested": 37,
-		"combinators": 10,
+		"rules": 41,
+		"nested": 39,
+		"combinators": 12,
 		"important": 0,
 		"specificityBumps": 1,
 		"negativeMargins": 0,
@@ -423,8 +414,8 @@
 		"displayContents": 0
 	},
 	"RadioButton/RadioButton.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
@@ -513,9 +504,9 @@
 		"displayContents": 0
 	},
 	"SplitButton/SplitButton.styles.scss": {
-		"rules": 9,
-		"nested": 7,
-		"combinators": 2,
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -566,15 +557,6 @@
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
-	"Tag/Tag.styles.scss": {
-		"rules": 17,
-		"nested": 15,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Text/Text.styles.scss": {
 		"rules": 5,
 		"nested": 1,
@@ -612,8 +594,8 @@
 		"displayContents": 0
 	},
 	"ToggleSwitch/ToggleSwitch.styles.scss": {
-		"rules": 6,
-		"nested": 5,
+		"rules": 4,
+		"nested": 3,
 		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
