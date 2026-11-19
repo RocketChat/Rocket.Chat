@@ -1,5 +1,5 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
-import { Callout, IconButton, Text } from '@rocket.chat/fuselage';
+import { Box, Callout, IconButton, Text } from '@rocket.chat/fuselage';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,19 +42,22 @@ const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) =
 			{roomIndexed && (
 				<Callout
 					type='success'
-					title={t('E2E_Local_Search_Room_Indexed_Title')}
+					// The toggle sits in the title row: the actions of a narrow callout take a row of their own.
+					title={
+						<Box display='flex' alignItems='center' justifyContent='space-between'>
+							{t('E2E_Local_Search_Room_Indexed_Title')}
+							<IconButton
+								icon={detailsShown ? 'chevron-up' : 'chevron-down'}
+								size='mini'
+								title={detailsShown ? t('Collapse') : t('Expand')}
+								aria-expanded={detailsShown}
+								aria-controls={detailsId}
+								onClick={() => setDetailsShown((shown) => !shown)}
+							/>
+						</Box>
+					}
 					role='status'
 					data-qa='local-search-room-indexed'
-					actions={
-						<IconButton
-							icon={detailsShown ? 'chevron-up' : 'chevron-down'}
-							size='small'
-							title={detailsShown ? t('Collapse') : t('Expand')}
-							aria-expanded={detailsShown}
-							aria-controls={detailsId}
-							onClick={() => setDetailsShown((shown) => !shown)}
-						/>
-					}
 				>
 					{detailsShown && (
 						<Text is='p' id={detailsId}>
