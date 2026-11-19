@@ -1,8 +1,11 @@
 import type { BackgroundTransformer } from '@livekit/track-processors';
 
-type CategoryMask = { width: number; height: number; getAsWebGLTexture(): WebGLTexture };
+type SegmentationMask = { width: number; height: number; getAsWebGLTexture(): WebGLTexture };
 
 type InitOptions = Parameters<BackgroundTransformer['init']>[0];
+
+/** Which confidence mask to read, and whether it scores the person rather than the background the compositor expects. */
+const CONFIDENCE_MASK = { index: 0, scoresPerson: true };
 
 /** How much of the previous mask each frame keeps: higher steadies the edges but makes them trail movement. */
 const MASK_SMOOTHING = 0.5;
@@ -21,7 +24,7 @@ uniform float u_smoothing;
 out vec4 fragColor;
 void main() {
 	ivec2 texel = ivec2(gl_FragCoord.xy);
-	float raw = texelFetch(u_raw, texel, 0).r;
+	float raw = ${CONFIDENCE_MASK.scoresPerson ? '1.0 - ' : ''}texelFetch(u_raw, texel, 0).r;
 	fragColor = vec4(mix(raw, texelFetch(u_previous, texel, 0).r, u_smoothing), 0.0, 0.0, 1.0);
 }`;
 
@@ -40,7 +43,7 @@ const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
 	return shader;
 };
 
-/** Averages each segmentation mask with the ones before it, at the mask's own resolution. */
+/** Averages each confidence mask with the ones before it, at the mask's own resolution, scoring the background. */
 class MaskSmoother {
 	private readonly program: WebGLProgram;
 
@@ -82,7 +85,7 @@ class MaskSmoother {
 		this.smoothingLocation = gl.getUniformLocation(program, 'u_smoothing');
 	}
 
-	smooth(mask: CategoryMask): WebGLTexture {
+	smooth(mask: SegmentationMask): WebGLTexture {
 		const { gl } = this;
 		if (mask.width !== this.width || mask.height !== this.height) {
 			this.resize(mask.width, mask.height);
@@ -151,23 +154,25 @@ class MaskSmoother {
 	}
 }
 
-/** The library's transformer, with each segmentation mask smoothed over time to steady the edges. */
+/** The library's transformer, compositing on confidence masks smoothed over time to soften and steady the edges. */
 export const withSmoothedMask = (Base: typeof BackgroundTransformer): typeof BackgroundTransformer =>
 	class SmoothedMaskTransformer extends Base {
 		#smoother: MaskSmoother | undefined;
 
-		/** Set when the smoothing pass cannot run here; masks then go through as the segmenter made them. */
+		/** Set when the smoothing pass cannot run here; masks then go through as the segmenter made them, unsmoothed and uninverted. */
 		#unsmoothable = false;
 
 		constructor(...args: ConstructorParameters<typeof BackgroundTransformer>) {
 			super(...args);
-			// `updateMask` is private only in the library's types; each segmentation result reaches it.
-			Object.assign(this, { updateMask: async (mask?: CategoryMask) => this.#updateMask(mask) });
+			// `updateMask` is private only in the library's types; it runs while each segmentation result is open.
+			Object.assign(this, { updateMask: async () => this.#updateMask() });
 		}
 
 		override async init(options: InitOptions) {
 			this.#smoother = undefined;
 			await super.init(options);
+			// The library asks for a binary category mask; confidence keeps the edges soft once scaled up.
+			await this.imageSegmenter?.setOptions({ outputCategoryMask: false, outputConfidenceMasks: true });
 		}
 
 		override async restart(options: InitOptions) {
@@ -181,14 +186,15 @@ export const withSmoothedMask = (Base: typeof BackgroundTransformer): typeof Bac
 			await super.destroy(...args);
 		}
 
-		#updateMask(mask?: CategoryMask) {
+		#updateMask() {
+			const mask = this.segmentationResults?.confidenceMasks?.[CONFIDENCE_MASK.index];
 			if (!mask || !this.gl) {
 				return;
 			}
 			this.gl.updateMask(this.#smooth(mask) ?? mask.getAsWebGLTexture());
 		}
 
-		#smooth(mask: CategoryMask) {
+		#smooth(mask: SegmentationMask) {
 			if (this.#unsmoothable) {
 				return undefined;
 			}
