@@ -243,7 +243,7 @@
 		"displayContents": 0
 	},
 	"InputBox/InputBox.styles.scss": {
-		"rules": 35,
+		"rules": 36,
 		"nested": 26,
 		"combinators": 7,
 		"important": 0,
@@ -270,8 +270,8 @@
 		"displayContents": 0
 	},
 	"Label/Label.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
