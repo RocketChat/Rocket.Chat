@@ -10,6 +10,7 @@ import { getCredentials, request } from '../../data/api-data';
 import { uploadFileToRC } from '../../data/file.helper';
 import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
 import type { IRequestConfig, TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -25,7 +26,6 @@ describe('[File Upload - Image Rotation]', () => {
 	before((_t, done) => getCredentials(done));
 
 	let user: TestUser<IUser>;
-	const userPassword = `pass${Date.now()}`;
 	let userCredentials: Credentials;
 	let testRoom: IRoom;
 	let rotateImagesSetting: SettingValue;
@@ -35,8 +35,8 @@ describe('[File Upload - Image Rotation]', () => {
 	let thumbnailsHeightSetting: SettingValue;
 
 	before(async () => {
-		user = await createUser({ joinDefaultChannels: false, password: userPassword });
-		userCredentials = await login(user.username, userPassword);
+		user = await createUser({ joinDefaultChannels: false });
+		userCredentials = await login(user.username, password);
 		testRoom = (await createRoom({ type: 'p', name: `rotate-upload-${Date.now()}`, members: [user.username] })).body.group;
 
 		rotateImagesSetting = await getSettingValueById('FileUpload_RotateImages');

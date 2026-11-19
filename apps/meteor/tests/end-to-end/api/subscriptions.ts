@@ -6,7 +6,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { adminUsername } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -262,8 +262,8 @@ describe('[Subscriptions]', () => {
 			let threadUserCredentials: Credentials;
 
 			before(async () => {
-				user = await createUser({ username: 'testthread123', password: 'testthread123' });
-				threadUserCredentials = await login('testthread123', 'testthread123');
+				user = await createUser({ username: 'testthread123' });
+				threadUserCredentials = await login('testthread123', password);
 
 				const res = await request
 					.post(api('chat.sendMessage'))

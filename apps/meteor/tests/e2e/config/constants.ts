@@ -19,6 +19,6 @@ export const ADMIN_CREDENTIALS = {
 } as const;
 
 export const DEFAULT_USER_CREDENTIALS = {
-	password: 'password',
-	bcrypt: '$2b$10$LNYaqDreDE7tt9EVEeaS9uw.C3hic9hcqFfIocMBPTMxJaDCC6QWW',
+	password: 'R0ck3t.ch@tP@ssw0rd1234.!',
+	bcrypt: '$2b$10$2OS8S28a6mPf0d8pBdSu.ebHfpgq1LUKZ/zWUNjmtA/RMB5h.8khy',
 } as const;
