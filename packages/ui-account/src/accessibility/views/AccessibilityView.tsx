@@ -128,8 +128,8 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 													)}
 												/>
 											</FieldRow>
-											<Box paddingBlockStart={12}>
-												<FieldHint style={{ whiteSpace: 'break-spaces' }}>{t(description)}</FieldHint>
+											<Box paddingBlockStart={12} className={breakSpacesClassName}>
+												<FieldHint>{t(description)}</FieldHint>
 											</Box>
 										</Field>
 									</Box>
@@ -161,8 +161,8 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 											render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 										/>
 									</FieldRow>
-									<Box paddingBlock={12}>
-										<FieldDescription className={breakSpacesClassName}>{t('Mentions_with_@_symbol_description')}</FieldDescription>
+									<Box paddingBlock={12} className={breakSpacesClassName}>
+										<FieldDescription>{t('Mentions_with_@_symbol_description')}</FieldDescription>
 									</Box>
 								</Field>
 								<Field id='clockMode'>

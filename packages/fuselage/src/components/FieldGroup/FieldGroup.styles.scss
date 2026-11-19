@@ -1,22 +1,8 @@
 @use '../../styles/lengths.scss';
 
-.rcx-field-group {
-	display: flex;
-	flex-flow: column nowrap;
-	justify-content: center;
-	align-items: stretch;
+// Web only. The group does not render its children, so a frame cannot give them the box of a column item.
+.rcx-field-group > .rcx-field-group__item {
+	flex: 0 0 auto;
 
-	min-width: lengths.size(none);
-}
-
-.rcx-field-group__item {
-	.rcx-field-group > & {
-		flex: 0 0 auto;
-
-		width: lengths.size(full);
-	}
-
-	& + & {
-		margin-block-start: lengths.margin(24);
-	}
+	width: lengths.size(full);
 }
