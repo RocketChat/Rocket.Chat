@@ -1,6 +1,7 @@
 import type { ChangeEvent, FocusEvent } from 'react';
 import { useState } from 'react';
 
+import { formatMediaTime } from '../../helpers/formatMediaTime';
 import { Box } from '../Box';
 
 export type AudioWaveformProps = {
@@ -52,6 +53,7 @@ const AudioWaveform = ({ peaks, value, maxValue, onChange, 'aria-label': ariaLab
 				step={1}
 				value={Math.min(value, maxValue || 0)}
 				aria-label={ariaLabel}
+				aria-valuetext={formatMediaTime(value)}
 				onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(Number(event.currentTarget.value))}
 				onFocus={(event: FocusEvent<HTMLElement>) => setFocusVisible(event.currentTarget.matches(':focus-visible'))}
 				onBlur={() => setFocusVisible(false)}

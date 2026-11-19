@@ -286,6 +286,7 @@ const VideoPlayer = ({
 							step={1}
 							value={Math.min(currentTime, duration || 0)}
 							aria-label={videoPlaybackRangeLabel}
+							aria-valuetext={formatMediaTime(currentTime)}
 							tabIndex={controlsVisible ? 0 : -1}
 							onChange={(e: ChangeEvent<HTMLInputElement>) => {
 								if (videoRef.current) videoRef.current.currentTime = Number(e.currentTarget.value);

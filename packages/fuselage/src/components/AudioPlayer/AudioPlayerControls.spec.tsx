@@ -57,6 +57,7 @@ describe('[AudioPlayerControls Component]', () => {
 		render(<Waveform onSeek={onSeek} />);
 		const range = screen.getByRole('slider', { name: 'Audio Playback Range' });
 		expect(range).toHaveValue('9');
+		expect(range).toHaveAttribute('aria-valuetext', '0:09');
 		fireEvent.change(range, { target: { value: '18' } });
 		expect(onSeek).toHaveBeenCalledWith(18);
 	});
