@@ -1,12 +1,7 @@
-import type { AllHTMLAttributes } from 'react';
-
 import { cx } from '../../../helpers/composeClassNames';
 import { Icon, type IconProps } from '../../Icon';
 
-export type MessageStatusIndicatorItemProps = {
-	name: IconProps['name'];
-	color?: IconProps['color'];
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
+export type MessageStatusIndicatorItemProps = Omit<IconProps, 'size'>;
 
 /**
  * A status icon such as edited, pinned or starred. Its `title` names the status for assistive technology; without one the icon is decorative.

@@ -93,7 +93,7 @@ const everyVariation = (
 		<Icon name='chat' />
 		<Icon name='chat' size='x16' />
 		<Icon name='chat' size={24} />
-		<Icon name='chat' size='60px' />
+		<Icon name='chat' size='x60' />
 		<Icon name='chat' color='danger' />
 		<Icon name='chat' color='hint' />
 		<Icon name='chat' color='status-font-on-warning' />
