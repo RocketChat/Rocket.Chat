@@ -117,7 +117,7 @@ The RP-1 open question: a headless agent has no human session. The developer run
 - The response may repeat a message near the cursor. The harness removes repeats by `_id`. The server reads from `cursor − 2 s` so that a message with a late `ts` is not lost.
 - Load: 10 agents that poll every 2 s make 5 indexed reads per second.
 - **Alternatives**:
-  - MCP notifications. They need a server-initiated SSE stream, which the transport does not offer. Sized in A-1.
+  - MCP notifications. They need a server-initiated SSE stream, which the transport does not offer. A-1 sizes a long poll instead.
   - Webhooks. They need an outbound HTTP client, retries, and URL validation.
   - A pub/sub channel. It needs a new transport.
 - These go to the next iteration (SH-006). A harness that speaks only MCP still polls.
@@ -250,55 +250,56 @@ These checks confirm an assumption of D-13 to D-16. Each one is a task with a te
 
 An amendment adds a decision after the plan. It does not change the entries above unless it says so.
 
-### A-1 (2026-11-19): Push delivery over MCP
+### A-1 (2026-11-19): Long-poll delivery over MCP
 
-**Status**: Proposed. It revisits RQ-1 and sizes the upgrade path of SH-006. F-5 still ships the poll.
+**Status**: Proposed. It revisits RQ-1 and sizes the upgrade path of SH-006. F-5 still ships the poll. The revision of 2026-11-19 replaces the doorbell over `subscriptions/listen` with a long poll on `agents.messages`.
 
 #### Findings
 
-- Every saved or updated message reaches `Message.afterSave`. That method broadcasts `watch.messages` (`apps/meteor/server/services/messages/service.ts:286-292`, `apps/meteor/server/lib/notifyListener.ts:496-502`). An edit of the approval card takes the same path.
-- The broadcast reaches every instance in a multi-instance monolith with the `scalability` module, and every node in microservices mode ([docs/service-brokers.md](../../docs/service-brokers.md#events-across-instances)). A stream on any instance hears every message, so the load balancer needs no sticky routing.
+- Every saved or updated message reaches `Message.afterSave`. That method broadcasts `watch.messages` (`apps/meteor/server/services/messages/service.ts:286-292`, `apps/meteor/server/lib/notifyListener.ts:496-502`). An edit of the approval card takes the same path, and so does a reaction.
+- The broadcast reaches every instance in a multi-instance monolith with the `scalability` module, and every node in microservices mode ([docs/service-brokers.md](../../docs/service-brokers.md#events-across-instances)). A wait on any instance hears every message, so the load balancer needs no sticky routing. Without the module, the instances of a multi-instance monolith do not see each other's events.
 - The broadcast is at most once, with no replay.
 - The broadcast runs after the URL preview parse. A message with a link reaches a listener later, the same as it reaches a web client.
-- The HTTP server closes a socket after 5 s idle, unless `HTTP_SOCKET_TIMEOUT_MS` is set (`apps/meteor/server/lib/http/httpServer.ts:7-41`). A long stream must lift the timeout on its own socket.
-- The Meteor bundler cannot load the ESM subpaths of `hono`, such as `hono/streaming` ([docs/features/http-server.md](../../docs/features/http-server.md)). The stream must be a `Response` over a plain `ReadableStream`.
-- MCP revisions 2025-03-26 to 2025-11-25, which the server supports today, push on a GET SSE stream. `Mcp-Session-Id` ties that stream to the POST calls, and `resources/subscribe` picks the events. The server issues no session id, so push on these revisions needs a session store that every instance can read.
-- MCP revision 2026-07-28 removes the sessions, the GET stream, `resources/subscribe`, and `Last-Event-ID`. It adds `subscriptions/listen`: one POST whose response is a long SSE stream of the notifications the client opts in to ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog), [subscriptions](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions)).
-- Revision 2026-07-28 also removes `initialize` and `ping`. Each request carries its version and capabilities in `_meta`. The revision adds `server/discover`, the `Mcp-Method` and `Mcp-Name` headers, and a required `resultType` on every result. The server must implement these before it can offer `subscriptions/listen`.
-- `notifications/resources/updated` carries only the resource URI. The client reads the resource to get the content. MCP push is a doorbell, not a content channel.
-- A chat host does not start a model turn on a notification. Push helps a harness that drives its MCP client in code.
+- The MCP endpoint answers every request with `application/json` (`apps/meteor/ee/server/api/mcp/index.ts:219`). It sends no SSE response, so no byte flows while a call waits.
+- The MCP dispatch aborts a loopback REST call after 20 s (`apps/meteor/ee/server/api/mcp/dispatch.ts:14`). A wait must end before that limit.
+- The HTTP server closes a socket after 5 s idle. During a request, Meteor's request callback raises the socket timeout to 120 s and restores 5 s on finish (`apps/meteor/server/lib/http/httpServer.ts:36-41`). With `HTTP_SOCKET_TIMEOUT_MS` set, the timeout is that value for the whole socket.
+- MCP revision 2026-07-28 removes sessions, the GET stream, `resources/subscribe`, and `Last-Event-ID`. It adds `subscriptions/listen`, whose notifications carry only a resource URI ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog), [subscriptions](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions)). A harness that hears that doorbell must still call a read.
+- The Events extension (SEP-3415) carries content with cursors and replay. Client support is new, and the team judges it not stable enough to build on.
+- A chat host does not start a model turn on its own. A low-latency path helps a harness that drives its MCP client in code.
 
 #### Decision (proposed)
 
-- **Doorbell**: The server offers one resource per agent, `rocketchat://agents/me/messages`. It sends `notifications/resources/updated` for that URI when a message arrives that `agents.messages` would return, or when an approval of the agent gets a decision. The harness then calls `resources/read` or `get_agents_messages` with its cursor.
-- **Transport**: `subscriptions/listen` on revision 2026-07-28 only. The older revisions keep the `405` on GET.
-- **Hub**: A local service `AgentEvents` runs on each instance. It listens to `watch.messages`, `watch.subscriptions`, and a new `agent.changed` event. It indexes room id to open streams, for agents with an open stream only.
-- **Match**: The hub uses the D-10 reply-mode filter. A refactor moves that filter into a pure predicate that `agents.messages` and the hub share.
-- **Room index**: The hub reads the agent's subscriptions when a stream opens. D-5 keeps them equal to the allow list plus the direct messages. `watch.subscriptions` keeps the index current.
-- **Approvals**: The D-10 filter drops the agent's own messages, and the agent posts the card. The F-7 decide and expire paths broadcast `agent.approval.decided`, and the hub rings for it.
-- **Poll stays**: `agents.messages` is the fallback, and the resync after a broken stream. The RQ-1 cursor does not change.
+- **Long poll**: `agents.messages` gains a `wait` parameter, from 0 to 15 s. With `wait` above 0 and nothing to return, the route holds the request until a matching event arrives or the wait ends. It then returns the same body as a plain poll. `get_agents_messages` passes `wait` through, so the tool needs no custom handler.
+- **Order**: The route registers with the hub first, then reads from the cursor. A non-empty read returns at once. Otherwise the route waits for a ring and reads again. An event between two calls therefore is never lost.
+- **Hub**: A local service `AgentEvents` runs on each instance. It listens to `watch.messages` and to the F-7 `agent.approval.decided` event. It indexes room id to the waiting calls, for agents with a waiting call only. Several events in 250 ms merge into one ring.
+- **Room set**: The route passes the allowed rooms that `agents.messages` already reads. A room added during a wait counts from the next call.
+- **Match**: The hub uses the D-10 reply-mode filter. A refactor moves that filter into a pure predicate that `agents.messages` and the hub share. The predicate drops a message the cursor already passed, so an edit or a reaction on an old message does not end a wait.
+- **Transport**: Every MCP revision the server supports, with no change to the transport. Revision 2026-07-28 is not needed.
+- **Poll stays**: `wait=0`, the default, keeps the F-5 behavior. The RQ-1 cursor does not change.
 
 #### Rationale
 
-- The doorbell carries no message content. A scope change or a revocation between the event and the read leaks nothing, because the read passes the guard (FR-016).
-- The harness reads from its cursor after a reconnect. At-most-once delivery therefore loses no message, and the stream needs no replay.
-- Revision 2026-07-28 is stateless, like the server. The older revisions need a shared session store.
+- The response carries the content. A doorbell would cost the harness the same read call, plus a stream to keep open.
+- The hub carries no message content. The route reloads the agent and its allowed rooms before the final read, so a scope change or a revocation during the wait leaks nothing (FR-016).
+- The read runs from the cursor. At-most-once broadcast therefore loses no message, and the hub needs no replay.
+- The route holds a plain request. It needs no SSE, no stream lifecycle, and no MCP revision support.
 
 #### Limits and safeguards
 
-- The stream authenticates once, when it opens. The hub closes every stream of an agent on suspension, rotation, revocation, deletion, or owner loss, through `agent.changed`.
-- An agent may hold one open stream per instance. A second open closes the first and writes an `agent.stream.replaced` audit event, a signal for SH-002.
-- A stream lives 60 min at most. The server then sends the graceful closure result, and the harness opens a new stream.
-- The server sends an SSE comment every 15 s and the `X-Accel-Buffering: no` header.
-- The open counts as one request against the MCP rate limiter and the guard's call cap.
-- Cost per message: one map lookup per instance. Cost per agent: one open socket.
+- An agent may hold one waiting call per instance. A second call ends the first with an empty result.
+- The 15 s cap stays under the 20 s dispatch timeout and the 120 s request socket timeout. A deployment that sets `HTTP_SOCKET_TIMEOUT_MS` below 16 s must lower the cap to match.
+- Each call counts against the MCP rate limiter and the guard's call cap. An idle agent makes 4 calls a minute, against 30 at a 2 s poll.
+- Server shutdown ends every wait with an empty result.
+- Cost per message: one map lookup per instance. Cost per waiting agent: one held request.
+- A multi-instance monolith without the `scalability` module hears only local events. The wait then returns at its cap for messages saved on another instance. The latency floor becomes 15 s, and no message is lost.
 
 #### Alternatives
 
+- **A doorbell over `subscriptions/listen`** (the first A-1 proposal): Rejected. The harness still calls the read, so the doorbell saves no call. It needs revision 2026-07-28 support (R-2), harness SDKs on that revision, an SSE stream with keep-alive and closure, and 11 to 16 engineer-days.
+- **The Events extension (SEP-3415)**: Rejected for now. It carries content with replay, but client support is not stable. Revisit when the harness SDKs support it.
 - **The older revisions, with sessions**: Rejected. They need a session store across instances, and revision 2026-07-28 removes them.
-- **A REST SSE endpoint, `GET agents.events`**: Rejected after the 2026-11-19 clarification. FR-053 refuses an agent credential on REST.
-- **DDP subscriptions**: They ship in this iteration (D-16). A-1 still serves a harness that speaks only MCP. If the harness MCP SDKs lag on revision 2026-07-28 (V-3), DDP is the push path.
-- **Content on the stream**: Rejected. Each event needs a scope check, and a lost event needs a replay.
+- **A REST SSE endpoint, `GET agents.events`**: Rejected. FR-053 refuses an agent credential on REST.
+- **DDP subscriptions**: They ship in this iteration (D-16). A-1 serves a harness that speaks only MCP.
 - **Webhooks**: Unchanged from RQ-1.
 
 #### Effort
@@ -307,19 +308,15 @@ Engineer-days for one engineer who knows the code.
 
 | Step | Work | Days |
 |------|------|------|
-| R-2 | Support MCP revision 2026-07-28 next to the current revisions: `_meta`, `server/discover`, the request headers, `resultType`, and the `404` for an unknown method. | 3 to 5 |
 | R-3 | Extract the D-10 filter into a pure predicate. | 0.5 |
-| F-9 | The `AgentEvents` hub, the room index, and the `agent.changed` and `agent.approval.decided` events. | 2 to 3 |
-| F-9 | `subscriptions/listen`: the SSE response, the keep-alive, the socket timeout, the stream cap, and the closure. | 2 to 3 |
-| F-9 | `resources/list` and `resources/read` for the agent resource. | 1 |
-| F-9 | Unit tests for the hub, an API test with an SSE client, and a manual multi-instance run. | 2 to 3 |
+| F-9 | The `AgentEvents` hub, the merge window, and the `agent.approval.decided` event. | 1.5 to 2 |
+| F-9 | The `wait` parameter on `agents.messages`: the register-then-read order, the reload before the final read, the per-instance cap, and shutdown. | 1 to 1.5 |
+| F-9 | Unit tests for the hub, API tests for the wait, and a manual multi-instance run. | 1.5 to 2 |
 | F-9 | The subsystem doc and the MCP doc. | 0.5 |
-| | **Total over MCP** | **11 to 16** |
-| | **Total with REST SSE instead of MCP** (no R-2, no resources). No longer an option under FR-053. | **7 to 10** |
+| | **Total** | **5 to 6.5** |
 
 #### To verify before the build
 
-- **V-1**: A long response survives the 5 s idle timeout once its socket timeout is lifted, behind the CI proxy as well.
-- **V-2**: The `@rocket.chat/http-router` Node adapter flushes each chunk of a `ReadableStream` and signals a client close.
-- **V-3**: The MCP SDKs that harnesses use (TypeScript, Python) support revision 2026-07-28 and `subscriptions/listen`.
-- **V-4**: The official changelog presents revision 2026-07-28 as released. Some third-party posts still call it a release candidate.
+- **V-1**: A request held 15 s survives the socket timeouts, with and without `HTTP_SOCKET_TIMEOUT_MS`, behind the CI proxy as well.
+- **V-2**: The loopback dispatch passes a client abort to the REST route, so a closed MCP call releases its wait.
+- **V-3**: The MCP SDKs that harnesses use (TypeScript, Python) allow a tool call of 15 s under their default request timeout.

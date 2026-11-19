@@ -105,14 +105,14 @@ yarn test:e2e --grep agent                           # badge, admin allow list, 
 
 The API test suite covers every route in the agent tool table and a sample of routes outside it (SC-003). See [plan.md](plan.md#testing).
 
-## Amendment A-1: Push stream (proposed, F-9)
+## Amendment A-1: Long poll (proposed, F-9)
 
-Run this scenario only after F-9 ships. It uses an MCP client on revision 2026-07-28.
+Run this scenario only after F-9 ships. Any MCP client works.
 
-1. The harness sends `subscriptions/listen` for `rocketchat://agents/me/messages`. Expect the acknowledgment first.
-2. A human mentions the agent in an allowed room. Expect `notifications/resources/updated` within 1 s.
-3. The harness reads the resource with its cursor. Expect the mention.
-4. The owner suspends the agent. Expect the stream to close with no closure result.
-5. Kill the stream and post a message, then reopen it and read from the cursor. Expect the message, with no loss.
+1. The harness calls `get_agents_messages` with its cursor and `wait=10`. No message is pending.
+2. A human mentions the agent in an allowed room. Expect the call to return the mention within 1 s.
+3. The harness calls again with the new cursor and `wait=10`. Post nothing. Expect an empty result after 10 s, with the same cursor.
+4. The harness calls again with `wait=10`. The owner suspends the agent during the wait. Expect no message in the result.
+5. Post a message while no call waits. Then call with the last cursor and `wait=10`. Expect the message at once.
 
-Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-agent-message-stream).
+Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-long-poll-on-get_agents_messages).

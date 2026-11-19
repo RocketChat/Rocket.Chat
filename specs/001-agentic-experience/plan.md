@@ -170,7 +170,7 @@ docs/adr/NNNN-agent-user-type.md          # identity decision
 
 ## Delivery order
 
-Each step is one pull request with one concern (constitution I). The order puts the refactors first and keeps every scope check in place before any agent can exist (DC-2). The rows are in delivery order. R-4 and F-10 keep their ids from the 2026-11-19 revision, so A-1 keeps R-2, R-3, and F-9.
+Each step is one pull request with one concern (constitution I). The order puts the refactors first and keeps every scope check in place before any agent can exist (DC-2). The rows are in delivery order. R-4 and F-10 keep their ids from the 2026-11-19 revision, so A-1 keeps R-3 and F-9. The 2026-11-19 revision of A-1 retires R-2.
 
 | Step | Kind | Title | Stories | Content |
 |------|------|-------|---------|---------|
@@ -228,19 +228,18 @@ The 2026-11-19 revision adds no exception. The refusal audit slot is a named mod
 
 ## Amendments
 
-### A-1 (2026-11-19): Push delivery over MCP
+### A-1 (2026-11-19): Long-poll delivery over MCP
 
-**Status**: Proposed, not scheduled. The steps above do not change, and F-5 still ships the poll. Research, decision, and effort: [research.md, A-1](research.md#a-1-2026-11-19-push-delivery-over-mcp). Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-agent-message-stream).
+**Status**: Proposed, not scheduled. The steps above do not change, and F-5 still ships the poll. Research, decision, and effort: [research.md, A-1](research.md#a-1-2026-11-19-long-poll-delivery-over-mcp). Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-long-poll-on-get_agents_messages).
 
-If the team schedules it, three pull requests follow F-8:
+If the team schedules it, two pull requests follow F-8:
 
 | Step | Kind | Title | Stories | Content |
 |------|------|-------|---------|---------|
-| R-2 | refactor | Support MCP revision 2026-07-28 | none | `_meta` per request, `server/discover`, the `Mcp-Method` and `Mcp-Name` headers, `resultType`. The current revisions keep their behavior, and their tests stay green with no edits. |
 | R-3 | refactor | Share the agent reply-mode filter | none | Move the D-10 filter into a pure predicate. `agents.messages` returns the same results. |
-| F-9 | feat | Push new messages to agents | US4, US5 | The `AgentEvents` hub, `subscriptions/listen`, the agent resource, and the stream cap and closure. It resolves SH-006 for harnesses on revision 2026-07-28. |
+| F-9 | feat | Let agents wait for new messages | US4, US5 | The `AgentEvents` hub and the `wait` parameter on `agents.messages` and `get_agents_messages`. It resolves SH-006 on every MCP revision the server supports. |
 
-- **Effort**: 11 to 16 engineer-days. The REST SSE option is gone under FR-053. DDP subscriptions (F-10) already give push to a harness that speaks DDP, so A-1 serves MCP-only harnesses.
-- **New files**: `apps/meteor/server/lib/agents/agentEvents/` (the hub), and `apps/meteor/ee/server/api/mcp/subscriptions.ts` (the stream).
-- **Constitution**: The hub reads the subscriptions through a named method on `Subscriptions`. The MCP methods stay JSON-RPC outside `rest-typings`, like the current MCP endpoint. No new exception.
-- **Testing**: Unit tests for the hub, with `mockModel`. An API test opens a stream, posts a mention, and expects the doorbell within 1 s. It then suspends the agent and expects the stream to close. A manual run checks two instances.
+- **Effort**: 5 to 6.5 engineer-days. DDP subscriptions (F-10) already give push to a harness that speaks DDP, so A-1 serves MCP-only harnesses.
+- **New files**: `apps/meteor/server/lib/agents/agentEvents/` (the hub). The MCP endpoint does not change.
+- **Constitution**: The hub reads no model. The route passes the allowed rooms it already reads. No new exception.
+- **Testing**: Unit tests for the hub, with `mockModel`. An API test calls `get_agents_messages` with `wait=10`, posts a mention, and expects the result within 1 s. A second test expects an empty result after the wait with no event. A third suspends the agent during a wait and expects no message. A manual run checks two instances.
