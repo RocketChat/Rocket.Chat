@@ -31,6 +31,7 @@ import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useE2EESearchPreferences } from '../../../../hooks/useE2EESearchPreferences';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { mergeSearchHits, toServerSearchHit } from '../../../../lib/e2eeSearch/serverSearchHits';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
@@ -55,7 +56,8 @@ const MessageSearchTab = () => {
 	const indexBackend = useLocalSearchIndexBackend();
 	const indexExpected = useLocalSearchIndexExpected();
 	const localBackend = room.encrypted ? indexBackend : undefined;
-	// An encrypted room that this device searches locally never sends the search to the server, also before the index opens.
+	// An encrypted room that this device searches locally: the index finds the encrypted messages, and the server search
+	// finds the messages that are not encrypted. Both lists show as one.
 	const localSearch = !!localBackend || (!!room.encrypted && indexExpected);
 	// The device indexes only the rooms that the user chose. Another encrypted room asks the user first.
 	const roomChosen = useE2EESearchPreferences().rooms.includes(room._id);
@@ -66,8 +68,27 @@ const MessageSearchTab = () => {
 		isSuccess,
 		data: messageSearchData,
 		isPending,
-	} = useMessageSearchQuery({ searchText, limit, globalSearch, enabled: !localSearch });
-	const itemCount = (localSearch ? localQuery.data?.length : messageSearchData?.length) ?? 0;
+		isPlaceholderData: isServerPlaceholder,
+	} = useMessageSearchQuery({
+		searchText,
+		limit,
+		globalSearch: globalSearch && !localSearch,
+		enabled: !localSearch || !!searchText.trim(),
+	});
+	const serverDocs = localSearch && searchText.trim() && isSuccess ? messageSearchData : [];
+	const canLoadMoreServer = serverDocs.length >= limit && !isServerPlaceholder;
+	const localHits = localQuery.data ?? [];
+	const hits = localSearch
+		? mergeSearchHits([
+				{ hits: localHits, mayHaveMore: canLoadMoreLocal, oldestTs: localHits.at(-1)?.ts },
+				{
+					hits: serverDocs.flatMap((message) => toServerSearchHit(message, searchText) ?? []),
+					mayHaveMore: canLoadMoreServer,
+					oldestTs: serverDocs.length ? Math.min(...serverDocs.map(({ ts }) => new Date(ts).getTime())) : undefined,
+				},
+			])
+		: [];
+	const itemCount = (localSearch ? hits.length : messageSearchData?.length) ?? 0;
 
 	return (
 		<ContextualbarDialog>
@@ -92,16 +113,16 @@ const MessageSearchTab = () => {
 				{providerQuery.isSuccess && localSearch && (
 					<>
 						{roomChosen ? <LocalSearchIndexStatus backend={localBackend} rid={room._id} /> : <LocalSearchIndexRoomPrompt rid={room._id} />}
-						{searchText.trim() && (localQuery.isPending || !localBackend) && <Throbber />}
-						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
+						{searchText.trim() && (localQuery.isPending || !localBackend || isPending) && <Throbber />}
+						{searchText.trim() && localQuery.isSuccess && !isPending && hits.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />
 						)}
-						{localQuery.isSuccess && localQuery.data.length > 0 && (
+						{hits.length > 0 && (
 							<LocalMessageSearchResults
 								id={searchListId}
-								hits={localQuery.data}
+								hits={hits}
 								showUserAvatar={showUserAvatar}
-								onEndReached={canLoadMoreLocal ? () => setLimit((limit) => limit + pageSize) : undefined}
+								onEndReached={canLoadMoreLocal || canLoadMoreServer ? () => setLimit((limit) => limit + pageSize) : undefined}
 							/>
 						)}
 					</>

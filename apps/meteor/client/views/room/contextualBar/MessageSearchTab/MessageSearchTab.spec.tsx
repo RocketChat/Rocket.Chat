@@ -177,6 +177,35 @@ describe('MessageSearchTab local search', () => {
 		});
 	});
 
+	it('also searches the server, and lists its messages that are not encrypted with the local hits, newest first', async () => {
+		const serverSearch = jest.fn(() => ({
+			message: {
+				docs: [
+					{ _id: 'plain', rid: 'r1', ts: new Date(2025, 4, 15), msg: 'plain note', u: { _id: 'u-bob', username: 'bob' } },
+					{ _id: 'mine2', rid: 'r1', ts: new Date(2025, 5, 1), msg: 'ciphertext', t: 'e2e', u: { _id: 'u-self', username: 'jean' } },
+					{ _id: 'joined', rid: 'r1', ts: new Date(2025, 4, 20), msg: 'note', t: 'uj', u: { _id: 'u-bob', username: 'bob' } },
+				] as never[],
+			},
+		}));
+		render(<MessageSearchTab />, {
+			wrapper: mockAppRoot().withUser(self).withSetting('PageSize', 10).withMethod('rocketchatSearch.search', serverSearch).build(),
+		});
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'note');
+
+		await waitFor(() =>
+			expect(screen.getAllByRole('button', { name: /note/ }).map((hit) => hit.textContent)).toEqual([
+				expect.stringContaining('second note'),
+				expect.stringContaining('plain note'),
+				expect.stringContaining('first <note>'),
+				expect.stringContaining('old note'),
+			]),
+		);
+		expect(serverSearch).toHaveBeenCalled();
+		expect(screen.queryByText('ciphertext')).not.toBeInTheDocument();
+		expect(screen.queryByText('Encrypted_content_cannot_be_searched')).not.toBeInTheDocument();
+	});
+
 	it('loads more hits as the list reaches its end, also past the first page of the setting PageSize', async () => {
 		await mockBackend?.upsert(
 			Array.from({ length: 25 }, (_, i) => message(`page${i}`, 'u-bob', new Date(2026, 0, 1, 12, i), `paged ${i}`)),
@@ -376,19 +405,21 @@ describe('MessageSearchTab while the local index of this device is not open yet'
 		mockIndexExpected = false;
 	});
 
-	it('sends no search of the encrypted room to the server', async () => {
+	it('shows the server hits before the index opens', async () => {
 		mockBackend = undefined;
 		mockIndexExpected = true;
-		const serverSearch = jest.fn(() => ({ message: { docs: [] } }));
+		const serverSearch = jest.fn(() => ({
+			message: {
+				docs: [{ _id: 'plain', rid: 'r1', ts: new Date(2025, 4, 15), msg: 'plain note', u: { _id: 'u-bob', username: 'bob' } }] as never[],
+			},
+		}));
 		render(<MessageSearchTab />, {
 			wrapper: mockAppRoot().withUser(self).withSetting('PageSize', 10).withMethod('rocketchatSearch.search', serverSearch).build(),
 		});
 
-		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'secret words');
-		await new Promise((resolve) => setTimeout(resolve, 400));
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'note');
 
-		expect(serverSearch).not.toHaveBeenCalled();
-		expect(screen.queryByText('Encrypted_content_cannot_be_searched')).not.toBeInTheDocument();
+		expect(await screen.findByRole('button', { name: /plain note/ })).toBeInTheDocument();
 	});
 
 	it('shows the loading state for a text, and none for a text of only spaces', async () => {

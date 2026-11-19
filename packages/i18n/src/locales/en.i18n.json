@@ -2392,7 +2392,7 @@
   "E2E_Local_Search_Not_Available": "Search of encrypted messages is not available here. It needs a desktop app version with local search.",
   "E2E_Local_Search_Open_Settings": "Search settings",
   "E2E_Local_Search_Opt_In": "Index my encrypted messages on this device",
-  "E2E_Local_Search_Opt_In_Description": "Keep an encrypted index of your decrypted messages on this device, so you can search encrypted rooms here. The server never receives the index or your search terms. Turn it off to delete the index from this device.",
+  "E2E_Local_Search_Opt_In_Description": "Keep an encrypted index of your decrypted messages on this device, so you can search encrypted rooms here. The server never receives the index. A search in an encrypted room also goes to the server, which finds the messages that are not encrypted. Turn it off to delete the index from this device.",
   "E2E_Local_Search_Page_Title": "Encrypted message search",
   "E2E_Local_Search_Remove_All_Rooms": "Remove all rooms",
   "E2E_Local_Search_Room_Fully_Indexed": "All messages are indexed",
