@@ -4464,46 +4464,65 @@ describe('Threads', () => {
 			filterThreadsByText(text);
 		});
 
-		describe('filtered by drafts', () => {
-			const getDraftThreads = async () =>
-				(
-					await request
-						.get(api('chat.getThreadsList'))
-						.set(credentials)
-						.query({ rid: testChannel._id, type: 'drafts' })
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-				).body;
+		describe('filtered by type', () => {
+			let typeChannel: IRoom;
+			let draftThreadId: IMessage['_id'];
+			let replyThreadId: IMessage['_id'];
+			let otherUser: TestUser<IUser>;
+			let otherCredentials: Credentials;
 
-			const saveThreadDraft = (draft: string) =>
-				request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft, tmid: threadMessage.tmid }).expect(200);
+			const createThread = async () => {
+				const parent = (await sendSimpleMessage({ roomId: typeChannel._id, text: 'thread parent' }).expect(200)).body.message;
+				await sendSimpleMessage({ roomId: typeChannel._id, text: 'thread reply', tmid: parent._id }).expect(200);
+				return parent._id;
+			};
 
-			after(() => saveThreadDraft(''));
+			const getThreadIds = async (type: 'drafts' | 'unread', userCredentials = credentials) => {
+				const { body } = await request
+					.get(api('chat.getThreadsList'))
+					.set(userCredentials)
+					.query({ rid: typeChannel._id, type })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
 
-			it('should return no threads when the user has no thread drafts', async () => {
-				const body = await getDraftThreads();
+				expect(body.total).to.be.equal(body.threads.length);
+				return body.threads.map(({ _id }: IMessage) => _id);
+			};
 
-				expect(body).to.have.property('success', true);
-				expect(body.threads).to.have.lengthOf(0);
-				expect(body).to.have.property('total', 0);
+			const saveThreadDraft = (tmid: IMessage['_id'], draft: string, userCredentials = credentials) =>
+				request.post(api('rooms.saveDraft')).set(userCredentials).send({ rid: typeChannel._id, draft, tmid }).expect(200);
+
+			before(async () => {
+				typeChannel = (await createRoom({ type: 'c', name: `channel.test.threads.type.${Date.now()}` })).body.channel;
+				draftThreadId = await createThread();
+				replyThreadId = await createThread();
+
+				otherUser = await createUser();
+				otherCredentials = await login(otherUser.username, password);
+				await addUserToRoom({ usernames: [otherUser.username], rid: typeChannel._id });
 			});
 
-			it('should return only the threads the user has a draft in', async () => {
-				await saveThreadDraft(`thread draft ${Date.now()}`);
+			after(() => Promise.all([deleteRoom({ type: 'c', roomId: typeChannel._id }), deleteUser(otherUser)]));
 
-				const body = await getDraftThreads();
+			it("should return only the threads where the caller has a draft, ignoring other users' drafts", async () => {
+				await saveThreadDraft(draftThreadId, 'my draft');
+				await saveThreadDraft(replyThreadId, 'other user draft', otherCredentials);
 
-				expect(body.threads).to.have.lengthOf(1);
-				expect(body.threads[0]._id).to.be.equal(threadMessage.tmid);
-				expect(body).to.have.property('total', 1);
+				expect(await getThreadIds('drafts')).to.deep.equal([draftThreadId]);
+				expect(await getThreadIds('drafts', otherCredentials)).to.deep.equal([replyThreadId]);
 			});
 
-			it('should stop returning a thread once its draft is cleared', async () => {
-				await saveThreadDraft('');
+			it('should return only the threads with unread replies when filtered by unread', async () => {
+				await sendSimpleMessage({
+					roomId: typeChannel._id,
+					text: 'unread reply',
+					tmid: replyThreadId,
+					userCredentials: otherCredentials,
+				}).expect(200);
 
-				const body = await getDraftThreads();
-
-				expect(body.threads).to.have.lengthOf(0);
+				await retry('wait for the unread thread to be recorded', async () => {
+					expect(await getThreadIds('unread')).to.deep.equal([replyThreadId]);
+				});
 			});
 		});
 

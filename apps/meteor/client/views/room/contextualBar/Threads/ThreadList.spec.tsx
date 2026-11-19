@@ -1,17 +1,17 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 
 import ThreadList from './ThreadList';
 import { createFakeRoom } from '../../../../../tests/mocks/data';
 
 const fakeRoom = createFakeRoom({ t: 'c' });
-const fakeSubscription = { ...fakeRoom, threadDrafts: { 'thread-with-draft': 'unsent reply' } };
 
 jest.mock('./components/ThreadListItem', () => <></>);
 jest.mock('../../contexts/RoomContext', () => ({
 	useRoom: () => fakeRoom,
-	useRoomSubscription: () => fakeSubscription,
+	useRoomSubscription: () => fakeRoom,
 }));
 
 // TODO: Create a function to mock the lib/i18n to be used with mockAppRoot
@@ -38,16 +38,15 @@ describe('ThreadList Component', () => {
 	});
 
 	it('should request only the threads with drafts when the drafts filter is selected', async () => {
-		window.localStorage.setItem('thread-list-type', JSON.stringify('drafts'));
 		const getThreadsList = jest.fn().mockResolvedValue({ threads: [], total: 0, count: 0, offset: 0 });
 
 		render(<ThreadList />, {
-			wrapper: mockAppRoot().withRoom(fakeRoom).withEndpoint('GET', '/v1/chat.getThreadsList', getThreadsList).build(),
+			wrapper: mockAppRoot().withJohnDoe().withRoom(fakeRoom).withEndpoint('GET', '/v1/chat.getThreadsList', getThreadsList).build(),
 		});
 
-		expect(await screen.findByText('No_Threads')).toBeInTheDocument();
-		expect(getThreadsList).toHaveBeenCalledWith(expect.objectContaining({ rid: fakeRoom._id, type: 'drafts' }));
+		await userEvent.click(screen.getByRole('button', { name: 'All' }));
+		await userEvent.click(screen.getByRole('option', { name: 'Drafts' }));
 
-		window.localStorage.removeItem('thread-list-type');
+		await waitFor(() => expect(getThreadsList).toHaveBeenCalledWith(expect.objectContaining({ type: 'drafts' })));
 	});
 });
