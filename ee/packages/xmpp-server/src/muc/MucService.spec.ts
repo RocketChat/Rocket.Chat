@@ -217,6 +217,18 @@ describe('MucService delivery errors (hosted-muc R19)', () => {
 		},
 	);
 
+	it('removes the occupant when the bounce names its condition under a prefix', async () => {
+		const { muc, left } = await setupWithOccupant();
+
+		muc.handleStanza(
+			p(
+				`<message from='alice@remote.tld/pc' to='team@conference.rc.tld/bob' type='error'><error type='cancel' xmlns:e='urn:ietf:params:xml:ns:xmpp-stanzas'><e:remote-server-not-found/></error></message>`,
+			),
+		);
+
+		expect(left).toHaveLength(2);
+	});
+
 	it('removes the occupant when the bounce is a presence', async () => {
 		const { muc, left } = await setupWithOccupant();
 
