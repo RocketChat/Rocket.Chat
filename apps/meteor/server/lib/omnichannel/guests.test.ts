@@ -298,7 +298,7 @@ describe('removeGuest', () => {
 				cleanupSettled = true;
 				return { status: 'fulfilled' as const };
 			},
-			(error) => {
+			(error: unknown) => {
 				cleanupSettled = true;
 				return { status: 'rejected' as const, error };
 			},
