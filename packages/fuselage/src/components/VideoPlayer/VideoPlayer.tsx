@@ -264,7 +264,7 @@ const VideoPlayer = ({
 					borderRadius='full'
 					backgroundColor='overlay'
 				>
-					<Throbber size='x16' inheritColor aria-label={loadingLabel} />
+					<Throbber size='x8' inheritColor aria-label={loadingLabel} />
 				</Box>
 			)}
 

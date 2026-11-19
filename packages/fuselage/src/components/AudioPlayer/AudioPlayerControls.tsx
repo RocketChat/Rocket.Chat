@@ -92,7 +92,7 @@ const AudioPlayerControls = ({
 				disabled={loading && !isPlaying}
 				onClick={onTogglePlay}
 				aria-label={loading && !isPlaying ? loadingLabel : playAction.label}
-				icon={loading ? <Throbber size='x16' inheritColor /> : playAction.icon}
+				icon={loading ? <Throbber size='x4' inheritColor /> : playAction.icon}
 			/>
 			{waveform?.length ? (
 				<AudioWaveform
