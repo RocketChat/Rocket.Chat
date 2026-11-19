@@ -8,7 +8,7 @@ const settingsGet = sinon.stub();
 const checkPassword = sinon.stub();
 
 const { PasswordCheckFallback } = proxyquire.noCallThru().load('./PasswordCheckFallback', {
-	'meteor/accounts-base': { Accounts: { _checkPasswordAsync: checkPassword } },
+	'../../compareUserPassword': { compareUserPassword: checkPassword },
 	'../../../settings': { settings: { get: settingsGet } },
 });
 
@@ -20,7 +20,7 @@ describe('PasswordCheckFallback', () => {
 		settingsGet.reset();
 		settingsGet.withArgs('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback').returns(true);
 		checkPassword.reset();
-		checkPassword.resolves({});
+		checkPassword.resolves(true);
 	});
 
 	it('should apply only to users with a password when the fallback is enforced', () => {
@@ -46,13 +46,13 @@ describe('PasswordCheckFallback', () => {
 		expect(new PasswordCheckFallback().isEnabled(userWithoutPassword, true)).to.be.true;
 	});
 
-	it('should accept the password digest whatever its letter case', async () => {
+	it('should check the code as the SHA-256 digest of the password', async () => {
 		expect(await new PasswordCheckFallback().verify(userWithPassword, 'ABCDEF', false)).to.be.true;
-		expect(checkPassword.calledOnceWith(userWithPassword, { digest: 'abcdef', algorithm: 'sha-256' })).to.be.true;
+		expect(checkPassword.calledOnceWith(userWithPassword, { sha256: 'ABCDEF' })).to.be.true;
 	});
 
 	it('should refuse a wrong password', async () => {
-		checkPassword.resolves({ error: new Error('Incorrect password') });
+		checkPassword.resolves(false);
 
 		expect(await new PasswordCheckFallback().verify(userWithPassword, 'abcdef', false)).to.be.false;
 	});
