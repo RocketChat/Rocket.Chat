@@ -1,10 +1,10 @@
-import { useCustomSound, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useNotificationSounds, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 const query = { t: 'l', ls: { $exists: false }, open: true };
 export const useOmnichannelContinuousSoundNotification = <T>(queue: T[]) => {
 	const userSubscriptions = useUserSubscriptions(query);
-	const { notificationSounds } = useCustomSound();
+	const notificationSounds = useNotificationSounds();
 
 	const playNewRoomSoundContinuously = useSetting('Livechat_continuous_sound_notification_new_livechat_room');
 

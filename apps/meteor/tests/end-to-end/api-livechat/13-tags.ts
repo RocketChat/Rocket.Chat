@@ -1,15 +1,17 @@
 import { after, before, describe, it } from 'node:test';
 
-import type { ILivechatDepartment, ILivechatTag } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { ILivechatDepartment, ILivechatTag, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createDepartmentWithAnOnlineAgent } from '../../data/livechat/department';
-import { saveTags, removeAllTags } from '../../data/livechat/tags';
+import { listTags, saveTags, removeAllTags, removeTag } from '../../data/livechat/tags';
 import { createMonitor, createUnit } from '../../data/livechat/units';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
 import type { IUserWithCredentials } from '../../data/user';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -239,5 +241,45 @@ import { IS_EE } from '../../e2e/config/constants';
 			expect(response.body).to.have.property('name', tag.name);
 			expect(response.body).to.have.property('numDepartments', 0);
 		});
+	});
+});
+
+(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags without manage-livechat-tags', () => {
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+	});
+
+	after(() => deleteUser(user));
+
+	it('should refuse livechat/tags.save and create no tag', async () => {
+		const name = `refused-${Date.now()}`;
+
+		await request
+			.post(api('livechat/tags.save'))
+			.set(userCredentials)
+			.send({ tagData: { name, description: '' } })
+			.expect(403);
+
+		const { tags } = await listTags();
+		expect(tags.map((tag) => tag.name)).to.not.include(name);
+	});
+
+	it('should refuse livechat/tags.delete and keep the tag', async (t) => {
+		const tag = await saveTags();
+		t.after(() => removeTag(tag._id));
+
+		await request.post(api('livechat/tags.delete')).set(userCredentials).send({ id: tag._id }).expect(403);
+
+		await request
+			.get(api(`livechat/tags/${tag._id}`))
+			.set(credentials)
+			.expect(200);
 	});
 });

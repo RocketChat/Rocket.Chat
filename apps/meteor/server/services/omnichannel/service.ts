@@ -34,7 +34,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	override async started() {
 		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
-			this.queueWorker.shouldStart();
+			void this.queueWorker.shouldStart();
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {

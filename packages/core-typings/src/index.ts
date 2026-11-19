@@ -54,6 +54,7 @@ export type * from './ICustomEmojiDescriptor';
 export type * from './IAnalytics';
 export type * from './ICredentialToken';
 export type * from './ILoginCode';
+export type * from './IUiKitView';
 export type * from './ISamlUsedAssertions';
 export type * from './IAvatar';
 export type * from './ICustomUserStatus';
@@ -112,6 +113,8 @@ export type * from './VideoConferenceCapabilities';
 
 export type * from './SpotlightUser';
 export type * from './ICalendarEvent';
+export type * from './IExchangeCalendarSyncState';
+export type * from './IExchangeSyncLease';
 
 export type * from './search';
 export * from './omnichannel';

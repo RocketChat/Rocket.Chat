@@ -10,6 +10,7 @@ import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
+import { useExternalLink } from '../../../../../../hooks/useExternalLink';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
@@ -32,6 +33,8 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 
 	const router = useRouter();
 
+	const openExternalLink = useExternalLink();
+
 	const openContextualBar = () => {
 		router.navigate(
 			{
@@ -48,12 +51,8 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 		refetchLogs();
 	};
 
-	const onExportConfirm = (url: string) => {
-		window.open(url, '_blank', 'noopener noreferrer');
-	};
-
 	const openExportModal = () => {
-		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={onExportConfirm} />);
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={openExternalLink} />);
 	};
 
 	const compactMode = useCompactMode();

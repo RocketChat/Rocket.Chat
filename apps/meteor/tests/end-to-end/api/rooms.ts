@@ -21,6 +21,7 @@ import { assert, expect } from 'chai';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, sendMessage, deleteMessage } from '../../data/chat.helper';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL } from '../../data/interactions';
 import {
 	getSettingValueById,
@@ -1235,6 +1236,129 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		describe('with a discussion started from a message with a file', () => {
+			let originId: IMessage['_id'];
+			let drid: IRoom['_id'];
+
+			const startDiscussionFromOrigin = () =>
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({ prid: publicChannel._id, pmid: originId, t_name: `discussion-${Random.id()}` })
+					.expect(200);
+
+			const pruneAll = (options: Record<string, boolean>) =>
+				request
+					.post(api('rooms.cleanHistory'))
+					.set(credentials)
+					.send({ roomId: publicChannel._id, latest: '9999-12-31T23:59:59.000Z', oldest: '0001-01-01T00:00:00.000Z', ...options })
+					.expect(200);
+
+			const getMessages = async (roomId: IRoom['_id']): Promise<IMessage[]> =>
+				(await request.get(api('channels.messages')).set(credentials).query({ roomId }).expect(200)).body.messages;
+
+			const getFiles = async (): Promise<unknown[]> =>
+				(await request.get(api('channels.files')).set(credentials).query({ roomId: publicChannel._id }).expect(200)).body.files;
+
+			beforeEach(async () => {
+				const mediaResponse = await request
+					.post(api(`rooms.media/${publicChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				originId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'discussion origin' })
+						.expect(200)
+				).body.message._id;
+				drid = (await startDiscussionFromOrigin()).body.discussion._id;
+			});
+
+			it('should keep the origin message and its file when ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await startDiscussionFromOrigin();
+				await sendSimpleMessage({ roomId: publicChannel._id });
+
+				const res = await pruneAll({ ignoreDiscussion: true, ignoreDiscussionOrigin: true });
+
+				expect(res.body).to.have.property('count', 1);
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).to.include(originId);
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should delete the origin message when only ignoreDiscussion is set', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should delete the origin message when ignoreDiscussionOrigin is set without ignoreDiscussion', async () => {
+				await pruneAll({ ignoreDiscussion: false, ignoreDiscussionOrigin: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should keep the origin file when filesOnly, ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await pruneAll({ filesOnly: true, ignoreDiscussion: true, ignoreDiscussionOrigin: true });
+
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should show the deleted file in the discussion post and in the discussion room when the origin is pruned', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				const getQuote = (message: IMessage) => message.attachments?.find(isQuoteAttachment);
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				const copy = (await getMessages(drid)).find((message) => getQuote(message)?.message_link.endsWith(`?msg=${originId}`));
+				expect(post && getQuote(post)?.attachments?.[0]).to.have.property('type', 'removed-file');
+				expect(copy && getQuote(copy)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should show the deleted file in a discussion that survives a prune of discussion messages', async () => {
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				await request.post(api('chat.pinMessage')).set(credentials).send({ messageId: post?._id }).expect(200);
+
+				await pruneAll({ ignoreDiscussion: false, excludePinned: true });
+
+				const prunedPost = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				expect(prunedPost?.attachments?.find(isQuoteAttachment)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should keep the file of another quote in a message that also quotes the pruned origin', async () => {
+				const siteUrl = (await getSettingValueById('Site_Url')) as string;
+				const mediaResponse = await request
+					.post(api(`rooms.media/${drid}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				const otherId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${drid}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'other' })
+						.expect(200)
+				).body.message._id;
+				const quoteBoth = (
+					await sendMessage({
+						message: {
+							rid: drid,
+							msg: `${new URL(`/channel/x?msg=${originId}`, siteUrl)} ${new URL(`/channel/x?msg=${otherId}`, siteUrl)}`,
+						},
+					})
+				).body.message;
+
+				await pruneAll({ ignoreDiscussion: true });
+
+				const quotes = (await getMessages(drid)).find(({ _id }) => _id === quoteBoth._id)?.attachments?.filter(isQuoteAttachment);
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(otherId))?.attachments?.[0]).to.have.property('type', 'file');
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(originId))?.attachments?.[0]).to.have.property(
+					'type',
+					'removed-file',
+				);
+			});
+		});
+
 		it('should return success when send a valid private channel', async () => {
 			const res = await request
 				.post(api('rooms.cleanHistory'))
@@ -2037,6 +2161,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.not.have.property('pmid');
 		});
 		it('should create a discussion successfully when send the required parameters plus the optional parameter "reply"', async () => {
 			const res = await request
@@ -2088,6 +2213,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.have.property('pmid', messageSent._id);
 		});
 
 		describe('when the user is not a member of the parent room', () => {
@@ -3845,6 +3971,48 @@ describe('[Rooms]', () => {
 						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
 						expect(res.body.files[0]).to.have.property('_id', sentFileId);
 						expect(res.body).to.have.property('total', 1);
+					});
+			});
+		});
+		describe('with an encrypted image', () => {
+			let roomId: IRoom['_id'];
+			let encryptedFileId: string;
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+				const content = { algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' };
+
+				const res = await request
+					.post(api(`rooms.media/${roomId}`))
+					.set(credentials)
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/diagram.drawio')), {
+						contentType: 'application/octet-stream',
+					})
+					.field({ content: JSON.stringify(content) })
+					.expect(200);
+				encryptedFileId = res.body.file._id;
+
+				await request
+					.post(api(`rooms.mediaConfirm/${roomId}/${encryptedFileId}`))
+					.set(credentials)
+					.send({ t: 'e2e', content })
+					.expect(200);
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should return the encrypted file passed as startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: encryptedFileId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', encryptedFileId);
+						expect(res.body.files[0]).to.have.property('typeGroup', 'application');
 					});
 			});
 		});
@@ -6181,5 +6349,68 @@ describe('[/rooms.history]', () => {
 
 	it('should fail for a room that does not exist', async () => {
 		await request.get(api('rooms.history')).set(credentials).query({ roomId: 'does-not-exist' }).expect(404);
+	});
+});
+
+describe('[/uploads.delete]', () => {
+	let member: TestUser<IUser>;
+	let memberCredentials: Credentials;
+	let room: IRoom;
+
+	const uploadFile = async (as: Credentials = credentials) => {
+		const res = await request
+			.post(api(`rooms.media/${room._id}`))
+			.set(as)
+			.attach('file', imgURL)
+			.expect(200);
+		return res.body.file._id as string;
+	};
+
+	const sendFile = async (as: Credentials = credentials) => {
+		const fileId = await uploadFile(as);
+		const res = await request
+			.post(api(`rooms.mediaConfirm/${room._id}/${fileId}`))
+			.set(as)
+			.send({})
+			.expect(200);
+		return { fileId, messageId: res.body.message._id as string };
+	};
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		member = await createUser();
+		memberCredentials = await login(member.username, password);
+		room = (await createRoom({ type: 'c', name: `uploads-delete-${Date.now()}`, members: [member.username] })).body.channel;
+	});
+
+	after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(member)]));
+
+	it('should delete a file its uploader has not sent yet', async () => {
+		const fileId = await uploadFile();
+
+		const res = await request.post(api('uploads.delete')).set(credentials).send({ fileId }).expect(200);
+
+		expect(res.body.deletedFiles).to.include(fileId);
+		await request.post(api('uploads.delete')).set(credentials).send({ fileId }).expect(404);
+	});
+
+	it('should fail if a member deletes a file another user sent', async () => {
+		const { fileId, messageId } = await sendFile();
+
+		await request.post(api('uploads.delete')).set(memberCredentials).send({ fileId }).expect(403);
+
+		const res = await request.get(api('chat.getMessage')).set(credentials).query({ msgId: messageId }).expect(200);
+		expect(res.body.message.files.map(({ _id }: { _id: string }) => _id)).to.include(fileId);
+	});
+
+	it('should remove the file from its message when the sender deletes it', async () => {
+		const { fileId, messageId } = await sendFile(memberCredentials);
+
+		await request.post(api('uploads.delete')).set(memberCredentials).send({ fileId }).expect(200);
+
+		const message = await withDatabase((db) => db.collection<IMessage>('rocketchat_message').findOne({ _id: messageId }));
+		expect(message?.files?.map(({ _id }) => _id)).to.not.include(fileId);
+		expect(message?.attachments).to.deep.include({ type: 'removed-file', color: '#FD745E', text: '_File removed_', fileId });
 	});
 });

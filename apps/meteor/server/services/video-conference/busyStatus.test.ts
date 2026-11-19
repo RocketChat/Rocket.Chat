@@ -4,6 +4,7 @@ import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-ty
 import { UserStatus } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
@@ -13,7 +14,6 @@ import { PRESENCE_LEASE_MS } from '../../../lib/videoConference/presence';
  * The claim this suite is about is made through `Presence`, which the shared harness has no stub for — so this one
  * assembles `@rocket.chat/core-services` itself rather than teaching every other spec about presence.
  */
-const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;
 

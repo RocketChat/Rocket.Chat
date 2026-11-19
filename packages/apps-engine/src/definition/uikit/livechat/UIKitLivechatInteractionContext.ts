@@ -1,6 +1,11 @@
 import type { IUIKitBaseIncomingInteraction } from '../UIKitIncomingInteractionTypes';
 import { UIKitInteractionResponder } from '../UIKitInteractionResponder';
-import type { IUIKitLivechatBaseIncomingInteraction, IUIKitLivechatBlockIncomingInteraction } from './UIKitLivechatIncomingInteractionType';
+import type {
+	IUIKitLivechatBaseIncomingInteraction,
+	IUIKitLivechatBlockIncomingInteraction,
+	IUIKitLivechatViewCloseIncomingInteraction,
+	IUIKitLivechatViewSubmitIncomingInteraction,
+} from './UIKitLivechatIncomingInteractionType';
 
 export abstract class UIKitLivechatInteractionContext {
 	private baseContext: IUIKitLivechatBaseIncomingInteraction;
@@ -28,6 +33,26 @@ export class UIKitLivechatBlockInteractionContext extends UIKitLivechatInteracti
 	}
 
 	public getInteractionData(): IUIKitLivechatBlockIncomingInteraction {
+		return this.interactionData;
+	}
+}
+
+export class UIKitLivechatViewSubmitInteractionContext extends UIKitLivechatInteractionContext {
+	constructor(private readonly interactionData: IUIKitLivechatViewSubmitIncomingInteraction) {
+		super(interactionData);
+	}
+
+	public getInteractionData(): IUIKitLivechatViewSubmitIncomingInteraction {
+		return this.interactionData;
+	}
+}
+
+export class UIKitLivechatViewCloseInteractionContext extends UIKitLivechatInteractionContext {
+	constructor(private readonly interactionData: IUIKitLivechatViewCloseIncomingInteraction) {
+		super(interactionData);
+	}
+
+	public getInteractionData(): IUIKitLivechatViewCloseIncomingInteraction {
 		return this.interactionData;
 	}
 }

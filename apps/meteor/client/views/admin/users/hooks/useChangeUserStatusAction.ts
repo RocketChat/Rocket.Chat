@@ -30,13 +30,9 @@ export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolea
 					activeStatusQuery.confirmRelinquish = confirm;
 				}
 
-				try {
-					await changeActiveStatusRequest(activeStatusQuery);
-					dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
-					onChange();
-				} catch (error) {
-					throw error;
-				}
+				await changeActiveStatusRequest(activeStatusQuery);
+				dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+				onChange();
 			},
 			{
 				confirmText: t('Yes_deactivate_it'),
@@ -48,7 +44,9 @@ export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolea
 		? {
 				icon: 'user',
 				content: isActive ? t('Deactivate') : t('Activate'),
-				onClick: changeActiveStatus,
+				onClick: () => {
+					void changeActiveStatus();
+				},
 			}
 		: undefined;
 };

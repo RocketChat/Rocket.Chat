@@ -16,7 +16,7 @@ const AlertModal = ({ text, buttonText, onConfirm, ...props }: AlertModalProps) 
 	const { t } = useTranslation();
 
 	return (
-		<Modal open animated dismissByOverlay={false} {...props}>
+		<Modal open animated dismissByOverlay={false} role='alertdialog' aria-label={text} {...props}>
 			<ModalMessage>{text}</ModalMessage>
 			<ButtonGroup>
 				<Button secondary onClick={onConfirm}>

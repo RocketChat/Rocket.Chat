@@ -118,7 +118,7 @@ export async function sendTranscript({
 			messageContent = message.attachments[0].description || '';
 			escapeHtml(messageContent);
 
-			for await (const attachment of message.attachments) {
+			for (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
 					continue;
 				}
@@ -162,12 +162,7 @@ export async function sendTranscript({
 	html = `${html}</div>`;
 
 	const fromEmail = settings.get<string>('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-	let emailFromRegexp = '';
-	if (fromEmail) {
-		emailFromRegexp = fromEmail[0];
-	} else {
-		emailFromRegexp = settings.get<string>('From_Email');
-	}
+	const emailFromRegexp = fromEmail ? fromEmail[0] : settings.get<string>('From_Email');
 
 	// Some endpoints allow the caller to pass a different `subject` via parameter.
 	// IF subject is passed, we'll use that one and treat it as an override

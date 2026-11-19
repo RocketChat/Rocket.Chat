@@ -20,6 +20,8 @@
 		"start": "vite",
 		"storybook": "storybook dev -p 6006",
 		"stylelint": "stylelint 'src/**/*.scss'",
+		"test": "jest",
+		"testunit": "jest",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"browserslist": [
@@ -59,6 +61,7 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
@@ -73,6 +76,8 @@
 		"autoprefixer": "^10.5.4",
 		"css-loader": "^6.11.0",
 		"cssnano": "^7.1.9",
+		"identity-obj-proxy": "~3.0.0",
+		"jest": "~30.5.2",
 		"lorem-ipsum": "^2.0.10",
 		"postcss": "8.5.29",
 		"postcss-css-variables": "^0.19.0",

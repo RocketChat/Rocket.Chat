@@ -180,7 +180,7 @@ export class LDAPManager {
 		};
 	}
 
-	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string | undefined): IImportUser {
+	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string): IImportUser {
 		const uniqueId = this.getLdapUserUniqueID(ldapUser);
 		if (!uniqueId) {
 			throw new Error('Failed to generate unique identifier for ldap entry');
@@ -373,7 +373,7 @@ export class LDAPManager {
 	private static async syncUserForLogin(
 		ldapUser: ILDAPEntry,
 		existingUser?: IUser,
-		usedUsername?: string | undefined,
+		usedUsername?: string,
 	): Promise<IUser | undefined | null> {
 		logger.debug({
 			msg: 'Syncing user data',

@@ -16,6 +16,8 @@ import {
 	EmailInboxRaw,
 	EmailMessageHistoryRaw,
 	EmojiCustomRaw,
+	ExchangeCalendarSyncStateRaw,
+	ExchangeSyncLeaseRaw,
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	ImportDataRaw,
@@ -49,6 +51,7 @@ import {
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
 	LoginCodesRaw,
+	UiKitViewsRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -97,6 +100,8 @@ registerModel('ICustomUserStatusModel', new CustomUserStatusRaw(db));
 registerModel('IEmailInboxModel', new EmailInboxRaw(db));
 registerModel('IEmailMessageHistoryModel', new EmailMessageHistoryRaw(db));
 registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
+registerModel('IExchangeCalendarSyncStateModel', new ExchangeCalendarSyncStateRaw(db));
+registerModel('IExchangeSyncLeaseModel', new ExchangeSyncLeaseRaw(db));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
@@ -136,6 +141,7 @@ registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('ILoginCodesModel', new LoginCodesRaw(db));
+registerModel('IUiKitViewsModel', new UiKitViewsRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));

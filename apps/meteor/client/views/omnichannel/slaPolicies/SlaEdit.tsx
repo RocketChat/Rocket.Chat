@@ -1,12 +1,10 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, NumberInput, ButtonGroup } from '@rocket.chat/fuselage';
-import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type SlaEditProps = {
 	isNew?: boolean;

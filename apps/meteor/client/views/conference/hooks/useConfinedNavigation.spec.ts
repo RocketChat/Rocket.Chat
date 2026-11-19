@@ -161,16 +161,16 @@ describe('useConfinedNavigation', () => {
 		it('does not double-wrap on a second mount and leaves navigate clean after both unmount', () => {
 			const original = mockRouter.navigate;
 
-			const first = renderHook(() => useConfinedNavigation());
+			const { unmount: unmountFirst } = renderHook(() => useConfinedNavigation());
 			const firstWrapper = mockRouter.navigate;
 			expect(firstWrapper).not.toBe(original);
 
-			const second = renderHook(() => useConfinedNavigation());
+			const { unmount: unmountSecond } = renderHook(() => useConfinedNavigation());
 			// Second mount sees an already-wrapped navigate (_confined) and leaves it untouched.
 			expect(mockRouter.navigate).toBe(firstWrapper);
 
-			second.unmount();
-			first.unmount();
+			unmountSecond();
+			unmountFirst();
 
 			expect(mockRouter.navigate).toBe(original);
 		});

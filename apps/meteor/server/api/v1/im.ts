@@ -392,7 +392,6 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		let msgs = null;
 		let latest = null;
 		let members = null;
-		let lm = null;
 
 		if (ruserId) {
 			if (!access) {
@@ -408,7 +407,7 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
 
-		lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
+		const lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
 
 		if (subscription) {
 			unreads = subscription.unread ?? null;

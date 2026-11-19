@@ -100,7 +100,7 @@ class NotificationClass {
 			return false;
 		}
 
-		return this.worker(++counter);
+		return this.worker(counter + 1);
 	}
 
 	getNextNotification(): Promise<INotification | null> {

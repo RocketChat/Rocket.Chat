@@ -2,6 +2,7 @@ import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.
 import { useEffect, useRef } from 'react';
 
 import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
+// oxlint-disable-next-line no-restricted-imports -- moves to ui-contexts, see docs/proposals/view-isolation-migration.md phase 0
 import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 

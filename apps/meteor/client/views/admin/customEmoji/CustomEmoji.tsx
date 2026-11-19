@@ -84,7 +84,9 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	});
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => {
+			void refetch();
+		};
 	}, [reload, refetch]);
 
 	return (

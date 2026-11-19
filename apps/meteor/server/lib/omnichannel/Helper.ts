@@ -18,8 +18,13 @@ import type {
 	IOmnichannelRoomExtraData,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
-import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
+import {
+	LivechatInquiryStatus,
+	LivechatPriorityWeight,
+	OmnichannelSourceType,
+	DEFAULT_SLA_CONFIG,
+	UserStatus,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
@@ -836,7 +841,7 @@ export const updateDepartmentAgents = async (
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
-	for await (const agent of upsert) {
+	for (const agent of upsert) {
 		const agentFromDb = await Users.findOneById(agent.agentId, { projection: { _id: 1, username: 1 } });
 		if (!agentFromDb) {
 			continue;

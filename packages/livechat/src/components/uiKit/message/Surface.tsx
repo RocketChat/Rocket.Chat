@@ -3,7 +3,7 @@ import { createContext } from 'preact';
 import { memo, useContext } from 'preact/compat';
 
 type SurfaceContextValue = {
-	dispatchAction: (args: { appId: any; actionId: any; payload: any }) => Promise<unknown> | void;
+	dispatchAction: (args: { appId: any; blockId?: string; actionId: any; payload: any }) => Promise<unknown> | void;
 };
 
 const SurfaceContext = createContext<SurfaceContextValue>({
