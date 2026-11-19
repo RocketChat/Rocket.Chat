@@ -53,7 +53,7 @@ const AdminUserEmailField = ({ control, errors, isLoadingSmtpStatus, isSmtpEnabl
 			) : (
 				<>
 					<FieldRow>
-						<Stack direction='row' align='center' gap={4}>
+						<Stack direction='row' align='center' gap='x4'>
 							<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded}>
 								{t('Mark_email_as_verified')}
 							</FieldLabel>
