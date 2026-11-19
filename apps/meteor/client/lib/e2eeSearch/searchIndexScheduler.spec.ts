@@ -263,6 +263,33 @@ describe('createSearchIndexScheduler', () => {
 
 			expect(roomsOf().slice(0, 3)).toEqual(['b', 'c', 'c']);
 		});
+
+		it('runs the whole catch-up of a room that the user opens at once, and repays the skipped pauses after it', async () => {
+			const { scheduler, backend, requests } = await setup({ rooms: twoRooms, messagesPerRoom: 100 });
+			await backend.setRoomState('old', { lastUpdate: NOW - HOUR, backfillDone: true });
+			const openRoom = () => {
+				scheduler.requestCatchUp(['old']);
+				scheduler.focusRoom('old');
+			};
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(2 * REQUEST_MS + PAUSE_MS + 100);
+			expect(requests).toHaveLength(2);
+
+			openRoom();
+			await jest.advanceTimersByTimeAsync(2 * REQUEST_MS + 10);
+			expect(requests.slice(2).map(({ params }) => [params.roomId, params.type])).toEqual([
+				['old', 'UPDATED'],
+				['old', 'DELETED'],
+			]);
+
+			openRoom();
+			await jest.advanceTimersByTimeAsync(3 * PAUSE_MS - 100);
+			expect(requests).toHaveLength(4);
+			await jest.advanceTimersByTimeAsync(200);
+			expect(requests[4].params).toMatchObject({ roomId: 'old', type: 'UPDATED' });
+			scheduler.stop();
+		});
 	});
 
 	describe('back-off', () => {

@@ -94,6 +94,7 @@ const NOT_ALLOWED = 'error-not-allowed';
 
 /** Backfill pages that opened rooms get in a row before one page goes to another room (3 of every 4 pages). */
 const OPENED_ROOM_PAGES_PER_TURN = 3;
+const MAX_OWED_PAUSES = 2;
 
 /** An HTTP error as `fetch` reports it: the `Response`. */
 type HttpErrorResponse = {
@@ -221,6 +222,10 @@ export const createSearchIndexScheduler = ({
 	const listeners = new Set<() => void>();
 	let wakeUp: (() => void) | undefined;
 	let cancelSleep: (() => void) | undefined;
+	// The catch-up of the room that the user opened skips up to MAX_OWED_PAUSES pauses. The next full pause repays them, so the
+	// average pace and the rate limit stay the same.
+	let owedPauses = 0;
+	let cutPause: (() => void) | undefined;
 
 	const rooms = () =>
 		getRooms()
@@ -319,7 +324,9 @@ export const createSearchIndexScheduler = ({
 		await loadBackfillStates();
 		const active = rooms().filter(({ rid }) => !skippedRooms.has(rid) && !waitingForKey.has(rid));
 
-		for (const { rid } of active) {
+		const opened = focusOrder.at(0);
+		const catchUpOrder = [...active.filter(({ rid }) => rid === opened), ...active.filter(({ rid }) => rid !== opened)];
+		for (const { rid } of catchUpOrder) {
 			if (!catchUpPending.has(rid)) continue;
 			if ((await backend.getRoomState(rid))?.lastUpdate !== undefined)
 				return { kind: 'catch-up', rid, activityMark: activityPending.get(rid) };
@@ -492,7 +499,24 @@ export const createSearchIndexScheduler = ({
 				setStatus(run, 'indexing');
 				const delay = await attempt(run, job);
 				if (run !== generation) return;
-				await sleep(delay);
+				const paced = consecutiveFailures === 0;
+				const canSkip = paced && owedPauses < MAX_OWED_PAUSES;
+				const opened = focusOrder.at(0);
+				if (canSkip && opened !== undefined && catchUpPending.has(opened)) {
+					owedPauses++;
+					continue;
+				}
+				let cut = false;
+				cutPause = canSkip
+					? () => {
+							cut = true;
+							cancelSleep?.();
+						}
+					: undefined;
+				await sleep(paced ? delay * (1 + owedPauses) : delay);
+				cutPause = undefined;
+				if (cut) owedPauses++;
+				else if (paced) owedPauses = 0;
 			} catch (error) {
 				onError(error);
 				consecutiveFailures++;
@@ -559,6 +583,7 @@ export const createSearchIndexScheduler = ({
 		focusRoom(rid) {
 			if (!started) return;
 			focusOrder = [rid, ...focusOrder.filter((focused) => focused !== rid)];
+			if (catchUpPending.has(rid)) cutPause?.();
 			wake();
 		},
 
