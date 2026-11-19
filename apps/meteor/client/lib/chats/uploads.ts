@@ -126,39 +126,31 @@ const handleStorageEvent = (event: StorageEvent): void => {
 
 window.addEventListener('storage', handleStorageEvent);
 
-// Saved uploads belong to the session that kept them, so a logout forgets every room's rather than leaving them for
-// whoever logs in next. The account's own cleanup only empties localStorage, which is not where they are on a
-// workspace that forgets the user session.
-let forgettingSavedUploadsOnLogout = false;
-
-const forgetSavedUploadsOnLogout = (): void => {
-	if (forgettingSavedUploadsOnLogout) {
+/**
+ * Saved uploads belong to the session that kept them, so none of them outlive it for whoever logs in next. Called
+ * along with the rest of the account cleanup, because the storage they are in is not always the one it empties.
+ */
+export const forgetSavedUploads = (): void => {
+	const storage = getActiveStorage();
+	if (!storage) {
 		return;
 	}
-	forgettingSavedUploadsOnLogout = true;
 
-	getDdpSdk().account.onLogout(() => {
-		const storage = getActiveStorage();
-		if (!storage) {
-			return;
+	const storageKeys: string[] = [];
+	for (let index = 0; index < storage.length; index++) {
+		const storageKey = storage.key(index);
+		if (storageKey?.startsWith(STORAGE_KEY_PREFIX)) {
+			storageKeys.push(storageKey);
 		}
+	}
 
-		const storageKeys: string[] = [];
-		for (let index = 0; index < storage.length; index++) {
-			const storageKey = storage.key(index);
-			if (storageKey?.startsWith(STORAGE_KEY_PREFIX)) {
-				storageKeys.push(storageKey);
-			}
-		}
-
-		storageKeys.forEach((storageKey) =>
-			writePersistedUploads(
-				storageKey,
-				[],
-				readPersistedUploads(storageKey).map(({ id }) => id),
-			),
-		);
-	});
+	storageKeys.forEach((storageKey) =>
+		writePersistedUploads(
+			storageKey,
+			[],
+			readPersistedUploads(storageKey).map(({ id }) => id),
+		),
+	);
 };
 
 // Stands in for a file whose bytes are already on the server: it reports the size the user picked, so the chip and the
@@ -570,7 +562,5 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	}
 }
 
-export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => {
-	forgetSavedUploadsOnLogout();
-	return new UploadsStore({ rid, tmid });
-};
+export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI =>
+	new UploadsStore({ rid, tmid });

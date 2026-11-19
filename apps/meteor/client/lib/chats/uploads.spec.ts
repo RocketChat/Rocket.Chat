@@ -1,6 +1,6 @@
 import type { EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload } from './Upload';
-import { createUploadsAPI } from './uploads';
+import { createUploadsAPI, forgetSavedUploads } from './uploads';
 import { sdk } from '../SDKClient';
 import { setStorageBackend } from '../sdk/storage';
 
@@ -511,14 +511,14 @@ describe('UploadsStore on a workspace that forgets the user session', () => {
 		expect(second.get().map(({ id }) => id)).toEqual(['file-1']);
 	});
 
-	it('forgets them on logout, so the next account does not get them', async () => {
+	it('forgets them with the rest of the account, so the next one does not get them', async () => {
 		setStorageBackend('session');
 
 		const store = createUploadsAPI({ rid: 'room' });
 		attach(store);
 		await uploadFile(store, 'file-1');
 
-		logOut();
+		forgetSavedUploads();
 
 		expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
 		expect(store.get()).toHaveLength(0);
