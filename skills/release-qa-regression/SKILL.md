@@ -34,8 +34,15 @@ Recommended commands:
 
 ```bash
 git tag --list | sort -V
-git log --oneline --no-merges <baseline>..<target> -- apps/meteor/client
-git diff --stat <baseline>..<target> -- apps/meteor/client
+git log --oneline --no-merges <baseline>..<target> -- apps/meteor ee packages
+git diff --stat <baseline>..<target> -- apps/meteor ee packages
+```
+
+Before checking commits, map what the release meant to change. List every changeset in the range and read the release notes, then keep that list at hand: a candidate that matches an entry there is probably an intentional change.
+
+```bash
+git diff --name-only <baseline>..<target> -- .changeset
+git diff <baseline>..<target> -- .changeset
 ```
 
 ## High-yield areas
@@ -46,6 +53,12 @@ Start here first:
 - `apps/meteor/client/views/`
 - `apps/meteor/client/components/`
 - `apps/meteor/client/hooks/`
+
+Then cover the code behind user-facing flows:
+
+- `apps/meteor/server/` and `apps/meteor/app/` (REST endpoints and methods the client calls)
+- `ee/` (enterprise features)
+- `packages/` (Livechat widget, UI Kit, shared UI and REST typings)
 
 Most likely regression sources:
 
@@ -60,10 +73,12 @@ Most likely regression sources:
 
 Treat a change as a confirmed regression only when:
 
-- the behavior worked in the baseline release or prior implementation
+- the behavior worked in the baseline release, checked at runtime and not only by reading code
+- the baseline and the target ran with the same edition, licence and settings
 - the target release is broken, misleading, degraded, or materially less usable
 - the change is user-visible, workflow-visible, accessibility-visible, or output-visible
 - there is a concrete code path or introducing PR or commit behind it
+- the introducing PR, its changeset and its ticket do not describe the new behavior as intended
 
 Do not report:
 
@@ -81,10 +96,12 @@ Prefer targeted diffs over broad reading.
 Recommended commands:
 
 ```bash
-git diff --name-only <baseline>..<target> -- apps/meteor/client
-git diff --diff-filter=D --name-status <baseline>..<target> -- apps/meteor/client
-rg -n "moment|date-fns|supportedValuesOf|onBlur|formatDistance|formatDuration|new URL\\(" apps/meteor/client
+git diff --name-only <baseline>..<target> -- apps/meteor ee packages
+git diff --diff-filter=D --name-status <baseline>..<target> -- apps/meteor ee packages
+rg -n "moment|date-fns|supportedValuesOf|onBlur|formatDistance|formatDuration|new URL\\(" apps/meteor/client packages
 ```
+
+Scan `apps/meteor/client` first, then server, `ee/` and `packages/` changes in areas tied to user-facing flows.
 
 Look for:
 
@@ -122,10 +139,13 @@ Do not claim a full pass unless every commit in the release range was classified
 
 For each candidate:
 
-1. Confirm the old behavior in the baseline.
-2. Confirm the new behavior in the target.
-3. Explain the user-facing impact.
-4. Identify the introducing PR or commit.
+1. Confirm the old behavior in the baseline at runtime, with human-like input (typing and clicking as a user would, not only filling fields or calling APIs directly).
+2. Confirm the new behavior in the target the same way.
+3. Rule out the environment. Use the same edition, licence and settings on both. Many apparent regressions are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
+4. Explain the user-facing impact.
+5. Identify the introducing PR or commit.
+6. Check intent. Read the introducing PR's description ("Proposed changes", "Steps to test", "Further comments"), its `.changeset/*.md` and the linked Jira ticket. If they describe the observed behavior, classify it as an intentional change, not a regression. Add a UX note if the result is still rough for users.
+7. Check Jira. Search for an open ticket about the same behavior, and check whether it is already fixed on `develop` or on the release branch. If a ticket exists, add to it instead of reporting a new regression.
 
 Useful commands:
 
@@ -134,6 +154,8 @@ git show <baseline>:<path>
 git diff <baseline>..<target> -- <path>
 git log --oneline --no-merges <baseline>..<target> -- <path>
 git show --stat --summary <commit>
+gh pr view <number> --json body,files -q '.body'
+git show <commit> -- '.changeset/*.md'
 ```
 
 Use quick local checks when useful:
@@ -149,7 +171,7 @@ Use the simplest proof that demonstrates the regression:
 1. UI repro, if the UI exposes the affected path
 2. API repro, if the UI does not expose it cleanly
 3. database verification for data integrity issues
-4. code-only proof only when runtime setup is impractical
+4. code-only proof only when runtime setup is impractical; a finding backed only by code is `suspected`, never `confirmed`
 
 For database checks, keep queries read-only unless cleanup was explicitly requested.
 
@@ -208,11 +230,15 @@ Use this structure:
 **Root cause**: PR #[number] / commit `[sha]`
 - [Behavior-changing code change]
 - [Relevant files]
+
+**Intent check**: [PR / changeset / ticket reviewed; behavior not documented as intended]
 ```
+
+Report security-sensitive findings (a permission, authentication or validation check that changed, or a report that would explain how to bypass one) privately, to the security team or in an internal Jira ticket. Never post them in public GitHub PR comments or issues before the release is out.
 
 ## Output bar
 
 - Prefer a short list of strong findings over a long list of speculative ones.
-- Use `confirmed` only after reproduction or equivalent proof.
+- Use `confirmed` only after reproducing on both the baseline and the target at runtime.
 - Use `suspected` when the code signal is strong but runtime validation is incomplete.
 - Optimize for precision, reproducibility, and debuggability.
