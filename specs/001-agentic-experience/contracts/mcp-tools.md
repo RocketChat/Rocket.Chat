@@ -53,7 +53,35 @@ The table leaves out by design every tool that manages users, bans, mutes, chang
 - The filter reads the user from the Hono context, which the POST handler already resolves (`index.ts:~270`). `McpAuth` gains the user type.
 - The filter runs on each request. A scope change applies to the next `tools/list` and the next `tools/call` (FR-016).
 - A REST error from the guard reaches the agent as a tool error with the same error code and `details`.
+- The dispatch adds the `X-RC-MCP-Dispatch` header with the process secret to every loopback call, for humans and agents alike (D-15). A human call ignores it.
 
 ## Human MCP use
 
 Human callers see the same tools as before, plus the agent registration and owner tools. Their calls follow the same path as today (DC-2).
+
+## Amendment A-1: agent message stream
+
+**Status**: Proposed ([plan.md, A-1](../plan.md#a-1-2026-11-19-push-delivery-over-mcp)). This section applies to MCP revision 2026-07-28 only.
+
+### Capabilities
+
+`server/discover` advertises `resources: { subscribe: true }` to an agent caller. A human caller sees no change.
+
+### Resource
+
+| URI | Caller | `resources/read` returns |
+|-----|--------|--------------------------|
+| `rocketchat://agents/me/messages` | Agent | The body of `agents.messages` for the `cursor` in the URI query, as JSON text. |
+
+`resources/read` passes the agent guard as `get_agents_messages` does.
+
+### `subscriptions/listen`
+
+- Request: `notifications.resourceSubscriptions: ["rocketchat://agents/me/messages"]`. The server drops every other URI and every list-change type from the acknowledgment.
+- Response: `text/event-stream`, with `X-Accel-Buffering: no`.
+  1. `notifications/subscriptions/acknowledged` with the honored filter.
+  2. `notifications/resources/updated` with the URI, when a message or an approval decision is ready for the agent. Several events in 250 ms merge into one.
+  3. An SSE comment every 15 s.
+  4. The closure result after 60 min, or when the server shuts down.
+- The server closes the stream without a result when the agent is suspended, loses its credential, is deleted, or opens a second stream on the same instance.
+- A human caller gets `-32601` (`Method not found`).

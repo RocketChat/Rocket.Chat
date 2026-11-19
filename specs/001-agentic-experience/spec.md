@@ -26,6 +26,14 @@
 - Q: Who controls the rooms an agent may operate in? → A: An admin, through a room allow list per agent.
 - Q: Where do agent replies go? → A: In a room, into the thread of the message that triggered the reply. In a direct message with a human, into the conversation itself.
 
+### Session 2026-11-19
+
+- Q: Where may an agent credential be used? → A: Agent calls go through the workspace MCP server only. The REST API refuses an agent credential. DDP accepts it for subscriptions only (see below).
+- Q: When the MCP server is disabled or the workspace lacks its license, what happens to agents? → A: Agents cannot register or call the system. Their messages and settings stay. They work again when the MCP server comes back.
+- Q: Over DDP, may an agent only subscribe to events, or may it also call methods? → A: Subscriptions only. DDP accepts an agent credential to deliver events from the agent's allowed rooms and direct messages, and refuses every agent method call.
+- Q: Which events may an agent receive over a DDP subscription? → A: Every event in a room or direct message whose history the agent's effective scope lets it read. The reply mode decides what the agent responds to, not what it may read.
+- Q: Must the audit trail record each refused agent call on REST or a DDP method? → A: Yes, with at most one entry per agent per entry point per minute.
+
 ## Delivery Constraints *(mandatory for this feature)*
 
 ### DC-1: Fastest path to delivery
@@ -37,7 +45,7 @@
 
 ### DC-2: No shortcut on access scope
 
-- The following requirements MUST ship in full form: FR-004, FR-009, FR-013, FR-014, FR-015, FR-016, FR-017, FR-022, FR-031, FR-037, FR-038, FR-039, FR-040, FR-043, and FR-050.
+- The following requirements MUST ship in full form: FR-004, FR-009, FR-013, FR-014, FR-015, FR-016, FR-017, FR-022, FR-031, FR-037, FR-038, FR-039, FR-040, FR-043, FR-050, FR-053, FR-054, and FR-055.
 - A shortcut MUST NOT widen what an agent can read or do beyond its effective scope and room allow list.
 - A shortcut MUST NOT break existing bot accounts, personal access tokens, integrations, or MCP use by human users.
 - The constitution rules still apply to every shortcut, including tests for the behavior that ships.
@@ -89,6 +97,8 @@ A developer connects an agent framework, such as Mastra, to the workspace. The a
 5. **Given** an agent credential, **When** the agent tries to register another agent on any path, **Then** the system denies the call.
 6. **Given** a new agent, **When** the agent lists the rooms it can reach, **Then** the list is empty until an admin authorizes rooms.
 7. **Given** two agents registered through two different paths, **When** a member opens their info panels, **Then** both show the same agent type, owner, and capability information.
+8. **Given** an agent credential, **When** the agent calls the REST API directly or calls a DDP method, **Then** the system refuses the call, names the MCP server as the entry point, and records the refusal in the audit trail.
+9. **Given** an agent credential, **When** the agent subscribes over DDP to a room on its allow list, **Then** the agent receives the room events only if its effective scope lets it read that room's history.
 
 ---
 
@@ -179,10 +189,10 @@ An admin finds an agent in the existing user administration. An admin or the own
 - An agent is suspended while its approval card is open: the card still records a decision, and the agent receives it after reactivation.
 - An agent calls a tool that creates a room or a discussion: the new room joins the agent room allow list only if the agent scope allows room creation.
 - An existing bot account keeps working unchanged, with its current credentials.
-- The MCP server is disabled or unlicensed: no agent can register on an MCP-based path, and registered agents keep the same scope rules over the REST API.
+- The MCP server is disabled or unlicensed: no agent can register, and every registered agent call fails. DDP refuses agent logins too. The agent messages and settings stay. The agents work again when the MCP server comes back.
 - One owner registers the same agent framework twice, or on two paths: the system creates two separate agents, each with its own credential.
 - A registration waits for human approval and nobody acts on it: the registration expires and creates no agent.
-- Two agents in ambient mode share a room: an agent message reaches the other agent only through a mention, so the two agents do not reply to each other in a loop.
+- Two agents in ambient mode share a room: through the FR-042 tool, an agent message reaches the other agent only through a mention, so the two agents do not reply to each other in a loop. A DDP subscription delivers every message (FR-054), so a harness that reads DDP must apply the same rule itself.
 - A federated or external user views an agent message: the message carries the agent badge wherever the client can show it.
 
 ## Requirements *(mandatory)*
@@ -221,7 +231,7 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 | RP-4 | Pending self-registration: the agent registers without a human, and the agent stays pending until a permitted human approves it in a queue | The human who approves it | Open ecosystems with many agents | Abuse and spam limits on unauthenticated registration |
 | RP-5 | Admin form: an admin creates the agent in the administration area | The admin, or an owner the admin picks | Operators who prefer manual control | Whether it conflicts with the "no manual admin setup" goal |
 | RP-6 | Apps Engine: an installed app declares its agents, and installation registers them | The admin who installs the app | Agents shipped as Marketplace apps | How app permissions map to declared capabilities |
-| RP-7 | REST registration: the same contract as RP-1 over the REST API | Same as RP-1 | Agent frameworks that do not use MCP | Whether it differs from RP-1 at all |
+| RP-7 | REST registration: the same contract as RP-1 over the REST API | Same as RP-1 | Humans who register an agent without an MCP client. The agent itself still calls over MCP (FR-053) | Whether it differs from RP-1 at all |
 
 #### Scoped credential
 
@@ -230,6 +240,9 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 - **FR-017**: The system MUST deny every call outside the effective scope, with an error that names the missing capability or room, and MUST record each denial in the audit trail.
 - **FR-018**: An admin or the owner MUST be able to revoke and rotate an agent credential, and the change MUST take effect for the next call.
 - **FR-019**: An agent MUST NOT be able to log in through the interactive login screen.
+- **FR-053**: The REST API MUST refuse an agent credential, unless the workspace MCP server makes the call on behalf of the agent. The refusal MUST name the MCP server as the entry point for agents.
+- **FR-054**: The realtime connection (DDP) MUST accept an agent credential for subscriptions only. A subscription MUST deliver only events from the allowed rooms and direct messages whose history the agent's effective scope lets it read. The reply mode does not filter DDP events. DDP MUST refuse every agent method call except the login itself.
+- **FR-055**: The audit trail MUST record each refusal under FR-053 and FR-054, with at most one entry per agent per entry point per minute.
 
 #### Room-level authorization
 
@@ -241,7 +254,7 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 #### Reply behavior
 
 - **FR-024**: Each agent MUST have one reply mode: mention, ambient, or autonomous. An admin MUST be able to change it.
-- **FR-025**: An agent in mention mode MUST receive only the messages that mention it in allowed rooms, and the messages in its direct messages. An agent in ambient or autonomous mode MUST receive every message in its allowed rooms and direct messages. A message from another agent MUST reach an agent only when it mentions that agent.
+- **FR-025**: An agent in mention mode MUST receive only the messages that mention it in allowed rooms, and the messages in its direct messages. An agent in ambient or autonomous mode MUST receive every message in its allowed rooms and direct messages. A message from another agent MUST reach an agent only when it mentions that agent. This rule governs the FR-042 tool. DDP subscriptions follow FR-054.
 - **FR-026**: When an agent replies to a message in a room, the reply MUST go to the thread of that message by default.
 - **FR-027**: When an agent replies in a direct message with a human, the reply MUST go to the conversation, not to a thread.
 - **FR-028**: An agent in autonomous mode MUST be able to post a message without a triggering message in the main timeline of an allowed room.
@@ -261,7 +274,7 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 - **FR-036**: The MCP server MUST evaluate its tool catalog against agent needs and add the tools that the requirements in this spec call for.
 - **FR-037**: The workspace MCP server MUST accept an agent credential.
 - **FR-038**: The MCP server MUST list to an agent only the tools in its effective scope.
-- **FR-039**: Every MCP tool call by an agent MUST obey the effective scope and the room allow list, the same way as the REST API.
+- **FR-039**: Every MCP tool call by an agent MUST obey the effective scope and the room allow list.
 - **FR-040**: Search, directory, and autocomplete tools MUST return to an agent only the rooms on its room allow list and the users in those rooms.
 - **FR-041**: The MCP server MUST offer a tool that returns the calling agent's owner, declared capabilities, effective scope, reply mode, and room allow list.
 - **FR-042**: The MCP server MUST offer a tool that returns the messages for the calling agent since a given point, as its reply mode defines them, across its allowed rooms and direct messages.
@@ -290,7 +303,7 @@ The plan's research phase MUST answer each question below and record the answer 
 
 | ID | Question | Requirements it serves | Notes |
 |----|----------|------------------------|-------|
-| RQ-1 | How does an agent harness learn of events: mentions, room messages, direct messages, and approval decisions? Candidates: MCP notifications or subscriptions, a pub/sub channel, webhooks, and polling of the FR-042 tool. | FR-025, FR-034, FR-042, FR-049 | This is message delivery to the agent, not the excluded streaming of agent replies. Polling of FR-042 is the fastest path, if it meets FR-049. |
+| RQ-1 | How does an agent harness learn of events: mentions, room messages, direct messages, and approval decisions? Candidates: MCP notifications or subscriptions, DDP subscriptions (FR-054), a pub/sub channel, webhooks, and polling of the FR-042 tool. | FR-025, FR-034, FR-042, FR-049 | This is message delivery to the agent, not the excluded streaming of agent replies. Polling of FR-042 is the fastest path, if it meets FR-049. |
 | RQ-2 | Can the platform detect or block one credential in use by two harness instances, and at what cost? | FR-052, SH-002 | The answer feeds the next iteration. It does not block this iteration. |
 | RQ-3 | Do the REST API rate limits that the MCP server inherits meet FR-050 and FR-051? If not, which agent-specific guards are needed, for example per-agent limits or a cap on posts at agent start-up? | FR-050, FR-051 | Agents can post in bursts, for example a mass post at start-up. |
 | RQ-4 | Do one agent role and declared capabilities per MCP tool give enough control, or does the agent need finer scope, for example per room or read versus write? | FR-014, FR-015, FR-043 | The spec decides one agent role on the existing permissions. A finer model is a spec change. |
@@ -302,7 +315,7 @@ The plan's research phase MUST answer each question below and record the answer 
 - **Declared capabilities**: The MCP tools that an agent asks for at registration.
 - **Effective scope**: The declared capabilities that both the agent role and the owner's current permissions allow, inside the room allow list.
 - **Room allow list**: The list of rooms where an admin authorizes an agent to operate.
-- **Agent credential**: A secret that authenticates one agent on the MCP server and the REST API. It holds an issue date and a status (active, revoked).
+- **Agent credential**: A secret that authenticates one agent on the MCP server, and on DDP for subscriptions only. It holds an issue date and a status (active, revoked).
 - **Registration path**: A way for an agent to come to exist, such as the MCP tool, an OAuth consent, or a registration token. Every path produces the same agent entity.
 - **Agent owner**: The human identity that authorized the agent registration. The info panel shows the owner, and the MCP server returns it.
 - **Reply mode**: How an agent receives messages: mention, ambient, or autonomous.
@@ -317,7 +330,7 @@ The plan's research phase MUST answer each question below and record the answer 
 - **SC-002**: A developer registers an agent and posts a first reply in an authorized room in under 10 minutes, with the published documentation only.
 - **SC-003**: 100% of agent calls outside the effective scope or room allow list fail, in a test suite that covers every public action and every MCP tool.
 - **SC-004**: A revoked or rotated credential fails on the next call, within 5 seconds of the revocation.
-- **SC-005**: 100% of agent changes, approval decisions, and denied agent calls appear in the audit trail with an actor and a time.
+- **SC-005**: 100% of agent changes, approval decisions, and denied agent calls appear in the audit trail with an actor and a time. Refusals under FR-053 and FR-054 follow the cap in FR-055.
 - **SC-006**: Zero manual room membership steps are needed after an admin sets the room allow list.
 - **SC-007**: 100% of agent replies to room messages land in the thread of the triggering message, in a test that covers the three reply modes.
 - **SC-008**: An approver decides on an approval card with one click, and the agent can read the decision within 5 seconds.
@@ -335,7 +348,7 @@ The plan's research phase MUST answer each question below and record the answer 
 - The approval card asks for sign-off. The agent honors the decision. The platform does not block the agent action itself.
 - The approval card uses the UiKit message surface. UiKit PR #43485 is merged (commit `42f9f7efa46`), so the dependency is in place.
 - The audit trail is the existing platform audit trail.
-- Agent workloads run outside Rocket.Chat and call it over the workspace MCP server or the REST API.
+- Agent workloads run outside Rocket.Chat and call it over the workspace MCP server only. They may receive events over DDP subscriptions.
 - The workspace MCP server keeps its current license and enable setting, and its current behavior for human users.
 - FR-041 and FR-042 are the tool gaps found so far, besides the registration tool. The plan phase reviews the full MCP tool catalog under FR-036.
 - Mobile and desktop clients show the agent badge after the web client (SH-001).

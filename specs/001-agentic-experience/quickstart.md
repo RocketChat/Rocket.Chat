@@ -75,6 +75,20 @@ Register a second agent with `post_agents_approvals_create` and `get_agents_appr
 3. Rotate the credential. Expected: the old token fails, and the new token works.
 4. Try to log in as `qs-agent` on the login screen. Expected: the login fails.
 
+## Scenario 7b: MCP server as the only entry point (FR-053 to FR-055)
+
+Use an agent with `get_agents_messages` and `#general` on its allow list. Contract: [contracts/ddp-agents.md](contracts/ddp-agents.md).
+
+1. `curl -s http://localhost:3000/api/v1/agents.me -H "X-User-Id: $AGENT_ID" -H "X-Auth-Token: $AGENT_TOKEN"`. Expected: `403` with `error-agent-mcp-only` and `details.entryPoint` `/api/v1/mcp`.
+2. Repeat the call five times inside one minute. Expected: the audit trail holds one `agent.entry.refused` entry with the entry point `rest`.
+3. `curl -s http://localhost:3000/api/v1/login -d '{"resume":"'$AGENT_TOKEN'"}' -H "Content-Type: application/json"`. Expected: the login fails.
+4. Open a DDP client on `ws://localhost:3000/websocket` and log in with `{"resume":"<AGENT_TOKEN>"}`. Expected: the login succeeds.
+5. Subscribe to `stream-room-messages` for `GENERAL`. As `alice`, post `no mention here`. Expected: the agent receives the message, whatever its reply mode.
+6. Subscribe to `stream-room-messages` for a room off the allow list. Expected: `nosub` with an error.
+7. Call the method `sendMessage`. Expected: `error-agent-mcp-only`. The audit trail holds one `agent.entry.refused` entry with the entry point `ddp-method`.
+8. Remove `#general` from the allow list. Expected: the server closes the socket. After a new login, the subscription to `GENERAL` gets `nosub`.
+9. Turn off `MCP_Enabled`. Expected: the socket closes, the DDP login fails with `error-agent-mcp-unavailable`, and `agents.register` fails for the admin. Turn it back on. Expected: the agent calls and the DDP login work again with the same token.
+
 ## Scenario 8: No regression (DC-2)
 
 - An existing bot account posts with its current credentials, and the message shows the Bot tag only.
@@ -85,8 +99,20 @@ Register a second agent with `post_agents_approvals_create` and `get_agents_appr
 ```bash
 cd apps/meteor
 yarn testunit                                        # guard, scope, reply placement, rate counter
-yarn .testapi 'tests/end-to-end/api/agents*.ts'       # REST and MCP scope suite (SC-003)
+yarn .testapi 'tests/end-to-end/api/agents*.ts'       # MCP scope suite (SC-003), REST refusal, DDP subscriptions
 yarn test:e2e --grep agent                           # badge, admin allow list, approval card
 ```
 
 The API test suite covers every route in the agent tool table and a sample of routes outside it (SC-003). See [plan.md](plan.md#testing).
+
+## Amendment A-1: Push stream (proposed, F-9)
+
+Run this scenario only after F-9 ships. It uses an MCP client on revision 2026-07-28.
+
+1. The harness sends `subscriptions/listen` for `rocketchat://agents/me/messages`. Expect the acknowledgment first.
+2. A human mentions the agent in an allowed room. Expect `notifications/resources/updated` within 1 s.
+3. The harness reads the resource with its cursor. Expect the mention.
+4. The owner suspends the agent. Expect the stream to close with no closure result.
+5. Kill the stream and post a message, then reopen it and read from the cursor. Expect the message, with no loss.
+
+Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-agent-message-stream).

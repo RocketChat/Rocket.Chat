@@ -12,14 +12,18 @@ Every endpoint uses the validated `API.v1.get()` / `.post()` pattern, with reque
 | `error-agent-rate-limited` | 429 | Post 61 inside the window. `details.retryAfter` gives the seconds to wait. The `Retry-After` header carries the same value. |
 | `error-not-an-agent` | 403 | A human calls an agent-only endpoint. |
 | `error-agent-cannot-register` | 403 | An agent calls `agents.register`. |
+| `error-agent-mcp-only` | 403 | An agent calls a REST route directly, not through the MCP server (FR-053). `details.entryPoint` holds `/api/v1/mcp`. |
+| `error-agent-mcp-unavailable` | 403 | `agents.register` runs while the MCP server is off or unlicensed (D-18). |
 
-The guard writes an `agent.call.denied` audit event for each of the first four errors.
+The guard writes an `agent.call.denied` audit event for each of the first four errors. It writes `agent.entry.refused` for `error-agent-mcp-only`, at most once per agent per minute (FR-055).
+
+An agent reaches every endpoint below only through an MCP tool. The examples show the REST shapes that the tools return.
 
 ## Human endpoints
 
 ### `POST agents.register` (FR-007 to FR-014)
 
-Permission: `register-agents`. The caller must not be an agent.
+Permission: `register-agents`. The caller must not be an agent. The MCP server must be enabled and licensed (D-18).
 
 Request:
 
@@ -141,4 +145,4 @@ Returns the approval of the calling agent. Another agent gets `404`.
 
 ## Route coverage for the guard
 
-The guard denies every route that is not in the agent tool table ([mcp-tools.md](mcp-tools.md)). The `agents.*` human endpoints are not in the table, so an agent cannot call them.
+The guard denies every agent request that does not come from the MCP dispatch. It then denies every route that is not in the agent tool table ([mcp-tools.md](mcp-tools.md)). The `agents.*` human endpoints are not in the table, so an agent cannot call them.
