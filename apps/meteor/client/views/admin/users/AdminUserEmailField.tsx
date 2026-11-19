@@ -1,11 +1,10 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow, Icon, Skeleton, Stack, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { validateEmail } from '@rocket.chat/tools';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { Control, FieldErrors } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
@@ -18,7 +17,7 @@ type AdminUserEmailFieldProps = {
 };
 
 const AdminUserEmailField = ({ control, errors, isLoadingSmtpStatus, isSmtpEnabled, isVerificationNeeded }: AdminUserEmailFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const emailId = useId();
 	const verifiedId = useId();
 
