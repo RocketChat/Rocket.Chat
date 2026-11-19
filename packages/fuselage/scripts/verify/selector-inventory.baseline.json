@@ -71,8 +71,7 @@
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-color-primary {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-style-headline {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box.rcx-\\@s6mi60{margin:0.75rem !important;}.rcx-box.rcx-\\@19aubzx{margin:2rem !important;}.rcx-box.rcx-\\@1kgm1vs{-webkit-align-items:c",
-		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {",
-		"packages/fuselage/src/components/Skeleton/Skeleton.styles.scss: @extend .rcx-box;"
+		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {"
 	],
 	"rcx-bubble": [
 		"apps/meteor/client/views/room/body/UploadProgress/UploadProgressIndicator.tsx: & .rcx-bubble__item {"
@@ -103,9 +102,6 @@
 	"rcx-grid": [
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
-	],
-	"rcx-message-divider": [
-		"packages/fuselage/src/components/Divider/Divider.styles.scss: .rcx-message-divider.rcx-divider--labelled {"
 	],
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
