@@ -1,6 +1,6 @@
 export type { IExchangeProvider } from './definition/IExchangeProvider';
 export type * from './definition/types';
-export { ExchangeError, isExchangeError } from './errors';
+export { ExchangeError, FATAL_CODES, isExchangeError } from './errors';
 export type { ExchangeErrorCode } from './errors';
 export { logger } from './logger';
 export { scrubForLog, scrubText } from './scrub';
@@ -17,8 +17,10 @@ export {
 	setCalendarSyncWindowDays,
 	setExchangeProvider,
 } from './registry';
-export { MAILBOX_CONCURRENCY } from './sync/limits';
+export { AVATAR_DELETE_CONCURRENCY, MAILBOX_CONCURRENCY } from './sync/limits';
+export { forEachWithConcurrency } from './sync/forEachWithConcurrency';
+export { iterateMailboxCandidates, resolveMailbox } from './sync/resolveMailboxes';
 export { runCalendarSync } from './sync/calendar/runCalendarSync';
 export type { CalendarSyncRunSummary } from './sync/calendar/runCalendarSync';
 export { syncCalendarForUser } from './sync/calendar/syncCalendarForUser';
-export { whenSyncsIdle } from './sync/syncLease';
+export { acquireSyncLease, whenSyncsIdle } from './sync/syncLease';
