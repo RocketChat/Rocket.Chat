@@ -15,6 +15,7 @@ describe('trimTrailingSlashes', () => {
 		expect(trimTrailingSlashes('https://graph.microsoft.com/v1.0//users/')).toBe('https://graph.microsoft.com/v1.0//users');
 	});
 
+	// TODO: migrate to a proper benchmark test
 	it('returns quickly on 100k slashes followed by another character', () => {
 		const value = `https://graph.microsoft.com${'/'.repeat(100_000)}x`;
 
