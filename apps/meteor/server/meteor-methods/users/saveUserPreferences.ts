@@ -87,7 +87,7 @@ const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
-		const { activityFilterHours, activityFilterHidesUnreads } = category;
+		const { activityFilterHours } = category;
 		// A `null` filter clears it, so it is not stored; the REST schema lets it through for that.
 		if (activityFilterHours == null) {
 			delete category.activityFilterHours;
@@ -96,9 +96,6 @@ export const validateSidebarCategories = (categories: ISidebarCategory[]): void 
 				'error-invalid-param',
 				`sidebarCategories activityFilterHours must be between 1 and ${SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS}`,
 			);
-		}
-		if (activityFilterHidesUnreads == null) {
-			delete category.activityFilterHidesUnreads;
 		}
 
 		if (category.default) {

@@ -43,7 +43,6 @@ const appRoot = mockAppRoot()
 		Last_7_days: 'Last 7 days',
 		Last_14_days: 'Last 14 days',
 		Last_30_days: 'Last 30 days',
-		Hide_inactive_unreads: 'Hide inactive unreads',
 		Unreads: 'Unreads',
 		Always_display: 'Always display',
 		Keep_on_top: 'Keep on top',
@@ -82,19 +81,17 @@ const openFilterSubmenu = async (overrides: Partial<ComponentProps<typeof Catego
 	renderMenu(overrides);
 	await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 	await userEvent.click(await screen.findByRole('menuitem', { name: 'Filter' }));
-	return screen.findByRole('menuitemcheckbox', { name: /Hide inactive unreads/ });
+	expect(await screen.findByRole('menuitemradio', { name: 'All' })).toBeInTheDocument();
 };
 
 const persistedChannels = () => mutate.mock.calls[0][0].find((entry: { _id: string }) => entry._id === 'Channels');
 
 describe('the Filter submenu', () => {
-	it('checks the window in use and offers the unreads toggle, off by default', async () => {
-		const toggle = await openFilterSubmenu();
+	it('checks the window in use', async () => {
+		await openFilterSubmenu();
 
-		expect(screen.getByRole('menuitemcheckbox', { name: 'Last 7 days' })).toHaveAttribute('aria-checked', 'true');
-		expect(screen.getByRole('menuitemcheckbox', { name: 'All' })).toHaveAttribute('aria-checked', 'false');
-		expect(toggle).toHaveAttribute('aria-checked', 'false');
-		expect(toggle).not.toHaveAttribute('aria-disabled');
+		expect(screen.getByRole('menuitemradio', { name: 'Last 7 days' })).toHaveAttribute('aria-checked', 'true');
+		expect(screen.getByRole('menuitemradio', { name: 'All' })).toHaveAttribute('aria-checked', 'false');
 	});
 
 	it('offers the windows from the shortest to the longest', async () => {
@@ -103,7 +100,7 @@ describe('the Filter submenu', () => {
 		const windows = ['All', 'Last 24 hours', 'Last 7 days', 'Last 14 days', 'Last 30 days'];
 		// The checked window also renders its checkmark, so the names are matched rather than compared whole.
 		const offered = screen
-			.getAllByRole('menuitemcheckbox')
+			.getAllByRole('menuitemradio')
 			.map((item) => windows.find((name) => item.textContent?.includes(name)))
 			.filter((name): name is string => !!name);
 		expect(offered).toEqual(windows);
@@ -113,46 +110,9 @@ describe('the Filter submenu', () => {
 		const onActivityFilterChange = jest.fn();
 		await openFilterSubmenu({ onActivityFilterChange });
 
-		await userEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Last 14 days' }));
+		await userEvent.click(screen.getByRole('menuitemradio', { name: 'Last 14 days' }));
 
 		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHours: 24 * 14 }));
 		expect(onActivityFilterChange).toHaveBeenCalledWith(24 * 14);
-	});
-
-	it('turns the unreads toggle on for the group', async () => {
-		const toggle = await openFilterSubmenu();
-
-		await userEvent.click(toggle);
-
-		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHours: 24 * 7, activityFilterHidesUnreads: true }));
-	});
-
-	it('turns the unreads toggle off again', async () => {
-		jest.mocked(useUserSidebarCategories).mockReturnValue({
-			rawCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 * 7, activityFilterHidesUnreads: true }],
-			customCategories: [],
-		});
-		const toggle = await openFilterSubmenu({ activityFilterHidesUnreads: true });
-		expect(toggle).toHaveAttribute('aria-checked', 'true');
-
-		await userEvent.click(toggle);
-
-		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHidesUnreads: false }));
-	});
-
-	it('disables the unreads toggle while the group has no window', async () => {
-		jest.mocked(useUserSidebarCategories).mockReturnValue({
-			rawCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHidesUnreads: true }],
-			customCategories: [],
-		});
-		const toggle = await openFilterSubmenu({ activityFilterHours: undefined, activityFilterHidesUnreads: true });
-
-		expect(screen.getByRole('menuitemcheckbox', { name: 'All' })).toHaveAttribute('aria-checked', 'true');
-		expect(toggle).toHaveAttribute('aria-disabled', 'true');
-		expect(toggle).toHaveAttribute('aria-checked', 'true');
-
-		await userEvent.click(toggle);
-
-		expect(mutate).not.toHaveBeenCalled();
 	});
 });
