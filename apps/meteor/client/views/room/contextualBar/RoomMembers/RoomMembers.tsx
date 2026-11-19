@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Select, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
+import { Select, ButtonGroup, Button, Callout, Stack, Text } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -24,7 +24,6 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
-import ContextualbarListSummary from '../../../../components/ContextualbarListSummary';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ListViewport from '../../../../components/ListViewport';
@@ -153,24 +152,31 @@ const RoomMembers = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<FilterBar compact>
-					<FilterBarSearch
-						placeholder={t('Search_by_username')}
-						aria-label={t('Search_by_username')}
-						aria-controls={isSuccess ? membersListId : undefined}
-						value={text}
-						ref={inputRef}
-						onChange={setText}
-					/>
-					<FilterBarFilters>
-						<Select
-							aria-label={t('Status')}
-							options={options}
-							value={type}
-							onChange={(value): void => setType(value as 'online' | 'all')}
+				<Stack grow gap='x8'>
+					<FilterBar compact>
+						<FilterBarSearch
+							placeholder={t('Search_by_username')}
+							aria-label={t('Search_by_username')}
+							aria-controls={isSuccess ? membersListId : undefined}
+							value={text}
+							ref={inputRef}
+							onChange={setText}
 						/>
-					</FilterBarFilters>
-				</FilterBar>
+						<FilterBarFilters>
+							<Select
+								aria-label={t('Status')}
+								options={options}
+								value={type}
+								onChange={(value): void => setType(value as 'online' | 'all')}
+							/>
+						</FilterBarFilters>
+					</FilterBar>
+					{isSuccess && members.length > 0 && (
+						<Text is='span' color='hint' fontScale='p2'>
+							{t('Showing_current_of_total', { current: members.length, total })}
+						</Text>
+					)}
+				</Stack>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced={!isPending}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
@@ -185,9 +191,6 @@ const RoomMembers = ({
 				)}
 				{isSuccess && (
 					<>
-						{members.length > 0 && (
-							<ContextualbarListSummary>{t('Showing_current_of_total', { current: members.length, total })}</ContextualbarListSummary>
-						)}
 						<ListViewport id={membersListId}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
