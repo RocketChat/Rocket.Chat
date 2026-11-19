@@ -23,16 +23,23 @@ const onLeave = jest.fn();
 const onDropped = jest.fn();
 const onSelectNewHost = jest.fn();
 
-const render = (
-	props: { chatVisible?: boolean; participantsVisible?: boolean; hasUnread?: boolean; conferenceUrl?: string | undefined } = {},
-) =>
+type RenderProps = {
+	chatVisible?: boolean;
+	participantsVisible?: boolean;
+	hasUnread?: boolean;
+	screenShareAllowed?: boolean;
+	conferenceUrl?: string | undefined;
+};
+
+const render = (props: RenderProps = {}) =>
 	renderHook(
-		({ chatVisible, participantsVisible, hasUnread, conferenceUrl }) =>
+		({ chatVisible, participantsVisible, hasUnread, screenShareAllowed, conferenceUrl }) =>
 			useProviderPlugin({
 				conferenceUrl,
 				chatVisible,
 				participantsVisible,
 				hasUnread,
+				screenShareAllowed,
 				onToggleChat,
 				onToggleParticipants,
 				onLeave,
@@ -45,6 +52,7 @@ const render = (
 				chatVisible: props.chatVisible ?? false,
 				participantsVisible: props.participantsVisible ?? false,
 				hasUnread: props.hasUnread ?? false,
+				screenShareAllowed: props.screenShareAllowed ?? true,
 			},
 		},
 	);
@@ -85,8 +93,8 @@ describe('useProviderPlugin', () => {
 	// The one message that has to be answered. The plugin's buttons are already on screen by now, and every one
 	// of them renders inactive and unbadged whatever this page is actually showing — so `ready` answers with the
 	// state of each panel it stands in for.
-	it('answers `ready` with the state of both panels and the unread', () => {
-		render({ chatVisible: true, participantsVisible: true, hasUnread: true });
+	it('answers `ready` with the state of both panels, the unread and whether the viewer may share', () => {
+		render({ chatVisible: true, participantsVisible: true, hasUnread: true, screenShareAllowed: false });
 
 		fromPlugin(message('ready'));
 
@@ -94,6 +102,7 @@ describe('useProviderPlugin', () => {
 			{ action: 'rocketchat:videoconf/chat-state', active: true },
 			{ action: 'rocketchat:videoconf/participants-state', active: true },
 			{ action: 'rocketchat:videoconf/chat-unread', unread: true },
+			{ action: 'rocketchat:videoconf/screen-share', allowed: false },
 		]);
 	});
 
@@ -113,7 +122,7 @@ describe('useProviderPlugin', () => {
 		fromPlugin(message('ready'));
 		pluginWindow.postMessage.mockClear();
 
-		rerender({ conferenceUrl: CONFERENCE_URL, chatVisible: false, participantsVisible: true, hasUnread: false });
+		rerender({ conferenceUrl: CONFERENCE_URL, chatVisible: false, participantsVisible: true, hasUnread: false, screenShareAllowed: true });
 
 		expect(posted()).toEqual([{ action: 'rocketchat:videoconf/participants-state', active: true }]);
 	});
@@ -135,7 +144,7 @@ describe('useProviderPlugin', () => {
 		fromPlugin(message('ready'));
 		pluginWindow.postMessage.mockClear();
 
-		rerender({ conferenceUrl: CONFERENCE_URL, chatVisible: true, participantsVisible: false, hasUnread: false });
+		rerender({ conferenceUrl: CONFERENCE_URL, chatVisible: true, participantsVisible: false, hasUnread: false, screenShareAllowed: true });
 
 		expect(posted()).toEqual([{ action: 'rocketchat:videoconf/chat-state', active: true }]);
 	});
@@ -145,9 +154,26 @@ describe('useProviderPlugin', () => {
 		fromPlugin(message('ready'));
 		pluginWindow.postMessage.mockClear();
 
-		rerender({ conferenceUrl: CONFERENCE_URL, chatVisible: false, participantsVisible: false, hasUnread: true });
+		rerender({ conferenceUrl: CONFERENCE_URL, chatVisible: false, participantsVisible: false, hasUnread: true, screenShareAllowed: true });
 
 		expect(posted()).toEqual([{ action: 'rocketchat:videoconf/chat-unread', unread: true }]);
+	});
+
+	// A permission can be taken away or granted mid-call, and the plugin only holds back what it was last told.
+	it('tells the plugin whenever the viewer may or may not share their screen', () => {
+		const { rerender } = render();
+		fromPlugin(message('ready'));
+		pluginWindow.postMessage.mockClear();
+
+		rerender({
+			conferenceUrl: CONFERENCE_URL,
+			chatVisible: false,
+			participantsVisible: false,
+			hasUnread: false,
+			screenShareAllowed: false,
+		});
+
+		expect(posted()).toEqual([{ action: 'rocketchat:videoconf/screen-share', allowed: false }]);
 	});
 
 	describe('what it refuses to act on', () => {

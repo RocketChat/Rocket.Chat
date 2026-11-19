@@ -24,6 +24,7 @@ export const PLUGIN_FEATURES = [
 	'mute-all-guests',
 	'dial-out',
 	'leave',
+	'screen-share',
 ] as const;
 
 export type PluginFeature = (typeof PLUGIN_FEATURES)[number];

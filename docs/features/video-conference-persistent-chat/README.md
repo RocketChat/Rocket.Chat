@@ -819,6 +819,7 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | plugin → window | `self` | `{ participantUuid, micMuted, camMuted, clientMuted, isHost, canControl }` | Where the viewer stands in the call; `canControl` is what offers the call-wide controls |
 | plugin → window | `roster` | `{ participants }` | Who the provider has in the call, the whole list on every change |
 | window → plugin | `chat-unread` | `{ unread }` | The same unread that badges the top bar's chat toggle |
+| window → plugin | `screen-share` | `{ allowed }` | Whether the viewer may start sharing their screen; see [Restricting screen sharing](#restricting-screen-sharing) |
 | window → plugin | `mute` / `mute-video` | `{ participantUuid, muted }` | The conference's own mute, which is the one a host can undo |
 | window → plugin | `admit` / `disconnect` | `{ participantUuid }` | Let somebody in, or hang up on them — turning someone away at the door is the same request as the latter |
 | window → plugin | `spotlight` | `{ participantUuid, active }` | |
@@ -855,6 +856,21 @@ generic "Leave site?" prompt and opens the picker behind it. A user who stays fi
 leaves anyway closes the window without a handover. Browsers show that prompt only on a page the user has
 interacted with, and the call frame counts, so in practice it shows. Once a promotion is in flight, the prompt is
 not shown again.
+
+#### Restricting screen sharing
+
+Whether a user may share their screen in a call is the `videoconf-share-screen` permission, checked against the
+call's room so that a room owner or moderator holds it there whatever their global roles. Every default role has
+it, so nothing changes until an administrator takes it away.
+
+The screen-share button is the provider's, so this window cannot hide it; it tells the plugin instead. It sends
+`screen-share` with every answer to `ready`, before the user can be past the prejoin screen, and again whenever
+the permission changes. Pexip's plugin then turns a press of its button into a toast saying sharing is not
+available, while still letting a presentation that is already running be stopped.
+
+Only the button is held back. The provider is never told, so this is not a security boundary: someone who starts
+a presentation any other way is not stopped. A plugin that does not announce `screen-share` ignores the message,
+and sharing there works as it always did.
 
 Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
 

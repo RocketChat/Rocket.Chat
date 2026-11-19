@@ -7640,6 +7640,8 @@
   "VideoConf_Persistent_Chat_Mode_Thread": "Thread",
   "videoconf-ring-users": "Ring other users when calling",
   "videoconf-ring-users_description": "Permission to ring other users when calling",
+  "videoconf-share-screen": "Share screen in video conferences",
+  "videoconf-share-screen_description": "Permission to share your screen in a video conference whose provider lets Rocket.Chat restrict it",
   "Videos": "Videos",
   "View_All": "View all members",
   "View_all_results": "View all results",

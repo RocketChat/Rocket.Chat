@@ -98,6 +98,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// `video-conference.ring` refuses without it, so a caller who lacks it is offered nothing to press rather
 	// than a button that can only fail.
 	const canRingUsers = usePermission('videoconf-ring-users');
+	// Scoped to the room, so its owners and moderators are granted it there whatever their global roles.
+	const canShareScreen = usePermission('videoconf-share-screen', room.rid);
 
 	// What the chat button's mark says, worked out here because which unread rules a room honours — and whether
 	// its reader asked not to be told about it at all — is the product's business rather than the window's.
@@ -128,6 +130,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		chatVisible,
 		participantsVisible: activePanel === 'members',
 		hasUnread,
+		screenShareAllowed: canShareScreen,
 		onToggleChat: (active) => setActivePanel(active ? 'chat' : undefined),
 		onToggleParticipants: (active) => setActivePanel(active ? 'members' : undefined),
 		// The same thing hanging up does for a provider that runs the call in here: report the departure and

@@ -43,6 +43,11 @@ type UseProviderPluginOptions = {
 	participantsVisible: boolean;
 	/** Whether the chat has anything unread, which is what that control's badge reflects. */
 	hasUnread: boolean;
+	/**
+	 * Whether the viewer may start sharing their screen. The provider's page owns that button, so this is only
+	 * honoured by a plugin that can hold it back, and nothing stops a presentation already running.
+	 */
+	screenShareAllowed: boolean;
 	/** The plugin's chat control was used: open or close the chat panel. */
 	onToggleChat: (active: boolean) => void;
 	/** The plugin's people control was used: open or close the members panel. */
@@ -151,6 +156,7 @@ export const useProviderPlugin = ({
 	chatVisible,
 	participantsVisible,
 	hasUnread,
+	screenShareAllowed,
 	onToggleChat,
 	onToggleParticipants,
 	onLeave,
@@ -171,6 +177,8 @@ export const useProviderPlugin = ({
 	participantsVisibleRef.current = participantsVisible;
 	const hasUnreadRef = useRef(hasUnread);
 	hasUnreadRef.current = hasUnread;
+	const screenShareAllowedRef = useRef(screenShareAllowed);
+	screenShareAllowedRef.current = screenShareAllowed;
 	const onToggleChatRef = useRef(onToggleChat);
 	onToggleChatRef.current = onToggleChat;
 	const onToggleParticipantsRef = useRef(onToggleParticipants);
@@ -259,6 +267,9 @@ export const useProviderPlugin = ({
 					postToPlugin('chat-state', { active: chatVisibleRef.current });
 					postToPlugin('participants-state', { active: participantsVisibleRef.current });
 					postToPlugin('chat-unread', { unread: hasUnreadRef.current });
+					// The plugin lets everyone share until told otherwise, so a viewer who may not is told before
+					// they are past the prejoin screen and can reach the button.
+					postToPlugin('screen-share', { allowed: screenShareAllowedRef.current });
 					break;
 
 				case 'connected':
@@ -340,6 +351,10 @@ export const useProviderPlugin = ({
 	useEffect(() => {
 		postToPlugin('chat-unread', { unread: hasUnread });
 	}, [hasUnread, postToPlugin]);
+
+	useEffect(() => {
+		postToPlugin('screen-share', { allowed: screenShareAllowed });
+	}, [screenShareAllowed, postToPlugin]);
 
 	const actions = useMemo(
 		(): ProviderPluginActions => ({
