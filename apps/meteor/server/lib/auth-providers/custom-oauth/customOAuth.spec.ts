@@ -253,7 +253,7 @@ describe('CustomOAuthStrategy', () => {
 			(field) => {
 				const strategy = env.createStrategy({ [field]: undefined });
 				const identity = { id: 'external-id', username: 'alice', email: 'alice@example.com', name: 'Alice Smith' };
-				expect(strategy.normalizeIdentity({ ...identity })).toEqual(identity);
+				expect(strategy.normalizeIdentity({ ...identity })).toEqual({ ...identity, displayName: identity.name });
 			},
 		);
 
@@ -276,8 +276,22 @@ describe('CustomOAuthStrategy', () => {
 				username: 'alice',
 				email: 'alice@example.com',
 				name: 'Alice Smith',
+				displayName: 'Alice Smith',
 				avatarUrl: 'https://example.com/avatar',
 				custom_claim: [{ nested_claim: true }],
+			});
+		});
+
+		it('replaces the provider display name with the resolved name', () => {
+			const strategy = env.createStrategy({ nameField: '{{profile.first}} {{profile.last}}' });
+			const identity = { id: 'external-id', displayName: 'alice.smith', profile: { first: 'Alice', last: 'Smith' } };
+			expect(strategy.normalizeIdentity(identity)).toMatchObject({ name: 'Alice Smith', displayName: 'Alice Smith' });
+		});
+
+		it('keeps the provider display name when no name resolves', () => {
+			expect(env.createStrategy().normalizeIdentity({ id: 'external-id', displayName: 'Alice' })).toMatchObject({
+				name: undefined,
+				displayName: 'Alice',
 			});
 		});
 
@@ -396,6 +410,31 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.originalAccountOperation).toHaveBeenCalled();
 			expect(env.runCallback).not.toHaveBeenCalled();
 			expect(env.startSession).not.toHaveBeenCalled();
+		});
+
+		it('looks up an email key without a username', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsersDistinctServices: true }, 'github');
+			const data = { id: 'external-id', email: 'alice@example.com' };
+			await login(data);
+			expect(env.users.findOneByEmailAddress).toHaveBeenCalledWith('alice@example.com');
+			expect(env.originalAccountOperation).toHaveBeenCalledWith('github', data, {});
+		});
+
+		it('merges into the user found by an email key without a username', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsers: true, mergeUsersDistinctServices: true }, 'github');
+			env.users.findOneByEmailAddress.mockResolvedValue(makeUser({ username: undefined, name: undefined }));
+			await login({ id: 'external-id', email: 'alice@example.com' });
+			expect(env.updater.set).toHaveBeenCalledWith('services.github.id', 'external-id');
+			expect(env.users.updateFromUpdater).toHaveBeenCalled();
+			expect(env.session.commitTransaction).toHaveBeenCalled();
+		});
+
+		it('does not look up an email key when the identity has no email', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsersDistinctServices: true }, 'github');
+			await login({ id: 'external-id', username: 'alice' });
+			for (const method of lookupMethods) {
+				expect(env.users[method]).not.toHaveBeenCalled();
+			}
 		});
 
 		it('post-processes an existing user before the original account operation', async () => {
@@ -784,6 +823,7 @@ describe('CustomOAuthStrategy', () => {
 				login: 'alice',
 				username: 'alice',
 				name: 'alice',
+				displayName: 'alice',
 				serverURL: 'https://identity.example.com',
 			});
 		});

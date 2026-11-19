@@ -33,7 +33,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					profileFields: ['id', 'displayName', 'emails'],
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
-					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
+					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string; email?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
 					const user = await Accounts.updateOrCreateUserFromExternalService(
@@ -44,7 +44,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 							name: profile.displayName,
 							...restProfile,
 							..._json,
-							email: profile?.emails?.[0]?.value,
+							email: profile?.emails?.[0]?.value ?? restProfile.email,
 						},
 						{},
 					);
