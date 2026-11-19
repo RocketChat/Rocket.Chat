@@ -13,6 +13,12 @@ const MASK_SMOOTHING = 0.5;
 /** Radius, in mask texels (0 to 4), averaged around each texel: higher softens the edge further, 0 leaves it as segmented. */
 const MASK_FEATHER = 2;
 
+/**
+ * Added to the background score (0 to about 0.3): higher pulls the edge into the person and trims the halo, but very
+ * high values start cutting into hair and shoulders; 0 leaves the edge where the segmenter put it.
+ */
+const MASK_SHRINK = 0.1;
+
 const featherRadius = Math.min(4, Math.max(0, Math.round(MASK_FEATHER)));
 
 const featheredScore = featherRadius === 0 ? 'score(texel)' : 'feathered(texel)';
@@ -44,7 +50,7 @@ float feathered(ivec2 texel) {
 }
 void main() {
 	ivec2 texel = ivec2(gl_FragCoord.xy);
-	float raw = ${featheredScore};
+	float raw = clamp(${featheredScore} + ${MASK_SHRINK.toFixed(3)}, 0.0, 1.0);
 	fragColor = vec4(mix(raw, texelFetch(u_previous, texel, 0).r, u_smoothing), 0.0, 0.0, 1.0);
 }`;
 
