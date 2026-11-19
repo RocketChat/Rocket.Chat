@@ -11,3 +11,4 @@ Renders `Label` and `LabelInfo` with Tamagui frames compiled to static CSS. Thei
 - `is` is a closed set, `label`, `span` or `legend`; `legend` renders the legend of a fieldset. It took any element type before.
 - `style` and the Box styling props (`marginInline`, `color`, `fontScale` and the like) are no longer accepted.
 - The required mark and `LabelInfo` carry their own 4px inline spacing; it no longer comes from Box classes.
+- The label states its type scale (`p2m`) in its frame, so a class that sets `font-size`, `line-height`, `font-weight` or `letter-spacing` on a `Label` no longer applies.

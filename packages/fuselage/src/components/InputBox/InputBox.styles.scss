@@ -314,11 +314,13 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	@include use-text-ellipsis;
 }
 
-// The box of the label the wrapper is, which the Label stylesheet gave it while the wrapper rendered a Label
+// The look of the label the wrapper is, which the Label stylesheet gave it while the wrapper rendered a Label
 .rcx-input-box__wrapper {
 	display: flex;
 
 	cursor: default;
 
 	color: colors.font(default);
+
+	@include use-font-scale(p2m);
 }

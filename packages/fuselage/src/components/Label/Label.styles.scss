@@ -1,7 +1,0 @@
-@use '../../styles/typography.scss' as *;
-
-// Web only. The type scale, which stays here until the Tamagui config has font tokens for the frame to name (see
-// Deviations).
-.rcx-label {
-	@include use-font-scale(p2m);
-}
