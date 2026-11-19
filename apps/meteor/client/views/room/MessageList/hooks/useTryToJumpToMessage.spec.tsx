@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { MutableRefObject } from 'react';
 import type { WindowVirtualizerHandle } from 'virtua';
 
@@ -47,7 +47,8 @@ const renderJumpHook = (
 		messages = [{ _id: 'another-msg' }],
 		leadingRows = 0,
 		scrollToIndex = jest.fn(),
-	}: { messages?: { _id: string }[]; leadingRows?: number; scrollToIndex?: jest.Mock } = {},
+		routeParameters = {},
+	}: { messages?: { _id: string }[]; leadingRows?: number; scrollToIndex?: jest.Mock; routeParameters?: Record<string, string> } = {},
 ) =>
 	renderHook(
 		() =>
@@ -60,7 +61,7 @@ const renderJumpHook = (
 			}),
 		{
 			wrapper: mockAppRoot()
-				.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }) })
+				.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }), getRouteParameters: () => routeParameters })
 				.withEndpoint('GET', '/v1/chat.getMessage', (() => {
 					if (message instanceof Error) {
 						throw message;
@@ -158,4 +159,27 @@ it('should count the rows above the first message when scrolling to the target',
 	);
 
 	await waitFor(() => expect(scrollToIndex).toHaveBeenCalledWith(2, { align: 'center' }));
+});
+
+it('should leave a reply to the thread that is already open', async () => {
+	renderJumpHook(
+		'room-1',
+		{ ...message, rid: 'room-1', tmid: 'parent-msg-1' },
+		{
+			routeParameters: { tab: 'thread', context: 'parent-msg-1' },
+		},
+	);
+
+	await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+
+	expect(mockedSetIsJumpingToMessage).not.toHaveBeenCalledWith(true);
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
+});
+
+it('should jump to the thread parent when a permalink targets a reply of a thread that is not open', async () => {
+	renderJumpHook('room-1', { ...message, rid: 'room-1', tmid: 'parent-msg-1' });
+
+	await waitFor(() =>
+		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledWith({ _id: 'parent-msg-1', rid: 'room-1' }),
+	);
 });

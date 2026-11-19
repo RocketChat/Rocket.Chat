@@ -20,7 +20,7 @@ export const findChannelsWithNumberOfMessages = async ({
 	channels: {
 		room: {
 			_id: IRoom['_id'];
-			name: IRoom['name'] | IRoom['fname'];
+			name: IRoom['name'];
 			ts: IRoom['ts'];
 			t: IRoom['t'];
 			_updatedAt: IRoom['_updatedAt'];

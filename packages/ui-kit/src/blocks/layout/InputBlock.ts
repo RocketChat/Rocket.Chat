@@ -5,14 +5,18 @@ import type { ConversationsSelectElement } from '../elements/ConversationsSelect
 import type { DatePickerElement } from '../elements/DatePickerElement.js';
 import type { DateTimePickerElement } from '../elements/DateTimePickerElement.js';
 import type { EmailTextInputElement } from '../elements/EmailTextInputElement.js';
+import type { ExternalSelectElement } from '../elements/ExternalSelectElement.js';
+import type { FileInputElement } from '../elements/FileInputElement.js';
 import type { LinearScaleElement } from '../elements/LinearScaleElement.js';
 import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement.js';
 import type { MultiConversationsSelectElement } from '../elements/MultiConversationsSelectElement.js';
+import type { MultiExternalSelectElement } from '../elements/MultiExternalSelectElement.js';
 import type { MultiStaticSelectElement } from '../elements/MultiStaticSelectElement.js';
 import type { MultiUsersSelectElement } from '../elements/MultiUsersSelectElement.js';
 import type { NumberInputElement } from '../elements/NumberInputElement.js';
 import type { PlainTextInputElement } from '../elements/PlainTextInputElement.js';
 import type { RadioButtonElement } from '../elements/RadioButtonElement.js';
+import type { RichTextInputElement } from '../elements/RichTextInputElement.js';
 import type { StaticSelectElement } from '../elements/StaticSelectElement.js';
 import type { TimePickerElement } from '../elements/TimePickerElement.js';
 import type { ToggleSwitchElement } from '../elements/ToggleSwitchElement.js';
@@ -28,9 +32,12 @@ export type InputBlock = LayoutBlockish<{
 		| ConversationsSelectElement
 		| DatePickerElement
 		| DateTimePickerElement
+		| ExternalSelectElement
+		| FileInputElement
 		| LinearScaleElement
 		| MultiChannelsSelectElement
 		| MultiConversationsSelectElement
+		| MultiExternalSelectElement
 		| MultiStaticSelectElement
 		| MultiUsersSelectElement
 		| PlainTextInputElement
@@ -41,6 +48,7 @@ export type InputBlock = LayoutBlockish<{
 		| UsersSelectElement
 		| CheckboxElement
 		| RadioButtonElement
+		| RichTextInputElement
 		| TimePickerElement
 		| ToggleSwitchElement;
 	hint?: PlainText;

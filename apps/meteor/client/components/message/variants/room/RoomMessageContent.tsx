@@ -17,10 +17,8 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
 import UrlPreviews from '../../content/UrlPreviews';
-import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
-import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useMessageListReadReceipts } from '../../list/MessageListContext';
+import { useMessageListIsBroadcast, useMessageListOembedEnabled, useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 export type RoomMessageContentProps = {
@@ -33,8 +31,8 @@ export type RoomMessageContentProps = {
 
 const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
-	const { enabled: oembedEnabled } = useOembedLayout();
-	const broadcast = useMessageBroadcast(message);
+	const oembedEnabled = useMessageListOembedEnabled();
+	const broadcast = useMessageListIsBroadcast();
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };

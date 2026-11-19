@@ -1,8 +1,8 @@
 # Fuselage components on Tamagui
 
-The single rulebook for moving a Fuselage component to Tamagui, compiled to static CSS by the app's zero-runtime build. It holds the workflow, the rules, the Definition of Done, the policies decided once, and the two tables that grow with the program: [Deviations](#deviations) and [Precedents](#precedents). For how to design a component in general, see [building-components.md](building-components.md); for the props a component accepts, [ADR-0011](../adr/0011-fuselage-components-take-no-styling-props.md).
+The single rulebook for moving a Fuselage component to Tamagui, compiled to static CSS by the app's zero-runtime build. It holds the workflow, the rules, the Definition of Done, the policies decided once, and the two tables that grow with the program: [Deviations](#deviations) and [Precedents](#precedents). For how to design a component in general, see [building-components.md](building-components.md); for the props a component accepts, [ADR-0011](../adr/0011-fuselage-components-take-no-styling-props.md); for the platform-neutral contract every migrated component follows, [ADR-0013](../adr/0013-fuselage-one-contract-web-and-native-renderers.md).
 
-Each component is rewritten fresh from `develop`. API changes are accepted: every consumer in `apps/`, `packages/` and `ee/` moves in the same commit, with no deprecated shims. The pilot (#42942, frozen at `7dc65c82954`) is a reference only, read against its own parent commit, never against `develop`.
+Each component is rewritten fresh from `develop`. API changes are accepted: every consumer in `apps/`, `packages/` and `ee/` moves in the same commit, with no deprecated shims. The one exception is `onClick`, kept on web as a `@deprecated` alias of `onPress` for one to two majors ([ADR-0013](../adr/0013-fuselage-one-contract-web-and-native-renderers.md)). The pilot (#42942, frozen at `7dc65c82954`) is a reference only, read against its own parent commit, never against `develop`.
 
 ## How a component is migrated
 
@@ -40,13 +40,13 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | No text node directly in a `View` | jest dev-mode check ([`textNodes.spec.tsx`](../../packages/fuselage/src/testing/textNodes.spec.tsx)) |
 | Raw layout and style props don't grow | `scripts/scan-raw-layout.mjs`, `scripts/scan-style-props.mjs` ratchets |
 | No new override of a migrated part without `[class]`; CSS hacks don't grow | selector inventory and CSS-hack ratchets ([`selector-inventory.mjs`](../../packages/fuselage/scripts/verify/selector-inventory.mjs), [`css-hacks.mjs`](../../packages/fuselage/scripts/verify/css-hacks.mjs)), run by `yarn lint` |
-| Class contract, `.d.ts` and accessibility tree changes are visible | the DoD script diffs ([`dod.mjs`](../../packages/fuselage/scripts/verify/dod.mjs), [`story-classes.mjs`](../../packages/fuselage/scripts/verify/story-classes.mjs), [`dts-diff.mjs`](../../packages/fuselage/scripts/verify/dts-diff.mjs)); each change is a G6 row |
+| `.d.ts` and accessibility tree changes are visible; class changes are reported as an internal regression net (G0) | the DoD script diffs ([`dod.mjs`](../../packages/fuselage/scripts/verify/dod.mjs), [`story-classes.mjs`](../../packages/fuselage/scripts/verify/story-classes.mjs), [`dts-diff.mjs`](../../packages/fuselage/scripts/verify/dts-diff.mjs)); each `.d.ts` or accessibility tree change is a G6 row |
 | Size budget per batch | size-report CI job ([`sizeReport.mjs`](../../apps/meteor/vite/sizeReport.mjs)) |
 
 ### Enforced by review
 
 - **A frame gets only variants, a named `className` (after the `rcx-*` classes) and `children`.** It is declared in the module that renders it. A fixed tag is `render: '<tag>'`; a closed set of tags is one branch per tag, each with a literal element.
-- **Consumer attributes go on the literal render element:** `{...ariaAndDataAttributes(props)}` first, then each attribute **by name**, then any overriding default. The props type lists exactly what the component supports, built from the `ElementAttributes` groups with `Omit` in the type. Handlers are forwarded only where callers need them.
+- **Consumer attributes go on the literal render element:** `{...ariaAndDataAttributes(props)}` first, then each attribute **by name**, then any overriding default. The props type is the component's neutral contract (`<Component>.contract.ts`: declared variations, `children`, `role`, a declared subset of `aria-*`, `testID`, `ref`, and semantic events such as `onPress`) intersected with a typed platform extension; on web the extension adds `id`, `data-*`, `className`, `href`/`rel` and the closed `is` set. Shared code type-checks against the contract alone, and no DOM event type appears in it. The contract's `ref` is a `{ focus(), blur() }` handle, which the element the web hands out already satisfies; geometry is read with the platform-resolved `measure(ref)` utility, never from the handle. Handlers are forwarded only where callers need them.
 - **No consumer `style`.** The one exception is Tooltip under `Position`. An internal open value is a registered `@property` custom property on the component's own element.
 - **Text frames are `Text`-based.** No `Box`, `StylingBox` or `useStylingProps` inside a migrated component.
 - **Parent state is `group`.** `:has()` and sibling rules become variants. Plain CSS is allowed only in the categories below, commented.
@@ -59,15 +59,15 @@ Every component, with the evidence table in the pull request.
 
 | Gate | Requirement | Checked by |
 | --- | --- | --- |
-| **G0** Characterization | Specs (forwarding, keyboard, handlers, accessibility snapshot, class contract) land in a commit below the component, green on `develop`. The migration passes them unedited; only an intended API change edits them, each edit a G6 row. | Commit order; the specs run in jest and in the zero Storybook ([how to write one](../../packages/fuselage/src/testing/README.md)) |
+| **G0** Characterization | Specs (forwarding, keyboard, handlers, accessibility snapshot) land in a commit below the component, green on `develop`. The migration passes them unedited; only an intended API change edits them, each edit a G6 row. `classContract` assertions are an internal regression net, here and wherever this doc mentions the class contract: the `rcx-*` classes are not a public contract, and a class diff informs the author without being a review gate. | Commit order; the specs run in jest and in the zero Storybook ([how to write one](../../packages/fuselage/src/testing/README.md)) |
 | **G1** Zero-runtime | 0 bailed, 0 partial, 0 diagnostics for the component's modules; `build:vite` enforce passes; no `@tamagui/*` in the client; no new `.yarn/patches/@tamagui-*` hunk without a G6 decision and a Deviations row. | Zero stats file, enforce build, graph receipt |
 | **G2** No CSS hacks | Ratchets green. No `!important` or specificity bump inside Fuselage; no `:has()`, sibling or parent-state rule for what the component renders itself; no raw px/rem, literal colour or literal z-index; no static inline `style`; no Box styling. | Ratchets and lint; review for the rest |
 | **G3** A/B | Over every story that renders the component: pixel A/B develop to runtime and runtime to zero (light, desktop, LTR; hover, focus-visible, press and disabled via story args); computed-style A/B for dark, high contrast, RTL, and mobile width where the component has media queries; accessibility tree, tags and class contract identical or decided; real app on the main consumer screens in `build:vite` and `dev:next`. | [`dod.mjs <Component> --before <storybook-static> --after <storybook-static>`](../../packages/fuselage/scripts/verify/dod.mjs) runs the A/B checks ([`story-ab.mjs`](../../packages/fuselage/scripts/verify/story-ab.mjs) and [`story-computed.mjs`](../../packages/fuselage/scripts/verify/story-computed.mjs)) only when both builds are given, and otherwise reports them as not run. Computed-style checks cover dark and RTL; high contrast and mobile width are checked by hand until `dod.mjs` runs them. Visual regression CI; review for the app screens |
 | **G4** Behaviour and API | G0 specs green in jest and zero Storybook; axe on every story (not run by `dod.mjs` or CI yet: pending, checked in review); `.d.ts` diff reviewed; consumer survey, spreading wrappers included; Fuselage typecheck, lint and jest; Meteor `tsc`; `ui-client`, `fuselage-ui-kit` and `ui-*` typecheck and jest. e2e runs per pull request, not per component; a class-contract change greps e2e, apps and docs. | CI, the DoD script |
 | **G5** Budgets | Size inside the batch's share of +25 kB gzip JS; CSS reported, no growth beyond dedupe; Message and Sidebar benches within +10% of `develop`, from the first batch on. | Size-report CI, [`perf-bench.mjs`](../../packages/fuselage/scripts/verify/perf-bench.mjs), both read by [`dod.mjs`](../../packages/fuselage/scripts/verify/dod.mjs) |
 | **G6** Diff decisions | Every non-zero result is a row: what, why, and **noise** (reproduces on two `develop` captures), **intended** (reason and approver) or **regression** (fixed before merge). Precedents go in [Precedents](#precedents), deviations in [Deviations](#deviations). | The evidence table, reviewed |
-| **G7** Tamagui by the book | Frames follow the rules above. React Native readiness is narrow: frames and neutral prop types are portable; values and CSS are web-only, by decision. | [`frame-platform.mjs`](../../packages/fuselage/scripts/verify/frame-platform.mjs) (`yarn workspace @rocket.chat/fuselage test:verify`): frame modules import no DOM types and no `react-dom`, and read no browser global; review |
-| **G8** Review and release | Code review pass; human CODEOWNER review; changeset per [Releases](#releases); `@rocket.chat/meteor` changeset or release note when the class contract changes (Custom CSS impact); the program checklist updated. | Review, changeset check |
+| **G7** Tamagui by the book | Frames follow the rules above. Frames, neutral prop types and values are portable: a frame reads `$tokens` and theme keys from the Tamagui config, never `var(--rcx-*)`. CSS stays in web-only files ([ADR-0013](../adr/0013-fuselage-one-contract-web-and-native-renderers.md)). | [`frame-platform.mjs`](../../packages/fuselage/scripts/verify/frame-platform.mjs) (`yarn workspace @rocket.chat/fuselage test:verify`): frame modules import no DOM types and no `react-dom`, and read no browser global; review |
+| **G8** Review and release | Code review pass; human CODEOWNER review; changeset per [Releases](#releases); the program checklist updated. | Review, changeset check |
 
 ## Policies
 
@@ -83,7 +83,7 @@ Decided once, so no component reopens them.
 - **Tamagui is version-frozen.** An upgrade is its own pull request and re-runs the full A/B over every migrated component.
 - **Cold CI runs zero builds.** Never restore `.cache/tamagui`: the compiler cache is keyed on source only, so a stale one hides a compiler change.
 - **Land batches early in a release cycle** so release candidates and QA catch problems.
-- **Fix forward.** Once a later batch builds on an earlier one there is no rollback.
+- **Every pull request is atomic.** It matches [ADR-0013](../adr/0013-fuselage-one-contract-web-and-native-renderers.md) when it is reviewed and can be reverted alone; nothing merges to be corrected by a later one.
 - **Design notes are reviewed once per batch.** The gate re-fires only on a surprise during implementation.
 
 ## Releases
@@ -91,7 +91,6 @@ Decided once, so no component reopens them.
 - Changesets are **`minor`** on the affected package's current release line (the Fuselage packages are versioned independently of `@rocket.chat/meteor`), even though the packages are on npm.
 - Each changeset has a **"Breaking for npm consumers"** section listing every API change (props removed, renamed or narrowed, `style` no longer accepted, tags changed), plus the visible changes.
 - A removal of Box styling from a family ships as its own minor changeset, before that family's migration ([ADR-0011](../adr/0011-fuselage-components-take-no-styling-props.md)).
-- A change to the `rcx-*` class contract also gets a `@rocket.chat/meteor` changeset or release note, because workspace admins' Custom CSS targets those classes.
 
 ## Approval
 

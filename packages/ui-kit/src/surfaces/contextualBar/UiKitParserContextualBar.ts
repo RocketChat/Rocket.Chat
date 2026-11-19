@@ -4,17 +4,26 @@ import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 /** Layout blocks a contextual bar accepts; every contextual bar renderer must allow exactly these. */
 export const contextualBarSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
+	'card',
+	'container',
 	'context',
+	'data_table',
+	'data_visualization',
 	'divider',
 	'header',
 	'image',
 	'input',
+	'layout',
 	'markdown',
+	'plan',
 	'preview',
+	'rich_text',
 	'section',
 	'tab_navigation',
 	'table',
+	'task_card',
 	'video',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 

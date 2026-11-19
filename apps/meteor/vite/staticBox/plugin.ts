@@ -26,6 +26,11 @@ const require = createRequire(import.meta.url);
 const runtimeModule = join(dirname(fileURLToPath(import.meta.url)), 'StaticBox.ts');
 const virtualPrefix = 'virtual:rcx-static-box/';
 
+type Component = 'Box' | 'Stack' | 'Text';
+
+const stackProps = ['direction', 'gap', 'align', 'justify', 'wrap', 'grow'];
+const textProps = ['fontScale', 'color', 'truncate'];
+
 // The `Box`-only props that render as class names.
 const boxOnlyClassNames: Record<string, (value: unknown) => string> = {
 	animated: () => 'rcx-box--animated',
@@ -85,12 +90,14 @@ const walk = (node: unknown, visit: (node: Node) => void): void => {
 	}
 };
 
-// Renders the `Box`es of the production build whose styling props are literals
-// without the `Box` runtime: their styles are compiled into a stylesheet,
-// and `StaticBox` renders the element with the class names `Box` would give it.
+// Renders the `Box`, `Stack` and `Text` of the production build whose styling props are literals
+// without their runtime: their styles are compiled into a stylesheet,
+// and `StaticBox`, `StaticStack` and `StaticText` render the element with the class names they would give it.
 export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin => {
-	const { extractStylingProps } = require('@rocket.chat/fuselage') as {
+	const { extractStylingProps, stackStylingProps, textClassName } = require('@rocket.chat/fuselage') as {
 		extractStylingProps: (props: Record<string, unknown>) => [Record<string, unknown>, ((arg?: unknown) => string) | undefined];
+		stackStylingProps: (props: Record<string, unknown>) => Record<string, unknown>;
+		textClassName: (props: Record<string, unknown>) => string;
 	};
 
 	const { createClassName, escapeName, transpile } = require('@rocket.chat/css-in-js');
@@ -107,6 +114,21 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 	]);
 
 	const isStylingProp = (name: string) => !(name in extractStylingProps({ [name]: undefined })[0]);
+
+	const isTracked = (component: Component, name: string) => {
+		if (component === 'Stack') return stackProps.includes(name);
+		if (component === 'Text') return textProps.includes(name);
+		return isStylingProp(name) || isBoxOnlyProp(name);
+	};
+
+	// The stylesheet content and class names of a component for its static props.
+	const render = (component: Component, props: Record<string, unknown>) => {
+		if (component === 'Text') return { classNames: [textClassName(props)] };
+
+		const content = extractStylingProps(component === 'Stack' ? stackStylingProps(props) : props)[1]?.();
+
+		return { content, classNames: component === 'Box' ? Object.entries(props).map(([name, value]) => boxOnlyClassName(name, value)) : [] };
+	};
 
 	const stylesheets = new Map<string, string>();
 	const diagnostics: Diagnostic[] = [];
@@ -151,7 +173,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 				});
 			};
 
-			let box: string | undefined;
+			const components = new Map<string, Component>();
 
 			for (const statement of program.body as Node[]) {
 				if (
@@ -163,22 +185,28 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 				}
 
 				for (const specifier of statement.specifiers) {
-					if (specifier.type === 'ImportSpecifier' && specifier.imported.name === 'Box' && specifier.importKind !== 'type') {
-						box = specifier.local.name;
+					if (
+						specifier.type === 'ImportSpecifier' &&
+						['Box', 'Stack', 'Text'].includes(specifier.imported.name) &&
+						specifier.importKind !== 'type'
+					) {
+						components.set(specifier.local.name, specifier.imported.name);
 					}
 				}
 			}
 
-			if (!box) return null;
+			if (!components.size) return null;
 
 			const edits: { start: number; end: number; text: string }[] = [];
 			const imports = new Set<string>();
 			const hoisted: string[] = [];
 
 			walk(program, (node) => {
-				if (node.type !== 'JSXElement' || node.openingElement.name.type !== 'JSXIdentifier' || node.openingElement.name.name !== box) {
-					return;
-				}
+				if (node.type !== 'JSXElement' || node.openingElement.name.type !== 'JSXIdentifier') return;
+
+				const component = components.get(node.openingElement.name.name);
+
+				if (!component) return;
 
 				boxes++;
 
@@ -197,7 +225,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 
 					const { name } = attribute.name;
 
-					if (!isStylingProp(name) && !isBoxOnlyProp(name)) continue;
+					if (!isTracked(component, name)) continue;
 
 					// A spread can only be overridden by the props that follow it, which `StaticBox` can't tell apart from the
 					// props it spreads when it falls back to `Box`.
@@ -252,7 +280,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 				compiled++;
 				if (conditionals.length) conditional++;
 
-				const tag = '__RcxStaticBox';
+				const tag = `__RcxStatic${component}`;
 				let variant = '';
 
 				// One variant per combination of the conditional props; bit `j` of the index is set when the test of
@@ -265,8 +293,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 						props[name] = values[(index >> j) & 1];
 					});
 
-					const content = extractStylingProps(props)[1]?.();
-					const classNames = Object.entries(props).map(([name, value]) => boxOnlyClassName(name, value));
+					const { content, classNames } = render(component, props);
 
 					if (content) {
 						const className = createClassName(content);
@@ -278,7 +305,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 
 					const className = classNames.filter(Boolean).join(' ');
 
-					return className ? { __rcxClassName: className, __rcxBoxProps: props } : {};
+					return className ? { __rcxClassName: className, __rcxProps: props } : {};
 				});
 
 				if (variants.some((variant) => variant.__rcxClassName)) {
@@ -331,7 +358,10 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 
 			// Prepended to the first line and appended after the last,
 			// so every original line keeps its number.
-			const header = [`import { StaticBox as __RcxStaticBox } from ${JSON.stringify(runtimeModule)};`, ...imports].join('');
+			const header = [
+				`import { StaticBox as __RcxStaticBox, StaticStack as __RcxStaticStack, StaticText as __RcxStaticText } from ${JSON.stringify(runtimeModule)};`,
+				...imports,
+			].join('');
 
 			return {
 				code: `${header}${result}\n${hoisted.join('\n')}\n`,
@@ -345,7 +375,9 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 			const percent = boxes ? ((compiled / boxes) * 100).toFixed(1) : '0.0';
 
 			console.log('\n[RocketChat StaticBox] Compilation diagnostics');
-			console.log(`${compiled}/${boxes} Box components compiled (${percent}%), ${conditional} of them with conditional styling props.`);
+			console.log(
+				`${compiled}/${boxes} Box, Stack and Text components compiled (${percent}%), ${conditional} of them with conditional styling props.`,
+			);
 
 			if (diagnostics.length === 0) return;
 
@@ -357,7 +389,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 				{} as Record<string, number>,
 			);
 
-			console.log(`\n${diagnostics.length} Box components could not be compiled:\n`);
+			console.log(`\n${diagnostics.length} Box, Stack and Text components could not be compiled:\n`);
 			console.table(summary);
 
 			for (const reason of Object.keys(summary)) {

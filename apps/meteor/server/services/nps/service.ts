@@ -41,7 +41,7 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 			});
 		} catch (err) {
 			SystemLogger.error({ msg: 'Error creating NPS', err });
-			throw new Error('Error creating NPS');
+			throw new Error('Error creating NPS', { cause: err });
 		}
 
 		return true;

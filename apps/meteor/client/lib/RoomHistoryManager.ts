@@ -372,7 +372,7 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getSurroundingChannelMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
-		return this.loadSurroundingMessages(message, false);
+		return this.loadSurroundingMessages(message, getUserPreference(getUserId(), 'showThreadsInMainChannel', false));
 	}
 
 	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {

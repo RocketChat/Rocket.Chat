@@ -6,6 +6,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
 import { ActionForm } from './actions/ActionForm';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type TriggersPayload = {
 	name: string;

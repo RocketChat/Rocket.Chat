@@ -19,7 +19,6 @@ const serverPackages = [
 	'ddp-common@1.4.5',
 	'webapp@2.3.0',
 	'mongo@2.5.1',
-	'service-configuration@1.3.5',
 	'shell-server@0.7.0',
 	'routepolicy@1.1.2',
 	'facts-base@1.0.2',

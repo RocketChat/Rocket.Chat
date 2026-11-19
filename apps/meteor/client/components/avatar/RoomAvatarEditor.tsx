@@ -4,11 +4,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { useSingleFileInput } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 

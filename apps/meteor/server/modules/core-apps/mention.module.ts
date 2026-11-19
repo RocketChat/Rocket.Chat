@@ -17,7 +17,7 @@ const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMess
 		}
 		return mentions;
 	} catch (error) {
-		throw new Error('Invalid payload');
+		throw new Error('Invalid payload', { cause: error });
 	}
 };
 

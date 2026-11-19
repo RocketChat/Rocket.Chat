@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document } from 'mongodb';
+import type { Collection, Db, Document, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -14,34 +14,26 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		});
 	}
 
+	protected override modelIndexes(): IndexDescription[] {
+		return [{ key: { service: 1 }, unique: true }];
+	}
+
 	async createOrUpdateService(
 		serviceName: LoginServiceConfiguration['service'],
 		serviceData: Partial<LoginServiceConfiguration>,
 	): Promise<LoginServiceConfiguration['_id']> {
 		const service = serviceName.toLowerCase();
 
-		const existing = await this.findOne({ service });
-		if (!existing) {
-			const insertResult = await this.insertOne({
-				service,
-				...serviceData,
-			});
-
-			return insertResult.insertedId;
+		const result = await this.findOneAndUpdate(
+			{ service },
+			{ $set: { ...serviceData, service } },
+			{ upsert: true, returnDocument: 'after', projection: { _id: 1 } },
+		);
+		if (!result) {
+			throw new Error(`Login service ${service} was not saved`);
 		}
 
-		if (Object.keys(serviceData).length > 0) {
-			await this.updateOne(
-				{
-					_id: existing._id,
-				},
-				{
-					$set: serviceData,
-				},
-			);
-		}
-
-		return existing._id;
+		return result._id;
 	}
 
 	async removeAll(): Promise<LoginServiceConfiguration['_id'][]> {

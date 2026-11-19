@@ -24,7 +24,7 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roles: IRol
 		throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
 	}
 
-	for await (const roleId of roles) {
+	for (const roleId of roles) {
 		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 		if (!role) {
 			continue;

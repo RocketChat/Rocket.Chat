@@ -18,7 +18,7 @@ const ConfirmationModal = ({ text, confirmButtonText, cancelButtonText, onConfir
 	const { t } = useTranslation();
 
 	return (
-		<Modal open animated dismissByOverlay={false} {...props}>
+		<Modal open animated dismissByOverlay={false} role='alertdialog' aria-label={text} {...props}>
 			<ModalMessage>{text}</ModalMessage>
 			<ButtonGroup>
 				<Button outline secondary onClick={onCancel}>

@@ -1,11 +1,12 @@
 import type { DatumId } from '@nivo/pie';
 import { Pie } from '@nivo/pie';
-import { Box, Palette, Text } from '@rocket.chat/fuselage';
+import { Palette, Stack, Text } from '@rocket.chat/fuselage';
 import type { CSSProperties, ReactNode } from 'react';
 import { useMemo, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocalePercentage } from '../hooks/useLocalePercentage';
+import UsagePieChartFrame from '../layout/UsagePieChartFrame';
 
 type GraphColorsReturn = { [key: string]: string };
 
@@ -61,48 +62,38 @@ const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsageP
 	const localePercentage = useLocalePercentage(total, used, 0);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='center'>
-			<Box size={`x${size}`}>
-				<Box position='relative'>
-					<Pie
-						data={parsedData}
-						margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-						innerRadius={0.8}
-						colors={getColor}
-						width={size}
-						height={size}
-						enableArcLabels={false}
-						enableArcLinkLabels={false}
-					/>
-					<Box
-						display='flex'
-						alignItems='center'
-						justifyContent='center'
-						position='absolute'
-						fontScale='p2m'
-						style={{ left: 0, right: 0, top: 0, bottom: 0 }}
-					>
-						{unlimited ? '∞' : localePercentage}
-					</Box>
-				</Box>
-			</Box>
-			<Text is='span' fontScale='p2' color='secondary-info'>
-				{unlimited &&
-					t('used_limit_infinite', {
-						used,
-					})}
-				{!unlimited &&
-					t('used_limit', {
-						used,
-						limit: total,
-					})}
-			</Text>
-			{label && (
-				<Box is='span' marginBlockStart={4} color='font-secondary-info'>
-					{label}
-				</Box>
-			)}
-		</Box>
+		<Stack align='center'>
+			<UsagePieChartFrame size={size} center={<Text fontScale='p2m'>{unlimited ? '∞' : localePercentage}</Text>}>
+				<Pie
+					data={parsedData}
+					margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+					innerRadius={0.8}
+					colors={getColor}
+					width={size}
+					height={size}
+					enableArcLabels={false}
+					enableArcLinkLabels={false}
+				/>
+			</UsagePieChartFrame>
+			<Stack align='center' gap='x4'>
+				<Text is='span' fontScale='p2' color='secondary-info'>
+					{unlimited &&
+						t('used_limit_infinite', {
+							used,
+						})}
+					{!unlimited &&
+						t('used_limit', {
+							used,
+							limit: total,
+						})}
+				</Text>
+				{label && (
+					<Text is='span' color='secondary-info'>
+						{label}
+					</Text>
+				)}
+			</Stack>
+		</Stack>
 	);
 };
 

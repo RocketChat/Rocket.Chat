@@ -105,11 +105,11 @@ jobs:
 
       - name: Raw layout elements in screens
         if: matrix.check == 'lint'
-        run: node scripts/scan-raw-layout.mjs --max 1023 "$RUNNER_TEMP/raw-layout-findings.json"
+        run: node scripts/scan-raw-layout.mjs --max 928 "$RUNNER_TEMP/raw-layout-findings.json"
 
       - name: Browser reach in screens
         if: matrix.check == 'lint'
-        run: node scripts/scan-view-isolation.mjs --max 174 "$RUNNER_TEMP/view-isolation-findings.json"
+        run: node scripts/scan-view-isolation.mjs --max 38 --max-hook 23 --max-exempt 103 "$RUNNER_TEMP/view-isolation-findings.json"
 
       - name: Spacing scale
         if: matrix.check == 'lint'

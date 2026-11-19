@@ -3,10 +3,10 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
 import AppsUsageCardSection from './AppsUsageCardSection';
+import FeatureUsageCardBody from '../../../layout/FeatureUsageCardBody';
 import { PRICING_LINK } from '../../../utils/links';
 import type { CardProps } from '../../FeatureUsageCard';
 import FeatureUsageCard from '../../FeatureUsageCard';
-import FeatureUsageCardBody from '../../FeatureUsageCardBody';
 import UpgradeButton from '../../UpgradeButton';
 
 // Magic numbers

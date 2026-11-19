@@ -73,12 +73,12 @@ describe('message translation actions', () => {
 		});
 
 		it('should offer the action in a livechat room with no auto-translate on the subscription', () => {
-			const action = renderTranslate(messageFrom(), {
-				room: createFakeRoom({ t: 'l' }),
-				subscription: createFakeSubscription({ autoTranslate: false }),
-			});
-
-			expect(action).not.toBeNull();
+			expect(
+				renderTranslate(messageFrom(), {
+					room: createFakeRoom({ t: 'l' }),
+					subscription: createFakeSubscription({ autoTranslate: false }),
+				}),
+			).not.toBeNull();
 		});
 
 		it('should not offer the action when the message is already translated to the language of the user', () => {

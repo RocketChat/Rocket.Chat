@@ -6,6 +6,7 @@ import {
 	SidebarAccordion,
 	SidebarAccordionItem,
 	SidebarBanner,
+	SidebarBannerLink,
 	SidebarCollapseGroup,
 	SidebarFooterContent,
 	SidebarItemAction,
@@ -57,11 +58,10 @@ export const Default: Story = {
 			<Sidebar {...args}>
 				<SidebarBanner
 					title='You’ve reached the limit active contacts this month'
-					linkText='Learn more'
-					linkProps={{ href: '#' }}
-					onClick={action('click')}
 					addon={<Icon name='warning' color='danger' size='x24' />}
-				/>
+				>
+					<SidebarBannerLink href='#'>Learn more</SidebarBannerLink>
+				</SidebarBanner>
 				<SidebarSection>
 					<TextInput endAddon={<Icon name='magnifier' size='x20' />} small placeholder='Search' />
 					<IconButton icon='sort' title='Sort' size='medium' />

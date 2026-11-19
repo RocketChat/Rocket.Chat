@@ -47,6 +47,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					}
 					method(user, password, (error?: unknown) => {
 						if (error) {
+							// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 							reject(error);
 							return;
 						}
@@ -68,11 +69,12 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 
 				return () =>
 					new Promise((resolve, reject) => {
-						method(clientConfig, (error: any): void => {
+						method(clientConfig, (error?: unknown): void => {
 							if (!error) {
 								resolve(true);
 								return;
 							}
+							// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 							reject(error);
 						});
 					});

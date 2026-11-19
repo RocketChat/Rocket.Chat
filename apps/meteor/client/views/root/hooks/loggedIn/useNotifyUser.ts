@@ -1,7 +1,7 @@
 import type { AtLeast, INotificationDesktop, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { useCustomSound, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useNotificationSounds, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { useDesktopNotification } from './useDesktopNotification';
@@ -15,7 +15,7 @@ export const useNotifyUser = (user: IUser) => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
-	const { notificationSounds } = useCustomSound();
+	const notificationSounds = useNotificationSounds();
 	const newMessageNotification = useNewMessageNotification();
 	const showDesktopNotification = useDesktopNotification();
 

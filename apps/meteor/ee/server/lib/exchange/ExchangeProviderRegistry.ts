@@ -1,7 +1,17 @@
-import { ExchangeError, EwsTransport, ExchangeEwsProvider, MicrosoftGraphProvider, logger } from '@rocket.chat/exchange';
-import type { IExchangeProvider, DateRange } from '@rocket.chat/exchange';
+import {
+	EwsTransport,
+	EwsTransportPool,
+	ExchangeEwsProvider,
+	MAILBOX_CONCURRENCY,
+	MicrosoftGraphProvider,
+	logger,
+	setCalendarSyncWindowDays,
+	setExchangeProvider,
+} from '@rocket.chat/exchange';
+import type { EwsTransportConfig, IExchangeProvider } from '@rocket.chat/exchange';
 
 import { settings } from '../../../../server/settings';
+import { getCalendarSyncWindowDays } from '../../../lib/exchange/calendarSyncSchedule';
 
 const WATCHED_SETTINGS = [
 	'Outlook_Calendar_Enabled',
@@ -20,8 +30,6 @@ const WATCHED_SETTINGS = [
 	'Exchange_EWS_Reject_Unauthorized',
 ];
 
-let current: IExchangeProvider | undefined;
-
 const buildExchangeProvider = (): IExchangeProvider | undefined => {
 	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
 		return undefined;
@@ -39,18 +47,21 @@ const buildExchangeProvider = (): IExchangeProvider | undefined => {
 				graphHost: settings.get<string>('Exchange_Graph_Host') || undefined,
 			});
 
-		case 'ews':
+		case 'ews': {
+			const config: EwsTransportConfig = {
+				url: settings.get<string>('Exchange_EWS_Url'),
+				username: settings.get<string>('Exchange_EWS_Username'),
+				password: settings.get<string>('Exchange_EWS_Password'),
+				authMethod: settings.get<string>('Exchange_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
+				caCert: settings.get<string>('Exchange_EWS_CA_Cert') || undefined,
+				rejectUnauthorized: settings.get<boolean>('Exchange_EWS_Reject_Unauthorized') !== false,
+			};
+
 			return new ExchangeEwsProvider(
-				new EwsTransport({
-					url: settings.get<string>('Exchange_EWS_Url'),
-					username: settings.get<string>('Exchange_EWS_Username'),
-					password: settings.get<string>('Exchange_EWS_Password'),
-					authMethod: settings.get<string>('Exchange_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
-					caCert: settings.get<string>('Exchange_EWS_CA_Cert') || undefined,
-					rejectUnauthorized: settings.get<boolean>('Exchange_EWS_Reject_Unauthorized') !== false,
-				}),
+				new EwsTransportPool(MAILBOX_CONCURRENCY, () => new EwsTransport(config)),
 				settings.get<string>('Exchange_EWS_Username'),
 			);
+		}
 
 		default:
 			logger.error({ msg: 'Unknown Exchange provider configured', providerId });
@@ -58,47 +69,20 @@ const buildExchangeProvider = (): IExchangeProvider | undefined => {
 	}
 };
 
-export const getExchangeProvider = (): IExchangeProvider => {
-	if (!current) {
-		throw new ExchangeError('not-configured', 'Server-to-server Exchange sync is not configured');
-	}
+export const registerExchangeProviderWatchers = () => {
+	setCalendarSyncWindowDays(() => getCalendarSyncWindowDays(settings.get<number>('Exchange_Calendar_Sync_Window_Days')));
 
-	return current;
-};
+	return settings.watchMultiple(WATCHED_SETTINGS, () => {
+		let provider: IExchangeProvider | undefined;
 
-const DEFAULT_SYNC_WINDOW_DAYS = 2;
-const MIN_SYNC_WINDOW_DAYS = 1;
-const MAX_SYNC_WINDOW_DAYS = 7;
-
-/**
- * Starts at midnight, the same day `calendar-events.list` reports on, so an event that already happened
- * today is still refreshed rather than left behind. Both bounds land on a day boundary, so the window is
- * identical for every run of the same day, which is what makes a Graph delta link reusable.
- */
-export const getSyncWindow = (from: Date = new Date()): DateRange => {
-	const configured = Math.trunc(settings.get<number>('Exchange_Calendar_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
-	const days = Math.min(Math.max(configured, MIN_SYNC_WINDOW_DAYS), MAX_SYNC_WINDOW_DAYS);
-
-	const start = new Date(from);
-	start.setHours(0, 0, 0, 0);
-
-	const end = new Date(start);
-	end.setDate(end.getDate() + days);
-
-	return { start, end };
-};
-
-export const isServerSyncEnabled = (): boolean => current !== undefined;
-
-export const registerExchangeProviderWatchers = (): void => {
-	settings.watchMultiple(WATCHED_SETTINGS, () => {
 		try {
-			current = buildExchangeProvider();
+			provider = buildExchangeProvider();
 		} catch (err) {
-			current = undefined;
 			logger.error({ msg: 'Could not build the Exchange provider from the current settings', err });
 		}
 
-		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
+		setExchangeProvider(provider);
+
+		logger.debug({ msg: 'Exchange provider rebuilt', provider: provider?.id ?? 'none' });
 	});
 };
