@@ -359,3 +359,70 @@ Engineer-days for one engineer who knows the code.
 #### Open question
 
 - Do the FR-024 names stay? The data suggests "mention" is safe. "Ambient" clashes with the LangChain sense, but dam uses it in the FR-025 sense. "Proactive" is the platform term for what autonomous mode adds.
+
+### A-3 (2026-11-19): Outgoing webhook delivery
+
+**Status**: Proposed. It revisits the webhook alternative of RQ-1 as a second upgrade path for SH-006, next to A-1. F-5 still ships the poll.
+
+#### Findings
+
+- Outgoing integrations already post events to a URL (`apps/meteor/server/lib/integrations/lib/triggerHandler.ts`). They hook `afterSaveMessage` at low priority (`apps/meteor/server/lib/integrations/triggers.ts:11-16`), and they do not await the HTTP call.
+- Outgoing integrations skip the SSRF check, because only admins configure them (`triggerHandler.ts:622`). An agent registrant needs only `register-agents`, so an agent webhook cannot take that exemption.
+- Outgoing integrations post the response body back as a message, and they can run a script in `isolated-vm`. Either would let a webhook post past the agent guard (FR-050, FR-053).
+- Outgoing integrations pick a trigger by room and trigger words, not by the D-10 reply mode.
+- Outgoing integrations retry in memory with `setTimeout` (`triggerHandler.ts:722-757`). A restart loses a pending retry.
+- `serverFetch` enforces the SSRF check with DNS pinning when `ignoreSsrfValidation` is `false`, and it takes the `SSRF_Allowlist` setting as the allow list (`packages/server-fetch/src/index.ts:53-88`, `apps/meteor/server/modules/apps/bridges/http.ts:86`).
+- `afterSaveMessage` runs on the instance that saves the message, for a send and for an edit (`apps/meteor/server/lib/messages/sendMessage.ts`, `updateMessage.ts`). One instance sends each webhook, with or without the `scalability` module.
+- A harness behind NAT, for example a desktop client, has no URL the server can reach. A hosted harness has one.
+
+#### Decision (proposed)
+
+- **Registration**: `agents.register` takes an optional `webhookUrl`. The response returns a webhook secret once, next to the credential. An admin sets, changes, or clears the URL with `agents.update`. A credential rotation also rotates the webhook secret.
+- **URL rules**: `https` only, unless the host is on `SSRF_Allowlist`. The server runs the SSRF check at registration, at each update, and at each send. A refused URL gets `error-agent-webhook-url-refused`.
+- **Scope**: A webhook needs `get_agents_messages` in the effective scope. A registration with a URL and without that capability gets `error-agent-webhook-needs-messages`.
+- **Trigger**: A new `afterSaveMessage` callback at low priority, the same hook the integrations use. It skips edits. The F-7 decision path sends each approval decision.
+- **Selection**: One indexed query per saved message finds the agents with a webhook that allow the room or share the direct message. The partial index holds only agents with a webhook, so a room with no such agent costs one empty index read.
+- **Checks per send**: `canAgentReadRoomEvents` (F-10), the suspension, the MCP license and setting (D-18), and the D-10 reply-mode predicate (R-3 from A-1). A webhook follows the reply mode, the same as `get_agents_messages`.
+- **Body**: The `agents.messages` body with one item and a `cursor`. A harness parses both paths with one parser.
+- **Signature**: `X-RC-Agent-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "t.body">`. The harness refuses a timestamp older than 5 minutes. The request carries no agent credential.
+- **Send**: `serverFetch` with the SSRF check, a 5 s timeout, and no redirect. A `2xx` counts as delivered. The server ignores the response body. The agent replies over MCP only (FR-053).
+- **Retry**: 2 more tries, after 2 s and 4 s, in memory. After the last failure, the server logs the failure and drops the item.
+- **Poll stays**: The harness polls `get_agents_messages` from the last webhook cursor at start-up and every 60 s, to recover a dropped item.
+
+#### Rationale
+
+- A webhook delivers content at the speed of a save, with no held request and no open socket on the harness side.
+- A new sender keeps the SSRF check, the reply-mode filter, and the guard. A reuse of outgoing integrations would remove all three.
+- The send runs off the save path, so a slow webhook does not slow the post (FR-051).
+- The signature proves the origin without a credential on the wire, so a leaked webhook log does not leak agent access.
+
+#### Limits and safeguards
+
+- Delivery is best effort. A restart, a long outage, or 3 failed tries drop the item. The 60 s poll recovers it, so the latency floor for a dropped item is 60 s.
+- At most 10 sends per agent run at once on an instance. An item over the cap is dropped, and the poll recovers it.
+- The server does not disable a failing webhook. An admin clears the URL.
+- An edit and a reaction send nothing. A harness that needs edits subscribes over DDP (D-16).
+
+#### Alternatives
+
+- **Reuse outgoing integrations**, with one integration per agent: Rejected. It skips the SSRF check, posts the response body as a message, runs scripts, and ignores the reply mode. Each fix would change behavior for existing integrations (DC-2).
+- **A durable queue with retries across restarts**: Rejected for now. It needs a new collection and a worker. The poll gives the same recovery.
+- **A long poll (A-1)**: Not exclusive. A-1 serves a harness with no public URL. A-3 serves a hosted harness. Both share R-3.
+
+#### Effort
+
+Engineer-days for one engineer who knows the code. R-3 counts once if A-1 also ships.
+
+| Step | Work | Days |
+|------|------|------|
+| R-3 | Extract the D-10 filter into a pure predicate. | 0.5 |
+| F-11 | The `webhookUrl` field, the URL rules, the secret, and the rotation, in `agents.register`, `agents.update`, and the admin section. | 1 to 1.5 |
+| F-11 | The callback, the selection query and its index, the checks per send, the signature, the retry, and the per-agent cap. | 1.5 to 2 |
+| F-11 | Unit tests for the sender and the signature, API tests with a local receiver, and a manual multi-instance run. | 1.5 |
+| F-11 | The subsystem doc and the harness guide for the signature. | 0.5 |
+| | **Total** | **5 to 6** |
+
+#### To verify before the build
+
+- **V-8**: `serverFetch` can turn off redirects while it keeps the SSRF check.
+- **V-9**: The CI API tests can reach a local receiver through `SSRF_Allowlist`.

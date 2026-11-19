@@ -14,3 +14,5 @@ Each entry records one shortcut that the fastest path to delivery takes (DC-1). 
 | SH-008 | FR-033 | A cron job marks expired approval cards every minute. A decision after expiry is refused at once. | The card can show the pending state for up to 60 s after its expiry. | A member sees buttons that no longer work for up to one minute. | Schedule an expiry job per card, or render the expiry on the client. | Open |
 
 **Amendment A-1 (2026-11-19)**: SH-006 has a sized upgrade path, a long-poll `wait` on `get_agents_messages` that returns as soon as a message arrives. See [research.md, A-1](research.md#a-1-2026-11-19-long-poll-delivery-over-mcp). The entry stays open until F-9 ships.
+
+**Amendment A-3 (2026-11-19)**: SH-006 has a second upgrade path, an outgoing webhook for a hosted harness. See [research.md, A-3](research.md#a-3-2026-11-19-outgoing-webhook-delivery). If F-11 ships, a new entry records its best-effort delivery: retries live in memory, and the harness recovers a dropped item with a 60 s poll. The fix in the next iteration is a durable queue.
