@@ -252,8 +252,8 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 88,
-		"nested": 60,
+		"rules": 91,
+		"nested": 63,
 		"combinators": 10,
 		"important": 0,
 		"specificityBumps": 6,

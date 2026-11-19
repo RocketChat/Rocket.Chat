@@ -16,6 +16,10 @@ export type ItemProps = {
 	 */
 	inset?: ItemInset;
 	/**
+	 * Adds space above and below the slots, for rows that read as separate entries, such as messages in a panel's list.
+	 */
+	insetBlock?: ItemInset;
+	/**
 	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
 	 */
 	align?: 'center' | 'start';
@@ -86,6 +90,7 @@ const skipRegistration = () => () => undefined;
 const Item = ({
 	is: Tag = 'div',
 	inset = 'none',
+	insetBlock = 'none',
 	align = 'center',
 	hoverable,
 	selected,
@@ -143,6 +148,7 @@ const Item = ({
 				className={cx(
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
+						[`inset-block-${insetBlock}`]: insetBlock !== 'none',
 						[`align-${align}`]: align !== 'center',
 						'hoverable': !!hoverable,
 						'clickable': !!onClick,

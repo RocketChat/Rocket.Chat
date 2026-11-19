@@ -74,6 +74,7 @@ $item-group-narrow-width: 320px;
 	--rcx-item-gap: #{lengths.margin(4)};
 	// A unitless zero would make the padding calc() invalid.
 	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+	--rcx-item-inset-block: 0px; /* stylelint-disable-line length-zero-no-unit */
 
 	position: relative;
 
@@ -83,7 +84,7 @@ $item-group-narrow-width: 320px;
 	box-sizing: border-box;
 	min-width: 0;
 	margin: 0;
-	padding-block: $item-padding;
+	padding-block: calc(#{$item-padding} + var(--rcx-item-inset-block));
 	padding-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
 
 	list-style: none;
@@ -98,6 +99,18 @@ $item-group-narrow-width: 320px;
 	gap: var(--rcx-item-gap);
 	@include use-font-scale(p2);
 	@include inset-scale;
+
+	&--inset-block-sm {
+		--rcx-item-inset-block: #{lengths.padding(4)};
+	}
+
+	&--inset-block-md {
+		--rcx-item-inset-block: #{lengths.padding(8)};
+	}
+
+	&--inset-block-lg {
+		--rcx-item-inset-block: #{lengths.padding(12)};
+	}
 
 	&:has(> .rcx-item__content > :nth-child(2)),
 	&--multiline {
