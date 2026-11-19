@@ -8,15 +8,20 @@ import { Chevron } from '../Chevron';
 export type AccordionItemProps = {
 	children?: ReactNode;
 	className?: string;
+	/** Opens the section on first render, leaving it to the user afterward. Ignored when `expanded` is set. */
 	defaultExpanded?: boolean;
 	disabled?: boolean;
+	/** Holds the section open or closed; toggling it then only calls `onToggle`. */
 	expanded?: boolean;
 	tabIndex?: number;
 	title: ReactNode;
+	/** Keeps the section open, with no chevron and no way to collapse it. */
 	noncollapsible?: boolean;
+	/** Called with the state the user asks for when they click the title bar or press Enter or Space on it. */
 	onToggle?: (expanded: boolean) => void;
 };
 
+/** A section of an `Accordion`: a title bar that shows or hides its content. */
 const AccordionItem = ({
 	children,
 	defaultExpanded,

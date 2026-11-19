@@ -16,22 +16,32 @@ import { getPlacement } from './helpers/helpers';
 
 export type MenuProps<T> = AriaMenuProps<T> &
 	MenuTriggerProps & {
+		/** Icon of the trigger. */
 		icon?: IconButtonProps['icon'];
 		/** The size of the trigger. */
 		size?: IconButtonProps['size'];
+		/** Where the menu opens beside the trigger. On small screens it opens as a bottom sheet instead. */
 		placement?: UsePositionOptions['placement'];
+		/** Names the trigger: its tooltip, and its accessible name unless `aria-label` is set. */
 		title?: string;
+		/** Renders the open menu in the document body, to escape a container that would clip it. */
 		detached?: boolean;
-		/**
-		 * A component that renders an IconButton
-		 */
+		/** Replaces the `IconButton` trigger with a component that takes the same props, such as `NavBarItem`. */
 		is?: ElementType;
+		/** Class name of the trigger. */
 		className?: string;
+		/** Shows the trigger pressed while the menu is closed too. */
 		pressed?: boolean;
+		/** Caps the width of the open menu. */
 		maxWidth?: string;
+		/** A trigger element to use instead of the `IconButton`; it receives the trigger's props, `icon` and `pressed` included. */
 		button?: ReactElement<any>;
 	};
 
+/**
+ * Opens the actions or choices available at a given moment from a button, such as a kebab beside a row or a toolbar's
+ * sort and display options.
+ */
 const Menu = <T extends object>({
 	icon = 'kebab',
 	placement = 'bottom-start',

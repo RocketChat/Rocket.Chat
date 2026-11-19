@@ -33,7 +33,6 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Metrics row content, composed from MessageMetrics subcomponents (reply, item, following).',
 			table: { category: 'Content' },
 		},
 	},

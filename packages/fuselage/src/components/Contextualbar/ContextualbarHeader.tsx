@@ -3,6 +3,7 @@ import { Box } from '../Box';
 
 export type ContextualbarHeaderProps = ElementProps<HTMLDivElement>;
 
+/** Top row of the bar, with its title and the actions on the whole bar, such as back and close. */
 const ContextualbarHeader = ({ children, ...props }: ContextualbarHeaderProps) => (
 	<Box rcx-vertical-bar__header {...props}>
 		<Box rcx-vertical-bar__header-inner>{children}</Box>

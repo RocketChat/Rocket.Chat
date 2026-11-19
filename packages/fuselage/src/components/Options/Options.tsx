@@ -15,10 +15,15 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
 	ElementProps<HTMLElement>,
 	'onSelect'
 > & {
+	/** Height past which the list scrolls. */
 	maxHeight?: BoxProps['maxHeight'];
+	/** Tells assistive technology that more than one option can be selected. */
 	multiple?: boolean;
+	/** The entries as `[value, label, selected?, disabled?, type?, url?]`; a `type` of `heading` or `divider` structures the list. */
 	options: OptionType<TValue, TLabel>[];
+	/** Index of the option the arrow keys reached, highlighted and scrolled into view. `useCursor` keeps it. */
 	cursor: number;
+	/** Renders each option, such as `CheckOption` for a multiple selection. */
 	renderItem?: ComponentType<{
 		id?: string;
 		role?: string;
@@ -29,15 +34,19 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
 		disabled?: boolean;
 		onMouseDown: MouseEventHandler;
 	}>;
+	/** Shown in place of the list when there are no `options`. */
 	renderEmpty?: ComponentType<{
 		customEmpty?: string;
 	}>;
+	/** Called with the entry of the option that was picked, unless it is disabled. */
 	onSelect: (option: OptionType<TValue, TLabel>) => void;
+	/** Text of the empty state, in place of "Empty". */
 	customEmpty?: string;
 };
 
 /**
- * An input for selection of options.
+ * The floating list a select or an autocomplete opens, where the user picks one or more options with the pointer or the
+ * keyboard.
  */
 function Options<TValue extends string | number = string | number, TLabel = ReactNode>({
 	maxHeight,

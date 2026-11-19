@@ -5,6 +5,9 @@ import ItemMeta from '../Item/ItemMeta';
 
 export type MessageTimestampProps = Omit<HTMLAttributes<HTMLSpanElement>, 'is'>;
 
+/**
+ * The time a message was sent, in its header.
+ */
 const MessageTimestamp = ({ className, ...props }: MessageTimestampProps) => (
 	<ItemMeta is='span' {...props} className={cx('rcx-message-header__time', className)} />
 );

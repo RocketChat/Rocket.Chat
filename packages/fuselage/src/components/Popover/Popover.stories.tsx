@@ -16,22 +16,19 @@ export default {
 	argTypes: {
 		state: {
 			control: false,
-			description: 'Overlay trigger state (from `useOverlayTriggerState`) controlling whether the popover is open and how it closes.',
 			table: { category: 'State' },
 		},
 		triggerRef: {
 			control: false,
-			description: 'Ref to the element the popover is positioned relative to.',
+			description: 'Ref to the element the popover opens next to.',
 			table: { category: 'Positioning' },
 		},
 		popoverRef: {
 			control: false,
-			description: 'Ref to the popover element itself; defaults to an internal ref.',
 			table: { category: 'Positioning' },
 		},
 		portalContainer: {
 			control: false,
-			description: 'Element the popover portal renders into; defaults to the owner document body.',
 			table: { category: 'Positioning' },
 		},
 		placement: {
@@ -60,47 +57,47 @@ export default {
 				'end top',
 				'end bottom',
 			],
-			description: 'Placement of the popover relative to the trigger element.',
+			description: 'Side of the trigger the popover opens on, then how it aligns along that side.',
 			table: { category: 'Positioning', defaultValue: { summary: 'bottom' } },
 		},
 		offset: {
 			control: 'number',
-			description: 'Additional offset, in pixels, along the main axis between the popover and the trigger.',
+			description: 'Space, in pixels, between the trigger and the popover.',
 			table: { category: 'Positioning' },
 		},
 		crossOffset: {
 			control: 'number',
-			description: 'Additional offset, in pixels, along the cross axis between the popover and the trigger.',
+			description: 'Shift, in pixels, of the popover along the side of the trigger it opens on.',
 			table: { category: 'Positioning' },
 		},
 		containerPadding: {
 			control: 'number',
-			description: 'Minimum padding kept between the popover and the edges of its container.',
+			description: 'Space, in pixels, the popover keeps from the edges of the page.',
 			table: { category: 'Positioning', defaultValue: { summary: '12' } },
 		},
 		shouldFlip: {
 			control: 'boolean',
-			description: 'Whether the popover flips its placement when there is insufficient room to render fully.',
+			description: 'Moves the popover to the opposite side of the trigger when it does not fit on the requested one.',
 			table: { category: 'Positioning', defaultValue: { summary: 'true' } },
 		},
 		isNonModal: {
 			control: 'boolean',
-			description: 'Renders the popover as non-modal, allowing assistive technologies to interact with elements outside it.',
+			description:
+				'Leaves the rest of the page reachable, including by assistive technology, while the popover is open; a click outside no longer closes it.',
 			table: { category: 'Behavior' },
 		},
 		isKeyboardDismissDisabled: {
 			control: 'boolean',
-			description: 'Disables closing the popover with the Escape key.',
+			description: 'Keeps the popover open when the user presses Escape.',
 			table: { category: 'Behavior' },
 		},
 		shouldCloseOnInteractOutside: {
 			control: false,
-			description: 'Filters whether an interaction outside the popover should close it.',
+			description: 'Decides, for the element the user interacted with outside the popover, whether that closes it.',
 			table: { category: 'Behavior' },
 		},
 		children: {
 			control: false,
-			description: 'Content rendered inside the popover.',
 			table: { category: 'Content' },
 		},
 	},

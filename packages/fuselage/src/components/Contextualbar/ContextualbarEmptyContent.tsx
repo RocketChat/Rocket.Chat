@@ -9,6 +9,7 @@ export type ContextualbarEmptyContentProps = ContextualbarContentProps & {
 	subtitle?: string;
 };
 
+/** Fills the bar's main area with a message when it has nothing to show. */
 function ContextualbarEmptyContent({ icon = 'magnifier', title = 'Nothing Found', subtitle, ...props }: ContextualbarEmptyContentProps) {
 	return (
 		<ContextualbarContent {...props}>

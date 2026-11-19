@@ -6,7 +6,10 @@ import { Box } from '../Box';
 export type DividerProps = ElementProps<HTMLElement> & {
 	/** Colors the rule. Ignored when the divider has `children`. */
 	variation?: 'danger' | 'light';
-	/** Labels the divider, which then renders as a horizontal separator; `vertical`, `variation`, `flush`, `small` and `stretch` do not apply. */
+	/**
+	 * Labels the divider, which then renders as a horizontal separator; `vertical`, `variation`, `flush`, `small` and
+	 * `stretch` do not apply.
+	 */
 	children?: ReactNode;
 	vertical?: boolean;
 	/** Removes the divider's own margin, leaving the spacing to its container. */
@@ -17,6 +20,7 @@ export type DividerProps = ElementProps<HTMLElement> & {
 	stretch?: boolean;
 };
 
+/** Separates sections of content with a line, horizontal or vertical, optionally labelled. */
 const Divider = ({ variation, children, vertical, flush, small, stretch, ...props }: DividerProps) => {
 	if (!children) {
 		return (

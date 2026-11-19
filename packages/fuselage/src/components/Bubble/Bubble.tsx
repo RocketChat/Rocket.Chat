@@ -5,16 +5,26 @@ import { BubbleButton } from './BubbleButton';
 import { BubbleItem } from './BubbleItem';
 
 export type BubbleProps = {
+	/** Gives the bubble less emphasis. */
 	secondary?: boolean;
 	children: ReactNode;
 	small?: boolean;
+	/** Called when the label is pressed; with it, the label is a button. */
 	onClick?: () => void;
+	/** Icon shown before the label. */
 	icon?: IconName;
+	/** Called when the user dismisses the bubble; with it, a close button follows the label. */
 	onDismiss?: () => void;
+	/** Attributes for the label's element: a button with `onClick`, plain text without it. */
 	contentProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
+	/** Attributes for the close button, such as an `aria-label` to replace the default "Dismiss" and the label. */
 	dismissProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'onClick'>;
 
+/**
+ * Floats over a scrollable feed or a menu without pagination, to label what is in view, such as a date, or to lead
+ * to content out of view, such as new messages.
+ */
 const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, className, ...props }: BubbleProps) => (
 	<div
 		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small', className]

@@ -15,27 +15,22 @@ export default {
 	argTypes: {
 		xs: {
 			control: 'boolean',
-			description: 'Activates the extra-small breakpoint grid variant.',
 			table: { category: 'Breakpoints' },
 		},
 		sm: {
 			control: 'boolean',
-			description: 'Activates the small breakpoint grid variant.',
 			table: { category: 'Breakpoints' },
 		},
 		md: {
 			control: 'boolean',
-			description: 'Activates the medium breakpoint grid variant.',
 			table: { category: 'Breakpoints' },
 		},
 		lg: {
 			control: 'boolean',
-			description: 'Activates the large breakpoint grid variant.',
 			table: { category: 'Breakpoints' },
 		},
 		xl: {
 			control: 'boolean',
-			description: 'Activates the extra-large breakpoint grid variant.',
 			table: { category: 'Breakpoints' },
 		},
 	},

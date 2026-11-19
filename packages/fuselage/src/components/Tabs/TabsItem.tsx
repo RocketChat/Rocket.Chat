@@ -8,6 +8,7 @@ export type TabsItemProps = ElementProps<HTMLButtonElement, ButtonHTMLAttributes
 	disabled?: boolean;
 };
 
+/** One tab of a `Tabs` bar. */
 function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 	return (
 		<Box

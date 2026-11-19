@@ -27,14 +27,11 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Displays content in a visually appealing manner.\n\n' +
-					'**Rules**\n' +
-					'- Vertical card — use Regular as the default; use Hero for priority info at the top of a page.\n' +
-					'- Horizontal card — use within a list, among other list items; do NOT use as a stand-alone element.\n' +
-					'- Use the Header/Content sections to compose the card body from other design-system components.',
-			},
+			usage: `
+- Use a vertical \`Card\` by default, and a \`hero\` one for priority information at the top of a page.
+- Use a \`horizontal\` card only in a list, among other list items; never on its own.
+- Compose the card from \`CardHeader\`, \`CardTitle\`, \`CardBody\` and \`CardControls\`, filled with other Fuselage components.
+`,
 		},
 		backgrounds: { default: 'dark' },
 		layout: 'centered',
@@ -43,17 +40,14 @@ export default {
 	argTypes: {
 		horizontal: {
 			control: 'boolean',
-			description: 'Lays out the card horizontally instead of vertically.',
 			table: { category: 'Layout' },
 		},
 		hero: {
 			control: 'boolean',
-			description: 'Renders the hero (highlighted) visual style.',
 			table: { category: 'Kind' },
 		},
 		clickable: {
 			control: 'boolean',
-			description: 'Adds interactive/hover styling for clickable cards.',
 			table: { category: 'State' },
 		},
 	},

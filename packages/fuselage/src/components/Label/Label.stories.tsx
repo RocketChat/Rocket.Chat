@@ -8,36 +8,29 @@ export default {
 	component: Label,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					"The label for an input — names the field and marks whether it's required.\n\n" +
-					'**Rules**\n' +
-					'- May be used standalone, e.g. to label a Checkbox, Radio button or Toggle switch.\n' +
-					'- Accurately describe the information needed; mark required fields with the required indicator.\n' +
-					'- Avoid generic labels or unnecessary ownership wording.\n' +
-					'- Use the info icon only when the field needs a tooltip explanation.',
-			},
+			usage: `
+- Use a \`Label\` on its own to name a \`CheckBox\`, \`RadioButton\` or \`ToggleSwitch\`; in a \`Field\`, use a \`FieldLabel\`.
+- Describe the information needed with a specific label. Avoid generic labels, and don't assign ownership when it isn't needed.
+- Set \`required\` on the label of every required input.
+- Add a \`FieldLabelInfo\` only when the field needs an explanation in a tooltip.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Label content.',
 			table: { category: 'Content' },
 		},
 		is: {
 			control: 'text',
-			description: 'Underlying element rendered; defaults to `label`, or `span` when nested inside another `Label`.',
 			table: { category: 'Polymorphism' },
 		},
 		required: {
 			control: 'boolean',
-			description: 'Appends a required-field asterisk (`*`) after the content.',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Applies the disabled visual style.',
 			table: { category: 'State' },
 		},
 	},

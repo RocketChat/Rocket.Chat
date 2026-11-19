@@ -8,6 +8,7 @@ export type ContextualbarContentProps = ElementProps<HTMLElement> & {
 	spaced?: boolean;
 };
 
+/** The bar's main area, which fills the height between the header and the footer. */
 function ContextualbarContent({ flush, spaced, ...props }: ContextualbarContentProps) {
 	return <Box rcx-vertical-bar__content rcx-vertical-bar__content--flush={flush} rcx-vertical-bar__content--spaced={spaced} {...props} />;
 }

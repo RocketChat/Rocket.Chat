@@ -6,6 +6,7 @@ export type StatesSuggestionListProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLUListElement>;
 
+/** Bulleted list of things to try. */
 const StatesSuggestionList = ({ children, className, ...props }: StatesSuggestionListProps) => (
 	<ul {...props} className={cx('rcx-states__list', className)}>
 		{children}

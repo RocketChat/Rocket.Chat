@@ -1,17 +1,21 @@
 import type { HTMLAttributes, RefAttributes } from 'react';
 
 export type ButtonGroupProps = RefAttributes<HTMLDivElement> & {
+	/** Where the buttons sit along the row, or along the column when `vertical`. */
 	align?: 'start' | 'center' | 'end';
-	/** `equal` also gives every button the same width. */
+	/** Grows the buttons to fill the row, square ones excepted. `equal` also gives them the same width. */
 	stretch?: boolean | 'equal';
+	/** Moves buttons that don't fit onto a new line. */
 	wrap?: boolean;
 	vertical?: boolean;
+	/** Narrows the gap between buttons to 4px. The buttons keep their size. */
 	small?: boolean;
+	/** Widens the gap between buttons to 16px. The buttons keep their size. */
 	large?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
 /**
- * A container for grouping buttons that semantically share a common action context.
+ * Lays out related buttons together, 8px apart, and marks them as one group of actions for assistive technology.
  */
 function ButtonGroup({ align = 'start', children, stretch, vertical, wrap, small, large, className, ...props }: ButtonGroupProps) {
 	return (

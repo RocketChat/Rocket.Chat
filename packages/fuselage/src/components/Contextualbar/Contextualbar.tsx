@@ -9,7 +9,8 @@ export type ContextualbarProps = ElementProps<HTMLElement> & {
 };
 
 /**
- * The `Contextualbar` has the purpose to persist and input information about the scope of the related page.
+ * A panel beside the page with information and actions about what the page shows. It takes the user's input without
+ * taking them away from the page.
  */
 function Contextualbar({ stretch, position, ...props }: ContextualbarProps) {
 	return <Box rcx-vertical-bar rcx-vertical-bar--stretch={stretch} rcx-vertical-bar--position={position} {...props} />;

@@ -8,6 +8,9 @@ export type FieldRowProps = ElementProps<HTMLSpanElement> & {
 	justify?: 'end';
 };
 
+/**
+ * Lines up its children on one row of a field, spread to both ends: a label with its control, or a hint with a link.
+ */
 const FieldRow = ({ justify, ...props }: FieldRowProps) => {
 	const component = <Box is='span' rcx-field__row rcx-field__row--justify-end={justify === 'end'} {...props} />;
 

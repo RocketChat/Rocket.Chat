@@ -18,10 +18,15 @@ export type PaginatedOptionType = {
 	label: string;
 };
 
-export type PaginatedSelectProps = Omit<SelectProps, 'options'> & {
+export type PaginatedSelectProps = Omit<SelectProps, 'options' | 'filter'> & {
+	/** Replaces the element that takes the focus, such as with a text input that filters the options. */
 	anchor?: ElementType;
 	options: PaginatedOptionType[];
+	/** The text typed into the filter input. The options aren't narrowed down by it: pass only the matching ones. */
+	filter?: string;
+	/** Sets each option's label as its `title`, so a label cut short can be read in full on hover. */
 	withTitle?: boolean;
+	/** Called when the list is scrolled to its end, to load the next page of `options`. */
 	endReached?: (index: number) => void;
 	setFilter?: (value: string | undefined | number) => void;
 };

@@ -6,38 +6,40 @@ import ButtonGroup from './ButtonGroup';
 export default {
 	title: 'Inputs/ButtonGroup',
 	component: ButtonGroup,
+	parameters: {
+		docs: {
+			usage: `
+- Group two or more buttons that give access to related, frequently performed actions; a lone button needs no group.
+- Make the button for the next step \`primary\` when that step is evident. When it is unclear, keep every button \`secondary\`, so attention doesn't go where the user may not want to act.
+`,
+		},
+	},
 	argTypes: {
 		align: {
 			control: 'select',
 			options: ['start', 'center', 'end'],
-			description: 'Alignment of the buttons along the main axis.',
 			table: { category: 'Layout', defaultValue: { summary: 'start' } },
 		},
 		stretch: {
 			control: 'select',
 			options: [false, true, 'equal'],
-			description: 'Stretches every button to share the available space; `equal` also gives them the same width.',
 			table: { category: 'Layout' },
 		},
 		wrap: {
 			control: 'boolean',
-			description: 'Allows buttons to wrap onto multiple lines.',
 			table: { category: 'Layout' },
 		},
 		vertical: {
 			control: 'boolean',
-			description: 'Stacks the buttons vertically instead of horizontally.',
 			table: { category: 'Layout' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Small size scale for the contained buttons.',
-			table: { category: 'Size' },
+			table: { category: 'Spacing' },
 		},
 		large: {
 			control: 'boolean',
-			description: 'Large size scale for the contained buttons.',
-			table: { category: 'Size' },
+			table: { category: 'Spacing' },
 		},
 	},
 } satisfies Meta<typeof ButtonGroup>;
@@ -58,6 +60,13 @@ export const Default: Story = {
 
 export const Large: Story = {
 	render: Template,
+	parameters: {
+		docs: {
+			description: {
+				story: 'Only the gap between the buttons changes.',
+			},
+		},
+	},
 	args: {
 		large: true,
 	},
@@ -65,6 +74,13 @@ export const Large: Story = {
 
 export const Small: Story = {
 	render: Template,
+	parameters: {
+		docs: {
+			description: {
+				story: 'Only the gap between the buttons changes.',
+			},
+		},
+	},
 	args: {
 		small: true,
 	},
@@ -91,6 +107,13 @@ export const Stretch: Story = {
 };
 
 export const StretchEqual: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'The square button keeps its size; the others share the rest of the row equally.',
+			},
+		},
+	},
 	render: (args) => (
 		<ButtonGroup {...args}>
 			<Button>Cancel</Button>

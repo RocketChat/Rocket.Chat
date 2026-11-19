@@ -10,9 +10,14 @@ export type FlexItemProps = {
 	grow?: number;
 	shrink?: number;
 	basis?: number | string | 'auto';
+	/** Aligns this item on the cross axis, over the container's `alignItems`. */
 	align?: 'auto' | 'start' | 'end' | 'center' | 'stretch';
 };
 
+/**
+ * Sets how the `Box` it wraps grows, shrinks and aligns in its flex container, without adding an element of its own; a
+ * styling prop set on that `Box` wins.
+ */
 function FlexItem({ children, order, grow, shrink, basis, align }: FlexItemProps) {
 	const transformFn = useCallback(
 		(boxProps: BoxTransformProps) => {

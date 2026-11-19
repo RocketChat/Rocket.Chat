@@ -9,36 +9,29 @@ export default {
 	component: RadioButton,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Allows users to select only one option from a set of mutually exclusive options.\n\n' +
-					'**Rules**\n' +
-					'- Use only for a single choice from a small set of mutually exclusive options.\n' +
-					'- Avoid when the number of choices is large — consider another control.\n' +
-					'- Do not add links to the radio label.\n' +
-					'- Do not use for accepting terms of service or similar — use a checkbox instead.',
-			},
+			usage: `
+- Use a \`RadioButton\` for a single choice from a small set of mutually exclusive options.
+- Avoid it when there are many choices: they clutter the screen and make picking one harder.
+- Don't put links in its label.
+- Don't use it to accept terms of service or anything similar; use a \`CheckBox\` instead.
+`,
 		},
 	},
 	argTypes: {
 		checked: {
 			control: 'boolean',
-			description: 'Whether the radio button is checked (controlled).',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the radio button and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		labelChildren: {
 			control: false,
-			description: 'Content rendered before the radio input, inside its label.',
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the checked state changes.',
 			table: { category: 'Events' },
 		},
 	},
@@ -69,7 +62,14 @@ export const Disabled: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Checked and unchecked, in each interaction state.',
+			},
+		},
+	},
 	render: () => (
 		<PropsVariationSection
 			component={RadioButton}

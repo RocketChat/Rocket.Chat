@@ -45,54 +45,43 @@ export default {
 	component: Message,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'The main unit of information: text plus sender info and interaction elements. Rich text with attachments, threads and reactions.\n\n' +
-					'**Rules**\n' +
-					'- Use the system-message style for one-liner system operations; use the default style for human/bot messages.\n' +
-					'- Bot messages carry special UI Kit content in a separate block.',
-			},
+			usage: `
+- Use \`Message\` for what people and bots write, and \`MessageSystem\` for a one-line record of something that happened in the room.
+- Put a bot's UI Kit content in its own \`MessageBlock\`, apart from the \`MessageBody\`.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Message content, composed from Message subcomponents (header, body, reactions, toolbar, etc).',
 			table: { category: 'Content' },
 		},
 		className: {
 			control: 'text',
-			description: 'Additional CSS class applied to the root element.',
 			table: { category: 'Content' },
 		},
 		clickable: {
 			control: 'boolean',
-			description: 'Shows a pointer cursor and hover styling; also implied by passing an `onClick` handler.',
 			table: { category: 'Behavior' },
 		},
 		sequential: {
 			control: 'boolean',
-			description: 'Compact styling for a message that follows another from the same author, hiding the repeated header.',
 			table: { category: 'Behavior' },
 		},
 		isSelected: {
 			control: 'boolean',
-			description: 'Applies the selected visual state.',
 			table: { category: 'State' },
 		},
 		isEditing: {
 			control: 'boolean',
-			description: 'Applies the editing visual state.',
 			table: { category: 'State' },
 		},
 		isPending: {
 			control: 'boolean',
-			description: 'Applies the pending (not yet sent) visual state.',
 			table: { category: 'State' },
 		},
 		onClick: {
 			control: false,
-			description: 'Called when the message is activated.',
 			table: { category: 'Events' },
 		},
 	},
@@ -101,6 +90,13 @@ export default {
 type Story = StoryObj<typeof Message>;
 
 export const Default: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'Hover the message, or move keyboard focus into it, to show its toolbar and the button that adds a reaction.',
+			},
+		},
+	},
 	render: () => (
 		<Box>
 			<MessageDivider>May, 24, 2020</MessageDivider>

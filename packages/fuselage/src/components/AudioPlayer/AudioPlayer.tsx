@@ -49,25 +49,34 @@ const getDurationForInfinityDurationAudioFile = (src: string, callback: (duratio
 	});
 };
 
-/**
- * A Fuselage’s custom AudioPlayer.
- */
 export type AudioPlayerProps = RefAttributes<HTMLAudioElement> &
 	Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'is'> & {
 		src: string;
+		/** MIME type of the file at `src`. */
 		type?: string;
+		/** Fastest speed; pressing the speed button at it goes back to `minPlaybackSpeed`. */
 		maxPlaybackSpeed?: number;
+		/** Speed the speed button goes back to after `maxPlaybackSpeed`. */
 		minPlaybackSpeed?: number;
+		/** How much each press of the speed button raises the speed. */
 		playbackSpeedStep?: number;
+		/** Shows a button that downloads the audio file. */
 		download?: boolean;
+		/** Accessible name of the play button, to translate the default. */
 		playLabel?: string;
+		/** Accessible name of the pause button, to translate the default. */
 		pauseLabel?: string;
+		/** Accessible name of the slider that seeks through the audio, to translate the default. */
 		audioPlaybackRangeLabel?: string;
+		/** Accessible name of the speed button, to translate the default. */
 		changePlaybackSpeedLabel?: string;
+		/** Accessible name of the download button, to translate the default. */
 		downloadAudioFileLabel?: string;
+		/** Attributes of the captions track, such as its `src`. */
 		trackProps?: TrackHTMLAttributes<HTMLTrackElement>;
 	};
 
+/** Plays an audio file, such as a voice message, with controls to seek, change the speed and optionally download it. */
 const AudioPlayer = ({
 	ref,
 	src,

@@ -23,15 +23,12 @@ export default {
 	component: Menu,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Presents the actions a user can take at a given moment — selection or specific functionality.\n\n' +
-					'**Rules**\n' +
-					'- The item label is mandatory; the trailing element is optional (radio, checkbox, etc.).\n' +
-					'- Use title/divider items to structure groups; mark destructive items as danger; disable items that are unavailable.\n' +
-					'- A device picker / list of selectable options is a Menu with title groups + radio trailing elements — not hand-built rows.\n' +
-					'- Position 4px from the trigger edge on the opening side; align the menu border to the trigger border.',
-			},
+			usage: `
+- Give every \`MenuItem\` a label. Add a trailing \`MenuItemInput\`, such as a \`RadioButton\` or a \`CheckBox\`, only when the item holds a choice.
+- Group items with \`MenuSection\`, giving a section a \`title\` when the group needs a name.
+- Mark a destructive item as \`danger\` (\`variant: 'danger'\` in its data), and disable an unavailable one through \`disabledKeys\`.
+- For a picker, such as a list of devices, use a \`Menu\` with titled sections and \`RadioButton\` inputs instead of building the rows by hand.
+`,
 		},
 	},
 	decorators: [
@@ -71,7 +68,7 @@ Complex.parameters = {
 	docs: {
 		description: {
 			story:
-				'You can use `MenuItem` sub-components to render more complex items, with icons, avatars, text and inputs. The available components are: <br>`MenuItemAvatar` <br>`MenuItemColumn` <br>`MenuItemContent` <br>`MenuItemIcon` <br>`MenuItemInput` <br>`MenuItemSkeleton` <br>`MenuItemTitle`',
+				'Compose an item from `MenuItem*` parts: `MenuItemAvatar`, `MenuItemColumn`, `MenuItemContent`, `MenuItemIcon`, `MenuItemInput`, `MenuItemSkeleton` and `MenuItemTitle`.',
 		},
 	},
 };
@@ -92,8 +89,7 @@ export const WithSections: StoryFn<typeof Menu> = (args) => (
 WithSections.parameters = {
 	docs: {
 		description: {
-			story:
-				'Use `<MenuSection>` to group the menu items. The `title` prop is optional. If provided, a **title** and a **divider** is added - otherwise, only the divider is added.',
+			story: "A section's `title` adds a heading above it, and every section after the first starts with a divider.",
 		},
 	},
 };
@@ -199,7 +195,6 @@ const GenericMenuItem = ({ item: { icon, name, input } }: { item: Item }) => (
 );
 export const MenuMapGenericItem = () => {
 	const [sortBy, setSortBy] = useState('name');
-
 	const [groupByUnread, setGroupByUnread] = useState(false);
 	const [groupByFav, setGroupByFav] = useState(false);
 	const [groupByTypes, setGroupByTypes] = useState(false);
@@ -282,6 +277,13 @@ export const MenuMapGenericItem = () => {
 	);
 };
 
+MenuMapGenericItem.parameters = {
+	docs: {
+		description: {
+			story: 'Each section is built from an `items` array and a function that renders one item.',
+		},
+	},
+};
 export const AsNavBarActions = () => (
 	<NavBarGroup>
 		<NavBarItem icon='user' title='user' />
@@ -300,6 +302,13 @@ export const AsNavBarActions = () => (
 		</Menu>
 	</NavBarGroup>
 );
+AsNavBarActions.parameters = {
+	docs: {
+		description: {
+			story: 'With `is={NavBarItem}`, the trigger matches the other items of the nav bar.',
+		},
+	},
+};
 
 export const ControlledOpenState = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -350,6 +359,13 @@ export const ItemVariants = () => (
 		</MenuSection>
 	</Menu>
 );
+ItemVariants.parameters = {
+	docs: {
+		description: {
+			story: "An item's variant comes from its data (`variant` in `items`). Only `danger` changes how the item looks.",
+		},
+	},
+};
 
 export const Sizes = () => (
 	<ButtonGroup>
@@ -397,10 +413,24 @@ export const WithCustomButton = () => (
 		</Menu>
 	</ButtonGroup>
 );
+WithCustomButton.parameters = {
+	docs: {
+		description: {
+			story: '`button` takes a trigger element; `is` takes a trigger component.',
+		},
+	},
+};
 
 export const Scrollable = () => {
 	const items = Array.from({ length: 30 }, (_, i) => <MenuItem key={i}>Item {i + 1}</MenuItem>);
 	return <Menu title='Scrollable Menu'>{items}</Menu>;
+};
+Scrollable.parameters = {
+	docs: {
+		description: {
+			story: 'A menu taller than the screen scrolls.',
+		},
+	},
 };
 
 export const WithSubmenu: StoryFn<typeof Menu> = (args) => (
@@ -413,6 +443,13 @@ export const WithSubmenu: StoryFn<typeof Menu> = (args) => (
 		<MenuItem key='settings'>Settings</MenuItem>
 	</Menu>
 );
+WithSubmenu.parameters = {
+	docs: {
+		description: {
+			story: 'A `MenuItem` with a `title` and children opens its children as a submenu.',
+		},
+	},
+};
 
 export const WithRichSubmenuTrigger: StoryFn<typeof Menu> = (args) => (
 	<Menu title='Menu with rich submenu triggers' {...args}>
@@ -444,6 +481,14 @@ export const WithRichSubmenuTrigger: StoryFn<typeof Menu> = (args) => (
 );
 WithRichSubmenuTrigger.args = {
 	onAction: action('click'),
+};
+WithRichSubmenuTrigger.parameters = {
+	docs: {
+		description: {
+			story:
+				'In a `MenuSubmenuTrigger`, the first child is the entry in the parent menu and the rest fill the submenu, so the entry can carry an icon.',
+		},
+	},
 };
 
 export const WithItemParts: StoryFn<typeof Menu> = (args) => (
@@ -491,6 +536,13 @@ export const WithItemParts: StoryFn<typeof Menu> = (args) => (
 		</MenuSection>
 	</Menu>
 );
+WithItemParts.parameters = {
+	docs: {
+		description: {
+			story: 'Items composed from `Item` parts. Give each a `textValue`, since their content is not plain text.',
+		},
+	},
+};
 
 export const WithItemAliases: StoryFn<typeof Menu> = (args) => (
 	<Menu title='Status' {...args}>

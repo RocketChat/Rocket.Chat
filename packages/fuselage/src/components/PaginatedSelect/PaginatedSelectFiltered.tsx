@@ -7,8 +7,14 @@ import { PaginatedSelect } from './PaginatedSelect';
 
 export type PaginatedSelectFilteredProps = Omit<PaginatedSelectProps, 'setFilter'> &
 	RefAttributes<HTMLInputElement> & {
+		/** Called with the text as the user types it. */
 		setFilter: (value: string | undefined | number) => void;
 	};
+
+/**
+ * Picks one option from a long list, loaded a page at a time as it scrolls, that the user searches by typing. The caller
+ * narrows `options` down to the typed `filter`.
+ */
 
 const PaginatedSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedSelectFilteredProps) => {
 	const anchor = useMemo(

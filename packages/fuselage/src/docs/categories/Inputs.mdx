@@ -1,0 +1,41 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title='Inputs/Overview' />
+
+# Inputs
+
+Components the user acts with: buttons that trigger actions, and inputs that take a value.
+
+## Actions
+
+Pick by what the user needs to do:
+
+- An action with a label: [`Button`](?path=/docs/inputs-button--docs)
+- An action shown as an icon alone, in a toolbar or beside content: [`IconButton`](?path=/docs/inputs-iconbutton--docs)
+- Several actions side by side: [`ButtonGroup`](?path=/docs/inputs-buttongroup--docs)
+- A primary action fused with a menu of related options: [`SplitButton`](?path=/docs/inputs-splitbutton--docs)
+
+## Values
+
+Pick by the value the user gives:
+
+- A line of text: [`TextInput`](?path=/docs/inputs-textinput--docs), or the specialised [`EmailInput`](?path=/docs/inputs-emailinput--docs), [`PasswordInput`](?path=/docs/inputs-passwordinput--docs), [`UrlInput`](?path=/docs/inputs-urlinput--docs), [`NumberInput`](?path=/docs/inputs-numberinput--docs)
+- Several lines of text: [`TextAreaInput`](?path=/docs/inputs-textareainput--docs)
+- A search box: [`SearchInput`](?path=/docs/inputs-searchinput--docs)
+- One option from a list: [`Select`](?path=/docs/inputs-select--docs)
+- Several options from a list: [`MultiSelect`](?path=/docs/inputs-multiselect--docs)
+- Options loaded page by page, filtered as the user types: [`PaginatedSelectFiltered`](?path=/docs/inputs-paginatedselectfiltered--docs), [`PaginatedMultiSelectFiltered`](?path=/docs/inputs-paginatedmultiselectfiltered--docs)
+- One option from a few mutually exclusive ones, all visible: [`RadioButton`](?path=/docs/inputs-radiobutton--docs)
+- Any number of options from a list, or an agreement such as accepting terms: [`CheckBox`](?path=/docs/inputs-checkbox--docs)
+- A setting with two states that applies as soon as it's switched: [`ToggleSwitch`](?path=/docs/inputs-toggleswitch--docs)
+- A number in a range: [`Slider`](?path=/docs/inputs-slider--docs)
+
+[`AutoComplete`](?path=/docs/inputs-autocomplete--docs) is deprecated: use the filtered selects instead.
+[`InputBox`](?path=/docs/inputs-inputbox--docs) is the base the text inputs are built on; reach for one of them
+rather than for it.
+
+## Forms
+
+Every input sits in a [`Field`](?path=/docs/inputs-field--docs), which gives it a label, a hint and an error
+message; a form stacks its fields in a [`FieldGroup`](?path=/docs/inputs-fieldgroup--docs).
+[`Label`](?path=/docs/inputs-label--docs) names an input outside a `Field`.

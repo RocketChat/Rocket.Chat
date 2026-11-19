@@ -21,7 +21,9 @@ export type SelectProps<V extends Key = Key> = RefAttributes<HTMLElement> & {
 	defaultSelectedKey?: V;
 	onChange?: ((key: V) => any) | undefined;
 	placeholder?: string;
+	/** Marks the select as invalid. It doesn't show the message: show it in a `FieldError`. */
 	error?: string;
+	/** Matches the size of a `small` input, with smaller text. */
 	small?: boolean;
 	disabled?: boolean;
 	/** Submits the selected key under this name with the surrounding form. */
@@ -45,8 +47,8 @@ const getLabelText = (element: HTMLButtonElement | null) =>
 		.join(' ') || undefined;
 
 /**
- * An input for selection of options: a button that opens a listbox of its options, named by a `label` pointing at its `id`
- * like any other input, or by `aria-label` or `aria-labelledby`.
+ * Picks one option from a list that opens below it. Name it like any other input: with a `label` pointing at its `id`,
+ * or with `aria-label` or `aria-labelledby`.
  */
 function Select<V extends Key = Key>({
 	ref: outerRef,

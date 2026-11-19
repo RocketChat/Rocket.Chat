@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { PropsWithChildren, RefObject, UIEvent } from 'react';
+import type { ReactNode, RefObject, UIEvent } from 'react';
 import { useRef, useCallback } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
@@ -8,12 +8,20 @@ import { useStyle } from '../../hooks/useStyle';
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
 import type { BoxTransformProps } from '../Box/BoxTransforms';
 
-export type ScrollableProps = PropsWithChildren<{
+export type ScrollableProps = {
+	children?: ReactNode;
+	/** Scrolls only sideways; without `horizontal` or `vertical`, the content scrolls both ways. */
 	horizontal?: boolean;
+	/** Scrolls only up and down. Ignored with `horizontal`. */
 	vertical?: boolean;
+	/** Animates scrolling to a position, such as an anchor or a `scrollTo` call, instead of jumping there. */
 	smooth?: boolean;
+	/**
+	 * Called with the edges the content touches (`top`, `bottom`, `left`, `right`) when they change, as when it reaches
+	 * the top; checked as scrolling starts and 200ms after it stops.
+	 */
 	onScrollContent?: (touching: { top: boolean }) => void;
-}>;
+};
 
 const getTouchingEdges = (element: Element) => ({
 	top: !element.scrollTop,
@@ -44,7 +52,8 @@ const pollTouchingEdges = (
 };
 
 /**
- * Add scroll capability to the wrapped component.
+ * Makes the `Box` it wraps scroll the content that overflows it, with a thin scrollbar, without adding an element of its
+ * own.
  */
 const Scrollable = ({ children, horizontal, vertical, smooth, onScrollContent }: ScrollableProps) => {
 	const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);

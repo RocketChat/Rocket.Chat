@@ -14,17 +14,31 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 > & {
 	/** Lands on the wrapper when there is an addon, and on the input otherwise. */
 	className?: string;
+	/** Hides the input but keeps the space it takes in the layout. */
 	invisible?: boolean;
+	/** Content inside the input's border, before the value, such as an icon. */
 	startAddon?: ReactNode;
+	/**
+	 * Content inside the input's border, after the value, such as an icon or a small button. With `type='date'` or
+	 * `type='time'`, a picker icon takes its place.
+	 */
 	endAddon?: ReactNode;
 	/** Reduces the end padding so a button in `endAddon` sits flush with the input's edge. */
 	endAddonFlush?: boolean;
 	input?: ReactNode;
+	/** Accepts several values, for the types that support it: `email`, `file` and `select`. */
 	multiple?: boolean;
+	/**
+	 * Marks the input as invalid, with this text as its native validation message. The input doesn't display it: show it
+	 * in a `FieldError`.
+	 */
 	error?: string;
 	placeholder?: string;
+	/** Shows the value in the placeholder's color. */
 	placeholderVisible?: boolean;
+	/** Shrinks the input to 28 pixels high, with smaller text. */
 	small?: boolean;
+	/** The kind of value the input takes: an HTML input type, or `textarea` or `select` for those elements. */
 	type:
 		| 'button'
 		| 'checkbox'
@@ -54,10 +68,8 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 };
 
 /**
- * A decorated input control with support for addons.
- *
- * Usually you'll perfer to use `-Input` (e.g. <LinkTo kind='Forms/TextInput' story='Default'>`TextInput`</LinkTo>)
- * components over this one because it works as a construction block for them.
+ * The bordered box the text inputs are built on, with room for addons around the value. Reach for the input made for
+ * the value (`TextInput`, `EmailInput`, `NumberInput`…) first, and for `InputBox` when none fits, such as for a date.
  */
 function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
 	ref,

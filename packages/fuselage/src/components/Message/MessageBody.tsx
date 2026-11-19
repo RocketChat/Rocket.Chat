@@ -9,6 +9,9 @@ export type MessageBodyProps = HTMLAttributes<HTMLDivElement> & {
 	clamp?: 2;
 };
 
+/**
+ * The text of a message.
+ */
 const MessageBody = ({ clamp, className, ...props }: MessageBodyProps) => (
 	<div {...props} className={cx(cxx('rcx-message-body')({ clamp: !!clamp }), className)} />
 );

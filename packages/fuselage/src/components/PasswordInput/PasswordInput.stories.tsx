@@ -7,55 +7,58 @@ import PasswordInput from './PasswordInput';
 export default {
 	title: 'Inputs/PasswordInput',
 	component: PasswordInput,
+	parameters: {
+		docs: {
+			usage: `
+- Follows the \`TextInput\` usage.
+`,
+		},
+	},
 	argTypes: {
 		startAddon: {
 			control: false,
-			description: 'Content rendered before the input, inside its border.',
+			description: "Content inside the input's border, before the value, such as an icon.",
 			table: { category: 'Content' },
 		},
 		endAddon: {
 			control: false,
-			description: 'Content rendered after the input, inside its border; overrides the default show/hide password icon.',
+			description: "Content inside the input's border, after the value. Replaces the toggle that shows and hides the password.",
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown when the input is empty.',
 			table: { category: 'Content' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the input at a smaller size scale.',
+			description: 'Shrinks the input to 28 pixels high, with smaller text.',
 			table: { category: 'Size' },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message that marks the input as invalid and styles it accordingly.',
+			description:
+				"Marks the input as invalid, with this text as its native validation message. The input doesn't display it: show it in a `FieldError`.",
 			table: { category: 'State' },
 		},
 		placeholderVisible: {
 			control: 'boolean',
-			description: 'Keeps the placeholder visible even when there is a value.',
+			description: "Shows the value in the placeholder's color.",
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the input and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		value: {
 			control: 'text',
-			description: 'Controlled value of the input.',
 			table: { category: 'Content' },
 		},
 		defaultValue: {
 			control: 'text',
-			description: 'Initial, uncontrolled value of the input.',
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the input value changes.',
 			table: { category: 'Events' },
 		},
 	},
@@ -74,12 +77,26 @@ export const WithValue: Story = {
 		'aria-label': 'password',
 		'defaultValue': 'password',
 	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'Click the eye icon to show or hide the password.',
+			},
+		},
+	},
 };
 
 export const WithIconAddon: Story = {
 	args: {
 		'aria-label': 'password',
 		'endAddon': <Icon name='send' size={20} />,
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'An `endAddon` takes the place of the toggle that shows and hides the password.',
+			},
+		},
 	},
 };
 
@@ -105,7 +122,14 @@ export const WithPlaceholder: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Each interaction state against what the input holds, at the default size and at `small`.',
+			},
+		},
+	},
 	render: () => (
 		<>
 			<PropsVariationSection

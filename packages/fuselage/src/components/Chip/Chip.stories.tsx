@@ -11,55 +11,46 @@ export default {
 	component: Chip,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Used to communicate and manage input-field selections.\n\n' +
-					'**Rules**\n' +
-					'- Text is mandatory.\n' +
-					'- A chip may have either a leading icon or a leading avatar — not both.\n' +
-					'- Keep the close button when the chip represents a removable selection.',
-			},
+			usage: `
+- Always give the chip a label.
+- Lead with one thumbnail at most: an avatar from \`thumbUrl\`, or an icon through \`renderThumb\`.
+- Keep the dismiss symbol, by setting \`onClick\`, when the chip stands for a selection the user can remove.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Chip label content.',
 			table: { category: 'Content' },
 		},
 		thumbUrl: {
 			control: 'text',
-			description: 'URL of the avatar image rendered before the label.',
 			table: { category: 'Content' },
 		},
 		renderThumb: {
 			control: false,
-			description: 'Custom renderer for the thumbnail, receiving `{ url }`.',
 			table: { category: 'Content' },
 		},
 		renderDismissSymbol: {
 			control: false,
-			description: 'Custom renderer for the dismiss icon.',
 			table: { category: 'Content' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders a 20px tall chip.',
 			table: { category: 'Appearance' },
 		},
 		label: {
 			control: 'boolean',
-			description: 'Renders the text in uppercase, for chips that categorize rather than select.',
 			table: { category: 'Appearance' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the chip and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		onClick: {
 			control: false,
-			description: 'Called when the chip is clicked; the dismiss symbol is only rendered when this (or `onMouseDown`) is provided.',
+			description:
+				'Called when the chip is clicked, to remove it. Without it or `onMouseDown`, the chip is disabled and shows no dismiss symbol.',
 			table: { category: 'Events' },
 		},
 	},

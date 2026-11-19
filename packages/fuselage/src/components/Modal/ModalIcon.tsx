@@ -11,6 +11,7 @@ export type ModalIconProps = ElementProps<HTMLDivElement> & {
 	align?: 'center' | 'end';
 };
 
+/** Icon at the start of the header, to reinforce the title. */
 const ModalIcon = ({ size = 'x20', name, variant, align = 'center', ...props }: ModalIconProps) => (
 	<Box rcx-modal__icon rcx-modal__icon--variant={variant} rcx-modal__icon--align={align} {...props}>
 		<Icon name={name} size={size} />

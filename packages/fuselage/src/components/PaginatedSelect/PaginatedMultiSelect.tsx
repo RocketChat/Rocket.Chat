@@ -20,16 +20,21 @@ export type PaginatedMultiSelectOption = {
 };
 
 export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onChange'> & {
+	/** Shows the select as invalid; set `aria-invalid` too, for assistive technology. */
 	error?: boolean;
 	name?: string;
 	disabled?: boolean;
+	/** The text typed into the filter input. The options aren't narrowed down by it: pass only the matching ones. */
 	filter?: string;
 	options: PaginatedMultiSelectOption[];
+	/** Sets each chip's label as its `title`, so a label cut short can be read in full on hover. */
 	withTitle?: boolean;
 	placeholder?: string;
+	/** Called when the list is scrolled to its end, to load the next page of `options`. */
 	endReached?: (start?: number, end?: number) => void;
 	value?: PaginatedMultiSelectOption[];
 	onChange: (values: PaginatedMultiSelectOption[]) => void;
+	/** Replaces the list of options. */
 	renderOptions?: ComponentType<{
 		width?: CSSProperties['width'];
 		multiple?: boolean;
@@ -51,6 +56,7 @@ export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onCh
 		onSelect: (option: [unknown, string]) => void;
 		onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
 	}>;
+	/** Renders each option in the list. */
 	renderItem?: ComponentType<{
 		role?: string;
 		label?: ReactNode;
@@ -61,6 +67,7 @@ export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onCh
 		value?: string | number;
 		onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
 	}>;
+	/** Replaces the element that takes the focus, such as with a text input that filters the options. */
 	anchor?: any;
 };
 

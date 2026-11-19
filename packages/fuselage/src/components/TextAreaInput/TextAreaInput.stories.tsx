@@ -7,55 +7,58 @@ import TextAreaInput from './TextAreaInput';
 export default {
 	title: 'Inputs/TextAreaInput',
 	component: TextAreaInput,
+	parameters: {
+		docs: {
+			usage: `
+- Follows the \`TextInput\` usage.
+`,
+		},
+	},
 	argTypes: {
 		startAddon: {
 			control: false,
-			description: 'Content rendered before the input, inside its border.',
+			description: "Content inside the input's border, before the value, such as an icon.",
 			table: { category: 'Content' },
 		},
 		endAddon: {
 			control: false,
-			description: 'Content rendered after the input, inside its border.',
+			description: "Content inside the input's border, after the value, such as an icon or a small button.",
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown when the textarea is empty.',
 			table: { category: 'Content' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the textarea at a smaller size scale.',
+			description: 'Shrinks the input to 28 pixels high, with smaller text.',
 			table: { category: 'Size' },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message that marks the textarea as invalid and styles it accordingly.',
+			description:
+				"Marks the input as invalid, with this text as its native validation message. The input doesn't display it: show it in a `FieldError`.",
 			table: { category: 'State' },
 		},
 		placeholderVisible: {
 			control: 'boolean',
-			description: 'Keeps the placeholder visible even when there is a value.',
+			description: "Shows the value in the placeholder's color.",
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the textarea and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		value: {
 			control: 'text',
-			description: 'Controlled value of the textarea.',
 			table: { category: 'Content' },
 		},
 		defaultValue: {
 			control: 'text',
-			description: 'Initial, uncontrolled value of the textarea.',
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the textarea value changes.',
 			table: { category: 'Events' },
 		},
 	},
@@ -96,7 +99,14 @@ export const WithValue: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Each interaction state against what the input holds.',
+			},
+		},
+	},
 	render: () => (
 		<PropsVariationSection
 			component={TextAreaInput}

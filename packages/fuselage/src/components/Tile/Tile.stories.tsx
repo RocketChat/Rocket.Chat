@@ -8,17 +8,14 @@ export default {
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Tile content.',
 		},
 		elevation: {
 			control: 'select',
 			options: ['0', '1', '2', '1nb', '2nb'],
-			description: 'Shadow depth applied to the tile.',
 			table: { defaultValue: { summary: '1' } },
 		},
 		flush: {
 			control: 'boolean',
-			description: 'Drops the default padding.',
 		},
 	},
 } satisfies Meta<typeof Tile>;

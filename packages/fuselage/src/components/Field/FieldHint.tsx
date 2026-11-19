@@ -5,6 +5,9 @@ import { FieldContext } from './Field';
 
 export type FieldHintProps = ElementProps<HTMLSpanElement>;
 
+/**
+ * Explains a technical term, concept or behavior behind the field.
+ */
 const FieldHint = (props: FieldHintProps) => {
 	const component = <Box is='span' rcx-field__hint {...props} />;
 

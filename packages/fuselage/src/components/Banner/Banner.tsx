@@ -10,19 +10,30 @@ export type BannerVariant = 'neutral' | 'info' | 'success' | 'warning' | 'danger
 const variants: BannerVariant[] = ['neutral', 'info', 'success', 'warning', 'danger'];
 
 export type BannerProps = {
+	/** Shows the pointer cursor over the banner, to signal that clicking it calls `onAction`. */
 	actionable?: boolean;
+	/** Shows a close button that calls `onClose`. */
 	closeable?: boolean;
+	/** Shown before the content, and hidden when the banner is 375px wide or narrower. */
 	icon?: ReactNode;
+	/** Puts the title and the content on one line, cutting the content short with an ellipsis. */
 	inline?: boolean;
+	/** URL of a link shown after the content. */
 	link?: string;
 	linkTarget?: HTMLAttributeAnchorTarget;
 	linkText?: string;
+	/** Makes the whole banner a button that calls it on click, Enter or Space. */
 	onAction?: () => void;
 	onClose?: () => void;
 	title?: string;
+	/** Colors the top border, the icon and the link by what the banner reports; `neutral` has no colored border. */
 	variant?: BannerVariant;
 } & AllHTMLAttributes<HTMLElement>;
 
+/**
+ * Reports a condition that affects the whole app rather than specific content, such as a lost connection or a blocked
+ * permission, at the top of the screen. Whether the user can dismiss it depends on how important it is.
+ */
 const Banner = ({
 	actionable,
 	children,

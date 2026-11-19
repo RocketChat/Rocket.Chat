@@ -9,6 +9,7 @@ export type CardBodyProps = {
 	children: ReactNode;
 } & ElementProps<HTMLDivElement>;
 
+/** The card's main content, which takes the space left. */
 const CardBody = ({ children, flexDirection, height, ...props }: CardBodyProps) => (
 	<Box rcx-card__body flexDirection={flexDirection} height={height} {...props}>
 		{children}

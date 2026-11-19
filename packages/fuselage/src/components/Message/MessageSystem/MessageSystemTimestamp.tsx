@@ -8,6 +8,9 @@ export type MessageSystemTimestampProps = {
 	title?: string;
 } & Omit<HTMLAttributes<HTMLSpanElement>, 'is'>;
 
+/**
+ * The time of the event, at the end of a system message's line.
+ */
 const MessageSystemTimestamp = ({ className, ...props }: MessageSystemTimestampProps) => (
 	<ItemMeta is='span' {...props} className={cx('rcx-message-system__time', className)} />
 );

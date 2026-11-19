@@ -7,14 +7,16 @@ import { Box } from '../Box';
 const LabelContext = createContext(false);
 
 export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLElement>> & {
-	/** Renders another element, such as a `legend` or a `span`. */
+	/** Renders another element, such as a `legend` or a `span`. Without it, a `Label` inside another renders a `span`. */
 	is?: ElementType;
+	/** Dims the label to match a disabled input. It doesn't disable anything. */
 	disabled?: boolean;
+	/** Adds an asterisk, hidden from assistive technology: mark the input itself as required too. */
 	required?: boolean;
 };
 
 /**
- * A caption for an input component.
+ * Names an input, and marks it as required when it is.
  */
 function Label({ disabled, is, required, children, ...props }: LabelProps) {
 	const isInsideLabel = useContext(LabelContext);

@@ -19,22 +19,18 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'System message content, composed from MessageSystem subcomponents.',
 			table: { category: 'Content' },
 		},
 		title: {
 			control: 'text',
-			description: 'HTML title attribute rendered on the root element.',
 			table: { category: 'Content' },
 		},
 		isSelected: {
 			control: 'boolean',
-			description: 'Applies the selected visual state.',
 			table: { category: 'State' },
 		},
 		onClick: {
 			control: false,
-			description: 'Called when the system message is activated.',
 			table: { category: 'Events' },
 		},
 	},
@@ -250,6 +246,13 @@ export const WithClickableAuthorName: Story = {
 };
 
 export const WithLongTopic: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'A body longer than the line is cut short with an ellipsis.',
+			},
+		},
+	},
 	render: () => (
 		<Box overflow='hidden'>
 			<MessageSystem>

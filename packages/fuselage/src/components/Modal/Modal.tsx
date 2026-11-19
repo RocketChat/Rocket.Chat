@@ -13,10 +13,19 @@ export type ModalProps = ElementProps<Element, DialogHTMLAttributes<HTMLDialogEl
 	maxHeight?: BoxProps['maxHeight'];
 	/** Hides the modal while keeping it, and its state, mounted. */
 	hidden?: boolean;
+	/** Renders the element `wrapper` would, from the same props; it takes precedence over `wrapper`. */
 	wrapperFunction?: (props: Pick<BoxProps, 'elevation' | 'className' | 'children'>) => ReactNode;
+	/**
+	 * Element the modal's sections sit in, such as a `form` that the footer's submit button submits. It receives
+	 * `elevation`, `className` and `children`.
+	 */
 	wrapper?: ElementType<Pick<BoxProps, 'elevation' | 'className' | 'children'>>;
 };
 
+/**
+ * Interrupts the page with a prompt or information the user deals with before going back to it: a decision, a
+ * confirmation, critical information or a workflow. Show it over a `ModalBackdrop`.
+ */
 const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,

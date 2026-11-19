@@ -27,7 +27,6 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Status items content, composed from MessageStatusIndicatorItem subcomponents.',
 			table: { category: 'Content' },
 		},
 	},

@@ -7,20 +7,23 @@ import { Box } from '../Box';
 import { Icon } from '../Icon';
 
 export type IconButtonProps = {
+	/** An icon name, or an element shown in place of the glyph, such as an `Avatar` or an emoji. */
 	icon: IconName | ReactElement<any>;
 	/**
-	 * What to pin to the button's corner, if anything — a `Badge`, as a rule.
-	 *
-	 * It is hidden from assistive technology, always: `aria-label` replaces a button's contents rather than adding
-	 * to them, so a badge inside a labelled button is never read out. What it says has to reach `aria-label`
-	 * instead, which is the caller's to write.
+	 * Pinned to the button's corner, usually a `Badge`. It is hidden from assistive technology, so repeat what it says
+	 * in `aria-label`.
 	 */
 	badge?: ReactNode;
-	/** The corner the badge is pinned to. */
 	badgePosition?: 'top-end' | 'bottom-end';
+	/**
+	 * Without a variant, the button has no background until hovered. `info`, `success`, `warning` and `danger` color
+	 * only the glyph; `primary`, `secondary` and the `secondary-*` variants fill the button.
+	 */
 	variant?:
 		'primary' | 'secondary' | 'info' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
+	/** Match the size of the surrounding buttons and inputs. */
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
+	/** Holds the pressed look, for a toggle that is on. It changes only the look: set `aria-pressed` too. */
 	pressed?: boolean;
 	/** Renders a link instead of a button, for actions that navigate or download. */
 	is?: 'button' | 'a';
@@ -52,6 +55,10 @@ const getPressedClass = (variant: string) => {
 	return variantClass;
 };
 
+/**
+ * Triggers an action shown by an icon alone, where a recognizable icon needs no label, as in toolbars and action bars.
+ * Name it with `aria-label`.
+ */
 function IconButton({
 	icon,
 	badge,

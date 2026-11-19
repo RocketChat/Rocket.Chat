@@ -6,19 +6,19 @@ import { Button } from '../Button';
 import { Skeleton } from '../Skeleton';
 
 export type CodeSnippetProps = ElementProps<HTMLPreElement> & {
+	/** The code or command to show; while it is empty, a loading skeleton takes its place. */
 	children: string;
+	/** Label of the copy button, to translate the default `Copy`. */
 	buttonText?: string;
 	buttonDisabled?: boolean;
+	/**
+	 * Called when the copy button is pressed; without it, there is no button. Copy with `useClipboard` from
+	 * `@rocket.chat/fuselage-hooks`.
+	 */
 	onClick?: () => void;
 };
 
-/**
- * The `CodeSnippet` is used to show code or commands and make easier to copy them.
- *
- * The default button text is `Copy` but you can use the `buttonText` prop to handle translations in your project.
- *
- * Please check the `useClipBoard` hook in `fuselage-hooks` package, to handle the copy behaviour.
- */
+/** Shows code or a command in a monospaced block, with an optional button to copy it. */
 const CodeSnippet = ({
 	children,
 	onClick,

@@ -10,46 +10,37 @@ export default {
 	component: Divider,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Separates sections of content.\n\n' +
-					'**Rules**\n' +
-					'- Use inset to separate related content within a wrapper.\n' +
-					'- For a full-width stroke (e.g. separating a header from page content), use a border, not a divider.\n' +
-					'- Vertical dividers are used between things like a menu and composer; horizontal + text is used e.g. on a login page.',
-			},
+			usage: `
+- Separate related content inside a container with a \`Divider\`.
+- For a full-width stroke, such as between a header and the page content, use a border instead.
+- Use a \`vertical\` divider between elements side by side, such as a menu and the composer; label a horizontal one with \`children\`, as on the login page.
+`,
 		},
 	},
 	argTypes: {
 		variation: {
 			control: 'select',
 			options: ['danger', 'light'],
-			description: 'Color variation of the divider.',
 			table: { category: 'Kind' },
 		},
 		vertical: {
 			control: 'boolean',
-			description: 'Renders the divider along the vertical axis instead of horizontal.',
 			table: { category: 'Layout' },
 		},
 		flush: {
 			control: 'boolean',
-			description: "Removes the divider's own margin; the container spaces it instead.",
 			table: { category: 'Layout' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Vertical only: uses a 4px inline margin instead of 8px.',
 			table: { category: 'Layout' },
 		},
 		stretch: {
 			control: 'boolean',
-			description: 'Vertical only: grows to the height of its container instead of 20px.',
 			table: { category: 'Layout' },
 		},
 		children: {
 			control: 'text',
-			description: 'Text rendered inside the divider; when set, the divider renders as a labeled separator instead of a plain `hr`.',
 			table: { category: 'Content' },
 		},
 	},

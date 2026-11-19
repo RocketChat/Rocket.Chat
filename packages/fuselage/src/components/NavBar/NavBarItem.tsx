@@ -8,6 +8,9 @@ import type { IconButtonProps } from '../Button/IconButton';
 
 export type NavbarItemProps = HTMLAttributes<HTMLElement> & Partial<Omit<IconButtonProps, 'ref'>> & RefAttributes<HTMLElement>;
 
+/**
+ * A button in a `NavBar`: an `IconButton` when given an `icon`, otherwise its child, such as a `Menu`, styled to match.
+ */
 function NavBarItem({ children, icon, className, ...props }: NavbarItemProps) {
 	return (
 		<>

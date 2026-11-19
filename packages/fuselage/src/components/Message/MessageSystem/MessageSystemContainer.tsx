@@ -7,6 +7,9 @@ export type MessageSystemContainerProps = {
 	children?: ReactNode;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
+/**
+ * The content of a system message, holding its `MessageSystemBlock`.
+ */
 const MessageSystemContainer = ({ className, ...props }: MessageSystemContainerProps) => (
 	<ItemContent {...props} className={cx('rcx-message-system__container', className)} />
 );

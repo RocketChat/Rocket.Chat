@@ -9,31 +9,24 @@ export default {
 	component: ToggleSwitch,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Lets users quickly switch between two mutually exclusive states with instant feedback.\n\n' +
-					'**Rules**\n' +
-					'- Use when there are exactly two choices, such as enabling/disabling a setting.\n' +
-					"- The change applies immediately — do not use a toggle when you don't want the interface affected right away (use a checkbox with an explicit save action instead).",
-			},
+			usage: `
+- Use a \`ToggleSwitch\` only for two choices, such as enabling or disabling a setting.
+- It takes effect at once. When the screen shouldn't change until the user confirms, use a \`CheckBox\` and an explicit save action instead.
+`,
 		},
 	},
 	argTypes: {
 		labelChildren: {
 			control: false,
-			description: 'Content rendered inside the label, before the switch.',
 		},
 		checked: {
 			control: 'boolean',
-			description: 'Whether the switch is on.',
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the switch and blocks pointer interaction.',
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the switch is toggled.',
 			table: { category: 'Events' },
 		},
 	},
@@ -64,7 +57,14 @@ export const Disabled: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Checked and unchecked, in each interaction state.',
+			},
+		},
+	},
 	render: () => (
 		<PropsVariationSection
 			component={ToggleSwitch}

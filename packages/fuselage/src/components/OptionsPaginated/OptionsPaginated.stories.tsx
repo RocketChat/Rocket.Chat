@@ -12,43 +12,34 @@ export default {
 	argTypes: {
 		multiple: {
 			control: 'boolean',
-			description:
-				"Selection mode passed to each rendered item; when not `true`, an unselected item's `selected` prop falls back to `undefined` instead of `false`.",
 			table: { category: 'Selection' },
 		},
 		options: {
 			control: false,
-			description: 'List of `{ value, label, selected? }` items rendered virtualized (via `react-virtuoso`).',
 			table: { category: 'Content' },
 		},
 		cursor: {
 			control: 'number',
-			description: 'Index of the option currently focused via keyboard navigation.',
 			table: { category: 'State' },
 		},
 		withTitle: {
 			control: 'boolean',
-			description: "Passes each item's label as the rendered item's `title` attribute (tooltip).",
 			table: { category: 'Content' },
 		},
 		renderItem: {
 			control: false,
-			description: 'Component used to render each option (defaults to `Option`).',
 			table: { category: 'Content' },
 		},
 		renderEmpty: {
 			control: false,
-			description: "Component rendered in place of the list when `options` is empty (defaults to `Empty`, an `Option label='Empty'`).",
 			table: { category: 'Content' },
 		},
 		onSelect: {
 			control: false,
-			description: 'Called with `[value, label]` when an item is selected.',
 			table: { category: 'Events' },
 		},
 		endReached: {
 			control: false,
-			description: 'Called by the underlying virtualized list when scrolling reaches the end, for paginated/infinite loading.',
 			table: { category: 'Events' },
 		},
 	},

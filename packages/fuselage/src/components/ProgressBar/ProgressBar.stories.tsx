@@ -7,40 +7,31 @@ export default {
 	component: ProgressBar,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Concisely presents consumption or progress statistics.\n\n' +
-					'**Rules**\n' +
-					'- Use the `variant` (info/success/warning/danger) to convey state according to consumption or progress.\n' +
-					'- Note: the design system also documents a "+ info" variant (adding a label + counter) — this component does not implement that variant yet.',
-			},
+			usage: `
+- Pick the \`variant\` (\`info\`, \`success\`, \`warning\`, \`danger\`) for the state of the progress or consumption.
+`,
 		},
 	},
 	argTypes: {
 		percentage: {
 			control: { type: 'number', min: 0, max: 100 },
-			description: 'Percentage of the bar that is filled; clamped between 0 and 100.',
 			table: { category: 'Content' },
 		},
 		variant: {
 			control: 'select',
 			options: ['info', 'success', 'warning', 'danger'],
-			description: 'Color kind of the filled portion.',
 			table: { category: 'Kind', defaultValue: { summary: 'info' } },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message shown as a title tooltip; also forces the danger color, overriding `variant`.',
 			table: { category: 'State' },
 		},
 		animated: {
 			control: 'boolean',
-			description: 'Animates the fill with a striped, moving pattern.',
 			table: { category: 'State' },
 		},
 		light: {
 			control: 'boolean',
-			description: 'Uses the lighter background color kind instead of the font-on-color kind.',
 			table: { category: 'Appearance' },
 		},
 	},

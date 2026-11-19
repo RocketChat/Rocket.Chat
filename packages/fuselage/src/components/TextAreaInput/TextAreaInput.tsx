@@ -3,7 +3,7 @@ import { InputBox, type InputBoxProps } from '../InputBox';
 export type TextAreaInputProps = Omit<InputBoxProps<HTMLTextAreaElement>, 'type'>;
 
 /**
- * An input for multi-line plain-text editing.
+ * Takes plain text over several lines, such as a description or a message.
  */
 function TextAreaInput(props: TextAreaInputProps) {
 	return <InputBox type='textarea' {...props} />;

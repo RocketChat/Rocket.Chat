@@ -8,8 +8,11 @@ import { Icon } from '../Icon';
 import { Margins } from '../Margins';
 
 export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
+	/** Image shown as an avatar before the label. */
 	thumbUrl?: string;
+	/** Renders the thumbnail for `thumbUrl` in place of the default avatar. */
 	renderThumb?: (props: { url: string }) => ReactNode;
+	/** Renders the symbol in place of the default cross, on a chip that can be dismissed. */
 	renderDismissSymbol?: () => ReactNode;
 	/** Renders a 20px tall chip. */
 	small?: boolean;
@@ -24,6 +27,7 @@ const defaultRenderThumb = ({ url }: { url: string }) => (
 );
 const defaultRenderDismissSymbol = () => <Icon name='cross' size='x16' />;
 
+/** Shows a value picked in an input, such as a user, and lets the user remove it. */
 const Chip = ({
 	children,
 	className,

@@ -9,64 +9,62 @@ export default {
 	component: TextInput,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Lets users input one or multiple string values.\n\n' +
-					'**Rules**\n' +
-					'- Compose text inputs through the Field wrapper to get consistent label/description/hint/error/link.\n' +
-					'- Follow the Field UX-writing rules for all copy (clear labels, actionable error messages, hints for technical terms).',
-			},
+			usage: `
+- Compose the input in a \`Field\`, with the \`FieldLabel\`, \`FieldDescription\`, \`FieldHint\`, \`FieldLink\` and \`FieldError\` it needs around it.
+- Give it a \`FieldLabel\` unless the surrounding interface already makes clear what to type in it.
+- Add a \`FieldLabelInfo\` to the label when the input asks for a complex concept that needs more explanation.
+- Use the \`FieldDescription\` for what the input requires, in plain text.
+- Use a \`FieldHint\` to explain technical terms, and a \`FieldLink\` to point to documentation or other resources; put both in the same \`FieldRow\`, which sets them at opposite ends.
+- When the value is invalid, set \`error\` and show a \`FieldError\` that says what is wrong and how to fix it.
+- Word the label, description, hint and error as the \`Field\` usage says.
+`,
 		},
 	},
 	argTypes: {
 		startAddon: {
 			control: false,
-			description: 'Content rendered before the input, inside its border.',
+			description: "Content inside the input's border, before the value, such as an icon.",
 			table: { category: 'Content' },
 		},
 		endAddon: {
 			control: false,
-			description: 'Content rendered after the input, inside its border.',
+			description: "Content inside the input's border, after the value, such as an icon or a small button.",
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown when the input is empty.',
 			table: { category: 'Content' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the input at a smaller size scale.',
+			description: 'Shrinks the input to 28 pixels high, with smaller text.',
 			table: { category: 'Size' },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message that marks the input as invalid and styles it accordingly.',
+			description:
+				"Marks the input as invalid, with this text as its native validation message. The input doesn't display it: show it in a `FieldError`.",
 			table: { category: 'State' },
 		},
 		placeholderVisible: {
 			control: 'boolean',
-			description: 'Keeps the placeholder visible even when there is a value.',
+			description: "Shows the value in the placeholder's color.",
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the input and blocks pointer interaction.',
 			table: { category: 'State' },
 		},
 		value: {
 			control: 'text',
-			description: 'Controlled value of the input.',
 			table: { category: 'Content' },
 		},
 		defaultValue: {
 			control: 'text',
-			description: 'Initial, uncontrolled value of the input.',
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the input value changes.',
 			table: { category: 'Events' },
 		},
 	},
@@ -116,7 +114,14 @@ export const WithValue: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Each interaction state against what the input holds, at the default size and at `small`.',
+			},
+		},
+	},
 	render: () => (
 		<>
 			<PropsVariationSection

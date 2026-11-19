@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title='Feedback/Overview' />
+
+# Feedback
+
+What the system tells the user. Pick by who the message is for, how long it lasts, and whether the user can
+dismiss it.
+
+- Something that happened or is about to happen to the whole workspace, shown at the top of the screen:
+  [`Banner`](?path=/docs/feedback-banner--docs). Whether it can be dismissed depends on how important it is.
+- Something important about the content of the current page, which stays until its status changes:
+  [`Callout`](?path=/docs/feedback-callout--docs). The user can't dismiss it.
+- The result of an action the user just took, which disappears after a few seconds:
+  [`ToastBar`](?path=/docs/feedback-toastbar--docs).
+- Nothing to show yet, and what the user can do about it: [`States`](?path=/docs/feedback-states--docs).
+
+For loading, see [`Throbber`](?path=/docs/data-display-throbber--docs), [`ProgressBar`](?path=/docs/data-display-progressbar--docs)
+and [`Skeleton`](?path=/docs/layout-skeleton--docs).

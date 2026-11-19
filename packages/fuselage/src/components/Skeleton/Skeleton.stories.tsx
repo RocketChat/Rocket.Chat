@@ -8,23 +8,18 @@ export default {
 	component: Skeleton,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A visual loading indicator, used to indicate in-progress loading.\n\n' +
-					'**Rules**\n' +
-					'- Pair the skeleton with the content that is about to appear, matching its shape.',
-			},
+			usage: `
+- Pair the skeleton with the content about to appear: match its shape with \`variant\` and its size with \`width\` and \`height\`.
+`,
 		},
 	},
 	argTypes: {
 		variant: {
 			control: 'select',
 			options: ['text', 'rect', 'circle'],
-			description: 'Shape of the skeleton placeholder.',
 		},
 		inverted: {
 			control: 'boolean',
-			description: 'Whether the placeholder sits on a dark surface, such as a tooltip.',
 		},
 	},
 } satisfies Meta<typeof Skeleton>;

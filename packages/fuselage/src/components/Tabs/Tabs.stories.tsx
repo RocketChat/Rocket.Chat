@@ -11,26 +11,21 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Lets users move back and forth between groups of related content.\n\n' +
-					'**Rules**\n' +
-					'- Use tabs to group related content; use a tab within the Tabs component, not standalone.\n' +
-					'- Do NOT use tabs to navigate to other pages.\n' +
-					'- The tab bar can scroll horizontally — use as many tabs as needed.\n' +
-					'- Position tabs directly beneath the page header.',
-			},
+			usage: `
+- Use tabs to group related content on one page; don't use them to navigate to other pages.
+- Put every \`TabsItem\` inside a \`Tabs\`, never on its own.
+- Add as many tabs as the content needs: the tab bar scrolls horizontally.
+- Place the \`Tabs\` directly beneath the page header.
+`,
 		},
 	},
 	argTypes: {
 		divider: {
 			control: 'boolean',
-			description: 'Shows a bottom border dividing the tabs from the content below.',
 			table: { defaultValue: { summary: 'true' } },
 		},
 		stretch: {
 			control: 'boolean',
-			description: 'Grows the items to fill the whole width.',
 		},
 	},
 } satisfies Meta<typeof Tabs>;

@@ -13,26 +13,21 @@ export default {
 	component: Tooltip,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Shows additional, complementary information about an element on hover.\n\n' +
-					'**Rules**\n' +
-					'- Position 4px from the trigger edge on the opening side; center the tooltip on the trigger.\n' +
-					"- Never put vital information only in a tooltip — it's complementary and hover-only (unavailable on touch).\n" +
-					'- Good for ambiguous elements (number badges, mentions) and icon buttons.\n' +
-					'- Keep copy concise; line breaks are allowed.',
-			},
+			usage: `
+- Place it 4px from its element, on the side it opens towards, centered on the element (a \`-middle\` \`placement\`).
+- Never put vital information only in a tooltip: it is complementary, and touch screens can't hover.
+- Use it for elements whose meaning isn't evident, such as number badges and mentions, and for icon buttons.
+- Keep the copy concise; line breaks are allowed.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: 'text',
-			description: 'Tooltip content.',
 		},
 		variation: {
 			control: 'select',
 			options: ['dark', 'light'],
-			description: 'Color kind applied to the tooltip.',
 			table: { defaultValue: { summary: 'dark' } },
 		},
 		placement: {
@@ -50,7 +45,6 @@ export default {
 				'right',
 				null,
 			],
-			description: 'Direction the tooltip arrow points, relative to its anchor.',
 		},
 	},
 } satisfies Meta<typeof Tooltip>;
@@ -79,13 +73,6 @@ export const WithLineBreak: Story = {
 				Second line of the tooltip
 			</>
 		),
-	},
-	parameters: {
-		docs: {
-			description: {
-				story: 'Line breaks are supported for longer or structured copy.',
-			},
-		},
 	},
 };
 

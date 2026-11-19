@@ -33,20 +33,16 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Appears when there is no data to display and, if possible, describes what the user can do next.\n\n' +
-					'**Rules**\n' +
-					'- The message should be neutral and helpful, accurately describing the state and suggesting next steps.\n' +
-					'- Prefer a link over a primary button/CTA for the default empty state.\n' +
-					'- The magnifying-glass icon is reserved for search-related empty states; otherwise the icon should reflect the context.',
-			},
+			usage: `
+- Describe the state accurately, in a neutral and helpful message, and suggest next steps.
+- For the default empty state, prefer a \`StatesLink\` to a \`primary\` \`StatesAction\`.
+- Keep the \`magnifier\` icon for empty search results; otherwise choose a \`StatesIcon\` that reflects the context.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Content of the empty/error state.',
 		},
 	},
 } satisfies Meta<typeof States>;

@@ -14,37 +14,31 @@ export default {
 	argTypes: {
 		inline: {
 			control: 'boolean',
-			description: 'Renders the container as `inline-flex` instead of `flex` (only applied when `display` is not otherwise set).',
 			table: { category: 'Layout' },
 		},
 		direction: {
 			control: 'select',
 			options: ['row', 'row-reverse', 'column', 'column-reverse'],
-			description: 'Direction the flex items are laid out in.',
 			table: { category: 'Layout' },
 		},
 		wrap: {
 			control: 'select',
 			options: ['no-wrap', 'wrap', 'wrap-reverse'],
-			description: 'Whether flex items wrap onto multiple lines.',
 			table: { category: 'Layout' },
 		},
 		alignItems: {
 			control: 'select',
 			options: ['stretch', 'start', 'center', 'end', 'baseline'],
-			description: 'Alignment of items along the cross axis.',
 			table: { category: 'Layout' },
 		},
 		alignContent: {
 			control: 'select',
 			options: ['start', 'center', 'end', 'space-between', 'space-around'],
-			description: 'Alignment of wrapped lines along the cross axis when there is extra space.',
 			table: { category: 'Layout' },
 		},
 		justifyContent: {
 			control: 'select',
 			options: ['start', 'center', 'end', 'space-between', 'space-around'],
-			description: 'Alignment of items along the main axis.',
 			table: { category: 'Layout' },
 		},
 	},

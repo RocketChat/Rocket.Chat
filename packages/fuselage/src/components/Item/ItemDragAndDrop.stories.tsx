@@ -22,17 +22,13 @@ export default {
 	parameters: {
 		layout: 'padded',
 		docs: {
-			description: {
-				component:
-					'The states a list of `Item` rows shows while a row is dragged with the pointer, held on touch, or moved with the keyboard.\n\n' +
-					'**Two list modes**\n' +
-					'- *User-ordered*: the row lands in a gap, marked by `dropIndicator` on the row or group next to it.\n' +
-					'- *Auto-sorted*: the row only picks the group it goes into, marked by `dropTarget` on the group; the sort decides the position.\n\n' +
-					'**Rules**\n' +
-					'- The components only paint states; the list decides them (in the app, `useItemListDrag`).\n' +
-					'- A row with `dragHandle="none"` drags from anywhere; with a trailing `ItemDragHandle`, only from the grip.\n' +
-					'- The grip is never focusable: the keyboard moves the focused row with Cmd+Shift (Ctrl+Shift) and an arrow.',
-			},
+			usage: `
+- Let the list decide the drag states and pass them as props: the components only paint them. In the app, \`useItemListDrag\` decides them.
+- In a user-ordered list, mark the gap the row lands in with \`dropIndicator\` on the row or \`ItemGroup\` next to it.
+- In an auto-sorted list, mark the group the row goes into with \`dropTarget\` on the \`ItemGroup\`, and let the sort decide the position.
+- Let a row drag from anywhere by default. To drag it only from a grip, add an \`ItemDragHandle\` as its last slot.
+- Never make the grip focusable: the keyboard moves the focused row with Cmd+Shift (Ctrl+Shift) and an arrow.
+`,
 		},
 	},
 } satisfies Meta<typeof Item>;
@@ -494,10 +490,24 @@ export const Playground: StoryObj<
 		groupDropTarget: undefined,
 		groupDropDisabled: false,
 	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'The controls apply to the middle row; the `group…` ones apply to the list around it.',
+			},
+		},
+	},
 	argTypes: {
 		dropIndicator: { control: 'inline-radio', options: [undefined, 'before', 'after'] },
 		dropTarget: { control: 'inline-radio', options: [undefined, 'available', 'active'] },
-		groupDropTarget: { control: 'inline-radio', options: [undefined, 'available', 'active'] },
+		handle: { description: "Adds an `ItemDragHandle` as the row's last slot." },
+		handleDisabled: { description: 'Sets `disabled` on that `ItemDragHandle`.' },
+		groupDropTarget: {
+			control: 'inline-radio',
+			options: [undefined, 'available', 'active'],
+			description: '`dropTarget` on the `ItemGroup`.',
+		},
+		groupDropDisabled: { description: '`dropDisabled` on the `ItemGroup`.' },
 	},
 	render: ({ handle, handleDisabled, groupDropTarget, groupDropDisabled, ...props }) => (
 		<Box width='x280'>

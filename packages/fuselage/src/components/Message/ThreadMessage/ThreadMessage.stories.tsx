@@ -18,42 +18,31 @@ export default {
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Thread message content, composed from ThreadMessage subcomponents (row, container, body, origin, etc).',
 			table: { category: 'Content' },
 		},
 		className: {
 			control: 'text',
-			description: 'Additional CSS class applied to the root element.',
 			table: { category: 'Content' },
 		},
 		clickable: {
 			control: 'boolean',
-			description: 'Shows a pointer cursor and hover styling; also implied by passing an `onClick` handler.',
 			table: { category: 'Behavior' },
 		},
 		sequential: {
-			control: 'boolean',
-			description: 'Compact styling for a message that follows another from the same author.',
-			table: { category: 'Behavior' },
+			table: { disable: true },
 		},
 		isSelected: {
 			control: 'boolean',
-			description: 'Applies the selected visual state.',
 			table: { category: 'State' },
 		},
 		isEditing: {
-			control: 'boolean',
-			description: 'Applies the editing visual state.',
-			table: { category: 'State' },
+			table: { disable: true },
 		},
 		isPending: {
-			control: 'boolean',
-			description: 'Applies the pending (not yet sent) visual state.',
-			table: { category: 'State' },
+			table: { disable: true },
 		},
 		onClick: {
 			control: false,
-			description: 'Called when the thread message is activated.',
 			table: { category: 'Events' },
 		},
 	},

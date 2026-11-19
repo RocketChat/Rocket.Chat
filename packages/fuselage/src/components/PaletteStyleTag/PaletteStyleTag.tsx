@@ -14,30 +14,19 @@ const themes = {
 
 export type PaletteStyleTagProps = {
 	theme?: Themes;
-	/**
-	 * Default is `main-palette`.
-	 */
+	/** Id of the `style` element the palette is written to; each `PaletteStyleTag` on a page needs its own. */
 	tagId?: string;
-	/**
-	 * Token prefix. Default is `--rcx-color`.
-	 */
+	/** Prefix of the custom property names; Fuselage components read `--rcx-color`. */
 	prefix?: string;
-	/**
-	 * Default is `:root`.
-	 */
+	/** Elements the palette applies to, as a CSS selector, to theme part of the page; the whole page by default. */
 	selector?: string;
-	/**
-	 * CSS containing custom palette styles to be used.
-	 */
+	/** CSS to write in place of the theme's palette; `theme`, `prefix` and `selector` are then ignored. */
 	palette?: string;
 };
 
 /**
- * Style tag to handle the theme of the application.
- *
- * Import `PaletteStyleTag` and use it on the application informing the desired theme.
- *
- * Toggle the theme on Storybook's Control panel to see the color changes.
+ * Sets the colors Fuselage components use to the palette of a theme: `light`, `dark` or `high-contrast`. Render
+ * another one, with its own `tagId` and a `selector`, to give part of the page a different theme.
  */
 function PaletteStyleTag({ theme = 'light', tagId = 'main-palette', prefix = '--rcx-color', selector, palette }: PaletteStyleTagProps) {
 	const themePalette = palette || convertToCss(themes[theme], prefix, selector);

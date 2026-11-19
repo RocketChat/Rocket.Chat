@@ -4,7 +4,14 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Box
 
-A primitive component with normalized styles and a lot of props for prototyping.
+The primitive Fuselage components are built from. It renders any element (`is`) with normalized styles, and takes
+design tokens as props: spacing (`padding='x16'`), colours (`backgroundColor='surface-light'`), typography
+(`fontScale='h2'`) and borders. The stories under it show each group of props.
+
+Build a component or a layout container with `Box`. In the Rocket.Chat web client, screens don't render a `Box`
+themselves: they compose the containers built with it (see
+[Layout in the app](https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/frontend/layout.md)), and other
+Fuselage components take no styling props.
 
 ### `rcx-` prefixed props
 
@@ -14,17 +21,11 @@ values appended to the `className` prop.
 For instance,
 
 ```jsx
-<Box
-  rcx-component
-  rcx-component--bool-modifier
-  rcx-component--string-modifier='value'
-/>
+<Box rcx-component rcx-component--bool-modifier rcx-component--string-modifier='value' />
 ```
 
 is rendered as
 
 ```html
-<div
-  class="rcx-box rcx-component rcx-component--bool-modifier rcx-component--string-modifier-value"
-></div>
+<div class="rcx-box rcx-component rcx-component--bool-modifier rcx-component--string-modifier-value"></div>
 ```

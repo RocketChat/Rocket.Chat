@@ -13,20 +13,16 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Groups related content and lets users collapse/expand it under a section title, so they can scan titles and decide where to look.\n\n' +
-					'**Rules**\n' +
-					'- Use for large amounts of groupable content (e.g. settings configurations).\n' +
-					'- Do NOT use an accordion to hide important inputs or controls required for the current task.\n' +
-					'- Secondary title and leading icon are optional (off by default).',
-			},
+			usage: `
+- Use for a large amount of content that falls into groups, such as settings.
+- Don't hide inputs or controls the current task needs in a collapsed \`AccordionItem\`.
+- A secondary title and a leading icon are optional; compose either into the \`title\`.
+`,
 		},
 	},
 	argTypes: {
 		children: {
 			control: false,
-			description: 'AccordionItem elements rendered as collapsible sections.',
 			table: { category: 'Content' },
 		},
 	},
@@ -115,7 +111,7 @@ export const SecondaryTitle: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'The secondary title can provide additional information when needed. Example: app version release dates.',
+				story: 'A secondary title composed into `title`, for extra information such as a release date.',
 			},
 		},
 	},
@@ -148,7 +144,7 @@ export const LeadingIcon: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'A leading icon can be used before the title if required.',
+				story: 'An icon composed into `title`, before the label.',
 			},
 		},
 	},

@@ -28,11 +28,10 @@ export default {
 	component: Text,
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Text set in one of the font scales and text colours of the design system. It takes no `Box` styling props: the space around it belongs to its container, usually a `Stack` with a `gap`.\n\n' +
-					'Pass `is` when the text has a role: `h2` for a section title, `p` for a paragraph, `label` for a form label. Without it, `Text` renders a `div`.',
-			},
+			usage: `
+- Leave the space around it to its container, usually a \`Stack\` with a \`gap\`: \`Text\` takes no \`Box\` styling props.
+- Pass \`is\` when the text has a role: \`h2\` for a section title, \`p\` for a paragraph, \`label\` for a form label. Without it, \`Text\` renders a \`div\`.
+`,
 		},
 	},
 	argTypes: {

@@ -5,6 +5,9 @@ import ItemRow from '../Item/ItemRow';
 
 export type MessageRolesProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
+/**
+ * The author's roles, in a message header.
+ */
 const MessageRoles = ({ className, ...props }: MessageRolesProps) => (
 	<ItemRow {...props} className={cx('rcx-message-header__roles', className)} />
 );

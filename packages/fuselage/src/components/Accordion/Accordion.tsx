@@ -9,7 +9,8 @@ export type AccordionProps = {
 } & Partial<StylingProps>;
 
 /**
- * An `Accordion` allows users to toggle the display of sections of content.
+ * Groups related content into `AccordionItem` sections the user expands and collapses, so they can scan the titles
+ * and decide where to look.
  */
 const Accordion = ({ children, ...props }: AccordionProps) => (
 	<StylingBox {...props}>

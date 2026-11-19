@@ -18,7 +18,6 @@ export default {
 	argTypes: {
 		anchor: {
 			control: false,
-			description: 'Ref to the anchor element the positioned content is placed relative to.',
 			table: { category: 'Positioning' },
 		},
 		placement: {
@@ -37,23 +36,19 @@ export default {
 				'left-middle',
 				'left-end',
 			],
-			description: 'Where the positioned element is placed relative to the anchor.',
 			table: { category: 'Positioning' },
 		},
 		margin: {
 			control: 'number',
-			description: 'Gap, in pixels, kept between the anchor and the positioned element.',
 			table: { category: 'Positioning' },
 		},
 		visible: {
 			control: 'select',
 			options: ['hidden', 'visible', 'hiding', 'unhiding'],
-			description: 'Visibility/transition state applied to the positioned element via `AnimatedVisibility`.',
 			table: { category: 'State' },
 		},
 		children: {
 			control: false,
-			description: 'Element rendered and positioned relative to the anchor.',
 			table: { category: 'Content' },
 		},
 	},

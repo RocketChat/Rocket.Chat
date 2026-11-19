@@ -29,17 +29,30 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'Wraps an input with the supporting copy elements (label, description, hint, link, error) and keeps that copy clear, concise and consistent.\n\n' +
-					'**Rules**\n' +
-					'- Label — accurately describe the information needed; mark required fields with an asterisk.\n' +
-					'- Description — context/instructions that clarify the label; keep it clear and simple.\n' +
-					"- Placeholder — only when an extra hint helps the user, since it disappears on input; don't repeat the label in the placeholder.\n" +
-					'- Error message — explain the problem and give an actionable fix (e.g. "Invalid email address"); avoid vague or apologetic copy.\n' +
-					'- Hint — explain technical terms or behaviors.\n' +
-					'- There is no dedicated Select/Dropdown component — a select is composed from a text Field whose input shows a chevron-down as its trailing icon.',
-			},
+			usage: `
+- Put the input in a \`FieldRow\`. For a \`CheckBox\`, \`RadioButton\` or \`ToggleSwitch\`, put the \`FieldLabel\` and the control in the same \`FieldRow\`.
+- Keep the copy clear, concise and consistent across the product.
+
+**Labels**
+
+- Describe the information needed with a specific \`FieldLabel\`. Avoid generic labels, and don't assign ownership when it isn't needed.
+- Set \`required\` on the label of every required field.
+- Add a \`FieldLabelInfo\` only when the field needs an explanation in a tooltip.
+
+**Descriptions and hints**
+
+- Use a \`FieldDescription\` for context or instructions that clear up the label. Keep it short and non-technical, and move complex details to a \`FieldHint\`.
+- Use a \`FieldHint\` to explain technical terms, concepts or behaviors, and to clear up ambiguities.
+
+**Placeholders**
+
+- Set a \`placeholder\` on the input only when an example helps the user formulate the value; it disappears once they type, so a \`FieldHint\` usually serves better. Never repeat the label in it.
+
+**Errors**
+
+- In a \`FieldError\`, say what is wrong and how to fix it. Be specific and actionable; don't apologize or stay vague.
+- Follow the patterns "Invalid email address" and "Email required" ("Invalid URL", "Username required"). For several values, write "One or more invalid email addresses".
+`,
 		},
 	},
 } satisfies Meta<typeof Field>;

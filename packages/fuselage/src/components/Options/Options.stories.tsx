@@ -11,44 +11,35 @@ export default {
 	argTypes: {
 		multiple: {
 			control: 'boolean',
-			description: 'Marks the listbox as supporting multiple selection (sets `aria-multiselectable`); defaults to `true` when unset.',
 			table: { category: 'Selection' },
 		},
 		options: {
 			control: false,
-			description:
-				'List of `[value, label, selected?, disabled?, type?, url?]` tuples; entries with `type` `heading` or `divider` render as `OptionHeader`/`OptionDivider`, others render via `renderItem`.',
 			table: { category: 'Content' },
 		},
 		cursor: {
 			control: 'number',
-			description: 'Index of the option currently focused via keyboard navigation; the list auto-scrolls it into view.',
 			table: { category: 'State' },
 		},
 		renderItem: {
 			control: false,
-			description: 'Component used to render each selectable option (defaults to `Option`).',
 			table: { category: 'Content' },
 		},
 		renderEmpty: {
 			control: false,
-			description: 'Component rendered in place of the list when `options` is empty (defaults to `OptionsEmpty`).',
 			table: { category: 'Content' },
 		},
 		onSelect: {
 			control: false,
-			description: 'Called with the selected option tuple when a non-disabled option is clicked.',
 			table: { category: 'Events' },
 		},
 		customEmpty: {
 			control: 'text',
-			description: "Text forwarded to the empty-state component's `customEmpty` prop.",
 			table: { category: 'Content' },
 		},
 		maxHeight: {
 			control: 'text',
-			description: 'Maximum height of the scrollable options list (defaults to `x144`).',
-			table: { category: 'Layout' },
+			table: { category: 'Layout', defaultValue: { summary: '144px' } },
 		},
 	},
 } satisfies Meta<typeof Options<string | number, ReactNode>>;

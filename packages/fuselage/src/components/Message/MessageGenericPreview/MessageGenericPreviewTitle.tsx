@@ -3,10 +3,14 @@ import type { AnchorHTMLAttributes, HTMLAttributes } from 'react';
 import { cx } from '../../../helpers/composeClassNames';
 
 export type MessageGenericPreviewTitleProps = {
+	/** Turns the title into a link that opens this address in a new tab. */
 	externalUrl?: string;
 } & HTMLAttributes<HTMLSpanElement> &
 	AnchorHTMLAttributes<HTMLAnchorElement>;
 
+/**
+ * The title of a preview, cut short at the end of the line.
+ */
 const MessageGenericPreviewTitle = ({ externalUrl, children, className, ...props }: MessageGenericPreviewTitleProps) => {
 	if (externalUrl) {
 		return (

@@ -49,17 +49,14 @@ export default {
 	},
 	parameters: {
 		docs: {
-			description: {
-				component:
-					'A composable list row for the sidebar, search results, contextual bar lists, menus and selects.\n\n' +
-					'**Rules**\n' +
-					'- Compose rows from slots. A slot that is absent takes no space.\n' +
-					'- Parts render a `div` and set no role. Pass `is`, `role` and ARIA attributes to fit the list pattern: `ul`/`li` for lists, `listbox`/`option` for pickers.\n' +
-					'- Use `ItemLink` for the primary target, so actions sit beside the link instead of inside it.\n' +
-					'- The row height follows its content: the taller of the media and the text lines. Size the avatar to set it.\n' +
-					'- Use `inset` to align rows with their container gutter.\n' +
-					'- Collapsing a group belongs to the component that owns it. `ItemGroupHeader` only shows text.',
-			},
+			usage: `
+- Compose a row from the slots it needs: \`ItemMedia\`, \`ItemIcon\`, \`ItemContent\` and \`ItemActions\`. A slot left out takes no space.
+- Parts render a \`div\` and set no role: pass \`is\`, \`role\` and ARIA attributes to fit the list pattern, \`ul\`/\`li\` for lists and \`listbox\`/\`option\` for pickers.
+- Wrap the primary target in an \`ItemLink\`, so actions sit beside the link instead of inside it.
+- Size the avatar to set the row height: a row is as tall as the taller of its media and its text lines.
+- Use \`inset\` to align rows with their container's gutter.
+- Collapse a group from the component that owns it: \`ItemGroupHeader\` only shows text.
+`,
 		},
 		layout: 'padded',
 		controls: { hideNoControlsWarning: true },
@@ -68,7 +65,6 @@ export default {
 		inset: {
 			control: 'inline-radio',
 			options: ['none', 'sm', 'md', 'lg'],
-			description: 'Adds space between the row edge and its first and last slots.',
 			table: { category: 'Layout', defaultValue: { summary: 'none' } },
 		},
 		selected: {
@@ -77,12 +73,10 @@ export default {
 		},
 		highlighted: {
 			control: 'boolean',
-			description: 'Emphasizes the row, as for unread rooms.',
 			table: { category: 'State' },
 		},
 		focused: {
 			control: 'boolean',
-			description: 'Shows the hover surface for a virtual cursor.',
 			table: { category: 'State' },
 		},
 		disabled: {
@@ -341,6 +335,13 @@ export const Default: Story = {
 };
 
 export const Heights: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: "The sidebar's condensed, medium and extended rows: the avatar size sets the row height.",
+			},
+		},
+	},
 	render: () => (
 		<Box display='flex' flexDirection='column'>
 			{(['condensed', 'medium', 'extended'] as const).map((viewMode) => (
@@ -513,6 +514,13 @@ const HiddenActionsMenu = ({ label }: { label: string }) => (
 );
 
 export const HiddenActions: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'Actions hidden until hover take no room, so each row matches the one without actions until you hover it.',
+			},
+		},
+	},
 	render: () => (
 		<Box display='flex' flexDirection='column' width='x280'>
 			<Caption>Rows: without actions, then with reveal=&quot;hover&quot; actions</Caption>
@@ -671,6 +679,13 @@ const CollapsibleGroup = ({
 };
 
 export const CollapsibleGroupHeaders: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'Click a group title to collapse it. A collapsed group shows its unread count.',
+			},
+		},
+	},
 	render: () => (
 		<SidebarSurface>
 			<CollapsibleGroup title='Favorites'>
@@ -775,6 +790,13 @@ const MembersGroup = ({ title, list }: { title: string; list: typeof members }) 
 );
 
 export const NarrowList: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'In an `ItemGroup` narrower than 320px, the `lg` inset shrinks and an inline description moves to its own line.',
+			},
+		},
+	},
 	render: () => (
 		<Box width='x280' borderWidth='default' borderColor='extra-light'>
 			<MembersGroup title='Members' list={members} />

@@ -7,58 +7,61 @@ import NumberInput from './NumberInput';
 export default {
 	title: 'Inputs/NumberInput',
 	component: NumberInput,
+	parameters: {
+		docs: {
+			usage: `
+- Follows the \`TextInput\` usage.
+`,
+		},
+	},
 	args: {
 		'aria-label': 'number',
 	},
 	argTypes: {
 		value: {
 			control: 'number',
-			description: 'Current value of the underlying number input, for controlled usage.',
 			table: { category: 'Content' },
 		},
 		defaultValue: {
 			control: 'number',
-			description: 'Initial value of the underlying number input, for uncontrolled usage.',
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Placeholder text shown by the native input when it has no value.',
 			table: { category: 'Content' },
 		},
 		placeholderVisible: {
 			control: 'boolean',
-			description: 'Forces the `rcx-input-box--placeholder-visible` state, keeping the placeholder visible.',
+			description: "Shows the value in the placeholder's color.",
 			table: { category: 'Content' },
 		},
 		small: {
 			control: 'boolean',
-			description: 'Renders the input at a smaller size.',
+			description: 'Shrinks the input to 28 pixels high, with smaller text.',
 			table: { category: 'Size' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the input and blocks interaction.',
 			table: { category: 'State' },
 		},
 		error: {
 			control: 'text',
-			description: 'Error message; when set, marks the input as invalid via `setCustomValidity` and shows the invalid state styling.',
+			description:
+				"Marks the input as invalid, with this text as its native validation message. The input doesn't display it: show it in a `FieldError`.",
 			table: { category: 'State' },
 		},
 		startAddon: {
 			control: false,
-			description: 'Content rendered before the input, inside the decorated wrapper.',
+			description: "Content inside the input's border, before the value, such as an icon.",
 			table: { category: 'Content' },
 		},
 		endAddon: {
 			control: false,
-			description: 'Content rendered after the input, inside the decorated wrapper.',
+			description: "Content inside the input's border, after the value, such as an icon or a small button.",
 			table: { category: 'Content' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the value changes; also re-evaluates addon validity styling.',
 			table: { category: 'Events' },
 		},
 	},
@@ -93,7 +96,14 @@ export const WithPlaceholder: Story = {
 };
 
 export const States: Story = {
-	parameters: { pseudo: variationPseudoStates },
+	parameters: {
+		pseudo: variationPseudoStates,
+		docs: {
+			description: {
+				story: 'Each interaction state against what the input holds, at the default size and at `small`.',
+			},
+		},
+	},
 	render: () => (
 		<>
 			<PropsVariationSection

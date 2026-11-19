@@ -6,6 +6,7 @@ export type ModalBackdropProps = ElementProps<HTMLDivElement> & {
 	transparent?: boolean;
 };
 
+/** Covers the page with an overlay that blocks it, and centres the modal on it. */
 const ModalBackdrop = ({ transparent, ...props }: ModalBackdropProps) => (
 	<Box rcx-modal__backdrop backgroundColor={transparent ? 'transparent' : undefined} {...props} />
 );

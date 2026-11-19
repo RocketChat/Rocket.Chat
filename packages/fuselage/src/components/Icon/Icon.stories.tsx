@@ -14,18 +14,14 @@ export default {
 	argTypes: {
 		name: {
 			control: 'text',
-			description: 'Name of the icon to render, matching a key from the Fuselage icon set.',
 			table: { category: 'Content' },
 		},
 		size: {
 			control: 'text',
-			description: 'Size of the icon; accepts a Box `width` value (e.g. `x16`, `x20`, `x40`).',
 			table: { category: 'Size' },
 		},
 		color: {
 			control: 'text',
-			description:
-				'A semantic text or status font token (`info`, `danger`, `status-font-on-warning`…); without it, the icon takes the colour of the text around it.',
 			table: { category: 'Kind' },
 		},
 	},

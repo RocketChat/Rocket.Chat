@@ -8,6 +8,7 @@ import { cx } from '../../helpers/composeClassNames';
 
 export type NavbarSectionProps = HTMLAttributes<HTMLSpanElement>;
 
+/** One end of a `NavBar`. Its `NavBarGroup`s are separated by dividers. */
 const NavBarSection = ({ children, className, ...props }: NavbarSectionProps) => {
 	const groups = flattenChildren(children).filter(isElement);
 

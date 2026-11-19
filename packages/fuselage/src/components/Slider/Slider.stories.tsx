@@ -11,60 +11,54 @@ export default {
 	argTypes: {
 		label: {
 			control: 'text',
-			description: 'Text label associated with the slider.',
+			description: 'Visible name for the slider. Without it, set `aria-label`.',
 		},
 		formatOptions: {
 			control: false,
-			description: 'Intl.NumberFormat options used to format the output value.',
+			description: '`Intl.NumberFormat` options for the value shown, such as a currency.',
 		},
 		id: {
 			control: 'text',
-			description: 'Id of the slider input element, used to connect with an external label.',
+			description: "Lands on the slider's group, not on an input, so a `label` pointing at it doesn't name the slider.",
 		},
 		showOutput: {
 			control: 'boolean',
-			description: 'Shows the current value next to the label.',
+			description: 'Shows the current value, next to the label when there is one.',
 			table: { defaultValue: { summary: 'true' } },
 		},
 		multiThumb: {
 			control: 'boolean',
-			description: 'Renders two thumbs to select a range of values.',
+			description: 'Adds a second thumb, to pick a range instead of a single value.',
 			table: { defaultValue: { summary: 'false' } },
 		},
 		step: {
 			control: 'number',
-			description: 'Increment step between selectable values.',
 		},
 		minValue: {
 			control: 'number',
-			description: 'Minimum selectable value.',
 			table: { defaultValue: { summary: '0' } },
 		},
 		maxValue: {
 			control: 'number',
-			description: 'Maximum selectable value.',
 			table: { defaultValue: { summary: '100' } },
 		},
 		orientation: {
 			control: 'select',
 			options: ['horizontal', 'vertical'],
-			description: 'Layout direction of the slider.',
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the slider and blocks pointer interaction.',
 		},
 		defaultValue: {
 			control: false,
-			description: 'Initial, uncontrolled value (or [min, max] for multiThumb).',
+			description: 'Initial value, uncontrolled: a `[min, max]` pair with `multiThumb`.',
 		},
 		value: {
 			control: false,
-			description: 'Controlled current value (or [min, max] for multiThumb).',
+			description: 'Current value, controlled: a `[min, max]` pair with `multiThumb`. Requires `onChange`.',
 		},
 		onChange: {
 			control: false,
-			description: 'Called when the value changes.',
 		},
 	},
 } satisfies Meta<typeof Slider>;
@@ -84,6 +78,13 @@ const renderVertical: Story['render'] = (args) => (
 
 export const SliderPlayExample: Story = {
 	render,
+	parameters: {
+		docs: {
+			description: {
+				story: 'Tabs to the thumb and moves it with the arrow keys, one step a second.',
+			},
+		},
+	},
 	args: {
 		'aria-label': 'aria-range-label',
 		'maxValue': 50,

@@ -14,85 +14,66 @@ export default {
 	argTypes: {
 		options: {
 			control: false,
-			description:
-				'The full list of selectable options as `[value, label, selected?]` tuples; drives what is rendered and matched against `value`/`filter`.',
 			table: { category: 'Content' },
 		},
 		placeholder: {
 			control: 'text',
-			description: 'Text shown in the input when no options are selected.',
 			table: { category: 'Content' },
 		},
 		customEmpty: {
 			control: 'text',
-			description: 'Message rendered in the options list when there are no options to show.',
 			table: { category: 'Content' },
 		},
 		addonIcon: {
 			control: 'text',
-			description:
-				"Name of the icon shown in the trailing addon when the list is closed; defaults to 'chevron-down' (or 'chevron-up' while open).",
 			table: { category: 'Content' },
 		},
 		value: {
 			control: false,
-			description:
-				"Controlled array of selected option values; when provided, syncs the component's internal selection state via an effect.",
 			table: { category: 'Selection' },
 		},
 		onChange: {
 			control: false,
-			description: 'Called with the updated array of selected values whenever an option is toggled.',
 			table: { category: 'Selection' },
 		},
 		getLabel: {
 			control: false,
-			description: "Extracts the display label from an option tuple; defaults to the tuple's second element.",
 			table: { category: 'Selection' },
 		},
 		getValue: {
 			control: false,
-			description: "Extracts the value from an option tuple; defaults to the tuple's first element.",
 			table: { category: 'Selection' },
 		},
 		error: {
 			control: 'text',
-			description: 'Displays the invalid style and error state on the input container.',
 			table: { category: 'State' },
 		},
 		disabled: {
 			control: 'boolean',
-			description: 'Disables the input and blocks interaction, applying the disabled style.',
 			table: { category: 'State' },
 		},
 		filter: {
 			control: 'text',
-			description: 'Current filter text; options are matched against it (case-insensitive) to compute the visible list.',
 			table: { category: 'Filtering' },
 		},
 		setFilter: {
 			control: false,
-			description: 'Called with the new filter text as the user types; used to drive external filtering of `options`.',
 			table: { category: 'Filtering' },
 		},
 		anchor: {
 			control: false,
-			description: "Component rendered as the clickable input/trigger area; defaults to 'MultiSelectAnchor'.",
 			table: { category: 'Customization' },
 		},
 		renderOptions: {
 			control: false,
-			description: "Component used to render the options list/popup; defaults to 'Options'.",
 			table: { category: 'Customization' },
 		},
 		renderItem: {
 			control: false,
-			description: "Component used to render each option row; defaults to 'CheckOption'.",
 			table: { category: 'Customization' },
 		},
 		renderSelected: {
 			control: false,
-			description: "Component used to render each selected chip instead of the default 'SelectedOptions'.",
 			table: { category: 'Customization' },
 		},
 	},
@@ -128,6 +109,13 @@ export const WithValue: Story = {
 		options,
 		'value': ['1', '2'],
 	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'Click a chip to deselect its option.',
+			},
+		},
+	},
 };
 
 export const Error: Story = {
@@ -158,5 +146,12 @@ export const CustomEmpty: Story = {
 };
 
 export const WithFilter: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'Type into the select to narrow its options down.',
+			},
+		},
+	},
 	render: () => <MultiSelectFiltered placeholder='Placeholder here...' onChange={action('change')} options={options} />,
 };
