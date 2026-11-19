@@ -1,0 +1,19 @@
+apps/meteor/server/lib/auditServerEvents/userChanged.spec.ts
+  s_cbe68936cb4058::t_dec2f92881ea01 79-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1b32e2d0404ad9d25f309a680233064bda34713a",
+  "prompts": {},
+  "sessions": {
+    "s_cbe68936cb4058": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "897ac47e-99d8-4522-96d5-674729b4ae7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
