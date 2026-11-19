@@ -18,7 +18,7 @@ import {
 	FieldGroup,
 	Button,
 	ButtonGroup,
-	Box,
+	Stack,
 	TextAreaInput,
 	AccordionItem,
 	Text,
@@ -275,13 +275,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent padding='x24' is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
-				<Box display='flex' justifyContent='center'>
+				<Stack direction='row' justify='center'>
 					<Controller
 						control={control}
 						name='roomAvatar'
 						render={({ field: { onChange, value } }) => <RoomAvatarEditor room={room} roomAvatar={value} onChangeAvatar={onChange} />}
 					/>
-				</Box>
+				</Stack>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={roomNameField} required>

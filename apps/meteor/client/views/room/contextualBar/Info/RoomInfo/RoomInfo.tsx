@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
+import { Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericMenu,
@@ -78,9 +78,9 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 					{archived && (
 						<InfoPanelSection>
-							<Box marginBlock={16}>
+							<InfoPanelField>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
-							</Box>
+							</InfoPanelField>
 						</InfoPanelSection>
 					)}
 

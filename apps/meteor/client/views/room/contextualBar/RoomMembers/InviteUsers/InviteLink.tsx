@@ -1,4 +1,4 @@
-import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, UrlInput, Icon, Button, ButtonGroup, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,19 +21,20 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 				<FieldRow>
 					{!linkText && <InputBoxSkeleton />}
 					{linkText && (
-						<UrlInput id={inviteLinkId} value={linkText} endAddon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
+						<UrlInput
+							id={inviteLinkId}
+							value={linkText}
+							aria-describedby={captionText ? `${inviteLinkId}-hint` : undefined}
+							endAddon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />}
+						/>
 					)}
 				</FieldRow>
-				{captionText && (
-					<Box paddingBlock={8} color='annotation' fontScale='c2'>
-						{captionText}
-					</Box>
-				)}
+				{captionText && <FieldHint id={`${inviteLinkId}-hint`}>{captionText}</FieldHint>}
 			</Field>
 			{onClickEdit && (
-				<Box marginBlockStart={8}>
+				<ButtonGroup>
 					<Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>
-				</Box>
+				</ButtonGroup>
 			)}
 		</>
 	);
