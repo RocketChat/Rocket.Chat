@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, DOMAttributes, InputHTMLAttributes, MouseEventHandler, Ref } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, DOMAttributes, HTMLAttributes, InputHTMLAttributes, MouseEventHandler, Ref } from 'react';
 
 import type { WebInteractionHandlers } from '../helpers/pickWebInteractionHandlers';
 
@@ -96,11 +96,6 @@ export type WebSpanOrLinkProps<TContract> = WebProps<TContract, HTMLSpanElement 
 		tabIndex?: number;
 	};
 
-/** A contract as a web renderer that is always a `span` and only shows something takes it. */
-export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & {
-	title?: string;
-};
-
 /**
  * A contract as a web renderer that is a `div` grouping other parts takes it: its title, and what a toolbar listens to
  * on its group, its own click and the capture-phase keyboard and focus events.
@@ -109,8 +104,20 @@ export type WebGroupProps<TContract> = WebProps<TContract, HTMLDivElement> & {
 	title?: string;
 } & Pick<DOMAttributes<HTMLDivElement>, 'onClick' | 'onKeyDownCapture' | 'onFocusCapture' | 'onBlurCapture'>;
 
-/** A contract as a web renderer that is always a `div` takes it: the web attributes and the title. */
-export type WebDivProps<TContract> = WebProps<TContract, HTMLDivElement> & { title?: string };
-
 /** The deprecated press alias of a `div` whose contract declares `onPress`. */
 export type WebDivPressAlias = WebPressAlias<HTMLDivElement>;
+
+/**
+ * A contract as a web renderer that is one plain element takes it: the deprecated press alias, the handlers a trigger or
+ * a tooltip hands the element, and its title and focus order.
+ */
+export type WebElementProps<TContract, TElement extends HTMLElement> = WebProps<TContract, TElement> &
+	WebPressAlias<TElement> &
+	WebInteractionHandlers<TElement> &
+	Pick<HTMLAttributes<TElement>, 'title' | 'tabIndex'>;
+
+/** `WebElementProps` of a part that is always a `div`, named here so a frame module names no DOM type. */
+export type WebDivProps<TContract> = WebElementProps<TContract, HTMLDivElement>;
+
+/** `WebElementProps` of a part that is always a `span`. */
+export type WebSpanProps<TContract> = WebElementProps<TContract, HTMLSpanElement>;
