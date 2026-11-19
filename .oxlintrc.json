@@ -424,6 +424,10 @@
 					{
 						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(onCreateUser|validateNewUser)$/]",
 						"message": "Add the step to insertUser in 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='updateOrCreateUserFromExternalService']",
+						"message": "Use updateOrCreateUserFromExternalService from 'server/lib/auth/updateOrCreateUserFromExternalService' instead."
 					}
 				]
 			}
