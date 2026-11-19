@@ -120,7 +120,7 @@ async function cleanGuestHistory(_id: string) {
 				ReadReceipts.removeByRoomIds(completedRoomIds),
 				ReadReceiptsArchive.removeByRoomIds(completedRoomIds),
 			]);
-			cleanupErrors.push(...cleanupResults.flatMap((result) => (result.status === 'rejected' ? [result.reason] : [])));
+			cleanupErrors.push(...cleanupResults.flatMap((result) => (result.status === 'rejected' ? [result.reason as unknown] : [])));
 		}
 
 		throwCleanupErrors(cleanupErrors, 'error-cleaning-guest-history');
