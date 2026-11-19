@@ -41,10 +41,10 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 						{
 							accessToken,
 							refreshToken,
+							name: profile.displayName,
 							...restProfile,
 							..._json,
 							email: profile?.emails?.[0]?.value ?? restProfile.email,
-							name: profile.displayName || profile.name,
 						},
 						{},
 					);
