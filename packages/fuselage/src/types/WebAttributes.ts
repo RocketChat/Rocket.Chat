@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, InputHTMLAttributes, MouseEvent, Ref } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, DOMAttributes, InputHTMLAttributes, MouseEvent, Ref } from 'react';
 
 import type { WebInteractionHandlers } from '../helpers/pickWebInteractionHandlers';
 
@@ -66,3 +66,11 @@ export type WebButtonProps<TContract> = WebProps<TContract, HTMLButtonElement> &
 export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & {
 	title?: string;
 };
+
+/**
+ * A contract as a web renderer that is a `div` grouping other parts takes it: its title, and what a toolbar listens to
+ * on its group, its own click and the capture-phase keyboard and focus events.
+ */
+export type WebGroupProps<TContract> = WebProps<TContract, HTMLDivElement> & {
+	title?: string;
+} & Pick<DOMAttributes<HTMLDivElement>, 'onClick' | 'onKeyDownCapture' | 'onFocusCapture' | 'onBlurCapture'>;
