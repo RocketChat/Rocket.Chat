@@ -36,6 +36,13 @@ describe('[AudioPlayerControls Component]', () => {
 		expect(screen.getByText('-:-- / -:--')).toBeInTheDocument();
 	});
 
+	it('keeps pause available while playback buffers', async () => {
+		const onTogglePlay = jest.fn();
+		render(<Loading isPlaying onTogglePlay={onTogglePlay} />);
+		await userEvent.click(screen.getByRole('button', { name: 'Pause' }));
+		expect(onTogglePlay).toHaveBeenCalledTimes(1);
+	});
+
 	it('replaces the controls with an error and a retry action', async () => {
 		const onRetry = jest.fn();
 		render(<LoadError onRetry={onRetry} />);
