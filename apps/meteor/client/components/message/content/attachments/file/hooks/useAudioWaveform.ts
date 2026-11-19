@@ -24,9 +24,15 @@ export const toPeaks = (samples: Float32Array, count: number): number[] => {
 	return loudest ? peaks.map((peak) => peak / loudest) : peaks;
 };
 
+/** Stops the transfer of a body that will not be read. */
+const discardBody = (response: Response) => {
+	response.body?.cancel().catch(() => undefined);
+};
+
 /** Reads the whole body, failing as soon as it grows past `limit` bytes, whatever size the attachment declares. */
 export const readBodyUpTo = async (response: Response, limit: number): Promise<ArrayBuffer> => {
 	if (Number(response.headers.get('content-length')) > limit) {
+		discardBody(response);
 		throw new Error('Audio is too large for a waveform');
 	}
 
@@ -44,7 +50,7 @@ export const readBodyUpTo = async (response: Response, limit: number): Promise<A
 		}
 		total += value.byteLength;
 		if (total > limit) {
-			void reader.cancel();
+			reader.cancel().catch(() => undefined);
 			throw new Error('Audio is too large for a waveform');
 		}
 		chunks.push(value);
@@ -62,6 +68,7 @@ export const readBodyUpTo = async (response: Response, limit: number): Promise<A
 const fetchPeaks = async (src: string, signal: AbortSignal) => {
 	const response = await fetch(src, { credentials: 'same-origin', signal });
 	if (!response.ok) {
+		discardBody(response);
 		throw new Error(`Failed to fetch audio: ${response.status}`);
 	}
 	const context = new OfflineAudioContext(1, 1, 44100);

@@ -35,9 +35,12 @@ describe('readBodyUpTo', () => {
 		expect(body.byteLength).toBe(7);
 	});
 
-	it('rejects a declared length over the limit', async () => {
+	it('rejects a declared length over the limit without reading the body', async () => {
 		const response = new Response(streamOf(1), { headers: { 'content-length': '9' } });
+		const cancel = jest.spyOn(ReadableStream.prototype, 'cancel');
 		await expect(readBodyUpTo(response, 8)).rejects.toThrow('too large');
+		expect(cancel).toHaveBeenCalled();
+		cancel.mockRestore();
 	});
 
 	it('rejects a body that grows past the limit without declaring its length', async () => {
