@@ -1,0 +1,28 @@
+apps/meteor/server/lib/auth/createUser.test.ts
+  s_cbe68936cb4058::t_7f8bfb90845f71 1-81
+apps/meteor/server/lib/users/saveUser/saveNewUser.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 10,21,32,35
+apps/meteor/server/lib/auth/createUser.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 16
+  s_cbe68936cb4058::t_52df29d9d59a35 1-15,17-65
+apps/meteor/server/meteor-methods/users/registerUser.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 7,67
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 13,387
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "677675b163ff2e0ccf9b76f6f1403e1e17cc4c40",
+  "prompts": {},
+  "sessions": {
+    "s_cbe68936cb4058": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "897ac47e-99d8-4522-96d5-674729b4ae7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
