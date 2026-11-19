@@ -4,7 +4,7 @@ import { cx, cxx } from '../../helpers/composeClassNames';
 
 export type AccordionProps = {
 	children: ReactNode;
-} & AriaAttributes & { [key: `data-${string}`]: string | undefined };
+} & AriaAttributes;
 
 /**
  * An `Accordion` allows users to toggle the display of sections of content.
