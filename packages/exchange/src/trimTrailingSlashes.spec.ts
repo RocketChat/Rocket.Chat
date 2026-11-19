@@ -15,7 +15,7 @@ describe('trimTrailingSlashes', () => {
 		expect(trimTrailingSlashes('https://graph.microsoft.com/v1.0//users/')).toBe('https://graph.microsoft.com/v1.0//users');
 	});
 
-	it('never runs a regex, which backtracks quadratically on a long run of slashes', () => {
+	it('does not use a regex', () => {
 		const exec = jest.spyOn(RegExp.prototype, 'exec');
 
 		try {
