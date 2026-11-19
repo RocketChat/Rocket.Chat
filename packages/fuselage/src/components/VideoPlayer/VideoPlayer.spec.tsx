@@ -9,13 +9,24 @@ const { Default } = composeStories(stories);
 
 const getVideo = (container: HTMLElement) => container.querySelector('video') as HTMLVideoElement;
 
+// jsdom never matches `:focus-visible`; keyboard focus always would.
+const stubFocusVisible = () => {
+	const { matches } = Element.prototype;
+	jest.spyOn(Element.prototype, 'matches').mockImplementation(function (this: Element, selector: string) {
+		return selector === ':focus-visible' ? this === this.ownerDocument.activeElement : matches.call(this, selector);
+	});
+};
+
 describe('[VideoPlayer Component]', () => {
 	beforeEach(() => {
 		jest.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
 		jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => undefined);
 	});
 
-	afterEach(() => jest.restoreAllMocks());
+	afterEach(() => {
+		jest.useRealTimers();
+		jest.restoreAllMocks();
+	});
 
 	it('shows only the play button before the video starts', () => {
 		render(<Default />);
@@ -65,11 +76,7 @@ describe('[VideoPlayer Component]', () => {
 	});
 
 	it('keeps the controls reachable from the keyboard while the video plays', async () => {
-		// jsdom never matches `:focus-visible`; keyboard focus always would.
-		const { matches } = Element.prototype;
-		jest.spyOn(Element.prototype, 'matches').mockImplementation(function (this: Element, selector: string) {
-			return selector === ':focus-visible' ? this === this.ownerDocument.activeElement : matches.call(this, selector);
-		});
+		stubFocusVisible();
 		jest.useFakeTimers();
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 		const { container } = render(<Default />);
@@ -86,7 +93,35 @@ describe('[VideoPlayer Component]', () => {
 		expect(range).toHaveFocus();
 		act(() => jest.advanceTimersByTime(3000));
 		expect(screen.getByRole('button', { name: 'Pause' })).toBeVisible();
-		jest.useRealTimers();
+	});
+
+	it('moves focus to the controls when the video is started from the keyboard', async () => {
+		stubFocusVisible();
+		const user = userEvent.setup();
+		const { container } = render(<Default />);
+		await user.tab();
+		expect(screen.getByRole('button', { name: 'Play' })).toHaveFocus();
+		await user.keyboard('{Enter}');
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Pause' })).toHaveFocus();
+	});
+
+	it('hides the controls again once the focused Retry button is gone', async () => {
+		stubFocusVisible();
+		jest.useFakeTimers();
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		const { container } = render(<Default />);
+		const video = getVideo(container);
+		fireEvent.play(video);
+		fireEvent.error(video);
+		await user.tab();
+		expect(screen.getByRole('button', { name: 'Retry' })).toHaveFocus();
+		await user.keyboard('{Enter}');
+		fireEvent.loadedMetadata(video);
+		fireEvent.play(video);
+		fireEvent.playing(video);
+		act(() => jest.advanceTimersByTime(3000));
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
 	});
 
 	it('offers Play again after retrying a video that failed while playing', async () => {

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 import type { BoxProps } from '../Box';
 import { Box } from '../Box';
@@ -7,12 +7,14 @@ type VideoPlayerButtonProps = Pick<
 	BoxProps,
 	'size' | 'width' | 'height' | 'marginInline' | 'borderRadius' | 'borderWidth' | 'borderColor' | 'backgroundColor' | 'fontScale'
 > & {
+	ref?: Ref<HTMLButtonElement>;
 	label: string;
 	onClick: () => void;
 	children: ReactNode;
 };
 
 const VideoPlayerButton = ({
+	ref,
 	label,
 	onClick,
 	children,
@@ -27,6 +29,7 @@ const VideoPlayerButton = ({
 	fontScale,
 }: VideoPlayerButtonProps) => (
 	<Box
+		ref={ref}
 		is='button'
 		type='button'
 		aria-label={label}

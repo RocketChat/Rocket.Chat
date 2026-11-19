@@ -105,7 +105,25 @@ const VideoPlayer = ({
 	const wakeControls = () => {
 		setPointerActive(true);
 		clearTimeout(hideTimer.current);
-		hideTimer.current = setTimeout(() => setPointerActive(false), CONTROLS_HIDE_DELAY);
+		hideTimer.current = setTimeout(() => {
+			setPointerActive(false);
+			// A control that unmounts while focused never reports its blur.
+			if (!containerRef.current?.contains(ownerDocument.activeElement)) setKeyboardFocusWithin(false);
+		}, CONTROLS_HIDE_DELAY);
+	};
+
+	// Starting from the start button, which then goes away, keeps focus on the same action.
+	const playButtonRef = useRef<HTMLButtonElement>(null);
+	const focusPlayButtonOnStart = useRef(false);
+	useEffect(() => {
+		if (!started || !focusPlayButtonOnStart.current) return;
+		focusPlayButtonOnStart.current = false;
+		playButtonRef.current?.focus();
+	}, [started]);
+
+	const start = () => {
+		focusPlayButtonOnStart.current = containerRef.current?.contains(ownerDocument.activeElement) ?? false;
+		togglePlay();
 	};
 
 	const togglePlay = () => {
@@ -253,7 +271,7 @@ const VideoPlayer = ({
 			{!started && !loading && !error && (
 				<>
 					<Box position='absolute'>
-						<VideoPlayerButton label={playLabel} onClick={togglePlay} size='x48' borderRadius='full' backgroundColor='overlay'>
+						<VideoPlayerButton label={playLabel} onClick={start} size='x48' borderRadius='full' backgroundColor='overlay'>
 							<Icon name='play-shape-filled' size='x24' />
 						</VideoPlayerButton>
 					</Box>
@@ -325,7 +343,7 @@ const VideoPlayer = ({
 						/>
 					</Box>
 					<Box display='flex' alignItems='center'>
-						<VideoPlayerButton label={playing ? pauseLabel : playLabel} onClick={togglePlay}>
+						<VideoPlayerButton ref={playButtonRef} label={playing ? pauseLabel : playLabel} onClick={togglePlay}>
 							<Icon name={playing ? 'pause-shape-filled' : 'play-shape-filled'} size='x20' />
 						</VideoPlayerButton>
 						<VideoPlayerButton
