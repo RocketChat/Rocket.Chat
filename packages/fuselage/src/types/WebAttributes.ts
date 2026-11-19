@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, MouseEvent, Ref } from 'react';
+import type { AnchorHTMLAttributes, InputHTMLAttributes, MouseEvent, Ref } from 'react';
 
 /** The `data-*` attributes tests and the app select elements by. */
 export type WebDataAttributes = {
@@ -28,3 +28,25 @@ export type WebPressAlias<TElement extends Element> = {
 
 /** A contract as the web renderer takes it: its `ref` points at the element, and the web attributes are added. */
 export type WebProps<TContract, TElement extends Element> = Omit<TContract, 'ref'> & WebAttributes<TElement>;
+
+/**
+ * A contract as a web renderer built on a native `input` takes it: what forms (react-hook-form's `register` and `field`
+ * included) and field labels hand an input reaches the input, and `className` goes on the part's root.
+ */
+export type WebInputProps<TContract> = WebProps<TContract, HTMLInputElement> &
+	Pick<
+		InputHTMLAttributes<HTMLInputElement>,
+		| 'title'
+		| 'name'
+		| 'value'
+		| 'readOnly'
+		| 'required'
+		| 'autoFocus'
+		| 'tabIndex'
+		| 'inert'
+		| 'onChange'
+		| 'onBlur'
+		| 'onFocus'
+		| 'onClick'
+		| 'onKeyDown'
+	>;
