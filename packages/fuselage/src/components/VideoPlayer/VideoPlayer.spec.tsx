@@ -88,4 +88,14 @@ describe('[VideoPlayer Component]', () => {
 		expect(screen.getByRole('button', { name: 'Pause' })).toBeVisible();
 		jest.useRealTimers();
 	});
+
+	it('offers Play again after retrying a video that failed while playing', async () => {
+		const { container } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		fireEvent.error(getVideo(container));
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+		fireEvent.loadedMetadata(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
+	});
 });

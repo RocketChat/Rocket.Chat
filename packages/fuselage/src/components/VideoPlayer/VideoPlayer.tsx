@@ -134,6 +134,7 @@ const VideoPlayer = ({
 	};
 
 	const retry = () => {
+		setPlaying(false);
 		setError(false);
 		setLoading(true);
 		videoRef.current?.load();
