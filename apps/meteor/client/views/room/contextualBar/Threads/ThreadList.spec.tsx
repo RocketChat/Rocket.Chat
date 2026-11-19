@@ -44,8 +44,8 @@ describe('ThreadList Component', () => {
 			wrapper: mockAppRoot().withJohnDoe().withRoom(fakeRoom).withEndpoint('GET', '/v1/chat.getThreadsList', getThreadsList).build(),
 		});
 
-		await userEvent.click(screen.getByRole('button', { name: 'All' }));
-		await userEvent.click(screen.getByRole('option', { name: 'Drafts' }));
+		await userEvent.click(screen.getByRole('combobox', { name: 'Filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'Drafts' }));
 
 		await waitFor(() => expect(getThreadsList).toHaveBeenCalledWith(expect.objectContaining({ type: 'drafts' })));
 	});
