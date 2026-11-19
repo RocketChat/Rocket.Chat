@@ -299,10 +299,20 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	// elsewhere or expired disappear.
 	private syncWithStorage = ({ removed }: PersistedUploadsChange = { removed: [] }): void => {
 		const entries = readPersistedUploads(this.storageKey);
-		const kept = this.uploads.filter((upload) => !removed.includes(upload.id));
+		const kept = this.uploads
+			.filter((upload) => !removed.includes(upload.id))
+			// A rename or a new description made elsewhere reaches the chip, and is not written back stale on the next edit.
+			.map((upload) => {
+				const entry = upload.restored && entries.find(({ id }) => id === upload.id);
+				if (!entry || (entry.fileName === upload.file.name && entry.altText === upload.altText)) {
+					return upload;
+				}
+
+				return { ...upload, file: createPlaceholderFile(entry.fileName, entry.fileType, entry.fileSize), altText: entry.altText };
+			});
 		const missing = entries.filter((entry) => !kept.some((upload) => upload.id === entry.id));
 
-		if (kept.length !== this.uploads.length || missing.length > 0) {
+		if (kept.length !== this.uploads.length || missing.length > 0 || kept.some((upload, index) => upload !== this.uploads[index])) {
 			this.set([...kept, ...missing.map(fromPersistedUpload)]);
 		}
 

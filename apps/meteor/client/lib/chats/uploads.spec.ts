@@ -454,12 +454,25 @@ describe('UploadsStore across tabs', () => {
 		store.clear();
 	});
 
+	it('picks up a rename and a description another tab made', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+		store.detach();
+		attach(store);
+
+		writeFromAnotherTab([{ ...persistedUpload('file-1'), fileName: 'renamed.png', altText: 'A cat' }]);
+
+		expect(store.get()[0].file).toMatchObject({ name: 'renamed.png', size: 6 });
+		expect(store.get()[0].altText).toBe('A cat');
+	});
+
 	it('ignores what another tab keeps for another room', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
 		attach(store);
 		await uploadFile(store, 'file-1');
 
-		writeFromAnotherTab([], 'composer_uploads_other-room');
+		writeFromAnotherTab([persistedUpload('file-2')], 'composer_uploads_other-room');
 
 		expect(store.get().map(({ id }) => id)).toEqual(['file-1']);
 	});
