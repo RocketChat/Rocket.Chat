@@ -49,6 +49,8 @@ describe('the conditions of a frame value', () => {
 			hoverNone: '(hover: none)',
 			reducedMotion: '(prefers-reduced-motion: reduce)',
 			narrow: '(max-width: 319.98px)',
+			sm: '(min-width: 600px)',
+			md: '(min-width: 768px)',
 		});
 	});
 });

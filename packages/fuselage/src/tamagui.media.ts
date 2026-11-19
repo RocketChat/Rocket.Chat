@@ -12,4 +12,7 @@ export const media = {
 	reducedMotion: { prefersReducedMotion: 'reduce' },
 	/** A group too narrow for a row's widest layout: under 320 pixels, which a `max-width` can only state from below. */
 	narrow: { maxWidth: 319.98 },
+	/** The `sm` and `md` breakpoints of `@rocket.chat/fuselage-tokens`. */
+	sm: { minWidth: 600 },
+	md: { minWidth: 768 },
 } as const;
