@@ -55,3 +55,17 @@ export type ChangeEvents<TValue> = {
 
 /** The contract of a part that acts when pressed: a button, a link, a dismissable chip. */
 export type ActionContract = CommonAttributes & ActionAccessibilityAttributes & PressEvents;
+
+/** The ARIA states of a part that holds a checked state. */
+export type SelectionAccessibilityAttributes = Pick<
+	AriaAttributes,
+	'aria-label' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-required' | 'aria-hidden'
+>;
+
+/** The contract of a part that holds a checked state: a check box, a radio button, a switch. */
+export type SelectionContract = CommonAttributes &
+	SelectionAccessibilityAttributes & {
+		checked?: boolean;
+		defaultChecked?: boolean;
+		disabled?: boolean;
+	};
