@@ -14,7 +14,7 @@ const LocalSearchIndexNoteHeader = ({ title, action }: LocalSearchIndexNoteHeade
 	<Box display='flex' alignItems='center' justifyContent='space-between'>
 		<Box fontScale='p2b'>{title}</Box>
 		{/* Room for the focus ring of the button: the callout clips what overflows it. */}
-		<Box padding={2}>{action}</Box>
+		<Box padding='x4'>{action}</Box>
 	</Box>
 );
 
