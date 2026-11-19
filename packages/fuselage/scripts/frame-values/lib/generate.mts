@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 
 import prettier from 'prettier';
 
-import { moduleProblems, transformProblems } from './check.mts';
+import { fontReferenceProblems, moduleProblems, transformProblems } from './check.mts';
 import { END, START } from './markers.mts';
 import type { Target } from './target.mts';
 import { unresolvedReferences } from './tokens.mts';
@@ -23,8 +23,8 @@ export const loadModules = async (directory: string) => {
 
 /**
  * Writes the generated section of each target and returns what is wrong with them. With `check` nothing is written, and
- * a stale section is one of the problems. A section that names a token or theme key the Tamagui config lacks is never
- * written.
+ * a stale section is one of the problems. A section that names a token or theme key the Tamagui config lacks, or a
+ * token in a font property, is never written.
  */
 export const generateFrameValues = async (targets: Target[], check: boolean) => {
 	const problems: string[] = [];
@@ -40,6 +40,11 @@ export const generateFrameValues = async (targets: Target[], check: boolean) => 
 		}
 
 		const body = await prettier.format(generate(), { ...((await prettier.resolveConfig(file)) ?? {}), parser: 'typescript' });
+		const fontProblems = fontReferenceProblems(file, body);
+		if (fontProblems.length) {
+			problems.push(...fontProblems);
+			continue;
+		}
 		const unresolved = unresolvedReferences(body);
 		if (unresolved.length) {
 			problems.push(`${file}: the Tamagui config has no token or theme key for ${unresolved.join(', ')}`);
