@@ -64,18 +64,29 @@ interface IOAuthUserServices {
 	};
 }
 
+export type PasswordTokenRecord = {
+	token: string;
+	email: string;
+	when: Date;
+	reason: 'reset' | 'enroll';
+};
+
+export type EmailVerificationTokenRecord = {
+	token: string;
+	address: string;
+	when: Date;
+};
+
 interface IUserServices extends IOAuthUserServices {
 	password?: {
 		exists?: boolean;
 		bcrypt?: string;
+		reset?: PasswordTokenRecord;
+		enroll?: PasswordTokenRecord;
 	};
 	passwordHistory?: string[];
 	email?: {
-		verificationTokens?: {
-			token: string;
-			address: string;
-			when: Date;
-		}[];
+		verificationTokens?: EmailVerificationTokenRecord[];
 	};
 	resume?: {
 		loginTokens?: LoginToken[];
