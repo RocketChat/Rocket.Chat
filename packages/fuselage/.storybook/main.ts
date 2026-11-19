@@ -41,6 +41,7 @@ const config: StorybookConfig = {
 
 	viteFinal: (config, { configType }) => ({
 		...config,
+		define: { ...config.define, 'process.env.TAMAGUI_TARGET': '"web"' },
 		// Tamagui links its zero-runtime stylesheet at `<base>tamagui-zero.css`, which its dev server answers only at an absolute base.
 		...(zeroRuntime && configType === 'DEVELOPMENT' && { base: '/' }),
 		// The stories import the Tamagui config through this name: the runtime needs it, the compiled stories must not reach it

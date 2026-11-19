@@ -15,6 +15,13 @@ const probeFrame = {
 	borderRadius: '$radius.medium',
 	paddingBlock: 2,
 	paddingInline: '$space.x8',
+	minHeight: 28,
+	width: {
+		default: 20,
+		hover: 24,
+	},
+	top: -1,
+	maxWidth: '1.25rem',
 	zIndex: {
 		'focus-visible': '$zIndex.raised',
 	},

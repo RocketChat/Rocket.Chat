@@ -9,12 +9,12 @@
 	--t-space-x32: 32px;
 	--t-space-x40: 40px;
 	--t-radius-zero: 0;
-	--t-radius-default: 1px;
-	--t-radius-small: 2px;
-	--t-radius-medium: 4px;
-	--t-radius-large: 8px;
-	--t-radius-extra-large: 20px;
-	--t-radius-full: 9999px;
+	--t-radius-default: 0.0625rem;
+	--t-radius-small: 0.125rem;
+	--t-radius-medium: 0.25rem;
+	--t-radius-large: 0.5rem;
+	--t-radius-extra-large: 1.25rem;
+	--t-radius-full: 624.9375rem;
 	--t-zIndex-raised: 1;
 	--t-zIndex-overlap: 2;
 	--t-zIndex-sticky: 10;
