@@ -81,8 +81,8 @@ cannot be expressed over a fire-and-forget emitter.
 | `src/router/StanzaRouter.ts` | Dispatch of authenticated stanzas: MUC-addressed traffic to `MucService`, `message` and `presence` to typed events, IQ ping and disco to auto-replies, any other IQ get or set to `service-unavailable` |
 | `src/handlers/parse.ts` | Pure parsers: chat message (body, thread, XEP-0308 replace id), availability presence, subscription type |
 | `src/iq/disco.ts`, `src/iq/ping.ts` | XEP-0030 on the server domain, the MUC domain and individual room JIDs (clients disco a room before joining and refuse it unless it is `conference/text`); XEP-0199 |
-| `src/muc/MucService.ts` | Registry of hosted rooms plus which are public; routes room-addressed stanzas; detects invites addressed to local users |
-| `src/muc/MucRoom.ts` | Hosted-room state machine: occupants keyed by nick, nick conflicts, join authorization, presence fan-out with status 110 and 307 (never 201, the room always pre-exists in Rocket.Chat), the subject that closes a join, groupchat reflection, mediated invitations. Rocket.Chat members are **virtual occupants**: in the roster, delivered via events rather than sockets |
+| `src/muc/MucService.ts` | Registry of hosted rooms plus which are public; routes room-addressed stanzas; takes occupants who bounce a delivery error out of every room; detects invites addressed to local users |
+| `src/muc/MucRoom.ts` | Hosted-room state machine: occupants keyed by nick, nick conflicts, join authorization, presence fan-out with status 110, 307 and 333 (never 201, the room always pre-exists in Rocket.Chat), the subject that closes a join, groupchat reflection, mediated invitations. Rocket.Chat members are **virtual occupants**: in the roster, delivered via events rather than sockets |
 | `src/muc/RemoteMucSession.ts` | A local user joined into a remote MUC as a client over S2S, fixed resource `rocketchat`. Tracks join state and the remote roster, with the real JIDs the room discloses; prefers the XEP-0359 stanza id for dedup; skips its own reflections. One session per local member ([ADR 0009](adr/0009-one-remote-muc-session-per-local-member.md)); a member without one cannot speak, so `mucSendToRemoteRoom` throws instead of dropping |
 | `src/muc/stanzas.ts` | Pure builders and parsers for `muc#user` presence, groupchat (with replace), subject, join presence, mediated invites (XEP-0045 §7.8.2) and invite parsing (mediated and XEP-0249 direct) |
 | `src/types/ltx.d.ts` | Types for the CommonJS parts of `ltx` and `@xmpp/jid` the package uses |
@@ -179,6 +179,8 @@ member leaves/removed  → local → occupant presence 'unavailable'
 remote occupant joins  → muc.occupantJoined → upsert user + subscription (so they appear as a member)
 remote occupant leaves → muc.occupantLeft ('left' only) → performUserRemoval, which runs no
                          callbacks and therefore cannot bounce back as a kick
+occupant unreachable   → muc.occupantLeft ('unreachable') → nothing: the subscription stays,
+                         so the occupant can join again
 ```
 
 For `remote-muc` (mirrored) rooms, where membership is a client session rather than a roster

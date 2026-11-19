@@ -273,8 +273,9 @@ export class S2SManager {
 			route.status = 'failed';
 			const failure = error ?? new ConnectionFailedError(domain);
 			this.deps.events.emit('connection.failed', { domain, attempts: route.failures, error: failure });
+			const undeliverable = failure instanceof ConnectionFailedError ? failure : new ConnectionFailedError(domain, failure);
 			for (const queued of route.queue) {
-				queued.reject(failure);
+				queued.reject(undeliverable);
 			}
 			route.queue = [];
 			route.backoff.reset();

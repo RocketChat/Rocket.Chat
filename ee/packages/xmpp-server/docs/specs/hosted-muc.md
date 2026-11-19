@@ -87,6 +87,15 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   after the room is registered MUST be published as an occupant: every remote occupant
   receives their presence from `<room>@<MUC domain>/<username>`, with role `moderator` for
   the owner and `participant` otherwise (XEP-0045 §7.2.2).
+- **R19** A remote occupant who cannot be reached MUST be removed from every hosted room they
+  occupy under that real JID (XEP-0045 §18.1.2). They cannot be reached when an error
+  `message` or `presence` from their real JID carries `gone`, `item-not-found`,
+  `recipient-unavailable`, `redirect`, `remote-server-not-found` or `remote-server-timeout`,
+  or when a stanza the room sends them is dropped because their server cannot be connected
+  to. The remaining remote occupants receive their `unavailable` presence with status code
+  333 and no 307 (XEP-0045 §11.1). Their Rocket.Chat subscription stays, so they can join
+  again as R4 admits an invited member. A closed S2S connection removes nobody: peers close
+  idle streams (RFC 6120 §4.6.3), and a removal waits for one of the failures above.
 
 **Invitations**
 
@@ -120,7 +129,8 @@ MUC domain. `MucRoom` is the state machine: occupants keyed by nick with an `isL
 join authorization through the `authorizeMucJoin` delegate, presence fan-out to remote
 occupants only, groupchat reflection. The service implements the delegate against the
 rooms and subscriptions collections, handles `muc.occupantJoined`, `muc.occupantLeft` (left
-only, a kick is the echo of a removal) and `muc.messageReceived`, and exposes
+only: a kick is the echo of a removal, and an unreachable occupant keeps their membership)
+and `muc.messageReceived`, and exposes
 `registerHostedRoom`, `addHostedRoomMember`, `removeHostedRoomMember` and
 `inviteToHostedRoom` to the Meteor hooks. Flows are drawn in
 [architecture.md](../architecture.md#message-flow-end-to-end).
@@ -131,6 +141,8 @@ Parts of XEP-0045 not implemented:
 
 - Room configuration forms (§10), owner and admin IQ, affiliations beyond what disco reports.
 - Moderation other than kick: ban, voice, role changes initiated from the XMPP side.
+- Pinging idle occupants to find ghosts (XEP-0045 §18.1.2 MAY, XEP-0199): R19 acts only on
+  failures that traffic to the occupant reveals.
 - Discussion history on join (§7.2.13, §7.2.14): the newcomer receives no backlog.
 - Room passwords, nick changes (status 303), room destruction (§10.9).
 - Private messages between occupants (§7.5), subject changes from occupants (§8.1):
@@ -148,16 +160,6 @@ When Rocket.Chat removes an XMPP user from a room it hosts, the other occupants 
 `unavailable` presence with status 307 but the removed user does not. Their client keeps
 showing them in the room. Where: `MucRoom.kick` deletes the occupant before building the
 recipients list. Test: `hosted-muc.spec.ts`, "tells the kicked XMPP user they were removed".
-
-### D2 Occupants are never removed when their server's connection drops
-
-Hosted-room occupants are keyed by JID and only leave on an `unavailable` presence or a
-kick. When the S2S connection to their server is lost nothing removes them, so later
-messages keep being sent to them and the room roster is stale until their server
-reconnects. Where: nothing acts on `connection.lost` on behalf of the rooms. Test:
-`tests/integration/muc.spec.ts`, "drops the occupants of a server whose connection is
-lost"; the end-to-end harness cannot sever the link to ejabberd, so this one is an
-integration test.
 
 ### D3 A new topic does not reach occupants already in the room
 
