@@ -9147,7 +9147,7 @@ __metadata:
 
 "@rocket.chat/federation-sdk@patch:@rocket.chat/federation-sdk@npm%3A0.9.1#~/.yarn/patches/@rocket.chat-federation-sdk-npm-0.9.1-d02134bb21.patch":
   version: 0.9.1
-  resolution: "@rocket.chat/federation-sdk@patch:@rocket.chat/federation-sdk@npm%3A0.9.1#~/.yarn/patches/@rocket.chat-federation-sdk-npm-0.9.1-d02134bb21.patch::version=0.9.1&hash=c0c74d"
+  resolution: "@rocket.chat/federation-sdk@patch:@rocket.chat/federation-sdk@npm%3A0.9.1#~/.yarn/patches/@rocket.chat-federation-sdk-npm-0.9.1-d02134bb21.patch::version=0.9.1&hash=59d790"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9161,7 +9161,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/6e0c59bc47fc109e97c19775ff365bbb496b35c0c1da1b24a028e541fbee7ae3ea2f5a67f44d725e9e8c6249a07aadaedd349b7bf7bdb4b314212fc1a7906eaa
+  checksum: 10/04da67996aa4a4f1927a405d5f57a318c9fdc53005aad522751b7a4b9064bd20d47425313d0fbd9cc2bd7fc671589f4caaf05cdb05e71ee8f2c2cf29e698c758
   languageName: node
   linkType: hard
 
