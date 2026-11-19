@@ -140,6 +140,7 @@ const AudioPlayer = ({
 				loading={loading}
 				error={error}
 				onRetry={() => {
+					setLoading(false);
 					setError(false);
 					audioRef.current?.load();
 				}}
