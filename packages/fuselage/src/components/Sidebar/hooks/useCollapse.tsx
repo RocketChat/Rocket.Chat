@@ -1,6 +1,17 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useId, type KeyboardEventHandler, type MouseEvent } from 'react';
 
+// Every key a bar can get, so a part that forwards them by name reads one shape
+type CollapseBarProps = {
+	'aria-controls'?: string;
+	'aria-expanded': 'true' | 'false';
+	'aria-disabled'?: 'true';
+	'aria-labelledby'?: string;
+	'tabIndex'?: number;
+	'onClick'?: (event: MouseEvent<HTMLElement>) => void;
+	'onKeyDown'?: KeyboardEventHandler;
+};
+
 const hasPropExpanded = (expanded: boolean | undefined) => expanded !== undefined;
 
 export const useCollapse = ({
@@ -62,7 +73,7 @@ export const useCollapse = ({
 		'aria-labelledby': titleId,
 	} as const;
 
-	const barProps = noncollapsible ? nonCollapsibleProps : collapsibleProps;
+	const barProps: CollapseBarProps = noncollapsible ? nonCollapsibleProps : collapsibleProps;
 
 	return { barProps, titleId, panelId, panelExpanded, expanded };
 };

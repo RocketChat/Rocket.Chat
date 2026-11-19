@@ -441,8 +441,8 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 32,
-		"nested": 31,
+		"rules": 22,
+		"nested": 21,
 		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
