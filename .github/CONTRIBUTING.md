@@ -18,7 +18,7 @@ __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or y
 
 ## Development Guidelines
 
-To run Rocket.Chat from source, follow [Getting Started](../docs/getting-started.md). Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/space/RnD/359891343/%F0%9F%8C%90+Development+Guidelines) on how to code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
+To run Rocket.Chat from source, follow [Getting Started](https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/getting-started.md). Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/space/RnD/359891343/%F0%9F%8C%90+Development+Guidelines) on how to code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
 
 ## Contributor License Agreement
 
