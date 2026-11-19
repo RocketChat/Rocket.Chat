@@ -1,13 +1,13 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, Stack } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { Dispatch, SetStateAction } from 'react';
 import { useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
 import FeaturedAppsSections from './FeaturedAppsSections';
-import AppsListScroller from './layout/AppsListScroller';
 import ListViewport from '../../../components/ListViewport';
 
 export type AppsPageContentBodyProps = {
@@ -40,16 +40,18 @@ const AppsPageContentBody = ({
 	paginationProps,
 }: AppsPageContentBodyProps) => {
 	const { t } = useTranslation();
-	const scrollableRef = useRef<HTMLDivElement>(null);
+	const scrollableRef = useRef<HTMLElement>(null);
 	const appsListId = useId();
 
 	return (
 		<>
 			<ListViewport>
-				<AppsListScroller ref={scrollableRef}>
-					{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
-					<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
-				</AppsListScroller>
+				<CustomScrollbars ref={scrollableRef}>
+					<Stack gap='x16'>
+						{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
+						<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
+					</Stack>
+				</CustomScrollbars>
 			</ListViewport>
 			{Boolean(appsResult?.count) && (
 				<Pagination
