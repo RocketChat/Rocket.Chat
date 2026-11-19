@@ -72,6 +72,9 @@ const fetchPeaks = async (src: string, signal: AbortSignal) => {
 		throw new Error(`Failed to fetch audio: ${response.status}`);
 	}
 	const context = new OfflineAudioContext(1, 1, 44100);
+	// TODO: Bound the decoded size of audio waveforms, not only the download
+	// MAX_SIZE limits compressed bytes; a long low-bitrate clip under it decodes to hundreds of MiB of PCM.
+	// Skipping clips over a duration limit (known from the attachment's metadata) would cap it.
 	const buffer = await context.decodeAudioData(await readBodyUpTo(response, MAX_SIZE));
 	return toPeaks(buffer.getChannelData(0), BAR_COUNT);
 };
