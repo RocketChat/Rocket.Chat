@@ -124,3 +124,17 @@ Run this scenario only after F-9 ships. Any MCP client works.
 5. Post a message while no call waits. Then call with the last cursor and `wait=10`. Expect the message at once.
 
 Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-long-poll-on-get_agents_messages).
+
+## Amendment A-3: Webhook (proposed, F-11)
+
+Run this scenario only after F-11 ships.
+
+1. Start a local receiver on port 4000 that logs each request. Add `127.0.0.1` to `SSRF_Allowlist`.
+2. Register an agent with `webhookUrl: "http://127.0.0.1:4000/hook"`. Expect a webhook secret in the response.
+3. Add a room to its allow list. A human mentions the agent there. Expect one request within 1 s, with a valid signature.
+4. Post a message with no mention. In mention mode, expect no request.
+5. Make the receiver return `500` twice. Mention the agent. Expect three requests: at once, after 2 s, and after 4 s.
+6. Remove `127.0.0.1` from `SSRF_Allowlist`, then update the agent with the same URL. Expect `error-agent-webhook-url-refused`.
+7. Suspend the agent and mention it. Expect no request.
+
+Contract: [contracts/agent-webhook.md](contracts/agent-webhook.md).

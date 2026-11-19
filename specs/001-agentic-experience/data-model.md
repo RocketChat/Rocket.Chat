@@ -179,3 +179,21 @@ The reply-mode filter (D-10) runs in the endpoint, not in the model.
 | `agent.approval.created` | approval id, agent id, room id | the agent |
 | `agent.approval.decided` | approval id, decision | the approver |
 | `agent.approval.expired` | approval id | system |
+
+## Amendment A-3: webhook
+
+**Status**: Proposed ([plan.md, A-3](plan.md#a-3-2026-11-19-outgoing-webhook-delivery)).
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `agent.webhook` | `{ url: string; secret: string } \| undefined` | Set at registration or by `agents.update`. The server needs the plain secret to sign, so it stores it as is. No endpoint returns the secret after its creation or rotation. Every read for an endpoint projects it out. |
+
+| Method | Purpose |
+|--------|---------|
+| `setAgentWebhook(id, webhook)` | Sets or clears `agent.webhook`. |
+| `setAgentWebhookSecret(id, secret)` | Replaces the secret at rotation. |
+| `findAgentsWithWebhookByRoom(rid, memberIds, options)` | Lists the active agents with a webhook whose allow list holds `rid`, or whose id is in `memberIds` for a direct message. |
+
+Index: `{ 'agent.allowedRoomIds': 1 }` with a partial filter on `agent.webhook` existing. Most saved messages match no agent, so the read costs one empty index lookup.
+
+Audit: `agent.updated` records a webhook change with the old and new URL, never the secret.

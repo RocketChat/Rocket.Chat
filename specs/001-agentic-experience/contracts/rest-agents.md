@@ -148,3 +148,19 @@ Returns the approval of the calling agent. Another agent gets `404`.
 ## Route coverage for the guard
 
 The guard denies every agent request that does not come from the MCP dispatch. It then denies every route that is not in the agent tool table ([mcp-tools.md](mcp-tools.md)). The `agents.*` human endpoints are not in the table, so an agent cannot call them.
+
+## Amendment A-3: webhook URL
+
+**Status**: Proposed ([plan.md, A-3](../plan.md#a-3-2026-11-19-outgoing-webhook-delivery)). The outbound request: [agent-webhook.md](agent-webhook.md).
+
+- `POST agents.register` takes an optional `webhookUrl`. With it, the response adds `"webhook": { "url": "…", "secret": "<shown once>" }`.
+- `POST agents.update` takes `webhookUrl`: a URL sets or changes it, and `null` clears it. A new URL keeps the secret. A first URL creates a secret, and the response returns it once.
+- `POST agents.credential.rotate` also rotates the webhook secret when the agent has a URL. The response adds `"webhook": { "secret": "<shown once>" }`.
+- `GET agents.info` and `GET agents.me` return `webhookUrl`, never the secret.
+
+New errors:
+
+| Code | When |
+|------|------|
+| `error-agent-webhook-url-refused` | The URL is not `https` and its host is not on `SSRF_Allowlist`, or the SSRF check refuses it. |
+| `error-agent-webhook-needs-messages` | The agent has a URL and its capabilities lack `get_agents_messages`. |
