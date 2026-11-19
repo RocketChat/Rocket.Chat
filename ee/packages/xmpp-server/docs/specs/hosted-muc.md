@@ -7,6 +7,7 @@ code:
     src/muc/MucService.ts,
     src/muc/MucRoom.ts,
     src/muc/stanzas.ts,
+    src/xml/errors.ts,
     src/iq/disco.ts,
     src/XMPPServer.ts,
     src/service/XMPPServerService.ts,
@@ -19,6 +20,7 @@ tests:
     src/muc/MucRoom.spec.ts,
     src/muc/MucService.spec.ts,
     src/muc/stanzas.spec.ts,
+    src/xml/errors.spec.ts,
     tests/integration/muc.spec.ts,
     tests/end-to-end/hosted-muc.spec.ts,
   ]
