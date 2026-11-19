@@ -227,7 +227,15 @@ const VideoPlayer = ({
 			</Box>
 
 			{videoFocusVisible && (
-				<Box position='absolute' inset={0} borderRadius='medium' borderWidth='medium' borderColor='highlight' aria-hidden />
+				<Box
+					position='absolute'
+					inset={0}
+					borderRadius='medium'
+					borderWidth='medium'
+					borderColor='highlight'
+					style={{ pointerEvents: 'none' }}
+					aria-hidden
+				/>
 			)}
 
 			{error && (
