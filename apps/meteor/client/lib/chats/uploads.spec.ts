@@ -467,6 +467,46 @@ describe('UploadsStore across tabs', () => {
 		expect(store.get()[0].altText).toBe('A cat');
 	});
 
+	it('picks up a rename of an upload it is still holding the bytes of', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		writeFromAnotherTab([{ ...persistedUpload('file-1'), fileName: 'renamed.png', altText: 'A cat' }]);
+
+		expect(store.get()[0].file).toMatchObject({ name: 'renamed.png', size: 6 });
+		expect(store.get()[0].altText).toBe('A cat');
+	});
+
+	it('picks up a rename of an encrypted upload, including what is encrypted with it', async () => {
+		const encryption = { key: { kty: 'oct' }, iv: 'iv', type: 'image/png', hash: 'hash' };
+		const encrypted: EncryptedFileUploadContent = {
+			rawFile: createFile(),
+			fileContent: { raw: { name: 'photo.png', type: 'image/png' } },
+			encryptedFile: { ...encryption, file: new File(['cipher'], 'photo.png') },
+		};
+
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		const sending = store.send(encrypted.encryptedFile.file, encrypted);
+		completeUpload(xhrs[xhrs.length - 1], 'file-1');
+		await sending;
+		store.detach();
+		attach(store);
+
+		writeFromAnotherTab([
+			{
+				...persistedUpload('file-1'),
+				fileName: 'renamed.png',
+				encryption: { ...encryption, metadataForEncryption: { name: 'renamed.png', type: 'image/png' } },
+			},
+		]);
+
+		const [restored] = store.get();
+		expect(restored.file.name).toBe('renamed.png');
+		expect(isEncryptedUpload(restored) && restored.metadataForEncryption).toMatchObject({ name: 'renamed.png' });
+	});
+
 	it('ignores what another tab keeps for another room', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
 		attach(store);

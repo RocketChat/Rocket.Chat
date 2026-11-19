@@ -293,14 +293,24 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		const entries = readPersistedUploads(this.storageKey);
 		const kept = this.uploads
 			.filter((upload) => !removed.includes(upload.id))
-			// A rename or a new description made elsewhere reaches the chip, and is not written back stale on the next edit.
+			// A rename or a new description made elsewhere reaches the chip, what is sent with it, and what its next edit
+			// saves. An upload of this composer's own keeps the bytes it holds; a restored one has none to keep.
 			.map((upload) => {
-				const entry = upload.restored && entries.find(({ id }) => id === upload.id);
+				const entry = entries.find(({ id }) => id === upload.id);
 				if (!entry || (entry.fileName === upload.file.name && entry.altText === upload.altText)) {
 					return upload;
 				}
 
-				return { ...upload, file: createPlaceholderFile(entry.fileName, entry.fileType, entry.fileSize), altText: entry.altText };
+				if (upload.restored) {
+					return fromPersistedUpload(entry);
+				}
+
+				return {
+					...upload,
+					file: new File([upload.file], entry.fileName, upload.file),
+					altText: entry.altText,
+					...(isEncryptedUpload(upload) && entry.encryption && { metadataForEncryption: entry.encryption.metadataForEncryption }),
+				};
 			});
 		const missing = entries.filter((entry) => !kept.some((upload) => upload.id === entry.id));
 
