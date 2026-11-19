@@ -378,8 +378,8 @@
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
