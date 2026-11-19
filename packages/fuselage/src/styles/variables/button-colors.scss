@@ -172,36 +172,6 @@ $button-secondary-success-disabled-border-color: theme(
 );
 $button-secondary-success-disabled-color: theme('button-secondary-success-disabled-color', colors.button(on-secondary-success-disabled));
 
-// empty
-$button-empty-background-color: theme('button-empty-background-color', colors.surface(light));
-$button-empty-border-color: theme('button-empty-border-color', colors.stroke(dark));
-$button-empty-color: theme('button-empty-color', colors.font(white));
-$button-empty-hover-background-color: theme('button-empty-hover-background-color', colors.surface(light));
-$button-empty-hover-border-color: theme('button-empty-hover-border-color', colors.stroke(extra-dark));
-$button-empty-active-background-color: theme('button-empty-active-background-color', colors.surface(light));
-$button-empty-active-border-color: theme('button-empty-active-border-color', colors.stroke(extra-dark));
-$button-empty-focus-background-color: theme('button-empty-focus-background-color', colors.surface(light));
-$button-empty-focus-border-color: theme('button-empty-focus-border-color', colors.stroke(extra-dark));
-$button-empty-focus-shadow-color: theme('button-empty-focus-shadow-color', colors.shadow(highlight));
-$button-empty-disabled-background-color: theme('button-empty-disabled-background-color', colors.button(secondary-disabled));
-$button-empty-disabled-border-color: theme('button-empty-disabled-border-color', colors.stroke(light));
-$button-empty-disabled-color: theme('button-empty-disabled-color', colors.font(white));
-
-// off
-$button-off-background-color: theme('button-off-background-color', colors.stroke(medium));
-$button-off-border-color: theme('button-off-border-color', colors.stroke(medium));
-$button-off-color: theme('button-off-color', colors.font(white));
-$button-off-hover-background-color: theme('button-off-hover-background-color', colors.font(hint));
-$button-off-hover-border-color: theme('button-off-hover-border-color', colors.font(hint));
-$button-off-active-background-color: theme('button-off-active-background-color', colors.stroke(dark));
-$button-off-active-border-color: theme('button-off-active-border-color', colors.stroke(dark));
-$button-off-focus-background-color: theme('button-off-focus-background-color', colors.stroke(medium));
-$button-off-focus-border-color: theme('button-off-focus-border-color', colors.stroke(extra-dark));
-$button-off-focus-shadow-color: theme('button-off-focus-shadow-color', colors.shadow(highlight));
-$button-off-disabled-background-color: theme('button-off-disabled-background-color', colors.button(secondary-disabled));
-$button-off-disabled-border-color: theme('button-off-disabled-border-color', colors.button(secondary-disabled));
-$button-off-disabled-color: theme('button-off-disabled-color', colors.button(on-secondary-disabled));
-
 // split button / ghost segment (secondary tokens at 70% opacity)
 @function -translucent($token) {
 	@return color-mix(in srgb, colors.button($token) 70%, transparent);
