@@ -1,14 +1,21 @@
 import { MockedServerContext, MockedUserContext } from '@rocket.chat/mock-providers';
-import { render } from '@testing-library/react';
+import { AuthenticationContext } from '@rocket.chat/ui-contexts';
+import { render as rtlRender } from '@testing-library/react';
+import type { ReactElement, ReactNode } from 'react';
+import { useContext } from 'react';
 
 import SAMLLoginRoute from './SAMLLoginRoute';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
-import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
-jest.mock('../../meteor/login/saml', () => ({
-	loginWithSamlToken: jest.fn((_token: string, callback: () => void) => callback()),
-}));
+const loginWithSamlToken = jest.fn(async (_token: string, callback?: (error?: unknown) => void) => callback?.());
+
+const WithSamlLogin = ({ children }: { children: ReactNode }) => {
+	const authentication = useContext(AuthenticationContext);
+	return <AuthenticationContext.Provider value={{ ...authentication, loginWithSamlToken }}>{children}</AuthenticationContext.Provider>;
+};
+
+const render = (ui: ReactElement) => rtlRender(ui, { wrapper: WithSamlLogin });
 
 jest.mock('../invite/hooks/useSamlInviteToken');
 const mockUseSamlInviteToken = jest.mocked(useSamlInviteToken);
@@ -21,7 +28,7 @@ beforeAll(() => {
 beforeEach(() => {
 	jest.clearAllMocks();
 	navigateStub.mockClear();
-	jest.mocked(loginWithSamlToken).mockClear();
+	loginWithSamlToken.mockClear();
 });
 
 it('should redirect to /home', async () => {
