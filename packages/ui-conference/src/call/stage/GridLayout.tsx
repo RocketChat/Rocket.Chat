@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMemo, useRef } from 'react';
 
+import GridCell from './GridCell';
 import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
 import ScreenShareThumb from './ScreenShareThumb';
@@ -55,24 +56,19 @@ const GridLayout = ({ tiles, activeSpeakerId, selfId, screens = [] }: GridLayout
 				}}
 			>
 				{screens.map((screen, i) => (
-					<Box key={`screen-${screen.id}`} style={{ gridColumnStart: gridColumnStartFor(i, cellCount, cols) }} minWidth={0} minHeight={0}>
-						<ScreenShareThumb screen={screen} fill />
-					</Box>
+					<GridCell key={`screen-${screen.id}`} columnStart={gridColumnStartFor(i, cellCount, cols)}>
+						<ScreenShareThumb screen={screen} />
+					</GridCell>
 				))}
 				{visible.map((t, i) => (
-					<Box key={t.id} style={{ gridColumnStart: gridColumnStartFor(screens.length + i, cellCount, cols) }} minWidth={0} minHeight={0}>
+					<GridCell key={t.id} columnStart={gridColumnStartFor(screens.length + i, cellCount, cols)}>
 						<MainTile tile={t} />
-					</Box>
+					</GridCell>
 				))}
 				{hidden.length > 0 && (
-					<Box
-						key='overflow'
-						style={{ gridColumnStart: gridColumnStartFor(screens.length + visible.length, cellCount, cols) }}
-						minWidth={0}
-						minHeight={0}
-					>
+					<GridCell key='overflow' columnStart={gridColumnStartFor(screens.length + visible.length, cellCount, cols)}>
 						<OverflowTile hidden={hidden} />
-					</Box>
+					</GridCell>
 				)}
 			</Box>
 		</Box>

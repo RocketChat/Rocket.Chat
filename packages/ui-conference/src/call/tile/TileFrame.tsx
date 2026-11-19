@@ -4,6 +4,7 @@ import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import TileBadge from './TileBadge';
 import PinToggle from '../PinToggle';
 import VoiceActivity from '../VoiceActivity';
 import { useSpeakingRing } from '../hooks/useSpeakingRing';
@@ -101,17 +102,6 @@ const indicatorRowStyles = css`
 	gap: 0.25rem;
 	pointer-events: none;
 	z-index: 2;
-`;
-
-const indicatorBadgeStyles = css`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 1.75rem;
-	height: 1.75rem;
-	border-radius: 50%;
-	background-color: ${Palette.surface['surface-overlay'].toString()};
-	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
 /** Seen for exactly as long as the same reaction rises over the call. */
@@ -242,9 +232,9 @@ const TileFrame = ({
 					{/* Keyed by the reaction, so a newer one starts over instead of taking up the fade of the one it replaces.
 					    Hidden from assistive technology: the call already announces each reaction as it arrives. */}
 					{reaction && (
-						<Box key={reaction.id} className={[indicatorBadgeStyles, reactionBadgeStyles]} aria-hidden>
+						<TileBadge key={reaction.id} className={reactionBadgeStyles} aria-hidden>
 							{reaction.emoji}
-						</Box>
+						</TileBadge>
 					)}
 				</Box>
 			)}
@@ -262,25 +252,27 @@ const TileFrame = ({
 					</Box>
 				)}
 				{pin?.pinned && (
-					<Box className={[indicatorBadgeStyles, 'rcx-tile-pin-mark']} title={t('Pinned')}>
-						<Icon name='pin-filled' size='x16' />
-						<VisuallyHidden>{t('Pinned')}</VisuallyHidden>
+					<Box className='rcx-tile-pin-mark'>
+						<TileBadge title={t('Pinned')}>
+							<Icon name='pin-filled' size='x16' />
+							<VisuallyHidden>{t('Pinned')}</VisuallyHidden>
+						</TileBadge>
 					</Box>
 				)}
 				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
-					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>
+					<TileBadge title={t('Microphone_muted')}>
 						<Icon name='mic-off' size='x16' />
 						<VisuallyHidden>{t('Microphone_muted')}</VisuallyHidden>
-					</Box>
+					</TileBadge>
 				) : (
 					<VoiceActivity level={rawLevel} size={18} badge />
 				)}
 				{held && (
-					<Box className={indicatorBadgeStyles} title={t('On_Hold')}>
+					<TileBadge title={t('On_Hold')}>
 						<Icon name='pause-shape-unfilled' size='x16' />
 						<VisuallyHidden>{t('On_Hold')}</VisuallyHidden>
-					</Box>
+					</TileBadge>
 				)}
 			</Box>
 		</Box>
