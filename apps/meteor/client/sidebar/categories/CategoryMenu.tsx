@@ -9,12 +9,7 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isActivityFilterable } from './hooks/useActivityFilter';
-import {
-	ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID,
-	getActivityFilterItemId,
-	useActivityFilterHidesUnreadsItem,
-	useActivityFilterItems,
-} from './hooks/useActivityFilterItems';
+import { getActivityFilterItemId, useActivityFilterItems } from './hooks/useActivityFilterItems';
 import { useArchiveRoomsItems } from './hooks/useArchiveRoomsItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMarkGroupReadItem } from './hooks/useMarkGroupReadItem';
@@ -32,7 +27,6 @@ type CategoryMenuProps = {
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
 	activityFilterHours?: number;
-	activityFilterHidesUnreads?: boolean;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
 	onMoveUp: () => void;
@@ -49,7 +43,6 @@ const CategoryMenu = ({
 	showUnreads,
 	keepUnreadsOnTop,
 	activityFilterHours,
-	activityFilterHidesUnreads = false,
 	canMoveUp,
 	canMoveDown,
 	onMoveUp,
@@ -160,14 +153,7 @@ const CategoryMenu = ({
 		onActivityFilterChange?.(hours);
 	});
 	const filterItems = useActivityFilterItems(groupKey, activityFilterHours, handleActivityFilterChoice);
-	const hidesUnreadsItem = useActivityFilterHidesUnreadsItem(groupKey, activityFilterHours, activityFilterHidesUnreads);
-	const activityFilterItems = isActivityFilterable(groupKey) ? [...filterItems, hidesUnreadsItem] : [];
-	// The submenu checks the window in use and, when on, the unreads toggle; a toggle with no window is disabled.
-	const activityFilterSelectedKeys = [
-		getActivityFilterItemId(activityFilterHours),
-		...(activityFilterHidesUnreads ? [ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID] : []),
-	];
-	const activityFilterDisabledKeys = hidesUnreadsItem.disabled ? [ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID] : [];
+	const activityFilterItems = isActivityFilterable(groupKey) ? filterItems : [];
 	const archiveItems = useArchiveRoomsItems({ groupKey, groupTitle, rooms, onOpen: close });
 
 	const allItems = [
@@ -225,21 +211,13 @@ const CategoryMenu = ({
 							<MenuSubmenuTrigger
 								key='activity-filter'
 								textValue={t('Filter')}
-								selectionMode='multiple'
-								selectedKeys={activityFilterSelectedKeys}
-								disabledKeys={activityFilterDisabledKeys}
+								selectionMode='single'
+								selectedKeys={[getActivityFilterItemId(activityFilterHours)]}
 							>
 								<MenuItem aria-label={t('Filter')}>
 									<GenericMenuItem id='activity-filter' icon='clock' content={t('Filter')} />
 								</MenuItem>
 								<MenuSection items={filterItems}>
-									{(item) => (
-										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
-											<GenericMenuItem {...item} />
-										</MenuItem>
-									)}
-								</MenuSection>
-								<MenuSection items={[hidesUnreadsItem]}>
 									{(item) => (
 										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
 											<GenericMenuItem {...item} />

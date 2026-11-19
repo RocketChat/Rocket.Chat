@@ -32,8 +32,6 @@ export type SidebarRoomListGroup = {
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
 	activityFilterHours?: number;
-	/** The activity filter hides the unread rooms too, instead of keeping them listed whatever their age. */
-	activityFilterHidesUnreads?: boolean;
 	/** Rooms the activity filter leaves out of the expanded group, counted whether or not they are being shown. */
 	inactiveCount: number;
 	showingInactive: boolean;
@@ -116,7 +114,7 @@ export const useRoomList = ({
 
 	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
-	const { getActivityFilterHours, getActivityFilterHidesUnreads, hasActivityFilters } = useActivityFilterHours();
+	const { getActivityFilterHours, hasActivityFilters } = useActivityFilterHours();
 	const now = useActivityFilterClock(hasActivityFilters);
 
 	const options = useSortQueryOptions();
@@ -201,22 +199,18 @@ export const useRoomList = ({
 				// A search by name lists every match, so while there is one the activity filter is lifted along
 				// with the collapsed state.
 				const activityFilterHours = text ? undefined : getActivityFilterHours(key);
-				const activityFilterHidesUnreads = text ? undefined : getActivityFilterHidesUnreads(key);
 				const showingInactive = activityFilterHours !== undefined && liftedFilters?.[key] === activityFilterHours;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
 				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
-				// The activity filter thins out read rooms; unread ones stay listed whatever their age, unless the group
-				// asks to hide them too, and the one currently open always stays. A room with no date at all is kept
+				// The activity filter thins out read rooms; unread ones stay listed whatever their age, and the one
+				// currently open always stays. A room with no date at all is kept
 				// rather than guessed at. The inactive rooms are counted even while they are shown or the group is
 				// collapsed, so the chip and the announcement can say how many the filter hides.
 				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
 				const isInactive = (room: SubscriptionWithRoom) =>
-					activeSince !== undefined &&
-					room.rid !== openedRoom &&
-					(activityFilterHidesUnreads || !isUnreadRoom(room)) &&
-					(getLastActivity(room) ?? Infinity) < activeSince;
+					activeSince !== undefined && room.rid !== openedRoom && !isUnreadRoom(room) && (getLastActivity(room) ?? Infinity) < activeSince;
 				const activeRooms: SubscriptionWithRoom[] = [];
 				let inactiveCount = 0;
 				for (const room of allRooms) {
@@ -248,7 +242,6 @@ export const useRoomList = ({
 					showUnreads,
 					keepUnreadsOnTop,
 					activityFilterHours,
-					activityFilterHidesUnreads,
 					inactiveCount,
 					showingInactive,
 					collapsed,
@@ -293,7 +286,6 @@ export const useRoomList = ({
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			getActivityFilterHours,
-			getActivityFilterHidesUnreads,
 			liftedFilters,
 			now,
 			openedRoom,

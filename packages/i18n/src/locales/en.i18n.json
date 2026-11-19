@@ -3352,7 +3352,6 @@
   "Hide_flextab": "Hide contextual bar by clicking outside of it",
   "Hide_Group_Warning": "“{{roomName}}” leaves the sidebar. The private channel comes back when you open it or a new message arrives.",
   "Hide_inactive": "Hide inactive",
-  "Hide_inactive_unreads": "Hide inactive unreads",
   "Hide_Livechat_Warning": "“{{roomName}}” leaves the sidebar. The chat comes back when you open it or a new message arrives.",
   "Hide_On_Workspace": "Hide on workspace",
   "Hide_Private_Warning": "“{{roomName}}” leaves the sidebar. The direct message comes back when you open it or a new message arrives.",
