@@ -4,7 +4,6 @@ import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-ty
 import { UserStatus } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';

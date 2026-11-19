@@ -2,8 +2,9 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const settingsWatch = sinon.stub();
@@ -15,7 +16,7 @@ const resolveUsersByIds = sinon.stub();
 const isAdminHidingAllowed = sinon.stub();
 const isUserHidingAllowed = sinon.stub();
 
-const { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } = proxyquire.noCallThru().load('./getFullUserData', {
+const { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } = loadWithMocks('./getFullUserData', {
 	'@rocket.chat/logger': {
 		Logger: class {
 			warn = loggerWarn;

@@ -2,7 +2,6 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
