@@ -412,6 +412,31 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.startSession).not.toHaveBeenCalled();
 		});
 
+		it('looks up an email key without a username', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsersDistinctServices: true }, 'github');
+			const data = { id: 'external-id', email: 'alice@example.com' };
+			await login(data);
+			expect(env.users.findOneByEmailAddress).toHaveBeenCalledWith('alice@example.com');
+			expect(env.originalAccountOperation).toHaveBeenCalledWith('github', data, {});
+		});
+
+		it('merges into the user found by an email key without a username', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsers: true, mergeUsersDistinctServices: true }, 'github');
+			env.users.findOneByEmailAddress.mockResolvedValue(makeUser({ username: undefined, name: undefined }));
+			await login({ id: 'external-id', email: 'alice@example.com' });
+			expect(env.updater.set).toHaveBeenCalledWith('services.github.id', 'external-id');
+			expect(env.users.updateFromUpdater).toHaveBeenCalled();
+			expect(env.session.commitTransaction).toHaveBeenCalled();
+		});
+
+		it('does not look up an email key when the identity has no email', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsersDistinctServices: true }, 'github');
+			await login({ id: 'external-id', username: 'alice' });
+			for (const method of lookupMethods) {
+				expect(env.users[method]).not.toHaveBeenCalled();
+			}
+		});
+
 		it('post-processes an existing user before the original account operation', async () => {
 			env.createStrategy({}, 'github');
 			const user = makeUser({
