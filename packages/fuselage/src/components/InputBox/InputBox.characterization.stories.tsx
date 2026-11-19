@@ -235,7 +235,7 @@ export const Addons: Story = {
 		const [start, end, plain] = [...canvasElement.querySelectorAll('input')];
 
 		await expect(start.parentElement?.tagName).toBe('LABEL');
-		await expect(start.parentElement).toHaveClass('rcx-input-box__wrapper', 'rcx-label', 'consumer-wrapper');
+		await expect(start.parentElement).toHaveClass('rcx-input-box__wrapper', 'consumer-wrapper');
 		await expect(start).not.toHaveClass('consumer-wrapper');
 		await expect(start).toHaveClass('rcx-input-box--undecorated');
 		await expect(start.previousElementSibling).toHaveClass('rcx-input-box__addon');
@@ -441,11 +441,11 @@ export const ClassContract: Story = {
 				'root > input[1]: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--small rcx-input-box--type-text',
 				'root > input[2]: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-text',
 				'root > input[3]: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-text',
-				'root > label[0]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper rcx-label',
+				'root > label[0]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper',
 				'root > label[0] > span: rcx-box rcx-box--full rcx-input-box__addon',
 				'root > label[0] > input: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-text rcx-input-box--undecorated',
 				'root > input[4]: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-email',
-				'root > label[1]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper rcx-label',
+				'root > label[1]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper',
 				'root > label[1] > input: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-password rcx-input-box--undecorated',
 				'root > label[1] > span: rcx-box rcx-box--full rcx-input-box__addon',
 				'root > label[1] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-eye-off',
@@ -453,11 +453,11 @@ export const ClassContract: Story = {
 				'root > input[6]: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-search',
 				'root > input[7]: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-url',
 				'root > textarea: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-textarea',
-				'root > label[2]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper rcx-label',
+				'root > label[2]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper',
 				'root > label[2] > input: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-date rcx-input-box--undecorated',
 				'root > label[2] > span: rcx-box rcx-box--full rcx-input-box__addon',
 				'root > label[2] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-calendar',
-				'root > label[3]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper rcx-label',
+				'root > label[3]: rcx-box rcx-box--animated rcx-box--full rcx-input-box__wrapper',
 				'root > label[3] > input: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-time rcx-input-box--undecorated',
 				'root > label[3] > span: rcx-box rcx-box--full rcx-input-box__addon',
 				'root > label[3] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-clock',

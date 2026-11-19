@@ -2,6 +2,7 @@ import type { LabelHTMLAttributes, OutputHTMLAttributes } from 'react';
 import type { SliderState } from 'react-stately';
 
 import { Label } from '../Label';
+import type { LabelProps } from '../Label';
 
 type SliderHeadProps = {
 	state: SliderState;
@@ -13,13 +14,13 @@ type SliderHeadProps = {
 };
 export const SliderHead = ({ state, labelProps, outputProps, label, showOutput = true, multiThumb }: SliderHeadProps) => {
 	const output = (
-		<Label {...outputProps}>
+		<Label htmlFor={outputProps.htmlFor} aria-live={outputProps['aria-live']}>
 			{multiThumb ? (
-				<Label {...outputProps} data-testid='slider-output'>
+				<Label htmlFor={outputProps.htmlFor} aria-live={outputProps['aria-live']} data-testid='slider-output'>
 					{`${state.getThumbValueLabel(0)} - ${state.getThumbValueLabel(1)}`}
 				</Label>
 			) : (
-				<Label {...outputProps} data-testid='slider-output'>
+				<Label htmlFor={outputProps.htmlFor} aria-live={outputProps['aria-live']} data-testid='slider-output'>
 					{state.getThumbValueLabel(0)}
 				</Label>
 			)}
@@ -29,7 +30,9 @@ export const SliderHead = ({ state, labelProps, outputProps, label, showOutput =
 		<>
 			{label ? (
 				<div className={`rcx-slider__head rcx-slider__head--${state.orientation}`}>
-					<Label {...labelProps}>{label}</Label>
+					<Label id={labelProps.id} htmlFor={labelProps.htmlFor} onClick={labelProps.onClick as LabelProps['onClick']}>
+						{label}
+					</Label>
 					{showOutput && output}
 				</div>
 			) : (
