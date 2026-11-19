@@ -1,0 +1,16 @@
+apps/meteor/server/lib/auth/accountEmails.ts
+  h_4c386397e672f4 93,109,127
+apps/meteor/server/lib/auth/startup.js
+  h_4c386397e672f4 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9aae45c208b26a6b8b4a9e869154affca101d1c4",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
