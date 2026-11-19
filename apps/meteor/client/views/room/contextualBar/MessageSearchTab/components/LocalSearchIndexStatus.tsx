@@ -1,5 +1,5 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
-import { Box, Callout, IconButton, Text } from '@rocket.chat/fuselage';
+import { Callout, IconButton, Text } from '@rocket.chat/fuselage';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import type { SearchIndexProgress } from '../../../../../lib/e2eeSearch/searchIn
 import { useLocalSearchIndexEncryptedAtRest } from '../hooks/useLocalSearchIndexEncryptedAtRest';
 import { useLocalSearchIndexProgress } from '../hooks/useLocalSearchIndexProgress';
 import { useLocalSearchIndexRoomCoverage } from '../hooks/useLocalSearchIndexRoomCoverage';
+import LocalSearchIndexNoteHeader from '../layout/LocalSearchIndexNoteHeader';
 import LocalSearchIndexStatusPanel from '../layout/LocalSearchIndexStatusPanel';
 
 const isIndexing = (progress: SearchIndexProgress | undefined): progress is SearchIndexProgress =>
@@ -41,11 +42,9 @@ const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) =
 		<LocalSearchIndexStatusPanel>
 			{roomIndexed && (
 				<Callout type='success' role='status' data-qa='local-search-room-indexed'>
-					{/* Not the title and actions props: the title takes only text, and narrow callouts put actions on a new row. */}
-					<Box display='flex' alignItems='center' justifyContent='space-between'>
-						<Box fontScale='p2b'>{t('E2E_Local_Search_Room_Indexed_Title')}</Box>
-						{/* Room for the focus ring of the button: the callout clips what overflows it. */}
-						<Box padding={2}>
+					<LocalSearchIndexNoteHeader
+						title={t('E2E_Local_Search_Room_Indexed_Title')}
+						action={
 							<IconButton
 								icon={detailsShown ? 'chevron-up' : 'chevron-down'}
 								size='mini'
@@ -54,8 +53,8 @@ const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) =
 								aria-controls={detailsId}
 								onClick={() => setDetailsShown((shown) => !shown)}
 							/>
-						</Box>
-					</Box>
+						}
+					/>
 					{detailsShown && (
 						<Text is='p' id={detailsId}>
 							{t('E2E_Local_Search_Room_Indexed_Description')}
