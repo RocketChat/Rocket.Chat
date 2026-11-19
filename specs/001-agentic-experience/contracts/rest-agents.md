@@ -21,7 +21,7 @@ An agent reaches every endpoint below only through an MCP tool. The examples sho
 
 ## Human endpoints
 
-### `POST agents.register` (FR-007 to FR-014)
+### `POST agents.register` (FR-007 to FR-014, FR-056)
 
 Permission: `register-agents`. The caller must not be an agent. The MCP server must be enabled and licensed (D-18).
 
@@ -49,6 +49,8 @@ Response `200`:
 Response `400` with `error-agent-capabilities-refused`. `details.refused` lists each refused capability with a reason: `unknown-tool`, `not-allowed-for-agents`, `owner-lacks-permission`.
 
 The request has no owner field. The owner is always the caller (FR-009).
+
+The caller authenticates with a PAT (RP-1, RP-7) or an OAuth access token (RP-2). With an OAuth token, the endpoint deletes every access token and refresh token of that client for the caller after it creates the agent (FR-056). A later call with the token gets `401`. A refused registration keeps the token. A PAT is never revoked. The deletes go through `OAuthAccessTokens.deleteByClientIdAndUserId` and `OAuthRefreshTokens.deleteByClientIdAndUserId`, two new model methods.
 
 ### `GET agents.info?agentId=` (FR-005)
 

@@ -31,7 +31,7 @@ Phase 0 output for [plan.md](plan.md). Each entry gives the decision, the ration
 
 - **Decision**: The credential is a personal access token on the agent user, issued by the server at registration. Rotation removes every login token of the agent and adds a new one. Revocation removes every login token.
 - **Rationale**: The MCP server already accepts a PAT through `X-User-Id` and `X-Auth-Token`, and it already refuses a session token on POST (`ee/server/api/mcp/index.ts:~92-104`). FR-037 needs no new auth method. One token per agent meets FR-052.
-- **Alternatives**: An OAuth token. Rejected for this iteration: OAuth tokens resolve to the approving human and carry no scope (`docs/features/oauth2-server.md`).
+- **Alternatives**: An OAuth token as the agent credential. Rejected: OAuth tokens resolve to the approving human and carry no scope (`docs/features/oauth2-server.md`). RP-2 uses an OAuth token only to authorize the registration (D-8).
 
 ## D-3: Effective scope enforcement (FR-015 to FR-017, FR-038, FR-039, FR-043)
 
@@ -82,11 +82,20 @@ Phase 0 output for [plan.md](plan.md). Each entry gives the decision, the ration
 |------|----------|--------|
 | RP-1 MCP tool | Ships | The baseline. It loops back to `agents.register`. |
 | RP-7 REST | Ships | It is the same `agents.register` endpoint, so it costs nothing extra. |
-| RP-2 OAuth consent | Deferred (SH-005) | OAuth tokens resolve to the approving human and carry no scope. The consent must mint a new user and mark the client. Medium size. |
+| RP-2 OAuth consent | Ships | The MCP server already accepts an OAuth Bearer token, and the loopback passes it to `agents.register`. The consenting human is the caller, so FR-009 and FR-013 hold with no change. Small size. |
 | RP-3 Registration token | Deferred (SH-005) | A new model and two endpoints. It solves the headless case, which RP-1 covers with a one-time call by the developer. |
 | RP-4 Pending self-registration | Out of scope this iteration (SH-005) | It needs a public, unauthenticated endpoint with abuse limits. |
 | RP-5 Admin form | Out of scope this iteration (SH-005) | An admin holds `register-agents` and can use RP-1 or RP-7. A form conflicts with the "no manual setup" goal. |
 | RP-6 Apps Engine | Deferred (SH-005) | The users bridge creates `bot` and `app` users but has no credential flow. |
+
+RP-2 flow:
+
+1. The MCP client registers through `POST /oauth/register` (dynamic client registration), or uses an OAuth app that an admin creates.
+2. A human signs in and approves the client on the existing consent page. The client exchanges the code for an access token.
+3. The client calls `post_agents_register` with `Authorization: Bearer <token>`. The human is the caller and the owner.
+4. After it creates the agent, `agents.register` deletes every access token and refresh token of that client for that human (FR-056). The token has no scope, so the client would otherwise keep full access as the human next to the agent PAT. A refused registration keeps the token, so the client can retry.
+
+The consent page names the client and warns of full access. It does not list the capabilities (SH-005).
 
 The RP-1 open question: a headless agent has no human session. The developer runs the registration once with their own PAT, and the harness stores the agent credential. The quickstart shows this.
 
@@ -150,7 +159,7 @@ The RP-1 open question: a headless agent has no human session. The developer run
   - The owner's permissions cap the scope.
 - Two gaps remain, with no spec change in this iteration:
   - The scope cannot differ per room, for example read-only in one room. That would need a capability list per allow-list entry.
-  - The OAuth path (RP-2) would need token scopes. It is deferred.
+  - The OAuth path (RP-2) has no token scope. The registration revokes the OAuth token instead (D-8).
 
 ## D-11: Owner loss
 
