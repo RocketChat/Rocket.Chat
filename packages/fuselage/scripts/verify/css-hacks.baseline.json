@@ -1,13 +1,4 @@
 {
-	"Accordion/Accordion.styles.scss": {
-		"rules": 10,
-		"nested": 5,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"AudioPlayer/AudioPlayer.styles.scss": {
 		"rules": 5,
 		"nested": 4,
