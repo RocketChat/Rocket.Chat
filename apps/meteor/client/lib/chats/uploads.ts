@@ -94,6 +94,30 @@ const writePersistedUploads = (storageKey: string, entries: PersistedUpload[], r
 	persistedUploadsEvents.emit(storageKey, { removed });
 };
 
+// Only the other tabs hear about a write to localStorage, and they hear it as a DOM storage event carrying the value
+// before and after it, which is what tells an upload the other tab discarded apart from one it kept.
+const parsePersistedUploadIds = (value: string | null): PersistedUpload['id'][] => {
+	try {
+		const persisted: unknown = value ? JSON.parse(value) : [];
+		return Array.isArray(persisted) ? persisted.map((entry) => entry?.id).filter((id): id is string => typeof id === 'string') : [];
+	} catch {
+		return [];
+	}
+};
+
+// An event without a key is the whole storage being cleared, which happens on logout: the session goes with it, so
+// there is no composer left to tell.
+const handleStorageEvent = (event: StorageEvent): void => {
+	if (event.storageArea !== localStorage || !event.key?.startsWith(STORAGE_KEY_PREFIX)) {
+		return;
+	}
+
+	const kept = parsePersistedUploadIds(event.newValue);
+	persistedUploadsEvents.emit(event.key, { removed: parsePersistedUploadIds(event.oldValue).filter((id) => !kept.includes(id)) });
+};
+
+window.addEventListener('storage', handleStorageEvent);
+
 // Stands in for a file whose bytes are already on the server: it reports the size the user picked, so the chip and the
 // sent message still show it.
 const createPlaceholderFile = (name: string, type: string, size: number): File => {

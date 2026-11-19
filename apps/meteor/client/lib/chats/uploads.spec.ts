@@ -387,6 +387,83 @@ describe('UploadsStore persistence', () => {
 	});
 });
 
+describe('UploadsStore across tabs', () => {
+	// Another tab writing to the same key: the write itself is already visible here, the event is what announces it.
+	const writeFromAnotherTab = (entries: unknown[], storageKey = STORAGE_KEY) => {
+		const oldValue = localStorage.getItem(storageKey);
+		const newValue = entries.length > 0 ? JSON.stringify(entries) : null;
+
+		if (newValue === null) {
+			localStorage.removeItem(storageKey);
+		} else {
+			localStorage.setItem(storageKey, newValue);
+		}
+
+		window.dispatchEvent(new StorageEvent('storage', { key: storageKey, oldValue, newValue, storageArea: localStorage }));
+	};
+
+	const persistedUpload = (id: string) => ({
+		id,
+		fileName: 'photo.png',
+		fileType: 'image/png',
+		fileSize: 6,
+		url: `/file-upload/${id}/file`,
+		expiresAt: Date.now() + DAY,
+	});
+
+	it('shows an upload another tab kept for the same room', () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+
+		writeFromAnotherTab([persistedUpload('file-1')]);
+
+		expect(store.get()).toHaveLength(1);
+		expect(store.get()[0]).toMatchObject({ id: 'file-1', restored: true });
+	});
+
+	it('drops an upload another tab has sent or discarded', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		writeFromAnotherTab([]);
+
+		expect(store.get()).toHaveLength(0);
+	});
+
+	it('keeps the uploads another tab did not touch', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+		await uploadFile(store, 'file-2');
+
+		writeFromAnotherTab([persistedUpload('file-2')]);
+
+		expect(store.get().map(({ id }) => id)).toEqual(['file-2']);
+	});
+
+	it('keeps an upload of its own that is still in flight', () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		void store.send(createFile());
+
+		writeFromAnotherTab([]);
+
+		expect(store.get()).toHaveLength(1);
+		store.clear();
+	});
+
+	it('ignores what another tab keeps for another room', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		writeFromAnotherTab([], 'composer_uploads_other-room');
+
+		expect(store.get().map(({ id }) => id)).toEqual(['file-1']);
+	});
+});
+
 describe('UploadsStore unload warning', () => {
 	const unloadIsBlocked = () => {
 		const event = new Event('beforeunload', { cancelable: true });
