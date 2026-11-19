@@ -44,14 +44,17 @@ const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) =
 					{/* Not the title and actions props: the title takes only text, and narrow callouts put actions on a new row. */}
 					<Box display='flex' alignItems='center' justifyContent='space-between'>
 						<Box fontScale='p2b'>{t('E2E_Local_Search_Room_Indexed_Title')}</Box>
-						<IconButton
-							icon={detailsShown ? 'chevron-up' : 'chevron-down'}
-							size='mini'
-							title={detailsShown ? t('Collapse') : t('Expand')}
-							aria-expanded={detailsShown}
-							aria-controls={detailsId}
-							onClick={() => setDetailsShown((shown) => !shown)}
-						/>
+						{/* Room for the focus ring of the button: the callout clips what overflows it. */}
+						<Box padding={2}>
+							<IconButton
+								icon={detailsShown ? 'chevron-up' : 'chevron-down'}
+								size='mini'
+								title={detailsShown ? t('Collapse') : t('Expand')}
+								aria-expanded={detailsShown}
+								aria-controls={detailsId}
+								onClick={() => setDetailsShown((shown) => !shown)}
+							/>
+						</Box>
 					</Box>
 					{detailsShown && (
 						<Text is='p' id={detailsId}>
