@@ -1,12 +1,17 @@
+import { Stack } from '@rocket.chat/fuselage';
+
 import PrivateEmptyStateDefault from './PrivateEmptyStateDefault';
 import PrivateEmptyStateUpgrade from './PrivateEmptyStateUpgrade';
-import AppsPageEmptyState from './layout/AppsPageEmptyState';
 import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 
 const PrivateEmptyState = () => {
 	const privateAppsEnabled = usePrivateAppsEnabled();
 
-	return <AppsPageEmptyState>{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}</AppsPageEmptyState>;
+	return (
+		<Stack grow justify='center'>
+			{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}
+		</Stack>
+	);
 };
 
 export default PrivateEmptyState;

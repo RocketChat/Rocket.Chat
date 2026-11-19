@@ -7,10 +7,9 @@ import {
 	StatesSuggestionListItem,
 	StatesSuggestionText,
 	StatesTitle,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
-
-import AppsPageEmptyState from './layout/AppsPageEmptyState';
 
 export type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
 
@@ -21,7 +20,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
@@ -40,7 +39,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 					</StatesSuggestionList>
 				</StatesSuggestion>
 			</States>
-		</AppsPageEmptyState>
+		</Stack>
 	);
 };
 

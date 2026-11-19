@@ -1,13 +1,11 @@
-import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Stack } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
-
-import AppsPageEmptyState from './layout/AppsPageEmptyState';
 
 const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }) => {
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon variation='danger' name='circle-exclamation' />
 				<StatesTitle>{t('Connection_error')}</StatesTitle>
@@ -18,7 +16,7 @@ const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }) 
 					</StatesAction>
 				</StatesActions>
 			</States>
-		</AppsPageEmptyState>
+		</Stack>
 	);
 };
 

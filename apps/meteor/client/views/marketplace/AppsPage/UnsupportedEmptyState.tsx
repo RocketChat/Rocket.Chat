@@ -1,10 +1,9 @@
-import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, Button } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, Button, Stack } from '@rocket.chat/fuselage';
 import { links } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import UpdateRocketChatButton from '../components/UpdateRocketChatButton';
-import AppsPageEmptyState from './layout/AppsPageEmptyState';
 
 const UnsupportedEmptyState = () => {
 	const isAdmin = usePermission('manage-apps');
@@ -14,7 +13,7 @@ const UnsupportedEmptyState = () => {
 	const description = isAdmin ? t('Update_to_access_marketplace_description') : t('Marketplace_unavailable_description');
 
 	return (
-		<AppsPageEmptyState>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon name='warning' />
 				<StatesTitle>{title}</StatesTitle>
@@ -26,7 +25,7 @@ const UnsupportedEmptyState = () => {
 					{isAdmin && <UpdateRocketChatButton />}
 				</StatesActions>
 			</States>
-		</AppsPageEmptyState>
+		</Stack>
 	);
 };
 

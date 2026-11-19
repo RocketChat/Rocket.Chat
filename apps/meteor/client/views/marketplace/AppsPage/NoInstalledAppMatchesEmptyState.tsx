@@ -7,10 +7,9 @@ import {
 	StatesSuggestionText,
 	StatesActions,
 	StatesAction,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
-
-import AppsPageEmptyState from './layout/AppsPageEmptyState';
 
 export type NoInstalledAppMatchesEmptyStateProps = {
 	shouldShowSearchText: boolean;
@@ -22,7 +21,7 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 	const { t } = useTranslation();
 
 	return (
-		<AppsPageEmptyState>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
@@ -38,7 +37,7 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 					<StatesAction onClick={onButtonClick}>{t('Search_on_marketplace')}</StatesAction>
 				</StatesActions>
 			</States>
-		</AppsPageEmptyState>
+		</Stack>
 	);
 };
 
