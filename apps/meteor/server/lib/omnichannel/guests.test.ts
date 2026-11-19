@@ -13,12 +13,14 @@ const modelsMock = {
 	Messages: { removeByRoomIds: sinon.stub() },
 	ReadReceipts: { removeByRoomIds: sinon.stub() },
 	ReadReceiptsArchive: { removeByRoomIds: sinon.stub() },
-	Subscriptions: { removeByRoomIds: sinon.stub() },
+	Subscriptions: { removeByRoomId: sinon.stub() },
 	LivechatContacts: {},
+	Uploads: { findByRoomIds: sinon.stub() },
 	Users: {},
 };
 
-const fileUploadMock = { removeFilesByRoomId: sinon.stub() };
+const deleteUploadMock = sinon.stub();
+const fileUploadMock = { removeFilesByRoomId: sinon.stub(), getStore: sinon.stub().returns({ deleteById: deleteUploadMock }) };
 const notifyOnSubscriptionChangedMock = sinon.stub();
 const notifyOnLivechatInquiryChangedMock = sinon.stub();
 
@@ -43,11 +45,13 @@ describe('removeGuest', () => {
 	let rooms: { _id: string }[];
 	let inquiries: { _id: string }[];
 	let subscriptions: { _id: string; rid: string }[];
+	let remainingUploads: { _id: string }[];
 
 	beforeEach(() => {
 		rooms = [];
 		inquiries = [];
 		subscriptions = [];
+		remainingUploads = [];
 
 		modelsMock.LivechatVisitors.disableById.reset();
 		modelsMock.LivechatVisitors.disableById.resolves({ _id: 'visitor-id' });
@@ -65,15 +69,22 @@ describe('removeGuest', () => {
 		modelsMock.ReadReceipts.removeByRoomIds.resolves();
 		modelsMock.ReadReceiptsArchive.removeByRoomIds.reset();
 		modelsMock.ReadReceiptsArchive.removeByRoomIds.resolves();
-		modelsMock.Subscriptions.removeByRoomIds.reset();
-		modelsMock.Subscriptions.removeByRoomIds.callsFake(async (_roomIds, options) => {
-			for (const subscription of subscriptions) {
+		modelsMock.Subscriptions.removeByRoomId.reset();
+		modelsMock.Subscriptions.removeByRoomId.callsFake(async (roomId, options) => {
+			const roomSubscriptions = subscriptions.filter(({ rid }) => rid === roomId);
+			for (const subscription of roomSubscriptions) {
 				options.onTrash(subscription as unknown as ISubscription);
 			}
-			return { acknowledged: true, deletedCount: subscriptions.length };
+			return { acknowledged: true, deletedCount: roomSubscriptions.length };
 		});
 		fileUploadMock.removeFilesByRoomId.reset();
 		fileUploadMock.removeFilesByRoomId.resolves();
+		modelsMock.Uploads.findByRoomIds.reset();
+		modelsMock.Uploads.findByRoomIds.callsFake(async function* () {
+			yield* remainingUploads;
+		});
+		deleteUploadMock.reset();
+		deleteUploadMock.resolves();
 		notifyOnSubscriptionChangedMock.reset();
 		notifyOnLivechatInquiryChangedMock.reset();
 	});
@@ -81,11 +92,12 @@ describe('removeGuest', () => {
 	it('skips room cleanup when the visitor has no rooms', async () => {
 		await removeGuest({ _id: 'visitor-id' });
 
-		expect(modelsMock.Subscriptions.removeByRoomIds.notCalled).to.be.true;
+		expect(modelsMock.Subscriptions.removeByRoomId.notCalled).to.be.true;
 		expect(modelsMock.Messages.removeByRoomIds.notCalled).to.be.true;
 		expect(modelsMock.ReadReceipts.removeByRoomIds.notCalled).to.be.true;
 		expect(modelsMock.ReadReceiptsArchive.removeByRoomIds.notCalled).to.be.true;
 		expect(fileUploadMock.removeFilesByRoomId.notCalled).to.be.true;
+		expect(modelsMock.Uploads.findByRoomIds.notCalled).to.be.true;
 		expect(modelsMock.LivechatRooms.removeByVisitorId.calledOnceWithExactly('visitor-id')).to.be.true;
 		expect(modelsMock.LivechatVisitors.disableById.calledOnceWithExactly('visitor-id')).to.be.true;
 	});
@@ -98,10 +110,13 @@ describe('removeGuest', () => {
 		await removeGuest({ _id: 'visitor-id' });
 
 		expect(fileUploadMock.removeFilesByRoomId.calledOnceWithExactly('room-one')).to.be.true;
-		expect(modelsMock.Subscriptions.removeByRoomIds.calledOnceWithExactly(['room-one'], sinon.match.object)).to.be.true;
+		expect(modelsMock.Subscriptions.removeByRoomId.calledOnceWithExactly('room-one', sinon.match.object)).to.be.true;
+		expect(modelsMock.Subscriptions.removeByRoomId.calledAfter(fileUploadMock.removeFilesByRoomId)).to.be.true;
 		expect(modelsMock.Messages.removeByRoomIds.calledOnceWithExactly(['room-one'])).to.be.true;
 		expect(modelsMock.ReadReceipts.removeByRoomIds.calledOnceWithExactly(['room-one'])).to.be.true;
 		expect(modelsMock.ReadReceiptsArchive.removeByRoomIds.calledOnceWithExactly(['room-one'])).to.be.true;
+		expect(modelsMock.Uploads.findByRoomIds.calledOnceWithExactly(['room-one'], { projection: { _id: 1 } })).to.be.true;
+		expect(deleteUploadMock.notCalled).to.be.true;
 		expect(modelsMock.LivechatInquiry.removeByIds.calledOnceWithExactly(['inquiry-one'])).to.be.true;
 		expect(notifyOnLivechatInquiryChangedMock.calledOnceWithExactly(inquiries, 'removed')).to.be.true;
 		expect(modelsMock.LivechatVisitors.disableById.calledOnceWithExactly('visitor-id')).to.be.true;
@@ -118,8 +133,7 @@ describe('removeGuest', () => {
 		await removeGuest({ _id: 'visitor-id' });
 
 		const roomIds = ['room-one', 'room-two'];
-		expect(modelsMock.Subscriptions.removeByRoomIds.calledOnce).to.be.true;
-		expect(modelsMock.Subscriptions.removeByRoomIds.firstCall.args[0]).to.deep.equal(roomIds);
+		expect(modelsMock.Subscriptions.removeByRoomId.getCalls().map(({ args }) => args[0])).to.deep.equal(roomIds);
 		expect(modelsMock.Messages.removeByRoomIds.calledOnceWithExactly(roomIds)).to.be.true;
 		expect(modelsMock.ReadReceipts.removeByRoomIds.calledOnceWithExactly(roomIds)).to.be.true;
 		expect(modelsMock.ReadReceiptsArchive.removeByRoomIds.calledOnceWithExactly(roomIds)).to.be.true;
@@ -159,6 +173,47 @@ describe('removeGuest', () => {
 		await cleanup;
 
 		expect(modelsMock.Messages.removeByRoomIds.calledOnceWithExactly(['room-one'])).to.be.true;
+		expect(fileUploadMock.removeFilesByRoomId.calledOnceWithExactly('room-one')).to.be.true;
+	});
+
+	it('removes uploads that finished during cleanup once the rooms are gone', async () => {
+		rooms = [{ _id: 'room-one' }, { _id: 'room-two' }];
+		remainingUploads = [{ _id: 'late-upload-one' }, { _id: 'late-upload-two' }];
+
+		await removeGuest({ _id: 'visitor-id' });
+
+		expect(modelsMock.Uploads.findByRoomIds.calledOnceWithExactly(['room-one', 'room-two'], { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.Uploads.findByRoomIds.calledAfter(modelsMock.LivechatRooms.removeByVisitorId)).to.be.true;
+		expect(deleteUploadMock.getCalls().map(({ args }) => args[0])).to.deep.equal(['late-upload-one', 'late-upload-two']);
+		expect(modelsMock.LivechatVisitors.disableById.calledAfter(deleteUploadMock)).to.be.true;
+	});
+
+	it('reports a failed final upload sweep and leaves the visitor enabled', async () => {
+		rooms = [{ _id: 'room-one' }];
+		remainingUploads = [{ _id: 'late-upload' }];
+		const sweepError = new Error('upload store unavailable');
+		deleteUploadMock.rejects(sweepError);
+
+		await expect(removeGuest({ _id: 'visitor-id' })).to.be.rejectedWith(sweepError.message);
+
+		expect(deleteUploadMock.calledOnceWithExactly('late-upload')).to.be.true;
+		expect(modelsMock.LivechatInquiry.findByVisitorIds.notCalled).to.be.true;
+		expect(modelsMock.LivechatVisitors.disableById.notCalled).to.be.true;
+	});
+
+	it('completes the cleanup on retry after an earlier failure', async () => {
+		rooms = [{ _id: 'room-one' }];
+		modelsMock.Messages.removeByRoomIds.onFirstCall().rejects(new Error('message cleanup failed'));
+
+		await expect(removeGuest({ _id: 'visitor-id' })).to.be.rejectedWith('message cleanup failed');
+		expect(modelsMock.LivechatRooms.removeByVisitorId.notCalled).to.be.true;
+		expect(modelsMock.LivechatVisitors.disableById.notCalled).to.be.true;
+
+		await removeGuest({ _id: 'visitor-id' });
+
+		expect(modelsMock.Messages.removeByRoomIds.callCount).to.equal(2);
+		expect(modelsMock.LivechatRooms.removeByVisitorId.calledOnceWithExactly('visitor-id')).to.be.true;
+		expect(modelsMock.LivechatVisitors.disableById.calledOnceWithExactly('visitor-id')).to.be.true;
 	});
 
 	it('limits concurrent file cleanup and attempts all rooms', async () => {
@@ -195,8 +250,7 @@ describe('removeGuest', () => {
 		await expect(removeGuest({ _id: 'visitor-id' })).to.be.rejectedWith(fileError.message);
 
 		expect(fileUploadMock.removeFilesByRoomId.callCount).to.equal(3);
-		expect(modelsMock.Subscriptions.removeByRoomIds.calledOnce).to.be.true;
-		expect(modelsMock.Subscriptions.removeByRoomIds.firstCall.args[0]).to.deep.equal(['room-one', 'room-three']);
+		expect(modelsMock.Subscriptions.removeByRoomId.getCalls().map(({ args }) => args[0])).to.deep.equal(['room-one', 'room-three']);
 		expect(modelsMock.Messages.removeByRoomIds.calledOnceWithExactly(['room-one', 'room-three'])).to.be.true;
 		expect(modelsMock.ReadReceipts.removeByRoomIds.calledOnceWithExactly(['room-one', 'room-three'])).to.be.true;
 		expect(modelsMock.ReadReceiptsArchive.removeByRoomIds.calledOnceWithExactly(['room-one', 'room-three'])).to.be.true;
@@ -208,7 +262,7 @@ describe('removeGuest', () => {
 	it('does not continue to later cleanup stages or disable the visitor when subscription cleanup fails', async () => {
 		rooms = [{ _id: 'room-one' }];
 		const subscriptionError = new Error('subscription cleanup failed');
-		modelsMock.Subscriptions.removeByRoomIds.rejects(subscriptionError);
+		modelsMock.Subscriptions.removeByRoomId.rejects(subscriptionError);
 
 		await expect(removeGuest({ _id: 'visitor-id' })).to.be.rejectedWith(subscriptionError.message);
 
@@ -224,9 +278,49 @@ describe('removeGuest', () => {
 	it('waits for every batched history deletion to settle and leaves the visitor enabled on failure', async () => {
 		rooms = [{ _id: 'room-one' }];
 		const messageError = new Error('message cleanup failed');
+		let markReceiptDeletionStarted!: () => void;
+		let releaseReceiptDeletion!: () => void;
+		const receiptDeletionStarted = new Promise<void>((resolve) => {
+			markReceiptDeletionStarted = resolve;
+		});
+		const receiptDeletionGate = new Promise<void>((resolve) => {
+			releaseReceiptDeletion = resolve;
+		});
 		modelsMock.Messages.removeByRoomIds.rejects(messageError);
+		modelsMock.ReadReceipts.removeByRoomIds.callsFake(async () => {
+			markReceiptDeletionStarted();
+			await receiptDeletionGate;
+		});
 
-		await expect(removeGuest({ _id: 'visitor-id' })).to.be.rejectedWith(messageError.message);
+		let cleanupSettled = false;
+		const cleanup = removeGuest({ _id: 'visitor-id' }).then(
+			() => {
+				cleanupSettled = true;
+				return { status: 'fulfilled' as const };
+			},
+			(error) => {
+				cleanupSettled = true;
+				return { status: 'rejected' as const, error };
+			},
+		);
+
+		try {
+			await receiptDeletionStarted;
+			await new Promise<void>((resolve) => setImmediate(resolve));
+			expect(cleanupSettled).to.be.false;
+			expect(modelsMock.Messages.removeByRoomIds.calledOnce).to.be.true;
+			expect(modelsMock.ReadReceiptsArchive.removeByRoomIds.calledOnce).to.be.true;
+			expect(modelsMock.LivechatRooms.removeByVisitorId.notCalled).to.be.true;
+			expect(modelsMock.LivechatVisitors.disableById.notCalled).to.be.true;
+		} finally {
+			releaseReceiptDeletion();
+		}
+
+		const result = await cleanup;
+		expect(result.status).to.equal('rejected');
+		if (result.status === 'rejected') {
+			expect(result.error).to.equal(messageError);
+		}
 
 		expect(modelsMock.ReadReceipts.removeByRoomIds.calledOnce).to.be.true;
 		expect(modelsMock.ReadReceiptsArchive.removeByRoomIds.calledOnce).to.be.true;

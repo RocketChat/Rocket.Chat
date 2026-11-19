@@ -159,6 +159,11 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 			try {
 				const uploadedFile = await getUploadFile(details, smsUrl);
+				// The guest's history may have been removed while the media was downloading.
+				if (rid && !(await LivechatRooms.findOneById(rid, { projection: { _id: 1 } }))) {
+					await FileUpload.getStore('Uploads').deleteById(uploadedFile._id);
+					throw new Error('error-invalid-room');
+				}
 				file = { _id: uploadedFile._id, name: uploadedFile.name || 'file', type: uploadedFile.type };
 				const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || 'file')}`);
 
