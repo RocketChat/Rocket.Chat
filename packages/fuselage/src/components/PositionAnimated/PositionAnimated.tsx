@@ -11,6 +11,8 @@ export type PositionAnimatedProps = Omit<ElementProps<HTMLElement>, 'children'> 
 	margin?: number;
 	placement?: UsePositionOptions['placement'];
 	preventScroll?: boolean;
+	/** Gives the element the width of its anchor, and keeps it as the anchor resizes. */
+	width?: 'anchor';
 	visible?: 'hidden' | 'visible' | 'hiding' | 'unhiding';
 };
 
