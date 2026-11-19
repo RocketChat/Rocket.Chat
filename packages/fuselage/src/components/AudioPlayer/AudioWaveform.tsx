@@ -9,23 +9,16 @@ const MIN_BAR_GAP = 1;
 
 /**
  * Picks how many bars to draw and the whole-pixel gap between them, so every gap
- * is equal: the narrowest gap that leaves less than one more bar of `width` unused.
+ * is equal: as many bars as fit at the narrowest gap, spread as wide as `width` allows.
  */
 export const layoutBars = (width: number, maxBars: number): { count: number; gap: number } => {
-	let best: { count: number; gap: number; slack: number } | undefined;
+	const count = Math.max(1, Math.min(maxBars, Math.floor((width + MIN_BAR_GAP) / (BAR_WIDTH + MIN_BAR_GAP))));
 
-	for (let gap = MIN_BAR_GAP; ; gap++) {
-		const count = Math.max(1, Math.min(maxBars, Math.floor((width + gap) / (BAR_WIDTH + gap))));
-		const slack = width - count * BAR_WIDTH - (count - 1) * gap;
-
-		if (!best || (slack >= 0 && slack < best.slack)) {
-			best = { count, gap, slack };
-		}
-
-		if (slack < BAR_WIDTH + MIN_BAR_GAP || count < 2) {
-			return { count: best.count, gap: best.gap };
-		}
+	if (count < 2) {
+		return { count, gap: MIN_BAR_GAP };
 	}
+
+	return { count, gap: Math.max(MIN_BAR_GAP, Math.floor((width - count * BAR_WIDTH) / (count - 1))) };
 };
 
 /** Merges neighbouring peaks, keeping the loudest, so the waveform fits in `count` bars. */

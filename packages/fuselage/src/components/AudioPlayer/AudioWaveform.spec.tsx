@@ -17,6 +17,15 @@ describe('layoutBars', () => {
 		expect(400 - used(layout)).toBeLessThan(3 + layout.gap);
 	});
 
+	it('keeps every peak that fits at the narrowest gap', () => {
+		expect(layoutBars(368, 10)).toEqual({ count: 10, gap: 37 });
+		for (const maxBars of [10, 40, 64]) {
+			for (let width = 3; width <= 400; width++) {
+				expect(layoutBars(width, maxBars).count).toBe(Math.min(maxBars, Math.floor((width + 1) / 4)));
+			}
+		}
+	});
+
 	it('never overflows the width', () => {
 		for (let width = 3; width <= 400; width++) {
 			expect(used(layoutBars(width, 40))).toBeLessThanOrEqual(width);
