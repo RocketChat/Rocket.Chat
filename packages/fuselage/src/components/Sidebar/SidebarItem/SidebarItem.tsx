@@ -1,7 +1,7 @@
-import type { AllHTMLAttributes, ElementType } from 'react';
-
+import { SidebarItemCol } from './SidebarItemCol';
 import { cx } from '../../../helpers/composeClassNames';
-import { Item, type ItemProps } from '../../Item';
+import { Item, type ItemAttributes, type ItemProps } from '../../Item';
+import { holdsLines } from '../../Item/Item';
 
 export type SidebarItemProps = {
 	selected?: boolean;
@@ -22,9 +22,9 @@ export type SidebarItemProps = {
 	 * The row element. The default anchor makes the whole row a link.
 	 * For a row with menus or buttons, pass `div` and put a `SidebarItemLink` inside `SidebarItemTitle`.
 	 */
-	is?: ElementType;
-} & Pick<ItemProps, 'dragging' | 'dropIndicator' | 'dropDisabled'> &
-	AllHTMLAttributes<HTMLAnchorElement>;
+	is?: ItemProps['is'];
+} & Pick<ItemProps, 'dragging' | 'dropIndicator' | 'dropDisabled' | 'interactive'> &
+	ItemAttributes;
 
 /**
  * A sidebar row. It renders an `Item`, so its content can also be composed from `Item` parts.
@@ -36,6 +36,8 @@ export const SidebarItem = ({
 	focusVisible,
 	level = 1,
 	className,
+	children,
+	interactive,
 	is = 'a',
 	href,
 	target,
@@ -43,7 +45,7 @@ export const SidebarItem = ({
 	download,
 	...props
 }: SidebarItemProps) => {
-	const isContainer = typeof is === 'string' && is !== 'a';
+	const isContainer = is !== 'a';
 
 	return (
 		<Item
@@ -55,12 +57,16 @@ export const SidebarItem = ({
 			highlighted={highlighted}
 			focused={focused}
 			focusVisible={focusVisible}
+			interactive={interactive ?? isContainer}
+			multiline={holdsLines(children, SidebarItemCol)}
 			className={cx(
 				'rcx-sidebar-item',
 				!!selected && 'rcx-sidebar-item--selected',
 				!!level && `rcx-sidebar-item--level-${level}`,
 				className,
 			)}
-		/>
+		>
+			{children}
+		</Item>
 	);
 };

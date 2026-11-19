@@ -36,21 +36,22 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		min-block-size: line-height(p2);
 	}
 
+	// Interim `[class]` bumps on the rules that set properties an `Item` part's frame sets
 	&-container {
-		&--left,
-		&--fixed {
+		&--left[class],
+		&--fixed[class] {
 			flex-direction: column;
 		}
 
 		// A fixed-width column, so the content starts at the same x with or without an avatar.
-		&--left {
+		&--left[class] {
 			align-items: flex-end;
 
 			width: lengths.size(36);
 		}
 	}
 
-	&.rcx-message--editing {
+	&.rcx-message--editing[class] {
 		color: $message-color-editing;
 		background: $message-background-color-editing;
 	}

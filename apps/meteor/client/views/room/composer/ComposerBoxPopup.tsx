@@ -14,12 +14,10 @@ import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { memo, useMemo, useRef, useId } from 'react';
+import { memo, useEffect, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
-
-const scrollIntoViewNearest = (element: HTMLElement | null) => element?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -58,6 +56,7 @@ function ComposerBoxPopup<
 	const id = useId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
 	const popupSizes = useContentBoxSize(composerBoxPopupRef);
+	const focusedItemRef = useRef<HTMLElement>(null);
 
 	const variant = popupSizes && popupSizes.inlineSize < 480 ? 'small' : 'large';
 
@@ -94,6 +93,11 @@ function ComposerBoxPopup<
 		[items],
 	);
 
+	// Keeps the focused option visible as focus moves or the options change
+	useEffect(() => {
+		focusedItemRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+	}, [focused, itemsFlat]);
+
 	const isLoading = items.some((item) => item.isLoading && item.fetchStatus !== 'idle');
 
 	return (
@@ -127,7 +131,7 @@ function ComposerBoxPopup<
 								<Item
 									key={index}
 									id={`popup-item-${item._id}`}
-									ref={item === focused ? scrollIntoViewNearest : undefined}
+									ref={item === focused ? focusedItemRef : undefined}
 									role='option'
 									inset='md'
 									title={getOptionTitle(item)}

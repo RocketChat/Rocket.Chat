@@ -1,6 +1,6 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import type { ElementType, ReactElement } from 'react';
-import { cloneElement, useRef } from 'react';
+import { cloneElement, useContext, useEffect, useRef } from 'react';
 import type { AriaMenuProps } from 'react-aria';
 import { useButton, useMenuTrigger } from 'react-aria';
 import type { MenuTriggerProps } from 'react-stately';
@@ -10,6 +10,7 @@ import { IconButton } from '../Button';
 import MenuDropDown from './MenuDropdown';
 import MenuPopover from './MenuPopover';
 import type { IconButtonProps } from '../Button/IconButton';
+import { ItemActionsContext } from '../Item/ItemContext';
 import { Overlay } from '../Overlay';
 import { getPlacement } from './helpers/helpers';
 
@@ -46,6 +47,13 @@ const Menu = <T extends object>({
 	...props
 }: MenuProps<T>) => {
 	const state = useMenuTriggerState(props);
+	const reportOpen = useContext(ItemActionsContext);
+
+	// The actions of a row that hide until it is hovered stay shown while the menu they hold is open
+	useEffect(() => {
+		reportOpen?.(state.isOpen);
+		return () => reportOpen?.(false);
+	}, [reportOpen, state.isOpen]);
 
 	const ref = useRef<Element>(null);
 	const { menuTriggerProps, menuProps } = useMenuTrigger<T>({}, state, ref);

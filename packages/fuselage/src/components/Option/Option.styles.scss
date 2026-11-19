@@ -177,7 +177,9 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		color: $option-color-variant-warning;
 	}
 
-	&--primary {
+	// Interim `[class]` bump: the option is an `Item` whose frame sets the color, and this variant has no color of the
+	// theme for the frame to name
+	&--primary[class] {
 		color: $option-color-variant-primary;
 	}
 }
