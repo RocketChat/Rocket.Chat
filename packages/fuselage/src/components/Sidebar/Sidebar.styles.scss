@@ -19,24 +19,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-accordion {
-		display: flex;
-		overflow: hidden;
-		flex-flow: column nowrap;
-		justify-content: stretch;
-		flex: 0 1 auto;
-
-		height: lengths.size(full);
-
-		&__wrapper {
-			display: flex;
-			overflow: scroll;
-			flex-direction: column;
-		}
-	}
-
-	&-collapse-group,
-	&-accordion-item {
+	&-collapse-group {
 		display: flex;
 		flex-flow: column nowrap;
 
@@ -119,9 +102,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 				padding-block: lengths.padding(4) lengths.padding(8);
 			}
 		}
-	}
 
-	&-collapse-group {
 		// The group takes the class of a dragged `ItemGroup`, whose look is now in its frame
 		&.rcx-item-group--dragging {
 			opacity: 0.4;
@@ -172,55 +153,9 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 	}
 
 	&-accordion-item {
-		flex: 0 1 0;
-
-		border: 2px solid transparent;
-		border-bottom: lengths.border-width(default) solid $sidebar-accordion-border-color;
-
-		&__bar {
-			position: sticky;
-
-			z-index: 1;
-			top: 0;
-
-			padding: lengths.padding(12) lengths.padding(16) lengths.padding(12) lengths.padding(none);
-
-			color: colors.font(default);
-
-			border-radius: lengths.border-radius(small);
-
-			background-color: colors.surface(sidebar);
-
-			&[tabindex] {
-				@include clickable;
-				@include focus-state($shadow: false);
-
-				&:hover {
-					background-color: colors.surface(tint);
-				}
-			}
-
-			&--disabled {
-				cursor: not-allowed;
-
-				color: colors.font(disabled);
-				background-color: colors.surface(disabled);
-			}
-
-			.rcx-sidebar-accordion-item__chevron {
-				visibility: hidden;
-			}
-
-			&:focus-visible,
-			&:hover {
-				.rcx-sidebar-accordion-item__chevron {
-					visibility: visible;
-				}
-			}
-		}
-
-		&__title {
-			@include use-font-scale(h5);
+		// A property a frame has no key for, inherited by the rows the panel holds
+		&__panel {
+			list-style: none;
 		}
 	}
 
