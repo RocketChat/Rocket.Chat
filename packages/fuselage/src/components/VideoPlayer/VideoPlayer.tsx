@@ -169,6 +169,7 @@ const VideoPlayer = ({
 				onTimeUpdate={(e: MediaEvent) => setCurrentTime(e.currentTarget.currentTime)}
 				onLoadedMetadata={(e: MediaEvent) => {
 					setError(false);
+					setLoading(false);
 					setDuration(e.currentTarget.duration);
 				}}
 				onDurationChange={(e: MediaEvent) => setDuration(e.currentTarget.duration)}

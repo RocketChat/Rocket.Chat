@@ -39,4 +39,14 @@ describe('[VideoPlayer Component]', () => {
 		expect(HTMLMediaElement.prototype.load).toHaveBeenCalled();
 		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 	});
+
+	it('stops showing the loading state once a retried video has its metadata', async () => {
+		const { container } = render(<Default />);
+		fireEvent.error(getVideo(container));
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+		expect(screen.getByLabelText('Loading')).toBeInTheDocument();
+		fireEvent.loadedMetadata(getVideo(container));
+		expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+	});
 });
