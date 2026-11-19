@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import type { RemoteParticipantInfo } from './context';
 import { useActiveSpeakerId } from './hooks/useActiveSpeakerId';
@@ -55,7 +55,18 @@ const CallStage = ({
 	const [stageRef, stageSize] = useElementSize();
 	const orientation = spotlightOrientation(stageSize);
 
-	const pinFocus = usePinFocusScope();
+	const [pinFocus, pinFocusFallbackRef] = usePinFocusScope();
+	const ref = useCallback(
+		(node: HTMLElement) => {
+			const stopMeasuring = stageRef(node);
+			pinFocusFallbackRef(node);
+			return () => {
+				if (typeof stopMeasuring === 'function') stopMeasuring();
+				pinFocusFallbackRef(null);
+			};
+		},
+		[stageRef, pinFocusFallbackRef],
+	);
 
 	const renderLayout = () => {
 		if (screenOnStage) {
@@ -96,7 +107,7 @@ const CallStage = ({
 	};
 
 	return (
-		<Box className={stageStyles} ref={stageRef}>
+		<Box className={stageStyles} ref={ref} tabIndex={-1}>
 			<PinFocusProvider value={pinFocus}>{renderLayout()}</PinFocusProvider>
 		</Box>
 	);

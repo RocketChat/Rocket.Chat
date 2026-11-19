@@ -21,12 +21,15 @@ export type SidebarLayoutProps = {
 	screens?: ScreenShare[];
 };
 
-/** The speaker large, and as many of everyone else as fit beside or under them without scrolling. */
+/**
+ * The speaker large, and as many of everyone else as fit beside or under them without scrolling. Shares are all drawn,
+ * so they alone can outgrow the space, and then they scroll.
+ */
 const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, orientation, screens = [] }: SidebarLayoutProps) => {
 	const classes = spotlightClasses(orientation);
 	const { visible, hidden } = splitByPriority(
 		tiles.filter((t) => t.id !== featured.id),
-		Math.max(1, sidebarCapacity(stageSize, orientation) - screens.length),
+		sidebarCapacity(stageSize, orientation, screens.length),
 		activeSpeakerId,
 		selfId,
 	);
@@ -37,7 +40,7 @@ const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, or
 				<MainTile tile={featured} />
 			</Box>
 			{(screens.length > 0 || visible.length > 0 || hidden.length > 0) && (
-				<Box className={classes.thumbs} style={{ overflow: 'hidden' }}>
+				<Box className={classes.thumbs} style={screens.length > 0 ? undefined : { overflow: 'hidden' }}>
 					{screens.map((screen) => (
 						<ThumbSlot key={`screen-${screen.id}`} orientation={orientation} screen>
 							<ScreenShareThumb share={screen} />

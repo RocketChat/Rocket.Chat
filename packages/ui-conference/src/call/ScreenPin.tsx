@@ -6,19 +6,28 @@ import { useCallPins } from './context';
 import type { ScreenShare } from './lib/screenShares';
 
 export type ScreenPinProps = Pick<PinToggleProps, 'icon'> & {
-	share: Pick<ScreenShare, 'id' | 'name' | 'isLocal'>;
+	share: ScreenShare;
 };
 
 /** Pressed while the share is on the stage, whether the reader pinned it there or not. */
-const ScreenPin = ({ share: { id, name, isLocal }, icon }: ScreenPinProps) => {
+const ScreenPin = ({ share, icon }: ScreenPinProps) => {
 	const { t } = useTranslation();
 	const { screenOnStage, toggleScreenPin } = useCallPins();
-	const pinned = screenOnStage?.id === id;
+	const { id } = share;
 
-	const label =
-		isLocal || !name ? t(pinned ? 'Unpin_your_screen' : 'Pin_your_screen') : t(pinned ? 'Unpin_screen_of' : 'Pin_screen_of', { name });
+	const label = share.isLocal ? t('Pin_your_screen') : t('Pin_screen_of', { name: share.name });
+	const unpinTitle = share.isLocal ? t('Unpin_your_screen') : t('Unpin_screen_of', { name: share.name });
 
-	return <PinToggle pinned={pinned} label={label} focusKey={`screen-${id}`} icon={icon} onToggle={() => toggleScreenPin(id)} />;
+	return (
+		<PinToggle
+			pinned={screenOnStage?.id === id}
+			label={label}
+			unpinTitle={unpinTitle}
+			focusKey={`screen-${id}`}
+			icon={icon}
+			onToggle={() => toggleScreenPin(id)}
+		/>
+	);
 };
 
 export default ScreenPin;

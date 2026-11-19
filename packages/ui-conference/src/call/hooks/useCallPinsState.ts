@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useCallState } from '../context';
 import type { CallPins } from '../lib/callPins';
-import { NO_PINS, SCREENS_DISMISSED, pinScreen, pinnedIdOf, pinsForShares, togglePersonPin, unpinPerson } from '../lib/callPins';
+import { NO_PINS, dismissScreens, pinScreen, pinnedIdOf, pinsForShares, togglePersonPin, unpinPerson } from '../lib/callPins';
 import type { ScreenShare, ShareStarts } from '../lib/screenShares';
 import { collectScreenShares, pickFeaturedScreen, recordShareStarts } from '../lib/screenShares';
 
@@ -66,7 +66,7 @@ export const useCallPinsState = (): CallPinsValue => {
 
 	const togglePin = useCallback((participantId: string) => setPins((pins) => togglePersonPin(pins, participantId)), [setPins]);
 	const toggleScreenPin = useCallback(
-		(sharerId: string) => setPins(() => (sharerId === screenOnStageId ? SCREENS_DISMISSED : pinScreen(sharerId))),
+		(sharerId: string) => setPins((pins) => (sharerId === screenOnStageId ? dismissScreens(pins) : pinScreen(sharerId))),
 		[setPins, screenOnStageId],
 	);
 

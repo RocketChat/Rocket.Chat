@@ -2,13 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 import type { SpotlightOrientation } from '../lib/stageTiles';
-import { STRIP_THUMB_WIDTH } from '../lib/stageTiles';
-
-const STRIP_SCREEN_WIDTH = '12.5rem';
+import { STRIP_SCREEN_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles';
 
 export type ThumbSlotProps = {
 	orientation: SpotlightOrientation;
-	/** A shared screen gets a wider slot in a strip, so it stays legible. */
 	screen?: boolean;
 	children: ReactNode;
 };
