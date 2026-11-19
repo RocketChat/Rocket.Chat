@@ -24,7 +24,6 @@ const VideoAttachment = ({
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'video');
-	// Opt-in while the custom player is evaluated: localStorage.setItem('feature.customVideoPlayer', 'true')
 	const [customPlayer] = useLocalStorage('feature.customVideoPlayer', false);
 
 	return (
