@@ -10,6 +10,13 @@ const CONFIDENCE_MASK = { index: 0, scoresPerson: false };
 /** How much of the previous mask each frame keeps: higher steadies the edges but makes them trail movement. */
 const MASK_SMOOTHING = 0.5;
 
+/** Radius, in mask texels (0 to 4), averaged around each texel: higher softens the edge further, 0 leaves it as segmented. */
+const MASK_FEATHER = 2;
+
+const featherRadius = Math.min(4, Math.max(0, Math.round(MASK_FEATHER)));
+
+const featheredScore = featherRadius === 0 ? 'score(texel)' : 'feathered(texel)';
+
 const vertexShader = `#version 300 es
 void main() {
 	vec2 corner = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
@@ -22,9 +29,22 @@ uniform sampler2D u_raw;
 uniform sampler2D u_previous;
 uniform float u_smoothing;
 out vec4 fragColor;
+float score(ivec2 texel) {
+	ivec2 last = textureSize(u_raw, 0) - 1;
+	return ${CONFIDENCE_MASK.scoresPerson ? '1.0 - ' : ''}texelFetch(u_raw, clamp(texel, ivec2(0), last), 0).r;
+}
+float feathered(ivec2 texel) {
+	float sum = 0.0;
+	for (int y = -${featherRadius}; y <= ${featherRadius}; y++) {
+		for (int x = -${featherRadius}; x <= ${featherRadius}; x++) {
+			sum += score(texel + ivec2(x, y));
+		}
+	}
+	return sum / ${(2 * featherRadius + 1) ** 2}.0;
+}
 void main() {
 	ivec2 texel = ivec2(gl_FragCoord.xy);
-	float raw = ${CONFIDENCE_MASK.scoresPerson ? '1.0 - ' : ''}texelFetch(u_raw, texel, 0).r;
+	float raw = ${featheredScore};
 	fragColor = vec4(mix(raw, texelFetch(u_previous, texel, 0).r, u_smoothing), 0.0, 0.0, 1.0);
 }`;
 
