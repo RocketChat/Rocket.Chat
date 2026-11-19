@@ -10,7 +10,7 @@ export type RetentionPolicyWarningProps = { room: IRoom };
 const RetentionPolicyWarning = ({ room }: RetentionPolicyWarningProps) => {
 	const { t } = useTranslation();
 
-	const message = usePruneWarningMessage(room);
+	const message = usePruneWarningMessage(room, 'banner');
 
 	return (
 		<Box display='flex' justifyContent='center' paddingInline={20} marginBlock={8}>

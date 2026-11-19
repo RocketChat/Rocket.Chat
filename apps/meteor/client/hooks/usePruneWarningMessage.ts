@@ -11,14 +11,31 @@ import { getCronAdvancedTimerFromPrecisionSetting } from '../../lib/getCronAdvan
 import { getNextCronRunDate } from '../lib/getNextCronRunDate';
 import { useRetentionPolicy } from '../views/room/hooks/useRetentionPolicy';
 
-const getMessage = ({ filesOnly, excludePinned }: { filesOnly: boolean; excludePinned: boolean }): TranslationKey => {
+const MESSAGES = {
+	nextRun: {
+		all: 'RetentionPolicy_RoomWarning_NextRunDate',
+		unpinned: 'RetentionPolicy_RoomWarning_Unpinned_NextRunDate',
+		filesOnly: 'RetentionPolicy_RoomWarning_FilesOnly_NextRunDate',
+		unpinnedFilesOnly: 'RetentionPolicy_RoomWarning_UnpinnedFilesOnly_NextRunDate',
+	},
+	banner: {
+		all: 'RetentionPolicy_RoomBanner',
+		unpinned: 'RetentionPolicy_RoomBanner_Unpinned',
+		filesOnly: 'RetentionPolicy_RoomBanner_FilesOnly',
+		unpinnedFilesOnly: 'RetentionPolicy_RoomBanner_UnpinnedFilesOnly',
+	},
+} as const satisfies Record<string, Record<string, TranslationKey>>;
+
+const getMessage = (
+	{ filesOnly, excludePinned }: { filesOnly: boolean; excludePinned: boolean },
+	variant: keyof typeof MESSAGES,
+): TranslationKey => {
+	const messages = MESSAGES[variant];
 	if (filesOnly) {
-		return excludePinned
-			? 'RetentionPolicy_RoomWarning_UnpinnedFilesOnly_NextRunDate'
-			: 'RetentionPolicy_RoomWarning_FilesOnly_NextRunDate';
+		return excludePinned ? messages.unpinnedFilesOnly : messages.filesOnly;
 	}
 
-	return excludePinned ? 'RetentionPolicy_RoomWarning_Unpinned_NextRunDate' : 'RetentionPolicy_RoomWarning_NextRunDate';
+	return excludePinned ? messages.unpinned : messages.all;
 };
 
 type CronPrecisionSetting = '0' | '1' | '2' | '3';
@@ -77,7 +94,7 @@ const useNextRunDate = ({
 	);
 };
 
-export const usePruneWarningMessage = (room: IRoom) => {
+export const usePruneWarningMessage = (room: IRoom, variant: keyof typeof MESSAGES = 'nextRun') => {
 	const retention = useRetentionPolicy(room);
 	if (!retention) {
 		throw new Error('usePruneWarningMessage - No room provided');
@@ -92,7 +109,7 @@ export const usePruneWarningMessage = (room: IRoom) => {
 	const enableAdvancedCronTimer = useSetting('RetentionPolicy_Advanced_Precision', false);
 	const advancedCronTimer = useSetting('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *');
 
-	const message = getMessage({ filesOnly, excludePinned });
+	const message = getMessage({ filesOnly, excludePinned }, variant);
 
 	const nextRunDate = useNextRunDate({
 		enableAdvancedCronTimer,

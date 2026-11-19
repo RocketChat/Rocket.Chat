@@ -4,6 +4,7 @@ import type { Meta } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import PruneMessages from './PruneMessages';
+import { initialValues } from './PruneMessagesWithData';
 
 export default {
 	component: PruneMessages,
@@ -14,9 +15,7 @@ export default {
 	decorators: [
 		(fn) => {
 			const methods = useForm({
-				defaultValues: {
-					pinned: true,
-				},
+				defaultValues: initialValues,
 			});
 
 			return (
@@ -30,10 +29,8 @@ export default {
 	],
 } satisfies Meta<typeof PruneMessages>;
 
-export const Default = {};
-
-export const WithCallout = {
+export const Default = {
 	args: {
-		callOutText: 'This is a callout',
+		validateDateRange: () => true,
 	},
 };

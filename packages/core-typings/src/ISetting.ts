@@ -76,6 +76,7 @@ export interface ISettingBase extends IRocketChatRecord {
 	packageValue: SettingValue;
 	blocked: boolean;
 	enableQuery?: EnableQuery;
+	disabledValue?: { value: SettingValue; query: EnableQuery };
 	displayQuery?: EnableQuery;
 	validation?: SettingValidation;
 	sorter: number;

@@ -104,10 +104,11 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
 
-	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
+	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert, disabledValue } = setting;
 
 	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery);
 	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
+	const disabledValueApplies = useEditableSettingVisibilityQuery(disabledValue?.query);
 
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
@@ -183,7 +184,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			sectionChanged={sectionChanged}
 			{...setting}
 			disabled={disabled || shouldDisableEnterprise}
-			value={value}
+			value={disabled && disabledValue && disabledValueApplies ? disabledValue.value : value}
 			editor={editor}
 			hasResetButton={hasResetButton}
 			onChangeValue={onChangeValue}

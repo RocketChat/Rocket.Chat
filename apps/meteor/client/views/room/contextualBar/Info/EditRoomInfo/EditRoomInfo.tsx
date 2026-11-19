@@ -541,7 +541,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</AccordionItem>
 							)}
 							{showRetentionPolicy && (
-								<AccordionItem title={t('Prune')}>
+								<AccordionItem title={t('RetentionPolicy')}>
 									<FieldGroup>
 										<Field>
 											<FieldRow>
@@ -569,16 +569,19 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										</Field>
 										{retentionOverrideGlobal && (
 											<>
-												<Callout type='danger'>
-													<Trans
-														i18nKey='RetentionPolicyRoom_ReadTheDocs'
-														components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
-													/>
+												<Callout type='warning'>
+													<Text is='p' fontScale='p2b'>
+														{t('RetentionPolicy_Warning_Title')}
+													</Text>
+													<Text is='p'>
+														<Trans
+															i18nKey='RetentionPolicyRoom_ReadTheDocs'
+															components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
+														/>
+													</Text>
 												</Callout>
 												<Field>
-													<FieldLabel htmlFor={retentionMaxAgeField}>
-														{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAgeDefault })}
-													</FieldLabel>
+													<FieldLabel htmlFor={retentionMaxAgeField}>{t('RetentionPolicyRoom_DeleteOlderThan')}</FieldLabel>
 													<FieldRow>
 														<Controller
 															control={control}
@@ -587,6 +590,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																<NumberInput
 																	id={retentionMaxAgeField}
 																	{...field}
+																	placeholder={String(retentionMaxAgeDefault)}
+																	endAddon={t('days')}
 																	onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.currentTarget.value))}
 																/>
 															)}
@@ -595,36 +600,52 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												</Field>
 												<Field>
 													<FieldRow>
-														<FieldLabel htmlFor={retentionExcludePinnedField}>{t('RetentionPolicyRoom_ExcludePinned')}</FieldLabel>
-														<Controller
-															control={control}
-															name='retentionExcludePinned'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={retentionExcludePinnedField} {...field} checked={value} />
-															)}
-														/>
-													</FieldRow>
-												</Field>
-												<Field>
-													<FieldRow>
-														<FieldLabel htmlFor={retentionFilesOnlyField}>{t('RetentionPolicyRoom_FilesOnly')}</FieldLabel>
+														<FieldLabel htmlFor={retentionFilesOnlyField}>{t('RetentionPolicy_FilesOnly')}</FieldLabel>
 														<Controller
 															control={control}
 															name='retentionFilesOnly'
 															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={retentionFilesOnlyField} {...field} checked={value} />
+																<ToggleSwitch
+																	id={retentionFilesOnlyField}
+																	{...field}
+																	checked={value}
+																	aria-describedby={`${retentionFilesOnlyField}-hint`}
+																/>
+															)}
+														/>
+													</FieldRow>
+													<FieldHint id={`${retentionFilesOnlyField}-hint`}>{t('RetentionPolicy_FilesOnly_Description')}</FieldHint>
+												</Field>
+												<Field>
+													<FieldRow>
+														<FieldLabel htmlFor={retentionExcludePinnedField}>{t('RetentionPolicyRoom_DeletePinned')}</FieldLabel>
+														<Controller
+															control={control}
+															name='retentionExcludePinned'
+															render={({ field: { value, onChange, ...field } }) => (
+																<ToggleSwitch
+																	id={retentionExcludePinnedField}
+																	{...field}
+																	checked={!value}
+																	onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
+																/>
 															)}
 														/>
 													</FieldRow>
 												</Field>
 												<Field>
 													<FieldRow>
-														<FieldLabel htmlFor={retentionIgnoreThreads}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
+														<FieldLabel htmlFor={retentionIgnoreThreads}>{t('RetentionPolicyRoom_DeleteThreads')}</FieldLabel>
 														<Controller
 															control={control}
 															name='retentionIgnoreThreads'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={retentionIgnoreThreads} {...field} checked={value} />
+															render={({ field: { value, onChange, ...field } }) => (
+																<ToggleSwitch
+																	id={retentionIgnoreThreads}
+																	{...field}
+																	checked={!value}
+																	onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
+																/>
 															)}
 														/>
 													</FieldRow>

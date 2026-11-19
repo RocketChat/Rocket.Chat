@@ -12,7 +12,7 @@ const RetentionPolicyCallout = ({ room }: RetentionPolicyCalloutProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Callout aria-label={t('Retention_policy_warning_callout')} role='alert' aria-live='polite' type='warning'>
+		<Callout aria-label={t('Retention_policy_warning_callout')} role='alert' aria-live='polite' type='warning' icon='prune'>
 			<div>
 				<p>{message}</p>
 			</div>
