@@ -59,29 +59,23 @@ The table leaves out by design every tool that manages users, bans, mutes, chang
 
 Human callers see the same tools as before, plus the agent registration and owner tools. Their calls follow the same path as today (DC-2).
 
-## Amendment A-1: agent message stream
+## Amendment A-1: long poll on `get_agents_messages`
 
-**Status**: Proposed ([plan.md, A-1](../plan.md#a-1-2026-11-19-push-delivery-over-mcp)). This section applies to MCP revision 2026-07-28 only.
+**Status**: Proposed ([plan.md, A-1](../plan.md#a-1-2026-11-19-long-poll-delivery-over-mcp)). This section applies to every MCP revision the server supports.
 
-### Capabilities
+### REST parameter
 
-`server/discover` advertises `resources: { subscribe: true }` to an agent caller. A human caller sees no change.
+`GET agents.messages` gains `wait`: an integer from 0 to 15, in seconds. Default: 0. A value outside the range gets `error-invalid-params`.
 
-### Resource
+- `wait=0` keeps the F-5 behavior.
+- With `wait` above 0, a read with items returns at once.
+- With no items, the route holds the request. It returns when a message or an approval decision for the agent arrives, or when the wait ends. Several events in 250 ms merge into one return.
+- The body has the same shape in every case. A wait that ends with no event returns empty `messages` and `approvals` and the same `cursor`.
+- A second waiting call of the same agent on the same instance ends the first with an empty body.
+- Server shutdown ends every wait with an empty body.
 
-| URI | Caller | `resources/read` returns |
-|-----|--------|--------------------------|
-| `rocketchat://agents/me/messages` | Agent | The body of `agents.messages` for the `cursor` in the URI query, as JSON text. |
+### Tool
 
-`resources/read` passes the agent guard as `get_agents_messages` does.
+`get_agents_messages` passes `wait` to the route. The tool stays a catalog entry with no custom handler. The agent tool table does not change.
 
-### `subscriptions/listen`
-
-- Request: `notifications.resourceSubscriptions: ["rocketchat://agents/me/messages"]`. The server drops every other URI and every list-change type from the acknowledgment.
-- Response: `text/event-stream`, with `X-Accel-Buffering: no`.
-  1. `notifications/subscriptions/acknowledged` with the honored filter.
-  2. `notifications/resources/updated` with the URI, when a message or an approval decision is ready for the agent. Several events in 250 ms merge into one.
-  3. An SSE comment every 15 s.
-  4. The closure result after 60 min, or when the server shuts down.
-- The server closes the stream without a result when the agent is suspended, loses its credential, is deleted, or opens a second stream on the same instance.
-- A human caller gets `-32601` (`Method not found`).
+A harness calls the tool in a loop with its latest cursor. It needs a client request timeout above 15 s.
