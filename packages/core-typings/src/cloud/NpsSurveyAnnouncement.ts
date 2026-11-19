@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { TimestampSchema } from '../utils';
+import { TimestampSchema } from '../utils.js';
 
 export const NpsSurveyAnnouncementSchema = z.object({
 	id: z.string(),

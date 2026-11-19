@@ -1,5 +1,5 @@
-import { escapeLocalpart, unescapeLocalpart } from './escaping';
-import { InvalidJidError } from '../errors';
+import { escapeLocalpart, unescapeLocalpart } from './escaping.js';
+import { InvalidJidError } from '../errors.js';
 
 describe('XEP-0106 localpart escaping', () => {
 	it.each([

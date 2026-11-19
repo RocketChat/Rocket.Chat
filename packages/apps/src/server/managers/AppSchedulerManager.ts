@@ -1,9 +1,9 @@
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IJobContext, IOnetimeSchedule, IProcessor, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IJobContext, IOnetimeSchedule, IProcessor, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler/index.js';
 
-import type { AppManager } from '../AppManager';
-import type { IInternalSchedulerBridge } from '../bridges/IInternalSchedulerBridge';
-import type { SchedulerBridge } from '../bridges/SchedulerBridge';
+import type { AppManager } from '../AppManager.js';
+import type { IInternalSchedulerBridge } from '../bridges/IInternalSchedulerBridge.js';
+import type { SchedulerBridge } from '../bridges/SchedulerBridge.js';
 
 function createProcessorId(jobId: string, appId: string): string {
 	return jobId.includes(`_${appId}`) ? jobId : `${jobId}_${appId}`;

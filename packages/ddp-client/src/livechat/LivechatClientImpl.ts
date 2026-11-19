@@ -3,9 +3,9 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 import { isValidAppId } from '@rocket.chat/ui-kit';
 
-import { DDPSDK } from '../DDPSDK';
-import type { StreamerCallbackArgs } from '../types/streams';
-import type { LivechatEndpoints, LivechatRoomEvents, LivechatStream } from './types/LivechatSDK';
+import { DDPSDK } from '../DDPSDK.js';
+import type { StreamerCallbackArgs } from '../types/streams.js';
+import type { LivechatEndpoints, LivechatRoomEvents, LivechatStream } from './types/LivechatSDK.js';
 
 export class LivechatClientImpl extends DDPSDK implements LivechatStream, LivechatEndpoints {
 	public token?: string;

@@ -1,6 +1,6 @@
-import type { ILoggerStorageEntry } from '../../../src/server/logging';
-import type { IAppLogStorageFindOptions } from '../../../src/server/storage';
-import { AppLogStorage } from '../../../src/server/storage';
+import type { ILoggerStorageEntry } from '../../../src/server/logging/index.js';
+import type { IAppLogStorageFindOptions } from '../../../src/server/storage/index.js';
+import { AppLogStorage } from '../../../src/server/storage/index.js';
 
 export class TestsAppLogStorage extends AppLogStorage {
 	constructor() {

@@ -1,6 +1,6 @@
-import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
-import type { IMediaCallServer } from '../definition/IMediaCallServer';
-import { logger } from '../logger';
+import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector.js';
+import type { IMediaCallServer } from '../definition/IMediaCallServer.js';
+import { logger } from '../logger.js';
 
 let castDirectorInstance: IMediaCallCastDirector | null = null;
 let mediaCallServerInstance: IMediaCallServer | null = null;

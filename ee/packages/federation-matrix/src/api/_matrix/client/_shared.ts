@@ -1,7 +1,7 @@
 import type { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import { logger } from '../../logger';
+import { logger } from '../../logger.js';
 
 export type ClientRouter = Router<'/client', any>;
 

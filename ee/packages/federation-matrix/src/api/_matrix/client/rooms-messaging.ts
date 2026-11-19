@@ -6,7 +6,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
+import type { ClientRouter } from './_shared.js';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	MATRIX_USER_ID_PATTERN,
@@ -18,9 +18,9 @@ import {
 	isRoomIdParamsProps,
 	license,
 	tags,
-} from './_shared';
-import { getActivityDisplayName } from '../../../helpers/getActivityDisplayName';
-import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+} from './_shared.js';
+import { getActivityDisplayName } from '../../../helpers/getActivityDisplayName.js';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated.js';
 
 const SendEventParamsSchema = {
 	type: 'object',

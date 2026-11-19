@@ -1,5 +1,5 @@
-import { cx } from '../../../helpers/composeClassNames';
-import { ItemLink, type ItemLinkProps } from '../../Item';
+import { cx } from '../../../helpers/composeClassNames.js';
+import { ItemLink, type ItemLinkProps } from '../../Item/index.js';
 
 export type SidebarItemLinkProps = ItemLinkProps;
 

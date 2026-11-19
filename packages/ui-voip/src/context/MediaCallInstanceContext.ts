@@ -2,8 +2,8 @@ import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import type { RefObject } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { PeerAutocompleteOptions } from '../components';
-import type { PeerInfo } from './definitions';
+import type { PeerInfo } from './definitions.js';
+import type { PeerAutocompleteOptions } from '../components/index.js';
 
 export type AvailableViews = 'room' | 'popout' | 'widget' | 'inline-widget';
 

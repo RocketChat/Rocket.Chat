@@ -1,4 +1,4 @@
-import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
+import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json' with { type: 'json' };
 
 type BreakpointName = keyof typeof breakpoints;
 

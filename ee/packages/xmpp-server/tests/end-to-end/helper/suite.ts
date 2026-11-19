@@ -1,8 +1,8 @@
-import { Cleanup } from './cleanup';
-import { config } from './config';
-import { connectRocketChat, forgetRemoteUserOnCleanup } from './rocketchat';
-import type { RocketChat } from './rocketchat';
-import { XmppUser } from './xmpp-client';
+import { Cleanup } from './cleanup.js';
+import { config } from './config.js';
+import { connectRocketChat, forgetRemoteUserOnCleanup } from './rocketchat.js';
+import type { RocketChat } from './rocketchat.js';
+import { XmppUser } from './xmpp-client.js';
 
 /** Connects to Rocket.Chat and returns the suite's context; pass it to `teardown` when done. */
 export async function setupSuite(): Promise<RocketChat> {

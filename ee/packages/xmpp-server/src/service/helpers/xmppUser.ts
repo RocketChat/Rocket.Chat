@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { domainOfJid } from './jid';
-import { normalizeUserBareJid } from '../../jid/normalize';
+import { domainOfJid } from './jid.js';
+import { normalizeUserBareJid } from '../../jid/normalize.js';
 
 /** Creates or refreshes the record of the remote account `jid` names; throws for anything that names no remote account. */
 export async function createOrUpdateXMPPUser(options: { jid: string; name?: string }): Promise<IUser> {

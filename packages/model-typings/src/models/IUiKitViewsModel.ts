@@ -1,6 +1,6 @@
 import type { IUiKitView } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IUiKitViewsModel extends IBaseModel<IUiKitView> {
 	saveView(view: Pick<IUiKitView, 'viewId' | 'appId' | 'userId' | 'type' | 'view'>): Promise<void>;

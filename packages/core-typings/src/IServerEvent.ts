@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
 import type {
 	IServerEventAbacActionPerformed,
 	IServerEventAbacAttributeChanged,
@@ -8,9 +8,9 @@ import type {
 	IServerEventAbacObjectAttributeChanged,
 	IServerEventAbacObjectAttributesRemoved,
 	IServerEventAbacSubjectAttributeChanged,
-} from './ServerAudit/IAuditServerAbacAction';
-import type { IServerEventSettingsChanged } from './ServerAudit/IAuditServerSettingEvent';
-import type { IServerEventUserChanged } from './ServerAudit/IAuditUserChangedEvent';
+} from './ServerAudit/IAuditServerAbacAction.js';
+import type { IServerEventSettingsChanged } from './ServerAudit/IAuditServerSettingEvent.js';
+import type { IServerEventUserChanged } from './ServerAudit/IAuditUserChangedEvent.js';
 
 export enum ServerEventType {
 	FAILED_LOGIN_ATTEMPT = 'failed-login-attempt',

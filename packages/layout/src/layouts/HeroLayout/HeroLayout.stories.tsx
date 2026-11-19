@@ -1,8 +1,8 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import HeroLayout from './HeroLayout';
-import HeroLayoutSubtitle from './HeroLayoutSubtitle';
-import HeroLayoutTitle from './HeroLayoutTitle';
+import HeroLayout from './HeroLayout.js';
+import HeroLayoutSubtitle from './HeroLayoutSubtitle.js';
+import HeroLayoutTitle from './HeroLayoutTitle.js';
 
 export default {
 	title: 'layouts/HeroLayout',

@@ -1,1 +1,1 @@
-export { default } from './EmailConfirmedPage';
+export { default } from './EmailConfirmedPage.js';

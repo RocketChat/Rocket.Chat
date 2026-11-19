@@ -1,4 +1,4 @@
-export type * from './definition/IMediaCallServer';
+export type * from './definition/IMediaCallServer.js';
 
-export { callServer } from './server/configuration';
-export { getSignalsForExistingCall } from './server/signals/getSignalsForExistingCall';
+export { callServer } from './server/configuration.js';
+export { getSignalsForExistingCall } from './server/signals/getSignalsForExistingCall.js';

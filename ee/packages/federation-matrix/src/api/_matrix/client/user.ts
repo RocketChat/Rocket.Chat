@@ -3,7 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
+import type { ClientRouter } from './_shared.js';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	MATRIX_USER_ID_PATTERN,
@@ -13,8 +13,8 @@ import {
 	isMatrixErrorProps,
 	license,
 	tags,
-} from './_shared';
-import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+} from './_shared.js';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated.js';
 
 const AccountDataDisplaynameParamsSchema = {
 	type: 'object',

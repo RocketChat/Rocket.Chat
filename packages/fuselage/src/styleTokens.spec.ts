@@ -15,7 +15,7 @@ import {
 	spacing,
 	spacingScale,
 	strokeColor,
-} from './styleTokens';
+} from './styleTokens.js';
 
 describe('spacingScale', () => {
 	it('lists the eight steps in pixels', () => {

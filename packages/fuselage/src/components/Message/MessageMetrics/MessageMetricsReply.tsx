@@ -1,5 +1,5 @@
-import { MessageMetricsItem } from './MessageMetricsItem';
-import { Button, type ButtonProps } from '../../Button';
+import { MessageMetricsItem } from './MessageMetricsItem/index.js';
+import { Button, type ButtonProps } from '../../Button/index.js';
 
 export type MessageMetricsReplyProps = ButtonProps;
 

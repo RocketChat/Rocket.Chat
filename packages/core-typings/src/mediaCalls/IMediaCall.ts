@@ -1,6 +1,6 @@
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
-import type { RequiredField } from '../utils';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
+import type { IUser } from '../IUser.js';
+import type { RequiredField } from '../utils.js';
 
 export type MediaCallActorType = 'user' | 'sip';
 

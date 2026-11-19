@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsMock = sinon.stub();
 const getLoginTokenStub = sinon.stub();
@@ -36,7 +37,7 @@ class DisabledCheckMock {
 	}
 }
 
-const { checkCodeForUser } = proxyquire.noCallThru().load('./index', {
+const { checkCodeForUser } = loadWithMocks('./index', {
 	'./TOTPCheck': { TOTPCheck: TOTPCheckMock },
 	'./EmailCheck': { EmailCheck: DisabledCheckMock },
 	'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
@@ -131,7 +132,7 @@ describe('checkCodeForUser - remembered two-factor authorization', () => {
 		}
 	}
 
-	const twoFactor = proxyquire.noCallThru().load('./index', {
+	const twoFactor = loadWithMocks('./index', {
 		'./TOTPCheck': { TOTPCheck: EnabledTOTPCheck },
 		'./EmailCheck': { EmailCheck: DisabledCheckMock },
 		'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },

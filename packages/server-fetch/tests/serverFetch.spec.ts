@@ -2,7 +2,7 @@ import http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { Readable } from 'node:stream';
 
-import { serverFetch } from '../src';
+import { serverFetch } from '../src/index.js';
 
 const servers: http.Server[] = [];
 

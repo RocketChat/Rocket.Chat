@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -18,7 +19,7 @@ const modelsMock = {
 
 const validateContactManagerMock = sinon.stub();
 
-const { resolveContactConflicts } = proxyquire.noCallThru().load('./resolveContactConflicts', {
+const { resolveContactConflicts } = loadWithMocks('./resolveContactConflicts', {
 	'./validateContactManager': {
 		validateContactManager: validateContactManagerMock,
 	},

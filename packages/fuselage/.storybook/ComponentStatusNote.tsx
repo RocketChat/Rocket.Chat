@@ -1,8 +1,8 @@
 // Keep in step with ../../storybook-config/src/ComponentStatusNote.tsx, which Fuselage can't import: storybook-config depends on Fuselage.
 import type { DocsContextProps } from 'storybook/internal/types';
 
-import { componentStatuses, findComponentStatus, getComponentStatusBadgeStyle } from './status';
-import { themes, type ThemeMode } from './theme';
+import { componentStatuses, findComponentStatus, getComponentStatusBadgeStyle } from './status.js';
+import { themes, type ThemeMode } from './theme.js';
 
 /** Reads the lifecycle status of the component a docs page documents; pages not attached to stories have none. */
 const readComponentStatus = (context: DocsContextProps) => {

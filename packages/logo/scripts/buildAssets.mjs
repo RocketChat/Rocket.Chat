@@ -2,15 +2,15 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import prettier from 'prettier';
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import * as React from 'react';
+import * as ReactDOMServer from 'react-dom/server';
 import sharp from 'sharp';
 
-import RocketChatLogo from '../dist/cjs/RocketChatLogo/index.js';
+import RocketChatLogo from '../dist/RocketChatLogo/index.js';
 
 const distDir = fileURLToPath(new URL('../dist/', import.meta.url));
 
-const html = ReactDOMServer.renderToStaticMarkup(React.createElement(RocketChatLogo.default));
+const html = ReactDOMServer.renderToStaticMarkup(React.createElement(RocketChatLogo));
 
 const prettySvg = await prettier.format(html, { parser: 'html' });
 

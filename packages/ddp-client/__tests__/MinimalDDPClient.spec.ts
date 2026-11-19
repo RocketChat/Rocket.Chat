@@ -1,4 +1,4 @@
-import { MinimalDDPClient } from '../src/MinimalDDPClient';
+import { MinimalDDPClient } from '../src/MinimalDDPClient.js';
 
 describe('ping/pong mechanism', () => {
 	it('should reply with pong if no id is provided', () => {

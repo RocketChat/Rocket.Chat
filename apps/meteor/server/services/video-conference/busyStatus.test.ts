@@ -4,11 +4,11 @@ import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-ty
 import { UserStatus } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
 import { PRESENCE_LEASE_MS } from '../../../lib/videoConference/presence';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * The claim this suite is about is made through `Presence`, which the shared harness has no stub for — so this one
@@ -64,7 +64,7 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', language
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+const { VideoConfService } = loadWithMocks('./service', {
 	...commonServiceStubs,
 	'@rocket.chat/core-services': {
 		api: { broadcast: broadcastStub },

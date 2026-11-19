@@ -5,12 +5,12 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { client, xml } from '@xmpp/client';
 import type { Client } from '@xmpp/client';
 
-import type { Cleanup } from './cleanup';
-import { DUPLICATE_SETTLE_MS, config, uniqueSuffix } from './config';
-import { isMucSelfPresence, isPresenceFrom } from './predicates';
-import type { Predicate } from './predicates';
-import { NS } from './stanza';
-import type { Stanza } from './stanza';
+import type { Cleanup } from './cleanup.js';
+import { DUPLICATE_SETTLE_MS, config, uniqueSuffix } from './config.js';
+import { isMucSelfPresence, isPresenceFrom } from './predicates.js';
+import type { Predicate } from './predicates.js';
+import { NS } from './stanza.js';
+import type { Stanza } from './stanza.js';
 
 const DEFAULT_TIMEOUT_MS = 15_000;
 

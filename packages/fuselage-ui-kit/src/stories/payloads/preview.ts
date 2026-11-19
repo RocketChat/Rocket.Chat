@@ -1,7 +1,7 @@
 // import * as UiKit from '@rocket.chat/ui-kit';
 import type { PreviewBlock } from '@rocket.chat/ui-kit';
 
-import img from './img';
+import img from './img.js';
 
 export const preview: PreviewBlock[] = [
 	{

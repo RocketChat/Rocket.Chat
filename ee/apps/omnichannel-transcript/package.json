@@ -7,6 +7,7 @@
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
+	"type": "module",
 	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
 	"files": [
 		"/dist"

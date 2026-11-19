@@ -1,9 +1,9 @@
-import type { IHttpRequest, IHttpResponse, RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IHttpRequest, IHttpResponse, RequestMethod } from '@rocket.chat/apps-engine/definition/accessors/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export interface IHttpBridgeRequestInfo {
 	appId: string;

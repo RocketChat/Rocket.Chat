@@ -1,7 +1,7 @@
 import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
 import { type MessageType, type FileMessageContent, type EventID } from '@rocket.chat/federation-sdk';
 
-import { MatrixMediaService } from '../services/MatrixMediaService';
+import { MatrixMediaService } from '../services/MatrixMediaService.js';
 
 export async function handleMediaMessage(
 	url: string,

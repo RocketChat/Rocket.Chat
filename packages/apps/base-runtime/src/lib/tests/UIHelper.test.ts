@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
-import { UIHelper } from '../UIHelper';
+import { UIHelper } from '../UIHelper.js';
 
 describe('UIHelper.assignIds', () => {
 	it('assigns an actionId to the elements of an actions block, a section accessory and an input element', () => {

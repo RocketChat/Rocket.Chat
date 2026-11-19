@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect } from 'react';
 
-import { useMediaCallInstance, usePeekMediaSessionState, usePeekMediaSessionCallId } from '../context';
-import MediaCallPopoutWindow from './MediaCallPopoutWindow';
-import { usePopoutWindow } from './usePopoutWindow';
-import { useSetPopoutWindow } from '../providers/useMediaSessionInstance';
+import MediaCallPopoutWindow from './MediaCallPopoutWindow.js';
+import { usePopoutWindow } from './usePopoutWindow.js';
+import { useMediaCallInstance, usePeekMediaSessionState, usePeekMediaSessionCallId } from '../context/index.js';
+import { useSetPopoutWindow } from '../providers/useMediaSessionInstance.js';
 
 const MediaCallPopout = () => {
 	const { currentViews, unregisterView } = useMediaCallInstance();

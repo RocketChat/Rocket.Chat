@@ -1,7 +1,7 @@
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/index.js';
 
-import { UploadBridge } from '../../../src/server/bridges/UploadBridge';
+import { UploadBridge } from '../../../src/server/bridges/UploadBridge.js';
 
 export class TestUploadBridge extends UploadBridge {
 	public getById(id: string, appId: string): Promise<IUpload> {

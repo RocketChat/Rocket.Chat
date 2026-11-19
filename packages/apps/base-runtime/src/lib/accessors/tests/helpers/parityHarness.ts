@@ -1,4 +1,4 @@
-import type * as Messenger from '../../../messenger';
+import type * as Messenger from '../../../messenger.js';
 
 /**
  * Transitional parity harness for the accessor-consolidation migration.

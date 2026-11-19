@@ -10,7 +10,7 @@ import { startOfDayAt } from '@rocket.chat/tools';
 import type { DeleteResult, Document, FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 

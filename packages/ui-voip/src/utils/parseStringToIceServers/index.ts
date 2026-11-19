@@ -1,1 +1,1 @@
-export * from './parseStringToIceServers';
+export * from './parseStringToIceServers.js';

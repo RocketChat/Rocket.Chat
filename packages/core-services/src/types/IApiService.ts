@@ -1,6 +1,6 @@
-import type { CallingOptions, IBroker, IBrokerNode } from './IBroker';
-import type { IServiceClass } from './ServiceClass';
-import type { EventSignatures } from '../events/Events';
+import type { CallingOptions, IBroker, IBrokerNode } from './IBroker.js';
+import type { IServiceClass } from './ServiceClass.js';
+import type { EventSignatures } from '../events/Events.js';
 
 export interface IApiService {
 	setBroker(broker: IBroker): void;

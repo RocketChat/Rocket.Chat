@@ -1,2 +1,2 @@
-export { default as GenericNoResults } from './GenericNoResults';
-export type { GenericNoResultsProps } from './GenericNoResults';
+export { default as GenericNoResults } from './GenericNoResults.js';
+export type { GenericNoResultsProps } from './GenericNoResults.js';

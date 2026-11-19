@@ -1,6 +1,6 @@
 import type { IDirectMediaCallData, ITempMediaCallData } from '@rocket.chat/media-signaling';
 
-import { derivePeerInfoFromInstanceState } from './derivePeerInfoFromInstanceState';
+import { derivePeerInfoFromInstanceState } from './derivePeerInfoFromInstanceState.js';
 
 describe('derivePeerInfoFromInstanceState', () => {
 	const localParticipant = {

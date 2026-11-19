@@ -1,11 +1,11 @@
 import type { CpuInfo } from 'node:os';
 
-import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
-import type { ISettingStatisticsObject } from './ISetting';
-import type { ITeamStats } from './ITeam';
-import type { MACStats } from './omnichannel';
+import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession.js';
+import type { ISettingStatisticsObject } from './ISetting.js';
+import type { ITeamStats } from './ITeam.js';
+import type { MACStats } from './omnichannel/index.js';
 
 interface IVoIPPeriodStats {
 	calls?: number;

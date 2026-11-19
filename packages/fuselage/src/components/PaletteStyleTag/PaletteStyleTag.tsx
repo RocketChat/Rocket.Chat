@@ -1,10 +1,10 @@
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-import { convertToCss } from './helpers/convertToCss';
-import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
-import { dark, highContrast, light } from './lib/themePalettes';
-import type { Themes } from './types/themes';
+import { convertToCss } from './helpers/convertToCss.js';
+import { useCreateStyleContainer } from './hooks/useCreateStyleContainer.js';
+import { dark, highContrast, light } from './lib/themePalettes.js';
+import type { Themes } from './types/themes.js';
 
 const themes = {
 	light,

@@ -3,7 +3,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { _hashLoginToken, _tokenExpiration } from './utils';
+import { _hashLoginToken, _tokenExpiration } from './utils.js';
 
 export async function loginViaResume(resume: string, loginExpiration: number): Promise<false | ILoginResult> {
 	const hashedToken = _hashLoginToken(resume);

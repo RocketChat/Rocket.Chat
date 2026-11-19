@@ -3,9 +3,9 @@ import { EventEmitter } from 'events';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
-import type { IPacket } from '../IPacket';
-import type { Publication } from '../Publication';
-import type { Session } from '../Session';
+import type { IPacket } from '../IPacket.js';
+import type { Publication } from '../Publication.js';
+import type { Session } from '../Session.js';
 
 export function makeSession(readyState: number = WebSocket.OPEN) {
 	const session = Object.assign(new EventEmitter(), {

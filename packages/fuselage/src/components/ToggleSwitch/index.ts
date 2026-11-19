@@ -1,1 +1,1 @@
-export { default as ToggleSwitch, type ToggleSwitchProps } from './ToggleSwitch';
+export { default as ToggleSwitch, type ToggleSwitchProps } from './ToggleSwitch.js';

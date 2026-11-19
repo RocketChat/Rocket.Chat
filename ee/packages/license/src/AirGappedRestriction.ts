@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 
-import { License } from '.';
-import { decryptStatsToken } from './token';
+import { License } from './index.js';
+import { decryptStatsToken } from './token.js';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const NO_ACTION_PERIOD_IN_DAYS = 3;

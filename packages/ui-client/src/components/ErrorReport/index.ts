@@ -1,2 +1,2 @@
-export { default as CopyErrorReportAction } from './CopyErrorReportAction';
-export type { CopyErrorReportActionProps } from './CopyErrorReportAction';
+export { default as CopyErrorReportAction } from './CopyErrorReportAction.js';
+export type { CopyErrorReportActionProps } from './CopyErrorReportAction.js';

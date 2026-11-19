@@ -14,10 +14,10 @@ import {
 	SidebarItemTimestamp,
 	SidebarItemTitle,
 	SidebarListItem,
-} from '.';
-import { Avatar } from '../../Avatar';
-import { IconButton } from '../../Button';
-import { GenericCondensedItem, GenericExtendedItem, GenericMediumItem, MenuTemplate, decorators, leterAvatarUrls } from '../helpers';
+} from './index.js';
+import { Avatar } from '../../Avatar/index.js';
+import { IconButton } from '../../Button/index.js';
+import { GenericCondensedItem, GenericExtendedItem, GenericMediumItem, MenuTemplate, decorators, leterAvatarUrls } from '../helpers.js';
 
 export default {
 	title: 'Navigation/Sidebar/Item',

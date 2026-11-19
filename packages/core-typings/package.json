@@ -8,6 +8,13 @@
 		"directory": "packages/core-typings"
 	},
 	"license": "MIT",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -21,7 +28,7 @@
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"testunit": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
-		"typecheck": "tsc --noEmit --module preserve"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/fuselage": "workspace:^",

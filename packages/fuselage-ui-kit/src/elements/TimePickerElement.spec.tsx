@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import { modalParser } from '../surfaces';
+import { modalParser } from '../surfaces/index.js';
 
 const base: UiKit.TimePickerElement = { type: 'time_picker', appId: 'app', blockId: 'block', actionId: 'at', initialTime: '09:30' };
 

@@ -1,5 +1,5 @@
-import { useAccessibilityPreferences } from './logic/useAccessibilityPreferences';
-import AccessibilityView from './views/AccessibilityView';
+import { useAccessibilityPreferences } from './logic/useAccessibilityPreferences.js';
+import AccessibilityView from './views/AccessibilityView.js';
 
 const AccessibilityPage = () => {
 	const vm = useAccessibilityPreferences();

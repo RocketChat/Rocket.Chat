@@ -1,4 +1,4 @@
-import PlainSpan from '../elements/PlainSpan';
+import PlainSpan from '../elements/PlainSpan.js';
 
 export type CodeElementProps = {
 	code: string;

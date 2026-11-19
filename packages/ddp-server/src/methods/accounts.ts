@@ -1,9 +1,9 @@
 import WebSocket from 'ws';
 
-import type { Server } from '../Server';
-import type { Session } from '../Session';
-import { WS_ERRORS } from '../constants';
-import type { ConnectionLifecycle } from '../lifecycle';
+import type { Server } from '../Server.js';
+import type { Session } from '../Session.js';
+import { WS_ERRORS } from '../constants.js';
+import type { ConnectionLifecycle } from '../lifecycle.js';
 
 /** What the `login` method answers a client with. */
 export type LoginResult = { id: string; token: string; tokenExpires?: Date; type: string };

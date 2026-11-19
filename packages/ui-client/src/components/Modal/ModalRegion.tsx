@@ -2,8 +2,8 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCurrentModal, useModal } from '@rocket.chat/ui-contexts';
 import { lazy, Suspense } from 'react';
 
-import ModalBackdrop from './ModalBackdrop';
-import ModalPortal from './ModalPortal';
+import ModalBackdrop from './ModalBackdrop.js';
+import ModalPortal from './ModalPortal.js';
 
 const FocusScope = lazy(() => import('@react-aria/focus').then((module) => ({ default: module.FocusScope })));
 

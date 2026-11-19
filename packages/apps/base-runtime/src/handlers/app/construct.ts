@@ -1,10 +1,10 @@
-import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult';
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult.js';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import type { RequestContext } from '../../lib/requestContext';
-import { sanitizeDeprecatedUsage } from '../../lib/sanitizeDeprecatedUsage';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { AppAccessorsInstance } from '../../lib/accessors/mod.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { sanitizeDeprecatedUsage } from '../../lib/sanitizeDeprecatedUsage.js';
 
 /**
  * A platform-dependent `require` used to resolve the modules an app is allowed

@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ChannelsSetDefaultProps = { roomId: string; default: boolean } | { roomName: string; default: boolean };
 

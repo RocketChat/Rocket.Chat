@@ -8,7 +8,7 @@ import type {
 } from '@rocket.chat/model-typings';
 import type { AggregateOptions, Collection, Db, FindCursor, IndexDescription, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrationsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IIntegration>>) {

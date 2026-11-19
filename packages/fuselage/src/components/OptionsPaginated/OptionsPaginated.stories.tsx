@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { createRef } from 'react';
 
-import { Box } from '../Box';
-import { Option } from '../Option';
-import type { OptionsPaginatedProps } from './OptionsPaginated';
-import { CheckOption, OptionsPaginated } from './OptionsPaginated';
+import type { OptionsPaginatedProps } from './OptionsPaginated.js';
+import { CheckOption, OptionsPaginated } from './OptionsPaginated.js';
+import { Box } from '../Box/index.js';
+import { Option } from '../Option/index.js';
 
 export default {
 	title: 'Navigation/Options/OptionsPaginated',

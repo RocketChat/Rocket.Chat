@@ -3,8 +3,8 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { LocalAudioTrack, Room } from 'livekit-client';
 import { useState } from 'react';
 
-import { RnnoiseProcessor } from './rnnoiseProcessor';
-import { useNoiseSuppression } from './useNoiseSuppression';
+import { RnnoiseProcessor } from './rnnoiseProcessor.js';
+import { useNoiseSuppression } from './useNoiseSuppression.js';
 
 const persisted = jest.fn();
 let remembered: NoiseMethod = 'browser';

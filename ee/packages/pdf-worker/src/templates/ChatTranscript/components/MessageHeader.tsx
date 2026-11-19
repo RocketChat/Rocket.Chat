@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json' with { type: 'json' };
 
 const { fontScale } = typography;
 

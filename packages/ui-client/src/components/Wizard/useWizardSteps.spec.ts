@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react';
 
-import type { StepMetadata } from './lib/StepNode';
-import StepsLinkedList from './lib/StepsLinkedList';
-import { useWizardSteps } from './useWizardSteps';
+import type { StepMetadata } from './lib/StepNode.js';
+import StepsLinkedList from './lib/StepsLinkedList.js';
+import { useWizardSteps } from './useWizardSteps.js';
 
 it('should return the initial array of steps from the list', () => {
 	const initialSteps: StepMetadata[] = [{ id: '1', title: 'Step 1' }];

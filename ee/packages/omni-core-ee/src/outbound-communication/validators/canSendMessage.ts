@@ -3,7 +3,7 @@ import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
-import { addQueryRestrictionsToDepartmentsModel } from '../../units/addRoleBasedRestrictionsToDepartment';
+import { addQueryRestrictionsToDepartmentsModel } from '../../units/addRoleBasedRestrictionsToDepartment.js';
 
 export async function validateAgentAssignPermissions(userId: string, agentId: string): Promise<void> {
 	if (await Authorization.hasPermission(userId, 'outbound.can-assign-any-agent')) {

@@ -1,17 +1,17 @@
 import { useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { type ElementType, useState, useRef } from 'react';
 
-import type { OptionType, SelectOption, SelectProps } from '..';
-import { prevent } from '../../helpers/prevent';
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { Icon } from '../Icon';
-import { Option } from '../Option';
-import { useVisible } from '../Options/useVisible';
-import { OptionsPaginated } from '../OptionsPaginated';
-import { PositionAnimated } from '../PositionAnimated';
-import SelectAddon from '../Select/SelectAddon';
-import SelectFocus from '../Select/SelectFocus';
+import { prevent } from '../../helpers/prevent.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
+import { Option } from '../Option/index.js';
+import { useVisible } from '../Options/useVisible.js';
+import { OptionsPaginated } from '../OptionsPaginated/index.js';
+import { PositionAnimated } from '../PositionAnimated/index.js';
+import SelectAddon from '../Select/SelectAddon.js';
+import SelectFocus from '../Select/SelectFocus.js';
+import type { OptionType, SelectOption, SelectProps } from '../index.js';
 
 export type PaginatedOptionType = {
 	value: string | number;

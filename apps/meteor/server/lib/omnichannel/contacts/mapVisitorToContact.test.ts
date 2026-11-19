@@ -2,15 +2,15 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { OmnichannelSourceType, type ILivechatVisitor, type IOmnichannelSource } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import type { CreateContactParams } from './createContact';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const getContactManagerIdByUsername = sinon.stub();
 const getAllowedCustomFields = sinon.stub();
 
-const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToContact', {
+const { mapVisitorToContact } = loadWithMocks('./mapVisitorToContact', {
 	'./getContactManagerIdByUsername': {
 		getContactManagerIdByUsername,
 	},

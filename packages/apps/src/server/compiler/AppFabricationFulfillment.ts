@@ -1,7 +1,7 @@
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import { AppLicenseValidationResult } from '../marketplace/license';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import { AppLicenseValidationResult } from '../marketplace/license/index.js';
 
 export class AppFabricationFulfillment {
 	public info: IAppInfo;

@@ -2,12 +2,12 @@ import { TextAreaInput } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useState } from 'react';
 
-import { useRichTextMentionNames } from '../hooks/useRichTextMentionNames';
-import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
-import { useUiKitState } from '../hooks/useUiKitState';
-import type { BlockProps } from '../utils/BlockProps';
-import { richTextFromMarkdown } from '../utils/richText/richTextFromMarkdown';
-import { richTextToMarkdown } from '../utils/richText/richTextToMarkdown';
+import { useRichTextMentionNames } from '../hooks/useRichTextMentionNames.js';
+import { useStringFromTextObject } from '../hooks/useStringFromTextObject.js';
+import { useUiKitState } from '../hooks/useUiKitState.js';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { richTextFromMarkdown } from '../utils/richText/richTextFromMarkdown.js';
+import { richTextToMarkdown } from '../utils/richText/richTextToMarkdown.js';
 
 export type RichTextInputElementProps = BlockProps<UiKit.RichTextInputElement>;
 

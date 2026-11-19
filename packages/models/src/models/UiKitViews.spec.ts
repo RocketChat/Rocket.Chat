@@ -10,7 +10,7 @@ jest.mock('./BaseRaw', () => ({
 }));
 
 // oxlint-disable-next-line import-x/first -- must be registered before the module under test is loaded
-import { UiKitViewsRaw } from './UiKitViews';
+import { UiKitViewsRaw } from './UiKitViews.js';
 
 describe('UiKitViewsRaw.saveView', () => {
 	it('matches the owner, so one app or user cannot replace the view of another', async () => {

@@ -1,7 +1,7 @@
-import { ACTION_ID_LENGTH, MESSAGE_ID } from './constants';
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from './definition';
-import { AppsEngineUIMethods } from './definition/AppsEngineUIMethods';
-import { randomString } from './utils';
+import { ACTION_ID_LENGTH, MESSAGE_ID } from './constants/index.js';
+import { AppsEngineUIMethods } from './definition/AppsEngineUIMethods.js';
+import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from './definition/index.js';
+import { randomString } from './utils/index.js';
 
 /**
  * Represents the SDK provided to the external component.

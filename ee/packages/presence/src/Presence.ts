@@ -8,9 +8,9 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
-import { PresenceReaper } from './lib/PresenceReaper';
-import { normalizeStatusText } from './lib/normalizeStatusText';
-import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
+import { PresenceReaper } from './lib/PresenceReaper.js';
+import { normalizeStatusText } from './lib/normalizeStatusText.js';
+import { type ClaimUpdate, processPresence } from './lib/presenceEngine.js';
 
 const logger = new Logger('Presence');
 

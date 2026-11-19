@@ -1,11 +1,11 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { parse } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { MucService } from './MucService';
-import { resolveConfig } from '../config';
-import type { XMPPServerEventMap } from '../events';
-import type { Logger } from '../logger';
+import { MucService } from './MucService.js';
+import { resolveConfig } from '../config.js';
+import type { XMPPServerEventMap } from '../events.js';
+import type { Logger } from '../logger.js';
 
 const silentLogger: Logger = {
 	debug: () => undefined,

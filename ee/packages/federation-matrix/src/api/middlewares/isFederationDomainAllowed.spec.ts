@@ -1,8 +1,8 @@
 import { Settings } from '@rocket.chat/core-services';
 import { Hono } from 'hono';
 
-import { isFederationDomainAllowedMiddleware } from './isFederationDomainAllowed';
-import { logger } from '../logger';
+import { isFederationDomainAllowedMiddleware } from './isFederationDomainAllowed.js';
+import { logger } from '../logger.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Settings: { get: jest.fn() },

@@ -2,9 +2,9 @@ import { LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IStatusVisibilityService, PresenceScope } from '@rocket.chat/core-services';
 import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typings';
 
-import { StreamPresence, emit, refreshVisibility } from './StreamPresence';
-import { Streamer } from './streamer.module';
-import type { IPublication } from './types';
+import { StreamPresence, emit, refreshVisibility } from './StreamPresence.js';
+import { Streamer } from './streamer.module.js';
+import type { IPublication } from './types.js';
 
 class TestStreamer extends Streamer<any> {
 	registerPublication(): void {

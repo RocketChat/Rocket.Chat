@@ -1,24 +1,24 @@
-import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater';
-import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
-import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater';
-import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater';
-import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
-import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater.js';
+import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder.js';
+import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater.js';
+import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater.js';
+import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.js';
+import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.js';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
 
-import { LivechatUpdater } from './LivechatUpdater';
-import { MessageUpdater } from './MessageUpdater';
-import { UserUpdater } from './UserUpdater';
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { UIHelper } from '../../UIHelper';
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
-import { MessageBuilder } from '../builders/MessageBuilder';
-import { RoomBuilder } from '../builders/RoomBuilder';
+import { LivechatUpdater } from './LivechatUpdater.js';
+import { MessageUpdater } from './MessageUpdater.js';
+import { UserUpdater } from './UserUpdater.js';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { UIHelper } from '../../UIHelper.js';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
+import { MessageBuilder } from '../builders/MessageBuilder.js';
+import { RoomBuilder } from '../builders/RoomBuilder.js';
 
 export class ModifyUpdater implements IModifyUpdater {
 	private readonly livechatUpdater: ILivechatUpdater;

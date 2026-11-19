@@ -1,7 +1,7 @@
-import { Box } from '../Box';
-import { Skeleton } from '../Skeleton';
-import Contextualbar, { type ContextualbarProps } from './Contextualbar';
-import ContextualbarHeader from './ContextualbarHeader';
+import Contextualbar, { type ContextualbarProps } from './Contextualbar.js';
+import ContextualbarHeader from './ContextualbarHeader.js';
+import { Box } from '../Box/index.js';
+import { Skeleton } from '../Skeleton/index.js';
 
 export type ContextualbarSkeletonProps = ContextualbarProps;
 

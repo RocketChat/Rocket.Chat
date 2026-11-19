@@ -1,8 +1,8 @@
 import type { ITeam, TeamType } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, DeleteResult, Filter, Document, FindOptions } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ITeamModel extends IBaseModel<ITeam> {
 	findByNames(names: Array<string>): FindCursor<ITeam>;

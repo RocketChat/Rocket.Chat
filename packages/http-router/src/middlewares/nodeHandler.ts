@@ -1,8 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
-import { RESPONSE_ALREADY_SENT } from '@hono/node-server/utils/response';
-
-import type { RootMiddleware } from '../server';
+import { RESPONSE_ALREADY_SENT } from '../hono.cjs';
+import type { RootMiddleware } from '../server.js';
 
 type NodeRequestHandler = (req: IncomingMessage, res: ServerResponse, next: (err?: unknown) => void) => void;
 

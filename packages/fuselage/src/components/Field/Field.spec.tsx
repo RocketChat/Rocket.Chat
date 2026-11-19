@@ -1,10 +1,10 @@
 import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
-import { FieldContext } from './Field';
-import * as stories from './Field.stories';
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { render } from '../../testing';
+import { FieldContext } from './Field.js';
+import * as stories from './Field.stories.js';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

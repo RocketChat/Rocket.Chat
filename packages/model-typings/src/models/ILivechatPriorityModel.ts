@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { FindCursor, WithId } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ILivechatPriorityModel extends IBaseModel<ILivechatPriority> {
 	findOneByIdOrName(_idOrName: string, options?: any): Promise<ILivechatPriority | null>;

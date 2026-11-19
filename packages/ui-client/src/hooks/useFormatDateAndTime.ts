@@ -1,7 +1,7 @@
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { formatDate } from '../lib/dateFormat';
+import { formatDate } from '../lib/dateFormat.js';
 
 type UseFormatDateAndTimeParams = {
 	withSeconds?: boolean;

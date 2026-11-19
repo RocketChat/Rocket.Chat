@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo } from 'react';
 
-import MarkdownTextElement from '../elements/MarkdownTextElement';
-import type { BlockProps } from '../utils/BlockProps';
+import MarkdownTextElement from '../elements/MarkdownTextElement.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type MarkdownBlockProps = BlockProps<UiKit.MarkdownBlock>;
 

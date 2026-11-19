@@ -1,14 +1,14 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { IParseAppPackageResult } from '../../../src/server/compiler';
-import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManager';
-import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController';
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { TestInfastructureSetup } from '../../test-data/utilities';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { IParseAppPackageResult } from '../../../src/server/compiler/index.js';
+import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManager.js';
+import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestInfastructureSetup } from '../../test-data/utilities.js';
 
 describe('AppRuntimeManager', () => {
 	let mockManager: AppManager;

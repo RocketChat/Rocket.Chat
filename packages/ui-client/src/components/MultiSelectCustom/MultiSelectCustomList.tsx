@@ -17,8 +17,8 @@ import type { ChangeEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { OptionProp } from './MultiSelectCustom';
-import { useFilteredOptions } from './useFilteredOptions';
+import type { OptionProp } from './MultiSelectCustom.js';
+import { useFilteredOptions } from './useFilteredOptions.js';
 
 const iconColors = {
 	default: undefined,

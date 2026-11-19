@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 
-import { Callbacks } from './Callbacks';
+import { Callbacks } from './Callbacks.js';
 
 /**
  * Callbacks returning void, like event listeners.

@@ -1,12 +1,12 @@
 import nameToCharacterMapping from '@rocket.chat/icons';
 import { composeStories } from '@storybook/react';
 import { screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import * as stories from './Menu.stories';
-import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
-import { render } from '../../testing';
+import * as stories from './Menu.stories.js';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock.js';
+import { render } from '../../testing.js';
 
 withResizeObserverMock();
 

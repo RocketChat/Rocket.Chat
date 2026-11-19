@@ -1,13 +1,14 @@
 import { beforeEach, describe, it } from 'node:test';
 
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 const LoginServiceConfiguration = { removeByService: sandbox.stub() };
 const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 
-const { removeOAuthService } = p.noCallThru().load('./removeOAuthService.ts', {
+const { removeOAuthService } = loadWithMocks('./removeOAuthService.ts', {
 	'@rocket.chat/models': { LoginServiceConfiguration },
 	'../notifyListener': { notifyOnLoginServiceConfigurationChanged },
 });

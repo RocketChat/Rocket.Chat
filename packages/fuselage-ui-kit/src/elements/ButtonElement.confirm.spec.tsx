@@ -2,11 +2,11 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import ButtonElement from './ButtonElement';
-import { UiKitContext } from '../contexts/UiKitContext';
-import { messageParser } from '../surfaces';
+import ButtonElement from './ButtonElement.js';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { messageParser } from '../surfaces/index.js';
 
 const confirm: UiKit.ButtonElement['confirm'] = {
 	title: { type: 'plain_text', text: 'Are you sure?' },

@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { stopShareButtonStyles } from './stageStyles';
+import { stopShareButtonStyles } from './stageStyles.js';
 
 export type StopShareButtonProps = {
 	onStop: () => void;

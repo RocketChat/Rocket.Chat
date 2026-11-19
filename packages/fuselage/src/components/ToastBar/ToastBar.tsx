@@ -1,8 +1,8 @@
 import { type ReactNode, type AllHTMLAttributes, type CSSProperties, useId } from 'react';
 
-import { Box } from '../Box';
-import { IconButton } from '../Button';
-import { Icon } from '../Icon';
+import { Box } from '../Box/index.js';
+import { IconButton } from '../Button/index.js';
+import { Icon } from '../Icon/index.js';
 
 export type ToastBarProps = {
 	variant?: 'info' | 'success' | 'error';

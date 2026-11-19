@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import type { ContextType, ReactNode } from 'react';
 
-import { MentionBudgetContext, createMentionBudget } from '../contexts/MentionBudgetContext';
-import { SurfaceContext } from '../contexts/SurfaceContext';
+import { MentionBudgetContext, createMentionBudget } from '../contexts/MentionBudgetContext.js';
+import { SurfaceContext } from '../contexts/SurfaceContext.js';
 
 export type SurfaceProps = {
 	children: ReactNode;

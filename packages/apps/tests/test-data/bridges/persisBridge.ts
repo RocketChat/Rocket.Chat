@@ -1,6 +1,6 @@
-import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import { PersistenceBridge } from '../../../src/server/bridges';
+import { PersistenceBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsPersisBridge extends PersistenceBridge {
 	public purge(appId: string): Promise<void> {

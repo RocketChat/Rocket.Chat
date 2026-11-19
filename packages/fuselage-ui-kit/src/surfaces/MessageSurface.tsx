@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Surface } from './Surface';
+import { Surface } from './Surface.js';
 
 export type MessageSurfaceProps = {
 	children?: ReactNode;

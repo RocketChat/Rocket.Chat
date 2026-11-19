@@ -1,8 +1,8 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser';
-import { getOrCreateFederatedUser } from './getOrCreateFederatedUser';
+import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser.js';
+import { getOrCreateFederatedUser } from './getOrCreateFederatedUser.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {

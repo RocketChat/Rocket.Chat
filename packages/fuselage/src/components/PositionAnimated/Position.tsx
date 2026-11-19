@@ -4,9 +4,9 @@ import type { RefObject, ReactElement } from 'react';
 import { useRef, useMemo, cloneElement, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useOwnerDocument } from '../../contexts';
-import { cx } from '../../helpers/composeClassNames';
-import type { ElementProps } from '../../types/ElementProps';
+import { useOwnerDocument } from '../../contexts/index.js';
+import { cx } from '../../helpers/composeClassNames.js';
+import type { ElementProps } from '../../types/ElementProps.js';
 
 export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
 	anchor: RefObject<Element | null>;

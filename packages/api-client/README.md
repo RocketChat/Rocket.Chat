@@ -22,7 +22,7 @@ npm install @rocket.chat/api-client
 
 `@rocket.chat/rest-typings` and `@rocket.chat/core-typings` come in as dependencies.
 
-The package is published as CommonJS. It relies on the global `fetch`, `FormData` and `File`, so it runs in browsers and in recent Node.js versions. `upload()` uses `XMLHttpRequest` and only works in browsers.
+The package is published as an ES module. It relies on the global `fetch`, `FormData` and `File`, so it runs in browsers and in recent Node.js versions. `upload()` uses `XMLHttpRequest` and only works in browsers.
 
 ## Usage
 

@@ -6,15 +6,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import type { App } from '@rocket.chat/apps-engine/definition/App';
-import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload';
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
+import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload.js';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
 
-import { createMockRequest } from './helpers/mod';
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError } from '../../lib/jsonrpc';
-import handleUploadEvents from '../app/handleUploadEvents';
-import { Errors } from '../lib/assertions';
+import { createMockRequest } from './helpers/mod.js';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { JsonRpcError } from '../../lib/jsonrpc.js';
+import handleUploadEvents from '../app/handleUploadEvents.js';
+import { Errors } from '../lib/assertions.js';
 
 describe('handlers > upload', () => {
 	let app: App & IPreFileUpload;

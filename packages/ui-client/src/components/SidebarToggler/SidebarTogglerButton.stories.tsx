@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import SidebarTogglerButton from './SidebarTogglerButton';
+import SidebarTogglerButton from './SidebarTogglerButton.js';
 
 export default {
 	component: SidebarTogglerButton,

@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { fireEvent } from '@testing-library/react';
 
-import AnimatedVisibility from './AnimatedVisibility';
-import { render } from '../../testing';
-import { Box } from '../Box';
+import AnimatedVisibility from './AnimatedVisibility.js';
+import { render } from '../../testing.js';
+import { Box } from '../Box/index.js';
 
 const cssClassCount = (element: Element | null) =>
 	(element?.className ?? '').split(' ').filter((name) => name.startsWith('rcx-css-')).length;

@@ -4,9 +4,9 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { messageParser } from '../surfaces';
+import { messageParser } from '../surfaces/index.js';
 
 const video = (overrides: Partial<UiKit.VideoBlock> = {}): UiKit.VideoBlock => ({
 	type: 'video',

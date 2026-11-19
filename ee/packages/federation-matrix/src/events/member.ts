@@ -7,12 +7,12 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import debounce from 'lodash.debounce';
 import mem from 'mem';
 
-import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
-import { getFederatedRoomName } from '../helpers/getFederatedRoomName';
-import { getJoinRuleType } from '../helpers/getJoinRuleType';
-import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
-import { getUsernameServername } from '../helpers/getUsernameServername';
-import { MatrixMediaService } from '../services/MatrixMediaService';
+import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId.js';
+import { getFederatedRoomName } from '../helpers/getFederatedRoomName.js';
+import { getJoinRuleType } from '../helpers/getJoinRuleType.js';
+import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser.js';
+import { getUsernameServername } from '../helpers/getUsernameServername.js';
+import { MatrixMediaService } from '../services/MatrixMediaService.js';
 
 const logger = new Logger('federation-matrix:member');
 

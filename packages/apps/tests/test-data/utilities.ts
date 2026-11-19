@@ -1,67 +1,67 @@
 import * as os from 'node:os';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
-import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IApi, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
-import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
-import type { IApiEndpointInfo } from '@rocket.chat/apps-engine/definition/api/IApiEndpointInfo';
-import type { IMessage, IMessageAttachment, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IApiEndpointInfo } from '@rocket.chat/apps-engine/definition/api/IApiEndpointInfo.js';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api/index.js';
+import type { IApi, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api/index.js';
+import type { IMessage, IMessageAttachment, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages/index.js';
 import type {
 	IOutboundEmailMessageProvider,
 	IOutboundMessage,
 	IOutboundPhoneMessageProvider,
 	ProviderMetadata,
-} from '@rocket.chat/apps-engine/definition/outboundCommunication';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
+import { SettingType } from '@rocket.chat/apps-engine/definition/settings/index.js';
 import type {
 	ISlashCommand,
 	ISlashCommandPreview,
 	ISlashCommandPreviewItem,
 	SlashCommandContext,
-} from '@rocket.chat/apps-engine/definition/slashcommands';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
+} from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
+import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users/index.js';
 import type {
 	IVideoConferenceOptions,
 	IVideoConfProvider,
 	VideoConfData,
 	VideoConfDataExtended,
-} from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/AppVideoConference';
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
-import { VideoConferenceStatus } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
-import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser';
+} from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
+import type { AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/AppVideoConference.js';
+import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference.js';
+import { VideoConferenceStatus } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference.js';
+import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser.js';
 
-import { TestsAppBridges } from './bridges/appBridges';
-import { TestSourceStorage } from './storage/TestSourceStorage';
-import { TestsAppLogStorage } from './storage/logStorage';
-import { TestsAppStorage } from './storage/storage';
-import type { AppManager } from '../../src/server/AppManager';
-import { ProxiedApp } from '../../src/server/ProxiedApp';
-import type { AppBridges } from '../../src/server/bridges';
-import { AppResourceBridge } from '../../src/server/bridges/AppResourceBridge';
-import { AppPackageParser } from '../../src/server/compiler';
+import { TestsAppBridges } from './bridges/appBridges.js';
+import { TestSourceStorage } from './storage/TestSourceStorage.js';
+import { TestsAppLogStorage } from './storage/logStorage.js';
+import { TestsAppStorage } from './storage/storage.js';
+import type { AppManager } from '../../src/server/AppManager.js';
+import { ProxiedApp } from '../../src/server/ProxiedApp.js';
+import { AppResourceBridge } from '../../src/server/bridges/AppResourceBridge.js';
+import type { AppBridges } from '../../src/server/bridges/index.js';
+import { AppPackageParser } from '../../src/server/compiler/index.js';
+import type { AppOutboundCommunicationProviderManager } from '../../src/server/managers/AppOutboundCommunicationProviderManager.js';
+import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager.js';
+import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager.js';
 import type {
 	AppExternalComponentManager,
 	AppSchedulerManager,
 	AppSettingsManager,
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
-} from '../../src/server/managers';
-import type { AppOutboundCommunicationProviderManager } from '../../src/server/managers/AppOutboundCommunicationProviderManager';
-import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
-import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
-import type { IMarketplaceInfo, IMarketplaceSubscriptionInfo } from '../../src/server/marketplace';
-import { MarketplacePurchaseType } from '../../src/server/marketplace/MarketplacePurchaseType';
-import { MarketplaceSubscriptionStatus } from '../../src/server/marketplace/MarketplaceSubscriptionStatus';
-import { MarketplaceSubscriptionType } from '../../src/server/marketplace/MarketplaceSubscriptionType';
-import type { IRuntimeController } from '../../src/server/runtime/IRuntimeController';
-import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
-import { AppInstallationSource } from '../../src/server/storage/IAppStorageItem';
+} from '../../src/server/managers/index.js';
+import { MarketplacePurchaseType } from '../../src/server/marketplace/MarketplacePurchaseType.js';
+import { MarketplaceSubscriptionStatus } from '../../src/server/marketplace/MarketplaceSubscriptionStatus.js';
+import { MarketplaceSubscriptionType } from '../../src/server/marketplace/MarketplaceSubscriptionType.js';
+import type { IMarketplaceInfo, IMarketplaceSubscriptionInfo } from '../../src/server/marketplace/index.js';
+import type { IRuntimeController } from '../../src/server/runtime/IRuntimeController.js';
+import { AppInstallationSource } from '../../src/server/storage/IAppStorageItem.js';
+import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage/index.js';
 
 export class TestInfastructureSetup {
 	private appStorage: TestsAppStorage;

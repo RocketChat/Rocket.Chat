@@ -2,7 +2,7 @@ import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-t
 import type { IUserDataFilesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription, Document } from 'mongodb';
 
-import { BaseUploadModelRaw } from './BaseUploadModel';
+import { BaseUploadModelRaw } from './BaseUploadModel.js';
 
 export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFilesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {

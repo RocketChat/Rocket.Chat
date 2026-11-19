@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
-import type { ImageGalleryComponentProps } from '../ImageGalleryContext';
-import { ImageGalleryContext } from '../ImageGalleryContext';
+import UserInfoZoomableAvatar from './UserInfoZoomableAvatar.js';
+import type { ImageGalleryComponentProps } from '../ImageGalleryContext.js';
+import { ImageGalleryContext } from '../ImageGalleryContext.js';
 
 const Gallery = ({ images, onClose }: ImageGalleryComponentProps) => (
 	<div role='dialog' aria-label={images[0].description}>

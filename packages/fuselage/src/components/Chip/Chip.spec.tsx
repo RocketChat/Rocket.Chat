@@ -1,10 +1,10 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import Chip from './Chip';
-import * as stories from './Chip.stories';
-import { render } from '../../testing';
+import Chip from './Chip.js';
+import * as stories from './Chip.stories.js';
+import { render } from '../../testing.js';
 
 const { Default } = composeStories(stories);
 

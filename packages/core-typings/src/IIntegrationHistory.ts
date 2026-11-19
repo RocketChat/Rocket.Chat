@@ -1,6 +1,6 @@
-import type { OutgoingIntegrationEvent } from './IIntegration';
-import type { IMessage } from './IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { OutgoingIntegrationEvent } from './IIntegration.js';
+import type { IMessage } from './IMessage/index.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
 
 export interface IIntegrationHistory extends IRocketChatRecord {
 	type: string;

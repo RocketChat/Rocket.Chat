@@ -3,10 +3,10 @@ import type { MediaSignalingSession, CallState, CallContact } from '@rocket.chat
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer } from 'react';
 
-import { defaultSessionState } from '../context/MediaCallViewContext';
-import type { ConnectionState, SessionState } from '../context/definitions';
-import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
-import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
+import { defaultSessionState } from '../context/MediaCallViewContext.js';
+import type { ConnectionState, SessionState } from '../context/definitions.js';
+import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact.js';
+import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState.js';
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
 	if (contact.type === 'sip') {

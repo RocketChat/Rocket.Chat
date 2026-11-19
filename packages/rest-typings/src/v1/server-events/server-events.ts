@@ -1,7 +1,7 @@
 import type { IServerEvents } from '@rocket.chat/core-typings';
 
-import type { ServerEventsAuditSettingsParamsGET } from './ServerEventsAuditSettingsParamsGET';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { ServerEventsAuditSettingsParamsGET } from './ServerEventsAuditSettingsParamsGET.js';
+import type { PaginatedResult } from '../../helpers/PaginatedResult.js';
 
 export type ServerEventsEndpoints = {
 	'/v1/audit.settings': {

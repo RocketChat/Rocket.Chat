@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
-import { Element } from './ImageElement.styles';
-import { Image } from '../blocks/ImageBlock.styles';
+import { Element } from './ImageElement.styles.js';
+import { Image } from '../blocks/ImageBlock.styles.js';
 
 it.each([
 	['image block', <Image key='block' imageUrl='https://example.com/a.png' width={100} height={50} data-testid='frame' />],

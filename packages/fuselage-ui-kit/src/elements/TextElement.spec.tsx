@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import * as i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import MarkdownTextElement from './MarkdownTextElement';
-import PlainTextElement from './PlainTextElement';
-import { AppIdProvider } from '../contexts/AppIdContext';
+import MarkdownTextElement from './MarkdownTextElement.js';
+import PlainTextElement from './PlainTextElement.js';
+import { AppIdProvider } from '../contexts/AppIdContext.js';
 
 let i18n: i18next.i18n;
 

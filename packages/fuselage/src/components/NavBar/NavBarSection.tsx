@@ -3,8 +3,8 @@ import { Fragment } from 'react';
 import { isElement } from 'react-is';
 import flattenChildren from 'react-keyed-flatten-children';
 
-import NavBarDivider from './NavBarDivider';
-import { cx } from '../../helpers/composeClassNames';
+import NavBarDivider from './NavBarDivider.js';
+import { cx } from '../../helpers/composeClassNames.js';
 
 export type NavbarSectionProps = HTMLAttributes<HTMLSpanElement>;
 

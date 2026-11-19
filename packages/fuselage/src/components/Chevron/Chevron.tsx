@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
-import { Icon } from '../Icon';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box, type BoxProps } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
 
 export type ChevronProps = ElementProps<HTMLSpanElement> & {
 	size?: BoxProps['width'];

@@ -2,7 +2,7 @@ import { Authorization } from '@rocket.chat/core-services';
 import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
 import mem from 'mem';
 
-import { defaultLogger } from '../utils/logger';
+import { defaultLogger } from '../utils/logger.js';
 
 async function getUnitsFromUserRoles(user: string): Promise<string[]> {
 	return LivechatUnit.findByMonitorId(user);

@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { CommandAlreadyExistsError } from '../../../src/server/errors';
+import { CommandAlreadyExistsError } from '../../../src/server/errors/index.js';
 
 describe('CommandAlreadyExistsError', () => {
 	it('verifyCommandAlreadyExistsError', () => {

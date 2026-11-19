@@ -1,4 +1,4 @@
-import { XMPP_SERVER_DEFAULTS } from '../config';
+import { XMPP_SERVER_DEFAULTS } from '../config.js';
 
 export type XMPPServerConfiguration = {
 	enabled: boolean;

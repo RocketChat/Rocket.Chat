@@ -1,9 +1,9 @@
 import { memo } from 'react';
 
-import TileFrame from './TileFrame';
-import TilePicture from './TilePicture';
-import { TILE_RING_WIDTH } from '../lib/speakingRing';
-import type { TileParticipant } from '../lib/stageTiles';
+import TileFrame from './TileFrame.js';
+import TilePicture from './TilePicture.js';
+import { TILE_RING_WIDTH } from '../lib/speakingRing.js';
+import type { TileParticipant } from '../lib/stageTiles.js';
 
 export type ParticipantTileProps = TileParticipant;
 

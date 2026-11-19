@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { StrictMode } from 'react';
 
-import useAvailableViewTracker from './useAvailableViewTracker';
+import useAvailableViewTracker from './useAvailableViewTracker.js';
 
 describe('useAvailableViewTracker', () => {
 	it('should track registered views under StrictMode, which calls state updaters twice', () => {

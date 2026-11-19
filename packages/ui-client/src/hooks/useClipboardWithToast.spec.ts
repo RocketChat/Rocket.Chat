@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import { useClipboardWithToast } from './useClipboardWithToast';
+import { useClipboardWithToast } from './useClipboardWithToast.js';
 
 const writeText = jest.fn();
 

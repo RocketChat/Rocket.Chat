@@ -1,7 +1,7 @@
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IWorkspaceCredentialsModel extends IBaseModel<IWorkspaceCredentials> {
 	getCredentialByScope(scope?: string): Promise<IWorkspaceCredentials | null>;

@@ -1,7 +1,7 @@
-import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
-import type { PingPayload, PongPayload } from './heartbeatsPayloads';
-import type { ServerMethodPayloads } from './methodsPayloads';
-import type { ServerPublicationPayloads } from './publicationPayloads';
+import type { ConnectedPayload, FailedPayload } from './connectionPayloads.js';
+import type { PingPayload, PongPayload } from './heartbeatsPayloads.js';
+import type { ServerMethodPayloads } from './methodsPayloads.js';
+import type { ServerPublicationPayloads } from './publicationPayloads.js';
 
 /**
  * @category incoming

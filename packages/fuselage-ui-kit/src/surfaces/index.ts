@@ -1,13 +1,13 @@
-import BannerSurface from './BannerSurface';
-import { BannerSurfaceRenderer } from './BannerSurfaceRenderer';
-import ContextualBarSurface from './ContextualBarSurface';
-import { ContextualBarSurfaceRenderer } from './ContextualBarSurfaceRenderer';
-import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
-import ModalSurface from './ModalSurface';
-import { ModalSurfaceRenderer } from './ModalSurfaceRenderer';
-import { Surface } from './Surface';
-import { UiKitMessage, messageParser } from './UiKitMessage';
-import { createSurfaceRenderer } from './createSurfaceRenderer';
+import BannerSurface from './BannerSurface.js';
+import { BannerSurfaceRenderer } from './BannerSurfaceRenderer.js';
+import ContextualBarSurface from './ContextualBarSurface.js';
+import { ContextualBarSurfaceRenderer } from './ContextualBarSurfaceRenderer.js';
+import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer.js';
+import ModalSurface from './ModalSurface.js';
+import { ModalSurfaceRenderer } from './ModalSurfaceRenderer.js';
+import { Surface } from './Surface.js';
+import { UiKitMessage, messageParser } from './UiKitMessage.js';
+import { createSurfaceRenderer } from './createSurfaceRenderer.js';
 
 export const bannerParser = new BannerSurfaceRenderer();
 export const modalParser = new ModalSurfaceRenderer();

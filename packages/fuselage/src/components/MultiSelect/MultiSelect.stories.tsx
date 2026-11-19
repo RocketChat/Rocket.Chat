@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import type { SelectOption } from '../Select';
-import MultiSelect from './MultiSelect';
-import MultiSelectFiltered from './MultiSelectFiltered';
+import MultiSelect from './MultiSelect.js';
+import MultiSelectFiltered from './MultiSelectFiltered.js';
+import type { SelectOption } from '../Select/index.js';
 
 export default {
 	title: 'Inputs/MultiSelect',

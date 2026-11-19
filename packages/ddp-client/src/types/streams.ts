@@ -1,5 +1,5 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 import type {
 	IMessage,
 	IRoom,

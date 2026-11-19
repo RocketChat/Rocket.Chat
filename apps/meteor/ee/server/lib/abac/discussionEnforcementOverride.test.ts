@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const loggerMock = { info: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), debug: sinon.stub() };
 const updateValueByIdMock = sinon.stub();
@@ -12,14 +13,15 @@ const notifyOnSettingChangedByIdMock = sinon.stub();
 const settingsGetMock = sinon.stub();
 const hasModuleMock = sinon.stub();
 
-const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDiscussionEnabledWithoutLicense } = p
-	.noCallThru()
-	.load('./discussionEnforcementOverride.ts', {
+const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDiscussionEnabledWithoutLicense } = loadWithMocks(
+	'./discussionEnforcementOverride.ts',
+	{
 		'@rocket.chat/license': { License: { hasModule: hasModuleMock } },
 		'@rocket.chat/logger': { Logger: sinon.stub().returns(loggerMock) },
 		'../../../../server/lib/notifyListener': { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock },
 		'../../../../server/settings': { settings: { get: settingsGetMock } },
-	}) as {
+	},
+) as {
 	applyDiscussionEnforcementOverride: () => Promise<void>;
 	restoreDiscussionEnabled: () => Promise<void>;
 	restoreDiscussionEnabledWithoutLicense: () => Promise<void>;

@@ -4,11 +4,11 @@ import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus } from '@rocket.chat/models';
 import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
-import type { EventSignatures } from './events/Events';
-import { LocalServiceRegistry } from './lib/LocalServiceRegistry';
-import { asyncLocalStorage } from './lib/asyncLocalStorage';
-import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
-import type { ServiceClass, IServiceClass } from './types/ServiceClass';
+import type { EventSignatures } from './events/Events.js';
+import { LocalServiceRegistry } from './lib/LocalServiceRegistry.js';
+import { asyncLocalStorage } from './lib/asyncLocalStorage.js';
+import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker.js';
+import type { ServiceClass, IServiceClass } from './types/ServiceClass.js';
 
 type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
 

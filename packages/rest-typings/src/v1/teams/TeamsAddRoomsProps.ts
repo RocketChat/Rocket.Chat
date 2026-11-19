@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type TeamsAddRoomsProps = ({ teamId: string } | { teamName: string }) & {
 	rooms: string[];

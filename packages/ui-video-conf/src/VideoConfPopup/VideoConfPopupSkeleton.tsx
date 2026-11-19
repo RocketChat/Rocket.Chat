@@ -1,10 +1,10 @@
 import { Skeleton, Stack } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-import VideoConfPopup from './VideoConfPopup';
-import VideoConfPopupContent from './VideoConfPopupContent';
-import VideoConfPopupFooter from './VideoConfPopupFooter';
-import VideoConfPopupHeader from './VideoConfPopupHeader';
+import VideoConfPopup from './VideoConfPopup.js';
+import VideoConfPopupContent from './VideoConfPopupContent.js';
+import VideoConfPopupFooter from './VideoConfPopupFooter.js';
+import VideoConfPopupHeader from './VideoConfPopupHeader.js';
 
 export type VideoConfPopupSkeletonProps = Omit<ComponentProps<typeof VideoConfPopup>, 'children'>;
 

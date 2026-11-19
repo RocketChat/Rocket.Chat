@@ -1,8 +1,8 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { CallFlag, CallRole, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 
-import { getNewCallTransferredBy } from './getNewCallTransferredBy';
-import { getMediaCallServer } from '../injection';
+import { getNewCallTransferredBy } from './getNewCallTransferredBy.js';
+import { getMediaCallServer } from '../injection.js';
 
 function getCallFlags(call: IMediaCall, role: CallRole): CallFlag[] {
 	const flags: CallFlag[] = [];

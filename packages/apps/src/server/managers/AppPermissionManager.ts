@@ -1,8 +1,8 @@
-import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission.js';
 
-import { getPermissionsByAppId } from '../AppManager';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { APPS_ENGINE_RUNTIME_FILE_PREFIX } from '../runtime/AppsEngineRuntime';
+import { getPermissionsByAppId } from '../AppManager.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { APPS_ENGINE_RUNTIME_FILE_PREFIX } from '../runtime/AppsEngineRuntime.js';
 
 export class AppPermissionManager {
 	/**

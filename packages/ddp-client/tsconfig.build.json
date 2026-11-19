@@ -4,7 +4,8 @@
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"target": "es6",
-		"module": "commonjs",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"esModuleInterop": true,
 		"sourceMap": true
 	},

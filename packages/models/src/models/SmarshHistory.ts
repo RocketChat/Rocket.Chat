@@ -2,7 +2,7 @@ import type { ISmarshHistory, RocketChatRecordDeleted } from '@rocket.chat/core-
 import type { ISmarshHistoryModel } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class SmarshHistoryRaw extends BaseRaw<ISmarshHistory> implements ISmarshHistoryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISmarshHistory>>) {

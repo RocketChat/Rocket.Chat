@@ -2,7 +2,7 @@
  * @jest-environment <rootDir>/tests/environments/timezone.ts
  * @jest-environment-options {"timezone": "America/Argentina/Buenos_Aires"}
  */
-import { formatDate, momentFormatToDateFns, toDate } from './dateFormat';
+import { formatDate, momentFormatToDateFns, toDate } from './dateFormat.js';
 
 describe('momentFormatToDateFns', () => {
 	it('maps locale tokens', () => {

@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { ajvQuery } from '../Ajv';
-import { withGroupBaseProperties } from './BaseProps';
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajvQuery } from '../Ajv.js';
+import { withGroupBaseProperties } from './BaseProps.js';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest.js';
 
 export type GroupsMessagesProps = PaginatedRequest<
 	({ roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) & {

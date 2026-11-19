@@ -2,8 +2,8 @@ import { type IMediaStreamWrapper, type CallFeature } from '@rocket.chat/media-s
 import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
-import type { SessionState, PeerInfo } from './definitions';
-import { type LastKnownPosition } from '../providers/useWidgetPositionTracker';
+import type { SessionState, PeerInfo } from './definitions.js';
+import { type LastKnownPosition } from '../providers/useWidgetPositionTracker.js';
 
 export type MediaCallStreams = {
 	remoteScreen?: IMediaStreamWrapper;

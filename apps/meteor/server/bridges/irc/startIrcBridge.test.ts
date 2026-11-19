@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -12,7 +13,7 @@ const BridgeMock = sandbox.stub().callsFake(function (this: { init: typeof initM
 	this.init = initMock;
 });
 
-const { startIrcBridge } = p.noCallThru().load('./startIrcBridge', {
+const { startIrcBridge } = loadWithMocks('./startIrcBridge', {
 	'./irc-bridge': { __esModule: true, default: BridgeMock },
 	'../../settings/cached': { settings: { get: settingsGetMock } },
 });

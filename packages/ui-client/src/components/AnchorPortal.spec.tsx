@@ -1,7 +1,7 @@
 /* oxlint-disable testing-library/no-node-access */
 import { render, screen } from '@testing-library/react';
 
-import AnchorPortal from './AnchorPortal';
+import AnchorPortal from './AnchorPortal.js';
 
 it('should render children', () => {
 	render(

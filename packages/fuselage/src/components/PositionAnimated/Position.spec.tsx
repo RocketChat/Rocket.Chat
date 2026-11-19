@@ -1,7 +1,7 @@
 import { createRef } from 'react';
 
-import Position from './Position';
-import { render } from '../../testing';
+import Position from './Position.js';
+import { render } from '../../testing.js';
 
 test('keeps the style of the positioned element', () => {
 	const anchor = createRef<HTMLDivElement>();

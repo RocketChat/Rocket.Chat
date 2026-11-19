@@ -1,4 +1,4 @@
-import { ajv } from './Ajv';
+import { ajv } from './Ajv.js';
 
 type SamlParseMetadataProps = {
 	url: string;

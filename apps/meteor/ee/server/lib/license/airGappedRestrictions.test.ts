@@ -3,8 +3,9 @@ import { afterEach, before, describe, it } from 'node:test';
 import { Emitter } from '@rocket.chat/emitter';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 let promises: Array<Promise<any>> = [];
 
@@ -44,7 +45,7 @@ const licenseMock = {
 	},
 };
 
-proxyquire.noCallThru().load('./airGappedRestrictions.ts', {
+loadWithMocks('./airGappedRestrictions.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: airgappedRestrictionObj,
 		License: licenseMock,

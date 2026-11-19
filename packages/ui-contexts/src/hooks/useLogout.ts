@@ -1,8 +1,8 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useContext } from 'react';
 
-import { UserContext } from '../UserContext';
-import { useRouter } from './useRouter';
+import { UserContext } from '../UserContext.js';
+import { useRouter } from './useRouter.js';
 
 export const useLogout = (): (() => void) => {
 	const router = useRouter();

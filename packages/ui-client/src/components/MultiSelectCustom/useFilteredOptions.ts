@@ -1,7 +1,7 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import type { OptionProp } from './MultiSelectCustom';
+import type { OptionProp } from './MultiSelectCustom.js';
 
 export const useFilteredOptions = (optionSearch: string | undefined, options: OptionProp[]) => {
 	const { t } = useTranslation();

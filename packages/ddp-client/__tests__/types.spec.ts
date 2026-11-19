@@ -1,4 +1,4 @@
-import type { DDPSDK } from '../src';
+import type { DDPSDK } from '../src/index.js';
 
 // Checked by `yarn typecheck`; the body never runs.
 const typeAssertions = (sdk: DDPSDK) => {

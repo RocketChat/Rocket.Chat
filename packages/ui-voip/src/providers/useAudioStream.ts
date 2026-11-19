@@ -1,7 +1,7 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { usePlayMediaStream } from '@rocket.chat/ui-media';
 
-import { useInstanceSnapshot } from '../context/useInstanceSnapshot';
+import { useInstanceSnapshot } from '../context/useInstanceSnapshot.js';
 
 const getAudioStream = (instance?: MediaSignalingSession) => {
 	try {

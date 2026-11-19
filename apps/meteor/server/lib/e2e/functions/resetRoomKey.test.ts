@@ -2,10 +2,10 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { generateMultipleSubs } from '../../../../tests/mocks/data/subscriptions';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 function addSecondsToDate(seconds: number, date = new Date()) {
 	return new Date(date.getTime() + seconds * 1000);
@@ -28,7 +28,7 @@ const models = {
 	},
 };
 
-const { resetRoomKey, pushToLimit, replicateMongoSlice } = proxyquire.noCallThru().load('./resetRoomKey', {
+const { resetRoomKey, pushToLimit, replicateMongoSlice } = loadWithMocks('./resetRoomKey', {
 	'../../notifyListener': {
 		notifyOnRoomChanged: sinon.stub(),
 		notifyOnSubscriptionChanged: sinon.stub(),

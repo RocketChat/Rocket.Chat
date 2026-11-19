@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 
-import type { BoxProps } from './Box';
+import type { BoxProps } from './Box.js';
 
 export type BoxTransformProps = BoxProps & { className?: string };
 

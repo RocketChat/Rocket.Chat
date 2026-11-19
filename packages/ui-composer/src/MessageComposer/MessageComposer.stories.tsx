@@ -16,7 +16,7 @@ import {
 	MessageComposerFile,
 	MessageComposerFileGroup,
 	MessageComposerFileError,
-} from '.';
+} from './index.js';
 
 export default {
 	component: MessageComposer,

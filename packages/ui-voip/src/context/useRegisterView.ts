@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react';
 
-import { useMediaCallInstance } from '.';
-import type { AvailableViews } from './MediaCallInstanceContext';
+import type { AvailableViews } from './MediaCallInstanceContext.js';
+import { useMediaCallInstance } from './index.js';
 
 const useRegisterView = (view: AvailableViews) => {
 	const { currentViews, registerView, unregisterView } = useMediaCallInstance();

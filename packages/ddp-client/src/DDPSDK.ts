@@ -1,19 +1,19 @@
 import { RestClient } from '@rocket.chat/api-client';
 
-import { ClientStreamImpl, ConnectionLostError } from './ClientStream';
-import type { Connection, WebSocketConstructor } from './Connection';
-import { ConnectionImpl } from './Connection';
-import { DDPDispatcher } from './DDPDispatcher';
-import { TimeoutControl } from './TimeoutControl';
-import type { Account } from './types/Account';
-import { AccountImpl } from './types/Account';
-import type { ClientStream } from './types/ClientStream';
-import type { OutgoingPayload } from './types/OutgoingPayload';
-import type { SDK } from './types/SDK';
-import type { Subscription } from './types/Subscription';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './types/methods';
-import type { ChangedPayload, PublicationPayloads } from './types/publicationPayloads';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './types/streams';
+import { ClientStreamImpl, ConnectionLostError } from './ClientStream.js';
+import type { Connection, WebSocketConstructor } from './Connection.js';
+import { ConnectionImpl } from './Connection.js';
+import { DDPDispatcher } from './DDPDispatcher.js';
+import { TimeoutControl } from './TimeoutControl.js';
+import type { Account } from './types/Account.js';
+import { AccountImpl } from './types/Account.js';
+import type { ClientStream } from './types/ClientStream.js';
+import type { OutgoingPayload } from './types/OutgoingPayload.js';
+import type { SDK } from './types/SDK.js';
+import type { Subscription } from './types/Subscription.js';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './types/methods.js';
+import type { ChangedPayload, PublicationPayloads } from './types/publicationPayloads.js';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './types/streams.js';
 
 type StreamEvent = ChangedPayload & { fields: { eventName: string; args: unknown[] } };
 

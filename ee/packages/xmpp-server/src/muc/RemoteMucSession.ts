@@ -1,11 +1,11 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { MucRemoteOccupant } from '../events';
-import { MUC_STATUS, splitOccupantJid } from './stanzas';
-import { normalizeRoomJid } from '../jid/normalize';
-import { xml } from '../xml/build';
-import { buildReplace, parseReplaceId } from '../xml/correction';
-import { NS_MUC, NS_MUC_USER, NS_OCCUPANT_ID, NS_SID } from '../xml/namespaces';
+import type { MucRemoteOccupant } from '../events.js';
+import { MUC_STATUS, splitOccupantJid } from './stanzas.js';
+import { normalizeRoomJid } from '../jid/normalize.js';
+import { xml } from '../xml/build.js';
+import { buildReplace, parseReplaceId } from '../xml/correction.js';
+import { NS_MUC, NS_MUC_USER, NS_OCCUPANT_ID, NS_SID } from '../xml/namespaces.js';
 
 const REMOTE_RESOURCE = 'rocketchat';
 

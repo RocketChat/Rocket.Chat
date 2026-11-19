@@ -3,8 +3,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsValues: Record<string, unknown> = {};
 const broadcast = sinon.stub();
@@ -18,7 +19,7 @@ const translate = sinon.stub();
 const usersFindOneById = sinon.stub();
 const messagesFindOneById = sinon.stub();
 
-const { executeSendMessage } = proxyquire.noCallThru().load('./sendMessage', {
+const { executeSendMessage } = loadWithMocks('./sendMessage', {
 	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
 	'../../lib/authorization/canSendMessage': { canSendMessageAsync },
 	'../../lib/i18n': { i18n: { t: translate } },

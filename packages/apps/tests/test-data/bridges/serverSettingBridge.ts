@@ -1,6 +1,6 @@
-import { SettingType, type ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import { SettingType, type ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import { ServerSettingBridge } from '../../../src/server/bridges';
+import { ServerSettingBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsServerSettingBridge extends ServerSettingBridge {
 	public getAll(appId: string): Promise<Array<ISetting>> {

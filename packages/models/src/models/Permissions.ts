@@ -2,7 +2,7 @@ import type { IPermission, IRole, RocketChatRecordDeleted } from '@rocket.chat/c
 import type { IPermissionsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IPermission>>) {

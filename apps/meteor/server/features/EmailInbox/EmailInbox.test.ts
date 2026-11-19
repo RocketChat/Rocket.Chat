@@ -4,8 +4,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 class FakeIMAPInterceptor extends EventEmitter {
 	static instances: FakeIMAPInterceptor[] = [];
@@ -40,7 +41,7 @@ const models = {
 };
 const onEmailReceived = sinon.stub();
 
-const { configureEmailInboxes, inboxes } = proxyquire.noCallThru().load('./EmailInbox', {
+const { configureEmailInboxes, inboxes } = loadWithMocks('./EmailInbox', {
 	'./EmailInbox_Incoming': { onEmailReceived },
 	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
 	'../../email/IMAPInterceptor': { IMAPInterceptor: FakeIMAPInterceptor },

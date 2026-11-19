@@ -1,8 +1,8 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useEffect, useId } from 'react';
 
-import { useItemContext } from './ItemContext';
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { useItemContext } from './ItemContext.js';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type ItemTitleProps = {
 	is?: ElementType;

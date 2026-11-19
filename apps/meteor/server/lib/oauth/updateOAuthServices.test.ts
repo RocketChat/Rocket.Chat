@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -13,7 +14,7 @@ const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const notifyOnLoginServiceConfigurationChangedByService = sandbox.stub();
 const LoginServiceConfiguration = { createOrUpdateService: sandbox.stub(), removeByService: sandbox.stub() };
 
-const { updateOAuthServices } = p.noCallThru().load('./updateOAuthServices.ts', {
+const { updateOAuthServices } = loadWithMocks('./updateOAuthServices.ts', {
 	'../../settings/cached': {
 		settings: {
 			get: (key: string) => settingValues.get(key),

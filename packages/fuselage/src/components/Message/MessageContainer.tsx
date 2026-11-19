@@ -1,4 +1,4 @@
-import ItemContent, { type ItemContentProps } from '../Item/ItemContent';
+import ItemContent, { type ItemContentProps } from '../Item/ItemContent.js';
 
 export type MessageContainerProps = Omit<ItemContentProps, 'is'>;
 

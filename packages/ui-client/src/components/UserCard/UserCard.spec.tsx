@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import UserCard from './UserCard';
+import UserCard from './UserCard.js';
 
 it('does not take focus when it mounts', () => {
 	render(

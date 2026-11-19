@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Tabs, { type TabsProps } from './Tabs';
-import TabsItem, { type TabsItemProps } from './TabsItem';
+import Tabs, { type TabsProps } from './Tabs.js';
+import TabsItem, { type TabsItemProps } from './TabsItem.js';
 
 export default {
 	title: 'Navigation/Tabs',

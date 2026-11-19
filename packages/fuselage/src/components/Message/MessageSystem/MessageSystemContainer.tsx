@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import ItemContent from '../../Item/ItemContent';
+import { cx } from '../../../helpers/composeClassNames.js';
+import ItemContent from '../../Item/ItemContent.js';
 
 export type MessageSystemContainerProps = {
 	children?: ReactNode;

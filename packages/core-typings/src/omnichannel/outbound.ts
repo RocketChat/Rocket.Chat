@@ -1,7 +1,7 @@
 import type {
 	IOutboundEmailMessageProvider,
 	IOutboundPhoneMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundCommunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/index.js';
 
 export interface IOutboundProviderTemplate {
 	id: string;

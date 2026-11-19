@@ -1,4 +1,4 @@
-import { setUpdatedAt } from './setUpdatedAt';
+import { setUpdatedAt } from './setUpdatedAt.js';
 
 describe('setUpdatedAt', () => {
 	it('should set _updatedAt at the root of a plain document', () => {

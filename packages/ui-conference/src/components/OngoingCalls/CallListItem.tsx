@@ -3,9 +3,9 @@ import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import OngoingCallItem from './OngoingCallItem';
-import { useOngoingCalls } from '../../context/OngoingCallsContext';
-import { canDeclineCall } from '../../lib/constants';
+import OngoingCallItem from './OngoingCallItem.js';
+import { useOngoingCalls } from '../../context/OngoingCallsContext.js';
+import { canDeclineCall } from '../../lib/constants.js';
 
 type CallListItemProps = {
 	call: JoinableVideoConference;

@@ -3,8 +3,8 @@ import type { CallRole, CallState } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { usePeekMediaSessionState } from './usePeekMediaSessionState';
-import MockedInstanceProvider from '../providers/MockedInstanceProvider';
+import { usePeekMediaSessionState } from './usePeekMediaSessionState.js';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider.js';
 
 type MockInstance = {
 	getState: () => { state: CallState; localParticipant: { role: CallRole } } | null;

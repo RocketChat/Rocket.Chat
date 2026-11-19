@@ -1,6 +1,6 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import { BaseBridge } from './BaseBridge';
+import { BaseBridge } from './BaseBridge.js';
 
 export abstract class InternalBridge extends BaseBridge {
 	public doGetUsernamesOfRoomById(roomId: string): Promise<Array<string>> {

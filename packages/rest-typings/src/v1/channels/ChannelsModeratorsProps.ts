@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajvQuery } from '../Ajv.js';
 
 export type ChannelsModeratorsProps =
 	| { roomId: string; userId?: string; username?: string; user?: string }

@@ -3,7 +3,7 @@ import type { KeyboardEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ParagraphBlock from './ParagraphBlock';
+import ParagraphBlock from './ParagraphBlock.js';
 
 export type SpoilerBlockProps = {
 	children: MessageParser.Paragraph[];

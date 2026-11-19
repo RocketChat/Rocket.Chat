@@ -1,3 +1,3 @@
-export * from './isDepartmentCreationAvailable';
-export * from './hooks/applyDepartmentRestrictions';
-export * from './visitor/create';
+export * from './isDepartmentCreationAvailable.js';
+export * from './hooks/applyDepartmentRestrictions.js';
+export * from './visitor/create.js';

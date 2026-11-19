@@ -1,7 +1,7 @@
 import type { IExchangeSyncLease, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IExchangeSyncLeaseModel extends IBaseModel<IExchangeSyncLease> {
 	acquireLease(scope: IExchangeSyncLease['scope'], uid: IUser['_id'], token: string, until: Date, now: Date): Promise<UpdateResult>;

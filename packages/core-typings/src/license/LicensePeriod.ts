@@ -1,5 +1,5 @@
-import type { LicenseBehavior } from './LicenseBehavior';
-import type { LicenseModule } from './LicenseModule';
+import type { LicenseBehavior } from './LicenseBehavior.js';
+import type { LicenseModule } from './LicenseModule.js';
 
 export type LicensePeriod = {
 	validFrom?: string;

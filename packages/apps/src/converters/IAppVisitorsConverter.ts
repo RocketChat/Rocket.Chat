@@ -1,6 +1,6 @@
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
-import type { IAppsVisitor } from '../AppsEngine';
+import type { IAppsVisitor } from '../AppsEngine.js';
 
 export interface IAppVisitorsConverter {
 	convertById(visitorId: ILivechatVisitor['_id']): Promise<IAppsVisitor | undefined>;

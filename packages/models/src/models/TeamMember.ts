@@ -13,7 +13,7 @@ import type {
 	UpdateResult,
 } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeamMember>>) {

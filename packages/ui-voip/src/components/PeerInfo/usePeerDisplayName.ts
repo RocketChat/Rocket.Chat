@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
-import { type PeerInfo, usePeekMediaSessionPeerInfo } from '../../context';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import { type PeerInfo, usePeekMediaSessionPeerInfo } from '../../context/index.js';
+import { isExternalPeer } from '../../utils/isExternalPeer.js';
 
 export const getPeerDisplayName = (t: ReturnType<typeof useTranslation>['t'], peerInfo?: PeerInfo): string => {
 	if (peerInfo) {

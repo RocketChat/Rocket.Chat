@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { IconButton } from '../Button';
-import { ButtonGroup } from '../ButtonGroup';
-import Divider from './Divider';
+import Divider from './Divider.js';
+import { Box } from '../Box/index.js';
+import { IconButton } from '../Button/index.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
 
 export default {
 	title: 'Data Display/Divider',

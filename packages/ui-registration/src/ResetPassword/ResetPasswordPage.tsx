@@ -8,7 +8,7 @@ import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import HorizontalTemplate from '../template/HorizontalTemplate';
+import HorizontalTemplate from '../template/HorizontalTemplate.js';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,

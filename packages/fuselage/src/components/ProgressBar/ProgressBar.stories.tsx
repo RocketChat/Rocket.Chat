@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import ProgressBar from './ProgressBar';
+import ProgressBar from './ProgressBar.js';
 
 export default {
 	title: 'Data Display/ProgressBar',

@@ -4,8 +4,8 @@ import { ResponsivePie } from '@nivo/pie';
 import { Box, Palette, Tooltip } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 
-import Legend from './DataVisualizationLegend';
-import type { ChartModel } from '../utils/dataVisualization';
+import Legend from './DataVisualizationLegend.js';
+import type { ChartModel } from '../utils/dataVisualization.js';
 
 export type DataVisualizationChartProps = { model: ChartModel };
 

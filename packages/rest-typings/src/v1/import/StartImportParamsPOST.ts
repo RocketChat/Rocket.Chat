@@ -1,6 +1,6 @@
 import type { IImporterShortSelection } from '@rocket.chat/core-typings';
 
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type StartImportParamsPOST = {
 	input: IImporterShortSelection;

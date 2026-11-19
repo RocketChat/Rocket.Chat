@@ -1,19 +1,19 @@
 import { inspect } from 'node:util';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import type { IAppAuthorInfo, IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/index.js';
+import type { IAppAuthorInfo, IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 import mem from 'mem';
 
-import type { AppManager } from './AppManager';
-import { InvalidInstallationError } from './errors/InvalidInstallationError';
-import { AppConsole } from './logging';
-import { AppLicenseValidationResult } from './marketplace/license';
-import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
-import type { IRuntimeController } from './runtime/IRuntimeController';
-import { JSONRPC_METHOD_NOT_FOUND } from './runtime/base/BaseRuntimeSubprocessController';
-import type { AppInstallationSource, IAppStorageItem } from './storage';
+import type { AppManager } from './AppManager.js';
+import { InvalidInstallationError } from './errors/InvalidInstallationError.js';
+import { AppConsole } from './logging/index.js';
+import { AppLicenseValidationResult } from './marketplace/license/index.js';
+import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime.js';
+import type { IRuntimeController } from './runtime/IRuntimeController.js';
+import { JSONRPC_METHOD_NOT_FOUND } from './runtime/base/BaseRuntimeSubprocessController.js';
+import type { AppInstallationSource, IAppStorageItem } from './storage/index.js';
 
 export class ProxiedApp {
 	private previousStatus: AppStatus;

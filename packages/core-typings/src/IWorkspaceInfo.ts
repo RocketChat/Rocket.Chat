@@ -1,4 +1,4 @@
-import type { IServerInfo } from './IServerInfo';
+import type { IServerInfo } from './IServerInfo.js';
 
 export interface IWorkspaceInfo {
 	workspaceUrl?: string;

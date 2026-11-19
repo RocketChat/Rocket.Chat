@@ -1,5 +1,5 @@
-import type { RemoteParticipantInfo } from '../context';
-import type { StageSelf } from './stageTiles';
+import type { RemoteParticipantInfo } from '../context.js';
+import type { StageSelf } from './stageTiles.js';
 
 /** `name` is who is sharing, absent for the reader's own share. */
 export type ScreenShare = { id: string; stream: MediaStream; name?: string; isLocal: boolean };

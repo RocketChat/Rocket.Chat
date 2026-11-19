@@ -1,17 +1,17 @@
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/index.js';
 import type {
 	IVideoConferenceOptions,
 	IVideoConfProvider,
 	VideoConfData,
 	VideoConfDataExtended,
-} from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
-import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser';
+} from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
+import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser.js';
+import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/index.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
-import type { AppLogStorage } from '../storage';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController.js';
+import type { AppLogStorage } from '../storage/index.js';
 
 export class AppVideoConfProvider {
 	/**

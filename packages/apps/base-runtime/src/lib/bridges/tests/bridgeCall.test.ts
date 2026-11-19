@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it, mock } from 'node:test';
 
-import { bridgeCall, type BridgeName } from '../bridgeCall';
+import { bridgeCall, type BridgeName } from '../bridgeCall.js';
 
 // Mimics the resolved shape of Messenger.sendRequest: a JSON-RPC SuccessObject
 // whose `result` field carries the payload.

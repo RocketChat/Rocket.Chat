@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import type { IPublication } from './types';
+import type { IPublication } from './types.js';
 
 type CachedUser = IUser; // Pick<IUser, '_id' | 'roles'>;
 

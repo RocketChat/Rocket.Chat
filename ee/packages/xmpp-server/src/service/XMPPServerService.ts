@@ -13,20 +13,20 @@ import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { XMPPServer } from '../XMPPServer';
-import { XMPP_SERVER_DEFAULTS, type MucJoinDecision, type XMPPServerConfig } from '../config';
-import type { IncomingChatMessage, IncomingPresence, XMPPServerEventMap } from '../events';
-import type { XMPPServerConfiguration } from './configuration';
-import { normalizeDomain } from '../jid/normalize';
-import type { Logger as CoreLogger } from '../logger';
-import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
-import { domainOfJid, toBareJid } from './helpers/jid';
-import { deriveInboundEventId, deriveInboundMessageId } from './helpers/messageId';
-import type { InboundEventKey, InboundMessageKey } from './helpers/messageId';
-import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
-import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './helpers/remoteRoom';
-import { createOrUpdateXMPPUser } from './helpers/xmppUser';
-import type { XmppDnsResolver } from '../s2s/dnsResolver';
+import { XMPPServer } from '../XMPPServer.js';
+import { XMPP_SERVER_DEFAULTS, type MucJoinDecision, type XMPPServerConfig } from '../config.js';
+import type { IncomingChatMessage, IncomingPresence, XMPPServerEventMap } from '../events.js';
+import type { XMPPServerConfiguration } from './configuration.js';
+import { normalizeDomain } from '../jid/normalize.js';
+import type { Logger as CoreLogger } from '../logger.js';
+import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration.js';
+import { domainOfJid, toBareJid } from './helpers/jid.js';
+import { deriveInboundEventId, deriveInboundMessageId } from './helpers/messageId.js';
+import type { InboundEventKey, InboundMessageKey } from './helpers/messageId.js';
+import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence.js';
+import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './helpers/remoteRoom.js';
+import { createOrUpdateXMPPUser } from './helpers/xmppUser.js';
+import type { XmppDnsResolver } from '../s2s/dnsResolver.js';
 
 function toCoreLogger(logger: Logger): CoreLogger {
 	const log = (level: 'debug' | 'info' | 'warn' | 'error') => (obj: unknown, msg?: string) => {

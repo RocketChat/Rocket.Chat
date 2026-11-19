@@ -1,17 +1,17 @@
 import { Buffer } from 'node:buffer';
 import { readFile } from 'node:fs/promises';
 
-import type { App } from '@rocket.chat/apps-engine/definition/App';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
-import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.js';
+import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.js';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
-import type { RequestContext } from '../../lib/requestContext';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
-import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { AppAccessorsInstance } from '../../lib/accessors/mod.js';
+import { JsonRpcError, type Defined } from '../../lib/jsonrpc.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.js';
+import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions.js';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 

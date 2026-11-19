@@ -3,8 +3,8 @@ import { ServerContext, useRouter } from '@rocket.chat/ui-contexts';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCopyErrorReport } from '../../hooks/useCopyErrorReport';
-import type { ErrorReportSource } from '../../lib/errorReport';
+import { useCopyErrorReport } from '../../hooks/useCopyErrorReport.js';
+import type { ErrorReportSource } from '../../lib/errorReport.js';
 
 export type CopyErrorReportActionProps = Pick<ErrorReportSource, 'error' | 'componentStack'>;
 

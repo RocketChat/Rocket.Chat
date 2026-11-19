@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	Subscriptions: {
@@ -16,7 +17,7 @@ const models = {
 	},
 };
 
-const { updateGroupKey } = proxyquire.noCallThru().load('./updateGroupKey.ts', {
+const { updateGroupKey } = loadWithMocks('./updateGroupKey.ts', {
 	'../../lib/notifyListener': {
 		notifyOnSubscriptionChanged: sinon.stub(),
 		notifyOnRoomChangedById: sinon.stub(),

@@ -1,8 +1,8 @@
 import Ajv from 'ajv';
 import request from 'supertest';
 
-import { Router } from './Router';
-import { createNodeServer, createRootApp, mountRouter } from './server';
+import { Router } from './Router.js';
+import { createNodeServer, createRootApp, mountRouter } from './server.js';
 
 const serve = (router: Parameters<typeof mountRouter>[1]) => {
 	const app = createRootApp();

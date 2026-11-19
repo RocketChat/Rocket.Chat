@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatDepartment: {
@@ -20,7 +21,7 @@ const isDepartmentCreationAvailable = sinon.stub();
 const updateDepartmentAgents = sinon.stub();
 const notifyOnLivechatDepartmentAgentChangedByDepartmentId = sinon.stub();
 
-const { saveDepartment } = proxyquire.noCallThru().load('./departmentsLib', {
+const { saveDepartment } = loadWithMocks('./departmentsLib', {
 	'@rocket.chat/apps': {
 		Apps: { self: { triggerEvent } },
 		AppEvents: { IPostLivechatDepartmentDisabled: 'IPostLivechatDepartmentDisabled' },

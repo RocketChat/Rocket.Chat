@@ -1,10 +1,10 @@
 import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import type { ServerMediaCallSignal } from '@rocket.chat/media-signaling';
 
-import { getNewCallSignal } from './getNewCallSignal';
-import { getCallRoleForUser } from '../getCallRoleForUser';
-import { getInitialOfferSignal } from './getInitialOfferSignal';
-import { getStateNotification } from './getStateNotification';
+import { getNewCallSignal } from './getNewCallSignal.js';
+import { getCallRoleForUser } from '../getCallRoleForUser.js';
+import { getInitialOfferSignal } from './getInitialOfferSignal.js';
+import { getStateNotification } from './getStateNotification.js';
 
 export async function getSignalsForExistingCall(call: IMediaCall, uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
 	if (call.state === 'hangup') {

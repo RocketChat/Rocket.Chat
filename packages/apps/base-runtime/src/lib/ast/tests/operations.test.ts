@@ -13,14 +13,14 @@ import type {
 	VariableDeclaration,
 } from 'acorn';
 
-import type { WalkerState } from '../operations';
+import type { WalkerState } from '../operations.js';
 import {
 	asyncifyScope,
 	buildFixModifiedFunctionsOperation,
 	checkReassignmentOfModifiedIdentifiers,
 	getFunctionIdentifier,
 	wrapWithAwait,
-} from '../operations';
+} from '../operations.js';
 import {
 	ArrowFunctionDerefCallExpression,
 	AssignmentExpressionOfArrowFunctionToFooIdentifier,
@@ -35,7 +35,7 @@ import {
 	MethodDefinitionOfFooInClassBar,
 	SimpleCallExpressionOfFoo,
 	SyncFunctionDeclarationWithAsyncCallExpression,
-} from './data/ast_blocks';
+} from './data/ast_blocks.js';
 
 describe('getFunctionIdentifier', () => {
 	it(`identifies the name "foo" for the code \`${FunctionDeclarationFoo.code}\``, () => {

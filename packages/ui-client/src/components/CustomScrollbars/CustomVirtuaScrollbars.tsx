@@ -2,7 +2,7 @@ import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { useEffect, memo, forwardRef, useRef, useState } from 'react';
 
-import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
+import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars.js';
 
 export type CustomScrollbarsProps = {
 	children: ReactNode;

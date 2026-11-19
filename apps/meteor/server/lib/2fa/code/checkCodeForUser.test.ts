@@ -3,8 +3,9 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import type { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const totpEnabled = sinon.stub().returns(false);
@@ -56,7 +57,7 @@ class PasswordCheckFallback {
 	}
 }
 
-const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru().load('./index', {
+const { checkCodeForUser, getFingerprintFromConnection } = loadWithMocks('./index', {
 	'meteor/accounts-base': {
 		Accounts: {
 			_getLoginToken: () => 'token-hash',

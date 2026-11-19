@@ -4,10 +4,10 @@ import { ModalProvider, ModalRegion, TooltipProvider } from '@rocket.chat/ui-cli
 import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import MediaCallPopoutView from './MediaCallPopoutView';
-import type { PopoutContainer } from './usePopoutWindow';
-import { useMediaCallViewer } from '../hooks/useMediaCallViewer';
-import MediaCallViewProvider from '../providers/MediaCallViewProvider';
+import MediaCallPopoutView from './MediaCallPopoutView.js';
+import type { PopoutContainer } from './usePopoutWindow.js';
+import { useMediaCallViewer } from '../hooks/useMediaCallViewer.js';
+import MediaCallViewProvider from '../providers/MediaCallViewProvider.js';
 
 export type MediaCallPopoutWindowProps = {
 	container: PopoutContainer;

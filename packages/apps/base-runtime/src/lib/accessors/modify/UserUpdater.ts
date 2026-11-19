@@ -1,9 +1,9 @@
-import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater';
-import type { UserStatusConnection } from '@rocket.chat/apps-engine/definition/users';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
+import type { UserStatusConnection } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class UserUpdater implements IUserUpdater {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

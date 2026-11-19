@@ -1,7 +1,7 @@
 import type { ILivechatUnitMonitor } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ILivechatUnitMonitorsModel extends IBaseModel<ILivechatUnitMonitor> {
 	findByUnitId(unitId: string): FindCursor<ILivechatUnitMonitor>;

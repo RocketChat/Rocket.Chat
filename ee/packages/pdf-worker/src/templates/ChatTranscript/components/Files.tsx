@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer';
 
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json' with { type: 'json' };
 
-import type { PDFFile } from '../../../types/ChatTranscriptData';
+import type { PDFFile } from '../../../types/ChatTranscriptData.js';
 
 const { fontScale } = typography;
 

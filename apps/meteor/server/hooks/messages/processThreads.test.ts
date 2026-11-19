@@ -2,17 +2,17 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeMessage, createFakeRoom } from '../../../tests/mocks/data';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = { Messages: { findOneById: sinon.stub() } };
 const getMentionsMock = sinon.stub();
 const replyMock = sinon.stub();
 const callbacksRunAsyncMock = sinon.stub();
 
-const { processThreads } = p.noCallThru().load('./processThreads.ts', {
+const { processThreads } = loadWithMocks('./processThreads.ts', {
 	'./notifyUsersOnMessage': { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock },
 	'./sendNotificationsOnMessage': { sendMessageNotifications: sinon.stub() },
 	'../../lib/callbacks': {

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-import HeaderDivider from './HeaderDivider';
+import HeaderDivider from './HeaderDivider.js';
 
 export type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
 

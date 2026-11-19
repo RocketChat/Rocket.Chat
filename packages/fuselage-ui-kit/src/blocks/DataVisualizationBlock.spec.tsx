@@ -1,8 +1,8 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 
-import Legend from './DataVisualizationLegend';
-import { messageParser } from '../surfaces';
-import type { ChartModel } from '../utils/dataVisualization';
+import Legend from './DataVisualizationLegend.js';
+import { messageParser } from '../surfaces/index.js';
+import type { ChartModel } from '../utils/dataVisualization.js';
 
 // The charts themselves are nivo's; these specs cover what the block hands them.
 let mockChartThrows = false;

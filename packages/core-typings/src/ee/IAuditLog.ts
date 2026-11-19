@@ -1,9 +1,9 @@
-import type { ILivechatAgent } from '../ILivechatAgent';
-import type { ILivechatVisitor } from '../ILivechatVisitor';
-import type { IMessage } from '../IMessage';
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IRoom } from '../IRoom';
-import type { IUser } from '../IUser';
+import type { ILivechatAgent } from '../ILivechatAgent.js';
+import type { ILivechatVisitor } from '../ILivechatVisitor.js';
+import type { IMessage } from '../IMessage/index.js';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
+import type { IRoom } from '../IRoom.js';
+import type { IUser } from '../IUser.js';
 
 export interface IAuditLog extends IRocketChatRecord {
 	ts: Date;

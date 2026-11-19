@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
 
 export interface IOAuthAuthCode extends IRocketChatRecord {
 	authCode: string;

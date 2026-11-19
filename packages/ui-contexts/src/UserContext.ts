@@ -3,7 +3,7 @@ import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import type { ObjectId, Filter, FindOptions as MongoFindOptions, Document } from 'mongodb';
 import { createContext } from 'react';
 
-import type { SubscriptionWithRoom } from './types/SubscriptionWithRoom';
+import type { SubscriptionWithRoom } from './types/SubscriptionWithRoom.js';
 
 export type SubscriptionQuery =
 	| {

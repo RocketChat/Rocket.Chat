@@ -1,7 +1,7 @@
 import type { IUser, IUserSessionConnection } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import { processPresence } from './presenceEngine';
+import { processPresence } from './presenceEngine.js';
 
 const ONE_HOUR = 3600_000;
 

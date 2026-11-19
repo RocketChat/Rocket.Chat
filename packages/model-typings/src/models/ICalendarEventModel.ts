@@ -1,8 +1,8 @@
 import type { CalendarEventSource, ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
-import type { IBaseModel, InsertionModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel, InsertionModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export type ImportedCalendarEvent = Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'externalId'> & { externalId: string };
 

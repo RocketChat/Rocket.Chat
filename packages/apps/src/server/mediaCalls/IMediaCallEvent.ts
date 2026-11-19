@@ -4,10 +4,10 @@ import type {
 	IMediaCallStartedContext,
 	IPreMediaCallCreatedContext,
 	MediaCallCreateEventResult,
-} from '@rocket.chat/apps-engine/definition/mediaCalls';
-import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+} from '@rocket.chat/apps-engine/definition/mediaCalls/index.js';
+import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { HostEventResult } from '../eventResult';
+import type { HostEventResult } from '../eventResult/index.js';
 
 /**
  * Envelope used to dispatch a media-call event to the apps that implement

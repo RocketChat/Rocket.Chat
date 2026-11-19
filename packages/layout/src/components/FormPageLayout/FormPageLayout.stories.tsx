@@ -1,13 +1,13 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import Form from './Form';
-import FormContainer from './FormContainer';
-import FormFooter from './FormFooter';
-import FormHeader from './FormHeader';
-import FormSkeleton from './FormSkeleton';
-import FormSteps from './FormSteps';
-import FormSubtitle from './FormSubtitle';
-import FormTitle from './FormTitle';
+import Form from './Form.js';
+import FormContainer from './FormContainer.js';
+import FormFooter from './FormFooter.js';
+import FormHeader from './FormHeader.js';
+import FormSkeleton from './FormSkeleton.js';
+import FormSteps from './FormSteps.js';
+import FormSubtitle from './FormSubtitle.js';
+import FormTitle from './FormTitle.js';
 
 export default {
 	title: 'components/FormPageLayout',

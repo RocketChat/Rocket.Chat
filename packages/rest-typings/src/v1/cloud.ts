@@ -1,6 +1,6 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 
-import { ajv, ajvQuery } from './Ajv';
+import { ajv, ajvQuery } from './Ajv.js';
 
 type CloudManualRegister = {
 	cloudBlob: string;

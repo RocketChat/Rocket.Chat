@@ -3,7 +3,7 @@ import { appRootDecorator, languageGlobalTypes, languageInitialGlobals } from '@
 import { parameters, decorators } from '@rocket.chat/storybook-config/preview';
 import type { Preview } from '@storybook/react';
 
-import DefaultBodySize from './DefaultBodySize';
+import DefaultBodySize from './DefaultBodySize.js';
 
 const preview: Preview = {
 	parameters: {

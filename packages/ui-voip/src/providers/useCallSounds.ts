@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { useVoipSounds } from '../context';
-import type { State } from '../context/definitions';
+import type { State } from '../context/definitions.js';
+import { useVoipSounds } from '../context/index.js';
 
 export const useCallSounds = (state: State, subscribeCallEnded: (callback: () => void) => (() => void) | undefined) => {
 	const voipSounds = useVoipSounds();

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 
-import { CheckBox } from '../CheckBox';
-import Option, { type OptionProps } from './Option';
+import Option, { type OptionProps } from './Option.js';
+import { CheckBox } from '../CheckBox/index.js';
 
 export type CheckOptionProps = OptionProps;
 

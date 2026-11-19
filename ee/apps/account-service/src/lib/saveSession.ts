@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
-import type { IHashedStampedToken } from './utils';
+import type { IHashedStampedToken } from './utils.js';
 
 export async function saveSession(uid: string, newToken: IHashedStampedToken): Promise<void> {
 	await Users.updateOne(

@@ -1,13 +1,13 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
-import { isMatrixErrorProps, license, tags } from './_shared';
-import { createOrUpdateFederatedUser } from '../../../helpers/createOrUpdateFederatedUser';
-import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../../helpers/parseXmppUserId';
-import { validateFederatedUsername } from '../../../helpers/validateFederatedUsername';
-import { logger } from '../../logger';
-import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+import type { ClientRouter } from './_shared.js';
+import { isMatrixErrorProps, license, tags } from './_shared.js';
+import { createOrUpdateFederatedUser } from '../../../helpers/createOrUpdateFederatedUser.js';
+import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../../helpers/parseXmppUserId.js';
+import { validateFederatedUsername } from '../../../helpers/validateFederatedUsername.js';
+import { logger } from '../../logger.js';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated.js';
 
 const RegisterBodySchema = {
 	type: 'object',

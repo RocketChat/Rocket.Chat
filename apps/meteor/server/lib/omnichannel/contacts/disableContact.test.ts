@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -21,7 +22,7 @@ const settingsMock = {
 
 const removeGuestMock = { removeGuest: sinon.stub() };
 
-const { disableContactById } = proxyquire.noCallThru().load('./disableContact.ts', {
+const { disableContactById } = loadWithMocks('./disableContact.ts', {
 	'../guests': removeGuestMock,
 	'../../../settings': { settings: settingsMock },
 });

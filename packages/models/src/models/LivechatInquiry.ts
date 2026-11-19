@@ -23,8 +23,8 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw.js';
+import { readSecondaryPreferred } from '../readSecondaryPreferred.js';
 
 const { INQUIRY_LOCK_TIMEOUT = '10000' } = process.env;
 
