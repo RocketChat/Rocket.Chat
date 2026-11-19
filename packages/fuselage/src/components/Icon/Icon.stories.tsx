@@ -7,6 +7,7 @@ import { Box } from '../Box';
 import { Divider } from '../Divider';
 import { InputBox } from '../InputBox';
 import Icon from './Icon';
+import { iconSizes } from './Icon.contract';
 
 export default {
 	title: 'Data Display/Icon',
@@ -18,8 +19,10 @@ export default {
 			table: { category: 'Content' },
 		},
 		size: {
-			control: 'text',
-			description: 'Size of the icon; accepts a Box `width` value (e.g. `x16`, `x20`, `x40`).',
+			control: 'select',
+			options: iconSizes.map((pixels) => `x${pixels}`),
+			description:
+				'A step of the icon scale, by its name (`x16`) or its pixels (`16`); without it, the icon takes the size of the text around it.',
 			table: { category: 'Size' },
 		},
 		color: {
@@ -56,6 +59,31 @@ export const Colors: Story = {
 					</Box>
 				),
 			)}
+		</Box>
+	),
+};
+
+export const Sizes: Story = {
+	render: () => (
+		<Box display='flex' alignItems='center' gap='x8' color='default'>
+			{iconSizes.map((pixels) => (
+				<Icon key={pixels} name='bell' size={pixels} />
+			))}
+		</Box>
+	),
+};
+
+export const Directional: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' gap='x8' color='default'>
+			{(['ltr', 'rtl'] as const).map((dir) => (
+				<div key={dir} dir={dir}>
+					<Icon name='arrow-back' size='x20' />
+					<Icon name='chevron-left' size='x20' />
+					<Icon name='send' size='x20' />
+					<Icon name='bell' size='x20' />
+				</div>
+			))}
 		</Box>
 	),
 };
