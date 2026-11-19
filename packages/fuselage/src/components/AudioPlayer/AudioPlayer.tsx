@@ -175,6 +175,7 @@ const AudioPlayer = ({
 					setCurrentTime((e.target as HTMLAudioElement).currentTime);
 				}}
 				onLoadedMetadata={(e) => {
+					setError(false);
 					const { duration } = e.target as HTMLAudioElement;
 
 					if (duration !== Infinity) {
