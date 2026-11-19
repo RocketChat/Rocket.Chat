@@ -29,9 +29,10 @@ test('a stylesheet whose tokens all resolved has none', () => {
 });
 
 test('a token or theme key the config does not have is left as written', () => {
-	const css = '._col-doesNotExist{color:$doesNotExist}._bg-rcx-typo{background-color:$rcx-typo}._p-space{padding:$space.x5}';
+	const css =
+		'._col-doesNotExist{color:$doesNotExist}._bg-rcx-typo{background-color:$rcx-typo}._p-space{padding:$space.x5}._zi-drag{z-index:$zIndex.drag}';
 
-	assert.deepEqual(unresolvedTokens(css), ['$doesNotExist', '$rcx-typo', '$space.x5']);
+	assert.deepEqual(unresolvedTokens(css), ['$doesNotExist', '$rcx-typo', '$space.x5', '$zIndex.drag']);
 });
 
 test('each one is reported once', () => {

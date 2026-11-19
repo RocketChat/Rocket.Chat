@@ -3,6 +3,10 @@
 		"raised": { "value": 1, "type": "zIndex" },
 		"overlap": { "value": 2, "type": "zIndex" },
 		"sticky": { "value": 10, "type": "zIndex" },
-		"overlay": { "value": 100, "type": "zIndex" }
+		"overlay": { "value": 100, "type": "zIndex" },
+		"dropTarget": { "value": 9996, "type": "zIndex" },
+		"dragShield": { "value": 9997, "type": "zIndex" },
+		"dragPreview": { "value": 9999, "type": "zIndex" },
+		"dropIndicator": { "value": 10000, "type": "zIndex" }
 	}
 }
