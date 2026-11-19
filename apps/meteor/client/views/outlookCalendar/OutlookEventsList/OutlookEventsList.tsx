@@ -114,6 +114,13 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 								{t('Sync')}
 							</Button>
 						</ButtonGroup>
+						{outlookUrl && (
+							<ButtonGroup stretch>
+								<Button icon='new-window' onClick={() => openExternalLink(outlookUrl)}>
+									{t('Open_Outlook')}
+								</Button>
+							</ButtonGroup>
+						)}
 					</Stack>
 				) : (
 					<>
