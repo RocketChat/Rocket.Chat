@@ -5,6 +5,7 @@ import ParticipantTile from './ParticipantTile';
 import SelfThumbnail from './SelfThumbnail';
 import SelfTile from './SelfTile';
 import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures';
+import { CallPinsProvider } from '../context';
 import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles';
 
 /**
@@ -86,26 +87,34 @@ export const SelfThumbnailMuted: Story = {
 	render: () => <SelfThumbnail displayName='John Doe' muted held={false} />,
 };
 
-const pin = (pinned: boolean) => ({ pinned, restoreFocus: false, onToggle: () => undefined });
+const withPins =
+	(pinnedId: string | null): Decorator =>
+	(Story) => (
+		<CallPinsProvider value={{ pinnedId, shares: [], screenOnStage: null, togglePin: () => undefined, toggleScreenPin: () => undefined }}>
+			<Story />
+		</CallPinsProvider>
+	);
 
 /** Offers to pin them on hover or focus. */
 export const Pinnable: Story = {
-	args: { pin: pin(false) },
+	args: { participantId: 'ada' },
+	decorators: [withPins(null)],
 };
 
-/** Pinned: the control stays, pressed, without hovering. */
 export const Pinned: Story = {
-	args: { pin: pin(true) },
+	args: { participantId: 'ada' },
+	decorators: [withPins('ada')],
 };
 
-/** Narrower than a strip thumbnail: no room for the control, so only the mark. */
+/** Narrower than a strip thumbnail: only the mark. */
 export const PinnedNarrow: Story = {
+	args: { participantId: 'ada' },
 	decorators: [
 		(Story) => (
 			<div style={{ width: 120, aspectRatio: '4 / 3' }}>
 				<Story />
 			</div>
 		),
+		withPins('ada'),
 	],
-	render: () => <ParticipantTile displayName='Ada Lovelace' muted held={false} pin={pin(true)} />,
 };

@@ -1,35 +1,29 @@
 import { Box } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 
-import { ownBadgeStyles, screenThumbActionsStyles, screenThumbStyles } from './stageStyles';
-import PinToggle from '../PinToggle';
-import { useScreenShareLabels } from '../hooks/useScreenShareLabels';
-import type { StageScreen } from '../lib/screenShares';
+import ScreenActions from './ScreenActions';
+import { ownBadgeStyles, screenThumbStyles } from './stageStyles';
+import ScreenPin from '../ScreenPin';
+import { useScreenShareLabel } from '../hooks/useScreenShareLabel';
+import type { ScreenShare } from '../lib/screenShares';
 
 export type ScreenShareThumbProps = {
-	screen: StageScreen;
+	share: ScreenShare;
 };
 
 /** A screen shared while it is not on the stage, offering, on hover or focus, to pin it there. */
-const ScreenShareThumb = ({ screen }: ScreenShareThumbProps) => {
-	const { labelOf, pinLabelOf } = useScreenShareLabels();
+const ScreenShareThumb = ({ share }: ScreenShareThumbProps) => {
+	const label = useScreenShareLabel(share);
 
 	return (
 		<Box className={screenThumbStyles}>
-			<StreamVideo stream={screen.stream} fit='contain' />
+			<StreamVideo stream={share.stream} fit='contain' />
 			<Box className={ownBadgeStyles} fontScale='c1'>
-				{labelOf(screen)}
+				{label}
 			</Box>
-			<Box className={['rcx-screen-thumb-overlay', screenThumbActionsStyles]}>
-				<PinToggle
-					size='small'
-					variant='secondary'
-					pinned={false}
-					label={pinLabelOf(screen, false)}
-					restoreFocus={screen.pin.restoreFocus}
-					onPinToggle={screen.pin.onToggle}
-				/>
-			</Box>
+			<ScreenActions compact className='rcx-screen-thumb-overlay'>
+				<ScreenPin share={share} />
+			</ScreenActions>
 		</Box>
 	);
 };

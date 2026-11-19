@@ -18,7 +18,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
-			pin={tile.pin}
+			participantId={tile.id}
 			sendHeight={tile.sendHeight}
 		/>
 	) : (
@@ -31,7 +31,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
-			pin={tile.pin}
+			participantId={tile.id}
 		/>
 	);
 

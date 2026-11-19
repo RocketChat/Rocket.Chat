@@ -5,13 +5,12 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TileBadge from './TileBadge';
-import PinToggle from '../PinToggle';
+import TilePin from './TilePin';
 import VoiceActivity from '../VoiceActivity';
 import { useSpeakingRing } from '../hooks/useSpeakingRing';
 import { REACTION_VISIBLE_MS } from '../lib/reactions';
 import { speakingRingThickness } from '../lib/speakingRing';
-import type { TileParticipant, TilePin } from '../lib/stageTiles';
-import { STRIP_THUMB_WIDTH } from '../lib/stageTiles';
+import type { TileParticipant } from '../lib/stageTiles';
 
 const tileStyles = css`
 	position: relative;
@@ -26,30 +25,6 @@ const tileStyles = css`
 	isolation: isolate;
 	container-type: inline-size;
 	color: ${Palette.text['font-pure-white'].toString()};
-
-	& .rcx-tile-pin {
-		opacity: 0;
-		pointer-events: auto;
-		transition: opacity 150ms ease;
-	}
-	&:hover .rcx-tile-pin,
-	&:focus-within .rcx-tile-pin,
-	& .rcx-tile-pin[data-pinned='true'] {
-		opacity: 1;
-	}
-	& .rcx-tile-pin-mark {
-		display: none;
-	}
-
-	/* Too narrow for a control beside the badges: the pin is only marked, and changed from the People panel. */
-	@container (max-width: ${STRIP_THUMB_WIDTH - 1}px) {
-		& .rcx-tile-pin {
-			display: none;
-		}
-		& .rcx-tile-pin-mark {
-			display: flex;
-		}
-	}
 `;
 
 /**
@@ -166,7 +141,8 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 	 * else's encoder is doing is not something this client can honestly claim.
 	 */
 	sendHeight?: number;
-	pin?: TilePin;
+	/** Whose tile it is, where the tile offers to pin them. */
+	participantId?: string;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
@@ -181,7 +157,7 @@ const TileFrame = ({
 	reaction,
 	ringWidth,
 	sendHeight,
-	pin,
+	participantId,
 	children,
 }: TileFrameProps) => {
 	const { t } = useTranslation();
@@ -190,7 +166,7 @@ const TileFrame = ({
 	const ringColor = Palette.stroke['stroke-highlight'].toString();
 
 	return (
-		<Box className={tileStyles}>
+		<Box className={tileStyles} data-tile>
 			{displayLevel > 0 && (
 				<Box
 					style={{
@@ -239,26 +215,7 @@ const TileFrame = ({
 				</Box>
 			)}
 			<Box className={indicatorRowStyles}>
-				{pin && (
-					<Box className='rcx-tile-pin' data-pinned={pin.pinned}>
-						<PinToggle
-							size='small'
-							variant='secondary'
-							pinned={pin.pinned}
-							label={t(pin.pinned ? 'Unpin_participant' : 'Pin_participant', { name: displayName })}
-							restoreFocus={pin.restoreFocus}
-							onPinToggle={pin.onToggle}
-						/>
-					</Box>
-				)}
-				{pin?.pinned && (
-					<Box className='rcx-tile-pin-mark'>
-						<TileBadge title={t('Pinned')}>
-							<Icon name='pin-filled' size='x16' />
-							<VisuallyHidden>{t('Pinned')}</VisuallyHidden>
-						</TileBadge>
-					</Box>
-				)}
+				{participantId && <TilePin participantId={participantId} name={displayName} />}
 				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
 					<TileBadge title={t('Microphone_muted')}>

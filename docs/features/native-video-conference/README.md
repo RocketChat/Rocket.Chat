@@ -118,8 +118,9 @@ cells or the sidebar's thumbnails (Spotlight draws none; they are pinned from th
 starts joins them, until the reader pins one or nobody is sharing anymore. One pin holds at a time: pinning a person
 ends the choice of screen, and pinning a screen ends the person pin.
 
-Tiles offer the control on hover and focus, except tiles narrower than a strip thumbnail, which only show the mark;
-the People panel offers it for everyone in the call's video, including people the layout does not draw.
+Tiles offer the control on hover and focus, and always on a touch screen, except tiles narrower than a strip
+thumbnail, which only show the mark; the People panel offers it for everyone in the call's video, including people the
+layout does not draw.
 
 ## Data-channel messages
 

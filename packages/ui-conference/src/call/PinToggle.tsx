@@ -1,38 +1,35 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import type { ComponentProps, MouseEvent } from 'react';
-import { useCallback } from 'react';
+import type { ComponentProps } from 'react';
 
-export type PinToggleProps = Omit<ComponentProps<typeof IconButton>, 'icon' | 'onClick' | 'pressed' | 'aria-pressed'> & {
-	/** What is pinned, when the pin itself would not say: the pressed state still tells pinned from not. */
-	icon?: ComponentProps<typeof IconButton>['icon'];
+import { usePinFocus } from './hooks/usePinFocus';
+
+export type PinToggleProps = {
 	pinned: boolean;
 	label: string;
-	onPinToggle: (hadFocus: boolean) => void;
-	/** Takes the focus when drawn: the same pin was just toggled from the keyboard somewhere it no longer is. */
-	restoreFocus?: boolean;
+	/** Tells this pin from the others on the stage. */
+	focusKey: string;
+	/** Replaces the pin where a row offers more than one. */
+	icon?: ComponentProps<typeof IconButton>['icon'];
+	onToggle: () => void;
 };
 
-/** Pins or unpins one thing on the stage, pressed while it is pinned. */
-const PinToggle = ({ icon, pinned, label, onPinToggle, restoreFocus = false, title, ...props }: PinToggleProps) => {
-	const focusRef = useCallback(
-		(node: Element | null) => {
-			if (restoreFocus && node instanceof HTMLElement) {
-				node.focus();
-			}
-		},
-		[restoreFocus],
-	);
+const PinToggle = ({ pinned, label, focusKey, icon, onToggle }: PinToggleProps) => {
+	const [focusRef, keepFocus] = usePinFocus(focusKey);
 
 	return (
 		<IconButton
-			{...props}
 			ref={focusRef}
+			size='small'
+			variant='secondary'
 			icon={icon ?? (pinned ? 'pin-filled' : 'pin')}
 			pressed={pinned}
 			aria-pressed={pinned}
 			aria-label={label}
-			title={title ?? label}
-			onClick={(event: MouseEvent<HTMLElement>) => onPinToggle(event.currentTarget === document.activeElement)}
+			title={label}
+			onClick={(event) => {
+				keepFocus(event.currentTarget);
+				onToggle();
+			}}
 		/>
 	);
 };

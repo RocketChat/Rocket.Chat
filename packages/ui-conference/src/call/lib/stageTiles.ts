@@ -31,16 +31,8 @@ export type TileParticipant = {
 	reaction?: TileReaction;
 };
 
-/** The reader's own choice of whom to see large, as one tile offers it. */
-export type TilePin = {
-	pinned: boolean;
-	onToggle: (hadFocus: boolean) => void;
-	/** Takes the focus once drawn, after the same person was pinned or unpinned from the keyboard. */
-	restoreFocus: boolean;
-};
-
 /** The reader's tile says what it sends; nobody else's can. */
-export type StageTile = TileParticipant & { id: string; pin?: TilePin } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
+export type StageTile = TileParticipant & { id: string } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
 
 export type StageSize = { width: number; height: number };
 

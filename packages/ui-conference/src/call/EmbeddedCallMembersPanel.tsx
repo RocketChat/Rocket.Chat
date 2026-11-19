@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useCallActions, useCallState, usePinnedParticipant, useScreenPin } from './context';
+import { useCallActions, useCallState } from './context';
 import type { MembersInCall } from '../components/CallMembersPanel/CallMembersPanel';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 
@@ -12,10 +12,6 @@ export type EmbeddedCallMembersPanelProps = {
 const EmbeddedCallMembersPanel = ({ onClose }: EmbeddedCallMembersPanelProps) => {
 	const { self, remoteParticipants, raisedHands } = useCallState();
 	const { muteParticipant } = useCallActions();
-	const { pinnedId, togglePin } = usePinnedParticipant();
-	const { featured, shares, pin: pinScreen, unpin: unpinScreen } = useScreenPin();
-	// A pinned person holds the stage over any share.
-	const screenOnStage = pinnedId === null ? (featured?.id ?? null) : null;
 
 	const inCall = useMemo((): MembersInCall => {
 		const mutedMembers = new Set(remoteParticipants.filter(({ muted }) => muted).map(({ id }) => id));
@@ -31,27 +27,8 @@ const EmbeddedCallMembersPanel = ({ onClose }: EmbeddedCallMembersPanelProps) =>
 			mutedMembers,
 			audioStreams,
 			muteMember: muteParticipant,
-			pinnable: new Set([self.id, ...remoteParticipants.map(({ id }) => id)]),
-			pinnedId,
-			togglePin,
-			sharing: new Set(shares.map(({ id }) => id)),
-			screenOnStage,
-			toggleScreenPin: (id: string) => (id === screenOnStage ? unpinScreen() : pinScreen(id)),
 		};
-	}, [
-		self.id,
-		self.muted,
-		self.microphoneStream,
-		remoteParticipants,
-		raisedHands,
-		muteParticipant,
-		pinnedId,
-		togglePin,
-		shares,
-		screenOnStage,
-		pinScreen,
-		unpinScreen,
-	]);
+	}, [self.id, self.muted, self.microphoneStream, remoteParticipants, raisedHands, muteParticipant]);
 
 	return <CallMembersPanel inCall={inCall} onClose={onClose} />;
 };
