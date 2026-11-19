@@ -1,0 +1,82 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_96383f258293bb::t_36ba3cedf503d2 1238-1239,1241-1262,1268-1274,1276-1277,1279-1281,1283-1286,1288,1291,1294,1303-1304,1359-1360,2163,2215,1297,1300,1306,1309,1316,1320,1322,1326,1349,1351
+  s_96383f258293bb::t_f9dbba6dd0bb40 1263-1267
+  s_96383f258293bb::t_8e63d0b4b48cb0 1287,1292-1293,1305,1240,1275,1278,1282,1289-1290,1295-1296,1298-1299,1301-1302,1307-1308,1310-1315,1317-1319,1321,1323-1325,1327-1348,1350,1352-1358
+apps/meteor/tests/e2e/prune-messages.spec.ts
+  s_96383f258293bb::t_b2682b56e9a065 126
+  s_96383f258293bb::t_de0ff597a221ef 162
+packages/models/src/models/Messages.ts
+  s_96383f258293bb::t_d5f1527e9eccc7 686,704,1450,1456
+  s_96383f258293bb::t_8e63d0b4b48cb0 1873-1922
+.changeset/keep-discussion-origin-on-prune.md
+  s_96383f258293bb::t_85f290ba4dde20 1-5,8-9
+  s_96383f258293bb::t_4fde1a38b09a6e 6-7
+  s_f15b4a6b3cffae::t_6f5c4b23496ce2 10
+packages/i18n/src/locales/en.i18n.json
+  s_96383f258293bb::t_de0ff597a221ef 3004,5805-5806
+apps/meteor/server/lib/rooms/retention/cronPruneMessages.ts
+  s_96383f258293bb::t_8e63d0b4b48cb0 36,64,90
+apps/meteor/server/lib/rooms/cleanRoomHistory.test.ts
+  s_96383f258293bb::t_0525fadd33b41e 23
+  s_96383f258293bb::t_8a59be926ab383 71
+  s_96383f258293bb::t_929a4a52b112b6 79
+  s_96383f258293bb::t_06b92bdce4d635 139-141,143-145
+  s_f15b4a6b3cffae::t_e2762f516dc091 146-147,149,154,157-159,169-181,183-184
+  s_96383f258293bb::t_8e63d0b4b48cb0 15-18,35,42,76,142,148,150-153,155-156,160-168
+  s_ef962851677545::t_a0825efddc9b66 182
+apps/meteor/server/lib/rooms/cleanRoomHistory.ts
+  s_96383f258293bb::t_8e63d0b4b48cb0 29,56,68,79,127,142-143,2,4,12,30-38,41-45,57,69,80-82,128-129,147-148
+  s_96383f258293bb::t_36ba3cedf503d2 84-96,204,83
+  s_f15b4a6b3cffae::t_e2762f516dc091 15,144-146
+  s_ef962851677545::t_ea138d97f1a732 39-40
+apps/meteor/server/api/v1/rooms.ts
+  s_96383f258293bb::t_b0c37e780beb3a 507-518
+  s_96383f258293bb::t_8e63d0b4b48cb0 530
+apps/meteor/server/meteor-methods/rooms/cleanRoomHistory.ts
+  s_96383f258293bb::t_8e63d0b4b48cb0 19,35,59
+packages/model-typings/src/models/IMessagesModel.ts
+  s_96383f258293bb::t_d5f1527e9eccc7 196,341
+  s_96383f258293bb::t_8e63d0b4b48cb0 373-385
+apps/meteor/server/settings/retention-policy.ts
+  s_96383f258293bb::t_8e63d0b4b48cb0 195-201
+apps/meteor/server/lib/rooms/retention/cronPruneMessages.test.ts
+  s_96383f258293bb::t_d9e124bafc954c 1-60,64-73,77-81
+  s_96383f258293bb::t_186c2dfc9c9835 61-63,74-76
+packages/core-typings/src/IRoom.ts
+  s_96383f258293bb::t_36ba3cedf503d2 47
+  s_ef962851677545::t_ea138d97f1a732 48
+packages/rest-typings/src/v1/rooms.ts
+  s_96383f258293bb::t_8e63d0b4b48cb0 679,716
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "9da6a0e7a1806d8b734bc221db63ccac5934c87c",
+  "prompts": {},
+  "sessions": {
+    "s_96383f258293bb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a13be43d-4e7c-4d6c-b33b-7cdcf6d22c81",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_ef962851677545": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8ffa22ac-7c52-4448-b59c-318f9b82bbaa",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
