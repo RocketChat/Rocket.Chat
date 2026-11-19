@@ -1,0 +1,24 @@
+apps/meteor/server/lib/messaging/mentions/Mentions.ts
+  s_e7cefca4a3aafe::t_8ece7677f723ab 21-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "911614077e375adc2959e2652365dfe209203b20",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e7cefca4a3aafe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "939621ae-8ba4-4328-ba37-a8740fd26f43",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
