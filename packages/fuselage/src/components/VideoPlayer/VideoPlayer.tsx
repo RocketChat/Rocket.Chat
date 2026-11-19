@@ -123,7 +123,9 @@ const VideoPlayer = ({
 
 	const start = () => {
 		focusPlayButtonOnStart.current = containerRef.current?.contains(ownerDocument.activeElement) ?? false;
-		togglePlay();
+		videoRef.current?.play().catch(() => {
+			focusPlayButtonOnStart.current = false;
+		});
 	};
 
 	const togglePlay = () => {

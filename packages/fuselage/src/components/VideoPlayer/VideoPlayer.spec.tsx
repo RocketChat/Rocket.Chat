@@ -106,6 +106,18 @@ describe('[VideoPlayer Component]', () => {
 		expect(screen.getByRole('button', { name: 'Pause' })).toHaveFocus();
 	});
 
+	it('leaves focus alone when a keyboard start fails and playback starts later another way', async () => {
+		stubFocusVisible();
+		jest.mocked(HTMLMediaElement.prototype.play).mockRejectedValueOnce(new Error('NotAllowedError'));
+		const user = userEvent.setup();
+		const { container } = render(<Default />);
+		await user.tab();
+		await user.keyboard('{Enter}');
+		await act(async () => undefined);
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Pause' })).not.toHaveFocus();
+	});
+
 	it('hides the controls again once the focused Retry button is gone', async () => {
 		stubFocusVisible();
 		jest.useFakeTimers();
