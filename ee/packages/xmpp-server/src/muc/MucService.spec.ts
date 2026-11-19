@@ -28,7 +28,7 @@ function setup() {
 		logger: silentLogger,
 		send: (stanza) => sent.push(stanza),
 	});
-	return { muc, invites, sent };
+	return { muc, invites, sent, events };
 }
 
 const errorConditionOf = (stanza: Element): string | undefined =>
@@ -216,4 +216,70 @@ describe('MucService.handleStanza (hosted-muc R17)', () => {
 
 		expect(muc.handleStanza(p(`<iq from='alice@remote.tld/pc' to='team@conference.rc.tld' type='get' id='q1'/>`))).toBe(false);
 	});
+});
+
+describe('MucService delivery errors (hosted-muc R19)', () => {
+	const setupWithOccupant = async () => {
+		const { muc, sent, events } = setup();
+		const left: XMPPServerEventMap['muc.occupantLeft'][] = [];
+		events.on('muc.occupantLeft', (event) => left.push(event));
+		await Promise.all(
+			['team', 'other'].map((roomId) =>
+				muc
+					.createRoom({ roomId })
+					.handleJoin(
+						p(
+							`<presence from='alice@remote.tld/pc' to='${roomId}@conference.rc.tld/alice'><x xmlns='http://jabber.org/protocol/muc'/></presence>`,
+						),
+					),
+			),
+		);
+		sent.length = 0;
+		return { muc, sent, left };
+	};
+
+	const bounce = (condition: string, name = 'message') =>
+		p(
+			`<${name} from='alice@remote.tld/pc' to='team@conference.rc.tld/bob' type='error'><error type='cancel'><${condition} xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></${name}>`,
+		);
+
+	it.each([['gone'], ['item-not-found'], ['recipient-unavailable'], ['redirect'], ['remote-server-not-found'], ['remote-server-timeout']])(
+		'removes the occupant from every room when they bounce %s, answering nothing',
+		async (condition) => {
+			const { muc, sent, left } = await setupWithOccupant();
+
+			expect(muc.handleStanza(bounce(condition))).toBe(true);
+
+			expect(left.map((e) => [e.roomId, e.reason])).toEqual([
+				['team', 'unreachable'],
+				['other', 'unreachable'],
+			]);
+			expect(sent).toEqual([]);
+		},
+	);
+
+	it('removes the occupant when the bounce is a presence', async () => {
+		const { muc, left } = await setupWithOccupant();
+
+		muc.handleStanza(bounce('recipient-unavailable', 'presence'));
+
+		expect(left).toHaveLength(2);
+	});
+
+	it.each([['not-acceptable'], ['service-unavailable'], ['forbidden']])(
+		'keeps an occupant whose error is %s, which is no delivery failure',
+		async (condition) => {
+			const { muc, left } = await setupWithOccupant();
+
+			muc.handleStanza(bounce(condition));
+
+			expect(left).toEqual([]);
+			expect(
+				muc
+					.getRoom('team')
+					?.listOccupants()
+					.map((o) => o.nick),
+			).toEqual(['alice']);
+		},
+	);
 });

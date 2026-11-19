@@ -2,14 +2,24 @@ import type { Emitter } from '@rocket.chat/emitter';
 import type Element from 'ltx/lib/Element';
 
 import type { ResolvedXMPPServerConfig } from '../config';
-import type { XMPPServerEventMap } from '../events';
+import type { MucLeaveReason, XMPPServerEventMap } from '../events';
 import type { MucRoomDescription } from '../iq/disco';
 import { normalizeRoomJid, normalizeUserBareJid } from '../jid/normalize';
 import type { Logger } from '../logger';
 import { MucRoom } from './MucRoom';
 import { parseMucInvite, splitOccupantJid } from './stanzas';
-import { buildStanzaError } from '../xml/errors';
+import { buildStanzaError, stanzaErrorCondition } from '../xml/errors';
 import { NS_MUC } from '../xml/namespaces';
+
+/** XEP-0045 §18.1.2: the errors that say a stanza could not reach the occupant at all. */
+const DELIVERY_ERROR_CONDITIONS: ReadonlySet<string> = new Set([
+	'gone',
+	'item-not-found',
+	'recipient-unavailable',
+	'redirect',
+	'remote-server-not-found',
+	'remote-server-timeout',
+]);
 
 export type MucServiceDeps = {
 	config: ResolvedXMPPServerConfig;
@@ -92,6 +102,10 @@ export class MucService {
 		}
 		// RFC 6120 §8.3.1: an error is never answered
 		if (stanza.attrs.type === 'error') {
+			const condition = stanzaErrorCondition(stanza);
+			if (stanza.attrs.from && condition && DELIVERY_ERROR_CONDITIONS.has(condition)) {
+				this.removeUnreachable(stanza.attrs.from);
+			}
 			return true;
 		}
 
@@ -107,6 +121,13 @@ export class MucService {
 			this.deps.send(buildStanzaError(stanza, room ? 'feature-not-implemented' : 'item-not-found', 'cancel'));
 		}
 		return true;
+	}
+
+	/** Takes a remote occupant who can no longer be reached out of every room they are in (hosted-muc R19). */
+	removeUnreachable(realJid: string): void {
+		for (const room of this.rooms.values()) {
+			room.removeUnreachable(realJid);
+		}
 	}
 
 	/** Joins and leaves only: rooms take part in no presence subscription and answer no probe. */
@@ -170,7 +191,7 @@ export class MucService {
 				break;
 			}
 			case 'occupantLeft': {
-				const [occupant, reason] = args as [{ nick: string; realJid: string }, 'left' | 'kicked'];
+				const [occupant, reason] = args as [{ nick: string; realJid: string }, MucLeaveReason];
 				this.deps.events.emit('muc.occupantLeft', { roomId, nick: occupant.nick, jid: occupant.realJid, reason });
 				break;
 			}

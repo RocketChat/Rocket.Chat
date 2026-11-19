@@ -211,4 +211,40 @@ describe('MucRoom', () => {
 		).toContain('307');
 		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
 	});
+	it('removes an unreachable occupant, telling the others with 333 and no 307 (hosted-muc R19)', async () => {
+		const { room, sent, events } = setup();
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		await room.handleJoin(join('bob@gone.tld/pc', 'bob'));
+		sent.length = 0;
+		events.length = 0;
+
+		room.removeUnreachable('bob@gone.tld/pc');
+
+		expect(room.listOccupants().map((o) => o.nick)).toEqual(['diego', 'alice']);
+		expect(sent.map((s) => s.attrs.to)).toEqual(['alice@remote.tld/pc']);
+		expect(sent[0].attrs).toMatchObject({ from: `${ROOM}/bob`, type: 'unavailable' });
+		expect(
+			sent[0]
+				.getChild('x')
+				?.getChildren('status')
+				.map((s) => s.attrs.code),
+		).toEqual(['333']);
+		expect(events).toEqual([{ event: 'occupantLeft', args: [expect.objectContaining({ nick: 'bob' }), 'unreachable'] }]);
+	});
+
+	it('leaves the room untouched when the unreachable JID is no remote occupant (hosted-muc R19)', async () => {
+		const { room, sent, events } = setup();
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		sent.length = 0;
+		events.length = 0;
+
+		room.removeUnreachable('alice@remote.tld/phone');
+		room.removeUnreachable('diego@rc.tld');
+
+		expect(room.listOccupants().map((o) => o.nick)).toEqual(['diego', 'alice']);
+		expect(sent).toEqual([]);
+		expect(events).toEqual([]);
+	});
 });

@@ -10,7 +10,7 @@ export type MucAffiliation = 'owner' | 'admin' | 'member' | 'none';
 const roleAffiliation = (role: MucRole): MucAffiliation => (role === 'moderator' ? 'owner' : 'member');
 
 /** The XEP-0045 status codes this server sends or reads. */
-export const MUC_STATUS = { selfPresence: 110, kicked: 307 } as const;
+export const MUC_STATUS = { selfPresence: 110, kicked: 307, removedForError: 333 } as const;
 
 export type MucStatusCode = (typeof MUC_STATUS)[keyof typeof MUC_STATUS];
 

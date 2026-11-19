@@ -23,3 +23,11 @@ export function buildStanzaError(original: Element, condition: string, type: Sta
 
 	return reply;
 }
+
+/** The RFC 6120 §8.3.3 defined condition an error stanza carries, if any. */
+export function stanzaErrorCondition(stanza: Element): string | undefined {
+	return stanza
+		.getChild('error')
+		?.getChildElements()
+		.find((child) => child.attrs.xmlns === NS_STANZA_ERRORS)?.name;
+}

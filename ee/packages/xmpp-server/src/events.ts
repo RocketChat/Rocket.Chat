@@ -23,6 +23,9 @@ export type IncomingPresence = {
 	raw: Element;
 };
 
+/** Why an occupant is no longer in a hosted room: their own leave, a removal on the Rocket.Chat side, or a failed delivery. */
+export type MucLeaveReason = 'left' | 'kicked' | 'unreachable';
+
 export type MucRemoteOccupant = {
 	nick: string;
 	/** Real JID when the room is non-anonymous. */
@@ -48,7 +51,7 @@ export type XMPPServerEventMap = {
 	'presence.probe': { from: string; to: string };
 
 	'muc.occupantJoined': { roomId: string; nick: string; jid: string; role: string };
-	'muc.occupantLeft': { roomId: string; nick: string; jid: string; reason?: 'left' | 'kicked' };
+	'muc.occupantLeft': { roomId: string; nick: string; jid: string; reason?: MucLeaveReason };
 	'muc.messageReceived': { roomId: string; fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element };
 	'muc.subjectChanged': { roomId: string; fromNick: string; subject: string };
 	'muc.inviteReceived': { roomJid: string; toLocalJid: string; fromJid: string; reason?: string; password?: string };

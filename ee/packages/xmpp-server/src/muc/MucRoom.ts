@@ -1,6 +1,7 @@
 import type Element from 'ltx/lib/Element';
 
 import type { MucJoinDecision } from '../config';
+import type { MucLeaveReason } from '../events';
 import {
 	buildGroupchatMessage,
 	buildMediatedInvite,
@@ -10,7 +11,7 @@ import {
 	parseJoinPresence,
 	splitOccupantJid,
 } from './stanzas';
-import type { MucRole } from './stanzas';
+import type { MucRole, MucStatusCode } from './stanzas';
 import { parseReplaceId } from '../xml/correction';
 import { buildStanzaError } from '../xml/errors';
 
@@ -26,7 +27,7 @@ type BroadcastMessage = { fromNick: string; body: string; id?: string; replaceId
 
 export type MucRoomEvents = {
 	occupantJoined: (occupant: MucOccupant) => void;
-	occupantLeft: (occupant: MucOccupant, reason: 'left' | 'kicked') => void;
+	occupantLeft: (occupant: MucOccupant, reason: MucLeaveReason) => void;
 	message: (params: { fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element }) => void;
 };
 
@@ -219,7 +220,18 @@ export class MucRoom {
 		this.deps.emit('occupantLeft', occupant, 'kicked');
 	}
 
-	private broadcastPresence(occupant: MucOccupant, type?: 'unavailable'): void {
+	/** Takes out a remote occupant whose real JID can no longer be delivered to (hosted-muc R19). */
+	removeUnreachable(realJid: string): void {
+		const occupant = this.remoteOccupants().find((o) => o.realJid === realJid);
+		if (!occupant) {
+			return;
+		}
+		this.occupants.delete(occupant.nick);
+		this.broadcastPresence(occupant, 'unavailable', [MUC_STATUS.removedForError]);
+		this.deps.emit('occupantLeft', occupant, 'unreachable');
+	}
+
+	private broadcastPresence(occupant: MucOccupant, type?: 'unavailable', statusCodes?: MucStatusCode[]): void {
 		for (const recipient of this.remoteOccupants()) {
 			if (recipient.nick === occupant.nick) {
 				continue;
@@ -232,6 +244,7 @@ export class MucRoom {
 					realJid: occupant.realJid,
 					role: occupant.role,
 					type,
+					statusCodes,
 				}),
 			);
 		}
