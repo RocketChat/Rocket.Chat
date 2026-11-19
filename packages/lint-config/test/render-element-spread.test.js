@@ -5,7 +5,7 @@ import { Linter } from 'eslint';
 
 import rule from '../rules/render-element-spread.js';
 
-const safeCalls = ['ariaAndDataAttributes', 'pickWebPressHandlers'];
+const safeCalls = ['ariaAndDataAttributes', 'pickWebPressHandlers', 'pickWebInteractionHandlers'];
 
 const messagesFor = (code) =>
 	new Linter()
