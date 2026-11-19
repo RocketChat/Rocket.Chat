@@ -100,6 +100,7 @@ Review commit by commit when the PR is non-trivial. Classify each commit as:
 - checked, no bug found
 - confirmed bug
 - suspected bug
+- existing bug (also on the base branch, not caused by this PR)
 - intentional change
 
 Do not claim a full QA pass unless the whole requested range was checked.
@@ -133,7 +134,9 @@ Use the cheapest proof that can support or reject the hypothesis:
 2. targeted unit or integration tests
 3. local app flow or UI repro
 4. API repro
-5. code-path proof when runtime setup is impractical
+5. code-path proof when runtime setup is impractical; a finding backed only by code is `suspected`, never `confirmed`
+
+When a bug reproduces on the PR, run the same steps on the base branch with human-like input (typing and clicking as a user would). If it also happens there, it is an existing bug, not caused by this PR: report it in its own section.
 
 Useful commands:
 
@@ -141,10 +144,15 @@ Useful commands:
 git diff <merge-base>..HEAD -- <path>
 git log --oneline <merge-base>..HEAD -- <path>
 git show <merge-base>:<path>
+gh pr view <number> --json body,files -q '.body'
+git diff <merge-base>..HEAD -- '.changeset/*.md'
 ```
 
 Validation guidance:
 
+- Check intent before reporting a behavior change. Read the PR's description ("Proposed changes", "Steps to test", "Further comments") and its `.changeset/*.md`. If they describe the observed behavior, classify it as an intentional change, not a bug. Add a UX note if the result is still rough for users.
+- Rule out the environment. Run the PR and the base with the same edition, licence and settings. Many apparent bugs are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
+- Check Jira before reporting. Search for an open ticket about the same behavior; if one exists, link it instead of reporting the bug as new.
 - Prefer targeted test commands over whole-repo suites.
 - If no relevant test exists, say that clearly and propose the smallest missing check.
 - Use manual repro steps when the issue is primarily UX or workflow-visible.
@@ -197,6 +205,16 @@ Use this structure:
 - [relevant files]
 ```
 
+List existing bugs found along the way after the PR's own bugs:
+
+```markdown
+## Existing bugs (not caused by this PR)
+
+- [Bug title]: [one-line repro]; also on [base branch / version]. Jira: [key or "not filed yet"]
+```
+
+Report security-sensitive findings (a permission, authentication or validation check that changed, or a report that would explain how to bypass one) privately, to the security team or in an internal Jira ticket. Never post them in public GitHub PR comments.
+
 If no bug is confirmed, use:
 
 ```markdown
@@ -216,6 +234,6 @@ If no bug is confirmed, use:
 ## Output bar
 
 - Prefer one strong confirmed bug over five weak suspicions.
-- Use `confirmed` only after reproduction, failing test evidence, or equivalent code-path proof.
+- Use `confirmed` only after a runtime reproduction or a failing test.
 - Use `suspected` when the risk is real but validation is incomplete.
 - Always include why the bug matters to a user, not just why the code looks wrong.
