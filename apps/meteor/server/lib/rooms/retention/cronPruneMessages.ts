@@ -33,6 +33,7 @@ async function job(): Promise<void> {
 	const filesOnly = settings.get<boolean>('RetentionPolicy_FilesOnly');
 	const excludePinned = settings.get<boolean>('RetentionPolicy_DoNotPrunePinned');
 	const ignoreDiscussion = settings.get<boolean>('RetentionPolicy_DoNotPruneDiscussion');
+	const ignoreDiscussionOrigin = !settings.get<boolean>('RetentionPolicy_DeleteDiscussionOrigin');
 	const ignoreThreads = settings.get<boolean>('RetentionPolicy_DoNotPruneThreads');
 
 	const ignoreDiscussionQuery = ignoreDiscussion ? { prid: { $exists: false } } : {};
@@ -60,6 +61,7 @@ async function job(): Promise<void> {
 				filesOnly,
 				excludePinned,
 				ignoreDiscussion,
+				ignoreDiscussionOrigin,
 				ignoreThreads,
 			}).catch((err) => logger.error({ msg: 'Failed to prune room', rid, err }));
 		}
@@ -85,6 +87,7 @@ async function job(): Promise<void> {
 			filesOnly,
 			excludePinned,
 			ignoreDiscussion,
+			ignoreDiscussionOrigin,
 			ignoreThreads,
 		}).catch((err) => logger.error({ msg: 'Failed to prune room', rid, err }));
 	}
