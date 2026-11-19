@@ -1,4 +1,4 @@
-import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import type { E2EESearchIndexEvent, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 /** Changes this label only with a new index schema: a new label makes every sealed index unreadable. */
 const WRAP_KEY_LABEL = 'Rocket.Chat E2EE search index wrap key v1';
@@ -95,6 +95,9 @@ const backendMethods = [
 	'close',
 ] as const satisfies readonly (keyof ISearchIndexBackend)[];
 
+/** A member of the backend that the session backend does not forward. */
+type NotForwarded = Exclude<keyof ISearchIndexBackend, (typeof backendMethods)[number] | 'onIndexEvent'>;
+
 type BackendCall = (...args: unknown[]) => Promise<unknown>;
 
 /** The backend of one open of the index. After `revoke`, each call rejects, so work of an ended session reaches no index. */
@@ -104,13 +107,23 @@ const createSessionBackend = (backend: ISearchIndexBackend) => {
 		(call: BackendCall): BackendCall =>
 		(...args) =>
 			revoked ? Promise.reject(new Error('The E2EE search index session has ended')) : call.apply(backend, args);
-	const handle: Partial<Record<(typeof backendMethods)[number], BackendCall>> = {};
+	// A member that the backend gets and this handle does not forward fails the type check here, with its name.
+	const handle: Partial<Record<(typeof backendMethods)[number], BackendCall>> & Record<NotForwarded, never> = {};
 	for (const method of backendMethods) {
 		const call = backend[method] as BackendCall | undefined;
 		if (typeof call === 'function') handle[method] = forward(call);
 	}
+	const { onIndexEvent } = backend;
 	return {
-		backend: handle as unknown as ISearchIndexBackend,
+		backend: {
+			...handle,
+			...(typeof onIndexEvent === 'function' && {
+				onIndexEvent: (listener: (event: E2EESearchIndexEvent) => void) =>
+					onIndexEvent.call(backend, (event) => {
+						if (!revoked) listener(event);
+					}),
+			}),
+		} as unknown as ISearchIndexBackend,
 		revoke: () => {
 			revoked = true;
 		},

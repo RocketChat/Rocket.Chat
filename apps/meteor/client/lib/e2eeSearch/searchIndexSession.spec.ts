@@ -577,6 +577,33 @@ describe('createSearchIndexSession backend of one open', () => {
 		expect(backend.wipe).not.toHaveBeenCalled();
 	});
 
+	it('passes the index events of the desktop app to the user of the session, and none after the session ends', async () => {
+		const backend = createBackend();
+		let emit: (event: { type: 'lost' | 'changed' }) => void = () => undefined;
+		backend.onIndexEvent = jest.fn((listener) => {
+			emit = listener;
+			return () => undefined;
+		});
+		const { source, state, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		const listener = jest.fn();
+		session.getActiveBackend()?.onIndexEvent?.(listener);
+		emit({ type: 'lost' });
+
+		expect(listener).toHaveBeenCalledWith({ type: 'lost' });
+
+		state.userId = undefined;
+		state.privateKey = undefined;
+		setState('DISABLED');
+		await session.whenSettled();
+		emit({ type: 'lost' });
+
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+
 	it('closes an index whose open resolves after the logout', async () => {
 		const backend = createBackend();
 		backend.close = jest.fn(async () => undefined);
