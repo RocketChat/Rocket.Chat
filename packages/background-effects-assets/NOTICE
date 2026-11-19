@@ -7,7 +7,8 @@ files under the Apache License, Version 2.0
 
 - MediaPipe Tasks Vision runtime (@mediapipe/tasks-vision 0.10.14, wasm/),
   Copyright The MediaPipe Authors.
-- MediaPipe Selfie Segmenter model (selfie_segmenter.tflite, float16, version 1),
-  Copyright Google LLC.
+- MediaPipe Selfie Multiclass Segmentation model
+  (selfie_multiclass_256x256.tflite, float32, version 1), Copyright Google LLC.
+  Model card: https://storage.googleapis.com/mediapipe-assets/Model%20Card%20Multiclass%20Segmentation.pdf
 
 The preset images in presets/ are placeholders made for Rocket.Chat.

@@ -103,7 +103,8 @@ had before there was a choice.
 The backgrounds panel (beside the call; a dialog over the preflight) offers one choice: *Light*, *Medium* or *Strong*
 blur, a preset picture, a picture of the participant's own, or *No effect*. The camera menu has a quick toggle that
 turns the last effect used back on (*Medium* blur for someone who never used one) and a way to the panel. Processing
-is `@livekit/track-processors` (pinned), running MediaPipe's selfie segmenter on the participant's device.
+is `@livekit/track-processors` (pinned), running MediaPipe's selfie multiclass segmentation model on the participant's
+device.
 
 - **Remembered per account in this browser,** with the other call preferences, along with the effects used before:
   what the toggle turns back on, and what takes over when a picture in use is removed. A choice made with the camera

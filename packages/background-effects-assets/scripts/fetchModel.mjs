@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const require = (await import('node:module')).createRequire(import.meta.url);
 const { model } = require('../index.js');
 
-const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite';
+const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/1/selfie_multiclass_256x256.tflite';
 
 const packageDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const cacheDir = process.env.BACKGROUND_EFFECTS_CACHE_DIR || path.join(homedir(), '.cache', 'rocketchat-background-effects');

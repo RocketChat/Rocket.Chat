@@ -5,7 +5,7 @@ type SegmentationMask = { width: number; height: number; getAsWebGLTexture(): We
 type InitOptions = Parameters<BackgroundTransformer['init']>[0];
 
 /** Which confidence mask to read, and whether it scores the person rather than the background the compositor expects. */
-const CONFIDENCE_MASK = { index: 0, scoresPerson: true };
+const CONFIDENCE_MASK = { index: 0, scoresPerson: false };
 
 /** How much of the previous mask each frame keeps: higher steadies the edges but makes them trail movement. */
 const MASK_SMOOTHING = 0.5;
@@ -188,21 +188,20 @@ export const withSmoothedMask = (Base: typeof BackgroundTransformer): typeof Bac
 
 		#updateMask() {
 			const mask = this.segmentationResults?.confidenceMasks?.[CONFIDENCE_MASK.index];
-			if (!mask || !this.gl) {
+			const gl = this.canvas?.getContext('webgl2');
+			if (!mask || !gl || !this.gl) {
 				return;
 			}
-			this.gl.updateMask(this.#smooth(mask) ?? mask.getAsWebGLTexture());
+			// Splitting a multiclass result leaves MediaPipe's additive blending on, which would composite to white.
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+			this.gl.updateMask(this.#smooth(gl, mask) ?? mask.getAsWebGLTexture());
 		}
 
-		#smooth(mask: SegmentationMask) {
+		#smooth(gl: WebGL2RenderingContext, mask: SegmentationMask) {
 			if (this.#unsmoothable) {
 				return undefined;
 			}
 			try {
-				const gl = this.canvas?.getContext('webgl2');
-				if (!gl) {
-					return undefined;
-				}
 				this.#smoother ??= new MaskSmoother(gl);
 				return this.#smoother.smooth(mask);
 			} catch (err) {

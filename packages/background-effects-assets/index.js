@@ -4,9 +4,9 @@ const path = require('node:path');
 
 /** The segmentation model, fetched and verified at build time. */
 const model = {
-	file: path.join(__dirname, 'dist', 'selfie_segmenter.tflite'),
-	name: 'selfie_segmenter.tflite',
-	sha256: '191ac9529ae506ee0beefa6b2c945a172dab9d07d1e802a290a4e4038226658b',
+	file: path.join(__dirname, 'dist', 'selfie_multiclass_256x256.tflite'),
+	name: 'selfie_multiclass_256x256.tflite',
+	sha256: 'c6748b1253a99067ef71f7e26ca71096cd449baefa8f101900ea23016507e0e0',
 };
 
 /** In the order the backgrounds panel offers them. */
