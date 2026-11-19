@@ -1,116 +1,36 @@
+@use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../../styles/typography.scss' as *;
-@use '../../styles/variables/buttons.scss' as colors;
-@use '../../styles/mixins/button.scss';
-@use '../../styles/mixins/size.scss';
-@use '../../styles/mixins/interactivity.scss' as *;
-@use '../../styles/mixins/states.scss' as *;
 
+// Web only. What the Button and IconButton frames cannot state.
 .rcx-button {
-	@mixin with-rectangular-size($height, $padding-x, $line-height) {
-		min-width: calc(lengths.size($height) * 2);
-		height: lengths.size($height);
-		padding: calc((lengths.size($height) - $line-height) / 2 - 2px) calc(lengths.padding($padding-x) - 2px);
-		padding-block: calc((lengths.size($height) - $line-height) / 2 - 2px);
+	// The native button's own look
+	appearance: none;
 
-		padding-inline: calc(lengths.padding($padding-x) - 2px);
-	}
-
-	@mixin with-squared-size($size) {
-		width: lengths.size($size);
-		min-width: lengths.size($size);
-		height: lengths.size($size);
-		padding: 0;
-
-		&::before,
-		&::after {
-			display: inline-block;
-
-			height: 100%;
-
-			content: '';
-		}
-	}
-
-	display: inline-block;
-
-	text-align: center;
-	white-space: nowrap;
-	text-decoration: none;
-
-	@include click-animation($excludeRole: 'status');
-
-	.rcx-button--content {
+	// Pseudo-elements: an empty first item puts the baseline of a square button at its bottom edge, where a line of
+	// text or an inline group aligns it
+	&--square::before,
+	&--square::after {
 		display: inline-block;
 
-		width: 100%;
+		height: 100%;
 
-		vertical-align: top;
-
-		@include use-with-truncated-text();
+		content: '';
 	}
 
-	.rcx-button__icon {
+	// The icon is not a frame, so it takes no variant
+	&__icon {
 		margin-inline-end: lengths.margin(4);
 	}
 
-	@include clickable;
-	@include use-font-scale(p2m);
-	@include use-text-ellipsis;
-
-	@include with-rectangular-size($height: 40, $padding-x: 16, $line-height: line-height(p2));
-
-	@include button.kind-variant(colors.$secondary);
-
+	// A keyframe animation
 	&--loading {
 		.rcx-icon--name-loading {
 			animation: spin-animation 0.8s linear infinite;
 		}
 	}
 
-	&--small {
-		@include use-font-scale(c2);
-
-		@include with-rectangular-size($height: 28, $padding-x: 8, $line-height: line-height(c1));
-	}
-
-	&--medium {
-		@include use-font-scale(c2);
-
-		@include with-rectangular-size($height: 32, $padding-x: 12, $line-height: line-height(c1));
-	}
-
-	&--large {
-		@include use-font-scale(p2);
-
-		@include with-rectangular-size($height: 48, $padding-x: 24, $line-height: line-height(p2));
-	}
-
-	&--compact {
-		min-width: 4ch;
-	}
-
-	&--square {
-		@include with-squared-size($size: 40);
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-shrink: 0;
-	}
-
-	&--with-badge {
-		position: relative;
-
-		overflow: visible;
-	}
-
+	// The offset of the badge mirrors with the direction of the text, which a frame cannot follow without a direction
 	&__badge {
-		position: absolute;
-		inset-block-start: 0;
-		inset-inline-end: 0;
-
-		display: flex;
-
 		translate: 30% -30%;
 
 		&:dir(rtl) {
@@ -118,8 +38,6 @@
 		}
 
 		&--bottom-end {
-			inset-block: auto 0;
-
 			translate: 30% 30%;
 
 			&:dir(rtl) {
@@ -127,102 +45,66 @@
 			}
 		}
 	}
+}
 
-	&--icon {
-		@include button.kind-variant(colors.$icon);
-		@include click-animation('status');
+// A disabled fieldset disables the button inside it, which the `disabled` prop the frames follow cannot know. The
+// selectors outrank the compiled hover and press rules, which come last in the page. Order matters: a kind's class
+// follows the base class it is added to.
+@mixin disabled-paint($color, $background) {
+	color: $color;
+	border-color: $background;
+	background-color: $background;
+}
 
-		padding: 0;
+$kinds: 'primary', 'secondary', 'danger', 'secondary-danger', 'warning', 'secondary-warning', 'success', 'secondary-success';
 
-		line-height: 0;
+// A disabled button does not give way under the press: the compiled rule that nudges the content comes last in the
+// page, so these selectors are the more specific ones.
+.rcx-button:disabled .rcx-button--content,
+fieldset:disabled .rcx-button .rcx-button--content {
+	transform: none;
+}
 
-		&-secondary {
-			@include button.kind-variant(colors.$secondary);
-		}
+fieldset:disabled {
+	// Only a button is disabled by it: a link keeps its cursor
+	button.rcx-button {
+		cursor: not-allowed;
+	}
 
-		&-info {
-			@include button.kind-variant(colors.$icon-info);
-		}
+	.rcx-button {
+		@include disabled-paint(colors.button(on-secondary-disabled), colors.button(secondary-disabled));
+	}
 
-		&-success {
-			@include button.kind-variant(colors.$icon-success);
-		}
-
-		&-warning {
-			@include button.kind-variant(colors.$icon-warning);
-		}
-
-		&-danger {
-			@include button.kind-variant(colors.$icon-danger);
-		}
-
-		&-secondary-info {
-			@include button.kind-variant(colors.$primary);
-		}
-
-		&-secondary-success {
-			@include button.kind-variant(colors.$success);
-		}
-
-		&-secondary-warning {
-			@include button.kind-variant(colors.$warning);
-		}
-
-		&-secondary-danger {
-			@include button.kind-variant(colors.$danger);
+	@each $kind in $kinds {
+		.rcx-button--#{$kind} {
+			@include disabled-paint(colors.button(on-#{$kind}-disabled), colors.button(#{$kind}-disabled));
 		}
 	}
 
-	&--mini-square {
-		@include with-squared-size($size: 20);
+	// An icon button has no background of its own at rest, and a color a Button of the owner kind takes for its disabled background
+	.rcx-button--icon {
+		@include disabled-paint(colors.button(on-secondary-disabled), transparent);
 	}
 
-	&--tiny-square {
-		@include with-squared-size($size: 24);
+	@each $variant, $owner in ('info': 'primary', 'success': 'success', 'warning': 'warning', 'danger': 'danger') {
+		.rcx-button--icon-#{$variant} {
+			@include disabled-paint(colors.button(#{$owner}-disabled), transparent);
+		}
 	}
 
-	&--small-square {
-		@include with-squared-size($size: 28);
-	}
-
-	&--medium-square {
-		@include with-squared-size($size: 32);
-	}
-
-	&--large-square {
-		@include with-squared-size($size: 40);
-	}
-
-	&--primary {
-		@include button.kind-variant(colors.$primary);
-	}
-
-	&--secondary {
-		@include button.kind-variant(colors.$secondary);
-	}
-
-	&--secondary-danger {
-		@include button.kind-variant(colors.$secondary-danger);
-	}
-
-	&--danger {
-		@include button.kind-variant(colors.$danger);
-	}
-
-	&--warning {
-		@include button.kind-variant(colors.$warning);
-	}
-
-	&--secondary-warning {
-		@include button.kind-variant(colors.$secondary-warning);
-	}
-
-	&--success {
-		@include button.kind-variant(colors.$success);
-	}
-
-	&--secondary-success {
-		@include button.kind-variant(colors.$secondary-success);
+	@each $variant,
+		$owner
+			in (
+				'secondary': 'secondary',
+				'secondary-info': 'primary',
+				'secondary-success': 'success',
+				'secondary-warning': 'warning',
+				'secondary-danger': 'danger'
+			)
+	{
+		.rcx-button--icon-#{$variant} {
+			@include disabled-paint(colors.button(on-#{$owner}-disabled), colors.button(#{$owner}-disabled));
+		}
 	}
 }
 
