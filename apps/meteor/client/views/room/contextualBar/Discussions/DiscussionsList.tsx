@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Icon, TextInput, Throbber } from '@rocket.chat/fuselage';
+import { Icon, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -7,6 +7,7 @@ import {
 	ContextualbarContent,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarTitle,
 	ContextualbarSection,
 	ContextualbarDialog,
@@ -18,7 +19,6 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
-import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../components/ListViewport';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -85,11 +85,7 @@ function DiscussionsList({
 			</ContextualbarSection>
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
-				{isPending && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+				{isPending && <ContextualbarSkeletonContent />}
 				{error instanceof Error && (
 					<ContextualbarEmptyContent
 						icon='circle-exclamation'

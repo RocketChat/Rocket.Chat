@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import { MessageDivider } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
@@ -10,6 +10,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
@@ -18,7 +19,6 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ContextualbarStatus from '../../../components/ContextualbarStatus';
 import ListViewport from '../../../components/ListViewport';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
@@ -58,11 +58,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 			<ContextualbarContent flush>
-				{queryResult.isLoading && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+				{queryResult.isLoading && <ContextualbarSkeletonContent />}
 				{queryResult.isSuccess && (
 					<>
 						{queryResult.data.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}

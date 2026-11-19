@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Select, Throbber } from '@rocket.chat/fuselage';
+import { Select } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -9,6 +9,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
@@ -20,7 +21,6 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
-import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -149,11 +149,7 @@ const ThreadList = () => {
 			</ContextualbarSection>
 			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
-				{isPending && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+				{isPending && <ContextualbarSkeletonContent />}
 				{error && (
 					<ContextualbarEmptyContent
 						icon='circle-exclamation'

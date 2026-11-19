@@ -1,4 +1,4 @@
-import { MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import { MessageDivider } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
 	ContextualbarClose,
@@ -10,6 +10,7 @@ import {
 	ContextualbarDialog,
 	VirtualizedScrollbars,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useState, memo, Fragment, useId } from 'react';
@@ -65,7 +66,7 @@ const MessageSearchTab = () => {
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{providerQuery.isSuccess && (
 					<>
-						{searchText && isPending && <Throbber />}
+						{searchText && isPending && <ContextualbarSkeletonContent />}
 						{isSuccess && (
 							<ListViewport id={searchListId} ref={searchListRef}>
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}

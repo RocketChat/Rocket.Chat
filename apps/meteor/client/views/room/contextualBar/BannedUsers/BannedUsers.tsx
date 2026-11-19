@@ -1,10 +1,10 @@
-import { Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import BannedUsersItem from './BannedUsersItem';
-import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../components/ListViewport';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
@@ -40,12 +39,8 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				<ContextualbarTitle>{t('Banned_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent flush spaced>
-				{loading && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+			<ContextualbarContent flush spaced={!loading}>
+				{loading && <ContextualbarSkeletonContent />}
 
 				{error && <ContextualbarEmptyContent icon='warning' title={t('Banned_users_error')} subtitle={t('Please_try_again')} />}
 

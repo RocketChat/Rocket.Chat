@@ -1,6 +1,6 @@
 import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Select, Throbber } from '@rocket.chat/fuselage';
+import { Select } from '@rocket.chat/fuselage';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -9,6 +9,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
@@ -20,7 +21,6 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
-import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -93,11 +93,7 @@ const RoomFiles = ({
 			</ContextualbarSection>
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
-				{isPending && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+				{isPending && <ContextualbarSkeletonContent />}
 				{isSuccess && (
 					<ListViewport id={filesListId}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}

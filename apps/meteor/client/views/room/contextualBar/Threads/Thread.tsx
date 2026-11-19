@@ -9,6 +9,7 @@ import {
 	ContextualbarBack,
 	ContextualbarInnerContent,
 	ContextualbarDialog,
+	ContextualbarSkeletonContent,
 } from '@rocket.chat/ui-client';
 import {
 	useLayoutContextualBarExpanded,
@@ -20,7 +21,6 @@ import {
 import { createPortal } from 'react-dom';
 
 import ThreadChat from './components/ThreadChat';
-import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
@@ -111,7 +111,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 				</ContextualbarActions>
 			</ContextualbarHeader>
 
-			{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
+			{(mainMessageQueryResult.isLoading && <ContextualbarSkeletonContent />) ||
 				(mainMessageQueryResult.isSuccess && (
 					<ChatProvider tmid={tmid}>
 						<ThreadChat mainMessage={mainMessageQueryResult.data} />
