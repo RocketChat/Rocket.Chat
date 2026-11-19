@@ -531,12 +531,12 @@
 		"displayContents": 0
 	},
 	"Tabs/Tabs.styles.scss": {
-		"rules": 18,
-		"nested": 14,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Text/Text.styles.scss": {

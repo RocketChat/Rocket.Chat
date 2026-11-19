@@ -7,7 +7,7 @@ export type WebDataAttributes = {
 	[name: `data-${string}`]: string | number | boolean | undefined;
 };
 
-/** What any part takes on the web besides its contract; it takes no `style`. */
+/** What any part takes on the web besides its contract. No `style`: a frame cannot take one it does not know at build time. */
 export type WebAttributes<TElement extends Element> = WebDataAttributes & {
 	id?: string;
 	/** Joined after the part's own classes. */
@@ -108,3 +108,9 @@ export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & {
 export type WebGroupProps<TContract> = WebProps<TContract, HTMLDivElement> & {
 	title?: string;
 } & Pick<DOMAttributes<HTMLDivElement>, 'onClick' | 'onKeyDownCapture' | 'onFocusCapture' | 'onBlurCapture'>;
+
+/** A contract as a web renderer that is always a `div` takes it: the web attributes and the title. */
+export type WebDivProps<TContract> = WebProps<TContract, HTMLDivElement> & { title?: string };
+
+/** The deprecated press alias of a `div` whose contract declares `onPress`. */
+export type WebDivPressAlias = WebPressAlias<HTMLDivElement>;
