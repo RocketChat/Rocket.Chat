@@ -48,6 +48,7 @@ export class ReadStateManager extends Emitter {
 
 		const { unread, alert } = this.subscription;
 		if (!unread && !alert) {
+			this.clearUnreadMark();
 			return;
 		}
 
