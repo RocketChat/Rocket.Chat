@@ -1,5 +1,5 @@
-import type { TableColumns } from '../../../hooks/useTableColumns';
-import { useTableColumns } from '../../../hooks/useTableColumns';
+import type { TableColumns } from './useTableColumns';
+import { useTableColumns } from './useTableColumns';
 
 export const CONTACT_COLUMNS = [
 	{ key: 'displayName', label: 'Name', disabled: true },

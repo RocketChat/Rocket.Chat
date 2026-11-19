@@ -17,8 +17,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { isContactNotFoundError } from './lib/isContactNotFoundError';
-import { getErrorMessage } from '../../lib/errorHandling';
-import { contactsQueryKeys } from '../../lib/queryKeys';
+import { contactsQueryKeys } from './lib/queryKeys';
 
 export type ContactEditProps = {
 	contact?: Serialized<IContactPublic>;
@@ -106,7 +105,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 		},
 		onError: async (error) => {
 			if (!isContactNotFoundError(error)) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Failed_to_save_settings') });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 

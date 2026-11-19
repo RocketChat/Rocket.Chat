@@ -1,8 +1,8 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useContactsSync } from '@rocket.chat/ui-contacts';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useContactsSync } from './hooks/useContactsSync';
 import FilterByText from '../../components/FilterByText';
 
 export type ContactsPageFiltersProps = {

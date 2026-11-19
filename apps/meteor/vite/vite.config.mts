@@ -393,6 +393,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-client',
 	'@rocket.chat/ui-composer',
 	'@rocket.chat/ui-conference',
+	'@rocket.chat/ui-contacts',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
 	'@rocket.chat/ui-registration',

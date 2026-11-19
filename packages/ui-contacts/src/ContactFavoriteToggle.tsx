@@ -1,10 +1,10 @@
+import { isContactFavoriteEditable } from '@rocket.chat/core-typings';
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Icon, IconButton, Stack } from '@rocket.chat/fuselage';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useContactFavorite } from './hooks/useContactFavorite';
-import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
 
 export type ContactFavoriteToggleProps = {
 	contact: Serialized<IContactPublic>;

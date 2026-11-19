@@ -39,3 +39,6 @@ export interface IContact extends IRocketChatRecord {
 }
 
 export type IContactPublic = Omit<IContact, 'uid' | 'externalId' | 'folderId' | 'lastSyncAt'>;
+
+export const isContactFavoriteEditable = ({ source, syncProvider }: Pick<IContact, 'source' | 'syncProvider'>): boolean =>
+	source === 'local' || syncProvider === 'graph';

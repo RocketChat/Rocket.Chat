@@ -2,17 +2,13 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ContactsSortableField } from '@rocket.chat/rest-typings';
 import { GenericNoResults, GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
+import { ContactPanelRouter, ContactsTable, ContactsTableRow, contactsQueryKeys, useContactsColumns } from '@rocket.chat/ui-contacts';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ContactPanelRouter from './ContactPanelRouter';
 import ContactsPageFilters from './ContactsPageFilters';
-import ContactsTable from './ContactsTable';
-import ContactsTableRow from './ContactsTableRow';
-import { useContactsColumns } from './hooks/useContactsColumns';
-import { contactsQueryKeys } from '../../lib/queryKeys';
 import type { CallHistoryTab } from '../mediaCallHistory/CallHistoryPageLayout';
 import CallHistoryPageLayout from '../mediaCallHistory/CallHistoryPageLayout';
 

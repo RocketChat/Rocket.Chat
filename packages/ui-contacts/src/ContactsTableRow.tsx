@@ -4,6 +4,7 @@ import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Icon, Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { useContactAvatarPath } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent } from 'react';
 
 import ContactFavoriteToggle from './ContactFavoriteToggle';
@@ -11,7 +12,6 @@ import ContactMenu from './ContactMenu';
 import type { ContactsColumns } from './hooks/useContactsColumns';
 import ContactsTableName from './layout/ContactsTableName';
 import ContactsTableTags from './layout/ContactsTableTags';
-import { getAvatarURL } from '../../lib/getAvatarURL';
 
 export type ContactsTableRowProps = {
 	contact: Serialized<IContactPublic>;
@@ -23,6 +23,7 @@ export type ContactsTableRowProps = {
 
 const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: ContactsTableRowProps) => {
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
+	const getContactAvatarPath = useContactAvatarPath();
 
 	const { hoverProps, isHovered } = useHover({});
 	const { focusProps, isFocusVisible } = useFocusRing({ within: true });
@@ -43,7 +44,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 			</GenericTableCell>
 			{columns.isVisible('displayName') && (
 				<GenericTableCell truncate>
-					<ContactsTableName avatar={<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />}>
+					<ContactsTableName avatar={<BaseAvatar size='x28' url={getContactAvatarPath({ contactId: _id, etag: _updatedAt })} />}>
 						<Text fontScale='p2' truncate>
 							{displayName}
 						</Text>

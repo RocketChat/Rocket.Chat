@@ -1,4 +1,4 @@
-import type { IContactPublic } from '@rocket.chat/core-typings';
+import { isContactFavoriteEditable, type IContactPublic } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Contacts } from '@rocket.chat/models';
 import type { LocalContactPayload, PaginatedResult } from '@rocket.chat/rest-typings';
@@ -17,7 +17,6 @@ import {
 	CONTACTS_SORTABLE_FIELDS,
 } from '@rocket.chat/rest-typings';
 
-import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';

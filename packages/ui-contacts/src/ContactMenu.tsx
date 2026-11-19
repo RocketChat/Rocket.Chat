@@ -1,3 +1,4 @@
+import { isContactFavoriteEditable } from '@rocket.chat/core-typings';
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Text } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -6,14 +7,12 @@ import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { useComposeEmail } from './hooks/useComposeEmail';
 import { useContactCall } from './hooks/useContactCall';
 import { useContactFavorite } from './hooks/useContactFavorite';
 import { useContactLabel } from './hooks/useContactLabel';
 import { isContactNotFoundError } from './lib/isContactNotFoundError';
-import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
-import { useComposeEmail } from '../../hooks/useComposeEmail';
-import { getErrorMessage } from '../../lib/errorHandling';
-import { contactsQueryKeys } from '../../lib/queryKeys';
+import { contactsQueryKeys } from './lib/queryKeys';
 
 export type ContactMenuProps = {
 	contact: Serialized<IContactPublic>;
@@ -41,7 +40,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 		},
 		onError: (error) => {
 			if (!isContactNotFoundError(error)) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Contact_delete_failed') });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 

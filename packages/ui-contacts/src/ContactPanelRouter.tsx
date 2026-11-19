@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import ContactEdit from './ContactEdit';
 import ContactInfo from './ContactInfo';
 import ContactNotFound from './ContactNotFound';
-import { contactsQueryKeys } from '../../lib/queryKeys';
+import { contactsQueryKeys } from './lib/queryKeys';
 
 export type ContactPanelRouterProps = {
 	contactId?: string;

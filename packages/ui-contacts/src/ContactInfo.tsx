@@ -15,14 +15,14 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
+import { useContactAvatarPath } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ContactInfoEntry from './ContactInfoEntry';
 import ContactMenu from './ContactMenu';
+import { useComposeEmail } from './hooks/useComposeEmail';
 import { useContactCall } from './hooks/useContactCall';
 import { useContactLabel } from './hooks/useContactLabel';
-import { useComposeEmail } from '../../hooks/useComposeEmail';
-import { getAvatarURL } from '../../lib/getAvatarURL';
 
 export type ContactInfoProps = {
 	contact: Serialized<IContactPublic>;
@@ -36,6 +36,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 	const { canCall, isCallInProgress, call } = useContactCall();
 	const composeEmail = useComposeEmail();
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
+	const getContactAvatarPath = useContactAvatarPath();
 
 	// A labelled address says something an unlabelled one does not, so it gets its own field to say it in.
 	const plainEmails = emails.filter(({ label }) => !label);
@@ -54,7 +55,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 					<InfoPanelSection>
 						<InfoPanelTitle
 							title={displayName}
-							icon={<BaseAvatar size='x32' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />}
+							icon={<BaseAvatar size='x32' url={getContactAvatarPath({ contactId: _id, etag: _updatedAt })} />}
 						/>
 					</InfoPanelSection>
 					<InfoPanelSection>
