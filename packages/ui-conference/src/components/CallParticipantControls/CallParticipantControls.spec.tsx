@@ -20,6 +20,8 @@ const actions: ProviderPluginActions = {
 	disconnect: jest.fn(),
 	spotlight: jest.fn(),
 	setRole: jest.fn(),
+	dialOut: jest.fn(),
+	leave: jest.fn(),
 	raiseHand: jest.fn(),
 };
 

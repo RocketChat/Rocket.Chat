@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
-import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
+import { NEW_CONFERENCE_ID, usesConferenceWindow } from '../views/conference/lib/callWindow';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useLeaveCallOnWindowClose } from '../views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
@@ -34,7 +34,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 		() =>
 			VideoConfManager.on('call/join', ({ url, callId, providerName }) => {
 				// Without the call window, the provider's own URL is opened, exactly as before.
-				if (!conferenceWindowEnabled) {
+				if (!usesConferenceWindow(conferenceWindowEnabled, providerName)) {
 					handleOpenCall(url ?? '', providerName);
 					return;
 				}
@@ -46,7 +46,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 				// The conference page posts the join itself, after its preflight, so the user counts as being in the
 				// call from then on. If that window goes away before it can report its own departure, this is what
 				// does it for them.
-				watchCallWindow(callId, target);
+				watchCallWindow(callId, target, providerName);
 			}),
 		[handleOpenCall, router, conferenceWindowEnabled, watchCallWindow],
 	);

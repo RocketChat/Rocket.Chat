@@ -7,7 +7,9 @@ import type {
 	ProviderPluginControls,
 } from '@rocket.chat/ui-conference';
 import { PLUGIN_FEATURES } from '@rocket.chat/ui-conference';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * The namespace every message of this protocol carries, in both directions.
@@ -16,6 +18,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
  * [the feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md).
  */
 const PLUGIN_NS = 'rocketchat:videoconf';
+
+/** The bare action under the namespace, or undefined for a message that is not this protocol's. */
+const readAction = (action: string): string | undefined =>
+	action.startsWith(`${PLUGIN_NS}/`) ? action.slice(PLUGIN_NS.length + 1) : undefined;
+
+/**
+ * What a dial-out asks of the provider beyond the destination.
+ *
+ * The plugin forwards these as given to the conference's `dial` request, which requires all three, so a call
+ * placed from here is an audio-only guest and never anything with more standing.
+ */
+const DIAL_OUT_DEFAULTS = { role: 'GUEST', protocol: 'auto', call_type: 'audio' } as const;
 
 type UseProviderPluginOptions = {
 	/**
@@ -29,6 +43,11 @@ type UseProviderPluginOptions = {
 	participantsVisible: boolean;
 	/** Whether the chat has anything unread, which is what that control's badge reflects. */
 	hasUnread: boolean;
+	/**
+	 * Whether the viewer may start sharing their screen. The provider's page owns that button, so this is only
+	 * honoured by a plugin that can hold it back, and nothing stops a presentation already running.
+	 */
+	screenShareAllowed: boolean;
 	/** The plugin's chat control was used: open or close the chat panel. */
 	onToggleChat: (active: boolean) => void;
 	/** The plugin's people control was used: open or close the members panel. */
@@ -39,6 +58,18 @@ type UseProviderPluginOptions = {
 	 * for why only a deliberate leave gets here.
 	 */
 	onLeave: () => void;
+	/**
+	 * The call ended without the user having chosen to leave it.
+	 *
+	 * A drop and a deliberate leave look alike from here until the user says which they meant, so neither is
+	 * safe to act on alone — see the `disconnected` case below. A deliberate leave reaches `onLeave` instead.
+	 */
+	onDropped?: () => void;
+	/**
+	 * The only host pressed the provider's Leave button while others are still in the call, and the plugin held
+	 * the leave back so somebody can be handed the call first. The call goes on until `leave` is sent.
+	 */
+	onSelectNewHost?: () => void;
 };
 
 const isPluginFeature = (value: unknown): value is PluginFeature => PLUGIN_FEATURES.includes(value as PluginFeature);
@@ -103,6 +134,12 @@ const toSelf = (value: Record<string, unknown>): PluginSelf | undefined => {
 	};
 };
 
+/**
+ * Dial-out is offered whether or not the plugin announces it: Pexip's plugin handles it but leaves it off its
+ * list. Drop this once that plugin names it.
+ */
+const withDialOut = (features: ReadonlySet<PluginFeature>): ReadonlySet<PluginFeature> => new Set<PluginFeature>([...features, 'dial-out']);
+
 const NO_FEATURES: ReadonlySet<PluginFeature> = new Set();
 const NO_PARTICIPANTS: PluginParticipant[] = [];
 
@@ -119,9 +156,12 @@ export const useProviderPlugin = ({
 	chatVisible,
 	participantsVisible,
 	hasUnread,
+	screenShareAllowed,
 	onToggleChat,
 	onToggleParticipants,
 	onLeave,
+	onDropped,
+	onSelectNewHost,
 }: UseProviderPluginOptions): ProviderPluginControls => {
 	// Learned from the messages it sends, not from the iframe this page renders: a plugin may run in a frame
 	// *inside* the provider's page, where a message posted to the provider's own window would never reach it.
@@ -137,16 +177,35 @@ export const useProviderPlugin = ({
 	participantsVisibleRef.current = participantsVisible;
 	const hasUnreadRef = useRef(hasUnread);
 	hasUnreadRef.current = hasUnread;
+	const screenShareAllowedRef = useRef(screenShareAllowed);
+	screenShareAllowedRef.current = screenShareAllowed;
 	const onToggleChatRef = useRef(onToggleChat);
 	onToggleChatRef.current = onToggleChat;
 	const onToggleParticipantsRef = useRef(onToggleParticipants);
 	onToggleParticipantsRef.current = onToggleParticipants;
 	const onLeaveRef = useRef(onLeave);
 	onLeaveRef.current = onLeave;
+	const onDroppedRef = useRef(onDropped);
+	onDroppedRef.current = onDropped;
+	const onSelectNewHostRef = useRef(onSelectNewHost);
+	onSelectNewHostRef.current = onSelectNewHost;
 
 	// `disconnected` also arrives from a prejoin screen, where nobody has joined: reporting a leave from there
 	// would end the call for everyone still on their way into it.
 	const wasConnectedRef = useRef(false);
+
+	// Held in a ref like everything else the listener reads, so a language change does not rebind it.
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const reportDialOutRef = useRef<(dialled: boolean, detail: string) => void>(() => undefined);
+	reportDialOutRef.current = (dialled, detail) => {
+		if (dialled) {
+			dispatchToastMessage({ type: 'success', message: t('Calling__roomName__', { roomName: detail }) });
+			return;
+		}
+
+		dispatchToastMessage({ type: 'error', message: detail || t('Error') });
+	};
 
 	const [features, setFeatures] = useState<ReadonlySet<PluginFeature>>(NO_FEATURES);
 	const [self, setSelf] = useState<PluginSelf>();
@@ -176,7 +235,12 @@ export const useProviderPlugin = ({
 			}
 
 			const { action } = data;
-			if (typeof action !== 'string' || !action.startsWith(`${PLUGIN_NS}/`)) {
+			if (typeof action !== 'string') {
+				return;
+			}
+
+			const name = readAction(action);
+			if (!name) {
 				return;
 			}
 
@@ -191,10 +255,10 @@ export const useProviderPlugin = ({
 				targetOriginRef.current = event.origin === 'null' ? '*' : event.origin;
 			}
 
-			switch (action.slice(PLUGIN_NS.length + 1)) {
+			switch (name) {
 				case 'ready':
 					// Said once per page, so a reload is a new session whose old roster describes nobody.
-					setFeatures(toFeatures(data.features));
+					setFeatures(withDialOut(toFeatures(data.features)));
 					setSelf(undefined);
 					setParticipants(NO_PARTICIPANTS);
 
@@ -203,6 +267,9 @@ export const useProviderPlugin = ({
 					postToPlugin('chat-state', { active: chatVisibleRef.current });
 					postToPlugin('participants-state', { active: participantsVisibleRef.current });
 					postToPlugin('chat-unread', { unread: hasUnreadRef.current });
+					// The plugin lets everyone share until told otherwise, so a viewer who may not is told before
+					// they are past the prejoin screen and can reach the button.
+					postToPlugin('screen-share', { allowed: screenShareAllowedRef.current });
 					break;
 
 				case 'connected':
@@ -211,12 +278,31 @@ export const useProviderPlugin = ({
 					break;
 
 				case 'disconnected':
-					// Only a deliberate leave from someone who joined: an involuntary drop is the provider's to
-					// recover, and closing the window under it turns a blip into a departure.
-					if (wasConnectedRef.current && data.userInitiated === true) {
-						wasConnectedRef.current = false;
-						onLeaveRef.current();
+					// The plugin forgets the roster on a disconnect without publishing the empty one, so whoever was
+					// in the call is not left on show for a connection that is gone.
+					setSelf(undefined);
+					setParticipants(NO_PARTICIPANTS);
+
+					// Nothing from a prejoin screen, where nobody has joined: reporting a leave from there would
+					// end the call for everyone still on their way into it.
+					if (!wasConnectedRef.current) {
+						break;
 					}
+
+					wasConnectedRef.current = false;
+
+					// A deliberate leave is acted on. A drop is the provider's to recover, and closing the window
+					// under it turns a blip into a departure, so that goes to whoever can ask the user which it was.
+					if (data.userInitiated === true) {
+						onLeaveRef.current();
+						break;
+					}
+
+					onDroppedRef.current?.();
+					break;
+
+				case 'select-new-host':
+					onSelectNewHostRef.current?.();
 					break;
 
 				case 'toggle-participants':
@@ -230,6 +316,16 @@ export const useProviderPlugin = ({
 
 				case 'self':
 					setSelf(toSelf(data));
+					break;
+
+				// A number is dialled into the call rather than invited to it, so nothing appears anywhere to say
+				// it worked — the provider's answer is the only account of it there is.
+				case 'dial-out-success':
+					reportDialOutRef.current(true, typeof data.displayName === 'string' ? data.displayName : '');
+					break;
+
+				case 'dial-out-error':
+					reportDialOutRef.current(false, typeof data.message === 'string' ? data.message : '');
 					break;
 
 				case 'roster':
@@ -256,6 +352,10 @@ export const useProviderPlugin = ({
 		postToPlugin('chat-unread', { unread: hasUnread });
 	}, [hasUnread, postToPlugin]);
 
+	useEffect(() => {
+		postToPlugin('screen-share', { allowed: screenShareAllowed });
+	}, [screenShareAllowed, postToPlugin]);
+
 	const actions = useMemo(
 		(): ProviderPluginActions => ({
 			mute: (participantUuid, muted) => postToPlugin('mute', { participantUuid, muted }),
@@ -265,6 +365,8 @@ export const useProviderPlugin = ({
 			spotlight: (participantUuid, active) => postToPlugin('spotlight', { participantUuid, active }),
 			raiseHand: (participantUuid, raised) => postToPlugin('raise-hand', { participantUuid, raised }),
 			setRole: (participantUuid, role) => postToPlugin('set-role', { participantUuid, role }),
+			dialOut: (destination) => postToPlugin('dial-out', { ...DIAL_OUT_DEFAULTS, destination }),
+			leave: () => postToPlugin('leave'),
 		}),
 		[postToPlugin],
 	);

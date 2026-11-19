@@ -76,6 +76,19 @@ type ReportErrorsServerInteraction = {
 	errors: { [field: string]: string }[];
 };
 
+type UpdateActionButtonServerInteraction = {
+	type: 'action_button.update';
+	triggerId: string;
+	appId: string;
+	actionId: string;
+	update: {
+		actionId?: string;
+		labelI18n?: string;
+		variant?: 'default' | 'danger';
+		disabled?: boolean;
+	};
+};
+
 export type ServerInteraction =
 	| OpenModalServerInteraction
 	| UpdateModalServerInteraction
@@ -86,6 +99,7 @@ export type ServerInteraction =
 	| OpenContextualBarServerInteraction
 	| UpdateContextualBarServerInteraction
 	| CloseContextualBarServerInteraction
+	| UpdateActionButtonServerInteraction
 	| ReportErrorsServerInteraction;
 
 export const isOpenModalServerInteraction = typia.createIs<OpenModalServerInteraction>();
@@ -98,6 +112,7 @@ export const isOpenContextualBarServerInteraction = typia.createIs<OpenContextua
 export const isUpdateContextualBarServerInteraction = typia.createIs<UpdateContextualBarServerInteraction>();
 export const isCloseContextualBarServerInteraction = typia.createIs<CloseContextualBarServerInteraction>();
 export const isReportErrorsServerInteraction = typia.createIs<ReportErrorsServerInteraction>();
+export const isUpdateActionButtonServerInteraction = typia.createIs<UpdateActionButtonServerInteraction>();
 
 export const isServerInteraction = (input: unknown): input is ServerInteraction =>
 	isOpenModalServerInteraction(input) ||
@@ -109,4 +124,5 @@ export const isServerInteraction = (input: unknown): input is ServerInteraction 
 	isOpenContextualBarServerInteraction(input) ||
 	isUpdateContextualBarServerInteraction(input) ||
 	isCloseContextualBarServerInteraction(input) ||
+	isUpdateActionButtonServerInteraction(input) ||
 	isReportErrorsServerInteraction(input);

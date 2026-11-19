@@ -16,8 +16,15 @@ export type IUserState = {
 			public_key: string;
 		};
 		e2ePassword?: string;
+		sipExtension?: string;
 	};
 	state: Exclude<BrowserContextOptions['storageState'], string | undefined>;
+};
+
+// Outgoing calls are only offered to users who have an extension assigned
+const sipExtensions: Record<string, string> = {
+	user1: '1001',
+	user2: '1002',
 };
 
 const e2eeData: Record<string, { server: IUserState['data']['e2e']; client: { private_key: string } }> = {
@@ -53,6 +60,7 @@ function generateContext(username: string): IUserState {
 			loginToken: token.token,
 			loginExpire: token.when,
 			hashedToken,
+			...(sipExtensions[username] && { sipExtension: sipExtensions[username] }),
 			...(e2eeData[username] && {
 				e2e: e2eeData[username]?.server,
 				e2ePassword: 'minus mobile dexter forest elvis',

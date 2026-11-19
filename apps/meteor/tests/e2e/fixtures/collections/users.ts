@@ -10,7 +10,7 @@ type UserFixture = IUser & {
 };
 
 export function createUserFixture(user: IUserState): UserFixture {
-	const { username, hashedToken, loginExpire, e2e } = user.data;
+	const { username, hashedToken, loginExpire, e2e, sipExtension } = user.data;
 
 	return {
 		_id: `${username}`,
@@ -49,5 +49,6 @@ export function createUserFixture(user: IUserState): UserFixture {
 		_updatedAt: new Date(),
 		__rooms: ['GENERAL'],
 		e2e,
+		...(sipExtension && { sipExtension }),
 	};
 }

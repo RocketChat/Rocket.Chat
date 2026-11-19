@@ -1,4 +1,4 @@
-import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import type { IUIActionButton, UIActionButtonAvailableContexts } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useConnectionStatus, useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -6,7 +6,9 @@ import { useEffect } from 'react';
 
 export const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
-export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>(context?: TContext) => {
+type ActionButton<C extends UIActionButtonAvailableContexts> = Extract<IUIActionButton, { context: C }>;
+
+export const useAppActionButtons = <Ctx extends UIActionButtonAvailableContexts>(context?: Ctx) => {
 	const queryClient = useQueryClient();
 	const apps = useStream('apps');
 	const uid = useUserId();
@@ -20,14 +22,7 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 		queryFn: () => getActionButtons(),
 
 		...(context && {
-			select: (data: IUIActionButton[]) =>
-				data.filter(
-					(
-						button,
-					): button is IUIActionButton & {
-						context: UIActionButtonContext extends infer X ? (X extends TContext ? X : never) : never;
-					} => button.context === context,
-				),
+			select: (data: IUIActionButton[]) => data.filter((button): button is ActionButton<Ctx> => button.context === context),
 		}),
 
 		staleTime: Infinity,

@@ -1,6 +1,8 @@
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useRef } from 'react';
 
+import { usesConferenceWindow } from '../../../../conference/lib/callWindow';
+
 /** How often to look at the call window. Cheap, and a second's delay in ending a call nobody is in is nothing. */
 const POLL_INTERVAL = 1_000;
 
@@ -26,11 +28,11 @@ export const useLeaveCallOnWindowClose = () => {
 	useEffect(() => stop, [stop]);
 
 	return useCallback(
-		(callId: string, target: Window | null | undefined) => {
+		(callId: string, target: Window | null | undefined, providerName?: string) => {
 			stop();
 
 			// No window to watch: the desktop app manages its own, and a blocked popup never opened one.
-			if (!target || !conferenceWindowEnabled) {
+			if (!target || !usesConferenceWindow(conferenceWindowEnabled, providerName)) {
 				return;
 			}
 

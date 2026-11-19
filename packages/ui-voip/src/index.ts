@@ -11,7 +11,9 @@ export {
 } from './context';
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
-export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
+export { default as MediaCallViewContext } from './context/MediaCallViewContext';
+export { useMediaCallAction, useMediaCallTakeOverAction, useMediaCallOpenRoomTracker, useMediaCallDevices } from './hooks';
+export type { MediaCallDevice } from './hooks';
 
 export { CallHistoryContextualBar, MediaCallRoomActivity, InlineMediaCallWidget, getCallHistoryMenuItems } from './views';
 export type { CallHistoryData } from './views';
@@ -20,3 +22,7 @@ export * from './definitions/callHistoryContacts';
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 
 export * from './views/MediaCallHistoryTable';
+
+export * from './utils/isExternalPeer';
+export * from './utils/isInternalPeer';
+export * from './utils/isUnknownPeer';

@@ -596,13 +596,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			case 'call':
 				return this.onDirectCall(params);
 			// A server-originated ring, not a caller's client repeating `call`: nothing refreshes the timeout, so
-			// it rings once and gives up, and accepting joins rather than negotiating. Gated, because the server
-			// has always broadcast `ring` for group calls and clients ignored it — see [the feature doc](../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
-			case 'ring':
-				if (!this._conferenceWindow) {
-					return;
-				}
-
+			// it rings once and gives up, and accepting joins rather than negotiating. Not `ring`, which the server
+			// broadcasts to a whole room for group calls and clients ignore.
+			case 'ring-member':
 				this.allowRingingAgain(params.callId);
 				return this.onDirectCall(params, false);
 			case 'canceled':

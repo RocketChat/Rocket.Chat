@@ -15,6 +15,7 @@ import { useDesktopUserLoggedIn } from './hooks/useDesktopUserLoggedIn';
 import { useDesktopUserPresence } from './hooks/useDesktopUserPresence';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
+import { useExternalRouteNavigation } from './hooks/useExternalRouteNavigation';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
@@ -73,6 +74,7 @@ const AppLayout = () => {
 	useDesktopOutlookCredentials();
 	useDesktopUserRoles();
 	useDesktopUserPresence();
+	useExternalRouteNavigation();
 	useStartupEvent();
 	useIframeCommands();
 

@@ -11,6 +11,12 @@ export type VideoConfShareChatProps = {
 	 * does not guess. `invite` is rejected for rooms that can't take new members.
 	 */
 	mode: VideoConferenceChatAccessMode;
+	/**
+	 * Who to share the chat with. Left out, the members of the call who cannot read it are worked out — which
+	 * is what the notice in the call window asks for. Given, these are people being brought into the
+	 * conversation instead, and whether anyone was already locked out makes no difference.
+	 */
+	users?: string[];
 };
 
 const videoConfShareChatPropsSchema: JSONSchemaType<VideoConfShareChatProps> = {
@@ -23,6 +29,11 @@ const videoConfShareChatPropsSchema: JSONSchemaType<VideoConfShareChatProps> = {
 		mode: {
 			type: 'string',
 			enum: ['invite', 'discussion'],
+		},
+		users: {
+			type: 'array',
+			items: { type: 'string' },
+			nullable: true,
 		},
 	},
 	required: ['callId', 'mode'],

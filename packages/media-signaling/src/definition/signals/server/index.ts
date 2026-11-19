@@ -4,5 +4,6 @@ export type * from './registered';
 export type * from './rejected-call-request';
 export type * from './remote-sdp';
 export type * from './request-offer';
+export type * from './update';
 
 export type * from './MediaSignal';

@@ -18,7 +18,7 @@ import { callHistoryQueryKeys } from '../../lib/queryKeys';
 export type MediaCallHistoryContextualbarProps = {
 	openRoomId?: string;
 	messageRoomId?: string;
-	openUserInfo?: (userId: string, rid: string) => void;
+	openUserInfo?: (userId: string, rid?: string) => void;
 	onClose: () => void;
 	callId?: string;
 	historyId?: string;
@@ -67,7 +67,7 @@ const MediaCallHistoryContextualbar = ({
 	}
 
 	if (isSuccess && isExternalCallHistoryItem(data)) {
-		return <MediaCallHistoryExternal onClose={onClose} data={data} />;
+		return <MediaCallHistoryExternal onClose={onClose} data={data} openUserInfo={openUserInfo} />;
 	}
 
 	return (

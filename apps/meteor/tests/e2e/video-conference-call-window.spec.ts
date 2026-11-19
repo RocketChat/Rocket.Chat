@@ -253,7 +253,7 @@ test.describe('video conference call window', () => {
 
 		await test.step('no call is listed in the room history', async () => {
 			await poHomeChannel.roomToolbar.openCalls();
-			await expect(page.getByRole('dialog', { name: 'Calls', exact: true }).getByText('No history')).toBeVisible();
+			await expect(page.getByRole('dialog', { name: 'Conference call history', exact: true }).getByText('No history')).toBeVisible();
 		});
 
 		await test.step('and nobody was offered a call', async () => {

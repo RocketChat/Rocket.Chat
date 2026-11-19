@@ -14,9 +14,17 @@ export type InternalCallParams = {
 	requestedCallId?: string;
 	requestedService?: CallService;
 	parentCallId?: string;
+	/** The call is a consultation before an attended transfer, so the parent call is neither replaced nor hung up */
+	attended?: boolean;
+	/** Resolves the callee as this actor type, regardless of how the routing settings would reach them */
+	requiredCalleeType?: MediaCallActorType;
+	/** The call takes over for these calls, which stay in progress until it is active */
+	replacedCallIds?: string[];
 	requestedBy?: MediaCallSignedContact;
 	features: CallFeature[];
 	divertedBy?: MediaCallContact;
+	/** For `cti` calls: the external endpoint/device the caller chose to handle the call. */
+	device?: string;
 };
 
 export type MediaCallHeader = AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>;

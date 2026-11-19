@@ -1,7 +1,7 @@
 import type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
-import type { CallHistoryItem } from '@rocket.chat/core-typings';
+import type { MediaCallHistoryItem } from '@rocket.chat/core-typings';
 
-export function toAppCallHistoryItem(item: CallHistoryItem): IAppsCallHistoryItem {
+export function toAppCallHistoryItem(item: MediaCallHistoryItem): IAppsCallHistoryItem {
 	const base = {
 		id: item._id,
 		uid: item.uid,

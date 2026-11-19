@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useUserAvatarPath, useUserId, useUserSubscription, useUserCard, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useUser, useUserAvatarPath, useUserId, useUserSubscription, useUserCard, useUserRoom } from '@rocket.chat/ui-contexts';
 import { usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +9,8 @@ import type { UserInfoAction } from '../useUserInfoActions';
 export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'name'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const { t } = useTranslation();
 	const ownUserId = useUserId();
+	// PoC: only users with an assigned extension may start calls
+	const hasSipExtension = Boolean(useUser()?.sipExtension);
 	const { closeUserCard } = useUserCard();
 	const state = usePeekMediaSessionState();
 	const { toggleWidget } = useWidgetExternalControls();
@@ -23,7 +25,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 		return undefined;
 	}
 
-	if (state === 'unavailable') {
+	if (state === 'unavailable' || !hasSipExtension) {
 		return undefined;
 	}
 

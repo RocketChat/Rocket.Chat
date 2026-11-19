@@ -22,6 +22,9 @@ export const PLUGIN_FEATURES = [
 	'transfer',
 	'dtmf',
 	'mute-all-guests',
+	'dial-out',
+	'leave',
+	'screen-share',
 ] as const;
 
 export type PluginFeature = (typeof PLUGIN_FEATURES)[number];
@@ -81,6 +84,10 @@ export type ProviderPluginActions = {
 	spotlight: (participantUuid: string, active: boolean) => void;
 	raiseHand: (participantUuid: string, raised: boolean) => void;
 	setRole: (participantUuid: string, role: 'host' | 'guest') => void;
+	/** Calls a phone number or SIP address into the conference. Offered only where `dial-out` is a feature. */
+	dialOut: (destination: string) => void;
+	/** Leaves the call as the provider's own Leave button does. Offered only where `leave` is a feature. */
+	leave: () => void;
 };
 
 /** What the plugin makes of the call: who is in it, where the viewer stands, and what may be asked of either. */

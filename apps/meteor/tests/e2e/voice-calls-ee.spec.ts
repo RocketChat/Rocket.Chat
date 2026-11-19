@@ -71,10 +71,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 			await user1.poHomeChannel.voiceCalls.widget.resumeSelf();
 		});
 
-		await test.step('should access dialpad during call', async () => {
-			await user1.poHomeChannel.voiceCalls.widget.openDialpad();
-
-			await user1.poHomeChannel.voiceCalls.widget.closeDialpad();
+		await test.step('should not display the dialpad on an internal call', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.widget.controls.dialpad).not.toBeVisible();
 		});
 
 		await test.step('should not display screen share button', async () => {

@@ -120,9 +120,9 @@ this avoids. The screen says as much before it happens ("Alice will be notified 
 button is the call itself rather than a join.
 
 Without the call window there is no preflight to wait for, so nothing changes: the caller's own client rings the
-callee from the room, on the 1:1 handshake it always used. A server-originated `ring` — which the server has
-always broadcast for group calls — is ignored by the client then, exactly as it was before this work, so a group
-call does not start ringing a whole channel.
+callee from the room, on the 1:1 handshake it always used. The room-wide `ring` the server has always broadcast for
+group calls is ignored by the client, exactly as it was before this work, so a group call does not start ringing a
+whole channel. The targeted `ring-member` is not: it names the people being rung, so it is handled either way.
 
 ### How the call window is opened
 
@@ -408,7 +408,7 @@ Adding someone to a conference makes them a **member of the conference**. It put
 `POST /v1/video-conference.add-participants` takes `{ callId, users, ring }` — no `keepHistory`, no room choice — and calls `addMembers`:
 
 - Each user who isn't already associated with the call gets a `users[]` entry with `joined: false`. Users who already have an entry are skipped, so an existing member's `joinedAt` (or `declined`) is never overwritten.
-- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
+- Everyone actually added is **rung** (`notifyUser(…, 'ring-member', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
 - They also get a desktop notification, because the ring only reaches a client that is on screen and is one-shot. It deliberately carries **no room name**, which is what stops its click from navigating: the room behind the call may be one they can't open. Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
 
 Nothing about the conference's rooms changes, so `discussionRid` is untouched and no discussion is created.
@@ -812,11 +812,14 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | plugin → window | `toggle-participants` | `{ active }` | The same for the people panel, which the provider's own participant list is hidden in favour of |
 | plugin → window | `connected` | — | Past the provider's own prejoin screen and into the call |
 | plugin → window | `disconnected` | `{ userInitiated }` | Left the call from inside the provider's page. A deliberate leave reports the departure and closes the window, exactly as hanging up does; an involuntary drop is left to the provider's page to recover from |
+| plugin → window | `select-new-host` | — | The call's only host pressed the provider's Leave button while others are still in it. The plugin held the leave back; see [Handing the call over](#handing-the-call-over-before-leaving) |
+| window → plugin | `leave` | — | Leave the call as the provider's own Leave button does. The answer to `select-new-host`; the plugin then reports `disconnected` as usual |
 | window → plugin | `participants-state` | `{ active }` | The same for the people panel, so its control follows the panel however it was opened |
 | window → plugin | `chat-state` | `{ active }` | Pushed whenever the panel changes, so all three ways of opening it — the top bar, the panel's close button, the plugin's own control — keep that control honest |
 | plugin → window | `self` | `{ participantUuid, micMuted, camMuted, clientMuted, isHost, canControl }` | Where the viewer stands in the call; `canControl` is what offers the call-wide controls |
 | plugin → window | `roster` | `{ participants }` | Who the provider has in the call, the whole list on every change |
 | window → plugin | `chat-unread` | `{ unread }` | The same unread that badges the top bar's chat toggle |
+| window → plugin | `screen-share` | `{ allowed }` | Whether the viewer may start sharing their screen; see [Restricting screen sharing](#restricting-screen-sharing) |
 | window → plugin | `mute` / `mute-video` | `{ participantUuid, muted }` | The conference's own mute, which is the one a host can undo |
 | window → plugin | `admit` / `disconnect` | `{ participantUuid }` | Let somebody in, or hang up on them — turning someone away at the door is the same request as the latter |
 | window → plugin | `spotlight` | `{ participantUuid, active }` | |
@@ -830,6 +833,44 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 window sends none of them — they are not features we support yet. They stay named so a plugin announcing one is
 understood rather than discarded, and so turning one on later is a control and a caller rather than a change to
 the protocol.
+
+#### Handing the call over before leaving
+
+A Pexip conference whose last host leaves is left with guests nobody can admit, mute or hang up on. So when the
+only host presses the provider's own Leave button with someone else still in the call (the lobby does not count),
+the plugin stops the leave and sends `select-new-host`, and `useLastHostHandover` asks the user who takes over:
+
+- **Make host and leave** sends `set-role` for the chosen participant, then waits for the roster to show them as a
+  host before sending `leave`. Nothing answers a promotion, and leaving while it is still in flight could leave the
+  call without a host after all. If the roster has not shown it after ten seconds, the user stays in the call and is
+  told so.
+- **Leave without a host** sends `leave` straight away.
+- Closing the dialog sends nothing, and the user stays in the call.
+
+The candidates are everyone else the roster has in the call who is not already a host. A provider whose plugin does
+not announce `leave` never sends `select-new-host`, and its Leave button behaves as it always did.
+
+Closing the window is the other way out, and it never reaches the plugin. A page that is closing cannot open a
+dialog of its own, so when the roster says the user is the last host, `beforeunload` asks the browser to show its
+generic "Leave site?" prompt and opens the picker behind it. A user who stays finds the picker waiting. A user who
+leaves anyway closes the window without a handover. Browsers show that prompt only on a page the user has
+interacted with, and the call frame counts, so in practice it shows. Once a promotion is in flight, the prompt is
+not shown again.
+
+#### Restricting screen sharing
+
+Whether a user may share their screen in a call is the `videoconf-share-screen` permission, checked against the
+call's room so that a room owner or moderator holds it there whatever their global roles. Every default role has
+it, so nothing changes until an administrator takes it away.
+
+The screen-share button is the provider's, so this window cannot hide it; it tells the plugin instead. It sends
+`screen-share` with every answer to `ready`, before the user can be past the prejoin screen, and again whenever
+the permission changes. Pexip's plugin then turns a press of its button into a toast saying sharing is not
+available, while still letting a presentation that is already running be stopped.
+
+Only the button is held back. The provider is never told, so this is not a security boundary: someone who starts
+a presentation any other way is not stopped. A plugin that does not announce `screen-share` ignores the message,
+and sharing there works as it always did.
 
 Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
 
@@ -959,13 +1000,13 @@ and [Access Control](#access-control).
 
 Things worth knowing that aren't visible from the code alone.
 
-### Group ringing was dead code before this work
+### The room-wide `ring` stays unhandled
 
-The server had long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
+The server has long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
 handled it** — 1:1 ringing is driven entirely client-side, by the caller's own `VideoConfManager` republishing
-`'call'` while it waits. `VideoConfManager` now handles `'ring'`, which is what makes ringing-on-add work; the side
-effect is that group conferences which had been silently not ringing **will now ring**, which the EE code always
-intended but is a visible change beyond "ring on add".
+`'call'` while it waits. It is left alone: handling it would make every group conference ring its whole channel.
+Ringing people who were added to a running conference uses its own action, `'ring-member'`, which names exactly
+the people to ring.
 
 A server-originated ring is one-shot: nothing refreshes the 10s abort timeout a 1:1 caller keeps alive, so it rings
 once and gives up. That suits an already-running conference, where there is no caller waiting.
@@ -1191,6 +1232,7 @@ as the last read. A member removed from the room *during* a call still has the r
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
 | Reaching a call | `apps/meteor/client/components/OngoingCalls/` (`CallListItem` over the sidebar's own room item, its two rows, `OngoingCallsList` and `useOngoingCalls`), `client/sidebar/hooks/useRoomList.ts` and `RoomList/RoomList.tsx` (where the group is), `client/navbar/NavBarItemOngoingCalls.tsx` (the stand-in), `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
+| Last host leaving | `apps/meteor/client/views/conference/hooks/useLastHostHandover.tsx`, `ConferenceSelectNewHostModal.tsx` |
 | Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/cron/videoConferences.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
