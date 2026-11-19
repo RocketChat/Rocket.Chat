@@ -17,7 +17,7 @@ type RoomListActivityFilterChipProps = {
 const revealWindowOnHeaderHover = css`
 	.rcx-sidebar-collapse-group__bar:not(:hover, :focus-within, :has(.rcx-sidebar-collapse-group__menu-wrapper [aria-expanded='true']))
 		&
-		.rcx-tag__inner {
+		.rcx-tag__inner[class] {
 		display: none;
 	}
 `;
