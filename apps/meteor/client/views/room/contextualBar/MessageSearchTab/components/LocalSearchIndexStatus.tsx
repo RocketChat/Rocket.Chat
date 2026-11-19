@@ -20,19 +20,26 @@ type LocalSearchIndexStatusProps = {
 /**
  * The state of the local search index of decrypted E2EE messages, above the local search results. The search covers one
  * room, so the progress line tells how far back the index holds the history of this room, until its backfill is done.
+ * After that, a note tells that the search of this room covers its encrypted messages.
  */
 const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const progress = useLocalSearchIndexProgress();
 	const memoryOnly = useLocalSearchIndexEncryptedAtRest() === false;
-	const coverage = useLocalSearchIndexRoomCoverage(backend, rid, isIndexing(progress));
-	const roomPending = coverage?.done === false;
+	const coverage = useLocalSearchIndexRoomCoverage(backend, rid, !!progress);
+	const roomPending = isIndexing(progress) && coverage?.done === false;
+	const roomIndexed = coverage?.done === true;
 
-	if (!roomPending && !memoryOnly) return null;
+	if (!roomPending && !roomIndexed && !memoryOnly) return null;
 
 	return (
 		<LocalSearchIndexStatusPanel>
+			{roomIndexed && (
+				<Callout type='success' title={t('E2E_Local_Search_Room_Indexed_Title')} role='status' data-qa='local-search-room-indexed'>
+					{t('E2E_Local_Search_Room_Indexed_Description')}
+				</Callout>
+			)}
 			{memoryOnly && <Callout type='info'>{t('E2E_Local_Search_Memory_Only')}</Callout>}
 			{roomPending && (
 				<Text role='status' fontScale='c1' color='hint' data-qa='local-search-index-progress'>

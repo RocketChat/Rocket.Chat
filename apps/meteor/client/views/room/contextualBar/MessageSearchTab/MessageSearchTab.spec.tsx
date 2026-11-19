@@ -267,6 +267,31 @@ describe('MessageSearchTab local search', () => {
 		expect(progressLine()).not.toBeInTheDocument();
 	});
 
+	it.each([
+		['the index is done', progress('done', 40)],
+		['other rooms still index', progress('indexing', 12)],
+	])('says that the room is indexed once its backfill is done, when %s', async (_case, value) => {
+		mockProgress = value;
+		await mockBackend?.setRoomState('r1', { lastUpdate: Date.UTC(2026, 10, 9), backfillDone: true });
+		renderTab();
+
+		expect(await screen.findByText('E2E_Local_Search_Room_Indexed_Title')).toBeInTheDocument();
+		expect(screen.getByText('E2E_Local_Search_Room_Indexed_Description')).toBeInTheDocument();
+	});
+
+	it.each([
+		['its backfill runs', progress('indexing', 12)],
+		['no index is open', undefined],
+	])('does not say that the room is indexed while %s', async (_case, value) => {
+		mockProgress = value;
+		await mockBackend?.setRoomState('r1', { lastUpdate: Date.UTC(2026, 10, 9), backfillDone: false });
+		renderTab();
+
+		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		expect(screen.queryByText('E2E_Local_Search_Room_Indexed_Title')).not.toBeInTheDocument();
+	});
+
 	it('shows a note when the index is kept in memory only (encryptedAtRest false)', async () => {
 		mockEncryptedAtRest = false;
 		renderTab();
