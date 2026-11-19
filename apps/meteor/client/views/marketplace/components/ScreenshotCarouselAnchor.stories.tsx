@@ -1,7 +1,9 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
+import { ImageGalleryContext } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import ScreenshotCarouselAnchor from './ScreenshotCarouselAnchor';
+import LazyImageGallery from '../../../components/LazyImageGallery';
 
 const sampleImage = (label: string, fill: string) =>
 	`data:image/svg+xml,${encodeURIComponent(
@@ -26,6 +28,13 @@ export default {
 	parameters: {
 		layout: 'padded',
 	},
+	decorators: [
+		(Story) => (
+			<ImageGalleryContext.Provider value={LazyImageGallery}>
+				<Story />
+			</ImageGalleryContext.Provider>
+		),
+	],
 	args: {
 		screenshots: [screenshot(1, 'steelblue'), screenshot(2, 'seagreen'), screenshot(3, 'slategray')],
 	},

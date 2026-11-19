@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { KeyboardEvent, ReactNode } from 'react';
 
@@ -9,15 +8,8 @@ type ScreenshotPreviewProps = {
 	children: ReactNode;
 };
 
-const previewImage = css`
-	transition: filter 0.2s ease;
-	&:hover {
-		filter: brightness(90%);
-	}
-`;
-
 /**
- * The screenshot shown on an app's details, with a caption bar below it, that opens the full-screen viewer.
+ * The screenshot shown on an app's details, with a caption bar below it, that opens the image gallery.
  */
 const ScreenshotPreview = ({ src, alt, onClick, children }: ScreenshotPreviewProps) => {
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -40,7 +32,7 @@ const ScreenshotPreview = ({ src, alt, onClick, children }: ScreenshotPreviewPro
 			}}
 			tabIndex={0}
 		>
-			<Box is='img' src={src} alt={alt} className={[previewImage]} />
+			<Box is='img' src={src} alt={alt} />
 
 			<Box display='flex' flexDirection='row' backgroundColor='tint' paddingInline='x16' paddingBlock='x8' alignItems='center' gap='x8'>
 				{children}
