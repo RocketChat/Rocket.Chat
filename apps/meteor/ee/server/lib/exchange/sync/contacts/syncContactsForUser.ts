@@ -1,5 +1,5 @@
-import { ExchangeError, acquireSyncLease, getExchangeProvider, resolveMailbox } from '@rocket.chat/exchange';
 import type { IUser } from '@rocket.chat/core-typings';
+import { ExchangeError, acquireSyncLease, getExchangeProvider, resolveMailbox } from '@rocket.chat/exchange';
 import { Users } from '@rocket.chat/models';
 
 import type { UserContactSyncOutcome } from './syncUserContacts';

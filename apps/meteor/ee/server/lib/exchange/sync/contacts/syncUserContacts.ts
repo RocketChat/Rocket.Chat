@@ -1,6 +1,6 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { FATAL_CODES, isExchangeError, logger, scrubForLog } from '@rocket.chat/exchange';
 import type { IExchangeProvider } from '@rocket.chat/exchange';
-import type { IUser } from '@rocket.chat/core-typings';
 import { Contacts, ExchangeContactSyncState } from '@rocket.chat/models';
 
 import { deleteFolderContactAvatars } from './contactAvatars';

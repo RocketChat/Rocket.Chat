@@ -1,8 +1,17 @@
-import { MAILBOX_CONCURRENCY, acquireSyncLease, forEachWithConcurrency, getExchangeProvider, isExchangeError, isServerSyncEnabled, iterateMailboxCandidates, logger } from '@rocket.chat/exchange';
+import {
+	MAILBOX_CONCURRENCY,
+	acquireSyncLease,
+	forEachWithConcurrency,
+	getExchangeProvider,
+	isExchangeError,
+	isServerSyncEnabled,
+	iterateMailboxCandidates,
+	logger,
+} from '@rocket.chat/exchange';
 import { ExchangeContactSyncState } from '@rocket.chat/models';
 
-import { settings } from '../../../../../../server/settings';
 import { syncUserContacts } from './syncUserContacts';
+import { settings } from '../../../../../../server/settings';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

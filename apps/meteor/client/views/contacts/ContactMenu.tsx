@@ -11,6 +11,7 @@ import { useContactFavorite } from './hooks/useContactFavorite';
 import { useContactLabel } from './hooks/useContactLabel';
 import { isContactNotFoundError } from './lib/isContactNotFoundError';
 import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
+import { useComposeEmail } from '../../hooks/useComposeEmail';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { contactsQueryKeys } from '../../lib/queryKeys';
 
@@ -30,6 +31,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 
 	const { canCall, isCallInProgress, call } = useContactCall();
 	const { favorite, setFavorite } = useContactFavorite(contact);
+	const composeEmail = useComposeEmail();
 
 	const remove = useMutation({
 		mutationFn: () => deleteContact({ contactId: contact._id }),
@@ -90,7 +92,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 				icon: 'mail' as const,
 				content,
 				textValue: content,
-				onClick: () => window.open(`mailto:${address}`, '_self'),
+				onClick: () => composeEmail(address),
 			};
 		}),
 	];

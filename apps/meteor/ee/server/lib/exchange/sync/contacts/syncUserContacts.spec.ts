@@ -1,4 +1,5 @@
 import type { ContactFolder, IExchangeProvider } from '@rocket.chat/exchange';
+
 import { syncUserContacts } from './syncUserContacts';
 
 const deleteImportedByFolder = jest.fn();

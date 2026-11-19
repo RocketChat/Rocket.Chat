@@ -1,6 +1,6 @@
+import type { IContact, IUser } from '@rocket.chat/core-typings';
 import { FATAL_CODES, isExchangeError, logger, scrubForLog, scrubText } from '@rocket.chat/exchange';
 import type { ExchangeContactUpsert, IExchangeProvider } from '@rocket.chat/exchange';
-import type { IContact, IUser } from '@rocket.chat/core-typings';
 import type { ImportedContact } from '@rocket.chat/model-typings';
 import { Contacts, ExchangeContactSyncState } from '@rocket.chat/models';
 

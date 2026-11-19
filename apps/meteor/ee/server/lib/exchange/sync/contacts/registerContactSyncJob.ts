@@ -1,5 +1,5 @@
-import { logger, scrubForLog } from '@rocket.chat/exchange';
 import { cronJobs } from '@rocket.chat/cron';
+import { logger, scrubForLog } from '@rocket.chat/exchange';
 import { isValidCron } from 'cron-validator';
 
 import { runContactSync } from './runContactSync';

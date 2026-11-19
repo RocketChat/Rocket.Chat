@@ -21,6 +21,7 @@ import ContactInfoEntry from './ContactInfoEntry';
 import ContactMenu from './ContactMenu';
 import { useContactCall } from './hooks/useContactCall';
 import { useContactLabel } from './hooks/useContactLabel';
+import { useComposeEmail } from '../../hooks/useComposeEmail';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 
 export type ContactInfoProps = {
@@ -33,6 +34,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 	const labelOf = useContactLabel();
 	const { canCall, isCallInProgress, call } = useContactCall();
+	const composeEmail = useComposeEmail();
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
 
 	// A labelled address says something an unlabelled one does not, so it gets its own field to say it in.
@@ -67,7 +69,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 										text={address}
 										actionIcon='mail'
 										actionLabel={t('Email')}
-										onAction={() => window.open(`mailto:${address}`, '_self')}
+										onAction={() => composeEmail(address)}
 									/>
 								))}
 							</InfoPanelField>
@@ -76,12 +78,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 						{labelledEmails.map(({ address, label }, index) => (
 							<InfoPanelField key={`labelled-email-${index}-${address}`}>
 								<InfoPanelLabel>{`${t('Email')} (${labelOf(label)})`}</InfoPanelLabel>
-								<ContactInfoEntry
-									text={address}
-									actionIcon='mail'
-									actionLabel={t('Email')}
-									onAction={() => window.open(`mailto:${address}`, '_self')}
-								/>
+								<ContactInfoEntry text={address} actionIcon='mail' actionLabel={t('Email')} onAction={() => composeEmail(address)} />
 							</InfoPanelField>
 						))}
 

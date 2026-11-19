@@ -1,5 +1,6 @@
 import { ExchangeError } from '@rocket.chat/exchange';
 import type { ExchangeContact, ExchangeContactPhoto, ExchangeContactUpsert, IExchangeProvider, Page } from '@rocket.chat/exchange';
+
 import { syncContactFolder } from './syncContactFolder';
 
 const bulkUpsertImported = jest.fn();
