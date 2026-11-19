@@ -1,132 +1,521 @@
-import type { AllHTMLAttributes, ElementType, MouseEvent, RefAttributes } from 'react';
-import { useMemo } from 'react';
+/* oxlint-disable jsx-a11y/label-has-associated-control -- the consumer sets the control of the row */
+import { styled, View } from '@tamagui/web';
+import { isValidElement, useCallback, useMemo, useState } from 'react';
+import type { ElementType, ReactNode } from 'react';
 
+import type { ItemContract } from './Item.contract';
+import ItemContent from './ItemContent';
 import { ItemContext } from './ItemContext';
-import type { ItemInset } from './types';
+import { countLines, forEachSlot } from './lines';
+import type { ItemAttributes } from './types';
 import { useIdRegistry } from './useIdRegistry';
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
+import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
+import { pickWebRowHandlers } from '../../helpers/pickWebRowHandlers';
+import type { WebAnchorRef, WebDivRef, WebLabelRef, WebLiRef } from '../../types/WebElementAttributes';
 
-export type ItemProps = {
-	/**
-	 * The element to render. Use `li` inside a list; set `role` for listbox options or menu items.
-	 */
-	is?: ElementType;
-	/**
-	 * Adds space between the row edge and its first and last slots.
-	 */
-	inset?: ItemInset;
-	/**
-	 * Adds space above and below the slots, for rows that read as separate entries, such as messages in a panel's list.
-	 */
-	insetBlock?: ItemInset;
-	/**
-	 * Draws a rule along the row's bottom edge, for lists whose rows need a line between them.
-	 */
-	divided?: boolean;
-	/**
-	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
-	 */
-	align?: 'center' | 'start';
-	/**
-	 * Shows the hover surface even when the row has no click target, as for rows whose content is interactive.
-	 */
-	hoverable?: boolean;
-	selected?: boolean;
-	/**
-	 * Emphasizes the title, icon, description and meta, as for unread rooms.
-	 */
-	highlighted?: boolean;
-	/**
-	 * Shows the hover surface for a virtual cursor, such as a listbox's active descendant.
-	 */
-	focused?: boolean;
-	/**
-	 * Shows the focus ring for focus a script moves, such as a menu's, where the browser's `:focus-visible` also matches on hover.
-	 * Once set, it replaces `:focus-visible` for the row.
-	 */
-	focusVisible?: boolean;
-	/**
-	 * Dims the row and ignores clicks. Set the matching ARIA state through props.
-	 */
-	disabled?: boolean;
-	variant?: 'danger';
-	/**
-	 * Declares that the content takes two lines, which widens the gap, without waiting for the browser to match the content.
-	 */
-	multiline?: boolean;
-	/**
-	 * Declares that the row reacts to the pointer, without waiting for the browser to find a link, button or option.
-	 */
-	interactive?: boolean;
-	/**
-	 * Shows the grab cursor on the whole row, for rows dragged without an `ItemDragHandle`.
-	 */
-	grabbable?: boolean;
-	/**
-	 * Dims the row while a copy of it is being dragged.
-	 */
-	dragging?: boolean;
-	/**
-	 * Draws the line where a dragged row would land, on this row's top (`before`) or bottom (`after`) edge.
-	 */
-	dropIndicator?: 'before' | 'after';
-	/**
-	 * Marks the row as a place a dragged row goes into, such as a folder: `available` while a drag that could land on it is
-	 * under way, `active` while the pointer is over it.
-	 */
-	dropTarget?: 'available' | 'active';
-	/**
-	 * Marks the row as hovered by a drag that cannot land on it.
-	 */
-	dropDisabled?: boolean;
-	/**
-	 * Flashes the row once, where a dragged or keyboard-moved row has just landed.
-	 */
-	dropped?: boolean;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
-	RefAttributes<HTMLElement>;
+export type { ItemAttributes } from './types';
+
+export type ItemProps = Omit<ItemContract, 'ref'> &
+	ItemAttributes & {
+		/**
+		 * The element to render. Use `li` inside a list; set `role` for listbox options or menu items.
+		 */
+		is?: 'div' | 'li' | 'a' | 'label';
+	};
+
+const flags = [
+	['hoverable', 'rcx-item--hoverable'],
+	['clickable', 'rcx-item--clickable'],
+	['interactive', 'rcx-item--interactive'],
+	['multiline', 'rcx-item--multiline'],
+	['selected', 'rcx-item--selected'],
+	['highlighted', 'rcx-item--highlighted'],
+	['focused', 'rcx-item--focused'],
+	['focusManaged', 'rcx-item--focus-managed'],
+	['focusVisible', 'rcx-item--focus-visible'],
+	['disabled', 'rcx-item--disabled'],
+	['editing', 'rcx-item--editing'],
+	['danger', 'rcx-item--danger'],
+	['grabbable', 'rcx-item--grabbable'],
+	['dragging', 'rcx-item--dragging'],
+] as const;
+
+type RowClassStates = Pick<
+	ItemProps,
+	'inset' | 'insetBlock' | 'divided' | 'align' | 'dropIndicator' | 'dropTarget' | 'dropDisabled' | 'dropped'
+> &
+	Record<(typeof flags)[number][0], boolean | undefined>;
+
+// The row's modifier classes in the order `cxx` wrote them: a row renders on every update of a list, and the generic
+// composer walks entries and closures for each of its modifiers
+const rowClasses = (states: RowClassStates, className?: string) => {
+	let classes = 'rcx-item';
+	if (states.inset !== 'none') {
+		classes += ` rcx-item--inset-${states.inset}`;
+	}
+	if (states.insetBlock !== 'none') {
+		classes += ` rcx-item--inset-block-${states.insetBlock}`;
+	}
+	if (states.divided) {
+		classes += ' rcx-item--divided';
+	}
+	if (states.align !== 'center') {
+		classes += ` rcx-item--align-${states.align}`;
+	}
+	for (const [state, modifier] of flags) {
+		if (states[state]) {
+			classes += ` ${modifier}`;
+		}
+	}
+	if (states.dropIndicator) {
+		classes += ` rcx-item--drop-${states.dropIndicator}`;
+	}
+	if (states.dropTarget) {
+		classes += ` rcx-item--drop-target-${states.dropTarget}`;
+	}
+	if (states.dropDisabled) {
+		classes += ' rcx-item--drop-disabled';
+	}
+	if (states.dropped) {
+		classes += ' rcx-item--dropped';
+	}
+	return className ? `${classes} ${className}` : classes;
+};
 
 const skipRegistration = () => () => undefined;
 
 /**
+ * Whether the content among the slots of a row holds more than one line. A component that renders an `ItemContent` for
+ * its row passes itself as `content`, and the answer as `multiline`, so the row needs no second render to find out.
+ */
+export const holdsLines = (children: ReactNode, content: ElementType = ItemContent) => {
+	let held = false;
+	forEachSlot(children, (child) => {
+		held ||= isValidElement<{ children?: ReactNode }>(child) && child.type === content && countLines(child.props.children) > 1;
+	});
+	return held;
+};
+
+// generated by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit
+
+const itemFrame = {
+	display: 'flex',
+	flexDirection: 'row',
+	alignItems: 'center',
+	flexShrink: 1,
+	minWidth: 0,
+	minHeight: 'auto',
+	render: 'div',
+	position: 'relative',
+	margin: 0,
+	listStyle: 'none',
+	textAlign: 'start',
+	textDecorationLine: 'none',
+	color: '$rcx-font-default',
+	borderRadius: '$radius.small',
+	fontSize: '0.875rem',
+	lineHeight: '1.25rem',
+	fontWeight: '400',
+	letterSpacing: 0,
+} as const;
+
+const itemInsets = {
+	'none-none': {
+		paddingInline: '$space.x4',
+		paddingBlock: {
+			default: '$space.x4',
+			pointerCoarse: '$space.x8',
+		},
+	},
+	'none-sm': {
+		paddingInline: '$space.x4',
+		paddingBlock: {
+			default: '$space.x8',
+			pointerCoarse: '$space.x12',
+		},
+	},
+	'none-md': {
+		paddingInline: '$space.x4',
+		paddingBlock: {
+			default: '$space.x12',
+			pointerCoarse: '$space.x16',
+		},
+	},
+	'none-lg': {
+		paddingInline: '$space.x4',
+		paddingBlock: {
+			default: '$space.x16',
+			pointerCoarse: '$space.x20',
+		},
+	},
+	'sm-none': {
+		paddingInline: '$space.x8',
+		paddingBlock: {
+			default: '$space.x4',
+			pointerCoarse: '$space.x8',
+		},
+	},
+	'sm-sm': {
+		paddingInline: '$space.x8',
+		paddingBlock: {
+			default: '$space.x8',
+			pointerCoarse: '$space.x12',
+		},
+	},
+	'sm-md': {
+		paddingInline: '$space.x8',
+		paddingBlock: {
+			default: '$space.x12',
+			pointerCoarse: '$space.x16',
+		},
+	},
+	'sm-lg': {
+		paddingInline: '$space.x8',
+		paddingBlock: {
+			default: '$space.x16',
+			pointerCoarse: '$space.x20',
+		},
+	},
+	'md-none': {
+		paddingInline: '$space.x12',
+		paddingBlock: {
+			default: '$space.x4',
+			pointerCoarse: '$space.x8',
+		},
+	},
+	'md-sm': {
+		paddingInline: '$space.x12',
+		paddingBlock: {
+			default: '$space.x8',
+			pointerCoarse: '$space.x12',
+		},
+	},
+	'md-md': {
+		paddingInline: '$space.x12',
+		paddingBlock: {
+			default: '$space.x12',
+			pointerCoarse: '$space.x16',
+		},
+	},
+	'md-lg': {
+		paddingInline: '$space.x12',
+		paddingBlock: {
+			default: '$space.x16',
+			pointerCoarse: '$space.x20',
+		},
+	},
+	'lg-none': {
+		paddingInline: {
+			'default': '$space.x24',
+			'@narrow/rcx-item-group': '$space.x16',
+		},
+		paddingBlock: {
+			default: '$space.x4',
+			pointerCoarse: '$space.x8',
+		},
+	},
+	'lg-sm': {
+		paddingInline: {
+			'default': '$space.x24',
+			'@narrow/rcx-item-group': '$space.x16',
+		},
+		paddingBlock: {
+			default: '$space.x8',
+			pointerCoarse: '$space.x12',
+		},
+	},
+	'lg-md': {
+		paddingInline: {
+			'default': '$space.x24',
+			'@narrow/rcx-item-group': '$space.x16',
+		},
+		paddingBlock: {
+			default: '$space.x12',
+			pointerCoarse: '$space.x16',
+		},
+	},
+	'lg-lg': {
+		paddingInline: {
+			'default': '$space.x24',
+			'@narrow/rcx-item-group': '$space.x16',
+		},
+		paddingBlock: {
+			default: '$space.x16',
+			pointerCoarse: '$space.x20',
+		},
+	},
+} as const;
+
+const itemGutters = {
+	narrow: {
+		gap: '$space.x4',
+	},
+	wide: {
+		gap: '$space.x8',
+	},
+} as const;
+
+const itemTones = {
+	default: {},
+	danger: {
+		color: '$rcx-status-font-on-danger',
+	},
+	success: {
+		color: '$rcx-status-font-on-success',
+	},
+	warning: {
+		color: '$rcx-status-font-on-warning',
+	},
+	disabled: {
+		color: '$rcx-font-disabled',
+	},
+	editing: {
+		color: '$rcx-status-font-on-warning-2',
+	},
+} as const;
+
+const itemPaints = {
+	editing: {
+		backgroundColor: '$rcx-status-background-warning-2',
+	},
+	disabled: {
+		backgroundColor: 'transparent',
+	},
+	selected: {
+		backgroundColor: '$rcx-surface-selected',
+	},
+	focused: {
+		backgroundColor: '$rcx-surface-hover',
+	},
+	dropActive: {
+		backgroundColor: '$rcx-status-background-info',
+	},
+	dropDisabled: {
+		backgroundColor: 'transparent',
+	},
+	hover: {
+		backgroundColor: {
+			hover: '$rcx-surface-hover',
+		},
+	},
+} as const;
+
+const itemCursors = {
+	'pointer': {
+		cursor: 'pointer',
+	},
+	'grab': {
+		cursor: 'grab',
+	},
+	'not-allowed': {
+		cursor: 'not-allowed',
+	},
+} as const;
+
+const itemRings = {
+	'native': {
+		outlineWidth: {
+			'focus-visible': 2,
+		},
+		outlineStyle: {
+			'focus-visible': 'solid',
+		},
+		outlineColor: {
+			'focus-visible': 'transparent',
+		},
+		outlineOffset: {
+			'focus-visible': -2,
+		},
+		boxShadow: {
+			'focus-visible': 'inset 0 0 0 2px $rcx-stroke-highlight',
+		},
+	},
+	'managed': {
+		outlineStyle: {
+			focus: 'none',
+		},
+		outlineWidth: {
+			focus: 0,
+		},
+	},
+	'managed-visible': {
+		outlineWidth: {
+			default: 2,
+			focus: 0,
+		},
+		outlineStyle: {
+			default: 'solid',
+			focus: 'none',
+		},
+		outlineColor: 'transparent',
+		outlineOffset: -2,
+		boxShadow: 'inset 0 0 0 2px $rcx-stroke-highlight',
+	},
+	'dropActive': {
+		borderRadius: '$radius.medium',
+		boxShadow: 'inset 0 0 0 2px $rcx-stroke-highlight',
+	},
+	'dropAvailable': {
+		borderRadius: '$radius.medium',
+		outlineWidth: 1,
+		outlineStyle: 'dashed',
+		outlineColor: '$rcx-stroke-highlight',
+		outlineOffset: -1,
+	},
+} as const;
+
+// end of generated
+
+const ItemFrame = styled(View, {
+	...itemFrame,
+	group: 'item',
+	variants: {
+		inset: itemInsets,
+		gutter: itemGutters,
+		align: { center: {}, start: { alignItems: 'flex-start' } },
+		tone: itemTones,
+		paint: itemPaints,
+		cursor: itemCursors,
+		ring: itemRings,
+		dragging: { true: { opacity: 0.4 }, false: {} },
+	},
+});
+
+type PaintStates = Pick<ItemProps, 'editing' | 'disabled' | 'selected' | 'focused' | 'dropDisabled' | 'dropTarget'> & {
+	reactsToPointer: boolean;
+};
+
+const paintOf = ({ editing, disabled, selected, focused, dropDisabled, dropTarget, reactsToPointer }: PaintStates) => {
+	if (editing) {
+		return 'editing';
+	}
+	if (disabled) {
+		return 'disabled';
+	}
+	if (selected) {
+		return 'selected';
+	}
+	if (focused) {
+		return 'focused';
+	}
+	if (dropDisabled) {
+		return 'dropDisabled';
+	}
+	if (dropTarget === 'active') {
+		return 'dropActive';
+	}
+	return reactsToPointer ? 'hover' : undefined;
+};
+
+const toneOf = ({ editing, disabled, variant }: Pick<ItemProps, 'editing' | 'disabled' | 'variant'>) => {
+	if (editing) {
+		return 'editing';
+	}
+	return disabled ? 'disabled' : (variant ?? 'default');
+};
+
+const cursorOf = ({
+	disabled,
+	dropDisabled,
+	grabbable,
+	interactive,
+}: Pick<ItemProps, 'disabled' | 'dropDisabled' | 'grabbable'> & { interactive: boolean }) => {
+	if (disabled || dropDisabled) {
+		return 'not-allowed';
+	}
+	if (grabbable) {
+		return 'grab';
+	}
+	return interactive ? 'pointer' : undefined;
+};
+
+const ringOf = ({ dropTarget, focusVisible }: Pick<ItemProps, 'dropTarget' | 'focusVisible'>) => {
+	if (focusVisible) {
+		return 'managed-visible';
+	}
+	if (dropTarget === 'active') {
+		return 'dropActive';
+	}
+	if (dropTarget === 'available') {
+		return 'dropAvailable';
+	}
+	return focusVisible === undefined ? 'native' : 'managed';
+};
+
+/**
  * A list row composed from slots: media, icon, content and actions.
  */
-const Item = ({
-	is: Tag = 'div',
-	inset = 'none',
-	insetBlock = 'none',
-	divided,
-	align = 'center',
-	hoverable,
-	selected,
-	highlighted,
-	focused,
-	focusVisible,
-	disabled,
-	variant,
-	multiline,
-	interactive,
-	grabbable,
-	dragging,
-	dropIndicator,
-	dropTarget,
-	dropDisabled,
-	dropped,
-	className,
-	onClick,
-	children,
-	...props
-}: ItemProps) => {
+const Item = (props: ItemProps) => {
+	const {
+		is = 'div',
+		inset = 'none',
+		insetBlock = 'none',
+		divided,
+		align = 'center',
+		hoverable,
+		selected,
+		highlighted,
+		focused,
+		focusVisible,
+		disabled,
+		editing,
+		variant,
+		multiline,
+		grabbable,
+		dragging,
+		dropIndicator,
+		dropTarget,
+		dropDisabled,
+		dropped,
+		children,
+	} = props;
 	const [descriptionIds, registerDescription] = useIdRegistry();
 	const [titleIds, registerTitle] = useIdRegistry();
 
 	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.
 	const isMenuItem = !!props.role?.startsWith('menuitem');
+	const [reportedLines, setReportedLines] = useState(false);
+	const pressable = !!props.onPress || !!props.onClick;
+	const interactive = !!props.interactive || pressable || is === 'a' || props.role === 'option' || isMenuItem;
+
+	// A row told nothing counts the lines of the content among its slots. Content it holds through another component
+	// reports itself after the first render, which the row then repeats
+	const heldLines = multiline ?? holdsLines(children);
+	const wide = heldLines || reportedLines;
+
+	const reportLines = useCallback((lines: boolean) => {
+		setReportedLines(lines);
+		return () => setReportedLines(false);
+	}, []);
 
 	// Only a menu item reads its titles' ids, so any other row skips the render a title's registration causes on mount
 	const contextValue = useMemo(
-		() => ({ descriptionIds, registerDescription, registerTitle: isMenuItem ? registerTitle : skipRegistration }),
-		[descriptionIds, registerDescription, registerTitle, isMenuItem],
+		() => ({
+			descriptionIds,
+			registerDescription,
+			registerTitle: isMenuItem ? registerTitle : skipRegistration,
+			highlighted: !!highlighted,
+			grabbable: !!grabbable,
+			dragging: !!dragging,
+			wide,
+			// A row that already knows needs no report, and so no second render
+			reportLines: multiline === undefined && !heldLines ? reportLines : undefined,
+		}),
+		[
+			descriptionIds,
+			registerDescription,
+			registerTitle,
+			isMenuItem,
+			highlighted,
+			grabbable,
+			dragging,
+			wide,
+			multiline,
+			heldLines,
+			reportLines,
+		],
 	);
 
 	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || undefined)) : props['aria-labelledby'];
@@ -135,53 +524,181 @@ const Item = ({
 		? [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined
 		: props['aria-describedby'];
 
-	const handleClick = onClick
-		? (event: MouseEvent<HTMLElement>) => {
-				if (disabled) {
-					return;
-				}
-				onClick(event);
-			}
-		: undefined;
+	// A disabled row ignores presses
+	const press = disabled ? {} : props;
 
-	return (
-		<ItemContext.Provider value={contextValue}>
-			<Tag
-				{...props}
-				aria-labelledby={ariaLabelledBy}
-				aria-describedby={ariaDescribedBy}
-				className={cx(
-					cxx('rcx-item')({
-						[`inset-${inset}`]: inset !== 'none',
-						[`inset-block-${insetBlock}`]: insetBlock !== 'none',
-						'divided': !!divided,
-						[`align-${align}`]: align !== 'center',
-						'hoverable': !!hoverable,
-						'clickable': !!onClick,
-						'interactive': !!interactive,
-						'multiline': !!multiline,
-						'selected': !!selected,
-						'highlighted': !!highlighted,
-						'focused': !!focused,
-						'focus-managed': focusVisible !== undefined,
-						'focus-visible': !!focusVisible,
-						'disabled': !!disabled,
-						'danger': variant === 'danger',
-						'grabbable': !!grabbable,
-						'dragging': !!dragging,
-						'drop': dropIndicator ?? false,
-						'drop-target': dropTarget ?? false,
-						'drop-disabled': !!dropDisabled,
-						'dropped': !!dropped,
-					}),
-					className,
-				)}
-				onClick={handleClick}
+	const classes = rowClasses(
+		{
+			inset,
+			insetBlock,
+			divided,
+			align,
+			hoverable,
+			clickable: pressable,
+			interactive: props.interactive,
+			multiline,
+			selected,
+			highlighted,
+			focused,
+			focusManaged: focusVisible !== undefined,
+			focusVisible,
+			disabled,
+			editing,
+			danger: variant === 'danger',
+			grabbable,
+			dragging,
+			dropIndicator,
+			dropTarget,
+			dropDisabled,
+			dropped,
+		},
+		props.className,
+	);
+
+	const tone = toneOf({ editing, disabled, variant });
+	const paint = paintOf({ editing, disabled, selected, focused, dropDisabled, dropTarget, reactsToPointer: !!hoverable || interactive });
+	const cursor = cursorOf({ disabled, dropDisabled, grabbable, interactive });
+	const ring = ringOf({ dropTarget, focusVisible });
+
+	// One literal element per tag: the zero-runtime compiler has to know the tag
+	const renderRow = () => {
+		if (is === 'li') {
+			return (
+				<ItemFrame
+					inset={`${inset}-${insetBlock}`}
+					gutter={wide ? 'wide' : 'narrow'}
+					align={align}
+					tone={tone}
+					paint={paint}
+					cursor={cursor}
+					ring={ring}
+					dragging={!!dragging}
+					className={classes}
+					render={
+						<li
+							{...ariaAndDataAttributes(props)}
+							{...pickWebInteractionHandlers(props)}
+							{...pickWebRowHandlers(props)}
+							{...pickWebPressHandlers(press)}
+							ref={props.ref as WebLiRef}
+							id={props.id}
+							title={props.title}
+							role={props.role}
+							tabIndex={props.tabIndex}
+							value={props.value}
+							aria-labelledby={ariaLabelledBy}
+							aria-describedby={ariaDescribedBy}
+						/>
+					}
+				>
+					{children}
+				</ItemFrame>
+			);
+		}
+
+		if (is === 'a') {
+			return (
+				<ItemFrame
+					inset={`${inset}-${insetBlock}`}
+					gutter={wide ? 'wide' : 'narrow'}
+					align={align}
+					tone={tone}
+					paint={paint}
+					cursor={cursor}
+					ring={ring}
+					dragging={!!dragging}
+					className={classes}
+					render={
+						<a
+							{...ariaAndDataAttributes(props)}
+							{...pickWebInteractionHandlers(props)}
+							{...pickWebRowHandlers(props)}
+							{...pickWebPressHandlers(press)}
+							ref={props.ref as WebAnchorRef}
+							id={props.id}
+							title={props.title}
+							role={props.role}
+							tabIndex={props.tabIndex}
+							href={props.href}
+							target={props.target}
+							rel={props.rel}
+							download={props.download}
+							aria-labelledby={ariaLabelledBy}
+							aria-describedby={ariaDescribedBy}
+						/>
+					}
+				>
+					{children}
+				</ItemFrame>
+			);
+		}
+
+		if (is === 'label') {
+			return (
+				<ItemFrame
+					inset={`${inset}-${insetBlock}`}
+					gutter={wide ? 'wide' : 'narrow'}
+					align={align}
+					tone={tone}
+					paint={paint}
+					cursor={cursor}
+					ring={ring}
+					dragging={!!dragging}
+					className={classes}
+					render={
+						<label
+							{...ariaAndDataAttributes(props)}
+							{...pickWebInteractionHandlers(props)}
+							{...pickWebRowHandlers(props)}
+							{...pickWebPressHandlers(press)}
+							ref={props.ref as WebLabelRef}
+							id={props.id}
+							title={props.title}
+							role={props.role}
+							tabIndex={props.tabIndex}
+							aria-labelledby={ariaLabelledBy}
+							aria-describedby={ariaDescribedBy}
+						/>
+					}
+				>
+					{children}
+				</ItemFrame>
+			);
+		}
+
+		return (
+			<ItemFrame
+				inset={`${inset}-${insetBlock}`}
+				gutter={wide ? 'wide' : 'narrow'}
+				align={align}
+				tone={tone}
+				paint={paint}
+				cursor={cursor}
+				ring={ring}
+				dragging={!!dragging}
+				className={classes}
+				render={
+					<div
+						{...ariaAndDataAttributes(props)}
+						{...pickWebInteractionHandlers(props)}
+						{...pickWebRowHandlers(props)}
+						{...pickWebPressHandlers(press)}
+						ref={props.ref as WebDivRef}
+						id={props.id}
+						title={props.title}
+						role={props.role}
+						tabIndex={props.tabIndex}
+						aria-labelledby={ariaLabelledBy}
+						aria-describedby={ariaDescribedBy}
+					/>
+				}
 			>
 				{children}
-			</Tag>
-		</ItemContext.Provider>
-	);
+			</ItemFrame>
+		);
+	};
+
+	return <ItemContext.Provider value={contextValue}>{renderRow()}</ItemContext.Provider>;
 };
 
 export default Item;

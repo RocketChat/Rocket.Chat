@@ -46,7 +46,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 	}
 
 	return (
-		<Item role='listitem' inset='lg' id={room._id} data-rid={room._id} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item role='listitem' inset='lg' interactive id={room._id} data-rid={room._id} onFocus={mountNow} onPointerEnter={requestMount}>
 			<ItemMedia>
 				<RoomAvatar room={room} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>

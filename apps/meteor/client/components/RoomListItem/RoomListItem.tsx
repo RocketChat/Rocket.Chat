@@ -102,7 +102,15 @@ const RoomListItem = ({
 	);
 
 	return (
-		<SidebarItem {...props} is='div' selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarItem
+			{...props}
+			is='div'
+			interactive
+			selected={selected}
+			highlighted={highlighted}
+			onFocus={mountNow}
+			onPointerEnter={requestMount}
+		>
 			{showAvatar && (
 				<SidebarItemAvatarWrapper>
 					<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />

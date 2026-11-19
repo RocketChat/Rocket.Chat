@@ -301,10 +301,15 @@ export const useItemListDrag = ({
 				};
 
 				const lift = () => {
-					preview = sourceElement.cloneNode(true) as HTMLElement;
-					preview.removeAttribute('id');
+					const copy = sourceElement.cloneNode(true) as HTMLElement;
+					copy.removeAttribute('id');
+					copy.querySelectorAll('.rcx-item__actions').forEach((actions) => actions.remove());
+
+					// The copy keeps the classes of the row, so what lifts it off the page goes on an element around it
+					preview = document.createElement('div');
 					preview.setAttribute('aria-hidden', 'true');
-					preview.classList.add('rcx-item-drag-preview');
+					preview.className = 'rcx-item-drag-preview';
+					preview.append(copy);
 					preview.style.width = `${Math.min(sourceElement.getBoundingClientRect().width, PREVIEW_MAX_WIDTH)}px`;
 					document.body.append(preview);
 
@@ -491,7 +496,7 @@ export const useItemListDrag = ({
 				}
 
 				// Reordering detaches or remounts the row, which drops its focus; give it back to the same control once it lands.
-				const focusedClass = focused.classList[0];
+				const focusedClass = Array.from(focused.classList).find((name) => name.startsWith('rcx-'));
 				const findFocused = () => {
 					if (focused.isConnected) {
 						return focused;

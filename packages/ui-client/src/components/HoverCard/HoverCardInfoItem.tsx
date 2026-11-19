@@ -44,7 +44,7 @@ const HoverCardInfoItem = ({ icon, label, onClick, children }: HoverCardInfoItem
 	);
 
 	return (
-		<Item is='li'>
+		<Item is='li' interactive>
 			{media}
 			<ItemContent>{title}</ItemContent>
 		</Item>
