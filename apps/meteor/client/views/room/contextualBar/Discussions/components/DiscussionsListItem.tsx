@@ -11,16 +11,15 @@ import {
 	MessageMetricsItem,
 	MessageMetricsItemLabel,
 	MessageMetricsItemIcon,
+	Message,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
-import { clickableItem } from '../../../../../lib/clickableItem';
-import type { ContextualbarMessageRowProps } from '../../layout/ContextualbarMessageRow';
-import ContextualbarMessageRow from '../../layout/ContextualbarMessageRow';
+import { activateWithKeyboard } from '../../../../../lib/clickableItem';
 
 export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
@@ -32,7 +31,7 @@ export type DiscussionListItemProps = {
 	name?: IDiscussionMessage['u']['name'];
 	ts: IDiscussionMessage['ts'];
 	emoji: IDiscussionMessage['emoji'];
-} & ContextualbarMessageRowProps;
+} & ComponentProps<typeof Message>;
 
 const DiscussionListItem = ({
 	_id,
@@ -43,13 +42,12 @@ const DiscussionListItem = ({
 	dcount,
 	formatDate,
 	dlm,
-	className = [],
 	emoji,
 	...props
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<ContextualbarMessageRow {...props} className={className} spaceBelow='x8'>
+		<Message clickable insetBlock='md' tabIndex={0} onKeyDown={activateWithKeyboard} {...props}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>
@@ -81,8 +79,8 @@ const DiscussionListItem = ({
 					</MessageMetrics>
 				</MessageBlock>
 			</MessageContainer>
-		</ContextualbarMessageRow>
+		</Message>
 	);
 };
 
-export default memo(clickableItem(DiscussionListItem));
+export default memo(DiscussionListItem);

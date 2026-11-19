@@ -8,12 +8,13 @@ import {
 	MessageBody,
 	MessageContainerFixed,
 	MessageStatusIndicatorItem,
+	Message,
 	Box,
 	Stack,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTimeAgo } from '@rocket.chat/ui-client';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,8 +22,7 @@ import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
-import type { ContextualbarMessageRowProps } from '../../layout/ContextualbarMessageRow';
-import ContextualbarMessageRow from '../../layout/ContextualbarMessageRow';
+import { activateWithKeyboard } from '../../../../../lib/clickableItem';
 
 export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
@@ -41,7 +41,7 @@ export type ThreadListMessageProps = {
 	emoji: IMessage['emoji'];
 	hasDraft?: boolean;
 	ignored?: boolean;
-} & ContextualbarMessageRowProps;
+} & ComponentProps<typeof Message>;
 
 const ThreadListMessage = ({
 	_id,
@@ -57,7 +57,6 @@ const ThreadListMessage = ({
 	mention,
 	all,
 	tlm,
-	className = [],
 	emoji,
 	hasDraft,
 	ignored,
@@ -67,7 +66,7 @@ const ThreadListMessage = ({
 	const formatDate = useTimeAgo();
 
 	return (
-		<ContextualbarMessageRow className={className} {...props}>
+		<Message clickable insetBlock='md' tabIndex={0} onKeyDown={activateWithKeyboard} {...props}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>
@@ -94,7 +93,7 @@ const ThreadListMessage = ({
 					{unread && <ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />}
 				</Stack>
 			</MessageContainerFixed>
-		</ContextualbarMessageRow>
+		</Message>
 	);
 };
 
