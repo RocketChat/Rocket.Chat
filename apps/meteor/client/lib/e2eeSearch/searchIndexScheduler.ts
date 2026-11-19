@@ -225,7 +225,8 @@ export const createSearchIndexScheduler = ({
 	// The catch-up of the room that the user opened skips up to MAX_OWED_PAUSES pauses. The next full pause repays them, so the
 	// average pace and the rate limit stay the same.
 	let owedPauses = 0;
-	let cutPause: (() => void) | undefined;
+	let pauseCanBeCut = false;
+	let pauseCut = false;
 
 	const rooms = () =>
 		getRooms()
@@ -506,16 +507,11 @@ export const createSearchIndexScheduler = ({
 					owedPauses++;
 					continue;
 				}
-				let cut = false;
-				cutPause = canSkip
-					? () => {
-							cut = true;
-							cancelSleep?.();
-						}
-					: undefined;
+				pauseCanBeCut = canSkip;
+				pauseCut = false;
 				await sleep(paced ? delay * (1 + owedPauses) : delay);
-				cutPause = undefined;
-				if (cut) owedPauses++;
+				pauseCanBeCut = false;
+				if (pauseCut) owedPauses++;
 				else if (paced) owedPauses = 0;
 			} catch (error) {
 				onError(error);
@@ -583,7 +579,10 @@ export const createSearchIndexScheduler = ({
 		focusRoom(rid) {
 			if (!started) return;
 			focusOrder = [rid, ...focusOrder.filter((focused) => focused !== rid)];
-			if (catchUpPending.has(rid)) cutPause?.();
+			if (pauseCanBeCut && catchUpPending.has(rid)) {
+				pauseCut = true;
+				cancelSleep?.();
+			}
 			wake();
 		},
 
