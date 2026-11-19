@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
@@ -35,11 +35,36 @@ const RoomList = () => {
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
 	const ref = useMergedRefsV2(resizeObserverRef, preventDefaultRef, shortcutOpenMenuRef);
 
+	const computeItemKey = useCallback(
+		(flatIndex: number): string => {
+			// GroupedVirtuoso calls computeItemKey with the flat index, which counts
+			// group headers as items: the header of group g sits at
+			// sum(groupCounts[0..g-1]) + g, followed by that group's rooms.
+			// Keying rows by room id instead of the default index keeps React from
+			// reusing a row — and any menu open inside it — for a different room
+			// when the list shifts, e.g. after a room is marked as read.
+			let offset = 0;
+			for (let groupIndex = 0; groupIndex < groupCounts.length; groupIndex++) {
+				if (flatIndex === offset) {
+					return `group-${roomListGroups[groupIndex].group}`;
+				}
+				const count = groupCounts[groupIndex];
+				if (flatIndex < offset + count + 1) {
+					return roomListGroups[groupIndex].rooms[flatIndex - offset - 1]._id;
+				}
+				offset += count + 1;
+			}
+			return `index-${flatIndex}`;
+		},
+		[groupCounts, roomListGroups],
+	);
+
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupCounts}
+					computeItemKey={computeItemKey}
 					groupContent={(index) => {
 						const { group, unreadInfo } = roomListGroups[index];
 
