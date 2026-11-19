@@ -99,6 +99,17 @@ describe('MicrosoftGraphProvider', () => {
 			expect(graphCall()[0]).toBe(cursor);
 		});
 
+		it('requests Graph without a double slash when the configured host ends in slashes', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await new MicrosoftGraphProvider({ ...config, graphHost: 'https://graph.microsoft.com///' }).listEvents(
+				'user@contoso.com',
+				timeWindow,
+			);
+
+			expect(graphCall()[0]).toContain('https://graph.microsoft.com/v1.0/users/');
+		});
+
 		it('maps a Graph event onto the normalized shape', async () => {
 			mockTokenThen(
 				graphResponse({

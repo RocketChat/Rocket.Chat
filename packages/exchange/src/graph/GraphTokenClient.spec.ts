@@ -94,6 +94,17 @@ describe('GraphTokenClient', () => {
 			expect(client.tokenEndpoint).toBe('https://login.microsoftonline.us/contoso.onmicrosoft.com/oauth2/v2.0/token');
 		});
 
+		it('drops every trailing slash from the configured hosts', () => {
+			const client = new GraphTokenClient({
+				...config,
+				authorityHost: 'https://login.microsoftonline.us///',
+				graphHost: 'https://graph.microsoft.us///',
+			});
+
+			expect(client.tokenEndpoint).toBe('https://login.microsoftonline.us/contoso.onmicrosoft.com/oauth2/v2.0/token');
+			expect(client.scope).toBe('https://graph.microsoft.us/.default');
+		});
+
 		it('falls back to the defaults when the hosts are empty strings', () => {
 			const client = new GraphTokenClient({ ...config, authorityHost: '', graphHost: '' });
 

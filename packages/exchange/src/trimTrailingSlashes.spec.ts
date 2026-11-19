@@ -15,14 +15,14 @@ describe('trimTrailingSlashes', () => {
 		expect(trimTrailingSlashes('https://graph.microsoft.com/v1.0//users/')).toBe('https://graph.microsoft.com/v1.0//users');
 	});
 
-	it('does not use a regex', () => {
-		const exec = jest.spyOn(RegExp.prototype, 'exec');
+	it('returns quickly on 100k slashes followed by another character', () => {
+		const value = `https://graph.microsoft.com${'/'.repeat(100_000)}x`;
 
-		try {
-			trimTrailingSlashes('https://graph.microsoft.com///');
-			expect(exec).not.toHaveBeenCalled();
-		} finally {
-			exec.mockRestore();
-		}
+		const startedAt = performance.now();
+		const result = trimTrailingSlashes(value);
+		const elapsedMs = performance.now() - startedAt;
+
+		expect(result).toBe(value);
+		expect(elapsedMs).toBeLessThan(500);
 	});
 });
