@@ -11,12 +11,12 @@ export type ParticipantPinProps = {
 const ParticipantPin = ({ participantId, name }: ParticipantPinProps) => {
 	const { t } = useTranslation();
 	const { pinnedId, togglePin } = useCallPins();
-	const pinned = pinnedId === participantId;
 
 	return (
 		<PinToggle
-			pinned={pinned}
-			label={t(pinned ? 'Unpin_participant' : 'Pin_participant', { name })}
+			pinned={pinnedId === participantId}
+			label={t('Pin_participant', { name })}
+			unpinTitle={t('Unpin_participant', { name })}
 			focusKey={`person-${participantId}`}
 			onToggle={() => togglePin(participantId)}
 		/>

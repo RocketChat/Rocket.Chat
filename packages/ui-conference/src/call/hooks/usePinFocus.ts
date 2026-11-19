@@ -8,18 +8,23 @@ const PinFocusContext = createContext<PinFocusScope | null>(null);
 export const PinFocusProvider = PinFocusContext.Provider;
 
 /**
- * Lets the focus follow a pin control that toggling draws somewhere else. A request lasts one render, so a control
- * drawn later never steals the focus.
+ * Lets the focus follow a pin control that toggling draws somewhere else, or land on the element holding the returned
+ * ref when it is drawn nowhere. A request lasts one render, so a control drawn later never steals the focus.
  */
-export const usePinFocusScope = (): PinFocusScope => {
+export const usePinFocusScope = (): [scope: PinFocusScope, fallbackRef: RefCallback<HTMLElement>] => {
 	const requested = useRef<string | null>(null);
+	const fallback = useRef<HTMLElement | null>(null);
 
 	useEffect(() => {
+		const node = fallback.current;
+		if (requested.current !== null && node && node.ownerDocument.activeElement === node.ownerDocument.body) {
+			node.focus();
+		}
 		requested.current = null;
 	});
 
-	return useMemo(
-		() => ({
+	const scope = useMemo(
+		(): PinFocusScope => ({
 			request: (key) => {
 				requested.current = key;
 			},
@@ -27,6 +32,12 @@ export const usePinFocusScope = (): PinFocusScope => {
 		}),
 		[],
 	);
+
+	const fallbackRef = useCallback((node: HTMLElement | null) => {
+		fallback.current = node;
+	}, []);
+
+	return [scope, fallbackRef];
 };
 
 /** For the pin control named `key`: a ref that takes a requested focus, and what to call when it is toggled. */

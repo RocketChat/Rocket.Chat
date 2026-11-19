@@ -1,5 +1,7 @@
-import { NO_PINS, SCREENS_DISMISSED, pinScreen, pinsForShares, togglePersonPin, unpinPerson } from './callPins';
+import { NO_PINS, dismissScreens, pinScreen, pinsForShares, togglePersonPin, unpinPerson } from './callPins';
 import type { ScreenShare } from './screenShares';
+
+const SCREENS_DISMISSED = dismissScreens(NO_PINS);
 
 const share = (id: string): ScreenShare => ({ id, stream: { id } as MediaStream, name: id, isLocal: false });
 
@@ -20,9 +22,19 @@ describe('togglePersonPin', () => {
 });
 
 describe('pinScreen', () => {
-	// Whoever was pinned is replaced even while away: they don't take the stage back when they return.
-	it('replaces a pinned person', () => {
+	it('pins the screen and welcomes shares back on the stage', () => {
 		expect(pinScreen('bob')).toEqual({ pin: { kind: 'screen', id: 'bob' }, screensDismissed: false });
+	});
+});
+
+describe('dismissScreens', () => {
+	it('ends a screen pin', () => {
+		expect(dismissScreens(pinScreen('bob'))).toEqual({ pin: null, screensDismissed: true });
+	});
+
+	// They may only be away for a moment, and come back large.
+	it('keeps a pinned person', () => {
+		expect(dismissScreens(togglePersonPin(NO_PINS, 'ada')).pin).toEqual({ kind: 'person', id: 'ada' });
 	});
 });
 

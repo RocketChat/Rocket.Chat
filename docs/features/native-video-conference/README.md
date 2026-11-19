@@ -103,8 +103,9 @@ had before there was a choice.
 A participant can pin one person, themselves included, to see them large. The pin belongs to that call window alone:
 nothing is sent to the server or to the other participants, and nobody else's stage changes.
 
-- In Spotlight and Sidebar the pinned person replaces the active speaker as the large view; in Grid the stage takes
-  the sidebar arrangement while the pin lasts, and the layout setting stays Grid.
+- In Sidebar and Spotlight the pinned person replaces the active speaker as the large view. In Grid, and in Spotlight
+  while a share is live, the stage takes the sidebar arrangement while the pin lasts, and the layout setting stays as
+  chosen.
 - A pin takes the stage over screen shares too: while someone is pinned, every share is a thumbnail at the head of
   the strip, a share that starts joins them there, and choosing a share from its thumbnail ends the pin.
 - When the pinned person drops out of the call's video, the stage carries on unpinned. If they are back within 30
