@@ -109,7 +109,7 @@ async function cleanGuestHistory(_id: string) {
 		throw new Error('error-invalid-guest');
 	}
 
-	const rooms = await LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } }).toArray();
+	const rooms: Pick<IOmnichannelRoom, '_id'>[] = await LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } }).toArray();
 	const roomIds = rooms.map(({ _id }) => _id);
 	if (roomIds.length) {
 		const { completedRoomIds, errors: cleanupErrors } = await removeGuestRoomFilesAndSubscriptions(roomIds);
