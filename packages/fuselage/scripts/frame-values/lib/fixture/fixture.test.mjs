@@ -48,11 +48,12 @@ test('the fixture section is what its module generates', async () => {
 
 test('a theme key or token the config lacks is a problem, and the section is not written', async () => {
 	const before = readFileSync(frame, 'utf8');
-	const generate = () => `const probeFrame = { color: '${themed('typo')}', padding: '$space.x5', margin: '$space.x8' } as const;`;
+	const generate = () =>
+		`const probeFrame = { color: '${themed('typo')}', padding: '$space.x5', margin: '$space.x8', zIndex: '$zIndex.drag' } as const;`;
 
 	const [problem] = await generateFrameValues([{ file: frame, generate }], false);
 
-	assert.match(problem, /no token, theme key or condition for \$rcx-typo, \$space\.x5$/);
+	assert.match(problem, /no token, theme key or condition for \$rcx-typo, \$space\.x5, \$zIndex\.drag$/);
 	assert.equal(readFileSync(frame, 'utf8'), before);
 });
 
@@ -108,6 +109,7 @@ test('the zero build resolves every reference of the fixture', async () => {
 		'{line-height:1.25rem}',
 		'{font-weight:400}',
 		':where(:focus-visible){z-index:var(--t-zIndex-raised)}',
+		'--t-zIndex-dropIndicator:10000',
 		'{transform:rotate(90deg)}',
 	]) {
 		const found = typeof declaration === 'string' ? css.includes(declaration) : declaration.test(css);
