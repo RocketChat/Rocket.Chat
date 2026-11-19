@@ -1,10 +1,10 @@
 import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { sendVerificationEmail } from '../../lib/auth/accountEmails';
+import { createUser } from '../../lib/auth/createUser';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { SystemLogger } from '../../lib/logger/system';
 import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
@@ -64,7 +64,7 @@ export const registerUser = async (formData: {
 
 	let userId;
 	try {
-		userId = await Accounts.createUserAsync(userData);
+		userId = await createUser(userData);
 	} catch (e) {
 		if (isClientSafeError(e)) {
 			throw e;
