@@ -3,6 +3,29 @@
 /** Lengths in density-independent pixels, as a native client reads them. */
 export const tokens = {
 	space: { x4: 4, x8: 8, x12: 12, x16: 16, x20: 20, x24: 24, x32: 32, x40: 40 },
+	size: {
+		x1: 1,
+		x2: 2,
+		x4: 4,
+		x8: 8,
+		x12: 12,
+		x15: 15,
+		x16: 16,
+		x18: 18,
+		x20: 20,
+		x22: 22,
+		x24: 24,
+		x28: 28,
+		x32: 32,
+		x36: 36,
+		x40: 40,
+		x44: 44,
+		x48: 48,
+		x52: 52,
+		x56: 56,
+		x60: 60,
+		x64: 64,
+	},
 	radius: { 'zero': 0, 'default': 1, 'small': 2, 'medium': 4, 'large': 8, 'extra-large': 20, 'full': 9999 },
 	zIndex: { raised: 1, overlap: 2, sticky: 10, overlay: 100 },
 } as const;
@@ -10,6 +33,29 @@ export const tokens = {
 /** The same tokens for the web, in `rem` where a length follows the user's font size. */
 export const webTokens = {
 	space: { x4: 4, x8: 8, x12: 12, x16: 16, x20: 20, x24: 24, x32: 32, x40: 40 },
+	size: {
+		x1: '0.0625rem',
+		x2: '0.125rem',
+		x4: '0.25rem',
+		x8: '0.5rem',
+		x12: '0.75rem',
+		x15: '0.9375rem',
+		x16: '1rem',
+		x18: '1.125rem',
+		x20: '1.25rem',
+		x22: '1.375rem',
+		x24: '1.5rem',
+		x28: '1.75rem',
+		x32: '2rem',
+		x36: '2.25rem',
+		x40: '2.5rem',
+		x44: '2.75rem',
+		x48: '3rem',
+		x52: '3.25rem',
+		x56: '3.5rem',
+		x60: '3.75rem',
+		x64: '4rem',
+	},
 	radius: {
 		'zero': 0,
 		'default': '0.0625rem',
@@ -20,6 +66,29 @@ export const webTokens = {
 		'full': '624.9375rem',
 	},
 	zIndex: { raised: 1, overlap: 2, sticky: 10, overlay: 100 },
+} as const;
+
+/**
+ * The type scale, lengths in density-independent pixels. It is not a Tamagui font: on the web a font token compiles to
+ * a variable declared only under the class of a `TamaguiProvider`, which Fuselage does not render, so a frame states
+ * the values of its step.
+ */
+export const fontScale = {
+	hero: { fontSize: 48, lineHeight: 64, fontWeight: '800', letterSpacing: 0 },
+	h1: { fontSize: 32, lineHeight: 40, fontWeight: '700', letterSpacing: 0 },
+	h2: { fontSize: 24, lineHeight: 32, fontWeight: '700', letterSpacing: 0 },
+	h3: { fontSize: 20, lineHeight: 28, fontWeight: '700', letterSpacing: 0 },
+	h4: { fontSize: 16, lineHeight: 24, fontWeight: '700', letterSpacing: 0 },
+	h5: { fontSize: 14, lineHeight: 20, fontWeight: '700', letterSpacing: 0 },
+	p1: { fontSize: 16, lineHeight: 24, fontWeight: '400', letterSpacing: 0 },
+	p1m: { fontSize: 16, lineHeight: 24, fontWeight: '500', letterSpacing: 0 },
+	p1b: { fontSize: 16, lineHeight: 24, fontWeight: '700', letterSpacing: 0 },
+	p2: { fontSize: 14, lineHeight: 20, fontWeight: '400', letterSpacing: 0 },
+	p2m: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0 },
+	p2b: { fontSize: 14, lineHeight: 20, fontWeight: '700', letterSpacing: 0 },
+	c1: { fontSize: 12, lineHeight: 16, fontWeight: '400', letterSpacing: 0 },
+	c2: { fontSize: 12, lineHeight: 16, fontWeight: '700', letterSpacing: 0 },
+	micro: { fontSize: 10, lineHeight: 12, fontWeight: '700', letterSpacing: 0 },
 } as const;
 
 export const themes = {

@@ -11,7 +11,7 @@ import { build } from 'vite';
 
 import { unresolvedTokens } from '../../../verify/zero-stylesheet.mjs';
 import { generateFrameValues, loadModules } from '../generate.mts';
-import { themed } from '../tokens.mts';
+import { size, themed } from '../tokens.mts';
 
 const fuselageRoot = join(import.meta.dirname, '../../../..');
 const frame = join(import.meta.dirname, 'Probe.tsx');
@@ -56,6 +56,19 @@ test('a theme key or token the config lacks is a problem, and the section is not
 	assert.equal(readFileSync(frame, 'utf8'), before);
 });
 
+test('a token in a font property is a problem, and the section is not written', async () => {
+	const before = readFileSync(frame, 'utf8');
+	const generate = () => `const probeText = { fontSize: '${size('x24')}', lineHeight: '1.25rem' } as const;`;
+
+	for (const check of [true, false]) {
+		const [problem, ...rest] = await generateFrameValues([{ file: frame, generate }], check);
+
+		assert.match(problem, /Probe\.tsx:\d+: `fontSize: \$size\.x24` is written out as invalid CSS.*fontScale\(\)/);
+		assert.deepEqual(rest, []);
+		assert.equal(readFileSync(frame, 'utf8'), before);
+	}
+});
+
 test('the zero build resolves every reference of the fixture', async () => {
 	const css = await zeroStylesheet();
 
@@ -74,6 +87,11 @@ test('the zero build resolves every reference of the fixture', async () => {
 		'{max-width:1.25rem}',
 		'--t-radius-medium:0.25rem',
 		'--t-space-x8:8px',
+		'{height:var(--t-size-x20)}',
+		'--t-size-x20:1.25rem',
+		'{font-size:0.875rem}',
+		'{line-height:1.25rem}',
+		'{font-weight:400}',
 		':where(:focus-visible){z-index:var(--t-zIndex-raised)}',
 		'{transform:rotate(90deg)}',
 	]) {

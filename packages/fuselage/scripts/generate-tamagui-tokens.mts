@@ -12,6 +12,7 @@ import { join } from 'node:path';
 
 import border from '@rocket.chat/fuselage-tokens/dist/border.json';
 import spacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import zIndex from '@rocket.chat/fuselage-tokens/dist/zIndex.json';
 import prettier from 'prettier';
 
@@ -46,10 +47,25 @@ if (keysOf(themes.light) !== keysOf(themes.dark) || keysOf(themes.light) !== key
 	throw new Error('The light, dark and high-contrast palettes do not hold the same colors');
 }
 
-const tokens = { space: spacing, radius, zIndex };
+// `fuselage-tokens` has no size scale. This one is what a stylesheet could state through `lengths.size()`, 1, 2 and the
+// multiples of 4, up to the largest icon, plus the steps only the icon scale has.
+const LARGEST_SIZE = 64;
+const ICON_ONLY_SIZES = [15, 18, 22];
+const sizes = [1, 2, ...Array.from({ length: LARGEST_SIZE / 4 }, (_, index) => (index + 1) * 4), ...ICON_ONLY_SIZES].sort((a, b) => a - b);
+const size = Object.fromEntries(sizes.map((pixels) => [`x${pixels}`, pixels]));
 
-// The stylesheets these tokens replace wrote a radius in `rem` and a spacing in pixels.
-const IN_REM: ReadonlySet<string> = new Set(['radius']);
+const tokens = { space: spacing, size, radius, zIndex };
+
+// The stylesheets these tokens replace wrote a size and a radius in `rem` and a spacing in pixels.
+const IN_REM: ReadonlySet<string> = new Set(['size', 'radius']);
+
+// A weight is a string: Tamagui gives a numeric one a pixel unit.
+const fontScale = Object.fromEntries(
+	Object.entries(typography.fontScale).map(([name, { fontSize, lineHeight, fontWeight, letterSpacing }]) => [
+		name,
+		{ fontSize, lineHeight, fontWeight: String(fontWeight), letterSpacing },
+	]),
+);
 
 const webTokens = Object.fromEntries(
 	Object.entries(tokens).map(([category, values]) => [
@@ -76,6 +92,13 @@ export const tokens = ${JSON.stringify(tokens)} as const;
 
 /** The same tokens for the web, in \`rem\` where a length follows the user's font size. */
 export const webTokens = ${JSON.stringify(webTokens)} as const;
+
+/**
+ * The type scale, lengths in density-independent pixels. It is not a Tamagui font: on the web a font token compiles to
+ * a variable declared only under the class of a \`TamaguiProvider\`, which Fuselage does not render, so a frame states
+ * the values of its step.
+ */
+export const fontScale = ${JSON.stringify(fontScale)} as const;
 
 export const themes = ${JSON.stringify(themes)} as const;
 `,

@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { literal } from '../literal.mts';
 import type { Target } from '../target.mts';
-import { offScale, radius, rem, space, themed, zIndex } from '../tokens.mts';
+import { fontScale, offScale, radius, rem, size, space, themed, zIndex } from '../tokens.mts';
 
 const generateProbe = () => {
 	const frame = {
@@ -15,6 +15,7 @@ const generateProbe = () => {
 		paddingBlock: offScale(2),
 		paddingInline: space('x8'),
 		minHeight: 28,
+		height: size('x20'),
 		width: { default: 20, hover: 24 },
 		top: offScale(-1),
 		maxWidth: rem(20),
@@ -26,7 +27,11 @@ const generateProbe = () => {
 		rtl: { transform: 'rotate(90deg)' },
 	};
 
-	return [`const probeFrame = ${literal(frame)} as const;`, `const probeDirections = ${literal(directions)} as const;`].join('\n\n');
+	return [
+		`const probeFrame = ${literal(frame)} as const;`,
+		`const probeDirections = ${literal(directions)} as const;`,
+		`const probeText = ${literal({ ...fontScale('p2') })} as const;`,
+	].join('\n\n');
 };
 
 const targets: Target[] = [{ file: join(import.meta.dirname, 'Probe.tsx'), generate: generateProbe }];
