@@ -70,7 +70,7 @@ const ConnectionStatusProvider = ({ children }: ConnectionStatusProviderProps) =
 			status,
 			retryCount,
 			retryTime,
-			getSessionId: getConnectionSessionId,
+			sessionId: getConnectionSessionId(),
 			disconnect,
 			reconnect,
 		}),
