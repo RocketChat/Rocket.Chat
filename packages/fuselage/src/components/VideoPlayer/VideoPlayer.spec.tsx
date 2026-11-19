@@ -33,8 +33,12 @@ describe('[VideoPlayer Component]', () => {
 
 	it('replaces the controls with an error and reloads on retry', async () => {
 		const { container } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('slider')).toBeInTheDocument();
 		fireEvent.error(getVideo(container));
 		expect(screen.getByRole('alert')).toHaveTextContent("This video can't be played here");
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
 		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
 		expect(HTMLMediaElement.prototype.load).toHaveBeenCalled();
 		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
