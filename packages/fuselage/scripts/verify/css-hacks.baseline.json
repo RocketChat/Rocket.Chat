@@ -540,12 +540,12 @@
 		"displayContents": 0
 	},
 	"Table/Table.styles.scss": {
-		"rules": 30,
-		"nested": 28,
+		"rules": 4,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Tabs/Tabs.styles.scss": {
