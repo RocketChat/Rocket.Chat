@@ -8,9 +8,9 @@ export const ariaAndDataAttributes = <TProps extends object>(props: TProps & { t
 	if (props.testID !== undefined) {
 		attributes['data-testid'] = props.testID;
 	}
-	for (const [key, value] of Object.entries(props)) {
+	for (const key of Object.keys(props)) {
 		if (key.startsWith('aria-') || key.startsWith('data-')) {
-			attributes[key] = value;
+			attributes[key] = (props as Record<string, unknown>)[key];
 		}
 	}
 	return attributes as AriaAndData<TProps>;
