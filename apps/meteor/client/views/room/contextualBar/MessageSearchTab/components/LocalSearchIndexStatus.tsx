@@ -1,6 +1,7 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
-import { Callout, Text } from '@rocket.chat/fuselage';
+import { Callout, IconButton, Text } from '@rocket.chat/fuselage';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { SearchIndexProgress } from '../../../../../lib/e2eeSearch/searchIndexScheduler';
@@ -20,7 +21,8 @@ type LocalSearchIndexStatusProps = {
 /**
  * The state of the local search index of decrypted E2EE messages, above the local search results. The search covers one
  * room, so the progress line tells how far back the index holds the history of this room, until its backfill is done.
- * After that, a note tells that the search of this room covers its encrypted messages.
+ * After that, a note tells that the search of this room covers its encrypted messages. It shows only its title until the
+ * user expands it, as it stays above every search of the room.
  */
 const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) => {
 	const { t } = useTranslation();
@@ -30,14 +32,35 @@ const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) =
 	const coverage = useLocalSearchIndexRoomCoverage(backend, rid, !!progress);
 	const roomPending = isIndexing(progress) && coverage?.done === false;
 	const roomIndexed = coverage?.done === true;
+	const [detailsShown, setDetailsShown] = useState(false);
+	const detailsId = useId();
 
 	if (!roomPending && !roomIndexed && !memoryOnly) return null;
 
 	return (
 		<LocalSearchIndexStatusPanel>
 			{roomIndexed && (
-				<Callout type='success' title={t('E2E_Local_Search_Room_Indexed_Title')} role='status' data-qa='local-search-room-indexed'>
-					{t('E2E_Local_Search_Room_Indexed_Description')}
+				<Callout
+					type='success'
+					title={t('E2E_Local_Search_Room_Indexed_Title')}
+					role='status'
+					data-qa='local-search-room-indexed'
+					actions={
+						<IconButton
+							icon={detailsShown ? 'chevron-up' : 'chevron-down'}
+							size='small'
+							title={detailsShown ? t('Collapse') : t('Expand')}
+							aria-expanded={detailsShown}
+							aria-controls={detailsId}
+							onClick={() => setDetailsShown((shown) => !shown)}
+						/>
+					}
+				>
+					{detailsShown && (
+						<Text is='p' id={detailsId}>
+							{t('E2E_Local_Search_Room_Indexed_Description')}
+						</Text>
+					)}
 				</Callout>
 			)}
 			{memoryOnly && <Callout type='info'>{t('E2E_Local_Search_Memory_Only')}</Callout>}

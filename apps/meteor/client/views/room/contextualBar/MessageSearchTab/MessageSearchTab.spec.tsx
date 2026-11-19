@@ -276,7 +276,14 @@ describe('MessageSearchTab local search', () => {
 		renderTab();
 
 		expect(await screen.findByText('E2E_Local_Search_Room_Indexed_Title')).toBeInTheDocument();
+		expect(screen.queryByText('E2E_Local_Search_Room_Indexed_Description')).not.toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Expand' }));
 		expect(screen.getByText('E2E_Local_Search_Room_Indexed_Description')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Collapse' })).toHaveAttribute('aria-expanded', 'true');
+
+		await userEvent.click(screen.getByRole('button', { name: 'Collapse' }));
+		expect(screen.queryByText('E2E_Local_Search_Room_Indexed_Description')).not.toBeInTheDocument();
 	});
 
 	it.each([
