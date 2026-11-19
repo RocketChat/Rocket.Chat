@@ -80,7 +80,7 @@ const MessageSearchTab = () => {
 	const localHits = localQuery.data ?? [];
 	const hits = localSearch
 		? mergeSearchHits([
-				{ hits: localHits, mayHaveMore: canLoadMoreLocal, oldestTs: localHits.at(-1)?.ts },
+				{ hits: localHits.map((hit) => ({ ...hit, encrypted: true })), mayHaveMore: canLoadMoreLocal, oldestTs: localHits.at(-1)?.ts },
 				{
 					hits: serverDocs.flatMap((message) => toServerSearchHit(message, searchText) ?? []),
 					mayHaveMore: canLoadMoreServer,

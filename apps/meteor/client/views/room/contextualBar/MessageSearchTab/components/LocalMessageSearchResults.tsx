@@ -1,4 +1,3 @@
-import type { E2EESearchHit } from '@rocket.chat/desktop-api';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { isSameDay } from 'date-fns/isSameDay';
 import { useEffect, useRef } from 'react';
@@ -6,12 +5,13 @@ import type { UIEvent } from 'react';
 
 import LocalMessageSearchHit from './LocalMessageSearchHit';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import type { SearchListHit } from '../../../../../lib/e2eeSearch/serverSearchHits';
 import { LocalSearchResultList } from '../layout/LocalSearchResultList';
 import LocalSearchResultListItem from '../layout/LocalSearchResultListItem';
 
 type LocalMessageSearchResultsProps = {
 	id: string;
-	hits: E2EESearchHit[];
+	hits: SearchListHit[];
 	showUserAvatar: boolean;
 	/** Called when the user scrolls to the end of the list, or when the list does not fill its space: more hits may exist. */
 	onEndReached?: () => void;

@@ -1,4 +1,3 @@
-import type { E2EESearchHit } from '@rocket.chat/desktop-api';
 import {
 	Message,
 	MessageBody,
@@ -7,6 +6,8 @@ import {
 	MessageLeftContainer,
 	MessageName,
 	MessageNameContainer,
+	MessageStatusIndicator,
+	MessageStatusIndicatorItem,
 	MessageTimestamp,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
@@ -16,12 +17,13 @@ import { useTranslation } from 'react-i18next';
 
 import SearchSnippetText from './SearchSnippetText';
 import { getSearchHitAuthor } from '../../../../../lib/e2eeSearch/searchHitAuthor';
+import type { SearchListHit } from '../../../../../lib/e2eeSearch/serverSearchHits';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { Messages } from '../../../../../stores';
 import { useGoToThread } from '../../../hooks/useGoToThread';
 
 type LocalMessageSearchHitProps = {
-	hit: E2EESearchHit;
+	hit: SearchListHit;
 	showUserAvatar: boolean;
 };
 
@@ -66,6 +68,12 @@ const LocalMessageSearchHit = ({ hit, showUserAvatar }: LocalMessageSearchHitPro
 						<MessageName title={author.username}>{displayName}</MessageName>
 					</MessageNameContainer>
 					<MessageTimestamp title={formatDateAndTime(hit.ts)}>{formatTime(hit.ts)}</MessageTimestamp>
+					{/* The same mark as an encrypted message in the room. */}
+					{hit.encrypted && (
+						<MessageStatusIndicator>
+							<MessageStatusIndicatorItem name='key' data-qa='local-message-search-hit-encrypted' />
+						</MessageStatusIndicator>
+					)}
 				</MessageHeader>
 				<MessageBody>
 					<SearchSnippetText snippet={hit.snippet} />

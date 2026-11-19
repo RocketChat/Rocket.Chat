@@ -202,6 +202,11 @@ describe('MessageSearchTab local search', () => {
 			]),
 		);
 		expect(serverSearch).toHaveBeenCalled();
+		// The key of an encrypted message in the room marks the hits of the local index only.
+		const encryptedMark = (name: RegExp) =>
+			screen.getByRole('button', { name }).querySelector('[data-qa="local-message-search-hit-encrypted"]');
+		expect(encryptedMark(/second note/)).not.toBeNull();
+		expect(encryptedMark(/plain note/)).toBeNull();
 		expect(screen.queryByText('ciphertext')).not.toBeInTheDocument();
 		expect(screen.queryByText('Encrypted_content_cannot_be_searched')).not.toBeInTheDocument();
 	});
