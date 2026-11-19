@@ -127,7 +127,7 @@
 	"apps/meteor/client/views/admin/sidebar/AdminSidebarPages.tsx": 1,
 	"apps/meteor/client/views/admin/statusAndPresence/UserPresenceTabRow.tsx": 2,
 	"apps/meteor/client/views/admin/users/AdminInviteUsers.tsx": 1,
-	"apps/meteor/client/views/admin/users/AdminUserForm.tsx": 3,
+	"apps/meteor/client/views/admin/users/AdminUserForm.tsx": 2,
 	"apps/meteor/client/views/admin/users/AdminUserFormWithData.tsx": 3,
 	"apps/meteor/client/views/admin/users/AdminUserInfoWithData.tsx": 1,
 	"apps/meteor/client/views/admin/users/AdminUserSetRandomPasswordContent.tsx": 2,

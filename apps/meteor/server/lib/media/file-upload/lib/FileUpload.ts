@@ -94,6 +94,18 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 	},
 };
 
+async function triggerPreFileUploadEvent(file: IUpload, content?: Buffer | string) {
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new ClientSafeError('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+}
+
 export const FileUpload = {
 	handlers,
 
@@ -176,15 +188,7 @@ export const FileUpload = {
 		}
 
 		// App IPreFileUpload event hook
-		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
-		} catch (error: any) {
-			if (error.name === AppsEngineException.name) {
-				throw new ClientSafeError('error-app-prevented', error.message);
-			}
-
-			throw error;
-		}
+		await triggerPreFileUploadEvent(file, content);
 
 		return true;
 	},

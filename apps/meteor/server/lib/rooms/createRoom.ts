@@ -180,6 +180,56 @@ async function filterMembersAllowedInRoom(
 	};
 }
 
+async function runPreRoomCreateAppEvents(roomProps: Omit<IRoom, '_id' | '_updatedAt'>, memberList: string[]): Promise<void> {
+	const tmp = {
+		...roomProps,
+		_USERNAMES: memberList,
+	};
+
+	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
+		if (error.name === AppsEngineException.name) {
+			throw new ClientSafeError('error-app-prevented', error.message);
+		}
+
+		throw error;
+	});
+
+	if (prevent) {
+		throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+	}
+
+	const eventResult = await Apps.self?.triggerEvent(
+		AppEvents.IPreRoomCreateModify,
+		await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp),
+	);
+
+	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
+		Object.assign(roomProps, eventResult);
+	}
+}
+
+async function runAfterCreateRoomCallbacks(
+	type: RoomType,
+	room: IRoom,
+	owner: IUser,
+	options?: ICreateRoomParams['options'],
+): Promise<void> {
+	const team = type === 'c' && room.teamId ? await Team.getOneById(room.teamId) : null;
+	if (team) {
+		await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
+	}
+
+	if (type === 'c') {
+		callbacks.runAsync('afterCreateChannel', owner, room);
+	} else if (type === 'p') {
+		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
+	}
+	callbacks.runAsync('afterCreateRoom', owner, room);
+	void afterCreateRoomCallback.run({ owner, room, app: options?.app });
+
+	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
+}
+
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
@@ -249,19 +299,13 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (!owner) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
-			function: 'RocketChat.createRoom',
-		});
-	}
-
 	if (!owner?.username) {
 		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.createRoom',
 		});
 	}
 
-	if (!excludeSelf && owner.username && !memberList.includes(owner.username)) {
+	if (!excludeSelf && !memberList.includes(owner.username)) {
 		memberList.push(owner.username);
 	}
 
@@ -299,31 +343,7 @@ export const createRoom = async <T extends RoomType>(
 		}
 	}
 
-	const tmp = {
-		...roomProps,
-		_USERNAMES: memberList,
-	};
-
-	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
-		if (error.name === AppsEngineException.name) {
-			throw new ClientSafeError('error-app-prevented', error.message);
-		}
-
-		throw error;
-	});
-
-	if (prevent) {
-		throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
-	}
-
-	const eventResult = await Apps.self?.triggerEvent(
-		AppEvents.IPreRoomCreateModify,
-		await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp),
-	);
-
-	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
-		Object.assign(roomProps, eventResult);
-	}
+	await runPreRoomCreateAppEvents(roomProps, memberList);
 
 	await beforeCreateRoomCallback.run({
 		owner,
@@ -348,21 +368,8 @@ export const createRoom = async <T extends RoomType>(
 
 	const skippedMembers = await createUsersSubscriptions({ room, members: memberList, now, owner, options, shouldBeHandledByFederation });
 
-	if (type === 'c') {
-		if (room.teamId) {
-			const team = await Team.getOneById(room.teamId);
-			if (team) {
-				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
-			}
-		}
-		callbacks.runAsync('afterCreateChannel', owner, room);
-	} else if (type === 'p') {
-		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
-	}
-	callbacks.runAsync('afterCreateRoom', owner, room);
-	void afterCreateRoomCallback.run({ owner, room, app: options?.app });
+	await runAfterCreateRoomCallbacks(type, room, owner, options);
 
-	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,

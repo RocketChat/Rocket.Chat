@@ -377,9 +377,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 		const doesItReachedTheLimit =
 			!app.migrated &&
-			!appCountQuery?.data?.hasUnlimitedApps &&
-			appCountQuery?.data?.enabled !== undefined &&
-			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
+			!appCountQuery.data?.hasUnlimitedApps &&
+			appCountQuery.data?.enabled !== undefined &&
+			appCountQuery.data.enabled >= appCountQuery.data.limit;
 
 		const installedAppOptions = [
 			context !== 'details' &&
@@ -459,9 +459,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		handleAcquireApp,
 		isEnterpriseLicense,
 		isAppEnabled,
-		appCountQuery?.data?.hasUnlimitedApps,
-		appCountQuery?.data?.enabled,
-		appCountQuery?.data?.limit,
+		appCountQuery.data?.hasUnlimitedApps,
+		appCountQuery.data?.enabled,
+		appCountQuery.data?.limit,
 		context,
 		handleViewLogs,
 		canUpdate,

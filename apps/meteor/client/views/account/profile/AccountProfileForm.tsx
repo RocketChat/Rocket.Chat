@@ -1,5 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
-import type { AvatarObject } from '@rocket.chat/core-typings';
+import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Button, Divider, Icon, Stack } from '@rocket.chat/fuselage';
@@ -34,6 +34,12 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
+
+const getPreviousAccountValues = (user: IUser | null) => ({
+	previousEmail: user ? getUserEmailAddress(user) : '',
+	previousUsername: user?.username || '',
+	isUserVerified: user?.emails?.[0]?.verified ?? false,
+});
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
@@ -87,9 +93,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		[t],
 	);
 
-	const previousEmail = user ? getUserEmailAddress(user) : '';
-	const previousUsername = user?.username || '';
-	const isUserVerified = user?.emails?.[0]?.verified ?? false;
+	const { previousEmail, previousUsername, isUserVerified } = getPreviousAccountValues(user);
 
 	const mutateConfirmationEmail = useMutation({
 		mutationFn: sendConfirmationEmail,

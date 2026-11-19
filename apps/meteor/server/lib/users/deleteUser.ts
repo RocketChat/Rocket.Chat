@@ -30,6 +30,35 @@ import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from 
 import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';
 import { updateGroupDMsName } from '../rooms/updateGroupDMsName';
 
+async function deleteUserMessagesAndFiles(userId: string, deletedBy?: IUser['_id']): Promise<void> {
+	const store = FileUpload.getStore('Uploads');
+	const cursor = Messages.findFilesByUserId(userId);
+
+	for await (const { file, files } of cursor) {
+		const fileIds = files?.map(({ _id }) => _id) || [];
+		for (const fileId of fileIds) {
+			if (fileId) {
+				await store.deleteById(fileId);
+			}
+		}
+
+		if (file?._id && !fileIds.includes(file._id)) {
+			await store.deleteById(file._id);
+		}
+	}
+
+	await Messages.removeByUserId(userId);
+	await ReadReceipts.removeByUserId(userId);
+	await ReadReceiptsArchive.removeByUserId(userId);
+
+	await ModerationReports.hideMessageReportsByUserId(
+		userId,
+		deletedBy || userId,
+		deletedBy === userId ? 'user deleted own account' : 'user account deleted',
+		'DELETE_USER',
+	);
+}
+
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
 	if (userId === 'rocket.cat') {
 		throw new ClientSafeError('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
@@ -67,32 +96,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
 			case 'Delete':
-				const store = FileUpload.getStore('Uploads');
-				const cursor = Messages.findFilesByUserId(userId);
-
-				for await (const { file, files } of cursor) {
-					const fileIds = files?.map(({ _id }) => _id) || [];
-					for (const fileId of fileIds) {
-						if (fileId) {
-							await store.deleteById(fileId);
-						}
-					}
-
-					if (file?._id && !fileIds.includes(file._id)) {
-						await store.deleteById(file._id);
-					}
-				}
-
-				await Messages.removeByUserId(userId);
-				await ReadReceipts.removeByUserId(userId);
-				await ReadReceiptsArchive.removeByUserId(userId);
-
-				await ModerationReports.hideMessageReportsByUserId(
-					userId,
-					deletedBy || userId,
-					deletedBy === userId ? 'user deleted own account' : 'user account deleted',
-					'DELETE_USER',
-				);
+				await deleteUserMessagesAndFiles(userId, deletedBy);
 
 				break;
 			case 'Unlink':
