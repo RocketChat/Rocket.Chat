@@ -6,11 +6,11 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const findOneByEmailAddress = sinon.stub();
-const sendResetPasswordEmail = sinon.stub();
+const sendResetPasswordEmail = sinon.stub().resolves();
 const settingsGet = sinon.stub();
 
 const { sendForgotPasswordEmail } = proxyquire.noCallThru().load('./sendForgotPasswordEmail', {
-	'meteor/accounts-base': { Accounts: { sendResetPasswordEmail } },
+	'../../lib/auth/accountEmails': { sendResetPasswordEmail },
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../../settings': { settings: { get: settingsGet } },
 });
@@ -24,7 +24,7 @@ describe('sendForgotPasswordEmail', () => {
 
 	beforeEach(() => {
 		findOneByEmailAddress.reset();
-		sendResetPasswordEmail.reset();
+		sendResetPasswordEmail.resetHistory();
 		settingsGet.reset();
 	});
 

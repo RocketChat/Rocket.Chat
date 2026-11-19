@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 
+import { sendResetPasswordEmail } from '../../lib/auth/accountEmails';
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
 
@@ -20,7 +20,7 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 	}
 
 	try {
-		Accounts.sendResetPasswordEmail(user._id, email);
+		void sendResetPasswordEmail(user._id, email).catch((err) => SystemLogger.error({ err }));
 		return true;
 	} catch (err) {
 		SystemLogger.error({ err });

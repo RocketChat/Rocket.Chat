@@ -4,7 +4,9 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 
 import { trim } from '../../../lib/utils/stringUtils';
+import { sendVerificationEmail } from '../../lib/auth/accountEmails';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
+import { SystemLogger } from '../../lib/logger/system';
 import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
 import { validateEmailDomain } from '../../lib/validateEmailDomain';
 import { settings } from '../../settings';
@@ -81,7 +83,7 @@ export const registerUser = async (formData: {
 	}
 
 	try {
-		Accounts.sendVerificationEmail(userId, userData.email);
+		void sendVerificationEmail(userId, userData.email).catch((err) => SystemLogger.error({ err }));
 	} catch (error) {
 		// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
 	}
