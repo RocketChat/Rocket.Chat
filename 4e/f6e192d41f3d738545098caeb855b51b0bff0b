@@ -1,0 +1,19 @@
+.oxlintrc.json
+  s_7a7122163f9515::t_b31eeb579c37de 141-144,389-396
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4ef6e192d41f3d738545098caeb855b51b0bff0b",
+  "prompts": {},
+  "sessions": {
+    "s_7a7122163f9515": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bdfd6493-c52f-495a-9a97-ab6ed25f84d1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
