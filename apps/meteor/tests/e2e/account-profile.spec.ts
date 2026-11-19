@@ -207,5 +207,16 @@ test.describe.serial('settings-account-profile', () => {
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
 		});
+		test('should preview theme changes and restore the saved theme on cancel', async ({ page }) => {
+			const poAccessibility = new AccountAccessibility(page);
+
+			await poAccessibility.goto();
+
+			await page.locator('input#dark').check();
+			await expect(page.locator('#main-palette-dark')).toBeAttached();
+
+			await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+			await expect(page.locator('#main-palette-dark')).not.toBeAttached();
+		});
 	});
 });
