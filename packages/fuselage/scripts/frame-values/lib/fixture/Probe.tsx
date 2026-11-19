@@ -13,8 +13,20 @@ const probeFrame = {
 	borderColor: '$rcx-stroke-light',
 	borderWidth: 1,
 	borderRadius: '$radius.medium',
-	paddingBlock: 2,
-	paddingInline: '$space.x8',
+	paddingBlock: {
+		default: 2,
+		pointerCoarse: '$space.x4',
+	},
+	paddingInline: {
+		'default': '$space.x8',
+		'@narrow/probe-group': '$space.x4',
+	},
+	opacity: {
+		'default': 0.5,
+		'group-hover/probe': 1,
+		'hoverNone': 1,
+		'reducedMotion': 0.75,
+	},
 	minHeight: 28,
 	height: '$size.x20',
 	width: {

@@ -1,6 +1,7 @@
 import { Rem } from './literal.mts';
+import { media } from '../../../src/tamagui.media.ts';
 import { fontScale as scale, themes, tokens } from '../../../src/tamagui.tokens.ts';
-import { unresolvedTokens } from '../../verify/zero-stylesheet.mjs';
+import { unknownConditions, unresolvedTokens } from '../../verify/zero-stylesheet.mjs';
 
 type Unprefixed<Key> = Key extends `rcx-${infer Name}` ? Name : never;
 
@@ -9,9 +10,11 @@ const config = new Set([
 	...Object.entries(tokens).flatMap(([category, values]) => Object.keys(values).map((name) => `$${category}.${name}`)),
 ]);
 
-/** The references in a generated section that the Tamagui config has no token or theme key for. */
-export const unresolvedReferences = (body: string): string[] =>
-	unresolvedTokens(body).filter((reference: string) => !config.has(reference));
+/** The references in a generated section that the Tamagui config has no token, theme key or condition for. */
+export const unresolvedReferences = (body: string): string[] => [
+	...unresolvedTokens(body).filter((reference: string) => !config.has(reference)),
+	...unknownConditions(body, media),
+];
 
 /** A color of the theme, as the key a frame reads it by. */
 export const themed = (name: Unprefixed<keyof typeof themes.light>) => `$rcx-${name}`;
