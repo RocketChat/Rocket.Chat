@@ -1,5 +1,7 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
+@use '../../styles/typography.scss' as *;
 
 // Web only. The line of a labelled divider is a pseudo-element each bar draws itself, which a frame cannot state.
 .rcx-divider__bar::after {
@@ -8,4 +10,19 @@
 	content: '';
 
 	border: lengths.border-width(default) solid colors.stroke(extra-light);
+}
+
+.rcx-message-divider.rcx-divider--labelled {
+	@include use-font-scale(c2);
+
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	align-items: center;
+
+	margin-bottom: theme('message-divider-size-neg', lengths.margin(-1));
+	padding-inline: lengths.margin(20);
+
+	color: theme('message-divider-color', colors.font(default));
 }
