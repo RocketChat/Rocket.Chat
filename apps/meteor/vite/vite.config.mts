@@ -255,6 +255,7 @@ const devPage = (): Plugin => ({
 });
 const serverRoutes = [
 	'/api',
+	'^/oauth/(?!authorize|error/)',
 	'/_oauth',
 	'/_saml',
 	'/_cas',
