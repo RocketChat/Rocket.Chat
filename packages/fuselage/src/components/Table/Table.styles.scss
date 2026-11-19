@@ -58,7 +58,8 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 		border-width: lengths.border-width(default);
 	}
 
-	&__selection-button {
+	// Overrides the flex-shrink of the button frame, until Table migrates
+	&__selection-button[class][class] {
 		flex-shrink: 0;
 	}
 
