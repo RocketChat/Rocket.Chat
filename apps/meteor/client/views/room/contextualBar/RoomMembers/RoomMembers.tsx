@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Select, Throbber, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
+import { Select, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -11,6 +11,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
@@ -24,7 +25,6 @@ import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
 import ContextualbarListSummary from '../../../../components/ContextualbarListSummary';
-import ContextualbarStatus from '../../../../components/ContextualbarStatus';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ListViewport from '../../../../components/ListViewport';
@@ -172,13 +172,9 @@ const RoomMembers = ({
 					</FilterBarFilters>
 				</FilterBar>
 			</ContextualbarSection>
-			<ContextualbarContent flush spaced>
+			<ContextualbarContent flush spaced={!isPending}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
-				{isPending && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+				{isPending && <ContextualbarSkeletonContent />}
 				{error && (
 					<ContextualbarEmptyContent
 						icon='circle-exclamation'

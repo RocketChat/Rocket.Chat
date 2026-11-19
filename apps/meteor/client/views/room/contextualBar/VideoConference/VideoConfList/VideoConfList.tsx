@@ -1,5 +1,4 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -9,13 +8,13 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
-import ContextualbarStatus from '../../../../../components/ContextualbarStatus';
 import ListViewport from '../../../../../components/ListViewport';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
@@ -44,11 +43,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent flush ref={ref}>
-				{loading && (
-					<ContextualbarStatus>
-						<Throbber size='x12' />
-					</ContextualbarStatus>
-				)}
+				{loading && <ContextualbarSkeletonContent />}
 				{error && (
 					<ContextualbarEmptyContent
 						icon='circle-exclamation'
