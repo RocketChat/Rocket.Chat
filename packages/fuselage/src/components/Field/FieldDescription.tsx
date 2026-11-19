@@ -26,6 +26,10 @@ const fieldDescriptionFrame = {
 	minHeight: 'auto',
 	marginBlock: 2,
 	color: '$rcx-font-secondary-info',
+	fontSize: '0.875rem',
+	lineHeight: '1.25rem',
+	fontWeight: '400',
+	letterSpacing: 0,
 } as const;
 
 // end of generated

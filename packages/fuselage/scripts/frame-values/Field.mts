@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { literal } from './lib/literal.mts';
 import type { Target } from './lib/target.mts';
 import { textFrameDefaults } from './lib/textFrameDefaults.mts';
-import { offScale, percent, space, themed } from './lib/tokens.mts';
+import { fontScale, offScale, percent, space, themed } from './lib/tokens.mts';
 
 const component = (file: string) => join(import.meta.dirname, '../../src/components', file);
 
@@ -46,7 +46,7 @@ const generateFieldRow = () => {
 };
 
 // The text parts share a box: an inline one that is a flex item of the field
-const textPart = (render: string, color: Parameters<typeof themed>[0]) => {
+const textPart = (render: string, color: Parameters<typeof themed>[0], scale: Parameters<typeof fontScale>[0]) => {
 	const frame = {
 		render,
 		display: 'inline',
@@ -57,6 +57,7 @@ const textPart = (render: string, color: Parameters<typeof themed>[0]) => {
 		minHeight: 'auto',
 		marginBlock: offScale(2),
 		color: themed(color),
+		...fontScale(scale),
 	};
 
 	return literal({ ...textFrameDefaults(frame), ...frame });
@@ -79,15 +80,17 @@ const generateGroup = () => {
 	return `const fieldGroupFrame = ${literal(frame)} as const;`;
 };
 
-const text = (name: string, render: string, color: Parameters<typeof themed>[0]) => () =>
-	`const ${name} = ${textPart(render, color)} as const;`;
+const text =
+	(name: string, ...part: Parameters<typeof textPart>) =>
+	() =>
+		`const ${name} = ${textPart(...part)} as const;`;
 
 export default [
 	{ file: component('Field/Field.tsx'), generate: generateField },
 	{ file: component('Field/FieldRow.tsx'), generate: generateFieldRow },
-	{ file: component('Field/FieldDescription.tsx'), generate: text('fieldDescriptionFrame', 'span', 'font-secondary-info') },
-	{ file: component('Field/FieldHint.tsx'), generate: text('fieldHintFrame', 'span', 'font-secondary-info') },
-	{ file: component('Field/FieldError.tsx'), generate: text('fieldErrorFrame', 'span', 'font-danger') },
-	{ file: component('Field/FieldLink.tsx'), generate: text('fieldLinkFrame', 'a', 'font-info') },
+	{ file: component('Field/FieldDescription.tsx'), generate: text('fieldDescriptionFrame', 'span', 'font-secondary-info', 'p2') },
+	{ file: component('Field/FieldHint.tsx'), generate: text('fieldHintFrame', 'span', 'font-secondary-info', 'c1') },
+	{ file: component('Field/FieldError.tsx'), generate: text('fieldErrorFrame', 'span', 'font-danger', 'c1') },
+	{ file: component('Field/FieldLink.tsx'), generate: text('fieldLinkFrame', 'a', 'font-info', 'c1') },
 	{ file: component('FieldGroup/FieldGroup.tsx'), generate: generateGroup },
 ] satisfies Target[];
