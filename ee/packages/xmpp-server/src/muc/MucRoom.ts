@@ -220,15 +220,17 @@ export class MucRoom {
 		this.deps.emit('occupantLeft', occupant, 'kicked');
 	}
 
-	/** Takes out a remote occupant whose real JID can no longer be delivered to (hosted-muc R19). */
+	/** Takes out every nick a remote real JID holds once it can no longer be delivered to (hosted-muc R19). */
 	removeUnreachable(realJid: string): void {
-		const occupant = this.remoteOccupants().find((o) => o.realJid === realJid);
-		if (!occupant) {
-			return;
+		const unreachable = this.remoteOccupants().filter((o) => o.realJid === realJid);
+		// All of them leave before any removal is announced, so none is announced to another of them
+		for (const occupant of unreachable) {
+			this.occupants.delete(occupant.nick);
 		}
-		this.occupants.delete(occupant.nick);
-		this.broadcastPresence(occupant, 'unavailable', [MUC_STATUS.removedForError]);
-		this.deps.emit('occupantLeft', occupant, 'unreachable');
+		for (const occupant of unreachable) {
+			this.broadcastPresence(occupant, 'unavailable', [MUC_STATUS.removedForError]);
+			this.deps.emit('occupantLeft', occupant, 'unreachable');
+		}
 	}
 
 	private broadcastPresence(occupant: MucOccupant, type?: 'unavailable', statusCodes?: MucStatusCode[]): void {

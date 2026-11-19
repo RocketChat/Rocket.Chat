@@ -29,5 +29,6 @@ export function stanzaErrorCondition(stanza: Element): string | undefined {
 	return stanza
 		.getChild('error')
 		?.getChildElements()
-		.find((child) => child.attrs.xmlns === NS_STANZA_ERRORS)?.name;
+		.find((child) => child.getNS() === NS_STANZA_ERRORS && child.getName() !== 'text')
+		?.getName();
 }
