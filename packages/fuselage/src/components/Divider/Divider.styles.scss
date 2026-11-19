@@ -1,6 +1,7 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
 @use '../../styles/functions.scss' as *;
+@use '../../styles/typography.scss' as *;
 
 $divider-size: theme('divider-size', lengths.border-width(default));
 $divider-color: theme('divider-color', colors.stroke(extra-light));
@@ -63,5 +64,16 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 }
 
 .rcx-message-divider.rcx-divider--labelled {
-	padding-inline: 0;
+	@include use-font-scale(c2);
+
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	align-items: center;
+
+	margin-bottom: theme('message-divider-size-neg', lengths.margin(-1));
+	padding-inline: lengths.margin(20);
+
+	color: theme('message-divider-color', colors.font(default));
 }
