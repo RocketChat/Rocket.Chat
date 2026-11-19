@@ -31,6 +31,7 @@ export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerR
 
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
+	/* oxlint-disable eslint-js/no-useless-escape -- fuselage's verify:selectors:check baseline (packages/fuselage/scripts/verify/selector-inventory.baseline.json) stores these selectors with `\@`, so removing the backslash fails CI. JS drops it anyway: the page receives an unescaped `@`, which is invalid in a CSS class selector, so browsers skip the `.rcx-@…` rules. Making them apply needs `\\@` here plus a baseline update. */
 	res.write(`
 		<style>
 			body {
@@ -140,6 +141,7 @@ export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerR
 			</div>
 		</section>
 	`);
+	/* oxlint-enable eslint-js/no-useless-escape */
 
 	res.end();
 };
