@@ -19,11 +19,11 @@ export const verifyFunction = async (
 			{
 				accessToken,
 				refreshToken,
-				name: profile.displayName || profile.name,
 				...profile,
 				...restProfile,
 				..._json,
 				email: profile?.emails?.[0]?.value ?? restProfile.email,
+				name: profile.displayName || profile.name,
 			},
 			{},
 		);
