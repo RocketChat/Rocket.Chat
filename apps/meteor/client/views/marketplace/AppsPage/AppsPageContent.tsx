@@ -1,5 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { usePagination } from '@rocket.chat/ui-client';
+import { PageContent, usePagination } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -164,22 +164,24 @@ const AppsPageContent = () => {
 		return (
 			<>
 				<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
-				<AppsFilters
-					text={text}
-					setText={setText}
-					freePaidFilterStructure={freePaidFilterStructure}
-					freePaidFilterOnSelected={freePaidFilterOnSelected}
-					categories={categories}
-					selectedCategories={selectedCategories}
-					onSelected={onSelected}
-					sortFilterStructure={sortFilterStructure}
-					sortFilterOnSelected={sortFilterOnSelected}
-					categoryTagList={categoryTagList}
-					statusFilterStructure={statusFilterStructure}
-					statusFilterOnSelected={statusFilterOnSelected}
-					context={context}
-				/>
-				<AppsPageContentSkeleton />
+				<PageContent>
+					<AppsFilters
+						text={text}
+						setText={setText}
+						freePaidFilterStructure={freePaidFilterStructure}
+						freePaidFilterOnSelected={freePaidFilterOnSelected}
+						categories={categories}
+						selectedCategories={selectedCategories}
+						onSelected={onSelected}
+						sortFilterStructure={sortFilterStructure}
+						sortFilterOnSelected={sortFilterOnSelected}
+						categoryTagList={categoryTagList}
+						statusFilterStructure={statusFilterStructure}
+						statusFilterOnSelected={statusFilterOnSelected}
+						context={context}
+					/>
+					<AppsPageContentSkeleton />
+				</PageContent>
 			</>
 		);
 	}
@@ -192,6 +194,32 @@ const AppsPageContent = () => {
 		return (
 			<>
 				<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
+				<PageContent>
+					<AppsFilters
+						text={text}
+						setText={setText}
+						freePaidFilterStructure={freePaidFilterStructure}
+						freePaidFilterOnSelected={freePaidFilterOnSelected}
+						categories={categories}
+						selectedCategories={selectedCategories}
+						onSelected={onSelected}
+						sortFilterStructure={sortFilterStructure}
+						sortFilterOnSelected={sortFilterOnSelected}
+						categoryTagList={categoryTagList}
+						statusFilterStructure={statusFilterStructure}
+						statusFilterOnSelected={statusFilterOnSelected}
+						context={context}
+					/>
+					{unsupportedVersion ? <UnsupportedEmptyState /> : <AppsPageConnectionError onButtonClick={reload} />}
+				</PageContent>
+			</>
+		);
+	}
+
+	return (
+		<>
+			<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
+			<PageContent>
 				<AppsFilters
 					text={text}
 					setText={setText}
@@ -207,51 +235,29 @@ const AppsPageContent = () => {
 					statusFilterOnSelected={statusFilterOnSelected}
 					context={context}
 				/>
-				{unsupportedVersion ? <UnsupportedEmptyState /> : <AppsPageConnectionError onButtonClick={reload} />}
-			</>
-		);
-	}
-
-	return (
-		<>
-			<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
-			<AppsFilters
-				text={text}
-				setText={setText}
-				freePaidFilterStructure={freePaidFilterStructure}
-				freePaidFilterOnSelected={freePaidFilterOnSelected}
-				categories={categories}
-				selectedCategories={selectedCategories}
-				onSelected={onSelected}
-				sortFilterStructure={sortFilterStructure}
-				sortFilterOnSelected={sortFilterOnSelected}
-				categoryTagList={categoryTagList}
-				statusFilterStructure={statusFilterStructure}
-				statusFilterOnSelected={statusFilterOnSelected}
-				context={context}
-			/>
-			{(context === 'requested' && data.count === 0 && <NoAppRequestsEmptyState />) ||
-				((isMarketplace || isPremium) && data.count === 0 && (
-					<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />
-				)) ||
-				(context === 'installed' && data.totalAppsLength !== 0 && data.count === 0 && (
-					<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
-				)) ||
-				(context === 'private' && !isMarketplace && data.totalAppsLength === 0 && <PrivateEmptyState />) ||
-				(context !== 'private' && !isMarketplace && data.totalAppsLength === 0 && (
-					<NoInstalledAppsEmptyState onButtonClick={handleReturn} />
-				)) || (
-					<AppsPageContentBody
-						isMarketplace={isMarketplace}
-						isFiltered={isFiltered}
-						appsResult={data}
-						itemsPerPage={itemsPerPage}
-						current={current}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						paginationProps={paginationProps}
-					/>
-				)}
+				{(context === 'requested' && data.count === 0 && <NoAppRequestsEmptyState />) ||
+					((isMarketplace || isPremium) && data.count === 0 && (
+						<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />
+					)) ||
+					(context === 'installed' && data.totalAppsLength !== 0 && data.count === 0 && (
+						<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
+					)) ||
+					(context === 'private' && !isMarketplace && data.totalAppsLength === 0 && <PrivateEmptyState />) ||
+					(context !== 'private' && !isMarketplace && data.totalAppsLength === 0 && (
+						<NoInstalledAppsEmptyState onButtonClick={handleReturn} />
+					)) || (
+						<AppsPageContentBody
+							isMarketplace={isMarketplace}
+							isFiltered={isFiltered}
+							appsResult={data}
+							itemsPerPage={itemsPerPage}
+							current={current}
+							onSetItemsPerPage={onSetItemsPerPage}
+							onSetCurrent={onSetCurrent}
+							paginationProps={paginationProps}
+						/>
+					)}
+			</PageContent>
 		</>
 	);
 };
