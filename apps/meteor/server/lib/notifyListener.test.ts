@@ -12,6 +12,12 @@ describe('Message Broadcast Tests', () => {
 	let usersFindByUsernamesStub: sinon.SinonStub;
 	let messagesFindOneStub: sinon.SinonStub;
 	let broadcastStub: sinon.SinonStub;
+	let roomsByIdsStub: sinon.SinonStub;
+	let roomsByUsernamesOrUidsStub: sinon.SinonStub;
+	let notifyOnRoomChanged: typeof import('./notifyListener').notifyOnRoomChanged;
+	let notifyOnRoomChangedByUsernamesOrUids: typeof import('./notifyListener').notifyOnRoomChangedByUsernamesOrUids;
+	let logErrorStub: sinon.SinonStub;
+	let notifyOnRoomChangedById: typeof import('./notifyListener').notifyOnRoomChangedById;
 	let getMessageToBroadcast: any;
 	let notifyOnMessageChange: any;
 	let memStub: sinon.SinonStub;
@@ -28,6 +34,10 @@ describe('Message Broadcast Tests', () => {
 	};
 
 	const modelsStubs = () => ({
+		Rooms: {
+			findByIds: roomsByIdsStub,
+			findByUsernamesOrUids: roomsByUsernamesOrUidsStub,
+		},
 		Messages: {
 			findOneById: messagesFindOneStub,
 		},
@@ -52,6 +62,9 @@ describe('Message Broadcast Tests', () => {
 		usersFindByUsernamesStub = sinon.stub();
 		messagesFindOneStub = sinon.stub();
 		broadcastStub = sinon.stub();
+		roomsByIdsStub = sinon.stub();
+		roomsByUsernamesOrUidsStub = sinon.stub();
+		logErrorStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
 		const models = modelsStubs();
@@ -61,13 +74,61 @@ describe('Message Broadcast Tests', () => {
 
 		const proxyMock = proxyquire.noPreserveCache().load('./notifyListener', {
 			'@rocket.chat/core-services': coreStubs(),
+			'@rocket.chat/logger': {
+				Logger: class {
+					error = logErrorStub;
+				},
+			},
 			'mem': memStub,
 		});
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
+		notifyOnRoomChangedById = proxyMock.notifyOnRoomChangedById;
+		notifyOnRoomChanged = proxyMock.notifyOnRoomChanged;
+		notifyOnRoomChangedByUsernamesOrUids = proxyMock.notifyOnRoomChangedByUsernamesOrUids;
 	});
 
+	(['direct', 'byId', 'byUsernamesOrUids'] as const).forEach((helper) => {
+		it(`${helper}: logs a rejected room broadcast and still broadcasts the next room`, async () => {
+			const firstRoom = { _id: 'room-a', _updatedAt: new Date() };
+			const secondRoom = { _id: 'room-b', _updatedAt: new Date() };
+			const error = new Error('room broadcast failed');
+
+			roomsByIdsStub.returns([firstRoom, secondRoom]);
+			roomsByUsernamesOrUidsStub.returns([firstRoom, secondRoom]);
+			broadcastStub.onFirstCall().rejects(error);
+			broadcastStub.onSecondCall().resolves();
+
+			switch (helper) {
+				case 'direct':
+					await notifyOnRoomChanged([firstRoom, secondRoom], 'updated');
+					break;
+				case 'byId':
+					await notifyOnRoomChangedById([firstRoom._id, secondRoom._id], 'updated');
+					break;
+				case 'byUsernamesOrUids':
+					await notifyOnRoomChangedByUsernamesOrUids(['user-1'], ['alice'], 'updated');
+					sinon.assert.calledOnceWithExactly(roomsByUsernamesOrUidsStub, ['user-1'], ['alice']);
+					break;
+			}
+
+			sinon.assert.calledTwice(broadcastStub);
+			sinon.assert.calledWithExactly(broadcastStub.firstCall, 'watch.rooms', {
+				clientAction: 'updated',
+				room: firstRoom,
+			});
+			sinon.assert.calledWithExactly(broadcastStub.secondCall, 'watch.rooms', {
+				clientAction: 'updated',
+				room: secondRoom,
+			});
+			sinon.assert.calledOnceWithExactly(logErrorStub, {
+				msg: 'Failed to broadcast room change',
+				roomId: firstRoom._id,
+				err: error,
+			});
+		});
+	});
 	describe('getMessageToBroadcast', () => {
 		let originalEnv: NodeJS.ProcessEnv;
 

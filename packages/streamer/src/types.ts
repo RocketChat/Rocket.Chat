@@ -72,6 +72,8 @@ export interface IStreamer<N extends StreamNames> {
 
 	allowEmit<K extends StreamKeys<N>>(eventName: K, fn?: Rule | 'all' | 'none' | 'logged'): void;
 	allowEmit(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
+	/** Creates a rule per emission so recipients can share event-scoped work. */
+	allowEmitWithContext(createRule: (eventName: string) => Rule): void;
 
 	allowWrite<K extends StreamKeys<N>>(eventName: K | boolean, fn: Rule | 'all' | 'none' | 'logged'): void;
 	allowWrite(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
