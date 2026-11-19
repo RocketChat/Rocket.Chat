@@ -171,8 +171,8 @@
 		"displayContents": 0
 	},
 	"Field/Field.styles.scss": {
-		"rules": 8,
-		"nested": 7,
+		"rules": 3,
+		"nested": 2,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -180,9 +180,9 @@
 		"displayContents": 0
 	},
 	"FieldGroup/FieldGroup.styles.scss": {
-		"rules": 4,
-		"nested": 2,
-		"combinators": 2,
+		"rules": 1,
+		"nested": 0,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
