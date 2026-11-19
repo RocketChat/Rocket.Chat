@@ -42,7 +42,8 @@ $sidepanel-color-default: colors.font(default);
 		}
 	}
 
-	&--divider {
+	// Interim `[class]` bump: the divider is an `ItemDivider` whose frame sets the border color
+	&--divider[class] {
 		border-color: colors.stroke(light);
 
 		&.rcx-divider {
@@ -54,7 +55,8 @@ $sidepanel-color-default: colors.font(default);
 		}
 	}
 
-	&-list {
+	// Interim `[class]` bump: the list is an `ItemGroup` whose frame sets the padding
+	&-list[class] {
 		padding-block: lengths.padding(8);
 	}
 }

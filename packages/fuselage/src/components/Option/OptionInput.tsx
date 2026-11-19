@@ -1,14 +1,13 @@
-import type { HTMLAttributes, ReactNode } from 'react';
-
 import { cx } from '../../helpers/composeClassNames';
-import { ItemActions } from '../Item';
+import { ItemActions, type ItemActionsProps } from '../Item';
+import { wrapText } from '../Item/wrapText';
 
-export type OptionInputProps = {
-	children?: ReactNode;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+export type OptionInputProps = Omit<ItemActionsProps, 'reveal' | 'justify'>;
 
-const OptionInput = ({ className, ...props }: OptionInputProps) => (
-	<ItemActions {...props} className={cx('rcx-option__input', className)} />
+const OptionInput = ({ className, children, ...props }: OptionInputProps) => (
+	<ItemActions {...props} justify='end' className={cx('rcx-option__input', className)}>
+		{wrapText(children)}
+	</ItemActions>
 );
 
 export default OptionInput;
