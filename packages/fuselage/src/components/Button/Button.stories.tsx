@@ -139,24 +139,41 @@ export const Truncated: Story = {
 	),
 };
 
+// Margins reaches Boxes only, so each Button sits in one to keep its margin
 export const Variants: Story = {
 	render: () => (
 		<Margins all='x8'>
 			<ButtonGroup>
-				<Button variant='primary'>Primary</Button>
-				<Button variant='secondary'>Secondary</Button>
+				<Box display='flex'>
+					<Button variant='primary'>Primary</Button>
+				</Box>
+				<Box display='flex'>
+					<Button variant='secondary'>Secondary</Button>
+				</Box>
 			</ButtonGroup>
 			<ButtonGroup>
-				<Button variant='danger'>Danger</Button>
-				<Button variant='secondary-danger'>Secondary Danger</Button>
+				<Box display='flex'>
+					<Button variant='danger'>Danger</Button>
+				</Box>
+				<Box display='flex'>
+					<Button variant='secondary-danger'>Secondary Danger</Button>
+				</Box>
 			</ButtonGroup>
 			<ButtonGroup>
-				<Button variant='warning'>Warning</Button>
-				<Button variant='secondary-warning'>Secondary Warning</Button>
+				<Box display='flex'>
+					<Button variant='warning'>Warning</Button>
+				</Box>
+				<Box display='flex'>
+					<Button variant='secondary-warning'>Secondary Warning</Button>
+				</Box>
 			</ButtonGroup>
 			<ButtonGroup>
-				<Button variant='success'>Success</Button>
-				<Button variant='secondary-success'>Secondary Success</Button>
+				<Box display='flex'>
+					<Button variant='success'>Success</Button>
+				</Box>
+				<Box display='flex'>
+					<Button variant='secondary-success'>Secondary Success</Button>
+				</Box>
 			</ButtonGroup>
 		</Margins>
 	),

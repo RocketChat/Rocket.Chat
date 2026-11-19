@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react';
 
 export type UserInfoActionProps = {
 	icon: IconName;
+	label?: string;
 } & Omit<ComponentProps<typeof Button>, 'color'>;
 
 const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps) => {

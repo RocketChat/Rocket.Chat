@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, DOMAttributes, InputHTMLAttributes, MouseEvent, Ref } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, DOMAttributes, InputHTMLAttributes, MouseEventHandler, Ref } from 'react';
 
 import type { WebInteractionHandlers } from '../helpers/pickWebInteractionHandlers';
 
@@ -25,7 +25,7 @@ export type WebTagAttributes<TTag extends keyof HTMLElementTagNameMap> = {
 
 export type WebPressAlias<TElement extends Element> = {
 	/** @deprecated Use `onPress`. */
-	onClick?: (event: MouseEvent<TElement>) => void;
+	onClick?: MouseEventHandler<TElement>;
 };
 
 /** A contract as the web renderer takes it: its `ref` points at the element, and the web attributes are added. */
@@ -61,6 +61,28 @@ export type WebButtonProps<TContract> = WebProps<TContract, HTMLButtonElement> &
 	WebPressAlias<HTMLButtonElement> &
 	WebInteractionHandlers<HTMLButtonElement> &
 	Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'title' | 'name' | 'value' | 'tabIndex'>;
+
+/**
+ * A contract as a web renderer that is a `button` or, through `is`, an `a` takes it: the deprecated press alias, the
+ * handlers a trigger hands it and the attributes of each tag, which reach only the element they belong to.
+ */
+export type WebButtonOrLinkProps<TContract> = WebProps<TContract, HTMLButtonElement | HTMLAnchorElement> &
+	WebTagAttributes<'button' | 'a'> &
+	WebLinkAttributes &
+	WebPressAlias<HTMLButtonElement | HTMLAnchorElement> &
+	WebInteractionHandlers<HTMLButtonElement | HTMLAnchorElement> &
+	Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'title' | 'name' | 'value' | 'tabIndex' | 'type' | 'form' | 'autoFocus'> &
+	Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'download'> & {
+		/** Opens the link in a new tab, without giving it access to this page. */
+		external?: boolean;
+	};
+
+/** The handlers of a part a file can be dropped on, such as the button of a file upload control. */
+export type WebDropTargetProps = Pick<DOMAttributes<HTMLButtonElement | HTMLAnchorElement>, 'onDragOver' | 'onDrop'>;
+
+/** The `ref` of each branch of a part that renders a `button` or an `a`, whose props type one `ref` for both. */
+export type WebButtonRef = Ref<HTMLButtonElement>;
+export type WebLinkRef = Ref<HTMLAnchorElement>;
 
 /** A contract as a web renderer that is always a `span` and only shows something takes it. */
 export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & {

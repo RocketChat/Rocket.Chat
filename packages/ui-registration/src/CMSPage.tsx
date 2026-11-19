@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import {
 	LayoutLogoImage,
@@ -16,6 +17,10 @@ export type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
 };
 
+const backButtonStyles = css`
+	float: right;
+`;
+
 const CMSPage = ({ page }: CMSPageProps) => {
 	const { t } = useTranslation();
 	const pageContent = useSetting(page, '');
@@ -30,7 +35,9 @@ const CMSPage = ({ page }: CMSPageProps) => {
 			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
 			<VerticalWizardLayoutForm>
 				<Box padding={32}>
-					<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} style={{ float: 'right' }} />
+					<Box className={backButtonStyles}>
+						<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} />
+					</Box>
 					<Box withRichContent dangerouslySetInnerHTML={dangerousContent} />
 				</Box>
 			</VerticalWizardLayoutForm>

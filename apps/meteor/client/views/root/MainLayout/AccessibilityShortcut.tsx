@@ -13,7 +13,7 @@ const AccessibilityShortcut = () => {
 		top: 2px;
 		left: 2px;
 		z-index: 99;
-		&:not(:focus) {
+		&[class]:not(:focus) {
 			width: 1px;
 			height: 1px;
 			padding: 0;
