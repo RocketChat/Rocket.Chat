@@ -1,16 +1,18 @@
 import { Email } from 'meteor/email';
-import type { SendMailOptions } from 'nodemailer';
 
 import { SystemLogger } from '../lib/logger/system';
-import { configureMailTransport, sendMail } from '../lib/notifications/email/transport';
+import * as Mailer from '../lib/notifications/email/api';
+import { configureMailTransport } from '../lib/notifications/email/transport';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 // @types/meteor declares customTransport as a function, but Meteor reads it as an assignable property.
-const MeteorEmail = Email as unknown as { customTransport?: (mail: SendMailOptions & { packageSettings?: unknown }) => Promise<void> };
+const MeteorEmail = Email as unknown as {
+	customTransport?: (mail: Parameters<typeof Mailer.sendNoWrap>[0] & { packageSettings?: unknown }) => Promise<void>;
+};
 
-/** Sends all server email, Meteor accounts email included, through one transport built from the SMTP settings; without SMTP_Host, email is left unsent. */
+/** Sends all server email, Meteor accounts email included, through the Mailer and one transport built from the SMTP settings; without SMTP_Host, email is left unsent. */
 export function configureSMTP(settings: ICachedSettings): void {
-	MeteorEmail.customTransport = ({ packageSettings: _packageSettings, ...mail }) => sendMail(mail);
+	MeteorEmail.customTransport = ({ packageSettings: _packageSettings, text: _untranslatedText, ...mail }) => Mailer.sendNoWrap(mail);
 
 	settings.watchMultiple(
 		['SMTP_Host', 'SMTP_Port', 'SMTP_Username', 'SMTP_Password', 'SMTP_Protocol', 'SMTP_Pool', 'SMTP_IgnoreTLS'],

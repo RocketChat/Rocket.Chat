@@ -5,13 +5,14 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const configureMailTransport = sinon.stub();
-const sendMail = sinon.stub().resolves();
+const sendNoWrap = sinon.stub().resolves();
 const Email: { customTransport?: (mail: Record<string, unknown>) => Promise<void> } = {};
 
 const { configureSMTP } = proxyquire.noCallThru().load('./configureSMTP', {
 	'meteor/email': { Email },
 	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
-	'../lib/notifications/email/transport': { configureMailTransport, sendMail },
+	'../lib/notifications/email/api': { sendNoWrap },
+	'../lib/notifications/email/transport': { configureMailTransport },
 });
 
 const applySettings = (values: Record<string, unknown>) => {
@@ -45,14 +46,14 @@ describe('configureSMTP', () => {
 		}
 	});
 
-	it('should send Meteor email through the app transport, without Meteor package settings', async () => {
-		sendMail.resetHistory();
+	it("should send Meteor email through the Mailer, without Meteor's text part or package settings", async () => {
+		sendNoWrap.resetHistory();
 		applySettings(smtpSettings);
 
 		const mail = { to: 'someone@example.com', from: 'rocket.chat@example.com', subject: 'Reset your password', html: '<p>link</p>' };
-		await Email.customTransport?.({ packageSettings: {}, ...mail });
+		await Email.customTransport?.({ packageSettings: {}, text: 'Hello, To reset your password, simply click the link below.', ...mail });
 
-		expect(sendMail.calledOnceWithExactly(mail)).to.be.true;
+		sinon.assert.calledOnceWithExactly(sendNoWrap, mail);
 	});
 
 	it('should leave email unsent when there is no SMTP host, even with MAIL_URL set', () => {
