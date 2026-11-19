@@ -10,6 +10,7 @@ import { i18n } from '../../../lib/i18n';
 import { sdk } from '../SDKClient';
 import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { getDdpSdk } from '../sdk/ddpSdk';
+import { getActiveStorage } from '../sdk/storage';
 import { settings } from '../settings';
 import { fileUploadIsValidContentType } from '../utils/restrictions';
 
@@ -53,10 +54,12 @@ const isLivePersistedUpload = (entry: PersistedUpload, now: number): boolean =>
 	typeof entry.expiresAt === 'number' &&
 	entry.expiresAt > now;
 
+// Saved uploads live wherever the login keys live, so a workspace that forgets the user session when the window
+// closes does not keep them on disk either.
 const readPersistedUploads = (storageKey: string): PersistedUpload[] => {
 	let persisted: PersistedUpload[];
 	try {
-		const stored = localStorage.getItem(storageKey);
+		const stored = getActiveStorage()?.getItem(storageKey);
 		persisted = stored ? JSON.parse(stored) : [];
 		if (!Array.isArray(persisted)) {
 			throw new Error('Invalid persisted uploads');
@@ -82,11 +85,16 @@ const readPersistedUploads = (storageKey: string): PersistedUpload[] => {
 // Keeping uploads is best effort: when storage is full or unavailable, they stay in the composer but won't come back
 // on the next visit.
 const writePersistedUploads = (storageKey: string, entries: PersistedUpload[], removed: readonly PersistedUpload['id'][] = []): void => {
+	const storage = getActiveStorage();
+	if (!storage) {
+		return;
+	}
+
 	try {
 		if (entries.length === 0) {
-			localStorage.removeItem(storageKey);
+			storage.removeItem(storageKey);
 		} else {
-			localStorage.setItem(storageKey, JSON.stringify(entries));
+			storage.setItem(storageKey, JSON.stringify(entries));
 		}
 	} catch {
 		return;
@@ -108,7 +116,7 @@ const parsePersistedUploadIds = (value: string | null): PersistedUpload['id'][] 
 // An event without a key is the whole storage being cleared, which happens on logout: the session goes with it, so
 // there is no composer left to tell.
 const handleStorageEvent = (event: StorageEvent): void => {
-	if (event.storageArea !== localStorage || !event.key?.startsWith(STORAGE_KEY_PREFIX)) {
+	if (event.storageArea !== getActiveStorage() || !event.key?.startsWith(STORAGE_KEY_PREFIX)) {
 		return;
 	}
 
@@ -117,6 +125,41 @@ const handleStorageEvent = (event: StorageEvent): void => {
 };
 
 window.addEventListener('storage', handleStorageEvent);
+
+// Saved uploads belong to the session that kept them, so a logout forgets every room's rather than leaving them for
+// whoever logs in next. The account's own cleanup only empties localStorage, which is not where they are on a
+// workspace that forgets the user session.
+let forgettingSavedUploadsOnLogout = false;
+
+const forgetSavedUploadsOnLogout = (): void => {
+	if (forgettingSavedUploadsOnLogout) {
+		return;
+	}
+	forgettingSavedUploadsOnLogout = true;
+
+	getDdpSdk().account.onLogout(() => {
+		const storage = getActiveStorage();
+		if (!storage) {
+			return;
+		}
+
+		const storageKeys: string[] = [];
+		for (let index = 0; index < storage.length; index++) {
+			const storageKey = storage.key(index);
+			if (storageKey?.startsWith(STORAGE_KEY_PREFIX)) {
+				storageKeys.push(storageKey);
+			}
+		}
+
+		storageKeys.forEach((storageKey) =>
+			writePersistedUploads(
+				storageKey,
+				[],
+				readPersistedUploads(storageKey).map(({ id }) => id),
+			),
+		);
+	});
+};
 
 // Stands in for a file whose bytes are already on the server: it reports the size the user picked, so the chip and the
 // sent message still show it.
@@ -517,5 +560,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	}
 }
 
-export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI =>
-	new UploadsStore({ rid, tmid });
+export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => {
+	forgetSavedUploadsOnLogout();
+	return new UploadsStore({ rid, tmid });
+};

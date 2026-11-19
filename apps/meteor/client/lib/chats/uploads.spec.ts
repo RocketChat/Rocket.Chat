@@ -2,6 +2,7 @@ import type { EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload } from './Upload';
 import { createUploadsAPI } from './uploads';
 import { sdk } from '../SDKClient';
+import { setStorageBackend } from '../sdk/storage';
 
 jest.mock('../SDKClient', () => ({
 	sdk: { rest: { upload: jest.fn() } },
@@ -461,6 +462,53 @@ describe('UploadsStore across tabs', () => {
 		writeFromAnotherTab([], 'composer_uploads_other-room');
 
 		expect(store.get().map(({ id }) => id)).toEqual(['file-1']);
+	});
+});
+
+describe('UploadsStore on a workspace that forgets the user session', () => {
+	const readSessionStorage = () => JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? '[]');
+
+	afterEach(() => {
+		setStorageBackend('local');
+		sessionStorage.clear();
+	});
+
+	it('keeps the uploads where the login keys are, instead of on disk', async () => {
+		setStorageBackend('session');
+
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+		expect(readSessionStorage().map(({ id }: { id: string }) => id)).toEqual(['file-1']);
+	});
+
+	it('brings them back in the next composer of the same window', async () => {
+		setStorageBackend('session');
+
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		await uploadFile(first, 'file-1');
+		first.detach();
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+
+		expect(second.get().map(({ id }) => id)).toEqual(['file-1']);
+	});
+
+	it('forgets them on logout, so the next account does not get them', async () => {
+		setStorageBackend('session');
+
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		logOut();
+
+		expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
+		expect(store.get()).toHaveLength(0);
 	});
 });
 
