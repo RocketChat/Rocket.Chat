@@ -2,7 +2,6 @@
 @use '../../styles/functions.scss' as *;
 @use '../../styles/lengths.scss';
 @use '../../styles/mixins/size.scss';
-@use '../../styles/mixins/states.scss';
 @use '../../styles/typography.scss' as *;
 @use './MessageDivider/MessageDivider.styles.scss';
 @use './MessageGenericPreview/MessageGenericPreview.styles.scss';
@@ -13,18 +12,11 @@
 @use './MessageToolbar/MessageToolbar.styles.scss';
 @use './ThreadMessage/ThreadMessage.styles.scss';
 
+// Web only. The name, username, name container, body, block and highlight are frames, which state their own layout and
+// colors; what is left here is the parts still composed on Item and what a frame cannot state.
+
 $message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
 $message-color-editing: theme('message-color-editing', colors.status-font(on-warning-2));
-
-$message-highlight-colors-critical-color: theme('message-highlight-colors-critical-color', colors.status-font(on-danger));
-
-$message-highlight-colors-relevant-color: theme('message-highlight-colors-relevant-color', colors.status-font(on-service-1));
-
-$message-highlight-colors-other-color: theme('message-highlight-colors-other-color', colors.status-font(on-warning));
-
-$message-highlight-colors-link-color: theme('message-highlight-colors-link-color', colors.status-font(on-info));
-
-$message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 .rcx-message {
 	// The avatar centres on the header and the first body line, however long the body grows.
@@ -56,12 +48,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		background: $message-background-color-editing;
 	}
 
-	&--pending {
-		.rcx-message-body {
-			opacity: 0.4;
-		}
-	}
-
 	&-header {
 		&__time {
 			// secondary-info fails contrast against the hover surface.
@@ -70,68 +56,16 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			}
 		}
 
-		&__name-container {
-			@include use-with-truncated-text();
-			flex-shrink: 0;
-
-			// In the header a long name gives way before the timestamp and indicators do.
-			.rcx-message-header > & {
-				flex-shrink: 1;
-			}
-
-			// An outline takes no room, so the name keeps the header line's height; forced colors paint it too.
-			@include states.on-focus-visible {
-				border-radius: lengths.border-radius(medium);
-				outline: lengths.border-width(default) solid colors.stroke(highlight);
-				box-shadow: 0 0 0 calc(#{lengths.border-width(default)} + #{lengths.border-width(medium)}) colors.stroke(extra-light-highlight);
-			}
-
-			// This must match __name's color or the
-			// underline mismatches the text under it.
-			color: colors.font(titles-labels);
-
-			&[role='button'] {
-				cursor: pointer;
-
-				&:hover {
-					text-decoration: underline;
-				}
-			}
-		}
-
-		&__name {
-			@include use-font-scale(h5);
-			@include use-with-truncated-text();
-
-			color: colors.font(titles-labels);
-		}
-
-		&__username {
-			@include use-with-truncated-text();
-
-			color: colors.font(default);
-		}
-
 		&__roles {
 			overflow: hidden;
 		}
 	}
 
 	&-body {
-		@include use-font-scale(p2);
-
-		overflow: hidden;
-
-		// Padding rather than margin, so overflow: hidden leaves room for emoji glyphs
-		// that paint slightly past their line box.
-		padding-block: lengths.padding(2);
-
+		// A property a frame has no key for: the fade of a body whose message is being sent
 		transition: opacity 0.3s linear;
 
-		word-break: break-word;
-
-		color: colors.font(default);
-
+		// Consumer rich text: the elements a Markdown renderer puts in the body, which the body does not render itself
 		@each $heading in h1, h2, h3, h4 {
 			& #{$heading} {
 				@include use-font-scale($heading);
@@ -162,12 +96,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			content: attr(value) '.';
 		}
 
-		&--clamp {
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 2;
-		}
-
 		& blockquote {
 			padding-inline: lengths.padding(8);
 
@@ -181,15 +109,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 				background-color: colors.surface(hover);
 				border-inline-start-color: colors.stroke(medium);
 			}
-		}
-	}
-
-	&-block {
-		display: flex;
-		flex-direction: column;
-
-		&--width-fixed {
-			max-width: $message-block-width-fixed;
 		}
 	}
 
@@ -211,42 +130,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		&--big {
 			--emoji-size: 3rem;
-		}
-	}
-
-	&__highlight {
-		white-space: nowrap;
-
-		font-weight: 500;
-
-		&--clickable {
-			cursor: pointer;
-
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-
-		&--critical {
-			color: $message-highlight-colors-critical-color;
-		}
-
-		&--relevant {
-			color: $message-highlight-colors-relevant-color;
-		}
-
-		&--link {
-			color: $message-highlight-colors-link-color;
-		}
-
-		&--other {
-			color: $message-highlight-colors-other-color;
-		}
-
-		@include states.on-focus-visible {
-			border-radius: lengths.border-radius(medium);
-			outline: lengths.border-width(default) solid colors.stroke(highlight);
-			box-shadow: 0 0 0 calc(#{lengths.border-width(default)} + #{lengths.border-width(medium)}) colors.stroke(extra-light-highlight);
 		}
 	}
 }
