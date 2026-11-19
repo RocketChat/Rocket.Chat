@@ -1,4 +1,4 @@
-import { useActiveDescendant, useMergedRefs, useResizeObserver, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useActiveDescendant, useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, PointerEvent, RefAttributes } from 'react';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
@@ -81,8 +81,7 @@ function Select<V extends Key = Key>({
 	const { search: findByTypeahead, isSearching, reset: resetTypeahead } = useTypeahead();
 
 	const triggerRef = useRef<HTMLButtonElement>(null);
-	const { ref: resizeRef, borderBoxSize } = useResizeObserver<HTMLButtonElement>();
-	const mergedRef = useMergedRefs(outerRef, triggerRef, resizeRef);
+	const mergedRef = useMergedRefs(outerRef, triggerRef);
 
 	const [listboxName, setListboxName] = useState<string>();
 
@@ -325,13 +324,14 @@ function Select<V extends Key = Key>({
 				placement='bottom-start'
 				margin={4}
 				preventScroll={isOpen}
+				width='anchor'
 			>
 				<Box
 					aria-hidden={!isOpen || undefined}
 					style={isOpen ? undefined : { pointerEvents: 'none' }}
 					onPointerDown={(event: PointerEvent) => event.preventDefault()}
 				>
-					<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
+					<OptionContainer>
 						<Listbox
 							id={listboxId}
 							aria-labelledby={props['aria-labelledby']}

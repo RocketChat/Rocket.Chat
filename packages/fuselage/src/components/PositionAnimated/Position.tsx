@@ -1,5 +1,5 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
-import { usePosition, usePreventScrollOutside } from '@rocket.chat/fuselage-hooks';
+import { useBorderBoxSize, usePosition, usePreventScrollOutside } from '@rocket.chat/fuselage-hooks';
 import type { RefObject, ReactElement } from 'react';
 import { useRef, useMemo, cloneElement } from 'react';
 
@@ -14,10 +14,15 @@ export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
 	placement?: UsePositionOptions['placement'];
 	/** Holds the page still while the element is shown, so it cannot drift away from its anchor; it keeps scrolling itself. */
 	preventScroll?: boolean;
+	/** Gives the element the width of its anchor, and keeps it as the anchor resizes. */
+	width?: 'anchor';
 };
 
-const Position = ({ anchor, children, placement, margin, preventScroll = false, className, ...props }: PositionProps) => {
+const unmeasured = { current: null };
+
+const Position = ({ anchor, children, placement, margin, preventScroll = false, width, className, ...props }: PositionProps) => {
 	const target = useRef<Element>(null);
+	const { inlineSize } = useBorderBoxSize(width === 'anchor' ? (anchor as RefObject<HTMLElement | null>) : unmeasured);
 	const { style: positionStyle, placement: positionPlacement } =
 		usePosition(
 			anchor,
@@ -27,7 +32,10 @@ const Position = ({ anchor, children, placement, margin, preventScroll = false, 
 
 	usePreventScrollOutside(target, preventScroll);
 
-	const style = useMemo(() => ({ position: 'fixed', ...positionStyle }), [positionStyle]);
+	const style = useMemo(
+		() => ({ position: 'fixed', ...positionStyle, ...(width === 'anchor' && { width: inlineSize }) }),
+		[positionStyle, width, inlineSize],
+	);
 
 	return (
 		<Overlay containerId='position-container'>

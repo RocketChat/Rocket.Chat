@@ -27,7 +27,8 @@ export type MenuProps<T> = AriaMenuProps<T> &
 		is?: ElementType;
 		className?: string;
 		pressed?: boolean;
-		maxWidth?: string;
+		/** How wide the popup grows: 250px unless stated, or as wide as its content. */
+		maxWidth?: 'x250' | 'full';
 		button?: ReactElement<any>;
 	};
 
@@ -38,7 +39,7 @@ const Menu = <T extends object>({
 	is: MenuButton = IconButton,
 	className,
 	pressed,
-	maxWidth = 'x250',
+	maxWidth,
 	button,
 	detached,
 	size = 'small',

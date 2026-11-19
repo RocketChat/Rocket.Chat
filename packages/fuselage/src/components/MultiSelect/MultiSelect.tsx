@@ -1,4 +1,4 @@
-import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useState, useRef, useEffect } from 'react';
 
@@ -110,7 +110,7 @@ function MultiSelect({
 	const innerRef = useRef<HTMLElement>(null);
 	const anchorRef = useMergedRefs(ref, innerRef);
 
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const containerRef = useRef<HTMLElement>(null);
 
 	const handleClick = useStableCallback(() => {
 		if (visible === AnimatedVisibility.VISIBLE) {
@@ -204,9 +204,8 @@ function MultiSelect({
 			<SelectAddon>
 				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 			</SelectAddon>
-			<PositionAnimated visible={visible} anchor={containerRef}>
+			<PositionAnimated visible={visible} anchor={containerRef} width='anchor'>
 				<_Options
-					width={borderBoxSize.inlineSize}
 					onMouseDown={prevent}
 					multiple
 					filter={filter}
