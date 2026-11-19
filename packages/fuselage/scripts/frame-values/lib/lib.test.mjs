@@ -8,10 +8,69 @@ import { moduleProblems, transformProblems } from './check.mts';
 import { generateFrameValues } from './generate.mts';
 import { literal } from './literal.mts';
 import { END, START } from './markers.mts';
-import { offScale, radius, space, themed, unresolvedReferences, zIndex } from './tokens.mts';
+import { offScale, radius, rem, space, themed, unresolvedReferences, zIndex } from './tokens.mts';
 
 test('literal quotes keys, nests and skips undefined', () => {
 	assert.equal(literal({ 'a-b': 1, 'c': { d: 'x', e: undefined } }), '{\n\t"a-b": 1,\n\t"c": {\n\t\t"d": "x",\n\t},\n}');
+});
+
+const values = (value, platform) => JSON.parse(literal(value, platform).replace(/,(\s*})/g, '$1'));
+
+test('a plain number is written as it is, on every property and in every state', () => {
+	const frame = {
+		width: 20,
+		minHeight: 28,
+		maxWidth: 640,
+		top: -1,
+		insetInlineStart: 2,
+		borderTopLeftRadius: 4,
+		fontSize: 14,
+		letterSpacing: 1,
+		padding: 2,
+		marginInline: -1,
+		gap: 6,
+		borderWidth: 1,
+		outlineOffset: 2,
+		flexShrink: 1,
+		zIndex: 2,
+		opacity: 0.5,
+		height: { default: 20, hover: 24 },
+		sizing: { small: { minWidth: 8, padding: 2 } },
+		lineHeightMultiplier: '1',
+	};
+
+	assert.deepEqual(values(frame), frame);
+	assert.deepEqual(values(frame, 'native'), frame);
+});
+
+test('a numeric line height is pixels on the web too, where a bare number would be a multiplier', () => {
+	const frame = { lineHeight: 20, sizing: { large: { lineHeight: { default: 28, hover: 0 } } }, flexGrow: 1 };
+
+	assert.deepEqual(values(frame), { lineHeight: '20px', sizing: { large: { lineHeight: { default: '28px', hover: 0 } } }, flexGrow: 1 });
+	assert.deepEqual(values(frame, 'native'), frame);
+	assert.deepEqual(values({ lineHeight: '1' }), { lineHeight: '1' });
+});
+
+test('a rem length is rem on the web, in every state, and the number on native', () => {
+	const frame = {
+		width: rem(20),
+		maxWidth: { default: rem(640), hover: rem(-1) },
+		sizing: { small: { top: rem(2), gap: 4 } },
+		height: rem(0),
+	};
+
+	assert.deepEqual(values(frame), {
+		width: '1.25rem',
+		maxWidth: { default: '40rem', hover: '-0.0625rem' },
+		sizing: { small: { top: '0.125rem', gap: 4 } },
+		height: 0,
+	});
+	assert.deepEqual(values(frame, 'native'), {
+		width: 20,
+		maxWidth: { default: 640, hover: -1 },
+		sizing: { small: { top: 2, gap: 4 } },
+		height: 0,
+	});
 });
 
 test('a color is a theme key, a length or a layer a token of its category', () => {

@@ -1,3 +1,4 @@
+import { Rem } from './literal.mts';
 import { themes, tokens } from '../../../src/tamagui.tokens.ts';
 import { unresolvedTokens } from '../../verify/zero-stylesheet.mjs';
 
@@ -16,6 +17,9 @@ export const unresolvedReferences = (body: string): string[] =>
 export const themed = (name: Unprefixed<keyof typeof themes.light>) => `$rcx-${name}`;
 
 export const space = (name: keyof typeof tokens.space) => `$space.${name}`;
+
+/** A length in `rem` on the web, for one a stylesheet wrote in `rem` that the size scale has no step for. */
+export const rem = (pixels: number) => new Rem(pixels);
 
 export const radius = (name: keyof typeof tokens.radius) => `$radius.${name}`;
 

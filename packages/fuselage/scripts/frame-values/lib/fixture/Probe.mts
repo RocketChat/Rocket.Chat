@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { literal } from '../literal.mts';
 import type { Target } from '../target.mts';
-import { offScale, radius, space, themed, zIndex } from '../tokens.mts';
+import { offScale, radius, rem, space, themed, zIndex } from '../tokens.mts';
 
 const generateProbe = () => {
 	const frame = {
@@ -14,6 +14,10 @@ const generateProbe = () => {
 		borderRadius: radius('medium'),
 		paddingBlock: offScale(2),
 		paddingInline: space('x8'),
+		minHeight: 28,
+		width: { default: 20, hover: 24 },
+		top: offScale(-1),
+		maxWidth: rem(20),
 		zIndex: { 'focus-visible': zIndex('raised') },
 	};
 
