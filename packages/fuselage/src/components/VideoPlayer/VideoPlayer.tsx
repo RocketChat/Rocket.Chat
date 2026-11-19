@@ -108,7 +108,8 @@ const VideoPlayer = ({
 	const cyclePlaybackSpeed = () => {
 		const video = videoRef.current;
 		if (!video) return;
-		video.playbackRate = video.playbackRate >= maxPlaybackSpeed ? minPlaybackSpeed : video.playbackRate + playbackSpeedStep;
+		video.playbackRate =
+			video.playbackRate >= maxPlaybackSpeed ? minPlaybackSpeed : Math.min(video.playbackRate + playbackSpeedStep, maxPlaybackSpeed);
 	};
 
 	const toggleFullScreen = () => {
