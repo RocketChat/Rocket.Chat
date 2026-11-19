@@ -341,15 +341,6 @@
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
-	"NavBar/NavBar.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Option/Option.styles.scss": {
 		"rules": 25,
 		"nested": 23,
