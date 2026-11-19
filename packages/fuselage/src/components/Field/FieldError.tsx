@@ -26,6 +26,10 @@ const fieldErrorFrame = {
 	minHeight: 'auto',
 	marginBlock: 2,
 	color: '$rcx-font-danger',
+	fontSize: '0.75rem',
+	lineHeight: '1rem',
+	fontWeight: '400',
+	letterSpacing: 0,
 } as const;
 
 // end of generated

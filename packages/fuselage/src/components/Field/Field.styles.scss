@@ -1,18 +1,11 @@
-@use '../../styles/typography.scss' as *;
 @use '../../styles/primitives/rich-text.scss';
 
-// Web only. The type scale, which stays here until the Tamagui config has font tokens for the frame to name (see
-// Deviations), and the look of the markup a consumer puts inside a text part, which a frame cannot reach.
+// Web only. The look of the markup a consumer puts inside a text part, which a frame cannot reach.
 .rcx-field {
-	&__description {
-		@include use-font-scale(p2);
-		@extend %with-inline-elements;
-	}
-
+	&__description,
 	&__hint,
 	&__error,
 	&__link {
-		@include use-font-scale(c1);
 		@extend %with-inline-elements;
 	}
 }

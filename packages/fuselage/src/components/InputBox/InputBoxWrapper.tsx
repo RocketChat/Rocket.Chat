@@ -10,7 +10,7 @@ export type InputBoxWrapperProps = ElementProps<HTMLLabelElement, LabelHTMLAttri
 
 const InputBoxWrapper = (props: InputBoxWrapperProps) => (
 	<LabelContext.Provider value={true}>
-		<Box animated is='label' rcx-label rcx-input-box__wrapper {...props} />
+		<Box animated is='label' rcx-input-box__wrapper {...props} />
 	</LabelContext.Provider>
 );
 

@@ -171,8 +171,8 @@
 		"displayContents": 0
 	},
 	"Field/Field.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -240,15 +240,6 @@
 		"important": 0,
 		"specificityBumps": 6,
 		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"Label/Label.styles.scss": {
-		"rules": 1,
-		"nested": 0,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Listbox/Listbox.styles.scss": {
