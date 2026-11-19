@@ -1,3 +1,5 @@
+import type { Ref } from 'react';
+
 import type { WebProps } from './WebAttributes';
 
 // A contract as the web renderer of a part that only shows something takes it, by the element the part always renders.
@@ -17,3 +19,7 @@ export type WebSvgProps<TContract> = WebProps<TContract, SVGSVGElement> & WebTit
 
 /** For a part rendered as a sectioning or grouping element that has no element type of its own, such as `section` or `figure`. */
 export type WebElementProps<TContract> = WebProps<TContract, HTMLElement> & WebTitle;
+
+/** The `ref` of each branch of a part that renders one of two elements, for casting the ref its props type for both. */
+export type WebHrRef = Ref<HTMLHRElement>;
+export type WebDivRef = Ref<HTMLDivElement>;
