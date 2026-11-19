@@ -1,4 +1,4 @@
-import { Box, Divider, IconButton, Text } from '@rocket.chat/fuselage';
+import { Divider, IconButton, Stack, Text } from '@rocket.chat/fuselage';
 import { ActionLink } from '@rocket.chat/layout';
 import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { usePermission, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
@@ -32,32 +32,32 @@ const PlanCardLicenseDetails = () => {
 	return (
 		<>
 			<Divider />
-			<Box>
-				<Box display='flex'>
-					<Box marginInlineEnd={4}>{t('Site_Url')}</Box>
+			<Stack>
+				<Stack direction='row' gap='x4'>
+					<Text>{t('Site_Url')}</Text>
 					{hasCopiedSiteURL ? (
 						<IconButton variant='success' icon='check' size='mini' />
 					) : (
 						<IconButton title={t('Copy')} icon='clipboard' size='mini' onClick={() => !hasCopiedSiteURL && copySiteURL()} />
 					)}
-				</Box>
+				</Stack>
 				<Text truncate fontScale='p2'>
 					{siteURL}
 				</Text>
-			</Box>
-			<Box>
-				<Box display='flex'>
-					<Box marginInlineEnd={4}>{t('Hashed_Site_Url')}</Box>
+			</Stack>
+			<Stack>
+				<Stack direction='row' gap='x4'>
+					<Text>{t('Hashed_Site_Url')}</Text>
 					{hasCopiedHashed ? (
 						<IconButton variant='success' icon='check' size='mini' />
 					) : (
 						<IconButton title={t('Copy')} icon='clipboard' size='mini' onClick={() => !hasCopiedHashed && copyHashed()} />
 					)}
-				</Box>
+				</Stack>
 				<Text truncate fontScale='p2'>
 					{hashedSiteURL}
 				</Text>
-			</Box>
+			</Stack>
 			<ActionLink onClick={handleOpenModal}>{t('Manage_license')}</ActionLink>
 		</>
 	);

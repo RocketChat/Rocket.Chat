@@ -6,4 +6,12 @@ export type ExchangeEndpoints = {
 			success: boolean;
 		};
 	};
+	'/v1/exchange.syncMyCalendar': {
+		POST: () => {
+			upserted: number;
+			modified: number;
+			deleted: number;
+			success: boolean;
+		};
+	};
 };

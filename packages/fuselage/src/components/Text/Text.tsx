@@ -46,12 +46,15 @@ export type TextProps = ElementProps<
 	truncate?: boolean;
 };
 
+export const textClassName = ({ fontScale, color, truncate }: Pick<TextProps, 'fontScale' | 'color' | 'truncate'>) =>
+	cxx('rcx-text')(fontScale && `font-scale-${fontScale}`, color && `color-${color}`, truncate && 'truncate');
+
 /**
  * Text set in one of the design system's font scales and text colours.
  */
 function Text({ is = 'div', fontScale, color, truncate, className, ...props }: TextProps) {
 	return createElement(is, {
-		className: cx(cxx('rcx-text')(fontScale && `font-scale-${fontScale}`, color && `color-${color}`, truncate && 'truncate'), className),
+		className: cx(textClassName({ fontScale, color, truncate }), className),
 		...props,
 	});
 }
