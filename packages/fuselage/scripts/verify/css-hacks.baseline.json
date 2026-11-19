@@ -324,8 +324,8 @@
 		"displayContents": 0
 	},
 	"Message/MessageStatusIndicator/MessageStatusIndicator.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -383,7 +383,7 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
@@ -450,8 +450,8 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 32,
-		"nested": 31,
+		"rules": 22,
+		"nested": 21,
 		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
@@ -477,12 +477,12 @@
 		"displayContents": 0
 	},
 	"Sidepanel/Sidepanel.styles.scss": {
-		"rules": 9,
-		"nested": 7,
+		"rules": 4,
+		"nested": 3,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Skeleton/Skeleton.styles.scss": {
