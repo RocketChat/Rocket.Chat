@@ -114,7 +114,7 @@ const AudioPlayerControls = ({
 				</Box>
 			)}
 			<Box className={loading ? 'rcx-audio-player__time rcx-audio-player__time--loading' : 'rcx-audio-player__time'}>
-				{loading && !durationTime ? '-:-- / -:--' : `${formatMediaTime(currentTime)} / ${formatMediaTime(durationTime)}`}
+				{durationTime ? `${formatMediaTime(currentTime)} / ${formatMediaTime(durationTime)}` : '-:-- / -:--'}
 			</Box>
 			{/* Fixed slot so the slider keeps its width when the label grows from 1x to 1.25x. */}
 			<Box className='rcx-audio-player__speed'>

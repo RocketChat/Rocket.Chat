@@ -20,6 +20,11 @@ describe('[AudioPlayerControls Component]', () => {
 		expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
 	});
 
+	it('shows a placeholder until the duration is known', () => {
+		render(<Idle durationTime={0} />);
+		expect(screen.getByText('-:-- / -:--')).toBeInTheDocument();
+	});
+
 	it('adds hours past one hour', () => {
 		render(<LongDuration />);
 		expect(screen.getByText('1:02:05 / 1:30:00')).toBeInTheDocument();
