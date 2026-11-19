@@ -396,8 +396,8 @@
 		"displayContents": 0
 	},
 	"Pagination/Pagination.styles.scss": {
-		"rules": 14,
-		"nested": 5,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
