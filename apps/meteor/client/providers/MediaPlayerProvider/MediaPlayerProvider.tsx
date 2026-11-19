@@ -160,7 +160,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onCanPlay={() => setLoading(false)}
 				onPlaying={() => setLoading(false)}
 				onError={() => {
-					// Only a track that is set can fail; clearing `src` on close also fires `error`.
+					// An error arriving after close() belongs to no track.
 					if (trackRef.current) {
 						setLoading(false);
 						setError(true);
