@@ -1,5 +1,6 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { parse } from '@rocket.chat/message-parser';
 import { expect } from 'chai';
 
 import { MentionsServer } from './Mentions';
@@ -19,6 +20,10 @@ beforeEach(() => {
 				{
 					_id: 2,
 					username: 'jon',
+				},
+				{
+					_id: 3,
+					username: '@renato.becker:matrix.org',
 				},
 			].filter((user) => usernames.includes(user.username)), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 		getChannels(channels) {
@@ -165,6 +170,22 @@ describe('Mention Server', () => {
 			});
 		});
 
+		describe('for a federated user', () => {
+			it('should return the user stored under its full id', async () => {
+				const message = {
+					msg: 'hi @renato.becker:matrix.org',
+				};
+				const expected = [
+					{
+						_id: 3,
+						username: '@renato.becker:matrix.org',
+					},
+				];
+				const result = await mention.getUsersByMentions(message);
+				expect(result).to.be.deep.equal(expected);
+			});
+		});
+
 		describe('for an unknow user', () => {
 			it('should return "nothing"', async () => {
 				const message = {
@@ -212,6 +233,20 @@ describe('Mention Server', () => {
 			];
 			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
+		});
+		it('should resolve local and federated users mentioned in the parsed message', async () => {
+			const msg = '@rocket.cat @renato.becker:matrix.org @@renato.becker:matrix.org';
+			const result = await mention.execute({ msg, md: parse(msg) });
+			expect(result.mentions).to.be.deep.equal([
+				{
+					_id: 1,
+					username: 'rocket.cat',
+				},
+				{
+					_id: 3,
+					username: '@renato.becker:matrix.org',
+				},
+			]);
 		});
 		it('should return nothing"', async () => {
 			const message = {

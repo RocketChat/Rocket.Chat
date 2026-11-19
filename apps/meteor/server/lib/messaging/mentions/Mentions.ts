@@ -16,6 +16,12 @@ type MentionsServerArgs = MentionsParserArgs & {
 	onMaxRoomMembersExceeded: ({ sender, rid }: { sender: IMessage['u']; rid: string }) => Promise<void>;
 };
 
+// Federated users are stored under their full `@user:server` id; local users without the `@`.
+const toStoredUsername = (mention: string): string => {
+	const bare = mention.trim().replace(/^@+/, '');
+	return bare.includes(':') ? `@${bare}` : bare;
+};
+
 export class MentionsServer extends MentionsParser {
 	messageMaxAll: MentionsServerArgs['messageMaxAll'];
 
@@ -64,14 +70,7 @@ export class MentionsServer extends MentionsParser {
 		let totalChannelMembers: number | undefined;
 
 		for (const m of mentions) {
-			let mention: string;
-			if (m.includes(':')) {
-				mention = m.trim();
-			} else if (m.startsWith('@')) {
-				mention = m.substring(1);
-			} else {
-				mention = m;
-			}
+			const mention = toStoredUsername(m);
 			if (mention !== 'all' && mention !== 'here') {
 				userMentions.add(mention);
 				continue;
