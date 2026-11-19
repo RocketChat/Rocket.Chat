@@ -52,7 +52,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const licenseErrors = Object.keys(app.licenseValidation?.errors ?? {});
 
 	return (
-		<AppDetailsTabContent spaceBelow='x16'>
+		<AppDetailsTabContent>
 			<ContentColumn size='wide'>
 				<Stack gap='x32'>
 					{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (

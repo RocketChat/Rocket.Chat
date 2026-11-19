@@ -21,7 +21,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 	const { t } = useTranslation();
 
 	return (
-		<AppDetailsTabContent spaceBelow='x16'>
+		<AppDetailsTabContent>
 			<ContentColumn size='wide'>
 				<Stack gap='x32'>
 					<AppInfoSection title={<AppSecurityLabel>{t('Privacy_summary')}</AppSecurityLabel>}>
