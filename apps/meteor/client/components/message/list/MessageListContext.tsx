@@ -5,6 +5,8 @@ import { createContext, useContext } from 'react';
 
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
+import type { MessageNormalizer } from '../../../lib/createMessageNormalizer';
+import { createMessageNormalizer } from '../../../lib/createMessageNormalizer';
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -18,6 +20,8 @@ export type MessageListContextValue = {
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
 	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
+	/** Whether the list's room is a broadcast room the user is subscribed to. */
+	isBroadcast: boolean;
 	/** Role labels of the authors of messages in room `rid`; absent when the list does not resolve them. */
 	userRoles?: {
 		rid: string;
@@ -30,12 +34,9 @@ export type MessageListContextValue = {
 		regex: RegExp;
 		urlRegex: RegExp;
 	}[];
-	katex?: {
-		dollarSyntaxEnabled: boolean;
-		parenthesisSyntaxEnabled: boolean;
-	};
 	autoTranslateLanguage?: string;
-	showColors: boolean;
+	/** Stable for the list: changes only when a setting or the room's auto-translate state does, never per message. */
+	normalizeMessage: MessageNormalizer;
 	jumpToMessageParam?: string;
 	username: string | undefined;
 	apiEmbedEnabled: boolean;
@@ -63,9 +64,10 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 			date.toString(),
 	useOpenEmojiPicker: () => (): void => undefined,
 	showRoles: false,
+	isBroadcast: false,
 	showRealName: false,
 	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
-	showColors: false,
+	normalizeMessage: createMessageNormalizer({ emoticons: true }, { showAutoTranslate: () => false, autoTranslateEnabled: false }),
 	username: undefined,
 	apiEmbedEnabled: false,
 	readReceipts: {
@@ -87,6 +89,7 @@ export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (..
 	useContext(MessageListContext).useShowFollowing(...args);
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useMessageListIsBroadcast = (): MessageListContextValue['isBroadcast'] => useContext(MessageListContext).isBroadcast;
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListUserRoles = (uid: string, rid: string) => {
 	const { userRoles } = useContext(MessageListContext);
@@ -104,9 +107,7 @@ export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 
-export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
-
-export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
+export const useMessageListNormalizer = (): MessageListContextValue['normalizeMessage'] => useContext(MessageListContext).normalizeMessage;
 
 export const useMessageListReadReceipts = (): MessageListContextValue['readReceipts'] => useContext(MessageListContext).readReceipts;
 

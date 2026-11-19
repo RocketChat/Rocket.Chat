@@ -714,7 +714,7 @@ export class LDAPEEManager extends LDAPManager {
 						converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
 						return userData;
 					},
-					endCallback: (err: any): void => {
+					endCallback: (err?: Error): void => {
 						if (err) {
 							logger.error({ err });
 							reject(err);

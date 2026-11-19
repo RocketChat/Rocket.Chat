@@ -88,7 +88,7 @@ API.v1.addRoute(
 				throw new Error('Invalid status code');
 			} catch (error) {
 				logger.error({ msg: 'Error testing webhook', err: error });
-				throw new Error('error-invalid-webhook-response');
+				throw new Error('error-invalid-webhook-response', { cause: error });
 			}
 		},
 	},

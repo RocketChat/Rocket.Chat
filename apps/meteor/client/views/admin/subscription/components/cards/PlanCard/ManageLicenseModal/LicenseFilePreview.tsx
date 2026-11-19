@@ -1,34 +1,29 @@
-import { Box, IconButton, Text } from '@rocket.chat/fuselage';
+import { IconButton, Text } from '@rocket.chat/fuselage';
 import { FilePreviewIcon } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../../../lib/utils/getFileExtension';
 import { formatBytes } from '../../../../../../../lib/utils/formatBytes';
+import LicenseFileFrame from '../../../../layout/LicenseFileFrame';
 
 const LicenseFilePreview = ({ selectedFile, handleRemoveFile }: { selectedFile: File; handleRemoveFile: () => void }) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box
-			display='flex'
-			alignItems='center'
-			padding={4}
-			marginBlockEnd={8}
-			borderRadius='medium'
-			borderWidth='default'
-			borderColor='extra-light'
-		>
-			<FilePreviewIcon format={getFileExtension(selectedFile.name)} />
-			<Box flexGrow={1} withTruncatedText marginInlineStart={8} display='flex' flexDirection='column'>
+		<LicenseFileFrame
+			icon={<FilePreviewIcon format={getFileExtension(selectedFile.name)} />}
+			name={
 				<Text fontScale='p2' color='info' truncate>
 					{selectedFile.name}
 				</Text>
-				<Box fontScale='c1' color='hint' textTransform='uppercase'>
+			}
+			details={
+				<Text fontScale='c1' color='hint'>
 					{`${formatBytes(selectedFile.size, 2)} - ${getFileExtension(selectedFile.name)}`}
-				</Box>
-			</Box>
-			<IconButton icon='cross' size='tiny' title={t('Remove_file')} onClick={handleRemoveFile} />
-		</Box>
+				</Text>
+			}
+			action={<IconButton icon='cross' size='tiny' title={t('Remove_file')} onClick={handleRemoveFile} />}
+		/>
 	);
 };
 

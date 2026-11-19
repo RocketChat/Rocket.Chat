@@ -54,8 +54,8 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 
 	useEffect(
 		() =>
-			VideoConfManager.on('error', (props) => {
-				const message = t(props.error?.startsWith('error-') ? props.error : 'error-videoconf-unexpected');
+			VideoConfManager.on('error', (payload) => {
+				const message = t(payload.error?.startsWith('error-') ? payload.error : 'error-videoconf-unexpected');
 				dispatchToastMessage({ type: 'error', message });
 			}),
 		[dispatchToastMessage, t],
@@ -99,7 +99,9 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			dismissOutgoing: () => setOutgoing(undefined),
 			startCall,
 			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
-			joinCall: (callId) => VideoConfManager.joinCall(callId),
+			joinCall: (callId) => {
+				void VideoConfManager.joinCall(callId);
+			},
 			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
 			rejectIncomingCall: (callId) => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: () => VideoConfManager.abortCall(),

@@ -265,7 +265,7 @@ class PushClass {
 			};
 		} catch (error) {
 			logger.error({ msg: 'Error getting FCM token', err: error });
-			throw new Error('Error getting FCM token');
+			throw new Error('Error getting FCM token', { cause: error });
 		}
 	}
 

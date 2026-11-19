@@ -440,3 +440,28 @@ describe('the Incoming calls group', () => {
 		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
 	});
 });
+
+it('should list only the rooms whose name matches the filter, expanding collapsed groups and leaving out groups without a match', async () => {
+	const namedRoom = (t: 'c' | 'd', name: string, fname = name) =>
+		({
+			...createFakeSubscription({ t, name, fname, ...emptyUnread }),
+			...createFakeRoom({ t, name, fname }),
+		}) as unknown as SubscriptionWithRoom;
+	const supportChannel = namedRoom('c', 'support');
+	const supportDirect = namedRoom('d', 'u1', 'Support Bot');
+	const supportByUsername = namedRoom('d', 'sup.agent', 'Agent');
+	const wrapper = getWrapperSettings({
+		sidebarGroupByType: true,
+		isDiscussionEnabled: true,
+		isEnterprise: true,
+		rooms: [supportChannel, namedRoom('c', 'general'), supportDirect, supportByUsername],
+	}).build();
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'], filterText: ' SUP ' }), { wrapper });
+
+	await waitFor(() => expect(result.current.groupKeys).toContain('Discussions'));
+	expect(result.current.filtering).toBe(true);
+	expect(groupsListOf(result.current.groups)).toEqual(['Channels', 'Direct_Messages']);
+	expect(result.current.groups.map((group) => group.collapsed)).toEqual([false, false]);
+	expect(roomListOf(result.current.groups)).toEqual([supportChannel, supportDirect, supportByUsername]);
+});

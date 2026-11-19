@@ -2,7 +2,7 @@ import type { Actionable } from '../Actionable.js';
 import type { Option } from '../Option.js';
 
 export type CheckboxElement = Actionable<{
-	type: 'checkbox';
+	type: 'checkbox' | 'checkboxes';
 	options: Option[];
 	initialOptions?: Option[];
 	focus_on_load?: boolean;

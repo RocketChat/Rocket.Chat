@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import type { Options } from '@rocket.chat/message-parser';
 import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
@@ -9,10 +10,12 @@ import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { createMessageNormalizer } from '../../../../lib/createMessageNormalizer';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription, useUserIsSubscribed } from '../../contexts/RoomContext';
+import { useAutoLinkDomains } from '../hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 import { useRolesByUser } from '../hooks/useRolesByUser';
@@ -37,6 +40,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const uid = user?._id;
 	const username = user?.username;
 	const subscription = useRoomSubscription();
+	const subscribed = useUserIsSubscribed();
+	const isBroadcast = subscribed && Boolean(room.broadcast);
 
 	const { isMobile } = useLayout();
 
@@ -56,13 +61,22 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const highlights = useUserPreference<string[]>('highlights');
 
 	const autoTranslate = useAutoTranslate(subscription);
+	const autoLinkDomains = useAutoLinkDomains();
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
-	const katex = useMemo(
-		() =>
-			katexEnabled ? { dollarSyntaxEnabled: katexDollarSyntaxEnabled, parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled } : undefined,
-		[katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
+	const parseOptions = useMemo<Options>(
+		() => ({
+			colors: showColors,
+			emoticons: true,
+			customDomains: autoLinkDomains,
+			...(katexEnabled && {
+				katex: { dollarSyntax: katexDollarSyntaxEnabled, parenthesisSyntax: katexParenthesisSyntaxEnabled },
+			}),
+		}),
+		[showColors, autoLinkDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
 	);
+
+	const normalizeMessage = useMemo(() => createMessageNormalizer(parseOptions, autoTranslate), [parseOptions, autoTranslate]);
 
 	const parsedHighlights = useMemo(
 		() =>
@@ -91,7 +105,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
-			showColors,
+			normalizeMessage,
 			useUserHasReacted: username
 				? (message: IMessage) =>
 						(reaction: string): boolean =>
@@ -112,6 +126,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				(date: Date): string =>
 					date.toLocaleString(),
 			apiEmbedEnabled,
+			isBroadcast,
 			showRoles,
 			userRoles,
 			showRealName,
@@ -121,7 +136,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				return { normalizedUsername, showUsername: showUsername && showRealName && !nameRepeatsUsername };
 			},
 			jumpToMessageParam: msgParameter,
-			...(katex && { katex }),
 			highlights: parsedHighlights,
 
 			useOpenEmojiPicker: uid
@@ -142,14 +156,14 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			uid,
 			autoTranslate,
 			hasSubscription,
+			isBroadcast,
 			showRoles,
 			userRoles,
 			showRealName,
 			showUsername,
-			katex,
 			parsedHighlights,
 			reactToMessage,
-			showColors,
+			normalizeMessage,
 			msgParameter,
 			chat?.emojiPicker,
 			readReceipts,

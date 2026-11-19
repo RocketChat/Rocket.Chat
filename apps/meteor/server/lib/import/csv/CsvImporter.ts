@@ -163,7 +163,7 @@ export class CsvImporter extends Importer {
 				const item = entry.entryName.split('/'); // random/messages.csv
 				const folderName = item[0]; // random
 
-				let msgs = [];
+				let msgs;
 
 				try {
 					msgs = this.csvParser(entry.getData().toString());
