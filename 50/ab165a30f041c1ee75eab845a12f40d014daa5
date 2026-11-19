@@ -1,0 +1,16 @@
+package.json
+  h_4c386397e672f4 222-223
+yarn.lock
+  h_4c386397e672f4 9128,9130,9144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "50ab165a30f041c1ee75eab845a12f40d014daa5",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
