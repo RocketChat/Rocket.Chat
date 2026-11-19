@@ -77,7 +77,7 @@ Every component, with the evidence table in the pull request.
 
 Decided once, so no component reopens them.
 
-1. **z-index is a layer token.** Use `zIndex` from `@rocket.chat/fuselage-tokens` (`raised` 1, `overlap` 2, `sticky` 10, `overlay` 100). A literal z-index is forbidden. A component adopts the tokens in its own migration commit.
+1. **z-index is a layer token.** Use `zIndex` from `@rocket.chat/fuselage-tokens` (`raised` 1, `overlap` 2, `sticky` 10, `overlay` 100, and the planes of a drag, which sit above every other layer: `dropTarget` 9996, `dragShield` 9997, `dragPreview` 9999, `dropIndicator` 10000). A literal z-index is forbidden. A component adopts the tokens in its own migration commit.
 2. **Plain CSS only in allowed categories, and only on properties the frame doesn't set.** The categories are what a frame can't express: `:invalid`, a disabled `fieldset`, `::placeholder` and the like. If the frame sets the property, it becomes a variant instead, because Tamagui's atomic rules are unlayered and win. Each rule carries a comment naming its category, and never uses `[class]`.
 3. **Existing hacks go when their component migrates:** sibling `+` rules, `:has()`, `[class]` bumps, negative margins, `display: contents` compensation. One stays only with a [Deviations](#deviations) row.
 4. **A container that holds text is `Text`-based** (`Tile`, `TableCell`, `TabsItem`, `CardBody`). A pure layout container is a `View`, and callers wrap their text. A frame that extends another frame (`FramedIcon` extends `IconFrame`) follows the same G1 accounting as the base.
