@@ -1,0 +1,25 @@
+apps/meteor/server/lib/messaging/mentions/Mentions.ts
+  s_834a2a68fba86b::t_8091b7ffab763a 73
+  s_834a2a68fba86b::t_98c1fd25cd441b 19-24
+apps/meteor/server/lib/messaging/mentions/Mentions.test.js
+  s_834a2a68fba86b::t_b717aed36d7ce6 3,24-27,173-188,237-249
+  s_834a2a68fba86b::t_262a5678fb59c3 250
+.changeset/federated-user-mentions.md
+  s_834a2a68fba86b::t_f1ba43a264e341 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6816844e6d8a62eff2ae6f7a7c1fbe455925b0f2",
+  "prompts": {},
+  "sessions": {
+    "s_834a2a68fba86b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd404eae-9967-4230-8360-1a57680ea937",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
