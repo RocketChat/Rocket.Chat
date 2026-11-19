@@ -78,6 +78,7 @@ const VideoPlayer = ({
 	const [error, setError] = useState(false);
 	const [fullScreen, setFullScreen] = useState(false);
 	const [pointerActive, setPointerActive] = useState(false);
+	const [keyboardFocusWithin, setKeyboardFocusWithin] = useState(false);
 	const [focusVisible, setFocusVisible] = useState(false);
 
 	const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -137,7 +138,7 @@ const VideoPlayer = ({
 		videoRef.current?.load();
 	};
 
-	const controlsVisible = !playing || pointerActive;
+	const controlsVisible = !playing || pointerActive || keyboardFocusWithin;
 	const progress = duration ? (currentTime / duration) * 100 : 0;
 
 	return (
@@ -154,7 +155,13 @@ const VideoPlayer = ({
 			backgroundColor='overlay'
 			color='pure-white'
 			onPointerMove={wakeControls}
-			onFocus={wakeControls}
+			onFocus={(e: FocusEvent<HTMLElement>) => {
+				wakeControls();
+				if (e.target.matches(':focus-visible')) setKeyboardFocusWithin(true);
+			}}
+			onBlur={(e: FocusEvent<HTMLElement>) => {
+				if (!e.currentTarget.contains(e.relatedTarget)) setKeyboardFocusWithin(false);
+			}}
 		>
 			<Box
 				is='video'
@@ -165,6 +172,8 @@ const VideoPlayer = ({
 				objectFit='contain'
 				preload='metadata'
 				playsInline
+				tabIndex={started && !error ? 0 : undefined}
+				focusable
 				onClick={togglePlay}
 				onPlay={() => {
 					setPlaying(true);

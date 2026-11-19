@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react';
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as stories from './VideoPlayer.stories';
@@ -62,5 +62,30 @@ describe('[VideoPlayer Component]', () => {
 		expect(HTMLMediaElement.prototype.load).toHaveBeenCalledTimes(1);
 		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
 		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+	});
+
+	it('keeps the controls reachable from the keyboard while the video plays', async () => {
+		// jsdom never matches `:focus-visible`; keyboard focus always would.
+		const { matches } = Element.prototype;
+		jest.spyOn(Element.prototype, 'matches').mockImplementation(function (this: Element, selector: string) {
+			return selector === ':focus-visible' ? this === this.ownerDocument.activeElement : matches.call(this, selector);
+		});
+		jest.useFakeTimers();
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		const { container } = render(<Default />);
+		const video = getVideo(container);
+		fireEvent.play(video);
+		fireEvent.playing(video);
+		act(() => jest.advanceTimersByTime(3000));
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+
+		await user.tab();
+		expect(video).toHaveFocus();
+		await user.tab();
+		const range = screen.getByRole('slider', { name: 'Video Playback Range' });
+		expect(range).toHaveFocus();
+		act(() => jest.advanceTimersByTime(3000));
+		expect(screen.getByRole('button', { name: 'Pause' })).toBeVisible();
+		jest.useRealTimers();
 	});
 });
