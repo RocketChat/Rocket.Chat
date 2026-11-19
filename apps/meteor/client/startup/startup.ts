@@ -128,5 +128,4 @@ getDdpSdk().account.onLogout(() => {
 // the valid-session resume path is async and would clobber a valid token mid-flight.
 if (!userIdStore.getState() && localStorage.getItem('Meteor.loginToken') === null) {
 	removeLocalUserData();
-	forgetSavedUploads();
 }
