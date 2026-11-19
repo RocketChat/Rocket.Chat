@@ -38,9 +38,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		});
 	}
 
-	const user = await Users.findOneById(userId, {
-		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
-	});
+	const user = await Users.findOneById(userId, { projection: { services: 0 } });
 
 	if (!user) {
 		return { deletedRooms: [] };
