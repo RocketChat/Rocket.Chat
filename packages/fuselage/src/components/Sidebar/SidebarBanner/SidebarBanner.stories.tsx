@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import type { CSSProperties } from 'react';
 import { action } from 'storybook/actions';
 
 import { SidebarBanner } from './SidebarBanner';
@@ -26,7 +25,7 @@ export default {
 	args: {
 		title: 'You’ve reached the limit of active contacts this month',
 		onClose: action('close'),
-		children: <SidebarBannerButton onClick={action('action')}>Learn more</SidebarBannerButton>,
+		children: <SidebarBannerButton onPress={action('action')}>Learn more</SidebarBannerButton>,
 	},
 	decorators: [
 		(Story) => (
@@ -66,7 +65,7 @@ export const ButtonAction: Story = {
 	args: {
 		variant: 'warning',
 		title: 'Your status is offline because presence is disabled',
-		children: <SidebarBannerButton onClick={action('open modal')}>Learn more</SidebarBannerButton>,
+		children: <SidebarBannerButton onPress={action('open modal')}>Learn more</SidebarBannerButton>,
 	},
 };
 
@@ -82,23 +81,4 @@ export const CustomCloseLabel: Story = {
 		variant: 'success',
 		closeLabel: 'Dismiss notice',
 	},
-};
-
-// Each variant's background hook is overridden; the text keeps its own hook instead of turning the background colour.
-const backgroundOverrides = {
-	'--rcx-sidebar-banner-background-default': '#f2f3f5',
-	'--rcx-sidebar-banner-background-info': '#dbe8ff',
-	'--rcx-sidebar-banner-background-success': '#d6f5e3',
-	'--rcx-sidebar-banner-background-warning': '#fff0c7',
-	'--rcx-sidebar-banner-background-danger': '#ffdde0',
-} as CSSProperties;
-
-export const CustomBackgroundHooks: Story = {
-	render: (args) => (
-		<div style={{ ...backgroundOverrides, display: 'flex', flexDirection: 'column', gap: 8 }}>
-			{variants.map((variant) => (
-				<SidebarBanner key={variant} {...args} variant={variant} />
-			))}
-		</div>
-	),
 };
