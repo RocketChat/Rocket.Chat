@@ -212,11 +212,12 @@ test.describe.serial('settings-account-profile', () => {
 
 			await poAccessibility.goto();
 
-			await page.locator('input#dark').check();
-			await expect(page.locator('#main-palette-dark')).toBeAttached();
+			await poAccessibility.radioTheme('dark').check();
+			await expect(poAccessibility.paletteStyleTag('dark')).toBeAttached();
 
-			await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-			await expect(page.locator('#main-palette-dark')).not.toBeAttached();
+			await poAccessibility.btnCancel.click();
+			await expect(poAccessibility.paletteStyleTag('dark')).not.toBeAttached();
+			await expect(poAccessibility.radioTheme('dark')).not.toBeChecked();
 		});
 	});
 });
