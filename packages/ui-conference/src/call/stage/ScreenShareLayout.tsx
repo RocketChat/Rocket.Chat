@@ -4,6 +4,7 @@ import MainTile from './MainTile';
 import ScreenShareThumb from './ScreenShareThumb';
 import ScreenViewer from './ScreenViewer';
 import StopShareButton from './StopShareButton';
+import ThumbSlot from './ThumbSlot';
 import ThumbnailTile from './ThumbnailTile';
 import { mainStreamStyles, screenActionsStyles, spotlightClasses } from './stageStyles';
 import PinToggle from '../PinToggle';
@@ -49,16 +50,18 @@ const ScreenShareLayout = ({ main, screens, tiles, orientation, onStopLocalScree
 					</Box>
 				</ScreenViewer>
 			)}
-			<Box className={classes.thumbs} data-thumb-orientation={classes.thumbOrientation}>
+			<Box className={classes.thumbs}>
 				{screens.map((screen) => (
-					<ScreenShareThumb key={`screen-${screen.id}`} screen={screen} />
+					<ThumbSlot key={`screen-${screen.id}`} orientation={orientation} screen>
+						<ScreenShareThumb screen={screen} />
+					</ThumbSlot>
 				))}
 				{tiles
 					.filter(({ id }) => id !== largeTileId)
 					.map((t) => (
-						<Box key={t.id} className={classes.thumb}>
+						<ThumbSlot key={t.id} orientation={orientation}>
 							<ThumbnailTile tile={t} />
-						</Box>
+						</ThumbSlot>
 					))}
 			</Box>
 		</Box>

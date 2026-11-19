@@ -3,6 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
 import ScreenShareThumb from './ScreenShareThumb';
+import ThumbSlot from './ThumbSlot';
 import ThumbnailTile from './ThumbnailTile';
 import { mainStreamStyles, spotlightClasses } from './stageStyles';
 import type { StageScreen } from '../lib/screenShares';
@@ -36,19 +37,21 @@ const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, or
 				<MainTile tile={featured} />
 			</Box>
 			{(screens.length > 0 || visible.length > 0 || hidden.length > 0) && (
-				<Box className={classes.thumbs} style={{ overflow: 'hidden' }} data-thumb-orientation={classes.thumbOrientation}>
+				<Box className={classes.thumbs} style={{ overflow: 'hidden' }}>
 					{screens.map((screen) => (
-						<ScreenShareThumb key={`screen-${screen.id}`} screen={screen} />
+						<ThumbSlot key={`screen-${screen.id}`} orientation={orientation} screen>
+							<ScreenShareThumb screen={screen} />
+						</ThumbSlot>
 					))}
 					{visible.map((t) => (
-						<Box key={t.id} className={classes.thumb}>
+						<ThumbSlot key={t.id} orientation={orientation}>
 							<ThumbnailTile tile={t} />
-						</Box>
+						</ThumbSlot>
 					))}
 					{hidden.length > 0 && (
-						<Box className={classes.thumb}>
+						<ThumbSlot orientation={orientation}>
 							<OverflowTile hidden={hidden} />
-						</Box>
+						</ThumbSlot>
 					)}
 				</Box>
 			)}
