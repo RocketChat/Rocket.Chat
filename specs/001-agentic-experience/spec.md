@@ -33,6 +33,7 @@
 - Q: Over DDP, may an agent only subscribe to events, or may it also call methods? → A: Subscriptions only. DDP accepts an agent credential to deliver events from the agent's allowed rooms and direct messages, and refuses every agent method call.
 - Q: Which events may an agent receive over a DDP subscription? → A: Every event in a room or direct message whose history the agent's effective scope lets it read. The reply mode decides what the agent responds to, not what it may read.
 - Q: Must the audit trail record each refused agent call on REST or a DDP method? → A: Yes, with at most one entry per agent per entry point per minute.
+- Q: How does an MCP client that follows the MCP authorization flow register an agent? → A: RP-2 ships. The client gets an OAuth token through dynamic client registration and a human's consent, and calls the registration tool with that token. The consenting human becomes the owner. The registration revokes the OAuth token, so the client keeps only the agent credential.
 
 ## Delivery Constraints *(mandatory for this feature)*
 
@@ -45,7 +46,7 @@
 
 ### DC-2: No shortcut on access scope
 
-- The following requirements MUST ship in full form: FR-004, FR-009, FR-013, FR-014, FR-015, FR-016, FR-017, FR-022, FR-031, FR-037, FR-038, FR-039, FR-040, FR-043, FR-050, FR-053, FR-054, and FR-055.
+- The following requirements MUST ship in full form: FR-004, FR-009, FR-013, FR-014, FR-015, FR-016, FR-017, FR-022, FR-031, FR-037, FR-038, FR-039, FR-040, FR-043, FR-050, FR-053, FR-054, FR-055, and FR-056.
 - A shortcut MUST NOT widen what an agent can read or do beyond its effective scope and room allow list.
 - A shortcut MUST NOT break existing bot accounts, personal access tokens, integrations, or MCP use by human users.
 - The constitution rules still apply to every shortcut, including tests for the behavior that ships.
@@ -82,7 +83,7 @@ A room member reads a conversation. Every message, mention, profile, and member-
 
 ### User Story 2 - Register an agent (Priority: P1)
 
-A developer connects an agent framework, such as Mastra, to the workspace. The agent registers itself through a supported registration path, with its name, description, reply mode, and the MCP capabilities it needs. A human identity authorizes the registration and becomes the owner. The system creates the agent account and gives the agent a scoped credential once. The baseline path is an MCP tool that the developer calls with the developer's own credential. The plan evaluates more paths (see "Registration paths to evaluate").
+A developer connects an agent framework, such as Mastra, to the workspace. The agent registers itself through a supported registration path, with its name, description, reply mode, and the MCP capabilities it needs. A human identity authorizes the registration and becomes the owner. The system creates the agent account and gives the agent a scoped credential once. The baseline path is an MCP tool that the developer calls with the developer's own credential. An MCP client that follows the MCP authorization flow calls the same tool with an OAuth token that a human approves (RP-2). The plan evaluates more paths (see "Registration paths to evaluate").
 
 **Why this priority**: The onboarding job to be done. Registration replaces a manual bot setup, and the scoped credential closes the security gap of today's bot tokens.
 
@@ -99,6 +100,7 @@ A developer connects an agent framework, such as Mastra, to the workspace. The a
 7. **Given** two agents registered through two different paths, **When** a member opens their info panels, **Then** both show the same agent type, owner, and capability information.
 8. **Given** an agent credential, **When** the agent calls the REST API directly or calls a DDP method, **Then** the system refuses the call, names the MCP server as the entry point, and records the refusal in the audit trail.
 9. **Given** an agent credential, **When** the agent subscribes over DDP to a room on its allow list, **Then** the agent receives the room events only if its effective scope lets it read that room's history.
+10. **Given** an OAuth token that a human approved for an agent framework, **When** the framework registers an agent with that token, **Then** the system records that human as the owner, returns the agent credential once, and revokes the OAuth token.
 
 ---
 
@@ -218,6 +220,7 @@ An admin finds an agent in the existing user administration. An admin or the own
 - **FR-012**: Every registration path MUST deliver the agent credential once, at registration time.
 - **FR-013**: Only a human identity with the agent registration permission MUST be able to authorize a registration. An agent MUST NOT be able to register or authorize another agent.
 - **FR-014**: The system MUST reject a registration that declares a capability beyond the agent role or beyond the owner's own permissions, and MUST name each refused capability.
+- **FR-056**: A registration that an OAuth token authorizes MUST revoke the OAuth tokens of that client for that human once the agent exists. The registrant keeps only the agent credential.
 
 #### Registration paths to evaluate
 
@@ -342,7 +345,7 @@ The plan's research phase MUST answer each question below and record the answer 
 - Rocket.Chat already shows a "Bot" tag on messages from bot accounts. The agent badge is a new, distinct badge, and the bot tag stays as is.
 - The "operator" in the product brief is the agent owner. The spec uses "owner" for both.
 - A new "register agents" permission controls who may authorize a registration on any path. The admin role holds it by default, and admins grant it to developers.
-- The workspace already runs an OAuth 2 server with dynamic client registration, under the same license as the MCP server. RP-2 can build on it.
+- The workspace already runs an OAuth 2 server with dynamic client registration, under the same license as the MCP server. RP-2 builds on it. The dynamic client registration setting is off by default, so an admin turns it on or creates the OAuth app by hand.
 - A new "manage agents" permission controls the agent settings in the existing user administration. The admin role holds it by default.
 - The agent role reuses the existing platform permissions. The spec adds no new permission model.
 - The approval card asks for sign-off. The agent honors the decision. The platform does not block the agent action itself.

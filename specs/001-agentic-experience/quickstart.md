@@ -28,6 +28,14 @@ Expected: the response holds `credential.userId` and `credential.token`. Store t
 
 Run the call again with `"capabilities":["post_rooms_banUser"]`. Expected: `error-agent-capabilities-refused`, with `not-allowed-for-agents` for that tool.
 
+## Scenario 1b: Register an agent with OAuth (US2, RP-2)
+
+1. Turn on `OAuth2_Allow_Dynamic_Client_Registration`. Register a client with `POST /oauth/register` and a loopback `redirect_uris`.
+2. Open `/oauth/authorize` with that client as the admin, approve, and exchange the code at `POST /oauth/token`. Store the access token in `OAUTH_TOKEN`.
+3. Call `post_agents_register` on `/api/v1/mcp` with `Authorization: Bearer $OAUTH_TOKEN` and a new `username`.
+
+Expected: the response holds the agent credential, and the owner is the admin. Call any MCP tool again with `OAUTH_TOKEN`. Expected: `401` with `invalid_token`.
+
 ## Scenario 2: Scoped tool list (US2, FR-038)
 
 ```bash
