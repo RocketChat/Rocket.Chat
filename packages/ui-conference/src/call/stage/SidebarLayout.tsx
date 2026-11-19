@@ -6,7 +6,7 @@ import ScreenShareThumb from './ScreenShareThumb';
 import ThumbSlot from './ThumbSlot';
 import ThumbnailTile from './ThumbnailTile';
 import { mainStreamStyles, spotlightClasses } from './stageStyles';
-import type { StageScreen } from '../lib/screenShares';
+import type { ScreenShare } from '../lib/screenShares';
 import type { SpotlightOrientation, StageSize, StageTile } from '../lib/stageTiles';
 import { sidebarCapacity, splitByPriority } from '../lib/stageTiles';
 
@@ -17,8 +17,8 @@ export type SidebarLayoutProps = {
 	selfId: string;
 	stageSize: StageSize;
 	orientation: SpotlightOrientation;
-	/** Live shares nobody put on the stage, at the head of the thumbnails. */
-	screens?: StageScreen[];
+	/** Live shares that are not on the stage. */
+	screens?: ScreenShare[];
 };
 
 /** The speaker large, and as many of everyone else as fit beside or under them without scrolling. */
@@ -40,7 +40,7 @@ const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, or
 				<Box className={classes.thumbs} style={{ overflow: 'hidden' }}>
 					{screens.map((screen) => (
 						<ThumbSlot key={`screen-${screen.id}`} orientation={orientation} screen>
-							<ScreenShareThumb screen={screen} />
+							<ScreenShareThumb share={screen} />
 						</ThumbSlot>
 					))}
 					{visible.map((t) => (

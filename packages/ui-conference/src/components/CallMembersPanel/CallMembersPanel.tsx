@@ -4,6 +4,7 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallMemberPins from '../../call/CallMemberPins';
 import VoiceActivity from '../../call/VoiceActivity';
 import { ConferenceContext, useConference } from '../../context/ConferenceContext';
 import type { CallParticipantEntry } from '../../lib/callParticipants';
@@ -21,15 +22,6 @@ export type MembersInCall = {
 	mutedMembers: ReadonlySet<string>;
 	audioStreams: ReadonlyMap<string, MediaStream | undefined>;
 	muteMember: (memberId: string) => void;
-	/** Who is in the call's video, so can be pinned. */
-	pinnable: ReadonlySet<string>;
-	pinnedId: string | null;
-	togglePin: (memberId: string) => void;
-	/** Who is sharing a screen, so can have it pinned. */
-	sharing: ReadonlySet<string>;
-	/** Whose screen is on the stage. */
-	screenOnStage: string | null;
-	toggleScreenPin: (memberId: string) => void;
 };
 
 type CallMembersPanelProps = {
@@ -114,14 +106,7 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 					handRaised={inCall?.raisedHands.has(member._id)}
 					muted={inCall?.mutedMembers.has(member._id)}
 					onMute={inCall?.muteMember}
-					pins={
-						inCall && {
-							pinned: inCall.pinnedId === member._id,
-							onToggle: inCall.pinnable.has(member._id) ? () => inCall.togglePin(member._id) : undefined,
-							screenPinned: inCall.screenOnStage === member._id,
-							onToggleScreen: inCall.sharing.has(member._id) ? () => inCall.toggleScreenPin(member._id) : undefined,
-						}
-					}
+					pinControls={inCall && <CallMemberPins memberId={member._id} />}
 					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>

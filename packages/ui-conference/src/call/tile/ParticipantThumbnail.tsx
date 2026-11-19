@@ -6,7 +6,7 @@ import TilePicture from './TilePicture';
 import { THUMBNAIL_RING_WIDTH } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
-export type ParticipantThumbnailProps = TileParticipant & Pick<TileFrameProps, 'pin'>;
+export type ParticipantThumbnailProps = TileParticipant & Pick<TileFrameProps, 'participantId'>;
 
 /** Someone else in the call, in a strip or column of thumbnails. */
 const ParticipantThumbnail = ({
@@ -18,7 +18,7 @@ const ParticipantThumbnail = ({
 	audioStream,
 	handPosition,
 	reaction,
-	pin,
+	participantId,
 }: ParticipantThumbnailProps) => (
 	<TileFrame
 		displayName={displayName}
@@ -27,7 +27,7 @@ const ParticipantThumbnail = ({
 		audioStream={audioStream}
 		handPosition={handPosition}
 		reaction={reaction}
-		pin={pin}
+		participantId={participantId}
 		ringWidth={THUMBNAIL_RING_WIDTH}
 	>
 		<TilePicture displayName={displayName} avatarUrl={avatarUrl} cameraStream={cameraStream} avatarSize='x32' mirrored={false} />

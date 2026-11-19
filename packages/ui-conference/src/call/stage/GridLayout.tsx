@@ -8,7 +8,7 @@ import ScreenShareThumb from './ScreenShareThumb';
 import { gridMeasureStyles, gridStyles } from './stageStyles';
 import { useTileFlip } from '../hooks/useTileFlip';
 import { useTileGridLayout } from '../hooks/useTileGridLayout';
-import type { StageScreen } from '../lib/screenShares';
+import type { ScreenShare } from '../lib/screenShares';
 import type { StageTile } from '../lib/stageTiles';
 import { MAX_VISIBLE_TILES, absorbLonelyTile, gridCellKeys, gridColumnStartFor, splitByPriority } from '../lib/stageTiles';
 import { gridBox } from '../lib/tileGrid';
@@ -17,8 +17,8 @@ export type GridLayoutProps = {
 	tiles: StageTile[];
 	activeSpeakerId: string | null;
 	selfId: string;
-	/** Live shares nobody put on the stage, in the first cells. */
-	screens?: StageScreen[];
+	/** Live shares that are not on the stage. */
+	screens?: ScreenShare[];
 };
 
 /** Everyone in equal tiles, as many as fit, and one saying how many more there are. */
@@ -57,7 +57,7 @@ const GridLayout = ({ tiles, activeSpeakerId, selfId, screens = [] }: GridLayout
 			>
 				{screens.map((screen, i) => (
 					<GridCell key={`screen-${screen.id}`} columnStart={gridColumnStartFor(i, cellCount, cols)}>
-						<ScreenShareThumb screen={screen} />
+						<ScreenShareThumb share={screen} />
 					</GridCell>
 				))}
 				{visible.map((t, i) => (

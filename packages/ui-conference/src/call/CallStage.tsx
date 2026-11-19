@@ -4,9 +4,9 @@ import { useMemo } from 'react';
 import type { RemoteParticipantInfo } from './context';
 import { useActiveSpeakerId } from './hooks/useActiveSpeakerId';
 import { useElementSize } from './hooks/useElementSize';
-import type { FeaturedScreen } from './hooks/useFeaturedScreen';
-import { useFocusAfterPin } from './hooks/useFocusAfterPin';
+import { PinFocusProvider, usePinFocusScope } from './hooks/usePinFocus';
 import type { TileReaction } from './lib/reactions';
+import type { ScreenShare } from './lib/screenShares';
 import type { StageSelf } from './lib/stageTiles';
 import { buildStageTiles, pinnedOrFeaturedTile, spotlightOrientation } from './lib/stageTiles';
 import GridLayout from './stage/GridLayout';
@@ -27,10 +27,9 @@ export type CallStageProps = {
 	reactions?: Record<string, TileReaction>;
 	/** Which layout to use when no screen share is on the stage. Defaults to `'grid'`. */
 	layout?: StageLayout;
-	screens: FeaturedScreen;
-	/** Whom the reader pinned to see large. Without `onTogglePin`, tiles offer no pin. */
-	pinnedId?: string | null;
-	onTogglePin?: (participantId: string) => void;
+	pinnedId: string | null;
+	shares: ScreenShare[];
+	screenOnStage: ScreenShare | null;
 };
 
 /** Everyone's tiles in the chosen layout, or the shared screen on the stage with the tiles beside it. */
@@ -41,31 +40,14 @@ const CallStage = ({
 	handPositions,
 	reactions,
 	layout = 'grid',
-	screens,
-	pinnedId = null,
-	onTogglePin,
+	pinnedId,
+	shares,
+	screenOnStage,
 }: CallStageProps) => {
-	const [focusPinOf, requestFocus] = useFocusAfterPin();
-
-	const tiles = useMemo(() => {
-		const built = buildStageTiles(localParticipant, remoteParticipants, handPositions, reactions);
-		if (!onTogglePin) {
-			return built;
-		}
-		return built.map((tile) => ({
-			...tile,
-			pin: {
-				pinned: tile.id === pinnedId,
-				restoreFocus: tile.id === focusPinOf,
-				onToggle: (hadFocus: boolean) => {
-					onTogglePin(tile.id);
-					if (hadFocus) {
-						requestFocus(tile.id);
-					}
-				},
-			},
-		}));
-	}, [localParticipant, remoteParticipants, handPositions, reactions, onTogglePin, pinnedId, focusPinOf, requestFocus]);
+	const tiles = useMemo(
+		() => buildStageTiles(localParticipant, remoteParticipants, handPositions, reactions),
+		[localParticipant, remoteParticipants, handPositions, reactions],
+	);
 
 	const audioParticipants = useMemo(() => remoteParticipants.map((p) => ({ id: p.id, audioStream: p.audioStream })), [remoteParticipants]);
 	const activeSpeakerId = useActiveSpeakerId(audioParticipants, remoteParticipants[0]?.id ?? localParticipant.id);
@@ -73,56 +55,14 @@ const CallStage = ({
 	const [stageRef, stageSize] = useElementSize();
 	const orientation = spotlightOrientation(stageSize);
 
-	const pinnedTile = tiles.find(({ id }) => id === pinnedId);
-	const { featured: featuredScreen, shares, pin: pinScreen, unpin: unpinScreen } = screens;
-	const onStage = pinnedTile ? null : featuredScreen;
-
-	const stageScreens = useMemo(
-		() =>
-			shares.map((share) => {
-				const pinned = share.id === onStage?.id;
-				const focusKey = `screen-${share.id}`;
-				return {
-					...share,
-					pin: {
-						pinned,
-						restoreFocus: focusPinOf === focusKey,
-						onToggle: (hadFocus: boolean) => {
-							if (pinned) {
-								unpinScreen();
-							} else {
-								pinScreen(share.id);
-							}
-							if (hadFocus) {
-								requestFocus(focusKey);
-							}
-						},
-					},
-				};
-			}),
-		[shares, onStage, focusPinOf, pinScreen, unpinScreen, requestFocus],
-	);
-	const largeScreen = stageScreens.find(({ pin }) => pin.pinned);
-	const otherScreens = stageScreens.filter(({ pin }) => !pin.pinned);
+	const pinFocus = usePinFocusScope();
 
 	const renderLayout = () => {
-		if (pinnedTile && stageScreens.length > 0) {
+		if (screenOnStage) {
 			return (
 				<ScreenShareLayout
-					main={{ tile: pinnedTile }}
-					screens={stageScreens}
-					tiles={tiles}
-					orientation={orientation}
-					onStopLocalScreenShare={onStopLocalScreenShare}
-				/>
-			);
-		}
-
-		if (largeScreen) {
-			return (
-				<ScreenShareLayout
-					main={{ screen: largeScreen }}
-					screens={otherScreens}
+					featured={screenOnStage}
+					others={shares.filter(({ id }) => id !== screenOnStage.id)}
 					tiles={tiles}
 					orientation={orientation}
 					onStopLocalScreenShare={onStopLocalScreenShare}
@@ -131,14 +71,10 @@ const CallStage = ({
 		}
 
 		const featured = pinnedOrFeaturedTile(tiles, pinnedId, activeSpeakerId, localParticipant.id);
-		// A pin wants someone large, which the grid has no place for: it lends the sidebar's arrangement while it lasts.
-		const pinned = featured.id === pinnedId;
+		// The grid has no large view and Spotlight no thumbnails for the shares.
+		const pinNeedsSidebar = featured.id === pinnedId && (layout === 'grid' || shares.length > 0);
 
-		if (layout === 'spotlight') {
-			return <SpotlightLayout featured={featured} self={tiles.find((t) => t.id === localParticipant.id)} />;
-		}
-
-		if (layout === 'sidebar' || pinned) {
+		if (layout === 'sidebar' || pinNeedsSidebar) {
 			return (
 				<SidebarLayout
 					featured={featured}
@@ -147,17 +83,21 @@ const CallStage = ({
 					selfId={localParticipant.id}
 					stageSize={stageSize}
 					orientation={orientation}
-					screens={otherScreens}
+					screens={shares}
 				/>
 			);
 		}
 
-		return <GridLayout tiles={tiles} activeSpeakerId={activeSpeakerId} selfId={localParticipant.id} screens={otherScreens} />;
+		if (layout === 'spotlight') {
+			return <SpotlightLayout featured={featured} self={tiles.find((t) => t.id === localParticipant.id)} />;
+		}
+
+		return <GridLayout tiles={tiles} activeSpeakerId={activeSpeakerId} selfId={localParticipant.id} screens={shares} />;
 	};
 
 	return (
 		<Box className={stageStyles} ref={stageRef}>
-			{renderLayout()}
+			<PinFocusProvider value={pinFocus}>{renderLayout()}</PinFocusProvider>
 		</Box>
 	);
 };
