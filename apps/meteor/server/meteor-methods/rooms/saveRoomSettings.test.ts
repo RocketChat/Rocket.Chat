@@ -146,7 +146,7 @@ describe('saveRoomSettings', () => {
 		sandbox.reset();
 		hasPermission.resolves(false);
 		grant('edit-room', rid);
-		allowRoomSettingChange.resolves(true);
+		allowRoomSettingChange.returns(true);
 		findUser.withArgs(userId).resolves(user);
 		savers.saveRoomName.resolves(true);
 		savers.saveRoomType.resolves(true);
@@ -364,7 +364,7 @@ describe('saveRoomSettings', () => {
 
 		it('should refuse a change in rooms that do not support encryption', async () => {
 			grant('toggle-room-e2e-encryption', rid);
-			allowRoomSettingChange.resolves(false);
+			allowRoomSettingChange.returns(false);
 
 			await expectRefused({ encrypted: true });
 		});

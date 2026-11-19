@@ -1,4 +1,5 @@
-import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
+import type { IMessage, MessageMention, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import {
 	Modal,
 	Field,
@@ -13,43 +14,59 @@ import {
 	ModalClose,
 	ModalContent,
 	ModalFooter,
+	MultiSelect,
 } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { memo, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
+import UserAvatarChip from '../../../../components/UserAutoCompleteMultiple/UserAvatarChip';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
+
+export type DMRecipient = MessageMention & { username: string };
 
 type ForwardMessageProps = {
 	onClose: () => void;
 	permalink: string;
 	message: IMessage;
+	dmRecipients?: {
+		users: DMRecipient[];
+		forward: (users: DMRecipient[]) => Promise<unknown>;
+	};
 };
 
-const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProps) => {
+const ForwardMessageModal = ({ onClose, permalink, message, dmRecipients }: ForwardMessageProps) => {
 	const { t } = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { copy, hasCopied } = useClipboard(permalink);
 	const usersAndRoomsField = useId();
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { control, watch } = useForm({
 		defaultValues: {
 			rooms: [],
+			dmUsernames: dmRecipients?.users.map(({ username }) => username) ?? [],
 		},
 	});
 
 	const rooms = watch('rooms');
+	const dmUsernames = watch('dmUsernames');
+	const hasRecipients = dmRecipients ? dmUsernames.length > 0 : rooms.length > 0;
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
 
 	const sendMessageMutation = useMutation({
 		mutationFn: async () => {
+			if (dmRecipients) {
+				return dmRecipients.forward(dmRecipients.users.filter(({ username }) => dmUsernames.includes(username)));
+			}
+
 			const optionalMessage = '';
 			const curMsg = await prependReplies(optionalMessage, [message]);
 			const sendPayload = {
@@ -101,22 +118,51 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 					<Field>
 						<FieldLabel htmlFor={usersAndRoomsField}>{t('Person_Or_Channel')}</FieldLabel>
 						<FieldRow>
-							<Controller
-								name='rooms'
-								control={control}
-								render={({ field: { name, value, onChange } }) => (
-									<UserAndRoomAutoCompleteMultiple
-										id={usersAndRoomsField}
-										aria-describedby={`${usersAndRoomsField}-hint`}
-										name={name}
-										value={value}
-										limit={25}
-										onChange={onChange}
-									/>
-								)}
-							/>
+							{dmRecipients ? (
+								<Controller
+									name='dmUsernames'
+									control={control}
+									render={({ field: { name, value, onChange } }) => (
+										<MultiSelect
+											id={usersAndRoomsField}
+											aria-describedby={`${usersAndRoomsField}-hint`}
+											name={name}
+											value={value}
+											options={dmRecipients.users.map(({ username, name }) => [
+												username,
+												getUserDisplayName(name, username, useRealName) ?? username,
+											])}
+											onChange={onChange}
+											renderSelected={({ value, label, onMouseDown, onClick }) => (
+												<UserAvatarChip
+													key={value}
+													username={String(value)}
+													name={label ? String(label) : undefined}
+													onMouseDown={onMouseDown}
+													onClick={onClick}
+												/>
+											)}
+										/>
+									)}
+								/>
+							) : (
+								<Controller
+									name='rooms'
+									control={control}
+									render={({ field: { name, value, onChange } }) => (
+										<UserAndRoomAutoCompleteMultiple
+											id={usersAndRoomsField}
+											aria-describedby={`${usersAndRoomsField}-hint`}
+											name={name}
+											value={value}
+											limit={25}
+											onChange={onChange}
+										/>
+									)}
+								/>
+							)}
 						</FieldRow>
-						{!rooms.length && (
+						{!hasRecipients && (
 							<FieldHint id={`${usersAndRoomsField}-hint`}>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</FieldHint>
 						)}
 					</Field>
@@ -131,7 +177,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
 					<Button
-						disabled={!rooms.length}
+						disabled={!hasRecipients}
 						loading={sendMessageMutation.isPending}
 						onClick={() => sendMessageMutation.mutate()}
 						variant='primary'

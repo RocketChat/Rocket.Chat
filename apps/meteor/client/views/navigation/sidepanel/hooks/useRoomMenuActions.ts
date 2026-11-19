@@ -73,13 +73,17 @@ export const useRoomMenuActions = ({
 				id: 'toggleRead',
 				icon: 'flag',
 				content: isUnread ? t('Mark_read') : t('Mark_unread'),
-				onClick: handleToggleRead,
+				onClick: () => {
+					void handleToggleRead();
+				},
 			},
 			canFavorite && {
 				id: 'toggleFavorite',
 				icon: isFavorite ? 'star-filled' : 'star',
 				content: isFavorite ? t('Unfavorite') : t('Favorite'),
-				onClick: handleToggleFavorite,
+				onClick: () => {
+					void handleToggleFavorite();
+				},
 			},
 			canLeave && {
 				id: 'leaveRoom',
@@ -114,7 +118,9 @@ export const useRoomMenuActions = ({
 				id: 'turnOnNotifications',
 				icon: isNotificationEnabled ? 'bell' : 'bell-off',
 				content: isNotificationEnabled ? t('Turn_OFF') : t('Turn_ON'),
-				onClick: handleToggleNotification,
+				onClick: () => {
+					void handleToggleNotification();
+				},
 			},
 			{
 				id: 'notifications',

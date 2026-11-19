@@ -39,11 +39,22 @@ const groups = [
 	makeGroup('Empty_Group', [], 0),
 ];
 
-const mockUseRoomList = jest.fn((_options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number> }) => ({
-	groups,
-	groupsCount: [2, 1, 0],
-	totalCount: 3,
-}));
+let mockGroups = groups;
+
+const roomListOf = (listedGroups: typeof groups) => ({
+	groups: listedGroups,
+	groupKeys: listedGroups.map((group) => group.key),
+	filtering: false,
+	groupsCount: listedGroups.map((group) => group.rooms.length),
+	totalCount: listedGroups.reduce((acc, group) => acc + group.rooms.length, 0),
+});
+
+const mockUseRoomList = jest.fn(
+	({ filterText = '' }: { collapsedGroups?: string[]; liftedFilters?: Record<string, number>; filterText?: string }) => ({
+		...roomListOf(mockGroups),
+		filtering: Boolean(filterText.trim()),
+	}),
+);
 
 type MockSidebarVirtualListProps = {
 	groups: {
@@ -121,7 +132,8 @@ jest.mock('../hooks/usePreventDefault', () => ({
 
 jest.mock('../hooks/useRoomList', () => ({
 	...jest.requireActual('../hooks/useRoomList'),
-	useRoomList: (options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number> }) => mockUseRoomList(options),
+	useRoomList: (options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number>; filterText?: string }) =>
+		mockUseRoomList(options),
 }));
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
@@ -167,6 +179,16 @@ const appRoot = mockAppRoot().withJohnDoe().withUserPreference('sidebarViewMode'
 describe('RoomList', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		mockGroups = groups;
+	});
+
+	it('shows "No results found" when the filter matches no room', () => {
+		mockGroups = [];
+
+		render(<RoomList filterText='nothing' />, { wrapper: appRoot });
+
+		expect(screen.getByRole('group', { name: 'No_results_found' })).toBeInTheDocument();
+		expect(mockSidebarVirtualList).not.toHaveBeenCalled();
 	});
 
 	it('passes grouped room data to SidebarVirtualList', () => {
@@ -234,20 +256,12 @@ describe('RoomList', () => {
 		await userEvent.click(screen.getByRole('button', { name: 'filter Channels by 7 days' }));
 		expect(screen.getByRole('status')).toHaveTextContent('');
 
-		mockUseRoomList.mockReturnValue({
-			groups: [{ ...groups[0], activityFilterHours: 24 * 7, inactiveCount: 3 }, groups[1], groups[2]],
-			groupsCount: [2, 1, 0],
-			totalCount: 3,
-		});
+		mockUseRoomList.mockReturnValue(roomListOf([{ ...groups[0], activityFilterHours: 24 * 7, inactiveCount: 3 }, groups[1], groups[2]]));
 		rerender(<RoomList />);
 		expect(screen.getByRole('status')).toHaveTextContent('Last 7 days: 3 inactive rooms hidden in Channels');
 
 		await userEvent.click(screen.getByRole('button', { name: 'clear Channels filter' }));
-		mockUseRoomList.mockReturnValue({
-			groups: [{ ...groups[0], activityFilterHours: undefined, inactiveCount: 0 }, groups[1], groups[2]],
-			groupsCount: [2, 1, 0],
-			totalCount: 3,
-		});
+		mockUseRoomList.mockReturnValue(roomListOf([{ ...groups[0], activityFilterHours: undefined, inactiveCount: 0 }, groups[1], groups[2]]));
 		rerender(<RoomList />);
 		expect(screen.getByRole('status')).toHaveTextContent('Filter cleared in Channels');
 	});
@@ -255,11 +269,7 @@ describe('RoomList', () => {
 	it('stays quiet when a filter changes without a choice made here', () => {
 		const { rerender } = render(<RoomList />, { wrapper: appRoot });
 
-		mockUseRoomList.mockReturnValue({
-			groups: [{ ...groups[0], activityFilterHours: 24 * 7, inactiveCount: 3 }, groups[1], groups[2]],
-			groupsCount: [2, 1, 0],
-			totalCount: 3,
-		});
+		mockUseRoomList.mockReturnValue(roomListOf([{ ...groups[0], activityFilterHours: 24 * 7, inactiveCount: 3 }, groups[1], groups[2]]));
 		rerender(<RoomList />);
 
 		expect(screen.getByRole('status')).toHaveTextContent('');

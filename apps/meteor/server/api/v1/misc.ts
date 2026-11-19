@@ -219,7 +219,8 @@ API.v1.get(
 	},
 	async function action() {
 		const { type, icon } = this.queryParams;
-		let { channel, name } = this.queryParams;
+		const { channel } = this.queryParams;
+		let { name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
 			throw new ClientSafeError('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
@@ -299,7 +300,6 @@ API.v1.get(
 		const width = leftSize + rightSize;
 		const height = 20;
 
-		channel = escapeHTML(channel);
 		text = escapeHTML(text);
 		name = escapeHTML(name);
 

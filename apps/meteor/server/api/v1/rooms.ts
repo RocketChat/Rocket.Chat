@@ -506,7 +506,18 @@ API.v1.post(
 			return API.v1.forbidden('User does not have access to the room');
 		}
 
-		const { latest, oldest, inclusive = false, limit, excludePinned, filesOnly, ignoreThreads, ignoreDiscussion, users } = this.bodyParams;
+		const {
+			latest,
+			oldest,
+			inclusive = false,
+			limit,
+			excludePinned,
+			filesOnly,
+			ignoreThreads,
+			ignoreDiscussion,
+			ignoreDiscussionOrigin,
+			users,
+		} = this.bodyParams;
 
 		const count = await cleanRoomHistoryMethod(this.userId, {
 			roomId: _id,
@@ -518,6 +529,7 @@ API.v1.post(
 			filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
 			ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
 			ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
+			ignoreDiscussionOrigin: [true, 'true', 1, '1'].includes(ignoreDiscussionOrigin ?? false),
 			fromUsers: users?.filter(isTruthy) || [],
 		});
 
@@ -651,7 +663,7 @@ API.v1.get(
 
 		const ourQuery = { prid: room._id };
 
-		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 			sort: sort || { fname: 1 },
 			skip: offset,
 			limit: count,

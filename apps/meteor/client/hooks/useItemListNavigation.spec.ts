@@ -82,11 +82,11 @@ describe('arrow keys between rows', () => {
 		rows[1].link.focus();
 
 		pressKey(rows[1].link, 'ArrowDown');
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 
 		pressKey(rows[2].link, 'ArrowUp');
 		pressKey(rows[1].link, 'ArrowUp');
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('skips the row actions', () => {
@@ -95,7 +95,7 @@ describe('arrow keys between rows', () => {
 
 		pressKey(rows[0].link, 'ArrowDown');
 
-		expect(document.activeElement).toBe(rows[1].link);
+		expect(rows[1].link).toHaveFocus();
 	});
 
 	it('prevents the default scroll and stops propagation', () => {
@@ -118,8 +118,8 @@ describe('arrow keys between rows', () => {
 
 		pressKey(other, 'ArrowUp');
 
-		expect(document.activeElement).toBe(other);
-		expect(rows[0].link).not.toBe(document.activeElement);
+		expect(other).toHaveFocus();
+		expect(rows[0].link).not.toHaveFocus();
 	});
 
 	it('stops listening when the ref is detached', () => {
@@ -129,7 +129,7 @@ describe('arrow keys between rows', () => {
 
 		pressKey(rows[0].link, 'ArrowDown');
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 });
 
@@ -176,7 +176,7 @@ describe('Escape', () => {
 		const event = pressKey(rows[1].action!, 'Escape');
 
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(rows[1].link);
+		expect(rows[1].link).toHaveFocus();
 	});
 
 	it('leaves Escape on the row itself to the surroundings, such as closing a contextual bar', () => {
@@ -196,10 +196,10 @@ describe('Tab', () => {
 
 		const event = pressKey(rows[0].link, 'Tab');
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(rows[0].action);
+		expect(rows[0].action).toHaveFocus();
 
 		pressKey(rows[0].action!, 'Tab');
-		expect(document.activeElement).toBe(after);
+		expect(after).toHaveFocus();
 	});
 
 	it('walks back to the row, then leaves the list backwards', () => {
@@ -207,10 +207,10 @@ describe('Tab', () => {
 		rows[2].action!.focus();
 
 		pressKey(rows[2].action!, 'Tab', { shiftKey: true });
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 
 		pressKey(rows[2].link, 'Tab', { shiftKey: true });
-		expect(document.activeElement).toBe(before);
+		expect(before).toHaveFocus();
 	});
 
 	it('leaves the list at once from a row without controls', () => {
@@ -219,7 +219,7 @@ describe('Tab', () => {
 
 		pressKey(rows[1].link, 'Tab');
 
-		expect(document.activeElement).toBe(after);
+		expect(after).toHaveFocus();
 	});
 
 	it('wraps to the start of the page when nothing follows the list', () => {
@@ -230,7 +230,7 @@ describe('Tab', () => {
 		const event = pressKey(rows[0].link, 'Tab');
 
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(before);
+		expect(before).toHaveFocus();
 	});
 
 	it('wraps to the end of the page when nothing precedes the list', () => {
@@ -240,7 +240,7 @@ describe('Tab', () => {
 
 		pressKey(rows[0].link, 'Tab', { shiftKey: true });
 
-		expect(document.activeElement).toBe(after);
+		expect(after).toHaveFocus();
 	});
 
 	it('stays on the row instead of entering another one when nothing is focusable outside the list', () => {
@@ -252,7 +252,7 @@ describe('Tab', () => {
 		const event = pressKey(rows[0].link, 'Tab');
 
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	describe('on a video player', () => {
@@ -288,7 +288,7 @@ describe('Tab', () => {
 			mockFocusVisible(rows[1].link);
 			rows[1].link.focus();
 
-			expect(document.activeElement).toBe(after);
+			expect(after).toHaveFocus();
 		});
 
 		it('keeps the focus where the browser moves it inside the row', () => {
@@ -300,7 +300,7 @@ describe('Tab', () => {
 			mockFocusVisible(rows[0].link);
 			rows[0].link.focus();
 
-			expect(document.activeElement).toBe(rows[0].link);
+			expect(rows[0].link).toHaveFocus();
 		});
 
 		it('keeps the focus where a click moves it after tabbing into the controls', () => {
@@ -317,7 +317,7 @@ describe('Tab', () => {
 			mockFocusVisible(composer);
 			composer.focus();
 
-			expect(document.activeElement).toBe(composer);
+			expect(composer).toHaveFocus();
 		});
 	});
 
@@ -341,7 +341,7 @@ describe('Tab', () => {
 
 		pressKey(title, 'Tab');
 
-		expect(document.activeElement).toBe(menu);
+		expect(menu).toHaveFocus();
 	});
 });
 
@@ -365,11 +365,11 @@ describe('in a row matched as a whole, as a sidebar row is', () => {
 		action.focus();
 
 		pressKey(action, 'Tab', { shiftKey: true });
-		expect(document.activeElement).toBe(link);
+		expect(link).toHaveFocus();
 
 		action.focus();
 		pressKey(action, 'Escape');
-		expect(document.activeElement).toBe(link);
+		expect(link).toHaveFocus();
 	});
 });
 
@@ -388,7 +388,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[1].link);
+		expect(rows[1].link).toHaveFocus();
 	});
 
 	it('keeps a pointer focus where it lands', () => {
@@ -399,7 +399,7 @@ describe('coming back by keyboard', () => {
 
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('does not remember a row focused with the pointer', () => {
@@ -410,7 +410,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('keeps the focus where it lands when the last row is no longer rendered', () => {
@@ -423,7 +423,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[0].link);
+		expect(rows[0].link).toHaveFocus();
 	});
 
 	it('lands on the row of a control the keyboard enters', () => {
@@ -433,7 +433,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[2].action!);
 		rows[2].action!.focus();
 
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 	});
 
 	it('lands on the last row first with `enterAtLast`', () => {
@@ -447,7 +447,7 @@ describe('coming back by keyboard', () => {
 		mockFocusVisible(rows[0].link);
 		rows[0].link.focus();
 
-		expect(document.activeElement).toBe(rows[2].link);
+		expect(rows[2].link).toHaveFocus();
 	});
 });
 
@@ -469,7 +469,7 @@ describe('onLeave', () => {
 
 		expect(onLeave).toHaveBeenCalledWith('next', list);
 		expect(event.defaultPrevented).toBe(true);
-		expect(document.activeElement).toBe(before);
+		expect(before).toHaveFocus();
 	});
 });
 
@@ -494,7 +494,7 @@ describe('with a custom `isItem`', () => {
 
 		pressKey(rows[0], 'ArrowDown');
 
-		expect(document.activeElement).toBe(rows[1]);
+		expect(rows[1]).toHaveFocus();
 	});
 
 	describe('in a row that is its own focus target and holds a toolbar', () => {
@@ -527,10 +527,10 @@ describe('with a custom `isItem`', () => {
 			link.focus();
 
 			pressKey(link, 'Tab');
-			expect(document.activeElement).toBe(actions[1]);
+			expect(actions[1]).toHaveFocus();
 
 			pressKey(actions[1], 'Tab');
-			expect(document.activeElement).toBe(after);
+			expect(after).toHaveFocus();
 		});
 
 		it('returns from the toolbar to the control before it with Shift+Tab', () => {
@@ -539,7 +539,7 @@ describe('with a custom `isItem`', () => {
 
 			pressKey(actions[1], 'Tab', { shiftKey: true });
 
-			expect(document.activeElement).toBe(link);
+			expect(link).toHaveFocus();
 		});
 	});
 });

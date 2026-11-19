@@ -64,7 +64,9 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => {
+			void refetch();
+		};
 	}, [reload, refetch]);
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/sla-policies/new'));

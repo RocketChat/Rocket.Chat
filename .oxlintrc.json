@@ -134,6 +134,10 @@
 							{
 								"name": "meteor/check",
 								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							},
+							{
+								"name": "meteor/service-configuration",
+								"message": "Use the LoginServiceConfiguration model, then notifyOnLoginServiceConfigurationChanged or notifyOnLoginServiceConfigurationChangedByService so connected clients see the change."
 							}
 						]
 					}
@@ -163,6 +167,13 @@
 			"env": {
 				"mocha": true
 			}
+		},
+		{
+			"files": ["apps/meteor/**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}"],
+			"rules": {
+				"jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "expectListKeyboard"] }]
+			},
+			"plugins": ["jest"]
 		},
 		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
@@ -393,6 +404,51 @@
 							{
 								"group": ["@rocket.chat/fuselage", "react-dom", "**/views/**"],
 								"message": "logic/ must not depend on rendering; move this to views/ or pass it in."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": ["apps/meteor/client/views/**/*.{ts,tsx}"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						],
+						"patterns": [
+							{
+								"group": ["meteor/*"],
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not Meteor. See docs/frontend/view-isolation.md."
+							},
+							{
+								"regex": "^(?:(?:\\.\\./)+|/)(?:app|client/meteor)/|^(?:\\.\\./)+meteor/",
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not apps/meteor/app or client/meteor. See docs/frontend/view-isolation.md."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"apps/meteor/client/views/**/*.{spec,test,stories}.{ts,tsx}",
+				"apps/meteor/client/views/**/{__tests__,__mocks__,tests,testing}/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
 							}
 						]
 					}

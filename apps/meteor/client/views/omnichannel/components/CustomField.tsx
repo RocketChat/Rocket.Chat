@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 export type CustomFieldProps = {
 	id: string;
 	value: string;
+	notFoundMarginBlock: 'x4' | 'x16';
 };
 
-const CustomField = ({ id, value }: CustomFieldProps) => {
+const CustomField = ({ id, value, notFoundMarginBlock }: CustomFieldProps) => {
 	const { t } = useTranslation();
 	const getCustomField = useEndpoint('GET', '/v1/livechat/custom-fields/:_id', { _id: id });
 	const { data, isPending, isError } = useQuery({
@@ -22,7 +23,7 @@ const CustomField = ({ id, value }: CustomFieldProps) => {
 	}
 
 	if (isError || !data?.customField) {
-		return <Box marginBlockStart={16}>{t('Custom_Field_Not_Found')}</Box>;
+		return <Box marginBlock={notFoundMarginBlock}>{t('Custom_Field_Not_Found')}</Box>;
 	}
 
 	const { label } = data.customField;

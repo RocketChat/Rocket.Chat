@@ -40,7 +40,8 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { getCollectionName, UpdaterImpl } from '..';
+import { getCollectionName } from '../getCollectionName';
+import { UpdaterImpl } from '../updater';
 import type { Updater } from '../updater';
 import { setUpdatedAt } from './setUpdatedAt';
 

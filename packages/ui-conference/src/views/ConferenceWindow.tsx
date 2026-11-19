@@ -1,7 +1,6 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import ConferencePanelToggles from './ConferencePanelToggles';
@@ -19,6 +18,7 @@ import CallPanel from '../components/CallPanel';
 import CallTopBar from '../components/CallTopBar';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from '../components/ConferenceIframe';
+import { useCallSounds } from '../context/CallSoundsContext';
 import { ChatPanelContext } from '../context/ChatPanelContext';
 import type { ConferencePanel } from '../context/ConferenceContext';
 import { useConference } from '../context/ConferenceContext';
@@ -65,7 +65,7 @@ const ConferenceWindow = () => {
 
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);
 
-	const { callSounds } = useCustomSound();
+	const callSounds = useCallSounds();
 	const otherMembers = call.canRing && session.joined ? call.members.filter((m) => m._id !== viewer.uid && !isInVideoConference(m)) : [];
 	// Kept true as each ring lapses, which is what stops the dialler sounding for a call nobody is being asked about.
 	const ringingMembers = useRinging(otherMembers);

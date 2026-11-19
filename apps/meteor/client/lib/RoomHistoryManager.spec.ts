@@ -1,5 +1,6 @@
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { sdk } from './SDKClient';
+import { getUserPreference } from './getUserPreference';
 import { getUserId } from './user';
 import { Messages, PublicSettings } from '../stores';
 
@@ -122,4 +123,18 @@ describe('RoomHistoryManager', () => {
 
 		expect(mockedGet).toHaveBeenCalledWith('/v1/rooms.history', { roomId: 'room-a', count: 50, showThreadMessages: false });
 	});
+
+	it.each([true, false])(
+		'loads the main feed around a message following the thread messages preference (%s)',
+		async (showThreadsInMainChannel) => {
+			jest.mocked(getUserPreference).mockReturnValue(showThreadsInMainChannel);
+
+			await RoomHistoryManager.getSurroundingChannelMessages({ _id: 'message-id', rid: 'room-a' });
+
+			expect(mockedGet).toHaveBeenCalledWith(
+				'/v1/rooms.history',
+				expect.objectContaining({ roomId: 'room-a', aroundId: 'message-id', showThreadMessages: showThreadsInMainChannel }),
+			);
+		},
+	);
 });

@@ -82,7 +82,85 @@ jobs:
     permissions:
       contents: read
 
-    name: Test Visual Regression
+    # Both builds compare against the same baselines: Fuselage must render the same compiled as on the Tamagui runtime.
+    # Zero builds run cold: no step restores a Tamagui compiler cache (node_modules/.cache is neither cached nor in the
+    # packages build), and the zero leg clears it anyway, so a @tamagui/static patch change can't be masked by plans
+    # from the previous compiler.
+    #
+    # The `visual-change-approved` label means the pull request changes pixels on purpose: the legs still run and
+    # report their diffs, but only the pixel comparison is tolerated (a broken build or a failing g0 spec still fails
+    # the leg), and `update-baselines` produces the new baselines. A re-run reuses the original event payload, so the
+    # label is only seen by a run a new push starts: adding it doesn't start one.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Test Visual Regression
+            artifact: playwright-visual-results
+            zero-runtime: ''
+          - name: Test Visual Regression (zero-runtime)
+            artifact: playwright-visual-results-zero-runtime
+            zero-runtime: '1'
+
+    name: ${{ matrix.name }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+
+      - uses: ./.github/actions/restore-packages
+
+      - name: Clear the Tamagui compiler cache
+        if: matrix.zero-runtime == '1'
+        run: rm -rf node_modules/.cache/tamagui packages/fuselage/node_modules/.cache/tamagui packages/fuselage/.tamagui
+
+      - name: Build Storybook
+        id: build
+        run: yarn workspace @rocket.chat/fuselage run build-storybook
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: 1
+          FUSELAGE_ZERO_RUNTIME: ${{ matrix.zero-runtime }}
+
+      - name: Run visual regression tests
+        id: visual
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') }}
+        run: yarn workspace @rocket.chat/fuselage run visual-regression
+
+      - uses: ./.github/actions/setup-playwright
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.zero-runtime == '1' }}
+
+      - name: Run the g0 characterization specs against the zero-runtime Storybook
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.zero-runtime == '1' }}
+        run: yarn workspace @rocket.chat/fuselage run test:stories storybook-static
+
+      - name: Upload visual regression results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ failure() || steps.visual.outcome == 'failure' }}
+        with:
+          name: ${{ matrix.artifact }}-${{ github.event.number || github.run_id }}
+          path: packages/fuselage/test-results
+
+  # The only job that writes baselines, and only for a pull request labelled `visual-change-approved`. It uploads the
+  # regenerated snapshots as an artifact; committing them (a `test:` commit, reviewed against the change that made them
+  # stale) is a human step. Snapshots come from the runtime build, which the zero-runtime leg is compared against.
+  update-baselines:
+    needs: [changes]
+    if: needs.changes.outputs.fuselage == 'true' && contains(github.event.pull_request.labels.*.name, 'visual-change-approved')
+
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    name: Update Visual Regression Baselines
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -104,12 +182,11 @@ jobs:
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
 
-      - name: Run visual regression tests
-        run: yarn workspace @rocket.chat/fuselage run visual-regression
+      - name: Regenerate baselines
+        run: yarn workspace @rocket.chat/fuselage run visual-regression-update
 
-      - name: Upload visual regression results
+      - name: Upload baselines
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: failure()
         with:
-          name: playwright-visual-results-${{ github.event.number || github.run_id }}
-          path: packages/fuselage/test-results
+          name: visual-regression-baselines-${{ github.event.number || github.run_id }}
+          path: packages/fuselage/test/snapshots

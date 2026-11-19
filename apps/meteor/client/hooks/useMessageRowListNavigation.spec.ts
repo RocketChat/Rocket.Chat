@@ -44,5 +44,5 @@ it('moves between user and system messages', () => {
 
 	fireEvent.keyDown(user.message, { key: 'ArrowDown' });
 
-	expect(document.activeElement).toBe(system.message);
+	expect(system.message).toHaveFocus();
 });

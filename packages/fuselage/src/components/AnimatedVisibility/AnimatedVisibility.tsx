@@ -1,13 +1,19 @@
 import { css, keyframes } from '@rocket.chat/css-in-js';
-import type { ReactNode } from 'react';
+import type { AnimationEvent, AnimationEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
+import { patchChildren } from '../../helpers/patchChildren';
 import { useStyle } from '../../hooks/useStyle';
-import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
-import type { BoxTransformProps } from '../Box/BoxTransforms';
+import type { BoxProps } from '../Box';
 
 export type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
+
+type ClassNameProp = BoxProps['className'];
+
+// A Box child accepts a css function or an array; Box turns those into a class name, so they are kept as an array
+const appendAnimation = (current: ClassNameProp, animation: string): ClassNameProp =>
+	typeof current === 'function' || Array.isArray(current) ? [...[current].flat(), animation] : appendClassName(current, animation);
 
 export type AnimatedVisibilityProps = {
 	children: ReactNode;
@@ -91,23 +97,18 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 		[],
 	);
 
-	const transformFn = useCallback(
-		(boxProps: BoxTransformProps) => {
-			if (boxProps.onAnimationEnd === undefined) {
-				boxProps.onAnimationEnd = handleAnimationEnd;
-			}
-			boxProps.className = className && appendClassName(boxProps.className, className);
-			return boxProps;
-		},
-		[className, handleAnimationEnd],
-	);
-
-	const composedFn = useComposedBoxTransform(transformFn);
 	if (visibility === AnimatedVisibility.HIDDEN) {
 		return null;
 	}
 
-	return <BoxTransforms.Provider value={composedFn}>{props.children}</BoxTransforms.Provider>;
+	return patchChildren(props.children, (childProps: { className?: ClassNameProp; onAnimationEnd?: AnimationEventHandler }) => ({
+		...childProps,
+		className: className ? appendAnimation(childProps.className, className) : childProps.className,
+		onAnimationEnd: (event: AnimationEvent<Element>) => {
+			childProps.onAnimationEnd?.(event);
+			handleAnimationEnd();
+		},
+	}));
 };
 
 AnimatedVisibility.HIDDEN = 'hidden' as VisibilityType;

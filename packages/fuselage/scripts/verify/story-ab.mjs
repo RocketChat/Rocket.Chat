@@ -1,36 +1,22 @@
 // Usage: node scripts/verify/story-ab.mjs <storybook-static A> <storybook-static B> [title filter]
-// Screenshots every matching story in both builds and counts differing pixels. STORY_AB_WAIT=2000 lets addons such as
-// storybook-addon-pseudo-states apply first.
-import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { join } from 'node:path';
-
+//   [--renders rcx-button --class-index story-classes.json] [--globals 'theme:dark;direction:rtl'] [--jobs 4] [--width 1024]
+// Screenshots every matching story in both builds and counts differing pixels. A story that cannot be captured is
+// reported and the run goes on. Exits 1 when a story differs or could not be captured, or when none matched. STORY_AB_WAIT=2000 lets addons such as storybook-addon-pseudo-states apply first.
+import { cli, openStory, runPool, storyIds } from './lib.mjs';
 import { serve } from './serve.mjs';
 
-const require = createRequire(join(import.meta.dirname, '../..', 'package.json'));
-const { chromium } = require('playwright-core');
+const { values: opts, positionals } = cli();
+const [dirA, dirB, filter = ''] = positionals;
 
-const [dirA, dirB, filter = ''] = process.argv.slice(2);
-
-const { entries } = JSON.parse(readFileSync(join(dirA, 'index.json'), 'utf8'));
-const ids = Object.values(entries)
-	.filter((e) => e.type === 'story' && e.title.toLowerCase().includes(filter.toLowerCase()))
-	.map((e) => e.id);
+const ids = storyIds(dirA, {
+	match: (e) => e.title.toLowerCase().includes(filter.toLowerCase()),
+	renders: opts.renders,
+	classIndex: opts['class-index'],
+});
 
 const [a, b] = await Promise.all([serve(dirA), serve(dirB)]);
-const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1024, height: 768 } });
 
-const shot = async (base, id) => {
-	await page.goto(`${base}/iframe.html?id=${id}&viewMode=story`);
-	await page.waitForSelector('#storybook-root > *', { timeout: 15000, state: 'attached' });
-	await page.evaluate(() => globalThis.document.fonts.ready);
-	// Addons such as storybook-addon-pseudo-states apply after the first render
-	await page.waitForTimeout(Number(process.env.STORY_AB_WAIT ?? 0));
-	return (await page.screenshot({ fullPage: true, animations: 'disabled' })).toString('base64');
-};
-
-const diff = (pngA, pngB) =>
+const diff = (page, pngA, pngB) =>
 	page.evaluate(
 		async ([x, y]) => {
 			const load = async (b64) => globalThis.createImageBitmap(await (await fetch(`data:image/png;base64,${b64}`)).blob());
@@ -50,22 +36,32 @@ const diff = (pngA, pngB) =>
 		[pngA, pngB],
 	);
 
+const shot = async (page, base, id) => {
+	await openStory(page, base, id, opts.globals);
+	return (await page.screenshot({ fullPage: true, animations: 'disabled' })).toString('base64');
+};
+
+const results = await runPool(ids, { jobs: opts.jobs, width: opts.width }, async (page, id) =>
+	diff(page, await shot(page, a.url, id), await shot(page, b.url, id)),
+);
+
 let identical = 0;
 let failed = 0;
+let differing = 0;
 for (const id of ids) {
-	let result;
-	try {
-		result = await diff(await shot(a.url, id), await shot(b.url, id));
-	} catch (error) {
+	const { value, error } = results.get(id);
+	if (error) {
 		failed++;
-		console.log(`ERROR ${id}: ${error.message.split('\n')[0]}`);
-		continue;
+		console.log(`COULD NOT CAPTURE ${id}: ${error}`);
+	} else if (value === 0) identical++;
+	else {
+		differing++;
+		console.log(`DIFF ${id}: ${value}`);
 	}
-	if (result === 0) identical++;
-	else console.log(`DIFF ${id}: ${result}`);
 }
 console.log(`${identical} of ${ids.length} pixel-identical, ${failed} could not be captured`);
+if (!ids.length) console.error('No story matched, nothing was compared.');
+process.exitCode = !ids.length || failed || differing ? 1 : 0;
 
-await browser.close();
 a.close();
 b.close();

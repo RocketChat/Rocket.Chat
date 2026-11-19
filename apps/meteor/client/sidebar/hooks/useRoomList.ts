@@ -81,6 +81,8 @@ const makeArchivedGroup = (rooms: SubscriptionWithRoom[], collapsed: boolean): S
 
 type useRoomListReturnType = {
 	groups: SidebarRoomListGroup[];
+	groupKeys: string[];
+	filtering: boolean;
 	groupsCount: number[];
 	totalCount: number;
 };
@@ -95,13 +97,18 @@ export const getLastActivity = (room: SubscriptionWithRoom): number | undefined 
 	return times.length ? Math.max(...times) : undefined;
 };
 
+const matchesFilter = (room: { fname?: string; name?: string }, text: string) =>
+	[room.fname, room.name].some((name) => name?.toLocaleLowerCase().includes(text));
+
 export const useRoomList = ({
 	collapsedGroups,
 	liftedFilters,
+	filterText = '',
 }: {
 	collapsedGroups?: string[];
 	/** The groups showing their inactive rooms this session, each at the window it was lifted at. */
 	liftedFilters?: LiftedActivityFilters;
+	filterText?: string;
 }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
@@ -132,9 +139,11 @@ export const useRoomList = ({
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const groups = useDebouncedValue(
+	const { groups, groupKeys, filtering } = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
+			const text = filterText.trim().toLocaleLowerCase();
+			const activeCollapsedGroups = text ? undefined : collapsedGroups;
+			const isCollapsed = (key: string) => activeCollapsedGroups?.includes(key) ?? false;
 
 			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
 			categoryList.forEach((category) => {
@@ -147,6 +156,10 @@ export const useRoomList = ({
 			rooms.forEach((room) => {
 				if (isEnterprise && archivedRoomIds.has(room.rid)) {
 					archivedRooms.push(room);
+					return;
+				}
+
+				if (text && !matchesFilter(room, text)) {
 					return;
 				}
 
@@ -171,7 +184,8 @@ export const useRoomList = ({
 			});
 
 			if (unfilteredGroups.has('Incoming_Livechats')) {
-				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
+				const matchingQueue = text ? queue.filter((inquiry) => matchesFilter(inquiry, text)) : queue;
+				unfilteredGroups.set('Incoming_Livechats', new Set(matchingQueue) as unknown as Set<SubscriptionWithRoom>);
 			}
 
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
@@ -184,8 +198,10 @@ export const useRoomList = ({
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
 				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
-				const activityFilterHours = getActivityFilterHours(key);
-				const activityFilterHidesUnreads = getActivityFilterHidesUnreads(key);
+				// A search by name lists every match, so while there is one the activity filter is lifted along
+				// with the collapsed state.
+				const activityFilterHours = text ? undefined : getActivityFilterHours(key);
+				const activityFilterHidesUnreads = text ? undefined : getActivityFilterHidesUnreads(key);
 				const showingInactive = activityFilterHours !== undefined && liftedFilters?.[key] === activityFilterHours;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
@@ -248,14 +264,22 @@ export const useRoomList = ({
 
 			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
+			// The placeholder is not a position to persist, so the keys are taken before the archive is listed.
+			const groupKeys = groups.map((group) => group.key);
+
 			// The archive is offered from the group menus, which need a license; so is its group. Unlike the others
 			// it starts collapsed, so the collapsed list, which only records the groups toggled from their start,
-			// records it when it is expanded.
+			// records it when it is expanded. A search reaches into it like into any collapsed group.
 			if (isEnterprise) {
-				groups.push(makeArchivedGroup(archivedRooms, !isCollapsed(SIDEBAR_ARCHIVED_GROUP_KEY)));
+				const matchingArchivedRooms = text ? archivedRooms.filter((room) => matchesFilter(room, text)) : archivedRooms;
+				groups.push(makeArchivedGroup(matchingArchivedRooms, text ? false : !isCollapsed(SIDEBAR_ARCHIVED_GROUP_KEY)));
 			}
 
-			return groups;
+			return {
+				groups: text ? groups.filter((group) => group.rooms.length > 0) : groups,
+				groupKeys,
+				filtering: Boolean(text),
+			};
 		}, [
 			categoryList,
 			rooms,
@@ -273,6 +297,7 @@ export const useRoomList = ({
 			liftedFilters,
 			now,
 			openedRoom,
+			filterText,
 		]),
 		50,
 	);
@@ -283,6 +308,8 @@ export const useRoomList = ({
 
 	return {
 		groups,
+		groupKeys,
+		filtering,
 		groupsCount,
 		totalCount: useMemo(() => groupsCount.reduce((acc, count) => acc + count, 0), [groupsCount]),
 	};

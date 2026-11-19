@@ -20,7 +20,7 @@ import RichContent from '../../../../../components/RichContent';
 
 export type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
-	onStatusChange?: () => void;
+	onStatusChange?: () => void | Promise<unknown>;
 };
 
 const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisteredWorkspaceModalProps) => {

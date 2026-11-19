@@ -17,7 +17,7 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 	await new Promise<void>((resolve, reject) => {
 		const mid = chat.currentEditingMessage.getMID();
 
-		const onCloseModal = async (): Promise<void> => {
+		const onCloseModal = (): void => {
 			imperativeModal.close();
 
 			if (mid === message._id) {

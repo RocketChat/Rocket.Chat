@@ -5,10 +5,11 @@ import type { TextObject } from '@rocket.chat/ui-kit';
 import { Suspense } from 'react';
 
 import { useAppTranslation } from '../hooks/useAppTranslation';
+import { inlineBigEmoji } from '../utils/inlineBigEmoji';
 
-export type MarkdownTextElementProps = { textObject: TextObject };
+export type MarkdownTextElementProps = { textObject: TextObject; bigEmoji?: boolean };
 
-const MarkdownTextElement = ({ textObject }: MarkdownTextElementProps) => {
+const MarkdownTextElement = ({ textObject, bigEmoji = false }: MarkdownTextElementProps) => {
 	const { t } = useAppTranslation();
 
 	const text = textObject.i18n
@@ -19,9 +20,11 @@ const MarkdownTextElement = ({ textObject }: MarkdownTextElementProps) => {
 		return null;
 	}
 
+	const tokens = parse(text, { emoticons: false });
+
 	return (
 		<Suspense fallback={<Skeleton />}>
-			<Markup tokens={parse(text, { emoticons: false })} />
+			<Markup tokens={bigEmoji ? tokens : inlineBigEmoji(tokens)} />
 		</Suspense>
 	);
 };
