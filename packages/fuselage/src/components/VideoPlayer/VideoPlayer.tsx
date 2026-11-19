@@ -80,6 +80,7 @@ const VideoPlayer = ({
 	const [pointerActive, setPointerActive] = useState(false);
 	const [keyboardFocusWithin, setKeyboardFocusWithin] = useState(false);
 	const [focusVisible, setFocusVisible] = useState(false);
+	const [videoFocusVisible, setVideoFocusVisible] = useState(false);
 
 	const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 	useEffect(() => () => clearTimeout(hideTimer.current), []);
@@ -173,7 +174,8 @@ const VideoPlayer = ({
 				preload='metadata'
 				playsInline
 				tabIndex={started && !error ? 0 : undefined}
-				focusable
+				onFocus={(e: FocusEvent<HTMLElement>) => setVideoFocusVisible(e.currentTarget.matches(':focus-visible'))}
+				onBlur={() => setVideoFocusVisible(false)}
 				onClick={togglePlay}
 				onPlay={() => {
 					setPlaying(true);
@@ -204,6 +206,10 @@ const VideoPlayer = ({
 				<source src={src} type={type} onError={() => setError(true)} />
 				<track kind='captions' {...trackProps} />
 			</Box>
+
+			{videoFocusVisible && (
+				<Box position='absolute' inset={0} borderRadius='medium' borderWidth='medium' borderColor='highlight' aria-hidden />
+			)}
 
 			{error && (
 				<Box
