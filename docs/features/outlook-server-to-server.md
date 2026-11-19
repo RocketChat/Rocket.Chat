@@ -55,9 +55,12 @@ requires a premium license that includes the `outlook-calendar` module.
      certificate of a private certificate authority. The service account needs the
      **ApplicationImpersonation** role, scoped to the mailboxes it should reach, because it reads each
      user's mailbox on their behalf rather than its own.
-4. **Press Test connection.** It reports what is wrong in the admin's terms: credentials rejected,
-   settings incomplete, the endpoint not reachable, impersonation not granted. It does not report success
-   until a complete round trip has happened.
+4. **Press Test connection.** It checks the credentials and the endpoint, and reports what is wrong in the
+   admin's terms: credentials rejected, settings incomplete, the endpoint not reachable. It reads no
+   mailbox, so it cannot see the access granted in step 3: on Graph it only obtains a token, which Entra ID
+   issues whatever permissions the app holds, and on EWS it resolves a name as the service account itself,
+   without impersonating anyone. A missing permission or impersonation role, or an access policy that
+   leaves a user out, shows up on the first sync instead, as those mailboxes being refused.
 
 After that there is nothing per user to do. Every user whose verified Rocket.Chat email address matches a
 mailbox is covered from the next sync onwards.
