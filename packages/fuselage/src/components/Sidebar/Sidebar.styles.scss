@@ -145,23 +145,29 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 	}
 
 	&-collapse-group {
-		&__bar {
+		// The group takes the class of a dragged `ItemGroup`, whose look is now in its frame
+		&.rcx-item-group--dragging {
+			opacity: 0.4;
+		}
+
+		// Interim `[class]` bumps: the header and its title are `Item` parts whose frames set these properties
+		&__bar[class] {
 			color: colors.font(secondary-info);
+		}
 
-			&--empty {
-				color: colors.font(disabled);
-			}
+		&__bar--empty[class] {
+			color: colors.font(disabled);
+		}
 
-			&--unread {
-				color: $sidebar-item-color-highlighted;
+		&__bar--unread[class] {
+			color: $sidebar-item-color-highlighted;
 
-				.rcx-sidebar-collapse-group__title {
-					@include use-font-scale(c2);
-				}
+			.rcx-sidebar-collapse-group__title {
+				@include use-font-scale(c2);
 			}
 		}
 
-		&__bar-button {
+		&__bar-button[class] {
 			display: flex;
 			align-items: center;
 
@@ -241,8 +247,23 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-link {
-		@include use-link-colors($color: $sidebar-link-color);
+	// Interim `[class]` bump: the link is an `Item` whose frame sets the color. Only the colors of a link: its focus ring
+	// is the row's.
+	&-link[class] {
+		color: theme('link-color', $sidebar-link-color);
+
+		&:focus,
+		&:focus-within {
+			color: theme('link-focus-color', $sidebar-link-color);
+		}
+
+		&:where(:visited) {
+			color: theme('link-visited-color', $sidebar-link-color);
+		}
+
+		&:where(:active) {
+			color: theme('link-active-color', $sidebar-link-color);
+		}
 	}
 
 	&-banner {

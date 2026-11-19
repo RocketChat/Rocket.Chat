@@ -52,6 +52,7 @@ const RoomMembersItem = ({
 		<Item
 			role='listitem'
 			inset='lg'
+			interactive
 			data-username={username}
 			data-userid={_id}
 			onFocus={mountNow}
