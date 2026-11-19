@@ -40,25 +40,19 @@ const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) =
 	return (
 		<LocalSearchIndexStatusPanel>
 			{roomIndexed && (
-				<Callout
-					type='success'
-					// The toggle sits in the title row: the actions of a narrow callout take a row of their own.
-					title={
-						<Box display='flex' alignItems='center' justifyContent='space-between'>
-							{t('E2E_Local_Search_Room_Indexed_Title')}
-							<IconButton
-								icon={detailsShown ? 'chevron-up' : 'chevron-down'}
-								size='mini'
-								title={detailsShown ? t('Collapse') : t('Expand')}
-								aria-expanded={detailsShown}
-								aria-controls={detailsId}
-								onClick={() => setDetailsShown((shown) => !shown)}
-							/>
-						</Box>
-					}
-					role='status'
-					data-qa='local-search-room-indexed'
-				>
+				<Callout type='success' role='status' data-qa='local-search-room-indexed'>
+					{/* Not the title and actions props: the title takes only text, and narrow callouts put actions on a new row. */}
+					<Box display='flex' alignItems='center' justifyContent='space-between'>
+						<Box fontScale='p2b'>{t('E2E_Local_Search_Room_Indexed_Title')}</Box>
+						<IconButton
+							icon={detailsShown ? 'chevron-up' : 'chevron-down'}
+							size='mini'
+							title={detailsShown ? t('Collapse') : t('Expand')}
+							aria-expanded={detailsShown}
+							aria-controls={detailsId}
+							onClick={() => setDetailsShown((shown) => !shown)}
+						/>
+					</Box>
 					{detailsShown && (
 						<Text is='p' id={detailsId}>
 							{t('E2E_Local_Search_Room_Indexed_Description')}
