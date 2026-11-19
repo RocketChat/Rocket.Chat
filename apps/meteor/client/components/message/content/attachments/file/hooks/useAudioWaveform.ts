@@ -24,13 +24,48 @@ export const toPeaks = (samples: Float32Array, count: number): number[] => {
 	return loudest ? peaks.map((peak) => peak / loudest) : peaks;
 };
 
-const fetchPeaks = async (src: string) => {
-	const response = await fetch(src, { credentials: 'same-origin' });
+/** Reads the whole body, failing as soon as it grows past `limit` bytes, whatever size the attachment declares. */
+export const readBodyUpTo = async (response: Response, limit: number): Promise<ArrayBuffer> => {
+	if (Number(response.headers.get('content-length')) > limit) {
+		throw new Error('Audio is too large for a waveform');
+	}
+
+	const reader = response.body?.getReader();
+	if (!reader) {
+		return new ArrayBuffer(0);
+	}
+
+	const chunks: Uint8Array[] = [];
+	let total = 0;
+	for (;;) {
+		const { done, value } = await reader.read();
+		if (done) {
+			break;
+		}
+		total += value.byteLength;
+		if (total > limit) {
+			void reader.cancel();
+			throw new Error('Audio is too large for a waveform');
+		}
+		chunks.push(value);
+	}
+
+	const bytes = new Uint8Array(total);
+	let offset = 0;
+	for (const chunk of chunks) {
+		bytes.set(chunk, offset);
+		offset += chunk.byteLength;
+	}
+	return bytes.buffer;
+};
+
+const fetchPeaks = async (src: string, signal: AbortSignal) => {
+	const response = await fetch(src, { credentials: 'same-origin', signal });
 	if (!response.ok) {
 		throw new Error(`Failed to fetch audio: ${response.status}`);
 	}
 	const context = new OfflineAudioContext(1, 1, 44100);
-	const buffer = await context.decodeAudioData(await response.arrayBuffer());
+	const buffer = await context.decodeAudioData(await readBodyUpTo(response, MAX_SIZE));
 	return toPeaks(buffer.getChannelData(0), BAR_COUNT);
 };
 
@@ -38,7 +73,7 @@ const fetchPeaks = async (src: string) => {
 export const useAudioWaveform = (src: string, size?: number) =>
 	useQuery({
 		queryKey: ['audio-waveform', src],
-		queryFn: () => fetchPeaks(src),
+		queryFn: ({ signal }) => fetchPeaks(src, signal),
 		enabled: !!src && !!size && size <= MAX_SIZE,
 		staleTime: Infinity,
 		gcTime: Infinity,
