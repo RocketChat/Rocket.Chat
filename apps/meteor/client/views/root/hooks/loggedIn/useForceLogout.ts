@@ -1,28 +1,27 @@
-import { useGetConnectionSessionId, useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useConnectionSessionId, useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
 
 export const useForceLogout = (userId: string) => {
 	const getNotifyUserStream = useStream('notify-user');
 	const setForceLogout = useSessionDispatch('forceLogout');
 	const wipeLocalAuth = useWipeLocalAuth();
-	const getConnectionSessionId = useGetConnectionSessionId();
+	const sessionId = useConnectionSessionId();
+	const sessionIdRef = useRef(sessionId);
+	sessionIdRef.current = sessionId;
 
 	useEffect(() => {
 		setForceLogout(false);
 
-		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, (sessionId) => {
-			// A logout aimed at one device names its session; the user's other sessions stay logged in.
-			if (sessionId && sessionId !== getConnectionSessionId()) {
+		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, (eventSessionId) => {
+			if (eventSessionId && eventSessionId !== sessionIdRef.current) {
 				return;
 			}
 
 			setForceLogout(true);
 
-			// DDPSDK retries the refused token on every reconnection and swallows the rejection, so the stored
-			// credentials are wiped here for the router to fall back to /login.
 			wipeLocalAuth();
 		});
 
 		return unsubscribe;
-	}, [getConnectionSessionId, getNotifyUserStream, setForceLogout, userId, wipeLocalAuth]);
+	}, [getNotifyUserStream, setForceLogout, userId, wipeLocalAuth]);
 };
