@@ -329,3 +329,33 @@ Engineer-days for one engineer who knows the code.
 - **V-1**: A request held 15 s survives the socket timeouts, with and without `HTTP_SOCKET_TIMEOUT_MS`, behind the CI proxy as well.
 - **V-2**: The loopback dispatch passes a client abort to the REST route, so a closed MCP call releases its wait.
 - **V-3**: The MCP SDKs that harnesses use (TypeScript, Python) allow a tool call of 15 s under their default request timeout.
+
+### A-2 (2026-11-19): Prior art for the reply modes
+
+**Status**: Findings only. It records how other chat platforms name and gate the FR-024 reply modes. It changes no decision. A web search on 2026-11-19 checked each claim against the platform docs.
+
+#### Findings
+
+- No platform's official docs use "mention mode", "ambient mode", or "autonomous mode". Each platform gates two things apart: the messages a bot reads, and whether it may post with no trigger.
+
+| Platform | Mention only (default) | Every message | Post with no trigger |
+|----------|------------------------|---------------|----------------------|
+| Slack | `app_mention` event, scope `app_mentions.read` ([doc](https://docs.slack.dev/reference/events/app_mention)) | `message.channels` / `message.groups`, scopes `channels:history` / `groups:history` ([doc](https://docs.slack.dev/reference/events/message.channels)) | `chat.postMessage` needs `chat:write`, and membership or `chat:write.public` ([doc](https://docs.slack.dev/reference/methods/chat.postMessage)) |
+| Discord | Without the Message Content intent, content fields are empty except in the app's own messages, DMs, messages that mention the app, and context-menu targets | The Message Content privileged intent. An app in 100+ guilds needs verification and approval ([doc](https://docs.discord.com/developers/events/gateway#message-content-intent)) | No gate beyond channel permissions |
+| Telegram | Privacy mode, on by default: commands addressed to the bot, replies to its messages, inline messages via the bot. The docs do not list plain @mentions ([doc](https://core.telegram.org/bots/features#privacy-mode)) | Privacy mode off through BotFather, or the bot as group admin | No gate |
+| Microsoft Teams | A bot in a channel or group chat receives only messages that @mention it | RSC permissions `ChannelMessage.Read.Group` and `ChatMessage.Read.Chat`. Messages from other bots never arrive ([doc](https://learn.microsoft.com/en-us/microsoftteams/platform/agents-in-teams/enable-receive-all-chat-messages)) | "Proactive message": any message not in response to a user ([doc](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/send-proactive-messages)) |
+| Google Chat | A `MESSAGE` event on @mention or slash command in a space, and on every DM ([doc](https://developers.google.com/workspace/chat/receive-respond-interactions)) | A Workspace Events API subscription to `google.workspace.chat.message.v1.created` ([doc](https://developers.google.com/workspace/events/guides/events-chat)) | "Proactive messages" ([doc](https://developers.google.com/workspace/chat/api/guides/message-formats)) |
+| Mattermost | Outgoing webhooks on trigger words, public channels only ([doc](https://docs.mattermost.com/developers/integrate/webhooks/outgoing)) | An outgoing webhook with no trigger words | Not checked |
+| Zulip | Interactive bots on DMs and @mentions ([doc](https://zulip.com/api/running-bots)) | The event queue with `event_types: ["message"]`, for subscribed channels or `all_public_streams` ([doc](https://zulip.com/api/real-time-events)) | Not checked |
+
+- **"Ambient" has a different meaning in the field.** LangChain introduced "ambient agents" on 2025-01-14: agents that "listen to an event stream and act on it accordingly" ([post](https://www.langchain.com/blog/introducing-ambient-agents)). The term covers background, event-driven work, not "reads every message in a room". That sense sits closer to the FR-028 autonomous mode than to ambient mode.
+- **"Proactive" is the platform term for FR-028.** Teams and Google Chat both use it for a message with no trigger.
+- **Third-party agent tools use close names:**
+  - herdctl gives each Slack channel a `mention` mode (the default) or an `auto` mode, which answers every message ([doc](https://herdctl.dev/integrations/slack/)).
+  - dam has an "ambient mode" for Telegram, off by default and toggled by chat admins. Every group message reaches the agent as a "read-along" turn, and the agent speaks only when it helps ([PR #5484](https://github.com/dam-agents/dam/pull/5484), merged 2026-10-20).
+  - A third-party blog describes an "ambient mode" in Claude Tag that lets Claude post without a tag ([blog](https://ofox.ai/blog/claude-tag-slack-setup-guide-2026/)). Anthropic's help article does not use the term ([doc](https://support.claude.com/en/articles/15594475-what-is-claude-tag)).
+- **Not verified**: Telegram delivery of plain @mentions under privacy mode, Mattermost bot accounts on the WebSocket, and the Zulip difference between outgoing webhooks and generic bots.
+
+#### Open question
+
+- Do the FR-024 names stay? The data suggests "mention" is safe. "Ambient" clashes with the LangChain sense, but dam uses it in the FR-025 sense. "Proactive" is the platform term for what autonomous mode adds.
