@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import type { E2EESearchIndexEvent, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
 import {
@@ -45,8 +45,27 @@ const createSchedulerStub = (): jest.Mocked<SearchIndexScheduler> => ({
 	addPendingDecrypt: jest.fn(),
 	removeRoom: jest.fn(),
 	getProgress: jest.fn(),
+	isCaughtUp: jest.fn(() => false),
 	subscribe: jest.fn((_listener: () => void) => jest.fn()),
 });
+
+/** A backend that sends index events, like the desktop app's. */
+const withIndexEvents = <T extends ISearchIndexBackend>(backend: T) => {
+	const listeners = new Set<(event: E2EESearchIndexEvent) => void>();
+	return {
+		backend: {
+			...backend,
+			onIndexEvent: (listener: (event: E2EESearchIndexEvent) => void) => {
+				listeners.add(listener);
+				return () => {
+					listeners.delete(listener);
+				};
+			},
+		},
+		emit: (event: E2EESearchIndexEvent) => listeners.forEach((listener) => listener(event)),
+		listenerCount: () => listeners.size,
+	};
+};
 
 const stubRuntime = (initial?: ISearchIndexBackend) => {
 	const session = createSessionStub(initial);
@@ -189,6 +208,103 @@ describe('createSearchIndexRuntime', () => {
 		expect(schedulers[0].scheduler.addPendingDecrypt).toHaveBeenCalledWith(message);
 	});
 
+	it('starts a new scheduler on the same index after the desktop app lost its rows, and empties the room of the last request', async () => {
+		const removeRoom = jest.fn(async (_rid: string) => undefined);
+		const { backend, emit, listenerCount } = withIndexEvents({ name: 'A', removeRoom } as unknown as ISearchIndexBackend);
+		const { session, schedulers, runtime } = stubRuntime(backend);
+		schedulers[0].scheduler.stop.mockResolvedValue('r1');
+
+		emit({ type: 'changed' });
+		await runtime.whenSettled();
+		expect(schedulers).toHaveLength(1);
+
+		emit({ type: 'lost' });
+		await runtime.whenSettled();
+
+		expect(schedulers[0].scheduler.stop).toHaveBeenCalledTimes(1);
+		expect(removeRoom).toHaveBeenCalledWith('r1');
+		expect(schedulers).toHaveLength(2);
+		expect(schedulers[1].backend).toBe(backend);
+		expect(schedulers[1].scheduler.start).toHaveBeenCalledTimes(1);
+		expect(runtime.getScheduler()).toBe(schedulers[1].scheduler);
+
+		session.set(undefined);
+		expect(listenerCount()).toBe(0);
+	});
+
+	it('fills the index again after the desktop app cleared it, also when a page landed after the clear', async () => {
+		jest.useFakeTimers({ now: NOW });
+		try {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			for (let i = 0; i < 35; i++) server.addHistory(`m${i}`, 'r1', NOW - 1000 * (i + 1));
+
+			const fake = createFakeSearchIndexBackend();
+			await fake.open({ userId: 'u1' });
+			const { backend, emit } = withIndexEvents(fake);
+			const session = createSessionStub();
+			const queued: IMessage[] = [];
+			let requests = 0;
+			let release: (() => void) | undefined;
+
+			const runtime = createSearchIndexRuntime({
+				session,
+				writer: {
+					remove: async () => undefined,
+					flush: async () => {
+						await backend.upsert(
+							queued.splice(0).map((message) => ({
+								id: message._id,
+								rid: message.rid,
+								uid: message.u._id,
+								username: message.u.username,
+								ts: new Date(message.ts).getTime(),
+								updatedAt: new Date(message._updatedAt).getTime(),
+								kind: 'text' as const,
+								body: `plain ${message._id}`,
+							})),
+						);
+					},
+				},
+				syncMessages: async (params) => {
+					requests++;
+					// The third backfill page is in flight when the user clears the index.
+					if (requests === 3) {
+						await new Promise<void>((resolve) => {
+							release = resolve;
+						});
+					}
+					return server.syncMessages(params);
+				},
+				decryptMessage: async (message) => {
+					const decrypted = { ...message, e2e: 'done' } as IMessage;
+					queued.push(decrypted);
+					return decrypted;
+				},
+				getRooms: () => [{ rid: 'r1', lastActivityAt: NOW }],
+				getTuning: () => ({ pauseMs: 1000, pageSize: 10 }),
+			});
+
+			session.set(backend);
+			await jest.advanceTimersByTimeAsync(5000);
+			expect(release).toBeDefined();
+
+			// The desktop app empties the open index, the page in flight saves its position after that, then the event arrives.
+			for (const rid of await backend.listRooms()) await backend.removeRoom(rid);
+			release?.();
+			await jest.advanceTimersByTimeAsync(0);
+			expect((await backend.stats()).docs).toBe(10);
+			emit({ type: 'lost' });
+			await runtime.whenSettled();
+			await jest.advanceTimersByTimeAsync(5 * 60_000);
+
+			expect((await backend.stats()).docs).toBe(35);
+			expect(await backend.getRoomState('r1')).toMatchObject({ backfillDone: true });
+			runtime.dispose();
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
 	it('backfills a one-year-old message into the index with the real crawler and scheduler', async () => {
 		jest.useFakeTimers({ now: NOW });
 		try {
@@ -288,9 +404,14 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 		});
 		await runtime.whenSettled();
 
-		const reportDone = ({ roomsSkipped = 0 } = {}) => {
+		const report = ({
+			status = 'done',
+			roomsSkipped = 0,
+			caughtUp = true,
+		}: { status?: 'indexing' | 'done'; roomsSkipped?: number; caughtUp?: boolean } = {}) => {
+			schedulers[0].isCaughtUp.mockReturnValue(caughtUp);
 			schedulers[0].getProgress.mockReturnValue({
-				status: 'done',
+				status,
 				rooms: 1,
 				roomsDone: 1 - roomsSkipped,
 				roomsSkipped,
@@ -299,7 +420,8 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 			});
 			for (const [listener] of schedulers[0].subscribe.mock.calls) listener();
 		};
-		return { backend, session, runtime, scheduler: schedulers[0], saved, roomsAtStart, reportDone, onError };
+		const reportDone = (options: { roomsSkipped?: number } = {}) => report(options);
+		return { backend, session, runtime, scheduler: schedulers[0], saved, roomsAtStart, report, reportDone, onError };
 	};
 
 	it('empties every room before the crawler starts when the last full catch-up is older than the deletion records', async () => {
@@ -337,6 +459,16 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 		reportDone();
 		reportDone();
 
+		expect(saved).toEqual([NOW]);
+	});
+
+	it('saves the start time once every room caught up, while the history backfill still runs', async () => {
+		const { saved, report } = await setup(NOW - DAY);
+
+		report({ status: 'indexing', caughtUp: false });
+		expect(saved).toEqual([]);
+
+		report({ status: 'indexing' });
 		expect(saved).toEqual([NOW]);
 	});
 

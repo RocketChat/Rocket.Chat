@@ -94,6 +94,9 @@ export type E2EESearchRoomState = {
 	backfillDone: boolean;
 };
 
+/** `lost`: rows of the open index are gone. `changed`: the index changed outside this page. */
+export type E2EESearchIndexEvent = { type: 'lost' } | { type: 'changed' };
+
 export type E2EESearchStats = { docs: number; bytes: number; rooms: number };
 
 export type E2EESearchOpenResult = {
@@ -140,6 +143,11 @@ export interface ISearchIndexBackend {
 	 * without it close the index themselves at logout.
 	 */
 	close?(): Promise<void>;
+	/**
+	 * Calls the listener when the desktop app lost rows of the open index: the user cleared it, or the index process
+	 * stopped before it saved. The web client then reads the room states again. Desktop versions without it send no event.
+	 */
+	onIndexEvent?(listener: (event: E2EESearchIndexEvent) => void): () => void;
 }
 
 /**

@@ -38,5 +38,9 @@ export const getDesktopSearchIndexBackend = (): ISearchIndexBackend | undefined 
 		stats: () => bridge.stats(),
 		wipe: (scope) => (scope ? bridge.wipe(scope) : bridge.wipe()),
 		...(typeof bridge.close === 'function' && { close: () => bridge.close?.() ?? Promise.resolve() }),
+		...(typeof bridge.onIndexEvent === 'function' && {
+			onIndexEvent: (listener: Parameters<NonNullable<ISearchIndexBackend['onIndexEvent']>>[0]) =>
+				bridge.onIndexEvent?.(listener) ?? (() => undefined),
+		}),
 	};
 };

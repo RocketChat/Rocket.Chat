@@ -742,5 +742,47 @@ describe('createSearchIndexScheduler', () => {
 			scheduler.stop();
 			expect(scheduler.getProgress().status).toBe('stopped');
 		});
+
+		it('reports every room caught up after their catch-ups, while the history backfill still runs', async () => {
+			const { scheduler, backend } = await setup({ rooms: twoRooms });
+			for (const { rid } of twoRooms) await backend.setRoomState(rid, { lastUpdate: NOW - HOUR, backfillDone: false });
+
+			scheduler.start();
+			expect(scheduler.isCaughtUp()).toBe(false);
+
+			// Each catch-up reads the updates, then the deletes: 2 requests per room.
+			await jest.advanceTimersByTimeAsync(4 * (REQUEST_MS + PAUSE_MS) - PAUSE_MS);
+			expect(scheduler.isCaughtUp()).toBe(true);
+			expect(scheduler.getProgress()).toMatchObject({ status: 'indexing', roomsDone: 0 });
+
+			await scheduler.stop();
+		});
+
+		it('shows the back-off while it waits after an error outside a request', async () => {
+			const { scheduler, backend, onError } = await setup({ rooms: twoRooms });
+			jest.spyOn(backend, 'getRoomState').mockRejectedValueOnce(new Error('index busy'));
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(0);
+
+			expect(onError).toHaveBeenCalledWith(new Error('index busy'));
+			expect(scheduler.getProgress().status).toBe('backing-off');
+
+			await jest.advanceTimersByTimeAsync(60_000);
+			expect(scheduler.getProgress().status).not.toBe('backing-off');
+			await scheduler.stop();
+		});
+
+		it('resolves the stop with the room of the last request, after that request ended', async () => {
+			const { scheduler } = await setup({ rooms: twoRooms });
+			expect(await scheduler.stop()).toBeUndefined();
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(REQUEST_MS / 2);
+			const stopping = scheduler.stop();
+			await jest.advanceTimersByTimeAsync(REQUEST_MS);
+
+			expect(await stopping).toBe('recent');
+		});
 	});
 });

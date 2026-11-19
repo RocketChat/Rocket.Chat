@@ -190,7 +190,7 @@ export type SearchIndexRuntime = {
 	onDecryptFailed(message: IMessage): void;
 	/** Removes the rows of a room whose subscription was removed (the user left the room or was removed from it). */
 	onRoomRemoved(rid: string): Promise<void>;
-	/** Resolves when the removal of the left rooms after the last open is done. Specs use it. */
+	/** Resolves when the removal of the left rooms after the last open, and a restart after a loss, are done. Specs use it. */
 	whenSettled(): Promise<void>;
 	/**
 	 * Empties the open index, after the user reset the own E2E key: the old messages are not readable with the new key,
@@ -243,7 +243,15 @@ export const createSearchIndexRuntime = ({
 	let scheduler: SearchIndexScheduler | undefined;
 	let pruning: Promise<void> = Promise.resolve();
 	let unsubscribeScheduler: (() => void) | undefined;
-	/** The time when the running catch-up of every room started. It is saved when the scheduler has nothing left to do. */
+	let unsubscribeIndexEvents: (() => void) | undefined;
+	/** The scheduler that `startScheduler` started. A scheduler that waits for its first start has read nothing yet. */
+	let startedScheduler: SearchIndexScheduler | undefined;
+	let restarting: Promise<void> = Promise.resolve();
+	/**
+	 * The time when the running catch-up of every room started. It is saved when every room has caught up, also while the
+	 * history backfill goes on: the backfill is not needed for the deletions, because each room's catch-up reads them from
+	 * the `lastUpdate` of its first page.
+	 */
 	let catchUpStartedAt: number | undefined;
 	/** False while the rooms of an out-of-date index could not be emptied: no catch-up time is saved for it then. */
 	let recordsSync = false;
@@ -263,7 +271,7 @@ export const createSearchIndexRuntime = ({
 			unsubscribeScheduler = next.subscribe(() => {
 				const { status, roomsSkipped } = next.getProgress();
 				// A skipped room was not caught up, so the time is not saved: its deletions can still be missing.
-				if (catchUpStartedAt !== undefined && status === 'done' && roomsSkipped === 0) {
+				if (catchUpStartedAt !== undefined && status !== 'stopped' && roomsSkipped === 0 && next.isCaughtUp()) {
 					syncTime?.write(catchUpStartedAt);
 					catchUpStartedAt = undefined;
 				}
@@ -275,6 +283,7 @@ export const createSearchIndexRuntime = ({
 
 	const startScheduler = (started: SearchIndexScheduler, { recordSync }: { recordSync: boolean }) => {
 		if (scheduler !== started) return;
+		startedScheduler = started;
 		recordsSync = recordSync;
 		if (recordSync) catchUpStartedAt = now();
 		started.start();
@@ -311,19 +320,56 @@ export const createSearchIndexRuntime = ({
 		}
 	};
 
+	/**
+	 * The desktop app lost rows of the open index: the user cleared it, or its worker stopped before a save. A new crawler
+	 * and scheduler read the room states again and catch up every room. The room of the last request starts over: its page
+	 * can have saved its position after the loss, with the rows of the pages before it gone.
+	 */
+	const restartAfterLoss = async (lost: ISearchIndexBackend) => {
+		const stopped = scheduler;
+		// A scheduler that was not started yet starts with a new crawler anyway.
+		if (backend !== lost || !stopped || stopped !== startedScheduler) return;
+
+		const recordSync = recordsSync;
+		const stopping = stopped.stop();
+		setScheduler(undefined);
+		const lastRoom = await stopping;
+		if (backend !== lost) return;
+		if (lastRoom) await lost.removeRoom(lastRoom).catch(onError);
+		if (backend !== lost) return;
+
+		const created = buildScheduler(lost);
+		setScheduler(created);
+		startScheduler(created, { recordSync });
+	};
+
+	const watchIndexEvents = (opened: ISearchIndexBackend) => {
+		try {
+			unsubscribeIndexEvents = opened.onIndexEvent?.(({ type }) => {
+				if (type !== 'lost') return;
+				restarting = restarting.then(() => restartAfterLoss(opened)).catch(onError);
+			});
+		} catch (error) {
+			onError(error);
+		}
+	};
+
 	const sync = () => {
 		const next = session.getActiveBackend();
 		if (next === backend) return;
 
 		scheduler?.stop();
 		setScheduler(undefined);
+		unsubscribeIndexEvents?.();
+		unsubscribeIndexEvents = undefined;
 		backend = next;
 		if (!next) return;
+		watchIndexEvents(next);
 
 		const created = buildScheduler(next);
 		setScheduler(created);
 		if (!syncTime) {
-			created.start();
+			startScheduler(created, { recordSync: false });
 			pruning = pruneLeftRooms(next).catch(onError);
 			return;
 		}
@@ -357,7 +403,7 @@ export const createSearchIndexRuntime = ({
 				listeners.delete(listener);
 			};
 		},
-		whenSettled: () => pruning,
+		whenSettled: () => Promise.all([pruning, restarting]).then(() => undefined),
 		onReconnect: () => {
 			if (!scheduler) return;
 			if (recordsSync && catchUpStartedAt === undefined) catchUpStartedAt = now();
@@ -413,6 +459,8 @@ export const createSearchIndexRuntime = ({
 		},
 		dispose() {
 			unsubscribe();
+			unsubscribeIndexEvents?.();
+			unsubscribeIndexEvents = undefined;
 			scheduler?.stop();
 			setScheduler(undefined);
 			backend = undefined;

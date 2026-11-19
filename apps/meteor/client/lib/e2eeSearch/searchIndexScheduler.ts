@@ -42,8 +42,11 @@ type SearchIndexSchedulerOptions = {
 export type SearchIndexScheduler = {
 	/** Starts indexing: a catch-up of every room, then the history backfill, one request at a time. */
 	start(): void;
-	/** Stops after the request in flight, if any. Resolves when that request has ended. */
-	stop(): Promise<void>;
+	/**
+	 * Stops after the request in flight, if any. Resolves when that request has ended, with the room of the last request
+	 * that this scheduler sent (`undefined` when it sent none).
+	 */
+	stop(): Promise<string | undefined>;
 	/** Catches up the rooms again (every room when none is given), for example after a reconnect. */
 	requestCatchUp(rids?: string[]): void;
 	/**
@@ -67,6 +70,8 @@ export type SearchIndexScheduler = {
 	 */
 	removeRoom(rid: string): Promise<void>;
 	getProgress(): SearchIndexProgress;
+	/** True when no room waits for a catch-up: every room caught up since the last start, reconnect or catch-up request. */
+	isCaughtUp(): boolean;
 	/** Calls the listener each time `getProgress` changes. Returns the function that removes it. */
 	subscribe(listener: () => void): () => void;
 };
@@ -174,9 +179,12 @@ export const createSearchIndexScheduler = ({
 	let loop: Promise<void> = Promise.resolve();
 	/** The crawler call that runs now, if any. */
 	let inFlight: Promise<unknown> = Promise.resolve();
+	/** The room of the last crawler call. */
+	let lastRequestRoom: string | undefined;
 
-	const track = <T>(call: Promise<T>): Promise<T> => {
+	const track = <T>(rid: string, call: Promise<T>): Promise<T> => {
 		inFlight = call.catch(() => undefined);
+		lastRequestRoom = rid;
 		return call;
 	};
 	let status: SearchIndexProgress['status'] = 'stopped';
@@ -416,7 +424,7 @@ export const createSearchIndexScheduler = ({
 	/** Runs the job and returns how long to wait before the next request. */
 	const attempt = async (run: number, job: Job): Promise<number> => {
 		try {
-			await track(runJob(job));
+			await track(job.rid, runJob(job));
 			consecutiveFailures = 0;
 			jobAttempts = 0;
 			publish();
@@ -448,7 +456,7 @@ export const createSearchIndexScheduler = ({
 			keyArrived.delete(rid);
 			if (removedRooms.has(rid)) continue;
 			try {
-				indexed += (await track(crawler.retryPendingDecrypt(rid))).indexed;
+				indexed += (await track(rid, crawler.retryPendingDecrypt(rid))).indexed;
 			} catch (error) {
 				onError(error);
 			}
@@ -489,6 +497,7 @@ export const createSearchIndexScheduler = ({
 				onError(error);
 				consecutiveFailures++;
 				if (run !== generation) return;
+				setStatus(run, 'backing-off');
 				await sleep(backoffDelay());
 			}
 		}
@@ -527,7 +536,8 @@ export const createSearchIndexScheduler = ({
 		},
 
 		stop() {
-			if (!started) return loop;
+			const stopped = loop.then(() => lastRequestRoom);
+			if (!started) return stopped;
 			started = false;
 			generation++;
 			retryJob = undefined;
@@ -535,7 +545,7 @@ export const createSearchIndexScheduler = ({
 			wake();
 			status = 'stopped';
 			publish();
-			return loop;
+			return stopped;
 		},
 
 		requestCatchUp,
@@ -575,6 +585,8 @@ export const createSearchIndexScheduler = ({
 		},
 
 		getProgress: () => progress,
+
+		isCaughtUp: () => !rooms().some(({ rid }) => catchUpPending.has(rid)),
 
 		subscribe(listener) {
 			listeners.add(listener);
