@@ -1,6 +1,15 @@
 @use '../../styles/colors.scss';
+@use '../../styles/functions.scss' as *;
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
+
+.rcx-menu__popover {
+	max-width: to-rem(250);
+
+	&--full {
+		max-width: lengths.size(full);
+	}
+}
 
 .rcx-menu-item {
 	&--with-description {
