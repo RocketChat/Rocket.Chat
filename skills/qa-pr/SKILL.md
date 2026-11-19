@@ -150,7 +150,7 @@ git diff <merge-base>..HEAD -- '.changeset/*.md'
 
 Validation guidance:
 
-- Check intent before reporting a behavior change. Read the PR's description ("Proposed changes", "Steps to test", "Further comments") and its `.changeset/*.md`. If they describe the observed behavior, classify it as an intentional change, not a bug. Add a UX note if the result is still rough for users.
+- Check intent before reporting a behavior change. Read the PR's description ("Proposed changes", "Steps to test", "Further comments") and its `.changeset/*.md`. If they describe the observed behavior, check the linked Jira ticket or a maintainer's statement too. Classify it as an intentional change only when a second source confirms it; otherwise report it as `suspected`. Add a UX note if the result is still rough for users.
 - Rule out the environment. Run the PR and the base with the same edition, licence and settings. Many apparent bugs are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
 - Check Jira before reporting. Search for an open ticket about the same behavior; if one exists, link it instead of reporting the bug as new.
 - Prefer targeted test commands over whole-repo suites.
