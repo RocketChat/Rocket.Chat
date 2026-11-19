@@ -162,6 +162,8 @@ export class Page {
 
 		if (pageBase && orig === path) return;
 
+		if (/^\/api(\/|$)/.test(path)) return;
+
 		e.preventDefault();
 		this.show(orig);
 	};
