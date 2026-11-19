@@ -238,9 +238,22 @@ describe('MucService delivery errors (hosted-muc R19)', () => {
 		return { muc, sent, left };
 	};
 
+	// The error type RFC 6120 §8.3.3 gives each condition
+	const ERROR_TYPES: Record<string, string> = {
+		'gone': 'cancel',
+		'item-not-found': 'cancel',
+		'recipient-unavailable': 'wait',
+		'redirect': 'modify',
+		'remote-server-not-found': 'cancel',
+		'remote-server-timeout': 'wait',
+		'not-acceptable': 'modify',
+		'service-unavailable': 'cancel',
+		'forbidden': 'auth',
+	};
+
 	const bounce = (condition: string, name = 'message') =>
 		p(
-			`<${name} from='alice@remote.tld/pc' to='team@conference.rc.tld/bob' type='error'><error type='cancel'><${condition} xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></${name}>`,
+			`<${name} from='alice@remote.tld/pc' to='team@conference.rc.tld/bob' type='error'><error type='${ERROR_TYPES[condition]}'><${condition} xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></${name}>`,
 		);
 
 	it.each([['gone'], ['item-not-found'], ['recipient-unavailable'], ['redirect'], ['remote-server-not-found'], ['remote-server-timeout']])(

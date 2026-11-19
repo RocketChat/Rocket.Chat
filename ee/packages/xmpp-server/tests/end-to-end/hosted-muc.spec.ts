@@ -453,21 +453,19 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await erin.joinRoom(muc);
 		});
 
-		it('removes an occupant who bounces a delivery error, telling the others with 333 (R19)', async () => {
-			// What the room gets back when a stanza it sent to erin could not be delivered
+		it('removes an occupant who bounces a delivery error with 333, keeping them a member who can join again (R19, R4)', async () => {
+			// What the room gets back when a stanza it sent to erin could not be delivered (RFC 6120 §8.3.3.13)
 			await erin.send(
 				xml(
 					'message',
 					{ to: `${muc}/${owner.username}`, type: 'error' },
-					xml('error', { type: 'cancel' }, xml('recipient-unavailable', { xmlns: NS.stanzas })),
+					xml('error', { type: 'wait' }, xml('recipient-unavailable', { xmlns: NS.stanzas })),
 				),
 			);
 
 			const removed = await dave.waitFor(isOccupantPresence(muc, erin.username, { type: 'unavailable' }), "erin's removal");
 			assert.deepEqual(statusCodes(removed), ['333']);
-		});
 
-		it('keeps the unreachable occupant a member, so they can join the group again (R19, R4)', async () => {
 			await sleep(DUPLICATE_SETTLE_MS);
 			assert.ok((await listMemberUsernames(owner, room)).includes(erin.bareJid), 'erin lost her membership');
 
