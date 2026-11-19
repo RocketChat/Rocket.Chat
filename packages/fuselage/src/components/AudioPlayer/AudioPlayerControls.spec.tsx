@@ -5,13 +5,31 @@ import userEvent from '@testing-library/user-event';
 import * as stories from './AudioPlayerControls.stories';
 import { render } from '../../testing';
 
-const { Idle, Playing, LongDuration, Loading, LoadError, Waveform } = composeStories(stories);
+const { Idle, Playing, LongDuration, Loading, LoadError, WithDownload, Waveform } = composeStories(stories);
 
 describe('[AudioPlayerControls Component]', () => {
 	it('shows elapsed and total time while idle', () => {
 		render(<Idle />);
 		expect(screen.getByText('0:00 / 2:15')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Play' })).toBeEnabled();
+	});
+
+	it('toggles playback and cycles the speed', async () => {
+		const onTogglePlay = jest.fn();
+		const onChangePlaybackSpeed = jest.fn();
+		render(<Idle onTogglePlay={onTogglePlay} onChangePlaybackSpeed={onChangePlaybackSpeed} />);
+		await userEvent.click(screen.getByRole('button', { name: 'Play' }));
+		await userEvent.click(screen.getByRole('button', { name: 'Change Playback Speed' }));
+		expect(onTogglePlay).toHaveBeenCalledTimes(1);
+		expect(onChangePlaybackSpeed).toHaveBeenCalledTimes(1);
+	});
+
+	it('offers a download link only when asked to', () => {
+		const { unmount } = render(<Idle />);
+		expect(screen.queryByRole('link', { name: 'Download Audio File' })).not.toBeInTheDocument();
+		unmount();
+		render(<WithDownload downloadHref='/file.mp3' />);
+		expect(screen.getByRole('link', { name: 'Download Audio File' })).toHaveAttribute('href', '/file.mp3');
 	});
 
 	it('shows elapsed and total time while playing', () => {
