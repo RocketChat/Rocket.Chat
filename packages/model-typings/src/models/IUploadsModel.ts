@@ -24,4 +24,9 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 		originalFileId: string,
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+
+	findByRoomIds<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rids: IRoom['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

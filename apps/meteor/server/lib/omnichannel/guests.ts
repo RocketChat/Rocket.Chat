@@ -10,6 +10,7 @@ import {
 	ReadReceiptsArchive,
 	Subscriptions,
 	LivechatContacts,
+	Uploads,
 	Users,
 } from '@rocket.chat/models';
 import UAParser from 'ua-parser-js';
@@ -111,21 +112,9 @@ async function cleanGuestHistory(_id: string) {
 	const rooms = await LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } }).toArray();
 	const roomIds = rooms.map(({ _id }) => _id);
 	if (roomIds.length) {
-		const { completedRoomIds, errors: fileErrors } = await removeGuestFiles(roomIds);
-		const cleanupErrors = [...fileErrors];
+		const { completedRoomIds, errors: cleanupErrors } = await removeGuestRoomFilesAndSubscriptions(roomIds);
 
 		if (completedRoomIds.length) {
-			try {
-				await Subscriptions.removeByRoomIds(completedRoomIds, {
-					async onTrash(doc) {
-						void notifyOnSubscriptionChanged(doc, 'removed');
-					},
-				});
-			} catch (error) {
-				cleanupErrors.push(error);
-				throwCleanupErrors(cleanupErrors, 'error-cleaning-guest-history');
-			}
-
 			const cleanupResults = await Promise.allSettled([
 				Messages.removeByRoomIds(completedRoomIds),
 				ReadReceipts.removeByRoomIds(completedRoomIds),
@@ -138,22 +127,25 @@ async function cleanGuestHistory(_id: string) {
 	}
 
 	await LivechatRooms.removeByVisitorId(_id);
+	if (roomIds.length) {
+		await removeRemainingRoomUploads(roomIds);
+	}
 
 	const livechatInquiries = await LivechatInquiry.findByVisitorIds([_id]).toArray();
 	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
 	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }
 
-const GUEST_FILE_CLEANUP_CONCURRENCY = 5;
+const GUEST_ROOM_CLEANUP_CONCURRENCY = 5;
 
 /**
- * Removes room uploads with bounded concurrency and returns each room's cleanup result.
+ * Removes each room's uploads and subscriptions with bounded concurrency, and reports which rooms are ready for their history to be deleted.
  */
-async function removeGuestFiles(roomIds: string[]) {
+async function removeGuestRoomFilesAndSubscriptions(roomIds: string[]) {
 	let nextRoomIndex = 0;
 	const errors: unknown[] = [];
 	const completedRoomIds = new Set<string>();
-	const workerCount = Math.min(roomIds.length, GUEST_FILE_CLEANUP_CONCURRENCY);
+	const workerCount = Math.min(roomIds.length, GUEST_ROOM_CLEANUP_CONCURRENCY);
 
 	await Promise.all(
 		Array.from({ length: workerCount }, async () => {
@@ -161,6 +153,11 @@ async function removeGuestFiles(roomIds: string[]) {
 				const roomId = roomIds[nextRoomIndex++];
 				try {
 					await FileUpload.removeFilesByRoomId(roomId);
+					await Subscriptions.removeByRoomId(roomId, {
+						async onTrash(doc) {
+							void notifyOnSubscriptionChanged(doc, 'removed');
+						},
+					});
 					completedRoomIds.add(roomId);
 				} catch (error) {
 					errors.push(error);
@@ -170,6 +167,16 @@ async function removeGuestFiles(roomIds: string[]) {
 	);
 
 	return { completedRoomIds: roomIds.filter((roomId) => completedRoomIds.has(roomId)), errors };
+}
+
+/**
+ * Removes uploads still stored for the guest's deleted rooms, including those whose upload finished while cleanup was running.
+ */
+async function removeRemainingRoomUploads(roomIds: string[]) {
+	const uploadStore = FileUpload.getStore('Uploads');
+	for await (const upload of Uploads.findByRoomIds(roomIds, { projection: { _id: 1 } })) {
+		await uploadStore.deleteById(upload._id);
+	}
 }
 
 /**
