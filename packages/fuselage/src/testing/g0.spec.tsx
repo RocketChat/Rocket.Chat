@@ -1,7 +1,7 @@
 // Fixtures break these rules on purpose, to prove the helpers catch it.
 /* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/anchor-is-valid, jsx-a11y/interactive-supports-focus */
-import { render } from '@testing-library/react';
-import { createRef, useState } from 'react';
+import { render, screen } from '@testing-library/react';
+import { createRef, useRef, useState } from 'react';
 import { fn } from 'storybook/test';
 
 import {
@@ -151,37 +151,37 @@ describe('ariaSnapshot and classContract', () => {
 	});
 
 	it('lists the rcx classes per element path without generated classes', () => {
-		const { container } = render(
+		render(
 			<ul className='rcx-list rcx-css-abc123'>
 				<li className='rcx-item rcx-a'>1</li>
 				<li>2</li>
 			</ul>,
 		);
-		expect(classContract(container.firstElementChild as Element)).toBe('root: rcx-list\nroot > li[0]: rcx-a rcx-item');
+		expect(classContract(screen.getByRole('list'))).toBe('root: rcx-list\nroot > li[0]: rcx-a rcx-item');
 	});
 });
 
 describe('keyboard helpers', () => {
 	it('checks Enter and Space activation, and the tab order', async () => {
 		const onClick = fn();
-		const { getByText } = render(
+		render(
 			<>
 				<button onClick={onClick}>one</button>
 				<button>two</button>
 			</>,
 		);
-		await expectKeyboardActivation(getByText('one'), onClick);
-		await expectTabOrder([getByText('one'), getByText('two')]);
+		await expectKeyboardActivation(screen.getByText('one'), onClick);
+		await expectTabOrder([screen.getByText('one'), screen.getByText('two')]);
 	});
 
 	it('detects a button that ignores the keyboard', async () => {
 		const onClick = fn();
-		const { getByText } = render(
+		render(
 			<span tabIndex={0} onClick={onClick}>
 				one
 			</span>,
 		);
-		await expect(expectKeyboardActivation(getByText('one'), onClick)).rejects.toThrow();
+		await expect(expectKeyboardActivation(screen.getByText('one'), onClick)).rejects.toThrow();
 	});
 
 	it('checks a composite list where Tab never enters the next row', async () => {
@@ -207,8 +207,8 @@ describe('keyboard helpers', () => {
 				</>
 			);
 		};
-		const { container, getByText } = render(<Rows />);
-		await expectCompositeList(container.querySelector('ul') as HTMLElement, getByText('row 0'));
+		render(<Rows />);
+		await expectCompositeList(screen.getByRole('list'), screen.getByText('row 0'));
 	});
 
 	it('finds the rows of a list that uses Fuselage item classes', async () => {
@@ -217,6 +217,7 @@ describe('keyboard helpers', () => {
 			return (
 				<>
 					<div
+						data-testid='rows'
 						onKeyDown={(event) => {
 							if (event.key === 'ArrowDown') setActive(1);
 							if (event.key === 'ArrowUp') setActive(0);
@@ -234,8 +235,8 @@ describe('keyboard helpers', () => {
 				</>
 			);
 		};
-		const { container, getByText } = render(<Rows />);
-		await expectCompositeList(container.firstElementChild as HTMLElement, getByText('row 0'));
+		render(<Rows />);
+		await expectCompositeList(screen.getByTestId('rows'), screen.getByText('row 0'));
 	});
 
 	it('checks a combobox that moves aria-activedescendant', async () => {
@@ -266,38 +267,43 @@ describe('keyboard helpers', () => {
 				</>
 			);
 		};
-		const { getByRole, getAllByRole } = render(<Combo />);
-		await expectCombobox(getByRole('combobox'), getAllByRole('option'), onPick);
+		render(<Combo />);
+		await expectCombobox(screen.getByRole('combobox'), screen.getAllByRole('option'), onPick);
 	});
 
 	it('checks a menu that opens, moves focus and closes on Escape', async () => {
 		const Menu = () => {
 			const [open, setOpen] = useState(false);
+			const triggerRef = useRef<HTMLButtonElement>(null);
+			const secondItemRef = useRef<HTMLButtonElement>(null);
 			return (
 				<>
-					<button onKeyDown={(event) => event.key === 'Enter' && setOpen(true)}>trigger</button>
+					<button ref={triggerRef} onKeyDown={(event) => event.key === 'Enter' && setOpen(true)}>
+						trigger
+					</button>
 					{open && (
 						<div
 							role='menu'
 							onKeyDown={(event) => {
-								const items = [...event.currentTarget.querySelectorAll<HTMLElement>('[role=menuitem]')];
-								if (event.key === 'ArrowDown') items[1].focus();
+								if (event.key === 'ArrowDown') secondItemRef.current?.focus();
 								if (event.key === 'Escape') {
 									setOpen(false);
-									document.querySelector<HTMLElement>('button')?.focus();
+									triggerRef.current?.focus();
 								}
 							}}
 						>
 							<button role='menuitem' ref={(el) => el?.focus()}>
 								a
 							</button>
-							<button role='menuitem'>b</button>
+							<button ref={secondItemRef} role='menuitem'>
+								b
+							</button>
 						</div>
 					)}
 				</>
 			);
 		};
-		const { getByText, queryAllByRole } = render(<Menu />);
-		await expectMenu(getByText('trigger'), () => queryAllByRole('menuitem'));
+		render(<Menu />);
+		await expectMenu(screen.getByText('trigger'), () => screen.queryAllByRole('menuitem'));
 	});
 });

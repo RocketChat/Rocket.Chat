@@ -14,7 +14,7 @@ export function validateCustomFields(
 	const validValues: Record<string, string> = {};
 
 	for (const cf of allowedCustomFields) {
-		if (!customFields.hasOwnProperty(cf._id)) {
+		if (!Object.hasOwn(customFields, cf._id)) {
 			if (cf.required && !ignoreValidationErrors) {
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
 			}
