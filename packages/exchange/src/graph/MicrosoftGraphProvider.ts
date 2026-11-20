@@ -72,11 +72,21 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 	private readonly tokenClient: GraphTokenClient;
 
-	private readonly graphHost: string;
+	private readonly configuredGraphHost: string;
 
 	constructor(config: GraphTokenClientConfig, tokenClient = new GraphTokenClient(config)) {
 		this.tokenClient = tokenClient;
-		this.graphHost = (config.graphHost || DEFAULT_GRAPH_HOST).replace(/\/+$/, '');
+		this.configuredGraphHost = config.graphHost || DEFAULT_GRAPH_HOST;
+	}
+
+	private get graphHost(): string {
+		try {
+			return new URL(this.configuredGraphHost).origin;
+		} catch {
+			throw new ExchangeError('endpoint-not-recognized', 'The configured host is not a Microsoft endpoint', {
+				detail: this.configuredGraphHost,
+			});
+		}
 	}
 
 	public async testConnection(): Promise<void> {
