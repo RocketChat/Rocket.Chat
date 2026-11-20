@@ -39,10 +39,6 @@ export default {
 		},
 	},
 	argTypes: {
-		collapsed: {
-			control: 'boolean',
-			description: 'Renders the sidebar in its collapsed (narrow) state.',
-		},
 		children: {
 			control: false,
 			description: 'Content of the sidebar.',

@@ -378,8 +378,8 @@
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -441,21 +441,12 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 46,
-		"nested": 45,
-		"combinators": 2,
+		"rules": 22,
+		"nested": 21,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Sidebar/SidebarFooter/SidebarFooter.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/SidebarItem/SidebarItem.styles.scss": {
@@ -465,15 +456,6 @@
 		"important": 0,
 		"specificityBumps": 1,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Sidebar/SidebarMedia/SidebarMedia.styles.scss": {
-		"rules": 4,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/variables.scss": {
@@ -486,12 +468,12 @@
 		"displayContents": 0
 	},
 	"Sidepanel/Sidepanel.styles.scss": {
-		"rules": 9,
-		"nested": 7,
+		"rules": 4,
+		"nested": 3,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Skeleton/Skeleton.styles.scss": {
