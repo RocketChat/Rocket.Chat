@@ -79,10 +79,6 @@ const createPendingFileImporter = (httpMock: ReturnType<typeof createMockHttpMod
 				getProgress() {
 					return this.progress;
 				}
-
-				isCursorNotFoundError() {
-					return false;
-				}
 			},
 			ProgressStep: {
 				PREPARING_STARTED: 'preparing_started',
