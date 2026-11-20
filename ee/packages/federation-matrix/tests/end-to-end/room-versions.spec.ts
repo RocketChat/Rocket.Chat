@@ -151,9 +151,7 @@ const roomVersions = [
 					?.timeline.find((event) => event.getType() === 'm.room.message' && event.getContent().body === messageText);
 
 			it(`should create a version ${roomVersion} DM on Synapse`, async () => {
-				const room = await hs1AdminApp.createDM([rcUserMatrixId], requestedVersion);
-				assert(room);
-				matrixRoomId = room.roomId;
+				matrixRoomId = (await hs1AdminApp.createDM([rcUserMatrixId], requestedVersion)).roomId;
 
 				await retry(
 					'waiting for Synapse to sync the room state',
