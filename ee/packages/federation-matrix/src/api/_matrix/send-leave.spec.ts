@@ -22,12 +22,13 @@ const sdk = federationSDK as unknown as Record<keyof typeof federationSDK, jest.
 
 const roomId = '!room:remote.example';
 const eventId = '$leave';
+const verifiedOrigin = 'remote.example';
 
 const buildLeaveEvent = (sender: string) => ({
 	type: 'm.room.member',
 	sender,
 	state_key: sender,
-	origin: 'remote.example',
+	origin: 'unverified.example',
 	origin_server_ts: 1600000000000,
 	depth: 10,
 	content: { membership: 'leave' },
@@ -39,7 +40,7 @@ const sendLeave = (event: ReturnType<typeof buildLeaveEvent>) =>
 		.request(`/v2/send_leave/${encodeURIComponent(roomId)}/${encodeURIComponent(eventId)}`, {
 			method: 'PUT',
 			headers: {
-				'Authorization': 'X-Matrix origin="remote.example"',
+				'Authorization': 'X-Matrix origin="unverified.example"',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(event),
@@ -48,35 +49,30 @@ const sendLeave = (event: ReturnType<typeof buildLeaveEvent>) =>
 describe('PUT /_matrix/federation/v2/send_leave/:roomId/:eventId', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		sdk.verifyRequestSignature.mockResolvedValue('remote.example');
-		sdk.sendLeave.mockImplementation(async (_roomId: string, _eventId: string, event: { sender: string }, origin: string) => {
-			if (event.sender.split(':')[1] !== origin) {
-				throw new ForbiddenError(`Leave sender ${event.sender} does not belong to ${origin}`);
-			}
-		});
+		sdk.verifyRequestSignature.mockResolvedValue(verifiedOrigin);
+		sdk.sendLeave.mockResolvedValue(undefined);
 	});
 
-	it('should accept a leave sent by a user of the requesting server', async () => {
+	it('should hand the leave to the SDK with the server that signed the request', async () => {
 		const event = buildLeaveEvent('@alice:remote.example');
 
 		const response = await sendLeave(event);
 
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual({});
-		expect(sdk.sendLeave).toHaveBeenCalledWith(roomId, eventId, event, 'remote.example');
+		expect(sdk.sendLeave).toHaveBeenCalledWith(roomId, eventId, event, verifiedOrigin);
 	});
 
-	it('should answer 403 when the leave sender belongs to another server than the requesting one', async () => {
-		const event = buildLeaveEvent('@victim:rocketchat.local');
+	it('should answer 403 with the SDK message when the SDK forbids the leave', async () => {
+		sdk.sendLeave.mockRejectedValue(new ForbiddenError('Leave sender @victim:rocketchat.local does not belong to remote.example'));
 
-		const response = await sendLeave(event);
+		const response = await sendLeave(buildLeaveEvent('@victim:rocketchat.local'));
 
 		expect(response.status).toBe(403);
 		expect(await response.json()).toEqual({
 			errcode: 'M_FORBIDDEN',
 			error: 'Leave sender @victim:rocketchat.local does not belong to remote.example',
 		});
-		expect(sdk.sendLeave).toHaveBeenCalledWith(roomId, eventId, event, 'remote.example');
 	});
 
 	it('should answer 403 when federation settings do not allow leaving the room', async () => {

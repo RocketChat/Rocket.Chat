@@ -21,38 +21,42 @@ class ForbiddenError extends Error {
 const sdk = federationSDK as unknown as Record<keyof typeof federationSDK, jest.Mock>;
 
 const roomId = '!room:remote.example';
+const verifiedOrigin = 'remote.example';
 
 const makeLeave = (userId: string) =>
 	getMatrixMakeLeaveRoutes()
 		.getHonoRouter()
 		.request(`/v1/make_leave/${encodeURIComponent(roomId)}/${encodeURIComponent(userId)}`, {
 			method: 'GET',
-			headers: { Authorization: 'X-Matrix origin="remote.example"' },
+			headers: { Authorization: 'X-Matrix origin="unverified.example"' },
 		});
 
 describe('GET /_matrix/federation/v1/make_leave/:roomId/:userId', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		sdk.verifyRequestSignature.mockResolvedValue('remote.example');
-		sdk.makeLeave.mockImplementation(async (_roomId: string, userId: string, origin: string) => {
-			if (userId.split(':')[1] !== origin) {
-				throw new ForbiddenError(`User ${userId} does not belong to ${origin}`);
-			}
-			return {
-				event: { type: 'm.room.member', sender: userId, state_key: userId, content: { membership: 'leave' }, origin_server_ts: 1 },
-				room_version: '12',
-			};
+		sdk.verifyRequestSignature.mockResolvedValue(verifiedOrigin);
+		sdk.makeLeave.mockResolvedValue({
+			event: {
+				type: 'm.room.member',
+				sender: '@alice:remote.example',
+				state_key: '@alice:remote.example',
+				content: { membership: 'leave' },
+				origin_server_ts: 1,
+			},
+			room_version: '12',
 		});
 	});
 
-	it('should build a leave for a user of the requesting server', async () => {
+	it('should build the leave for the server that signed the request', async () => {
 		const response = await makeLeave('@alice:remote.example');
 
 		expect(response.status).toBe(200);
-		expect(sdk.makeLeave).toHaveBeenCalledWith(roomId, '@alice:remote.example', 'remote.example');
+		expect(sdk.makeLeave).toHaveBeenCalledWith(roomId, '@alice:remote.example', verifiedOrigin);
 	});
 
-	it('should answer 403 when the user belongs to another server than the requesting one', async () => {
+	it('should answer 403 with the SDK message when the SDK forbids the leave', async () => {
+		sdk.makeLeave.mockRejectedValue(new ForbiddenError('User @victim:rocketchat.local does not belong to remote.example'));
+
 		const response = await makeLeave('@victim:rocketchat.local');
 
 		expect(response.status).toBe(403);
@@ -60,7 +64,6 @@ describe('GET /_matrix/federation/v1/make_leave/:roomId/:userId', () => {
 			errcode: 'M_FORBIDDEN',
 			error: 'User @victim:rocketchat.local does not belong to remote.example',
 		});
-		expect(sdk.makeLeave).toHaveBeenCalledWith(roomId, '@victim:rocketchat.local', 'remote.example');
 	});
 
 	it('should answer 403 when federation settings do not allow leaving the room', async () => {
