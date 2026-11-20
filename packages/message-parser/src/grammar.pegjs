@@ -423,8 +423,9 @@ References
 
 // Fast-path: bulk consume chars that can't start ]( or ] [ and aren't emphasis markers
 LinkTitle
-  = (Whitespace / Emphasis)
-  / anyTitle:$[^\]()*_~ \t\r\n]+ { return plain(anyTitle) }
+  = "\\" char:("[" / "]" / "(" / ")" / "\\" / "*" / "_" / "~" / "`") { return plain(char); }
+  / (Whitespace / Emphasis)
+  / anyTitle:$[^\\\]()*_~ \t\r\n]+ { return plain(anyTitle) }
   / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
