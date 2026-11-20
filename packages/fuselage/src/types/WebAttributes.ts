@@ -1,4 +1,6 @@
-import type { AnchorHTMLAttributes, MouseEvent, Ref } from 'react';
+import type { AnchorHTMLAttributes, HTMLAttributes, MouseEvent, Ref } from 'react';
+
+import type { WebInteractionHandlers } from '../helpers/pickWebInteractionHandlers';
 
 /** The `data-*` attributes tests and the app select elements by. */
 export type WebDataAttributes = {
@@ -28,3 +30,18 @@ export type WebPressAlias<TElement extends Element> = {
 
 /** A contract as the web renderer takes it: its `ref` points at the element, and the web attributes are added. */
 export type WebProps<TContract, TElement extends Element> = Omit<TContract, 'ref'> & WebAttributes<TElement>;
+
+/**
+ * A contract as a web renderer that is one plain element takes it: the deprecated press alias, the handlers a trigger or
+ * a tooltip hands the element, and its title and focus order.
+ */
+export type WebElementProps<TContract, TElement extends HTMLElement> = WebProps<TContract, TElement> &
+	WebPressAlias<TElement> &
+	WebInteractionHandlers<TElement> &
+	Pick<HTMLAttributes<TElement>, 'title' | 'tabIndex'>;
+
+/** `WebElementProps` of a part that is always a `div`, named here so a frame module names no DOM type. */
+export type WebDivProps<TContract> = WebElementProps<TContract, HTMLDivElement>;
+
+/** `WebElementProps` of a part that is always a `span`. */
+export type WebSpanProps<TContract> = WebElementProps<TContract, HTMLSpanElement>;

@@ -279,12 +279,12 @@
 		"displayContents": 0
 	},
 	"Message/MessageDivider/MessageDivider.styles.scss": {
-		"rules": 7,
-		"nested": 6,
+		"rules": 2,
+		"nested": 0,
 		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
@@ -294,15 +294,6 @@
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/MessageMetrics/MessageMetrics.styles.scss": {
-		"rules": 5,
-		"nested": 4,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Message/MessageReactions/MessageReactions.styles.scss": {
@@ -315,8 +306,8 @@
 		"displayContents": 0
 	},
 	"Message/MessageStatusIndicator/MessageStatusIndicator.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 2,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -342,9 +333,9 @@
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 41,
-		"nested": 39,
-		"combinators": 12,
+		"rules": 23,
+		"nested": 21,
+		"combinators": 11,
 		"important": 0,
 		"specificityBumps": 1,
 		"negativeMargins": 0,
