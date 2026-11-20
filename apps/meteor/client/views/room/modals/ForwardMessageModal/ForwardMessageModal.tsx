@@ -167,7 +167,18 @@ const ForwardMessageModal = ({ onClose, permalink, message, dmRecipients }: Forw
 						)}
 					</Field>
 					<Field>
-						<QuoteAttachment attachment={attachment} />
+						<QuoteAttachment
+							attachment={attachment}
+							source={{
+								rid: message.rid,
+								mid: message._id,
+								username: message.u.username,
+								name: message.u.name,
+								ts: message.ts,
+								drid: message.drid,
+								pinned: message.pinned,
+							}}
+						/>
 					</Field>
 				</FieldGroup>
 			</ModalContent>

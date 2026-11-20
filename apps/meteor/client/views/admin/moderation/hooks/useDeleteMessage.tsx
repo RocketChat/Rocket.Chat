@@ -3,6 +3,8 @@ import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { useMediaPlayer } from '../../../../providers/MediaPlayerProvider/MediaPlayerContext';
+
 const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 	const { t } = useTranslation();
 	const deleteMessage = useEndpoint('POST', '/v1/chat.delete');
@@ -10,6 +12,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
+	const { track, close: closeMediaPlayer } = useMediaPlayer();
 
 	const handleDeleteMessages = useMutation({
 		mutationFn: deleteMessage,
@@ -18,6 +21,11 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 			setModal();
 		},
 		onSuccess: async () => {
+			// Deletion streams are authorized by room access, which a moderator may not have.
+			if (track?.mid === mid || track?.originMid === mid) {
+				closeMediaPlayer();
+			}
+
 			await handleDismissMessage.mutateAsync({ msgId: mid });
 		},
 	});
