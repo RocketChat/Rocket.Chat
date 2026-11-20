@@ -4,5 +4,7 @@ export * from './DmBlockUserProps';
 export * from './DmCreateProps';
 export * from './DmFileProps';
 export * from './DmLeaveProps';
+export * from './DmListProps';
 export * from './DmMembersProps';
+export * from './DmMessagesOthersProps';
 export * from './DmMessagesProps';
