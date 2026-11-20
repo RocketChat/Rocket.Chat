@@ -13,7 +13,10 @@ import {
 	isDmFileProps,
 	isDmHistoryProps,
 	isDmLeaveProps,
+	isDmListEveryoneProps,
+	isDmListProps,
 	isDmMemberProps,
+	isDmMessagesOthersProps,
 	isDmMessagesProps,
 	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
@@ -780,6 +783,7 @@ const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; c
 const dmMessagesOthersEndpointsProps = {
 	authRequired: true as const,
 	permissionsRequired: ['view-room-administration'],
+	query: isDmMessagesOthersProps,
 	response: {
 		200: paginatedMessagesResponseSchema,
 		400: validateBadRequestErrorResponse,
@@ -833,6 +837,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 
 const dmListEndpointsProps = {
 	authRequired: true as const,
+	query: isDmListProps,
 	response: {
 		200: paginatedImsResponseSchema,
 		400: validateBadRequestErrorResponse,
@@ -874,6 +879,7 @@ const dmListAction = <Path extends string>(_name: Path): TypedAction<typeof dmLi
 const dmListEveryoneEndpointsProps = {
 	authRequired: true as const,
 	permissionsRequired: ['view-room-administration'],
+	query: isDmListEveryoneProps,
 	response: {
 		200: paginatedImsResponseSchema,
 		400: validateBadRequestErrorResponse,
