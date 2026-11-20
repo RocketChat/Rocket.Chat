@@ -112,9 +112,6 @@
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
 	],
-	"rcx-sidebar-item": [
-		"packages/fuselage/src/components/Item/Item.styles.scss: .rcx-sidebar-item .rcx-item__row > .rcx-item__actions {"
-	],
 	"rcx-check-box": [
 		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
 	],

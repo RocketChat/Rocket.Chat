@@ -189,8 +189,8 @@
 		"displayContents": 0
 	},
 	"Field/Field.styles.scss": {
-		"rules": 8,
-		"nested": 7,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -198,9 +198,9 @@
 		"displayContents": 0
 	},
 	"FieldGroup/FieldGroup.styles.scss": {
-		"rules": 4,
-		"nested": 2,
-		"combinators": 2,
+		"rules": 1,
+		"nested": 0,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -234,7 +234,7 @@
 		"displayContents": 0
 	},
 	"InputBox/InputBox.styles.scss": {
-		"rules": 35,
+		"rules": 36,
 		"nested": 26,
 		"combinators": 7,
 		"important": 0,
@@ -252,17 +252,17 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 88,
-		"nested": 60,
-		"combinators": 10,
+		"rules": 22,
+		"nested": 7,
+		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 6,
-		"negativeMargins": 2,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Label/Label.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+	"Listbox/Listbox.styles.scss": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -270,8 +270,8 @@
 		"displayContents": 0
 	},
 	"Menu/Menu.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 5,
+		"nested": 3,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -324,11 +324,11 @@
 		"displayContents": 0
 	},
 	"Message/MessageSystem/MessageSystem.styles.scss": {
-		"rules": 4,
+		"rules": 5,
 		"nested": 3,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -346,16 +346,16 @@
 		"nested": 39,
 		"combinators": 12,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 4,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 9,
+		"rules": 10,
 		"nested": 8,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
@@ -391,13 +391,13 @@
 		"nested": 23,
 		"combinators": 1,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Options/Options.styles.scss": {
-		"rules": 5,
-		"nested": 3,
+		"rules": 7,
+		"nested": 5,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -441,11 +441,11 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 46,
-		"nested": 45,
+		"rules": 50,
+		"nested": 49,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 7,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -463,7 +463,7 @@
 		"nested": 21,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -490,7 +490,7 @@
 		"nested": 7,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},

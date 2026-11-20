@@ -27,7 +27,7 @@ export const tokens = {
 		x64: 64,
 	},
 	radius: { 'zero': 0, 'default': 1, 'small': 2, 'medium': 4, 'large': 8, 'extra-large': 20, 'full': 9999 },
-	zIndex: { raised: 1, overlap: 2, sticky: 10, overlay: 100 },
+	zIndex: { raised: 1, overlap: 2, sticky: 10, overlay: 100, dropTarget: 9996, dragShield: 9997, dragPreview: 9999, dropIndicator: 10000 },
 } as const;
 
 /** The same tokens for the web, in `rem` where a length follows the user's font size. */
@@ -65,7 +65,7 @@ export const webTokens = {
 		'extra-large': '1.25rem',
 		'full': '624.9375rem',
 	},
-	zIndex: { raised: 1, overlap: 2, sticky: 10, overlay: 100 },
+	zIndex: { raised: 1, overlap: 2, sticky: 10, overlay: 100, dropTarget: 9996, dragShield: 9997, dragPreview: 9999, dropIndicator: 10000 },
 } as const;
 
 /**

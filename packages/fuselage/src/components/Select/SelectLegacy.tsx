@@ -1,4 +1,4 @@
-import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ElementType, MouseEvent, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -98,7 +98,7 @@ function SelectLegacy({
 		hide();
 	});
 
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const containerRef = useRef<HTMLElement>(null);
 
 	const didMount = useRef(false);
 	useEffect(() => {
@@ -172,9 +172,8 @@ function SelectLegacy({
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
 			</Box>
-			<PositionAnimated visible={visible} anchor={containerRef}>
+			<PositionAnimated visible={visible} anchor={containerRef} width='anchor'>
 				<_Options
-					width={borderBoxSize.inlineSize}
 					role='listbox'
 					filter={filter}
 					options={filteredOptions}
