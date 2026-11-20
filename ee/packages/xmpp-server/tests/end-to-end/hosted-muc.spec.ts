@@ -3,6 +3,7 @@ import { after, before, describe, it } from 'node:test';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
+import { xml } from '@xmpp/client';
 
 import { DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config';
 import { isGroupchat, isOccupantPresence, isRoomInvite, isRoomSubject, replacedId, statusCodes } from './helper/predicates';
@@ -433,6 +434,44 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 				},
 				federationPolling,
 			);
+		});
+	});
+
+	describe('when an occupant cannot be reached', () => {
+		let dave: XmppUser;
+		let erin: XmppUser;
+		let room: IRoom;
+		let muc: string;
+
+		before(async () => {
+			dave = await registerXmppUser(rc, 'dave');
+			erin = await registerXmppUser(rc, 'erin');
+			room = await createHostedRoom(rc, owner, { type: 'p', name: `xe2e-ghost-${uniqueSuffix()}`, members: [dave.bareJid, erin.bareJid] });
+			muc = mucJidOf(room);
+			await Promise.all([dave.waitFor(isRoomInvite(muc), 'the invitation'), erin.waitFor(isRoomInvite(muc), 'the invitation')]);
+			await dave.joinRoom(muc);
+			await erin.joinRoom(muc);
+		});
+
+		it('removes an occupant who bounces a delivery error with 333, keeping them a member who can join again (R19, R4)', async () => {
+			// What the room gets back when a stanza it sent to erin could not be delivered (RFC 6120 §8.3.3.13)
+			await erin.send(
+				xml(
+					'message',
+					{ to: `${muc}/${owner.username}`, type: 'error' },
+					xml('error', { type: 'wait' }, xml('recipient-unavailable', { xmlns: NS.stanzas })),
+				),
+			);
+
+			const removed = await dave.waitFor(isOccupantPresence(muc, erin.username, { type: 'unavailable' }), "erin's removal");
+			assert.deepEqual(statusCodes(removed), ['333']);
+
+			await sleep(DUPLICATE_SETTLE_MS);
+			assert.ok((await listMemberUsernames(owner, room)).includes(erin.bareJid), 'erin lost her membership');
+
+			const after = dave.cursor();
+			await erin.joinRoom(muc);
+			await dave.waitFor(isOccupantPresence(muc, erin.username), 'erin back in the room', { after });
 		});
 	});
 

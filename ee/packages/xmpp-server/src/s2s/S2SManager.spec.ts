@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { S2SManager } from './S2SManager';
 import { resolveConfig } from '../config';
-import { QueueOverflowError } from '../errors';
+import { ConnectionFailedError, QueueOverflowError } from '../errors';
 import type { XMPPServerEventMap } from '../events';
 import type { Logger } from '../logger';
 import { xml } from '../xml/build';
@@ -80,7 +80,7 @@ describe('S2SManager reconnection', () => {
 		await manager.startListener();
 
 		try {
-			await expect(manager.sendStanza(message(1))).rejects.toThrow();
+			await expect(manager.sendStanza(message(1))).rejects.toBeInstanceOf(ConnectionFailedError);
 		} finally {
 			await manager.stopAll();
 		}

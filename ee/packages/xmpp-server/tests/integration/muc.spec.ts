@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { XMPPServer } from '../../src/XMPPServer';
+import type { XMPPServerEventMap } from '../../src/events';
 import type { Logger } from '../../src/logger';
 import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
 
@@ -180,23 +181,29 @@ describe('MUC integration: hosted room joined across servers', () => {
 		expect(hostSaw).toBe('bob:hello all');
 	});
 
-	// Known defect: ../../docs/specs/hosted-muc.md#d2-occupants-are-never-removed-when-their-servers-connection-drops
 	// Last in the file: stopping the remote server ends the S2S sessions the tests above rely on.
-	it.skip('drops the occupants of a server whose connection is lost (hosted-muc D2)', async () => {
+	it('removes an occupant once the room cannot reach their server, but not when the connection merely closes (hosted-muc R19)', async () => {
 		hostServer.mucCreateRoom({ roomId: 'dropped', public: true });
 
 		const roomJid = `dropped@${hostServer.mucDomain}`;
 		const hostSideJoins: string[] = [];
-		const hostSideLeaves: string[] = [];
+		const hostSideLeaves: XMPPServerEventMap['muc.occupantLeft'][] = [];
+		const lostOutbound: string[] = [];
 		hostServer.on('muc.occupantJoined', (e) => hostSideJoins.push(e.nick));
-		hostServer.on('muc.occupantLeft', (e) => hostSideLeaves.push(e.nick));
+		hostServer.on('muc.occupantLeft', (e) => hostSideLeaves.push(e));
+		hostServer.on('connection.lost', (e) => e.direction === 'outbound' && lostOutbound.push(e.domain));
 
 		await remoteServer.mucJoinRemoteRoom({ localJid: 'heidi@b.localhost', roomJid, nick: 'heidi' });
 		await waitFor(() => (hostSideJoins.includes('heidi') ? true : undefined));
 
 		await remoteServer.stop();
+		await waitFor(() => (lostOutbound.includes('b.localhost') ? true : undefined));
+		expect(hostServer.listMucOccupants('dropped')?.map((o) => o.nick)).toContain('heidi');
 
-		await waitFor(() => (hostSideLeaves.includes('heidi') ? true : undefined));
+		hostServer.mucBroadcastMessage({ roomId: 'dropped', fromNick: 'system', body: 'anyone there?' });
+
+		const left = await waitFor(() => hostSideLeaves.find((e) => e.roomId === 'dropped'));
+		expect(left).toMatchObject({ nick: 'heidi', reason: 'unreachable' });
 		expect(hostServer.listMucOccupants('dropped')?.map((o) => o.nick)).not.toContain('heidi');
 	});
 });
