@@ -71,6 +71,8 @@ export const getThemePalette = (theme: Themes) => {
 			list: [
 				{ name: 'shadow-highlight', color: shadow.highlight },
 				{ name: 'shadow-danger', color: shadow.danger },
+				// `fuselage-tokens` has no such shadow: the danger Button's focus ring is this primitive in every theme.
+				{ name: 'shadow-extra-light-error', color: colors.r200 },
 				{ name: 'shadow-elevation-border', color: shadow['elevation-border'] },
 				{ name: 'shadow-elevation-1', color: shadow['elevation-1'] },
 				{

@@ -70,7 +70,6 @@ const ToggleButton = ({
 	return (
 		<IconButton
 			{...props}
-			label={label}
 			size={size}
 			variant={getButtonVariant({ secondary, danger: dangerWhenPressed && pressed })}
 			icon={<Icon size={glyphSize} color={glyphStatus} name={glyphName} />}

@@ -1,4 +1,5 @@
-import { Button } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Button, useStyle } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService } from '@rocket.chat/ui-contexts';
@@ -9,6 +10,17 @@ import { useTranslation } from 'react-i18next';
 import type { LoginErrorState, LoginErrors } from './LoginForm';
 
 const servicesSupportedByMeteor = ['saml', 'cas', 'ldap'];
+
+// The value ends up in a stylesheet, so one that is not a color is left out
+const isColor = (value?: string): value is string => Boolean(value) && (globalThis.CSS?.supports?.('color', value as string) ?? true);
+
+// The colors an admin set for the service replace the button's own in every state, as an inline style used to
+const adminColors = (color?: string, backgroundColor?: string) => css`
+	&[class][class] {
+		${isColor(color) ? `color: ${color};` : ''}
+		${isColor(backgroundColor) ? `background-color: ${backgroundColor};` : ''}
+	}
+`;
 
 const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
@@ -64,14 +76,15 @@ const LoginServicesButton = <T extends LoginService>({
 		});
 	}, [handler, setError, service, loginStyle]);
 
+	const colorsClassName = useStyle(adminColors(buttonLabelColor, buttonColor));
+
 	return (
 		<Button
 			icon={icon as IconName}
-			className={className}
+			className={[className, colorsClassName].filter(Boolean).join(' ')}
 			onClick={handleOnClick}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
 			disabled={disabled}
-			style={{ color: buttonLabelColor, backgroundColor: buttonColor }}
 		>
 			{buttonLabelText || t('Sign_in_with__provider__', { provider: title })}
 		</Button>

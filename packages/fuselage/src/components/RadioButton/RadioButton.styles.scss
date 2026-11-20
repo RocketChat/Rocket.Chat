@@ -1,23 +1,9 @@
 @use '../../styles/lengths.scss';
-@use '../../styles/mixins/selection-button.scss' as *;
-@use '../../styles/primitives/selection-button.scss';
+@use '../../styles/mixins/selection-states.scss' as *;
 
+// Web only. Category: the state of a hidden native input and the pseudo-element that draws the dot.
 .rcx-radio-button {
-	@include is-selection-button($checked: 'primary', $unchecked: 'empty');
-
-	&__input {
-		@extend %selection-button__input;
-	}
-
-	&__fake {
-		@extend %selection-button__fake;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		border-radius: lengths.border-radius(full);
-		inline-size: lengths.size(20);
-	}
+	@include selection-states($unchecked: empty, $checked: (':checked'));
 
 	&__input:checked + &__fake::before {
 		display: block;
