@@ -732,7 +732,7 @@ export class SynapseClient {
 	 * @returns Promise that resolves when cleanup is complete
 	 */
 	async close(): Promise<void> {
-		if (this.matrixClient) {
+		if (this._matrixClient) {
 			this.matrixClient.stopClient();
 			await this.matrixClient.store?.deleteAllData?.();
 			await this.matrixClient.clearStores?.();
