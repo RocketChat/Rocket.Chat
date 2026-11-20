@@ -165,6 +165,7 @@
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-composer": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",
+		"@rocket.chat/ui-contacts": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-emoji-picker": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",

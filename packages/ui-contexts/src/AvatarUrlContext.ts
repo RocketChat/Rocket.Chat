@@ -9,9 +9,11 @@ export type AvatarUrlContextValue = {
 		(params: { username: string; etag?: string | null }): string;
 	};
 	getRoomPathAvatar: (...args: any) => string;
+	getContactPathAvatar: (params: { contactId: string; etag?: string | null }) => string;
 };
 
 export const AvatarUrlContext = createContext<AvatarUrlContextValue>({
 	getUserPathAvatar: () => dummy,
 	getRoomPathAvatar: () => dummy,
+	getContactPathAvatar: () => dummy,
 });

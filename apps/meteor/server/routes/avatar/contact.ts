@@ -1,0 +1,72 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import type { IContact, IIncomingMessage, IUser } from '@rocket.chat/core-typings';
+import { Avatars, Contacts, Users } from '@rocket.chat/models';
+import type { NextFunction } from 'connect';
+import { parseCookie } from 'cookie';
+
+import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
+
+const isRequestFromOwner = async (req: IIncomingMessage, ownerUID: IUser['_id']): Promise<boolean> => {
+	const matchesOwner = async (uid?: string, token?: string): Promise<boolean> =>
+		Boolean(
+			uid && token && uid === ownerUID && (await Users.findOneByIdAndLoginToken(uid, hashLoginToken(token), { projection: { _id: 1 } })),
+		);
+
+	if (await matchesOwner(req.query.rc_uid, req.query.rc_token)) {
+		return true;
+	}
+
+	if (!req.headers.cookie) {
+		return false;
+	}
+
+	const { rc_uid: uid, rc_token: token } = parseCookie(req.headers.cookie);
+
+	return matchesOwner(uid, token);
+};
+
+export const contactAvatar = async function (request: IncomingMessage, res: ServerResponse, next: NextFunction) {
+	const req = request as IIncomingMessage;
+
+	if (!req.url) {
+		return;
+	}
+
+	let contactId: string;
+	try {
+		contactId = decodeURIComponent(req.url.slice(1).replace(/\?.*$/, ''));
+	} catch {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
+
+	const contact = await Contacts.findOneById<Pick<IContact, '_id' | 'uid' | 'displayName'>>(contactId, {
+		projection: { uid: 1, displayName: 1 },
+	});
+
+	if (!contact || !(await isRequestFromOwner(req, contact.uid))) {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
+
+	setCacheAndDispositionHeaders(req, res, 'private');
+
+	const file = await Avatars.findOneContactAvatar(contact._id);
+
+	if (file) {
+		void serveAvatarFile(file, req, res, next);
+		return;
+	}
+
+	if (!wasFallbackModified(req.headers['if-modified-since'])) {
+		res.writeHead(304);
+		res.end();
+		return;
+	}
+
+	serveSvgAvatarInRequestedFormat({ nameOrUsername: contact.displayName, req, res, useAllInitials: true });
+};
