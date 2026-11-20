@@ -12,7 +12,9 @@ export const moduleProblems = (name: string, text: string) => {
 	}
 
 	for (const match of text.matchAll(/(['"`])-?[\d.]+(?:[a-z]+|%)\1/gi)) {
-		problems.push(`${name}:${lineOf(text, match.index)}: ${match[0]} has a CSS unit, use space() or offScale()`);
+		problems.push(
+			`${name}:${lineOf(text, match.index)}: ${match[0]} has a CSS unit, use space(), offScale(), percent(), fraction() or ch()`,
+		);
 	}
 
 	for (const match of text.matchAll(/\b(?:hover|press|focus|focusVisible|focusWithin|disabled)Style\b/g)) {
