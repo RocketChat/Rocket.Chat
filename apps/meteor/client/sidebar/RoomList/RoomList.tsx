@@ -120,6 +120,7 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 				renderItem={(item, _itemIndex, group, _groupIndex, rowIndex) => (
 					<RoomListRowWrapper data-index={rowIndex} data-drag-key={item.rid} data-drag-kind='item' data-drag-group={group.key}>
 						<RoomListRow
+							key={item.rid}
 							data={itemData}
 							item={item}
 							videoConfActions={ringingCalls.get(item.rid)}

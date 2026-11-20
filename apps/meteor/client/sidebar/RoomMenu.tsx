@@ -26,10 +26,10 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const sections = useRoomMenuActions({ rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions });
 
 	if (isEnterprise && !hideDefaultOptions && type !== 'l') {
-		return <CategoryRoomMenu rid={rid} name={name} sections={sections} />;
+		return <CategoryRoomMenu key={rid} rid={rid} name={name} sections={sections} />;
 	}
 
-	return <GenericMenu detached title={t('Options')} size='mini' aria-keyshortcuts='alt' sections={sections} />;
+	return <GenericMenu key={rid} detached title={t('Options')} size='mini' aria-keyshortcuts='alt' sections={sections} />;
 };
 
 export default memo(RoomMenu);
