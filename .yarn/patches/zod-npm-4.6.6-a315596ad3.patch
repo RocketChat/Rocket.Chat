@@ -18,6 +18,20 @@ diff --git a/v4/classic/external.cjs b/v4/classic/external.cjs
  // iso must be exported from top-level https://github.com/colinhacks/zod/issues/4491
  var iso_js_1 = require("./iso.cjs");
  Object.defineProperty(exports, "ZodISODateTime", { enumerable: true, get: function () { return iso_js_1.ZodISODateTime; } });
+diff --git a/v4/classic/external.d.cts b/v4/classic/external.d.cts
+--- a/v4/classic/external.d.cts
++++ b/v4/classic/external.d.cts
+@@ -14,3 +14,2 @@
+ export { input, output } from "./in-out.cjs";
+-export * as locales from "../locales/index.cjs";
+ export { ZodISODateTime, ZodISODate, ZodISOTime, ZodISODuration } from "./iso.cjs";
+diff --git a/v4/classic/external.d.ts b/v4/classic/external.d.ts
+--- a/v4/classic/external.d.ts
++++ b/v4/classic/external.d.ts
+@@ -14,3 +14,2 @@
+ export { input, output } from "./in-out.js";
+-export * as locales from "../locales/index.js";
+ export { ZodISODateTime, ZodISODate, ZodISOTime, ZodISODuration } from "./iso.js";
 diff --git a/v4/classic/external.js b/v4/classic/external.js
 --- a/v4/classic/external.js
 +++ b/v4/classic/external.js
@@ -49,6 +63,20 @@ diff --git a/v4/core/index.cjs b/v4/core/index.cjs
  __exportStar(require("./registries.cjs"), exports);
  __exportStar(require("./doc.cjs"), exports);
  __exportStar(require("./compile.cjs"), exports);
+diff --git a/v4/core/index.d.cts b/v4/core/index.d.cts
+--- a/v4/core/index.d.cts
++++ b/v4/core/index.d.cts
+@@ -10,3 +10,2 @@
+ export * as regexes from "./regexes.cjs";
+-export * as locales from "../locales/index.cjs";
+ export * from "./registries.cjs";
+diff --git a/v4/core/index.d.ts b/v4/core/index.d.ts
+--- a/v4/core/index.d.ts
++++ b/v4/core/index.d.ts
+@@ -10,3 +10,2 @@
+ export * as regexes from "./regexes.js";
+-export * as locales from "../locales/index.js";
+ export * from "./registries.js";
 diff --git a/v4/core/index.js b/v4/core/index.js
 --- a/v4/core/index.js
 +++ b/v4/core/index.js
@@ -80,6 +108,20 @@ diff --git a/v4/mini/external.cjs b/v4/mini/external.cjs
  /** A special constant with type `never` */
  // export const NEVER = {} as never;
  // iso
+diff --git a/v4/mini/external.d.cts b/v4/mini/external.d.cts
+--- a/v4/mini/external.d.cts
++++ b/v4/mini/external.d.cts
+@@ -11,3 +11,2 @@
+ export { toJSONSchema } from "../core/json-schema-processors.cjs";
+-export * as locales from "../locales/index.cjs";
+ /** A special constant with type `never` */
+diff --git a/v4/mini/external.d.ts b/v4/mini/external.d.ts
+--- a/v4/mini/external.d.ts
++++ b/v4/mini/external.d.ts
+@@ -11,3 +11,2 @@
+ export { toJSONSchema } from "../core/json-schema-processors.js";
+-export * as locales from "../locales/index.js";
+ /** A special constant with type `never` */
 diff --git a/v4/mini/external.js b/v4/mini/external.js
 --- a/v4/mini/external.js
 +++ b/v4/mini/external.js

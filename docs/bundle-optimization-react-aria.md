@@ -72,7 +72,7 @@ This means `import { z } from 'zod'` pulls in error messages for Arabic, Hebrew,
 
 ### The Solution
 
-A `yarn patch` on `zod@4.6.6` removes the locale barrel exports from the classic, core, and mini entry points in both ESM and CommonJS. The English locale remains loaded separately by classic schema construction. All other locales remain available for explicit import if needed:
+A `yarn patch` on `zod@4.6.6` removes the locale barrel exports from the classic, core, and mini entry points in both ESM and CommonJS, including their `.d.ts` and `.d.cts` declarations. Types therefore reject the unavailable `z.locales` and `z.core.locales` APIs. The English locale remains loaded separately by classic schema construction. All other locales remain available for explicit import if needed:
 
 ```typescript
 // Still works:
@@ -93,7 +93,8 @@ When upgrading zod, the patch must be re-created:
 4. Run `yarn patch zod@npm:<new-version>`
 5. Remove `export * as locales` from `v4/classic/external.js`, `v4/core/index.js`, and `v4/mini/external.js`
 6. Remove the `exports.locales` require and its entry in the export-initialization chain from the corresponding `.cjs` files; preserve the CommonJS export-sealing code and the separate English locale import in classic schemas
-7. Run `yarn patch-commit -s <patch-folder>` and point every existing zod patch resolution (including transitive ranges) at the new patch
+7. Remove `export * as locales` from the corresponding `.d.ts` and `.d.cts` barrels so the declared API matches the runtime
+8. Run `yarn patch-commit -s <patch-folder>` and point every existing zod patch resolution (including transitive ranges) at the new patch
 
 #### If zod locales are needed at runtime
 
