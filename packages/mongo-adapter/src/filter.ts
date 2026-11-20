@@ -414,7 +414,7 @@ const $elemMatch = <T>(operand: unknown) => {
 			for (let i = 0; i < value.length; ++i) {
 				const arrayElement = value[i];
 				if (!isIndexable(arrayElement)) {
-					return false;
+					continue;
 				}
 
 				if (subMatcher(arrayElement as T).result) {
