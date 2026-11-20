@@ -42,11 +42,13 @@ export const getUserToActivateEmail = (options: { name?: string; email?: string;
 
 export const getUserActivatedEmail = ({ active, name, username }: { active: boolean; name?: string; username?: string }) => {
 	const activated = username ? 'Activated' : 'Approved';
-	const action = active ? activated : 'Deactivated';
+	const bodyAction = active ? activated : 'Deactivated';
+	// The subject has always said "approved", even when the body says "activated".
+	const subjectAction = active ? 'Approved' : 'Deactivated';
 
 	return {
-		subject: `[${settings.get<string>('Site_Name')}] ${i18n.t(`Accounts_Email_${action}_Subject`)}`,
-		html: Mailer.replace(i18n.t(`Accounts_Email_${action}`), {
+		subject: `[${settings.get<string>('Site_Name')}] ${i18n.t(`Accounts_Email_${subjectAction}_Subject`)}`,
+		html: Mailer.replace(i18n.t(`Accounts_Email_${bodyAction}`), {
 			name: escapeHTML(name ?? ''),
 		}),
 	};

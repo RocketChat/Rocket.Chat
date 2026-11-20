@@ -27,17 +27,19 @@ const settingValues: Record<string, string> = {
 const replace = (str: string, data: Record<string, unknown> = {}) =>
 	str.replace(/\[(\w+)\]/g, (match, key) => (key in data ? String(data[key]) : match));
 
-const { sendResetPasswordEmail, sendEnrollmentEmail, sendVerificationEmail } = proxyquire.noCallThru().load('./accountEmails', {
-	'../notifications/email/api': {
-		getTemplateWrapped: (template: string, fn: (html: string) => void) => fn(templates[template]),
-		replace,
-		replacekey: (str: string, key: string, value: string) => str.replace(`[${key}]`, value),
-		sendNoWrap,
-	},
-	'../../settings': { settings: { get: (id: string) => settingValues[id] } },
-	'../i18n': { i18n: { t: (key: string) => key } },
-	'../utils/getURL': { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` },
-});
+const { sendResetPasswordEmail, sendEnrollmentEmail, sendVerificationEmail, getUserActivatedEmail } = proxyquire
+	.noCallThru()
+	.load('./accountEmails', {
+		'../notifications/email/api': {
+			getTemplateWrapped: (template: string, fn: (html: string) => void) => fn(templates[template]),
+			replace,
+			replacekey: (str: string, key: string, value: string) => str.replace(`[${key}]`, value),
+			sendNoWrap,
+		},
+		'../../settings': { settings: { get: (id: string) => settingValues[id] } },
+		'../i18n': { i18n: { t: (key: string) => key } },
+		'../utils/getURL': { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` },
+	});
 
 const user = {
 	_id: 'user-id',
@@ -149,6 +151,29 @@ describe('accountEmails', () => {
 		it('should reject an address the user does not have', async () => {
 			await expect(sendVerificationEmail('user-id', 'someone@else.com')).to.be.rejectedWith('No such email for user.');
 			sinon.assert.notCalled(addEmailVerificationToken);
+		});
+	});
+
+	describe('getUserActivatedEmail', () => {
+		it('should say approved in the subject and activated in the body for a user with a username', () => {
+			expect(getUserActivatedEmail({ active: true, name: 'Jane', username: 'jane' })).to.deep.equal({
+				subject: '[Rocket] Accounts_Email_Approved_Subject',
+				html: 'Accounts_Email_Activated',
+			});
+		});
+
+		it('should say approved in the subject and body for a user without a username', () => {
+			expect(getUserActivatedEmail({ active: true, name: 'Jane' })).to.deep.equal({
+				subject: '[Rocket] Accounts_Email_Approved_Subject',
+				html: 'Accounts_Email_Approved',
+			});
+		});
+
+		it('should say deactivated in the subject and body for an inactive user', () => {
+			expect(getUserActivatedEmail({ active: false, name: 'Jane', username: 'jane' })).to.deep.equal({
+				subject: '[Rocket] Accounts_Email_Deactivated_Subject',
+				html: 'Accounts_Email_Deactivated',
+			});
 		});
 	});
 });
