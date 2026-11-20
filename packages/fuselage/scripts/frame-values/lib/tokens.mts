@@ -36,6 +36,15 @@ export const fontScale = (name: keyof typeof scale) => {
 	return { fontSize: rem(fontSize), lineHeight: rem(lineHeight), fontWeight, letterSpacing: rem(letterSpacing) };
 };
 
+/** A share of the parent's length, which a number of pixels cannot state. */
+export const percent = (value: number) => `${value}%`;
+
+/** A grid track's share of the free space, for a web-only frame. */
+export const fraction = (value: number) => `${value}fr`;
+
+/** A width of `value` characters of the element's font, which follows the text and so no pixel count can state. */
+export const ch = (value: number) => `${value}ch`;
+
 export const radius = (name: keyof typeof tokens.radius) => `$radius.${name}`;
 
 export const zIndex = (name: keyof typeof tokens.zIndex) => `$zIndex.${name}`;

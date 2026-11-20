@@ -8,7 +8,7 @@ import { fontReferenceProblems, moduleProblems, transformProblems } from './chec
 import { generateFrameValues } from './generate.mts';
 import { literal } from './literal.mts';
 import { END, START } from './markers.mts';
-import { fontScale, offScale, radius, rem, size, space, themed, unresolvedReferences, zIndex } from './tokens.mts';
+import { ch, fontScale, fraction, offScale, percent, radius, rem, size, space, themed, unresolvedReferences, zIndex } from './tokens.mts';
 
 test('literal quotes keys, nests and skips undefined', () => {
 	assert.equal(literal({ 'a-b': 1, 'c': { d: 'x', e: undefined } }), '{\n\t"a-b": 1,\n\t"c": {\n\t\t"d": "x",\n\t},\n}');
@@ -156,6 +156,24 @@ test('a length with a CSS unit in a generator module is a problem, a unitless on
 	assert.equal(moduleProblems('m.mts', "const a = { paddingInline: '12px' };").length, 1);
 	assert.equal(moduleProblems('m.mts', "const a = { fontSize: '0.875rem' };").length, 1);
 	assert.equal(moduleProblems('m.mts', "const a = { maxHeight: '50vh', width: '2ch', height: '100%' };").length, 3);
+});
+
+test('percent, fraction and ch state a share, a grid track and a character width as the string a frame holds', () => {
+	assert.equal(percent(100), '100%');
+	assert.equal(fraction(1), '1fr');
+	assert.equal(ch(4), '4ch');
+	assert.equal(
+		literal({ width: percent(50), gridTemplateColumns: fraction(1), minWidth: ch(4) }),
+		'{\n\t"width": "50%",\n\t"gridTemplateColumns": "1fr",\n\t"minWidth": "4ch",\n}',
+	);
+});
+
+test('the helpers are the only way to state a percentage, a fraction or a character width in a generator module', () => {
+	assert.equal(moduleProblems('m.mts', 'const a = { width: percent(100), gridTemplateColumns: fraction(1), minWidth: ch(4) };').length, 0);
+	assert.equal(moduleProblems('m.mts', "const a = { maxHeight: '50vh' };").length, 1);
+	assert.equal(moduleProblems('m.mts', "const a = { width: '100%' };").length, 1);
+	assert.equal(moduleProblems('m.mts', "const a = { minWidth: '4ch' };").length, 1);
+	assert.equal(moduleProblems('m.mts', "const a = { gridTemplateColumns: '1fr' };").length, 1);
 });
 
 test('a style object the zero build drops is a problem', () => {
