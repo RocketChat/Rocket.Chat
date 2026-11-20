@@ -37,7 +37,7 @@ let apiContext: APIRequestContext;
 const cacheFromCredentials = new Map<string, string>();
 
 export const test = baseTest.extend<BaseTest>({
-	context: async ({ context }, use) => {
+	context: async ({ context }, use, testInfo) => {
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
 			await context.close();
@@ -51,9 +51,12 @@ export const test = baseTest.extend<BaseTest>({
 
 		await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
 
+		// Keeps each coverage file attributable to its spec, so CI can select specs by the code they exercise
+		const spec = encodeURIComponent(path.relative(testInfo.project.testDir, testInfo.file));
+
 		await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
 			if (coverageJSON) {
-				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${randomUUID()}.json`), coverageJSON);
+				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${spec}_${randomUUID()}.json`), coverageJSON);
 			}
 		});
 

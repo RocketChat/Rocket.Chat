@@ -45,6 +45,11 @@ on:
       coverage:
         required: false
         type: string
+      specs:
+        description: 'Space-separated spec paths (relative to apps/meteor) to restrict the UI suite to; empty runs every spec'
+        default: ''
+        required: false
+        type: string
     secrets:
       CR_USER:
         required: true
@@ -271,11 +276,18 @@ jobs:
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
           E2E_SHARD: ${{ matrix.shard }}
           E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
+          E2E_SPECS: ${{ inputs.specs }}
         working-directory: ./apps/meteor
         run: |
           set -o xtrace
 
-          yarn test:e2e --shard="$E2E_SHARD/$E2E_TOTAL_SHARD"
+          read -r -a specs <<< "$E2E_SPECS"
+          # a short spec list can leave a shard with nothing to run
+          if [[ ${#specs[@]} -gt 0 ]]; then
+            specs+=(--pass-with-no-tests)
+          fi
+
+          yarn test:e2e --shard="$E2E_SHARD/$E2E_TOTAL_SHARD" "${specs[@]}"
 
       - name: Merge ui coverage files
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
@@ -283,6 +295,19 @@ jobs:
         run: |
           npx nyc merge .nyc_output "${COVERAGE_DIR}/${COVERAGE_FILE_NAME}"
           ls -la "$COVERAGE_DIR" || true
+
+      - name: Build e2e impact map fragment
+        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        working-directory: ./apps/meteor
+        run: node tests/e2e/impact/impact.mts build "/tmp/e2e-impact-map-${{ matrix.shard }}.json" .nyc_output
+
+      - name: Store e2e impact map fragment
+        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-impact-map-fragment-${{ matrix.shard }}
+          path: /tmp/e2e-impact-map-${{ matrix.shard }}.json
+          retention-days: 5
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
