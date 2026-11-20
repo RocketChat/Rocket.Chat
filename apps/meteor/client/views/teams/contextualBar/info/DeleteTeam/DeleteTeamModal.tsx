@@ -11,9 +11,10 @@ export type DeleteTeamModalProps = {
 	onCancel: () => void;
 	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	rooms: Serialized<IRoom>[];
+	teamIsEncrypted?: boolean;
 };
 
-const DeleteTeamModal = ({ onCancel, onConfirm, rooms }: DeleteTeamModalProps) => {
+const DeleteTeamModal = ({ onCancel, onConfirm, rooms, teamIsEncrypted }: DeleteTeamModalProps) => {
 	const hasRooms = rooms && rooms.length > 0;
 
 	const [step, setStep] = useState(hasRooms ? STEPS.LIST_ROOMS : STEPS.CONFIRM_DELETE);
@@ -52,6 +53,7 @@ const DeleteTeamModal = ({ onCancel, onConfirm, rooms }: DeleteTeamModalProps) =
 				onCancel={onCancel}
 				deletedRooms={deletedRooms}
 				keptRooms={keptRooms}
+				teamIsEncrypted={teamIsEncrypted}
 			/>
 		);
 	}

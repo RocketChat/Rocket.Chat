@@ -8,11 +8,12 @@ import DeleteTeamModal from './DeleteTeamModal';
 
 export type DeleteTeamModalWithRoomsProps = {
 	teamId: string;
+	teamIsEncrypted?: boolean;
 	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	onCancel: () => void;
 };
 
-const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps) => {
+const DeleteTeamModalWithRooms = ({ teamId, teamIsEncrypted, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps) => {
 	const query = useMemo(() => ({ teamId }), [teamId]);
 	const getTeamsListRooms = useEndpoint('GET', '/v1/teams.listRooms');
 	const { data, isLoading } = useQuery({
@@ -23,7 +24,7 @@ const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamMod
 	if (isLoading) {
 		return <GenericModalSkeleton />;
 	}
-	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={data?.rooms || []} />;
+	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={data?.rooms || []} teamIsEncrypted={teamIsEncrypted} />;
 };
 
 export default DeleteTeamModalWithRooms;
