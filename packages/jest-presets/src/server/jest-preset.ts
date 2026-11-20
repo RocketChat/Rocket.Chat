@@ -34,4 +34,6 @@ export default {
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	collectCoverage: true,
+
+	...(process.env.CI ? { maxWorkers: 2 } : {}),
 } satisfies Config;

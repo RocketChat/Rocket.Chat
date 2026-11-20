@@ -46,7 +46,7 @@ jobs:
       - uses: ./.github/actions/restore-packages
 
       - name: Unit Test
-        run: yarn testunit --concurrency=1
+        run: yarn testunit --concurrency=2
 
       - name: Fuselage frame platform check
         run: yarn workspace @rocket.chat/fuselage test:verify

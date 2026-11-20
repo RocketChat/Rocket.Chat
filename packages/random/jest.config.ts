@@ -15,4 +15,5 @@ export default {
 			testMatch: ['<rootDir>/src/**/*.server.spec.[jt]s?(x)'],
 		},
 	],
+	...(process.env.CI ? { maxWorkers: 2 } : {}),
 } satisfies Config;

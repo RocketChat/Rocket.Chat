@@ -20,4 +20,5 @@ export default {
 			modulePathIgnorePatterns: ['<rootDir>/src/strategies/', '<rootDir>/src/templates/'],
 		},
 	],
+	...(process.env.CI ? { maxWorkers: 2 } : {}),
 } satisfies Config;
