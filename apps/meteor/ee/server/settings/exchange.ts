@@ -40,20 +40,20 @@ export function addSettings(): Promise<void> {
 					enableQuery: enabled,
 				});
 
+				await this.add('Outlook_Calendar_Outlook_Url', '', {
+					type: 'string',
+					public: true,
+					invalidValue: '',
+					placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
+					enableQuery: enabled,
+				});
+
 				await this.section('Exchange_Desktop', async function () {
 					await this.add('Outlook_Calendar_Exchange_Url', '', {
 						type: 'string',
 						public: true,
 						invalidValue: '',
 						placeholder: 'https://exchange.example.com/',
-						enableQuery: legacyOnly,
-					});
-
-					await this.add('Outlook_Calendar_Outlook_Url', '', {
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
 						enableQuery: legacyOnly,
 					});
 
