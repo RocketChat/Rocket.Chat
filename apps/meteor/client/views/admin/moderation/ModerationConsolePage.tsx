@@ -1,5 +1,6 @@
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,18 +21,20 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 	const { t } = useTranslation();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRedirect = useCallback(
 		async (mid: string) => {
 			try {
 				const permalink = await getPermaLink(mid);
-				window.open(permalink, '_self');
+				const url = new URL(permalink, 'http://localhost');
+				router.navigate(`${url.pathname}${url.search}${url.hash}` as LocationPathname);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[dispatchToastMessage],
+		[dispatchToastMessage, router],
 	);
 
 	return (
