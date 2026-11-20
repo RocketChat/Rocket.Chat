@@ -1,0 +1,21 @@
+apps/meteor/server/meteor-methods/auth/sendConfirmationEmail.ts
+  s_fb5cfef0363fda::t_d0181606bb6d9e 20-21
+apps/meteor/server/meteor-methods/auth/sendForgotPasswordEmail.ts
+  s_fb5cfef0363fda::t_d0181606bb6d9e 7,22-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a4a348e9af3492c5200b09b7a40dd79a3a00879e",
+  "prompts": {},
+  "sessions": {
+    "s_fb5cfef0363fda": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "336c37f5-b9c8-476e-a5ff-559248eb71a8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
