@@ -1,0 +1,46 @@
+apps/meteor/server/meteor-methods/auth/sendForgotPasswordEmail.test.ts
+  s_7a7122163f9515::t_e9d1346ebaf418 9,13,27
+apps/meteor/server/lib/users/setUsername.ts
+  s_7a7122163f9515::t_36005be64d6a04 16,118
+apps/meteor/server/lib/auth/startup.js
+  s_7a7122163f9515::t_4abf5be187dad9 8,40-41,45-47,124
+  s_7a7122163f9515::t_c0e408f59ea2a7 4
+apps/meteor/server/lib/auth/accountEmails.test.ts
+  s_7a7122163f9515::t_70ebeb0073fad2 1-26,29-154
+  s_7a7122163f9515::t_8fdd90f300b747 27-28
+apps/meteor/server/meteor-methods/auth/sendConfirmationEmail.ts
+  s_7a7122163f9515::t_36005be64d6a04 4-5,22
+  s_7a7122163f9515::t_b8bfd50e3cba54 3
+apps/meteor/server/lib/auth/accountEmails.ts
+  s_7a7122163f9515::t_b5288678dfa04b 25,29-31,34,48,102,144
+  s_7a7122163f9515::t_99f6bcadc1af57 1-24,26-28,32-33,35-47,49-92,94-101,103-108,110-116,118-126,128-143,146-149
+  s_7a7122163f9515::t_0135360ad940ea 145
+apps/meteor/server/lib/users/setUserActiveStatus.ts
+  s_7a7122163f9515::t_36005be64d6a04 8,151
+apps/meteor/server/meteor-methods/auth/sendForgotPasswordEmail.ts
+  s_7a7122163f9515::t_36005be64d6a04 3,23
+apps/meteor/server/meteor-methods/users/registerUser.ts
+  s_7a7122163f9515::t_36005be64d6a04 7,9,86
+apps/meteor/ee/server/lib/deviceManagement/session.ts
+  s_7a7122163f9515::t_36005be64d6a04 8,105
+apps/meteor/server/lib/users/setUsername.test.ts
+  s_7a7122163f9515::t_e9d1346ebaf418 21-22,54,86
+apps/meteor/server/configuration/configureSMTP.ts
+  s_7a7122163f9515::t_33e5a2bc764779 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "94b3d91a9a1e9255ff56da80e8eaeb8aa5184bfb",
+  "prompts": {},
+  "sessions": {
+    "s_7a7122163f9515": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bdfd6493-c52f-495a-9a97-ab6ed25f84d1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
