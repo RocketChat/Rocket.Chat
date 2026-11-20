@@ -74,7 +74,13 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	private get graphHost(): string {
-		return new URL(this.configuredGraphHost).origin;
+		try {
+			return new URL(this.configuredGraphHost).origin;
+		} catch {
+			throw new ExchangeError('endpoint-not-recognized', 'The configured host is not a Microsoft endpoint', {
+				detail: this.configuredGraphHost,
+			});
+		}
 	}
 
 	public async testConnection(): Promise<void> {
