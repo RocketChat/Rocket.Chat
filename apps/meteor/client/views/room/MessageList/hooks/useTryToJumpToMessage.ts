@@ -107,7 +107,6 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			return;
 		}
 
-		// TODO: Calculate the offset of the page, for the message to be in the center of the page
 		virtualizerRef.current?.scrollToIndex(leadingRows + targetIndex, {
 			align: 'center',
 		});
