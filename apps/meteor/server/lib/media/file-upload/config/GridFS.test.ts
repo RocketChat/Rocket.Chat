@@ -1,6 +1,7 @@
 import { once } from 'node:events';
 import { PassThrough } from 'node:stream';
 import { beforeEach, describe, it } from 'node:test';
+import { setImmediate } from 'node:timers/promises';
 
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -85,6 +86,27 @@ describe('GridFS:Uploads', () => {
 
 	it('should stop reading the file when the client goes away during a range request', async () => {
 		await requestThenDisconnect({ range: 'bytes=0-' });
+
+		expect(rs.destroyed).to.be.true;
+	});
+
+	it('should stop reading the file when the client goes away before the file is opened', async () => {
+		let openFile!: (stream: PassThrough) => void;
+		getReadStream.returns(
+			new Promise((resolve) => {
+				openFile = resolve;
+			}),
+		);
+
+		const res = new FakeResponse();
+		const request = fileUploadClasses['GridFS:Uploads'].get({ ...file }, { url: '/file-upload/file-id/clip.mp4', headers: {} }, res);
+
+		res.destroy();
+		await once(res, 'close');
+
+		openFile(rs);
+		await request;
+		await setImmediate();
 
 		expect(rs.destroyed).to.be.true;
 	});
