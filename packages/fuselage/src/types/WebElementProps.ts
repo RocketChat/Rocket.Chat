@@ -1,0 +1,19 @@
+import type { WebProps } from './WebAttributes';
+
+// A contract as the web renderer of a part that only shows something takes it, by the element the part always renders.
+// A frame module names one of these instead of the DOM element type, which it must not import.
+
+type WebTitle = {
+	title?: string;
+};
+
+export type WebDivProps<TContract> = WebProps<TContract, HTMLDivElement> & WebTitle;
+
+export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & WebTitle;
+
+export type WebPreProps<TContract> = WebProps<TContract, HTMLPreElement> & WebTitle;
+
+export type WebSvgProps<TContract> = WebProps<TContract, SVGSVGElement> & WebTitle;
+
+/** For a part rendered as a sectioning or grouping element that has no element type of its own, such as `section` or `figure`. */
+export type WebElementProps<TContract> = WebProps<TContract, HTMLElement> & WebTitle;
