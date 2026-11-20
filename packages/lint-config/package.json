@@ -25,7 +25,7 @@
 	"dependencies": {
 		"eslint": "~10.15.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.7",
-		"eslint-plugin-import-x": "~4.18.0",
+		"eslint-plugin-import-x": "~4.17.1",
 		"eslint-plugin-jest": "~29.16.6",
 		"eslint-plugin-jsx-a11y": "~6.10.2",
 		"eslint-plugin-prettier": "~5.5.6",

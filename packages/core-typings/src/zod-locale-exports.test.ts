@@ -38,15 +38,13 @@ ${['z', 'classic', 'mini', 'v4Mini', 'core', 'z.core', 'mini.core']
 	};
 	const fixtures = ['mts', 'cts'].map((extension) => join(__dirname, `zod-locale-consumer.${extension}`));
 	const host = ts.createCompilerHost(options);
-	const getSourceFile = host.getSourceFile;
+	const { getSourceFile } = host;
 	host.getSourceFile = (fileName, languageVersion, ...args) =>
 		fixtures.includes(fileName)
 			? ts.createSourceFile(fileName, source, languageVersion)
 			: getSourceFile(fileName, languageVersion, ...args);
 	const program = ts.createProgram(fixtures, options, host);
-	const diagnostics = ts
-		.getPreEmitDiagnostics(program)
-		.map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+	const diagnostics = ts.getPreEmitDiagnostics(program).map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
 	assert.deepEqual(diagnostics, []);
 });
 

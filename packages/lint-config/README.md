@@ -64,6 +64,12 @@ Load the plugin through `jsPlugins` and turn the rule on:
 }
 ```
 
+## Dependency exception
+
+The repository retains `eslint-plugin-import-x` 4.17.1 to preserve the existing import ordering instead of migrating 1,875 files to 4.18's comparator. Its scoped `minimatch` resolution stays on 10.2.6 because the plugin uses `makeRe()`, which minimatch 11 removed.
+
+This intentionally accepts [CVE-2026-118764](https://github.com/advisories/GHSA-g3hv-75wg-m249), rated Moderate (CVSS 6.9), for this tooling dependency: crafted glob patterns can exhaust CPU and memory when `optimizationLevel >= 2`. Other consumers retain their minimatch 11 security resolutions.
+
 ## Development
 
 This package lives in the [Rocket.Chat monorepo](https://github.com/RocketChat/Rocket.Chat/tree/develop/packages/lint-config). The repository's root `.oxlintrc.json` extends `oxlint.json`, so a change here affects every package in the monorepo. The opt-in rules live in `rules/`. From the repository root:

@@ -177,7 +177,7 @@
 		"typedoc/minimatch": "11.0.8",
 		"eslint/minimatch": "11.0.8",
 		"@eslint/config-array/minimatch": "11.0.8",
-		"eslint-plugin-import-x/minimatch": "11.0.8",
+		"eslint-plugin-import-x/minimatch": "10.2.6",
 		"@typescript-eslint/typescript-estree/minimatch": "11.0.8",
 		"@typescript-eslint/utils": "8.73.0",
 		"@typescript-eslint/scope-manager": "8.73.0",
