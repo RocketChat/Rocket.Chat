@@ -1,0 +1,21 @@
+ee/packages/federation-matrix/tests/helper/synapse-client.ts
+  s_e7704fe866afe4::t_7a009fb957701c 161,166,172-180
+ee/packages/federation-matrix/tests/end-to-end/room-versions.spec.ts
+  s_e7704fe866afe4::t_32c162774bac12 154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2184babc8c38beafb72d206b8350cd74251bdca0",
+  "prompts": {},
+  "sessions": {
+    "s_e7704fe866afe4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4914ffaa-5eb7-4270-a0de-a5c1ba6d41eb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
