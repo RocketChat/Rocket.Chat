@@ -66,17 +66,17 @@ Zod v4 re-exports all 50 locale files from its main entry point:
 export * as locales from "../locales/index.js";
 ```
 
-This means `import { z } from 'zod'` pulls in error messages for Arabic, Hebrew, Thai, Russian, and 46 other languages — even though Rocket.Chat only uses the English locale (loaded by default via `config(en())`).
+This means `import { z } from 'zod'` pulls in error messages for Arabic, Hebrew, Thai, Russian, and 46 other languages — even though Rocket.Chat only uses the English locale (registered by default when constructing a classic schema).
 
 **Measured impact:** 147 KB (50 locale files) out of 278 KB total for zod — **53% of the zod bundle was unused locale data**.
 
 ### The Solution
 
-A `yarn patch` on `zod@4.3.6` removes the `export * as locales` line from the barrel. The English locale (`en.js`) remains loaded since it's imported separately by `config(en())`. All other locales remain available for explicit import if needed:
+A `yarn patch` on `zod@4.6.6` removes the locale barrel exports from the classic, core, and mini entry points in both ESM and CommonJS. The English locale remains loaded separately by classic schema construction. All other locales remain available for explicit import if needed:
 
 ```typescript
 // Still works:
-import pt from 'zod/v4/locales/pt';
+import pt from 'zod/v4/locales/pt.js';
 import { config } from 'zod';
 config(pt());
 ```
@@ -91,16 +91,16 @@ When upgrading zod, the patch must be re-created:
 2. Delete `.yarn/patches/zod-*.patch`
 3. Run `yarn install`
 4. Run `yarn patch zod@npm:<new-version>`
-5. Remove the `export * as locales` line from `v4/classic/external.js`
-6. Remove the `exports.locales` require from `v4/classic/external.cjs`
-7. Run `yarn patch-commit -s <patch-folder>`
+5. Remove `export * as locales` from `v4/classic/external.js`, `v4/core/index.js`, and `v4/mini/external.js`
+6. Remove the `exports.locales` require and its entry in the export-initialization chain from the corresponding `.cjs` files; preserve the CommonJS export-sealing code and the separate English locale import in classic schemas
+7. Run `yarn patch-commit -s <patch-folder>` and point every existing zod patch resolution (including transitive ranges) at the new patch
 
 #### If zod locales are needed at runtime
 
 If a feature requires localized zod error messages (e.g., form validation in the user's language), import the specific locale directly instead of relying on the barrel:
 
 ```typescript
-import de from 'zod/v4/locales/de';
+import de from 'zod/v4/locales/de.js';
 import { config } from 'zod';
 config(de());
 ```
