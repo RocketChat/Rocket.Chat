@@ -825,6 +825,7 @@ describe('CustomOAuthStrategy', () => {
 				name: 'alice',
 				displayName: 'alice',
 				serverURL: 'https://identity.example.com',
+				_OAuthCustom: true,
 			});
 		});
 
