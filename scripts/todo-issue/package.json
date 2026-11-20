@@ -2,6 +2,9 @@
 	"name": "todo-issue",
 	"private": true,
 	"type": "module",
+	"scripts": {
+		"test": "bun test"
+	},
 	"dependencies": {
 		"parse-diff": "^0.11.1"
 	},
