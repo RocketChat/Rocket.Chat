@@ -8,6 +8,7 @@ import { fontReferenceProblems, moduleProblems, transformProblems } from './chec
 import { generateFrameValues } from './generate.mts';
 import { literal } from './literal.mts';
 import { END, START } from './markers.mts';
+import { textFrameDefaults } from './textFrameDefaults.mts';
 import { ch, fontScale, fraction, offScale, percent, radius, rem, size, space, themed, unresolvedReferences, zIndex } from './tokens.mts';
 
 test('literal quotes keys, nests and skips undefined', () => {
@@ -206,4 +207,13 @@ test('a target whose end marker comes before the start marker is reported and le
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
 	}
+});
+
+test('textFrameDefaults restates the View defaults the frame does not state itself', () => {
+	const defaults = textFrameDefaults({ display: 'inline', minWidth: 10 });
+
+	assert.equal(defaults.flexDirection, 'column');
+	assert.equal(defaults.render, 'div');
+	assert.equal(Object.hasOwn(defaults, 'display'), false);
+	assert.equal(Object.hasOwn(defaults, 'minWidth'), false);
 });
