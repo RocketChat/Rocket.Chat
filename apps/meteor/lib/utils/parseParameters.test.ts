@@ -184,4 +184,35 @@ ${value3}`;
 		expect(result[1]).to.be.equal(value2);
 		expect(result[2]).to.be.equal(value3);
 	});
+	it('should preserve "$&" inside quoted parameters', () => {
+		const value = 'price $& text';
+		const parameters = `"${value}"`;
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(1).and.eql([value]);
+	});
+
+	it('should preserve "$$" inside quoted parameters', () => {
+		const value = 'price $$ text';
+		const parameters = `"${value}"`;
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(1).and.eql([value]);
+	});
+
+	it('should preserve "$\'" inside quoted parameters', () => {
+		const value = "price $' text";
+		const parameters = `"${value}"`;
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(1).and.eql([value]);
+	});
+
+	it('should preserve "$`" inside quoted parameters', () => {
+		const value = 'price $` text';
+		const parameters = `"${value}"`;
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(1).and.eql([value]);
+	});
 });
