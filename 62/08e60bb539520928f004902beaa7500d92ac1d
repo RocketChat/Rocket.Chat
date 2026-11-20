@@ -1,0 +1,19 @@
+.changeset/federation-missing-auth-events.md
+  s_e7704fe866afe4::t_abe31bda021c53 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6208e60bb539520928f004902beaa7500d92ac1d",
+  "prompts": {},
+  "sessions": {
+    "s_e7704fe866afe4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4914ffaa-5eb7-4270-a0de-a5c1ba6d41eb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
