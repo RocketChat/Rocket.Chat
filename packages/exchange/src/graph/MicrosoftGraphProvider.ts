@@ -7,7 +7,6 @@ import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } fro
 import { ExchangeError } from '../errors';
 import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
-import { trimTrailingSlashes } from '../trimTrailingSlashes';
 
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
@@ -67,11 +66,15 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 	private readonly tokenClient: GraphTokenClient;
 
-	private readonly graphHost: string;
+	private readonly configuredGraphHost: string;
 
 	constructor(config: GraphTokenClientConfig, tokenClient = new GraphTokenClient(config)) {
 		this.tokenClient = tokenClient;
-		this.graphHost = trimTrailingSlashes(config.graphHost || DEFAULT_GRAPH_HOST);
+		this.configuredGraphHost = config.graphHost || DEFAULT_GRAPH_HOST;
+	}
+
+	private get graphHost(): string {
+		return new URL(this.configuredGraphHost).origin;
 	}
 
 	public async testConnection(): Promise<void> {
