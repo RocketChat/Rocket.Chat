@@ -114,9 +114,13 @@ export class Server {
 
 			end?.();
 		} catch (err: unknown) {
-			session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			const error = handleInternalException(err, 'Subscription error');
+			// A publication that already stopped has been answered, or its session is gone.
+			if (!publication?._isDeactivated()) {
+				session.send(encodeNosub(packet.id, error));
+			}
 			// A failed subscription must not outlive its handler.
-			publication?.emit('stop', session, packet);
+			publication?._deactivate();
 		}
 	}
 
