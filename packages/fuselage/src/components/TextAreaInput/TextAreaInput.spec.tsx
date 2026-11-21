@@ -9,4 +9,11 @@ describe('[TextAreaInput]', () => {
 
 		expect(screen.getByRole('textbox')).toBeInstanceOf(HTMLTextAreaElement);
 	});
+
+	it('renders a textarea when spread props carry another type', () => {
+		const props = { type: 'text' };
+		render(<TextAreaInput {...props} aria-label='Description' />);
+
+		expect(screen.getByLabelText('Description')).toBeInstanceOf(HTMLTextAreaElement);
+	});
 });
