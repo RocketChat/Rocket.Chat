@@ -1,5 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
+import type { MessageAttachment, IUser } from '@rocket.chat/core-typings';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
@@ -93,6 +92,62 @@ afterEach(() => {
 // `onSend` without emptying the box itself, so a send that fails before committing must leave the
 // composer untouched for the user to retry.
 describe('sendMessage', () => {
+	it('should not duplicate quote attachments when editing an encrypted message', async () => {
+		const { chat } = createChat();
+		const messageId = 'message-id';
+
+		const quoteAttachment = {
+			text: 'Original quoted message',
+			message_link: 'http://localhost:3000/channel?msg=quoted-message',
+			author_name: 'Alice',
+			author_icon: '/avatar/alice',
+		} as MessageAttachment;
+
+		const fileAttachment = {
+			type: 'file',
+			title: 'document.pdf',
+			title_link: '/file-upload/file-id/document.pdf',
+		} as MessageAttachment;
+
+		const fileMetadata = {
+			_id: 'file-id',
+			name: 'document.pdf',
+			type: 'application/pdf',
+			format: 'pdf',
+			size: 1024,
+		};
+
+		const originalMessage = createFakeMessage({
+			_id: messageId,
+			rid: 'room-id',
+			t: 'e2e',
+			attachments: [quoteAttachment, fileAttachment],
+			file: fileMetadata,
+		});
+
+		const editedMessage = createFakeMessage({
+			_id: messageId,
+			rid: 'room-id',
+			msg: 'Updated reply',
+		});
+
+		chat.currentEditingMessage.getMID = jest.fn().mockReturnValue(messageId);
+
+		jest.mocked(chat.data.findMessageByID).mockResolvedValue(originalMessage);
+		jest.mocked(chat.data.composeMessage).mockResolvedValue(editedMessage);
+
+		mockedProcessMessageEditing.mockResolvedValue(true);
+
+		await sendMessage(chat, { text: 'Updated reply' });
+
+		expect(mockedOnClientBeforeSendMessage).toHaveBeenCalledWith(
+			expect.objectContaining({
+				attachments: [fileAttachment],
+				file: fileMetadata,
+			}),
+		);
+	});
+
 	it('should clear the composer once the message is committed, before the optimistic insert and the request', async () => {
 		const { chat, clear } = createChat();
 

@@ -1,5 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-
+import { isQuoteAttachment, type IMessage } from '@rocket.chat/core-typings';
 import { t } from '../../../../lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { Messages, Rooms } from '../../../stores';
@@ -149,7 +148,9 @@ export const sendMessage = async (
 			const originalMessage = await chat.data.findMessageByID(mid);
 
 			if (originalMessage?.t === 'e2e' && originalMessage.attachments && originalMessage.attachments.length > 0) {
-				message.attachments = originalMessage.attachments;
+				// Quote attachments are reconstructed from their permalinks after decryption.
+				// Preserve actual attachments, but don't encrypt reconstructed quotes again.
+				message.attachments = originalMessage.attachments.filter((attachment) => !isQuoteAttachment(attachment));
 				message.file = originalMessage.file;
 			}
 		}
