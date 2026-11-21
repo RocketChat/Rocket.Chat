@@ -42,7 +42,14 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	return (
 		<Item inset='lg'>
 			{shouldDisplayPreview ? (
-				<ImageItem id={_id} url={path} name={displayName} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
+				<ImageItem
+					id={_id}
+					url={isEncrypted ? path : (fileData.thumbnailPath ?? path)}
+					name={displayName}
+					username={normalizedUsername}
+					timestamp={format(uploadedAt)}
+					alt={description}
+				/>
 			) : (
 				<>
 					<ItemMedia>
