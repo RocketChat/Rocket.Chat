@@ -155,9 +155,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
 		department: string | null,
-	): Promise<ILivechatInquiryRecord | null> {
+	): Promise<(ILivechatInquiryRecord & { lockedAt: Date }) | null> {
 		const date = new Date();
-		return this.findOneAndUpdate(
+		return this.findOneAndUpdate<ILivechatInquiryRecord & { lockedAt: Date }>(
 			{
 				status: LivechatInquiryStatus.QUEUED,
 				...(department ? { department } : { department: { $exists: false } }),
@@ -182,12 +182,13 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{
 				sort: queueSortBy,
+				returnDocument: 'after',
 			},
 		);
 	}
 
-	async unlock(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
+	async unlock(inquiryId: string, lockedAt: Date): Promise<UpdateResult> {
+		return this.updateOne({ _id: inquiryId, lockedAt }, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
