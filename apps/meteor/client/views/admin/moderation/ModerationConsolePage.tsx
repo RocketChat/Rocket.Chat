@@ -34,7 +34,7 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 				const prefix = getRootUrlPathPrefix();
 				let { pathname } = url;
 				if (prefix) {
-					pathname = pathname.replace(new RegExp(`^(${escapeRegExp(prefix)})+`), '');
+					pathname = pathname.replace(new RegExp(`^${escapeRegExp(prefix)}(?=/|$)`), '');
 				}
 				if (!pathname.startsWith('/')) {
 					pathname = `/${pathname}`;
