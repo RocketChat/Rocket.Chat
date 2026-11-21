@@ -11,7 +11,7 @@ export class UploadCreator implements IUploadCreator {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	public async uploadBuffer(buffer: Buffer, descriptor: IUploadDescriptor): Promise<IUpload> {
-		if (!Object.hasOwn(descriptor, 'user') && !descriptor.visitorToken) {
+		if (!descriptor.user && !descriptor.visitorToken) {
 			descriptor.user = (await bridgeCall(this.senderFn, 'getUserBridge', 'doGetAppUser', 'APP_ID')) as IUser;
 		}
 
