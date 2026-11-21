@@ -71,7 +71,7 @@ const Banner = ({
 		<div
 			className={cx('rcx-banner')({ [variant]: true, inline, actionable }, className)}
 			ref={ref}
-			{...(onAction ? { ...buttonProps } : { role: 'banner', tabIndex: -1 })}
+			{...(onAction && buttonProps)}
 			{...props}
 		>
 			{icon && isIconVisible && (
