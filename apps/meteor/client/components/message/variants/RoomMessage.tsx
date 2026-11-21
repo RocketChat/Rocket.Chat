@@ -25,6 +25,7 @@ import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
+import { messageToolbarScope } from '../toolbar/MessageToolbarReveal';
 
 export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -121,6 +122,7 @@ const RoomMessage = ({
 			data-own={message.u._id === uid}
 			aria-busy={message.temp}
 			{...props}
+			className={props.className ? `${messageToolbarScope} ${props.className}` : messageToolbarScope}
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
