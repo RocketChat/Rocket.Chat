@@ -4804,6 +4804,68 @@ describe('Threads', () => {
 			filterThreadsByText(text);
 		});
 
+		describe('filtered by type', () => {
+			let typeChannel: IRoom;
+			let draftThreadId: IMessage['_id'];
+			let replyThreadId: IMessage['_id'];
+			let otherUser: TestUser<IUser>;
+			let otherCredentials: Credentials;
+
+			const createThread = async () => {
+				const parent = (await sendSimpleMessage({ roomId: typeChannel._id, text: 'thread parent' }).expect(200)).body.message;
+				await sendSimpleMessage({ roomId: typeChannel._id, text: 'thread reply', tmid: parent._id }).expect(200);
+				return parent._id;
+			};
+
+			const getThreadIds = async (type: 'drafts' | 'unread', userCredentials = credentials) => {
+				const { body } = await request
+					.get(api('chat.getThreadsList'))
+					.set(userCredentials)
+					.query({ rid: typeChannel._id, type })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(body.total).to.be.equal(body.threads.length);
+				return body.threads.map(({ _id }: IMessage) => _id);
+			};
+
+			const saveThreadDraft = (tmid: IMessage['_id'], draft: string, userCredentials = credentials) =>
+				request.post(api('rooms.saveDraft')).set(userCredentials).send({ rid: typeChannel._id, draft, tmid }).expect(200);
+
+			before(async () => {
+				typeChannel = (await createRoom({ type: 'c', name: `channel.test.threads.type.${Date.now()}` })).body.channel;
+				draftThreadId = await createThread();
+				replyThreadId = await createThread();
+
+				otherUser = await createUser();
+				otherCredentials = await login(otherUser.username, password);
+				await addUserToRoom({ usernames: [otherUser.username], rid: typeChannel._id });
+			});
+
+			after(() => Promise.all([deleteRoom({ type: 'c', roomId: typeChannel._id }), deleteUser(otherUser)]));
+
+			it("should return only the threads where the caller has a draft, ignoring other users' drafts", async () => {
+				await saveThreadDraft(draftThreadId, 'my draft');
+				await saveThreadDraft(replyThreadId, 'other user draft', otherCredentials);
+
+				expect(await getThreadIds('drafts')).to.deep.equal([draftThreadId]);
+				expect(await getThreadIds('drafts', otherCredentials)).to.deep.equal([replyThreadId]);
+			});
+
+			it('should return only the threads with unread replies when filtered by unread', async () => {
+				await sendSimpleMessage({
+					roomId: typeChannel._id,
+					text: 'unread reply',
+					tmid: replyThreadId,
+					userCredentials: otherCredentials,
+				}).expect(200);
+
+				await retry('wait for the unread thread to be recorded', async () => {
+					expect(await getThreadIds('unread')).to.deep.equal([replyThreadId]);
+				});
+			});
+		});
+
 		it('should return an empty thread list', async () => {
 			await updatePermission('view-c-room', ['admin', 'user']);
 
