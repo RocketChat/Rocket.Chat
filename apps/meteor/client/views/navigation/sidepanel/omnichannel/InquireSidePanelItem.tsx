@@ -43,6 +43,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 	const menu =
 		!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
 			<RoomMenu
+				key={rid}
 				alert={alert}
 				rid={rid}
 				roomOpen={rid === openedRoom}
