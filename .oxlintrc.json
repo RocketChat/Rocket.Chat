@@ -30,6 +30,26 @@
 	],
 	"overrides": [
 		{
+			"files": ["**/*"],
+			"jsPlugins": [{ "name": "rocket.chat", "specifier": "./packages/lint-config/rules/index.js" }],
+			"rules": {
+				"rocket.chat/no-generic-model-methods": "warn"
+			}
+		},
+		{
+			"files": [
+				"packages/models/**/*",
+				"apps/meteor/ee/server/models/raw/**/*",
+				"apps/meteor/server/startup/migrations/**/*",
+				"**/*.{spec,test}.{ts,tsx,js,jsx,mjs,cjs}",
+				"**/*.tests.js",
+				"**/tests/**/*"
+			],
+			"rules": {
+				"rocket.chat/no-generic-model-methods": "off"
+			}
+		},
+		{
 			"files": ["apps/meteor/**/*"],
 			"rules": {
 				"you-dont-need-lodash-underscore/concat": "error",
