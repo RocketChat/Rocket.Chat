@@ -17,7 +17,13 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 			...imapConfig,
 		};
 
-		options.deleteAfterRead = settings.get('Direct_Reply_Delete');
+		options = {
+			filter: ['UNSEEN'],
+			markSeen: true,
+			maxRetries: 10,
+			...options,
+			deleteAfterRead: settings.get('Direct_Reply_Delete'),
+		};
 
 		super(imapConfig, options);
 
