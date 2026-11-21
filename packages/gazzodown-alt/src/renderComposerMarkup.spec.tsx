@@ -150,7 +150,7 @@ describe('blocks the composer gives visual treatment', () => {
 	});
 });
 
-// TODO: As we implement these nodes, remove these tests
+// These tests document the fallback behavior for blocks that do not yet have dedicated visual treatment.
 describe('blocks with no visual treatment yet', () => {
 	it.each([
 		['a task list', [tasks] as MessageParser.Root, '', '- [x] done\n- [ ] todo\n'],
