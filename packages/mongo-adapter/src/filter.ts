@@ -33,7 +33,7 @@ const regexpElementMatcher =
 	};
 
 const equalityElementMatcher = (elementSelector: unknown) => {
-	if (isOperatorObject(elementSelector)) {
+	if (isOperatorObject(elementSelector) && Object.keys(elementSelector).length > 0) {
 		throw new Error("Can't create equalityValueSelector for operator object");
 	}
 
@@ -178,7 +178,7 @@ const $in = (operand: unknown): ((value: unknown) => boolean) => {
 			return regexpElementMatcher(option);
 		}
 
-		if (isOperatorObject(option)) {
+		if (isOperatorObject(option) && Object.keys(option).length > 0) {
 			throw new Error('cannot nest $ under $in');
 		}
 
@@ -526,7 +526,7 @@ const compileValueSelector = (valueSelector: unknown) => {
 		return convertElementMatcherToBranchedMatcher(regexpElementMatcher(valueSelector));
 	}
 
-	if (isOperatorObject(valueSelector)) {
+	if (isOperatorObject(valueSelector) && Object.keys(valueSelector).length > 0) {
 		return operatorBranchedMatcher(valueSelector);
 	}
 
