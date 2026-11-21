@@ -5,9 +5,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import SidebarRail from './SidebarRail';
 
 const baseRoot = () =>
-	mockAppRoot().withSetting('Layout_Show_Home_Button', true).withTranslations('en', 'core', {
+	mockAppRoot().withTranslations('en', 'core', {
 		Sidebar: 'Sidebar',
-		Home: 'Home',
+		Inbox: 'Inbox',
+		Navigation: 'Navigation',
+		Sidebar_preferences: 'Sidebar preferences',
 		Create_new: 'Create new',
 		Voice_Call: 'Voice Call',
 		Pages_and_actions: 'Pages and actions',

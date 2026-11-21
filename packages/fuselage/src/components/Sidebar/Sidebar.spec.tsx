@@ -62,6 +62,62 @@ describe('[SidebarCollapseGroup]', () => {
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
+
+	it('should report the next state and follow the `expanded` prop when controlled', async () => {
+		const onToggle = jest.fn();
+		const { rerender } = render(
+			<SidebarCollapseGroup title='Favorites' expanded onToggle={onToggle}>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		const toggle = screen.getByRole('button', { name: 'Favorites' });
+
+		await userEvent.click(toggle);
+
+		expect(onToggle).toHaveBeenCalledTimes(1);
+		expect(onToggle).toHaveBeenLastCalledWith(false);
+		expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+		rerender(
+			<SidebarCollapseGroup title='Favorites' expanded={false} onToggle={onToggle}>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		expect(toggle).toHaveAttribute('aria-expanded', 'false');
+	});
+
+	it('should report once per Enter press and ignore repeats', async () => {
+		const onToggle = jest.fn();
+		render(
+			<SidebarCollapseGroup title='Favorites' expanded onToggle={onToggle}>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		screen.getByRole('button', { name: 'Favorites' }).focus();
+		await userEvent.keyboard('{Enter>2}');
+
+		expect(onToggle).toHaveBeenCalledTimes(1);
+		expect(onToggle).toHaveBeenLastCalledWith(false);
+	});
+
+	it('should toggle itself and report the next state when uncontrolled', async () => {
+		const onToggle = jest.fn();
+		render(
+			<SidebarCollapseGroup title='Favorites' defaultExpanded onToggle={onToggle}>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		const toggle = screen.getByRole('button', { name: 'Favorites' });
+
+		await userEvent.click(toggle);
+
+		expect(onToggle).toHaveBeenLastCalledWith(false);
+		expect(toggle).toHaveAttribute('aria-expanded', 'false');
+	});
 });
 
 describe('[SidebarDivider]', () => {

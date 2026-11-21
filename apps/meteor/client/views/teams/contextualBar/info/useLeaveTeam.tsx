@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import LeaveTeam from './LeaveTeam';
 
-export const useLeaveTeam = ({ teamId }: IRoom) => {
+export const useLeaveTeam = ({ teamId }: Pick<IRoom, 'teamId'>) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();

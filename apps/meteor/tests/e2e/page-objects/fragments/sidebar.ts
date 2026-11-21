@@ -58,6 +58,45 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByRole('group', { name: 'No results found' });
 	}
 
+	get teamsHeading(): Locator {
+		return this.root.getByRole('heading', { name: 'Teams', level: 2 });
+	}
+
+	get teamsList(): Locator {
+		return this.root.getByRole('list', { name: 'Teams', exact: true });
+	}
+
+	get btnSearchTeams(): Locator {
+		return this.root.getByRole('button', { name: 'Search teams and rooms' });
+	}
+
+	get inputSearchTeams(): Locator {
+		return this.root.getByRole('textbox', { name: 'Search teams and rooms' });
+	}
+
+	getTeamRoomLink(name: string): Locator {
+		return this.teamsList.locator(this.getRoomLink(name));
+	}
+
+	getTeamToggle(name: string): Locator {
+		return this.getCollapseGroupByName(name).getByRole('button', { name });
+	}
+
+	async selectTeamMenuItem(teamName: string, item: string): Promise<void> {
+		const team = this.getCollapseGroupByName(teamName);
+		await team.hover();
+		await team.getByRole('button', { name: 'Options', exact: true }).click();
+		await this.menuOptions.getCheckboxItem(item).click();
+	}
+
+	async getTeamOrder(): Promise<string[]> {
+		const labels = await this.teamsList
+			.getByRole('listitem', { name: /^(Collapse|Expand) / })
+			.evaluateAll((items) => items.map((item) => item.getAttribute('aria-label') ?? ''));
+
+		return labels.map((label) => label.replace(/^(Collapse|Expand) /, ''));
+	}
+
 	get teamCollabFilters(): Locator {
 		return this.root.getByRole('tablist', { name: 'Team collaboration filters' });
 	}
