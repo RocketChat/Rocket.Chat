@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { GenericNoResults, useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 
@@ -13,17 +14,22 @@ import RoomListWrapper from './RoomListWrapper';
 import { useSidebarListDrag } from './useSidebarListDrag';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
+import { useActivityFilterAnnouncement } from '../hooks/useActivityFilterAnnouncement';
+import { SIDEBAR_ARCHIVED_GROUP_KEY, SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useLiftedActivityFilters } from '../hooks/useLiftedActivityFilters';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRingingCalls } from '../hooks/useRingingCalls';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
+// The dynamic groups stay first and the archived placeholder stays last, so neither moves nor is moved past.
+const isPinnedGroup = (key: string): boolean => SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key) || key === SIDEBAR_ARCHIVED_GROUP_KEY;
+
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
-	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
-	if (direction === 'down') return index + 1 < groups.length;
+	if (isPinnedGroup(groups[index].key)) return false;
+	if (direction === 'down') return index + 1 < groups.length && groups[index + 1].key !== SIDEBAR_ARCHIVED_GROUP_KEY;
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
 };
 
@@ -47,8 +53,16 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups, groupKeys, filtering } = useRoomList({ collapsedGroups, filterText });
+	const { liftedFilters, toggleLifted, dropLifted } = useLiftedActivityFilters();
+	const { groups, groupKeys, filtering } = useRoomList({ collapsedGroups, liftedFilters, filterText });
+	const { announcement, announceActivityFilter } = useActivityFilterAnnouncement(groups);
 	const moveCategory = useMoveCategoryPosition();
+
+	// A window chosen from the menu applies right away, even if the previous one was lifted, and is announced.
+	const chooseActivityFilter = (groupKey: string, activityFilterHours: number | undefined) => {
+		dropLifted(groupKey);
+		announceActivityFilter(groupKey, activityFilterHours);
+	};
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const ringingCalls = useRingingCalls();
@@ -114,6 +128,8 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 						canMoveDown={!filtering && canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(groupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(groupKeys, group.key, 'down')}
+						onToggleInactive={() => group.activityFilterHours && toggleLifted(group.key, group.activityFilterHours)}
+						onActivityFilterChange={(activityFilterHours) => chooseActivityFilter(group.key, activityFilterHours)}
 						onClick={() => !filtering && handleClick(group.key)}
 					/>
 				)}
@@ -132,6 +148,9 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 				<MoreUnreadsBubble direction='up' mention={previousUnread.mention} onClick={() => scrollToUnread(previousUnread.index)} />
 			)}
 			{nextUnread && <MoreUnreadsBubble direction='down' mention={nextUnread.mention} onClick={() => scrollToUnread(nextUnread.index)} />}
+			<VisuallyHidden elementType='div' role='status' aria-live='polite'>
+				{announcement}
+			</VisuallyHidden>
 		</Box>
 	);
 };

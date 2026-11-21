@@ -81,6 +81,25 @@ describe('[Sidebar Custom Categories]', () => {
 				});
 		});
 
+		it('should persist the optional activityFilterHours field verbatim, presets or not', async () => {
+			const categories = [
+				category({ name: 'Recent', activityFilterHours: 24 }),
+				category({ name: 'Week', activityFilterHours: 168 }),
+				category({ name: 'Custom', activityFilterHours: 36 }),
+				{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 720 },
+			];
+
+			await setCategories(categories).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
+				});
+		});
+
 		it('should preserve the array order (order is the render order)', async () => {
 			const categories = [category({ name: 'A' }), category({ name: 'B' }), category({ name: 'C' })];
 
@@ -162,6 +181,96 @@ describe('[Sidebar Custom Categories]', () => {
 			await setCategories([{ _id: Random.id(), name: 'x', showUnreads: 'yes' }])
 				.expect(400)
 				.expect(expectInvalid);
+		});
+
+		it('should reject an "activityFilterHours" that is not a whole number of hours', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 1.5 }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should reject an "activityFilterHours" below one hour', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 0 }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should reject an "activityFilterHours" longer than a year', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 24 * 365 + 1 }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should reject a negative "activityFilterHours"', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: -1 }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should accept an "activityFilterHours" of exactly a year', async () => {
+			const categories = [category({ name: 'Year', activityFilterHours: 24 * 365 })];
+
+			await setCategories(categories).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
+				});
+		});
+
+		it('should coerce a numeric string "activityFilterHours" to a number', async () => {
+			const entry = category({ name: 'Day' });
+
+			await setCategories([{ ...entry, activityFilterHours: '24' }]).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories[0]).to.have.property('activityFilterHours', 24);
+				});
+		});
+
+		it('should clear "activityFilterHours" when the entry is sent without it', async () => {
+			const entry = category({ name: 'Day' });
+
+			await setCategories([{ ...entry, activityFilterHours: 24 }]).expect(200);
+			await setCategories([entry]).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories[0]).to.not.have.property('activityFilterHours');
+				});
+		});
+
+		it('should clear "activityFilterHours" when it is sent as null', async () => {
+			const entry = category({ name: 'Day' });
+
+			await setCategories([{ ...entry, activityFilterHours: 24 }]).expect(200);
+			await setCategories([{ ...entry, activityFilterHours: null }]).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories[0]).to.not.have.property('activityFilterHours');
+				});
+		});
+
+		it('should reject a blank category name even when its "activityFilterHours" is null', async () => {
+			await setCategories([{ ...category({ name: '   ' }), activityFilterHours: null }]).expect(400);
+		});
+
+		it('should reject a blank category name on an entry without a filter', async () => {
+			await setCategories([category({ name: '   ' })]).expect(400);
 		});
 
 		it('should return 401 when not authenticated', async () => {

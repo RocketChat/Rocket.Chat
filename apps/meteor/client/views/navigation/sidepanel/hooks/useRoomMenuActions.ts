@@ -9,7 +9,7 @@ import { useLeaveRoomAction } from '../../../../hooks/menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from '../../../../hooks/menuActions/useToggleFavoriteAction';
 import { useToggleNotificationAction } from '../../../../hooks/menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from '../../../../hooks/menuActions/useToggleReadAction';
-import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
+import { useRoomArchiveMenuItem } from '../../../../hooks/useRoomArchiveMenuItem';
 import { useOmnichannelPrioritiesMenu } from '../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
@@ -53,7 +53,7 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
+	const archiveItem = useRoomArchiveMenuItem({ rid, type, name, redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -68,14 +68,7 @@ export const useRoomMenuActions = ({
 		}
 
 		const options: (GenericMenuItemProps | false)[] = [
-			!isOmnichannelRoom && {
-				id: 'hideRoom',
-				icon: 'eye-off',
-				content: t('Hide'),
-				onClick: () => {
-					void handleHide();
-				},
-			},
+			!isOmnichannelRoom && archiveItem,
 			{
 				id: 'toggleRead',
 				icon: 'flag',
@@ -105,7 +98,7 @@ export const useRoomMenuActions = ({
 		subscription,
 		isOmnichannelRoom,
 		t,
-		handleHide,
+		archiveItem,
 		isUnread,
 		handleToggleRead,
 		canFavorite,

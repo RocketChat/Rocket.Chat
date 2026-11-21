@@ -35,7 +35,12 @@ const wrapper = mockAppRoot().withSetting('Favorite_Rooms', true).withUserPrefer
 beforeEach(() => {
 	mockedUseUserIsSubscribed.mockReturnValue(true);
 	mockedUseToggleFavoriteMutation.mockReturnValue({ mutate: jest.fn() } as any);
-	mockedUseCategoryModals.mockReturnValue({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() });
+	mockedUseCategoryModals.mockReturnValue({
+		openCreate: jest.fn(),
+		openManage: jest.fn(),
+		openDelete: jest.fn(),
+		openArchiveRooms: jest.fn(),
+	});
 	mockedUseMoveRoomCategory.mockReturnValue({ mutate: jest.fn(), mutateAsync: jest.fn() } as any);
 	mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: true } } as any);
 });
