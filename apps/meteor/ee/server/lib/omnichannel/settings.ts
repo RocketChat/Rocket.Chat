@@ -292,7 +292,7 @@ export const createSettings = async (): Promise<void> => {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		i18nDescription: 'Livechat_auto_transfer_chat_timeout_description',
+		i18nDescription: 'Livechat_auto_transfer_chat_timeout_Description',
 		enterprise: true,
 		invalidValue: 0,
 		modules: ['livechat-enterprise'],
