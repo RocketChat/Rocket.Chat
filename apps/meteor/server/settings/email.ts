@@ -377,6 +377,13 @@ export const createEmailSettings = () =>
 				env: true,
 				i18nLabel: 'Pool',
 			});
+			await this.add('SMTP_Max_Connections', 5, {
+				type: 'int',
+				env: true,
+				i18nLabel: 'SMTP_Max_Connections',
+				i18nDescription: 'SMTP_Max_Connections_Description',
+				enableQuery: { _id: 'SMTP_Pool', value: true },
+			});
 			await this.add('SMTP_Username', '', {
 				type: 'string',
 				env: true,

@@ -15,7 +15,7 @@ export function configureSMTP(settings: ICachedSettings): void {
 	MeteorEmail.customTransport = ({ packageSettings: _packageSettings, text: _untranslatedText, ...mail }) => Mailer.sendNoWrap(mail);
 
 	settings.watchMultiple(
-		['SMTP_Host', 'SMTP_Port', 'SMTP_Username', 'SMTP_Password', 'SMTP_Protocol', 'SMTP_Pool', 'SMTP_IgnoreTLS'],
+		['SMTP_Host', 'SMTP_Port', 'SMTP_Username', 'SMTP_Password', 'SMTP_Protocol', 'SMTP_Pool', 'SMTP_Max_Connections', 'SMTP_IgnoreTLS'],
 		() => {
 			SystemLogger.info('Updating SMTP transport');
 
@@ -30,11 +30,14 @@ export function configureSMTP(settings: ICachedSettings): void {
 			const password = settings.get<string>('SMTP_Password');
 			const port = parseInt(settings.get<string>('SMTP_Port'));
 			const ignoreTLS = protocol === 'smtp' && settings.get<boolean>('SMTP_IgnoreTLS');
+			const pool = settings.get<boolean>('SMTP_Pool');
+			const maxConnections = settings.get<number>('SMTP_Max_Connections');
 
 			configureMailTransport({
 				host,
 				secure: protocol === 'smtps',
-				pool: settings.get<boolean>('SMTP_Pool'),
+				pool,
+				...(pool && Number.isSafeInteger(maxConnections) && maxConnections > 0 && { maxConnections }),
 				...(port && { port }),
 				...(username && password && { auth: { user: username, pass: password } }),
 				...(ignoreTLS && { ignoreTLS }),
