@@ -373,8 +373,8 @@ class E2E extends Emitter {
 				this.userId = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: "Wasn't possible to decode your encryption key to be imported.", // TODO: missing translation
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>', // TODO: missing translation
+					title: () => t('Wasnt_possible_to_decode_your_encryption_key_to_be_imported'),
+					html: () => t('Your_encryption_password_seems_wrong_Click_here_to_try_again'),
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
