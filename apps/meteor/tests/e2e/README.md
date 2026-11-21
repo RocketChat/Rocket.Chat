@@ -54,8 +54,8 @@ to go away.
   "No results", assert the new rows too.
 - If the list has no busy state, give it one: `aria-busy` while the search params and the request haven't caught up,
   e.g. `params !== debouncedParams || isFetching`. Assistive technology needs the same signal.
-- If the UI fix is out of scope, wait for the response, then assert something only the new rows satisfy, and leave a
-  `TODO` in the page object naming the component that lacks the signal.
+- If the UI fix is out of scope, wait for the response, then assert something only the new rows satisfy, and leave
+  a `TODO` in the page object naming the component that lacks the signal.
 
 # Playwright Locator Best Practices
 
