@@ -594,7 +594,7 @@ MaybeReferences
 
 /* Italic */
 Italic
-   = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
+   = value:$(AlphaNumericChar MarkChar* (AlphaNumericChar MarkChar* / [.] AlphaNumericChar MarkChar* / [\-] DecimalNumberChar)* [\x5F] [\x5F]?) { return plain(value); }
   / [\x5F] [\x5F] i:ItalicContentItems [\x5F] [\x5F] t:$[a-zA-Z0-9]+ {
       return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)]);
     }
