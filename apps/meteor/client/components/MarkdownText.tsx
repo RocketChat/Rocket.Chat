@@ -9,7 +9,7 @@ export { supportedURISchemes } from './MarkdownTextInner';
 
 type MarkdownTextParams = {
 	content: string;
-	variant: 'inline' | 'inlineWithoutBreaks' | 'document';
+	variant: 'inline' | 'inlineWithoutBreaks' | 'document' | 'documentTextOnly';
 	preserveHtml: boolean;
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
@@ -23,9 +23,9 @@ const preserveLineBreaks = css`
 
 const MarkdownText = ({ content, withTruncatedText = false, variant, preserveHtml, parseEmoji, ...boxProps }: MarkdownTextProps) => {
 	if (content && content.length > getMarkdownParserLimit()) {
-		// `document` parses with `breaks: true`, so its line breaks have to survive the unparsed
+		// the `document` variants parse with `breaks: true`, so their line breaks have to survive the unparsed
 		// fallback; the inline variants collapse them on purpose, and truncation needs a single line.
-		const keepLineBreaks = (variant ?? 'document') === 'document' && !withTruncatedText;
+		const keepLineBreaks = (variant ?? 'document').startsWith('document') && !withTruncatedText;
 
 		return (
 			<Box

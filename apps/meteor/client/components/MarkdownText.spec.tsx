@@ -456,6 +456,86 @@ describe('line breaks handling', () => {
 	});
 });
 
+describe('documentTextOnly variant', () => {
+	it('should render images and links in document variant', () => {
+		render(<MarkdownText content='![logo](https://example.com/logo.png) [docs](https://example.com/docs)' variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.getByRole('img', { name: 'logo' })).toHaveAttribute('src', 'https://example.com/logo.png');
+		expect(screen.getByRole('link', { name: 'docs' })).toHaveAttribute('href', 'https://example.com/docs');
+	});
+
+	it.each([
+		{ caseName: 'an inline image', content: 'Status: ![build passing](https://example.com/badge.svg)', expected: 'build passing' },
+		{
+			caseName: 'a reference image',
+			content: 'Status: ![build passing][badge]\n\n[badge]: https://example.com/badge.svg',
+			expected: 'build passing',
+		},
+		{
+			caseName: 'an image inside a link',
+			content: 'Status: [![build passing](https://example.com/badge.svg)](https://example.com/build)',
+			expected: 'build passing',
+		},
+		{ caseName: 'a link', content: 'See [the runbook](https://example.com/runbook)', expected: 'the runbook' },
+		{ caseName: 'a bare url', content: 'See https://example.com/runbook', expected: 'https://example.com/runbook' },
+		{ caseName: 'an email address', content: 'Ask ops@example.com', expected: 'ops@example.com' },
+	])('should render $caseName as text', ({ content, expected }) => {
+		render(<MarkdownText content={content} variant='documentTextOnly' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.queryByRole('img')).not.toBeInTheDocument();
+		expect(screen.queryByRole('link')).not.toBeInTheDocument();
+		expect(screen.getByText(expected, { exact: false })).toBeInTheDocument();
+	});
+
+	it('should keep text formatting', () => {
+		render(
+			<MarkdownText content={'# Summary\n\n**Deployed** to _staging_\n\n- first\n- second\n\n`yarn build`'} variant='documentTextOnly' />,
+			{
+				wrapper: mockAppRoot().build(),
+			},
+		);
+
+		expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
+		expect(screen.getByText('Deployed').tagName).toBe('STRONG');
+		expect(screen.getByText('staging').tagName).toBe('EM');
+		expect(screen.getAllByRole('listitem')).toHaveLength(2);
+		expect(screen.getByRole('code')).toHaveTextContent('yarn build');
+	});
+
+	it('should leave out anything that is not text', () => {
+		render(<MarkdownText content='- [ ] deploy' variant='documentTextOnly' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+		expect(screen.getByRole('listitem')).toHaveTextContent('deploy');
+	});
+
+	it('should not let a code block language add attributes', () => {
+		render(<MarkdownText content={'```js" data-tooltip="Sign in again" aria-hidden="true\nsecret\n```'} variant='documentTextOnly' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const code = screen.getByText('secret');
+		expect(code).not.toHaveAttribute('data-tooltip');
+		expect(code).not.toHaveAttribute('aria-hidden');
+	});
+
+	it('should keep html tags as text', () => {
+		const content = '<img src="logo.png" alt="logo">';
+		render(<MarkdownText content={content} variant='documentTextOnly' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.queryByRole('img')).not.toBeInTheDocument();
+		expect(screen.getByText(content)).toBeInTheDocument();
+	});
+});
+
 describe('DOMPurify hook registration', () => {
 	it('should register hook only once at module level', () => {
 		// Import the module to trigger hook registration
@@ -595,5 +675,24 @@ describe('emoji parsing', () => {
 		const emojiElement = screen.getByTitle(':smile:');
 		expect(emojiElement).toBeInTheDocument();
 		expect(emojiElement).toHaveTextContent('😄');
+	});
+
+	it('should render emoji as plain text in documentTextOnly variant', () => {
+		emoji.packages.custom = {
+			emojiCategories: [],
+			emojisByCategory: {},
+			toneList: {},
+			render: (text: string) =>
+				text.replace(/:parrot:/g, '<span class="emoji" style="background-image:url(https://example.test/parrot.png)">:parrot:</span>'),
+			renderPicker: () => undefined,
+		};
+
+		render(<MarkdownText content='Approved :smile: :parrot:' variant='documentTextOnly' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.getByText('Approved 😄 :parrot:')).toBeInTheDocument();
+
+		delete emoji.packages.custom;
 	});
 });
