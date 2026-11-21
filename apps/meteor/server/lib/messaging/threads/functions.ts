@@ -4,7 +4,11 @@ import { Messages, Subscriptions, NotificationQueue } from '@rocket.chat/models'
 
 import { getMentions, getUserIdsFromHighlights } from '../../../hooks/messages/notifyUsersOnMessage';
 import { callbacks } from '../../callbacks';
-import { notifyOnSubscriptionChangedByRoomIdAndUserIds, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../notifyListener';
+import {
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChangedByRoomIdAndUserIds,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
+} from '../../notifyListener';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
 	if (!tmid || isEditedMessage(message)) {
@@ -51,9 +55,22 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		);
 	}
 
+	const hasGroupMention = toAll || toHere;
+
+	if (hasGroupMention) {
+		// @all / @here notify the whole room, so the rest of the room gets the persistent unread state too
+		promises.push(
+			Subscriptions.addUnreadGroupMentionThreadByRoomIdExcludingUserIds(rid, [u._id, ...threadFollowersUids, ...mentionedUsers], tmid),
+		);
+	}
+
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	if (hasGroupMention) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	} else {
+		void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	}
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {
