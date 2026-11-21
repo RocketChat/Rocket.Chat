@@ -81,6 +81,7 @@
 		"ajv@npm:^8.9.0": "8.20.0",
 		"@google-cloud/storage/fast-xml-parser": "5.12.1",
 		"@aws-sdk/xml-builder@npm:^3.972.8": "3.972.31",
+		"@file-type/xml@npm:^0.4.3": "patch:@file-type/xml@npm%3A0.4.4#~/.yarn/patches/@file-type-xml-npm-0.4.4-meteor-main.patch",
 		"follow-redirects": "^1.16.2",
 		"handlebars": "^4.7.9",
 		"lodash": "^4.18.0",

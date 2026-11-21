@@ -3446,13 +3446,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@file-type/xml@npm:^0.4.3":
+"@file-type/xml@npm:0.4.4":
   version: 0.4.4
   resolution: "@file-type/xml@npm:0.4.4"
   dependencies:
     sax: "npm:^1.4.1"
     strtok3: "npm:^10.3.4"
   checksum: 10/a7c9bdbdb188fbc11bb08efdc699b49c5367952f732e3a9505396e905edfe47e2f924623861827be992a7899158b1864515770ec9252a43d6c0e37e404b4bd7a
+  languageName: node
+  linkType: hard
+
+"@file-type/xml@patch:@file-type/xml@npm%3A0.4.4#~/.yarn/patches/@file-type-xml-npm-0.4.4-meteor-main.patch":
+  version: 0.4.4
+  resolution: "@file-type/xml@patch:@file-type/xml@npm%3A0.4.4#~/.yarn/patches/@file-type-xml-npm-0.4.4-meteor-main.patch::version=0.4.4&hash=5fcc57"
+  dependencies:
+    sax: "npm:^1.4.1"
+    strtok3: "npm:^10.3.4"
+  checksum: 10/730b5c546d9ef09ef7ce787605e939e1de24d78c99e77d2faffa9f02caa704475265f8271e19b5b9ecf60c4acd1b7085e28045adeccf7425674f13994721de50
   languageName: node
   linkType: hard
 
