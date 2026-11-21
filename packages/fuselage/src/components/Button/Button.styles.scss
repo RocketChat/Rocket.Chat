@@ -1,3 +1,4 @@
+@use '../../styles/functions.scss' as *;
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/buttons.scss' as colors;
@@ -6,14 +7,25 @@
 @use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/mixins/states.scss' as *;
 
+// Rendered inset = border + padding. Mixins below subtract this from the
+// total inset to get the padding value.
+$border-width: theme('button-border-width', lengths.border-width('default'));
+
+// Inline inset, one padding-scale step per size. The icon side reads 2px
+// tighter than this, but that is an optical correction carried by the icon's
+// own margin, so every inset here stays a plain scale value.
+$inset-default: lengths.padding(16); // 16px
+$inset-medium: lengths.padding(12); // 12px
+$inset-small: lengths.padding(8); // 8px
+$inset-large: lengths.padding(24); // 24px
+
 .rcx-button {
-	@mixin with-rectangular-size($height, $padding-x, $line-height) {
+	@mixin with-rectangular-size($height, $inline-inset, $line-height) {
 		min-width: calc(lengths.size($height) * 2);
 		height: lengths.size($height);
-		padding: calc((lengths.size($height) - $line-height) / 2 - 2px) calc(lengths.padding($padding-x) - 2px);
-		padding-block: calc((lengths.size($height) - $line-height) / 2 - 2px);
 
-		padding-inline: calc(lengths.padding($padding-x) - 2px);
+		padding-block: calc((lengths.size($height) - $line-height) / 2 - $border-width);
+		padding-inline: calc($inline-inset - $border-width);
 	}
 
 	@mixin with-squared-size($size) {
@@ -48,17 +60,31 @@
 		vertical-align: top;
 
 		@include use-with-truncated-text();
-	}
 
-	.rcx-button__icon {
-		margin-inline-end: lengths.margin(4);
+		// The icon is sized to the label's line-height, so top-aligning it keeps
+		// both centred (default `vertical-align: text-bottom` would not). Scoped
+		// to the button's own icon rather than every `.rcx-icon` below it, so a
+		// caller's icon inside `children` keeps whatever alignment it had.
+		.rcx-button__icon {
+			vertical-align: top;
+		}
 	}
 
 	@include clickable;
 	@include use-font-scale(p2m);
 	@include use-text-ellipsis;
 
-	@include with-rectangular-size($height: 40, $padding-x: 16, $line-height: line-height(p2));
+	@include with-rectangular-size($height: 40, $inline-inset: $inset-default, $line-height: line-height(p2));
+
+	&.rcx-button--with-icon {
+		// The margins only have a job beside a label: the end margin separates
+		// icon from label, and the start margin is the optical correction that
+		// makes the pair read as centred. An icon-only button needs neither, so
+		// they are scoped here rather than applied to every icon.
+		.rcx-button__icon {
+			margin-inline: lengths.margin(-2) lengths.margin(4);
+		}
+	}
 
 	@include button.kind-variant(colors.$secondary);
 
@@ -71,19 +97,19 @@
 	&--small {
 		@include use-font-scale(c2);
 
-		@include with-rectangular-size($height: 28, $padding-x: 8, $line-height: line-height(c1));
+		@include with-rectangular-size($height: 28, $inline-inset: $inset-small, $line-height: line-height(c1));
 	}
 
 	&--medium {
 		@include use-font-scale(c2);
 
-		@include with-rectangular-size($height: 32, $padding-x: 12, $line-height: line-height(c1));
+		@include with-rectangular-size($height: 32, $inline-inset: $inset-medium, $line-height: line-height(c1));
 	}
 
 	&--large {
 		@include use-font-scale(p2);
 
-		@include with-rectangular-size($height: 48, $padding-x: 24, $line-height: line-height(p2));
+		@include with-rectangular-size($height: 48, $inline-inset: $inset-large, $line-height: line-height(p2));
 	}
 
 	&--compact {

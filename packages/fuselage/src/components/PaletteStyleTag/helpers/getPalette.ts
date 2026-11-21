@@ -254,7 +254,7 @@ export const getThemePalette = (theme: Themes) => {
 				},
 				{
 					name: 'button-background-secondary-danger-disabled',
-					color: button.backgroundDangerDisabled,
+					color: button.backgroundSecondaryDangerDisabled,
 				},
 			],
 		},
