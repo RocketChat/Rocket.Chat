@@ -2,7 +2,7 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import { ownBadgeStyles, screenThumbStyles, spotlightOverlayStyles } from './stageStyles';
+import { ownBadgeStyles, screenThumbStyles, spotlightOverlayStyles } from './stageStyles.js';
 
 export type ScreenShareThumbProps = {
 	stream: MediaStream;

@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useDebouncedValue } from './useDebouncedValue';
+import { renderHook } from './testing.js';
+import { useDebouncedValue } from './useDebouncedValue.js';
 
 const delay = 100;
 

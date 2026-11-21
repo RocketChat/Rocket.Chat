@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import VideoConfController from './VideoConfController';
+import VideoConfController from './VideoConfController.js';
 
 export default {
 	component: VideoConfController,

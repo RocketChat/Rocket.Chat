@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import LayoutLogoImage from './LayoutLogoImage';
+import LayoutLogoImage from './LayoutLogoImage.js';
 
 export default {
 	title: 'components/LayoutLogoImage',

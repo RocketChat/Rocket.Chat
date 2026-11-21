@@ -1,11 +1,11 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react';
 
-import ParticipantThumbnail from './ParticipantThumbnail';
-import ParticipantTile from './ParticipantTile';
-import SelfThumbnail from './SelfThumbnail';
-import SelfTile from './SelfTile';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures';
-import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles';
+import ParticipantThumbnail from './ParticipantThumbnail.js';
+import ParticipantTile from './ParticipantTile.js';
+import SelfThumbnail from './SelfThumbnail.js';
+import SelfTile from './SelfTile.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures.js';
+import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles.js';
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their

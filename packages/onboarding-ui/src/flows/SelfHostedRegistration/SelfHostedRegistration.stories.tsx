@@ -10,18 +10,18 @@ import {
 	validateEmail,
 	validatePassword,
 	validateUsername,
-} from './mocks';
-import type { AdminInfoPayload } from '../../forms/AdminInfoForm/AdminInfoForm';
-import type { OrganizationInfoPayload } from '../../forms/OrganizationInfoForm/OrganizationInfoForm';
-import type { RegisterOfflinePayload } from '../../forms/RegisterOfflineForm/RegisterOfflineForm';
-import type { RegisterServerPayload } from '../../forms/RegisterServerForm/RegisterServerForm';
-import AdminInfoPage from '../../pages/AdminInfoPage';
-import AwaitingConfirmationPage from '../../pages/AwaitingConfirmationPage';
-import ConfirmationProcessPage from '../../pages/ConfirmationProcessPage';
-import EmailConfirmedPage from '../../pages/EmailConfirmedPage';
-import OrganizationInfoPage from '../../pages/OrganizationInfoPage';
-import RegisterOfflinePage from '../../pages/RegisterOfflinePage';
-import RegisteredServerPage from '../../pages/RegisterServerPage';
+} from './mocks.js';
+import type { AdminInfoPayload } from '../../forms/AdminInfoForm/AdminInfoForm.js';
+import type { OrganizationInfoPayload } from '../../forms/OrganizationInfoForm/OrganizationInfoForm.js';
+import type { RegisterOfflinePayload } from '../../forms/RegisterOfflineForm/RegisterOfflineForm.js';
+import type { RegisterServerPayload } from '../../forms/RegisterServerForm/RegisterServerForm.js';
+import AdminInfoPage from '../../pages/AdminInfoPage/index.js';
+import AwaitingConfirmationPage from '../../pages/AwaitingConfirmationPage/index.js';
+import ConfirmationProcessPage from '../../pages/ConfirmationProcessPage/index.js';
+import EmailConfirmedPage from '../../pages/EmailConfirmedPage/index.js';
+import OrganizationInfoPage from '../../pages/OrganizationInfoPage/index.js';
+import RegisterOfflinePage from '../../pages/RegisterOfflinePage/index.js';
+import RegisteredServerPage from '../../pages/RegisterServerPage/index.js';
 
 export default {
 	title: 'flows/Self-Hosted Registration',

@@ -1,12 +1,12 @@
 import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { Decorator } from '@storybook/react';
 
-import { buildDeviceSelection, buildNoiseSuppression, buildVideoQuality, fakeDevices } from './callFixtures';
-import { embeddedCapabilities } from './storyFixtures';
-import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
-import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import type { PreviewMediaState } from '../preflight/PreviewMediaContext';
-import { PreviewMediaContextProvider } from '../preflight/PreviewMediaContext';
+import { buildDeviceSelection, buildNoiseSuppression, buildVideoQuality, fakeDevices } from './callFixtures.js';
+import { embeddedCapabilities } from './storyFixtures.js';
+import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext.js';
+import { VideoQualityProvider } from '../devices/VideoQualityContext.js';
+import type { PreviewMediaState } from '../preflight/PreviewMediaContext.js';
+import { PreviewMediaContextProvider } from '../preflight/PreviewMediaContext.js';
 
 export type PreviewMediaFixture = {
 	capabilities?: PreviewMediaState['capabilities'];

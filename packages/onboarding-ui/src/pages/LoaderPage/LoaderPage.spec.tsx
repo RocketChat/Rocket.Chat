@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import LoaderPage from './LoaderPage';
+import LoaderPage from './LoaderPage.js';
 
 const subtitles = [
 	'Bringing rocket to launch position',

@@ -1,5 +1,5 @@
-import { getTargetBoundaries } from './getTargetBoundaries';
-import { withResizeObserverMock } from '../../mocks/withResizeObserverMock';
+import { getTargetBoundaries } from './getTargetBoundaries.js';
+import { withResizeObserverMock } from '../../mocks/withResizeObserverMock.js';
 
 withResizeObserverMock();
 

@@ -1,4 +1,4 @@
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from './deviceLabels';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from './deviceLabels.js';
 
 describe('deviceName', () => {
 	// The vendor:product pair identifies the hardware to the machine, not to the person choosing it.

@@ -1,9 +1,9 @@
 import { DeviceMenu, DeviceMenuButton, useAudioLevel, useDeviceSelection, useRevealDeviceLabels } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import VoiceActivity from './VoiceActivity';
-import { useCallState } from './context';
-import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices';
+import VoiceActivity from './VoiceActivity.js';
+import { useCallState } from './context.js';
+import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices.js';
 
 /**
  * The microphone and speaker of a call running in this window, with how the microphone is cleaned up; its trigger

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { usePersonalAccessTokens } from './usePersonalAccessTokens';
+import { usePersonalAccessTokens } from './usePersonalAccessTokens.js';
 
 const tokens = [{ name: 'ci', createdAt: '2026-01-01T00:00:00.000Z', lastTokenPart: 'abc123', bypassTwoFactor: false }];
 

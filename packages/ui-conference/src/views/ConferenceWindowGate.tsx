@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ConferencePreflight from './ConferencePreflight';
-import ConferenceStatePage from './ConferenceStatePage';
-import { useConference } from '../context/ConferenceContext';
-import type { ConferenceMember } from '../context/definitions';
-import { PREFLIGHT_FACES_SHOWN } from '../lib/constants';
+import ConferencePreflight from './ConferencePreflight.js';
+import ConferenceStatePage from './ConferenceStatePage.js';
+import { useConference } from '../context/ConferenceContext.js';
+import type { ConferenceMember } from '../context/definitions.js';
+import { PREFLIGHT_FACES_SHOWN } from '../lib/constants.js';
 
 export type ConferenceWindowGateProps = {
 	present: ConferenceMember[];

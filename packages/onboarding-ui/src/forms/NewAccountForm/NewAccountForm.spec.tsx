@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import NewAccountForm from './NewAccountForm';
+import NewAccountForm from './NewAccountForm.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

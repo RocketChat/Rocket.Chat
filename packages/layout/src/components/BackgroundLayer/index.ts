@@ -1,1 +1,1 @@
-export { default, type BackgroundLayerProps } from './BackgroundLayer';
+export { default, type BackgroundLayerProps } from './BackgroundLayer.js';

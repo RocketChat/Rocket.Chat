@@ -6,7 +6,7 @@ import { RoomEvent } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { HandsMap } from './callDataProtocol';
+import type { HandsMap } from './callDataProtocol.js';
 import {
 	applyHand,
 	createReaction,
@@ -17,7 +17,7 @@ import {
 	parseMessage,
 	reactionIdFor,
 	sweepReactions,
-} from './callDataProtocol';
+} from './callDataProtocol.js';
 
 /**
  * Raised hands, reactions and mute requests, carried over the room's data channel.
