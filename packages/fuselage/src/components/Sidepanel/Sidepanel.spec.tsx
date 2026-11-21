@@ -59,8 +59,8 @@ describe('[Sidepanel]', () => {
 	});
 	it('preserves the sidepanel variant when props contain an extra variant', () => {
 	    const props = {
-	      variant: 'default' as const,
-	      'aria-label': 'Calls',
+	        variant: 'default' as const,
+	        'aria-label': 'Calls',
 	    };
 	
 	    render(<Sidepanel {...props} />);
