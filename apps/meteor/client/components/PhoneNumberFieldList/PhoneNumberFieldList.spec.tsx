@@ -49,6 +49,11 @@ describe('PhoneNumberFieldList', () => {
 			const { container } = render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
 			expect(await axe(container)).toHaveNoViolations();
 		});
+
+		it('renders the phone number input with type="tel"', () => {
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
+			expect(screen.getByRole('textbox', { name: 'Phone number 1' })).toHaveAttribute('type', 'tel');
+		});
 	});
 
 	describe('interactions', () => {
