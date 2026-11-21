@@ -45,7 +45,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 		poHomeOmnichannelAgent2 = new HomeOmnichannel(agent2Page);
 
 		poLiveChat = new OmnichannelLiveChat(page, api);
-		await poLiveChat.goto();
+		await poLiveChat.gotoExpecting(poLiveChat.inputName, { state: 'attached' });
 	});
 
 	test.afterEach(async ({ page }) => {
