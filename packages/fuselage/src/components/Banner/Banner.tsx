@@ -65,6 +65,10 @@ const Banner = ({
 		[onClose],
 	);
 
+	const handleLinkClick = useCallback((event: MouseEvent) => {
+		event.stopPropagation();
+	}, []);
+
 	const buttonProps = useButtonPattern(handleBannerClick);
 
 	return (
@@ -87,7 +91,12 @@ const Banner = ({
 				{title && <h6 className={cx('rcx-banner__title')({ inline })}>{title}</h6>}
 				{children}
 				{link && (
-					<a href={link} target={linkTarget} className={cx('rcx-banner__link')({ [variant]: true })}>
+					<a
+						href={link}
+						target={linkTarget}
+						className={cx('rcx-banner__link')({ [variant]: true })}
+						onClick={handleLinkClick}
+					>
 						{linkText}
 					</a>
 				)}
