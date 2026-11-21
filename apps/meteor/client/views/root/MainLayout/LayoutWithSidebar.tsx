@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -20,8 +20,8 @@ const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 export type LayoutWithSidebarProps = { children: ReactNode };
 
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
+	const embeddedLayout = useEmbeddedLayout();
 	const {
-		isEmbedded: embeddedLayout,
 		sidebar: { shouldToggle },
 	} = useLayout();
 

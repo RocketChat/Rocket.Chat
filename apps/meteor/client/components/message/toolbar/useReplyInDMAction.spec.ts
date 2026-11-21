@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { LayoutContext } from '@rocket.chat/ui-contexts';
+import { EmbeddingContext } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 import type { ContextType } from 'react';
 import { createElement } from 'react';
@@ -110,7 +110,7 @@ describe('useReplyInDMAction', () => {
 				.withUser(currentUser)
 				.withPermission('create-d')
 				.wrap((children) =>
-					createElement(LayoutContext.Provider, { value: { isEmbedded: true } as ContextType<typeof LayoutContext> }, children),
+					createElement(EmbeddingContext.Provider, { value: { isEmbedded: true } as ContextType<typeof EmbeddingContext> }, children),
 				)
 				.build();
 

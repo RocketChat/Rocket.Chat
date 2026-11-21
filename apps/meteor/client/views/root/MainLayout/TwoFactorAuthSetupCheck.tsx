@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
@@ -11,7 +11,7 @@ const AccountSecurityPage = lazy(() => import('../../account/security/AccountSec
 export type TwoFactorAuthSetupCheckProps = { children: ReactNode };
 
 const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => {
-	const { isEmbedded: embeddedLayout } = useLayout();
+	const embeddedLayout = useEmbeddedLayout();
 	const require2faSetup = useRequire2faSetup();
 
 	if (require2faSetup) {

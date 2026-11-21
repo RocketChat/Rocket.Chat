@@ -1,5 +1,6 @@
 import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/core-typings';
-import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { useUserId, useSetting, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { MentionsParser } from '../../../../../lib/MentionsParser';
@@ -14,7 +15,7 @@ export const useE2EEncryption = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const router = useRouter();
 	// we don't care about the reactivity of this boolean
-	const adminEmbedded = useLayout().isEmbedded && router.getLocationPathname().startsWith('/admin');
+	const adminEmbedded = useEmbeddedLayout() && router.getLocationPathname().startsWith('/admin');
 
 	useEffect(() => {
 		if (!userId) {

@@ -113,8 +113,6 @@ describe('RoomHeader', () => {
 			featuresPreview = [{ name: 'roomToolboxLayout', value: true }],
 		) => {
 			const mockLayoutContextValue: LayoutContextValue = {
-				isEmbedded: false,
-				showTopNavbarEmbeddedLayout: false,
 				isTablet: false,
 				isMobile: false,
 				roomToolboxExpanded: true,
@@ -137,12 +135,6 @@ describe('RoomHeader', () => {
 				size: { sidebar: '240px', contextualBar: '380px' },
 				contextualBarPosition: 'relative',
 				contextualBarExpanded: false,
-				hiddenActions: {
-					roomToolbox: [],
-					messageToolbox: [],
-					composerToolbox: [],
-					userToolbox: [],
-				},
 				...layoutContextValue,
 			};
 

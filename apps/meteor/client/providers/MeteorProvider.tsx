@@ -8,6 +8,7 @@ import AvatarUrlProvider from './AvatarUrlProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
+import EmbeddingProvider from './EmbeddingProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import MediaCallProvider from './MediaCallProvider';
@@ -37,45 +38,47 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 				<RouterProvider>
 					<ModalProvider>
 						<SettingsProvider>
-							<TranslationProvider>
-								<SessionProvider>
-									<TooltipProvider>
-										<ToastMessagesProvider>
-											<AvatarUrlProvider>
-												<ConnectionStatusProvider>
-													<UserProvider>
-														<LayoutProvider>
-															<AuthenticationProvider>
-																<CustomSoundProvider>
-																	<NotificationSoundsProvider>
-																		<DeviceProvider>
-																			<AuthorizationProvider>
-																				<EmojiPickerProvider>
-																					<OmnichannelRoomIconProvider>
-																						<UserPresenceProvider>
-																							<ActionManagerProvider>
-																								<VideoConfProvider>
-																									<MediaCallProvider>
-																										<OmnichannelProvider>{children}</OmnichannelProvider>
-																									</MediaCallProvider>
-																								</VideoConfProvider>
-																							</ActionManagerProvider>
-																						</UserPresenceProvider>
-																					</OmnichannelRoomIconProvider>
-																				</EmojiPickerProvider>
-																			</AuthorizationProvider>
-																		</DeviceProvider>
-																	</NotificationSoundsProvider>
-																</CustomSoundProvider>
-															</AuthenticationProvider>
-														</LayoutProvider>
-													</UserProvider>
-												</ConnectionStatusProvider>
-											</AvatarUrlProvider>
-										</ToastMessagesProvider>
-									</TooltipProvider>
-								</SessionProvider>
-							</TranslationProvider>
+							<EmbeddingProvider>
+								<TranslationProvider>
+									<SessionProvider>
+										<TooltipProvider>
+											<ToastMessagesProvider>
+												<AvatarUrlProvider>
+													<ConnectionStatusProvider>
+														<UserProvider>
+															<LayoutProvider>
+																<AuthenticationProvider>
+																	<CustomSoundProvider>
+																		<NotificationSoundsProvider>
+																			<DeviceProvider>
+																				<AuthorizationProvider>
+																					<EmojiPickerProvider>
+																						<OmnichannelRoomIconProvider>
+																							<UserPresenceProvider>
+																								<ActionManagerProvider>
+																									<VideoConfProvider>
+																										<MediaCallProvider>
+																											<OmnichannelProvider>{children}</OmnichannelProvider>
+																										</MediaCallProvider>
+																									</VideoConfProvider>
+																								</ActionManagerProvider>
+																							</UserPresenceProvider>
+																						</OmnichannelRoomIconProvider>
+																					</EmojiPickerProvider>
+																				</AuthorizationProvider>
+																			</DeviceProvider>
+																		</NotificationSoundsProvider>
+																	</CustomSoundProvider>
+																</AuthenticationProvider>
+															</LayoutProvider>
+														</UserProvider>
+													</ConnectionStatusProvider>
+												</AvatarUrlProvider>
+											</ToastMessagesProvider>
+										</TooltipProvider>
+									</SessionProvider>
+								</TranslationProvider>
+							</EmbeddingProvider>
 						</SettingsProvider>
 					</ModalProvider>
 				</RouterProvider>

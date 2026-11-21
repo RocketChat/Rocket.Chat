@@ -1,3 +1,3 @@
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useEmbedding } from '@rocket.chat/ui-contexts';
 
-export const useEmbeddedLayout = () => useLayout().isEmbedded;
+export const useEmbeddedLayout = () => useEmbedding().isEmbedded;

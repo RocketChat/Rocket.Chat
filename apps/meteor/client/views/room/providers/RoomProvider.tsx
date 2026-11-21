@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { LayoutContext, useLayout, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { EmbeddingContext, useEmbedding, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
 
@@ -39,13 +39,13 @@ export type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
-	const layout = useLayout();
-	// Only built when a caller asks for it: the ordinary room passes the layout's own context straight through.
+	const embedding = useEmbedding();
+	// Only built when a caller asks for it: the ordinary room passes the embedding context straight through.
 	// `showTopNavbarEmbeddedLayout` is forced off rather than inherited: it is the workspace saying that an
 	// embedded *page* should still show the navigation, which is a sentence about an iframe in someone else's
 	// site. A room in a panel beside a call has no use for it — `Header` reads exactly these two flags, and with
 	// the setting on the panel would have grown the full room header.
-	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [layout]);
+	const embeddedLayout = useMemo(() => ({ ...embedding, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [embedding]);
 	const room = Rooms.use((state) => state.get(rid));
 
 	const messageJumpParam = useSearchParameter('msg');
@@ -148,7 +148,7 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 	// Whenever the caller says so, even where the layout is already embedded: the conference route is itself an
 	// embedded layout, and skipping the override there left `showTopNavbarEmbeddedLayout` as the workspace set it —
 	// which on a workspace that has it on grew the full room header inside the call's chat panel.
-	return embedded ? <LayoutContext.Provider value={embeddedLayout}>{roomTree}</LayoutContext.Provider> : roomTree;
+	return embedded ? <EmbeddingContext.Provider value={embeddedLayout}>{roomTree}</EmbeddingContext.Provider> : roomTree;
 };
 
 export default memo(RoomProvider);

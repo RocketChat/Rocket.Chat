@@ -2,7 +2,7 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useHiddenActions } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +63,7 @@ const MessageBoxActionsToolbar = ({
 	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
-	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
+	const { composerToolbox: hiddenActions } = useHiddenActions();
 
 	const allActions = {
 		...(!isHidden(hiddenActions, audioMessageAction) && { audioMessageAction }),

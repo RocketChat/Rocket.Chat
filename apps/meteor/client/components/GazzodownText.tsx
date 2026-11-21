@@ -3,6 +3,7 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/tools';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { UIEvent, ReactNode } from 'react';
 import { useCallback, memo, useMemo } from 'react';
@@ -105,7 +106,8 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const goToRoom = useGoToRoom();
 
-	const { isEmbedded, isMobile } = useLayout();
+	const { isMobile } = useLayout();
+	const isEmbedded = useEmbeddedLayout();
 
 	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
 
