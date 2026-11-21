@@ -66,6 +66,78 @@ it('reverts hasCopied to false', async () => {
 	expect(result.current.hasCopied).toBe(false);
 });
 
+it('restarts the clear timeout when copying again', async () => {
+	const halfDelay = 50;
+	const delay = 2 * halfDelay;
+
+	const { result } = renderHook(() => useClipboard('Lorem Ipsum', { clearTime: delay }));
+
+	await act(async () => {
+		await result.current.copy();
+	});
+
+	act(() => {
+		jest.advanceTimersByTime(halfDelay);
+	});
+
+	await act(async () => {
+		await result.current.copy();
+	});
+
+	act(() => {
+		jest.advanceTimersByTime(halfDelay);
+	});
+
+	expect(result.current.hasCopied).toBe(true);
+
+	act(() => {
+		jest.advanceTimersByTime(halfDelay);
+	});
+
+	expect(result.current.hasCopied).toBe(false);
+});
+
+it('does not extend the clear timeout when copying fails', async () => {
+	const halfDelay = 50;
+	const delay = 2 * halfDelay;
+
+	const { result } = renderHook(() => useClipboard('Lorem Ipsum', { clearTime: delay }));
+
+	await act(async () => {
+		await result.current.copy();
+	});
+
+	act(() => {
+		jest.advanceTimersByTime(halfDelay);
+	});
+
+	withWriteText(() => Promise.reject(new Error('rejected')));
+
+	await act(async () => {
+		await result.current.copy();
+	});
+
+	act(() => {
+		jest.advanceTimersByTime(halfDelay);
+	});
+
+	expect(result.current.hasCopied).toBe(false);
+});
+
+it('clears the pending timeout on unmount', async () => {
+	const { result, unmount } = renderHook(() => useClipboard('Lorem Ipsum'));
+
+	await act(async () => {
+		await result.current.copy();
+	});
+
+	expect(jest.getTimerCount()).toBe(1);
+
+	unmount();
+
+	expect(jest.getTimerCount()).toBe(0);
+});
+
 it('runs only success function receiving event object', async () => {
 	const onCopySuccess = jest.fn();
 	const onCopyError = jest.fn();

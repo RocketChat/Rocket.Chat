@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useStableCallback } from './useStableCallback';
 
@@ -24,13 +24,22 @@ export const useClipboard = (
 	{ clearTime = 2000, onCopySuccess = (): void => undefined, onCopyError = (): void => undefined }: UseClipboardParams = {},
 ): UseClipboardReturn => {
 	const [hasCopied, setHasCopied] = useState(false);
+	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const copy = useStableCallback(async (e?: Event) => {
 		e?.preventDefault();
 		try {
 			await navigator.clipboard.writeText(text);
 			onCopySuccess(e);
+			if (timeoutRef.current !== null) {
+				clearTimeout(timeoutRef.current);
+			}
+
 			setHasCopied(true);
+			timeoutRef.current = setTimeout(() => {
+				setHasCopied(false);
+				timeoutRef.current = null;
+			}, clearTime);
 		} catch (e) {
 			if (e instanceof Error) {
 				onCopyError(e);
@@ -42,16 +51,12 @@ export const useClipboard = (
 	});
 
 	useEffect(() => {
-		if (!hasCopied) {
-			return;
-		}
-
-		const timeout = setTimeout(() => {
-			setHasCopied(false);
-		}, clearTime);
-
-		return () => clearTimeout(timeout);
-	}, [hasCopied, clearTime]);
+		return () => {
+			if (timeoutRef.current !== null) {
+				clearTimeout(timeoutRef.current);
+			}
+		};
+	}, []);
 
 	return { copy, hasCopied };
 };
