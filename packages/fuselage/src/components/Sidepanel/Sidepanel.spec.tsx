@@ -58,17 +58,17 @@ describe('[Sidepanel]', () => {
 		expect(panel).toHaveTextContent('Panel content');
 	});
 	it('preserves the sidepanel variant when props contain an extra variant', () => {
-	  const props = {
-	    variant: 'default' as const,
-	    'aria-label': 'Calls',
-	  };
+	    const props = {
+	      variant: 'default' as const,
+	      'aria-label': 'Calls',
+	    };
 	
-	  render(<Sidepanel {...props} />);
+	    render(<Sidepanel {...props} />);
 	
-	  const panel = screen.getByLabelText('Calls');
+	    const panel = screen.getByLabelText('Calls');
 	
-	  expect(panel.tagName).toBe('DIV');
-	  expect(panel).toHaveClass('rcx-sidepanel');
-	  expect(panel).not.toHaveClass('rcx-sidebar');
+	    expect(panel.tagName).toBe('DIV');
+	    expect(panel).toHaveClass('rcx-sidepanel');
+	    expect(panel).not.toHaveClass('rcx-sidebar');
 	});
 });
