@@ -149,24 +149,7 @@ The dialback secret is generated at start and never persisted
 
 ## Known defects
 
-### D1 An XML declaration split across reads closes the stream
-
-A peer whose `<?xml ...?>` declaration arrives in two reads gets `not-well-formed` and loses
-the stream. The parser strips the declaration only when all of it is in the first read, and
-takes a partial one for a processing instruction (R7). Servers send the declaration and the
-stream header in one write, so only a slow or hand-typed connection hits it. Where:
-`StanzaParser.write`. Test: `tests/integration/inbound-addressing.spec.ts`, "opens a stream
-whose XML declaration arrives split across reads"; no XMPP server can be made to split its
-declaration, so this one is an integration test.
-
-### D2 Stopping the server drops stanzas not yet written out
-
-A send resolves once the stanza is handed to the socket. Stopping the server destroys
-outbound sockets instead of closing their streams, so stanzas still buffered are lost
-although their send resolved (R18). Where: `S2SManager.stopAll` calls `destroy()` on outbound
-sessions. Test: `tests/integration/s2s.spec.ts`, "delivers every stanza already sent when
-the server stops"; the end-to-end harness cannot stop the service between a send and its
-delivery, so this one is an integration test.
+None.
 
 ## Open questions
 

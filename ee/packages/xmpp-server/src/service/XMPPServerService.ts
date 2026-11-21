@@ -49,6 +49,9 @@ function toCoreLogger(logger: Logger): CoreLogger {
 /** Everything the hosted-MUC helpers need from a room document. */
 const HOSTED_ROOM_PROJECTION = { _id: 1, t: 1, u: 1, topic: 1, xmppFederation: 1 } as const;
 
+const LICENSE_RECHECK_FIRST_MS = 1_000;
+const LICENSE_RECHECK_MAX_MS = 60_000;
+
 const coreRoomIdOf = (mucJid: string): string => mucJid.split('@')[0];
 
 const isRemoteUsername = (username: string): boolean => username.includes('@');
@@ -124,6 +127,10 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	private reconfiguring: Promise<void> = Promise.resolve();
 
+	private licenseRecheck: NodeJS.Timeout | undefined;
+
+	private licenseRecheckMs = LICENSE_RECHECK_FIRST_MS;
+
 	constructor({ forwardToRocketChat = true, observeHandler, resolver }: XMPPServerServiceOptions = {}) {
 		super();
 		this.forwardToRocketChat = forwardToRocketChat;
@@ -161,6 +168,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	}
 
 	override async stopped(): Promise<void> {
+		this.scheduleLicenseRecheck(false);
 		await this.stopServer();
 	}
 
@@ -178,12 +186,26 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		this.reconfiguring = this.reconfiguring.then(async () => {
 			try {
 				const config = await readXMPPServerConfiguration((key) => Settings.get(key), await License.hasModule('federation'));
+				this.scheduleLicenseRecheck(config.awaitingLicense);
 				await this.applyConfiguration(config);
 			} catch (err) {
 				this.logger.error({ msg: 'Failed to configure native XMPP server', err });
 			}
 		});
 		return this.reconfiguring;
+	}
+
+	/** Keeps reading the license while the feature is switched on without it, since its `license.module` event can miss a service that is still starting. */
+	private scheduleLicenseRecheck(awaitingLicense: boolean): void {
+		clearTimeout(this.licenseRecheck);
+		this.licenseRecheck = undefined;
+		if (!awaitingLicense) {
+			this.licenseRecheckMs = LICENSE_RECHECK_FIRST_MS;
+			return;
+		}
+		const delayMs = this.licenseRecheckMs;
+		this.licenseRecheckMs = Math.min(delayMs * 2, LICENSE_RECHECK_MAX_MS);
+		this.licenseRecheck = setTimeout(() => void this.reconfigure(), delayMs);
 	}
 
 	private async applyConfiguration(config: XMPPServerConfiguration): Promise<void> {
@@ -887,8 +909,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		}
 	}
 
-	/** Changes exactly when a setting the listener is bound to changes. */
+	/** Changes exactly when a setting that only a new listener applies changes. */
 	private fingerprintOf(config: XMPPServerConfiguration): string {
-		return [config.domain, config.port, config.mucSubdomain, config.tlsCert, config.tlsKey].join('\0');
+		return [config.domain, config.port, config.mucSubdomain, config.tlsCert, config.tlsKey, config.domainAllowList.join(',')].join('\0');
 	}
 }

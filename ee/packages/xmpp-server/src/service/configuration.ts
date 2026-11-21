@@ -2,6 +2,8 @@ import { XMPP_SERVER_DEFAULTS } from '../config';
 
 export type XMPPServerConfiguration = {
 	enabled: boolean;
+	/** Switched on in the settings, but the license lacks the `federation` module. */
+	awaitingLicense: boolean;
 	domain: string;
 	port: number;
 	tlsCert: string;
@@ -39,9 +41,11 @@ export async function readXMPPServerConfiguration(
 	hasFederationModule: boolean,
 ): Promise<XMPPServerConfiguration> {
 	const get = async <T>(key: XMPPSettingKey, fallback: T): Promise<T> => ((await getSetting(key)) as T | undefined) ?? fallback;
+	const switchedOn = await get('XMPP_Server_Enabled', false);
 
 	return {
-		enabled: hasFederationModule && (await get('XMPP_Server_Enabled', false)),
+		enabled: hasFederationModule && switchedOn,
+		awaitingLicense: switchedOn && !hasFederationModule,
 		domain: await get('XMPP_Server_Domain', ''),
 		port: await get('XMPP_Server_Port', XMPP_SERVER_DEFAULTS.port),
 		tlsCert: await get('XMPP_Server_TLS_Certificate', ''),
