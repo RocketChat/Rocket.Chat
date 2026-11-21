@@ -4,6 +4,8 @@ import { userEvent, within } from 'storybook/test';
 import ConferenceWindow from './ConferenceWindow';
 import ConferenceChatNotShared from '../components/ConferenceChatNotShared';
 import type { ConferenceMember } from '../context/definitions';
+import type { BackgroundEffectFixture } from '../fixtures/backgroundFixtures';
+import { remoteParticipants, withCall } from '../fixtures/callFixtures';
 import { conferenceAppRoot, onPhone, withConferenceWindow, withLiveConference } from '../fixtures/storyFixtures';
 import { buildChatAccess, buildConferenceMember } from '../fixtures/testFixtures';
 
@@ -177,4 +179,46 @@ export const MobileLandscapePanelSheet: Story = {
 export const MobileLandscapePanelsClosed: Story = {
 	...onPhone('phoneLandscape'),
 	decorators: [inCall([viewer, buildConferenceMember({ _id: 'ada', username: 'ada', name: 'Ada Lovelace' })])],
+};
+
+/** A call running in this window rather than in a provider's page, with the reader's camera on. */
+const inEmbeddedCall = (
+	backgroundEffect?: BackgroundEffectFixture,
+	self: { cameraOn?: boolean; cameraStarting?: boolean } = { cameraOn: true },
+) => [
+	withCall({ state: { remoteParticipants, self }, backgroundEffect }),
+	withLiveConference({
+		call: {
+			members: [viewer, buildConferenceMember({ _id: 'ada', username: 'ada', name: 'Ada Lovelace' })],
+			name: 'Weekly sync',
+			createdAt: new Date(Date.now() - CALL_STARTED_MS_AGO),
+			canRename: true,
+			capabilities: { mic: true, cam: true, title: true },
+		},
+		room: { rid: 'room-id', name: 'general', type: 'c', loading: false },
+		session: { joined: true, embedded: true },
+	}),
+];
+
+const openBackgrounds = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	await userEvent.click(await within(canvasElement).findByRole('button', { name: 'Camera options' }));
+	await userEvent.click(await within(canvasElement.ownerDocument.body).findByText('Background settings…'));
+};
+
+/** The backgrounds panel beside a call running in this window. */
+export const BackgroundsPanel: Story = {
+	decorators: inEmbeddedCall({ effect: { kind: 'blur', level: 'medium' } }),
+	play: openBackgrounds,
+};
+
+/** The backgrounds panel as a sheet on a narrow screen. */
+export const BackgroundsPanelSheet: Story = {
+	...onPhone('phonePortrait'),
+	decorators: inEmbeddedCall(),
+	play: openBackgrounds,
+};
+
+/** Joining with a background effect: the camera is held back until the effect is in place. */
+export const CameraStartingWithEffect: Story = {
+	decorators: inEmbeddedCall({ applying: { kind: 'blur', level: 'strong' } }, { cameraOn: false, cameraStarting: true }),
 };

@@ -3,6 +3,8 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
+import type { BackgroundEffect } from '../devices/BackgroundEffectContext';
+import { NO_BACKGROUND_EFFECT, isBackgroundEffect, isSameEffect } from '../devices/BackgroundEffectContext';
 
 /** Whether to arrive with mic and camera on. Exactly what the join endpoint accepts, which rejects anything more. */
 export type CallPreferences = {
@@ -37,17 +39,34 @@ export type NoiseMethod = 'none' | 'browser' | 'rnnoise';
 
 export type CallNoiseSuppressionPreference = { noiseMethod: NoiseMethod };
 
+/**
+ * `backgroundHistory` is newest last and never *None*: the quick toggle turns its last entry back on, and removing a
+ * picture in use falls back to it.
+ */
+export type CallBackgroundEffectPreference = { backgroundEffect: BackgroundEffect; backgroundHistory: BackgroundEffect[] };
+
 type StoredCallPreferences = CallPreferences &
 	CallDevices &
 	CallRingPreference &
 	CallVideoQualityPreference &
-	CallNoiseSuppressionPreference;
+	CallNoiseSuppressionPreference &
+	CallBackgroundEffectPreference;
 
 /**
  * Muted and unseen is the safe way in: it can only surprise in the harmless direction. The browser's filter is what
  * every call had before there was a choice, so nobody's voice changes until they ask for it.
  */
-const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, videoQuality: 'auto', noiseMethod: 'browser' };
+const DEFAULTS: StoredCallPreferences = {
+	mic: true,
+	cam: false,
+	ring: true,
+	videoQuality: 'auto',
+	noiseMethod: 'browser',
+	backgroundEffect: NO_BACKGROUND_EFFECT,
+	backgroundHistory: [],
+};
+
+const BACKGROUND_HISTORY_LENGTH = 8;
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
@@ -78,6 +97,14 @@ const sanitise = (value: unknown): StoredCallPreferences => {
 	if (!choicesOf(NOISE_METHOD_LABELS).includes(stored.noiseMethod as NoiseMethod)) {
 		stored.noiseMethod = DEFAULTS.noiseMethod;
 	}
+
+	// Unknown or broken effects read as none.
+	if (!isBackgroundEffect(stored.backgroundEffect)) {
+		stored.backgroundEffect = DEFAULTS.backgroundEffect;
+	}
+	stored.backgroundHistory = Array.isArray(stored.backgroundHistory)
+		? stored.backgroundHistory.filter((effect) => isBackgroundEffect(effect) && effect.kind !== 'none')
+		: [];
 
 	// Optional, so they have no default to fall back to: one that is not a device id is no choice at all.
 	for (const field of Object.values(callDeviceIdField)) {
@@ -195,6 +222,42 @@ export const useNoiseSuppressionPreference = () => {
 	);
 
 	return { noiseMethod, selectNoiseMethod };
+};
+
+const pushHistory = (history: BackgroundEffect[], effect: BackgroundEffect) =>
+	effect.kind === 'none' ? history : [...history.filter((used) => !isSameEffect(used, effect)), effect].slice(-BACKGROUND_HISTORY_LENGTH);
+
+export const useBackgroundEffectPreference = () => {
+	const [stored, setStored] = useStoredCallPreferences();
+
+	const { backgroundEffect, backgroundHistory } = stored;
+
+	const selectBackgroundEffect = useCallback(
+		(effect: BackgroundEffect) =>
+			setStored((current) => ({
+				...current,
+				backgroundEffect: effect,
+				backgroundHistory: pushHistory(current.backgroundHistory, effect),
+			})),
+		[setStored],
+	);
+
+	const forgetBackgroundEffect = useCallback(
+		(effect: BackgroundEffect) =>
+			setStored((current) => {
+				const backgroundHistory = current.backgroundHistory.filter((used) => !isSameEffect(used, effect));
+				return {
+					...current,
+					backgroundHistory,
+					backgroundEffect: isSameEffect(current.backgroundEffect, effect)
+						? (backgroundHistory.at(-1) ?? NO_BACKGROUND_EFFECT)
+						: current.backgroundEffect,
+				};
+			}),
+		[setStored],
+	);
+
+	return { backgroundEffect, backgroundHistory, selectBackgroundEffect, forgetBackgroundEffect };
 };
 
 /** Which resolution to ask the camera for, remembered like the rest of it. */

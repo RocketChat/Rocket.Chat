@@ -1,4 +1,4 @@
-import { Box, RadioButton } from '@rocket.chat/fuselage';
+import { Box, RadioButton, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -13,6 +13,7 @@ type DevicePick = { kind: MediaDeviceKind; deviceId: string; inUse: boolean };
 
 /** One option of a choice about the devices, rather than a device. */
 export type DeviceMenuChoice = {
+	type?: 'choice';
 	id: string;
 	name: string;
 	/** Said on its own line, under the name. */
@@ -22,8 +23,59 @@ export type DeviceMenuChoice = {
 	onSelect: () => void;
 };
 
-/** A section of choices about the devices, shown under the devices themselves. */
-export type DeviceMenuChoices = { title: string; choices: DeviceMenuChoice[] };
+/** A setting turned on and off by choosing it. */
+export type DeviceMenuToggle = {
+	type: 'toggle';
+	id: string;
+	name: string;
+	note?: string;
+	checked: boolean;
+	disabled?: boolean;
+	onToggle: () => void;
+};
+
+/** Opens somewhere outside the menu, such as a settings panel. */
+export type DeviceMenuAction = {
+	type: 'action';
+	id: string;
+	name: string;
+	disabled?: boolean;
+	onAction: () => void;
+};
+
+export type DeviceMenuRow = DeviceMenuChoice | DeviceMenuToggle | DeviceMenuAction;
+
+export type DeviceMenuChoices = { title: string; choices: DeviceMenuRow[] };
+
+/** Choosing the choice already in use does nothing, rather than restart it. */
+const activate = (row: DeviceMenuRow) => {
+	if (row.disabled) {
+		return;
+	}
+	switch (row.type) {
+		case 'toggle':
+			row.onToggle();
+			return;
+		case 'action':
+			row.onAction();
+			return;
+		default:
+			if (!row.selected) {
+				row.onSelect();
+			}
+	}
+};
+
+const rowAddon = (row: DeviceMenuRow) => {
+	switch (row.type) {
+		case 'toggle':
+			return <ToggleSwitch checked={row.checked} disabled={row.disabled} readOnly tabIndex={-1} />;
+		case 'action':
+			return undefined;
+		default:
+			return <RadioButton checked={row.selected} disabled={row.disabled} />;
+	}
+};
 
 /** Keeps a choice's id apart from the device ids, which are the browser's to pick. */
 const choiceKey = (sectionIndex: number, id: string) => `choice:${sectionIndex}:${id}`;
@@ -67,6 +119,8 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 	};
 
 	const picks = new Map<string, DevicePick>();
+	// Rows in use are passed as the selection, so screen readers announce them as checked.
+	const selectedKeys: string[] = [];
 
 	const sections = kinds
 		.map((kind) => {
@@ -76,6 +130,9 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 				const id = `${row.id}-${kind}`;
 				const name = row.name || t('Default');
 				picks.set(id, { kind, deviceId: row.id, inUse: row === selected });
+				if (row === selected) {
+					selectedKeys.push(id);
+				}
 
 				return {
 					id,
@@ -92,18 +149,21 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 
 	const disabled = sections.length === 0;
 
-	const choiceActions = new Map<string, DeviceMenuChoice>();
-	const choiceSections = choices.map(({ title, choices: options }, sectionIndex) => ({
+	const choiceActions = new Map<string, DeviceMenuRow>();
+	const choiceSections = choices.map(({ title, choices: rows }, sectionIndex) => ({
 		title,
-		items: options.map((choice): GenericMenuItemProps => {
-			const id = choiceKey(sectionIndex, choice.id);
-			choiceActions.set(id, choice);
+		items: rows.map((row): GenericMenuItemProps => {
+			const id = choiceKey(sectionIndex, row.id);
+			choiceActions.set(id, row);
+			if ((row.type === 'toggle' && row.checked) || (row.type !== 'toggle' && row.type !== 'action' && row.selected)) {
+				selectedKeys.push(id);
+			}
 			return {
 				id,
-				textValue: choice.name,
-				content: rowContent(choice.name, choice.note),
-				disabled: choice.disabled,
-				addon: <RadioButton checked={choice.selected} disabled={choice.disabled} />,
+				textValue: row.name,
+				content: rowContent(row.name, row.type === 'action' ? undefined : row.note),
+				disabled: row.disabled,
+				addon: rowAddon(row),
 			};
 		}),
 	}));
@@ -125,15 +185,19 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 			sections={[...sections, ...choiceSections]}
 			disabled={disabled}
 			placement={placement}
-			selectionMode={kinds.length > 1 ? 'multiple' : 'single'}
+			// 'multiple': one row is in use per section.
+			selectionMode='multiple'
+			selectedKeys={selectedKeys}
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			onAction={(key) => {
-				const choice = choiceActions.get(String(key));
-				if (choice) {
-					if (!choice.selected && !choice.disabled) {
-						choice.onSelect();
-					}
+				// Multiple selection keeps the menu open; a menu of one device kind still closes on a choice.
+				if (kinds.length === 1) {
+					setIsOpen(false);
+				}
+				const row = choiceActions.get(String(key));
+				if (row) {
+					activate(row);
 					return;
 				}
 				const pick = picks.get(String(key));

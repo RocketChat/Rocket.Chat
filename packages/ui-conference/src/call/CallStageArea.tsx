@@ -30,6 +30,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 			audioStream: self.microphoneStream ?? null,
 			// Said on the reader's own tile only: a claim about someone else's encoder is not one this client can make.
 			sendHeight: self.sendResolution?.height,
+			cameraStarting: self.cameraStarting,
 		}),
 		[
 			self.id,
@@ -37,6 +38,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 			self.avatarUrl,
 			self.muted,
 			self.cameraStream,
+			self.cameraStarting,
 			self.screenStream,
 			self.microphoneStream,
 			self.sendResolution?.height,

@@ -272,6 +272,7 @@ const serverRoutes = [
 	'/assets',
 	'/livechat',
 	'/theme.css',
+	'/video-conference/background-effects',
 	'/robots.txt',
 	'^/css-theme',
 	'^/scripts_',

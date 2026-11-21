@@ -8,7 +8,7 @@ import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixture
 const meta = {
 	component: CallControls,
 	parameters: { layout: 'centered' },
-	args: { layout: 'grid', onLayoutChange: () => undefined, onOpenDiagnostics: () => undefined },
+	args: { layout: 'grid', onLayoutChange: () => undefined, onOpenDiagnostics: () => undefined, onOpenBackgrounds: () => undefined },
 	decorators: [
 		(Story) => (
 			<CallSurface>
@@ -48,4 +48,9 @@ export const CameraOnAndSharing: Story = {
 
 export const HandRaised: Story = {
 	decorators: [withCall({ state: { self: { handRaised: true }, remoteParticipants } })],
+};
+
+/** The camera while its background effect starts. */
+export const CameraStarting: Story = {
+	decorators: [withCall({ state: { remoteParticipants, self: { cameraStarting: true } } })],
 };

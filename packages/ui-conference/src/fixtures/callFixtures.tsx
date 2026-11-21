@@ -5,6 +5,8 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
+import type { BackgroundEffectFixture } from './backgroundFixtures';
+import { FakeBackgroundEffectProvider } from './backgroundFixtures';
 import { JOHN_DOE_ID } from './storyFixtures';
 import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
 import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
@@ -13,9 +15,22 @@ import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
 
+/** An initials avatar in a random colour, so the tiles on a stage are told apart. */
+export const randomAvatar = (displayName: string): string => {
+	const hue = Math.floor(Math.random() * 360);
+	const initials = displayName
+		.split(' ')
+		.map((word) => word[0])
+		.join('')
+		.slice(0, 2);
+	const markup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="hsl(${hue} 65% 52%)"/><text x="32" y="41" font-family="sans-serif" font-size="24" font-weight="600" fill="white" text-anchor="middle">${initials}</text></svg>`;
+	return `data:image/svg+xml;utf8,${encodeURIComponent(markup)}`;
+};
+
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,
 	displayName: 'John Doe',
+	avatarUrl: randomAvatar('John Doe'),
 	muted: false,
 	cameraOn: false,
 	screenSharing: false,
@@ -26,7 +41,7 @@ export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 
 export const buildRemoteParticipant = (
 	overrides: Partial<RemoteParticipantInfo> & Pick<RemoteParticipantInfo, 'id' | 'displayName'>,
-): RemoteParticipantInfo => ({ muted: false, held: false, ...overrides });
+): RemoteParticipantInfo => ({ muted: false, held: false, avatarUrl: randomAvatar(overrides.displayName), ...overrides });
 
 /** The same five people every call story is about, so a layout story differs from the next only in its layout. */
 export const remoteParticipants: RemoteParticipantInfo[] = [
@@ -128,6 +143,7 @@ export type CallFixture = {
 	deviceSelection?: Partial<DeviceSelection>;
 	videoQuality?: Partial<VideoQualitySelection>;
 	noiseSuppression?: Partial<NoiseSuppressionSelection>;
+	backgroundEffect?: BackgroundEffectFixture;
 	diagnostics?: CallDiagnosticsData | null;
 };
 
@@ -136,6 +152,7 @@ const CallContexts = ({
 	deviceSelection,
 	videoQuality,
 	noiseSuppression,
+	backgroundEffect,
 	diagnostics = null,
 	children,
 }: CallFixture & { children: ReactNode }) => {
@@ -152,7 +169,9 @@ const CallContexts = ({
 				<DeviceSelectionProvider value={devices}>
 					<VideoQualityProvider value={quality}>
 						<NoiseSuppressionProvider value={noise}>
-							<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+							<FakeBackgroundEffectProvider {...backgroundEffect}>
+								<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+							</FakeBackgroundEffectProvider>
 						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>
@@ -171,6 +190,7 @@ export const withCall =
 			deviceSelection={fixture.deviceSelection}
 			videoQuality={fixture.videoQuality}
 			noiseSuppression={fixture.noiseSuppression}
+			backgroundEffect={fixture.backgroundEffect}
 			diagnostics={fixture.diagnostics}
 		>
 			<Story />

@@ -7,6 +7,8 @@ export type CallSelf = {
 	avatarUrl?: string;
 	muted: boolean;
 	cameraOn: boolean;
+	/** Held back until its background effect is in place, so no frame of the room is sent. */
+	cameraStarting?: boolean;
 	screenSharing: boolean;
 	handRaised: boolean;
 	/** Whether they are talking into a muted microphone. */

@@ -1,11 +1,12 @@
 /* oxlint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
-import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
+import { Avatar, Box, Icon, Throbber } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 
 import { useStreamHasLiveVideo } from '../hooks/useStreamHasLiveVideo';
 import { backdropTint } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
+import TileStatus from './layout/TileStatus';
 
 const avatarBackdropStyles = css`
 	position: absolute;
@@ -27,6 +28,8 @@ export type TilePictureProps = Pick<TileParticipant, 'displayName' | 'avatarUrl'
 	avatarSize: 'x32' | 'x48';
 	/** Flipped, as a self-view is, so it reads as a mirror rather than as someone else's camera. */
 	mirrored: boolean;
+	/** Shown under the avatar while the camera starts. */
+	status?: string;
 };
 
 /**
@@ -35,8 +38,25 @@ export type TilePictureProps = Pick<TileParticipant, 'displayName' | 'avatarUrl'
  *
  * Always muted: the picture carries only the camera, and the call's audio is played elsewhere.
  */
-const TilePicture = ({ displayName, avatarUrl, cameraStream, avatarSize, mirrored }: TilePictureProps) => {
+const TilePicture = ({ displayName, avatarUrl, cameraStream, avatarSize, mirrored, status }: TilePictureProps) => {
 	const cameraActive = useStreamHasLiveVideo(cameraStream);
+
+	if (!cameraActive && status) {
+		return (
+			<>
+				{avatarUrl && (
+					<>
+						<Box is='img' src={avatarUrl} alt='' className={avatarBackdropStyles} />
+						<Box className={avatarBackdropOverlayStyles} style={{ backgroundColor: backdropTint(displayName) }} />
+					</>
+				)}
+				<TileStatus avatar={avatarUrl ? <Avatar url={avatarUrl} size={avatarSize} /> : <Icon name='user' size={avatarSize} />}>
+					<Throbber size='x8' inheritColor />
+					{status}
+				</TileStatus>
+			</>
+		);
+	}
 
 	return cameraActive ? (
 		<StreamVideo stream={cameraStream} fit='cover' mirrored={mirrored} style={{ position: 'absolute', inset: 0 }} />
