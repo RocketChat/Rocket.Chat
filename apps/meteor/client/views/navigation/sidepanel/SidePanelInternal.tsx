@@ -56,6 +56,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 					<Virtuoso
 						totalCount={rooms.length}
 						data={rooms}
+						computeItemKey={(_index, room) => room?._id || room?.rid || _index}
 						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
 						itemContent={(_, room) => {
 							return <ItemContentComponent room={room} openedRoom={openedRoom} isRoomFilter={isRoomFilter} />;
