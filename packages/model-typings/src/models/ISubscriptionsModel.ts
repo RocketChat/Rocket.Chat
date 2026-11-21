@@ -366,6 +366,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		rid: string,
 		users: string[],
 		tmid: string,
+		ts: Date,
 		senderId: IUser['_id'],
 		data: { groupMention?: boolean; userMention?: boolean },
 	): Promise<UpdateResult | Document | void>;

@@ -38,10 +38,10 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
-	const promises = [Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, u._id, notifyOptions)];
+	const promises = [Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, ts, u._id, notifyOptions)];
 
 	if (mentionedUsers.length) {
-		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, u._id, { userMention: true }));
+		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, ts, u._id, { userMention: true }));
 	}
 
 	if (highlightsUids.length) {

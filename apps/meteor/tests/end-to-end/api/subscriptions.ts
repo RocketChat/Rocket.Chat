@@ -315,6 +315,7 @@ describe('[Subscriptions]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.subscription).to.not.have.property('tunread');
+						expect(res.body.subscription).to.not.have.property('tunreadSince');
 					});
 			});
 

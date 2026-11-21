@@ -20,6 +20,7 @@ export const useSubscriptionFieldsOfRoom = (subscription: ISubscription | undefi
 			'tunread',
 			'tunreadUser',
 			'tunreadGroup',
+			'tunreadSince',
 			'userMentions',
 			'groupMentions',
 			'_updatedAt',
