@@ -24,7 +24,7 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 } {
 	const options: FindOptions<IMessage> = {
 		sort: { _updatedAt: 1 },
-		...(next || previous ? { limit: count + 1 } : {}),
+		...(next || previous ? { batchSize: count + 1 } : {}),
 	};
 
 	if (next) {
@@ -140,20 +140,34 @@ export async function handleCursorPagination(
 }> {
 	const { query, options } = mountCursorQuery({ next, previous, count });
 
-	const response =
+	options.sort = { [type === 'UPDATED' ? '_updatedAt' : '_deletedAt']: previous ? -1 : 1 };
+	const messages =
 		type === 'UPDATED'
-			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
-			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
-					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+			? Messages.findForUpdates(rid, { updatedAt: query }, options)
+			: Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!;
 
+	const response: IMessage[] = [];
+	let hasMore = false;
+	for await (const message of messages) {
+		if (
+			response.length >= count &&
+			response.length > 0 &&
+			mountCursorFromMessage(message as IMessage, type) !== mountCursorFromMessage(response[response.length - 1], type)
+		) {
+			response.push(message as IMessage);
+			hasMore = true;
+			break;
+		}
+		response.push(message as IMessage);
+	}
+
+	const pageSize = response.length - (hasMore ? 1 : 0);
 	const cursor = {
-		next: mountNextCursor(response, count, type, next, previous),
-		previous: mountPreviousCursor(response, count, type, next, previous),
+		next: mountNextCursor(response, pageSize, type, next, previous),
+		previous: mountPreviousCursor(response, pageSize, type, next, previous),
 	};
 
-	if (response.length > count) {
+	if (hasMore) {
 		response.pop();
 	}
 
