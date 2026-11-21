@@ -1,11 +1,12 @@
 import { memo } from 'react';
 
+import type { TileFrameProps } from './TileFrame';
 import TileFrame from './TileFrame';
 import TilePicture from './TilePicture';
 import { TILE_RING_WIDTH } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
-export type ParticipantTileProps = TileParticipant;
+export type ParticipantTileProps = TileParticipant & Pick<TileFrameProps, 'participantId'>;
 
 /** Someone else in the call, at the size of a grid cell or the stage. */
 const ParticipantTile = ({
@@ -17,6 +18,7 @@ const ParticipantTile = ({
 	audioStream,
 	handPosition,
 	reaction,
+	participantId,
 }: ParticipantTileProps) => (
 	<TileFrame
 		displayName={displayName}
@@ -25,6 +27,7 @@ const ParticipantTile = ({
 		audioStream={audioStream}
 		handPosition={handPosition}
 		reaction={reaction}
+		participantId={participantId}
 		ringWidth={TILE_RING_WIDTH}
 	>
 		<TilePicture displayName={displayName} avatarUrl={avatarUrl} cameraStream={cameraStream} avatarSize='x48' mirrored={false} />
