@@ -72,7 +72,8 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 		setModal(
 			<GenericModalDoNotAskAgain
 				variant='danger'
-				confirmText={t('Yes_hide_it')}
+				title={t('Hide_room')}
+				confirmText={t('Hide_room')}
 				cancelText={t('Cancel')}
 				onClose={closeModal}
 				onCancel={closeModal}
