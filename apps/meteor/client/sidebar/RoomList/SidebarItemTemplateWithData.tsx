@@ -9,6 +9,7 @@ import { memo, useMemo } from 'react';
 import { RoomIcon, useRoomIconLabel } from '../../components/RoomIcon';
 import RoomListItem from '../../components/RoomListItem/RoomListItem';
 import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
+import { UserActivityText } from '../../components/UserActivity';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
@@ -18,6 +19,7 @@ import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMe
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
+import { useSidebarUserActivities } from '../hooks/useSidebarUserActivities';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -101,8 +103,12 @@ const SidebarItemTemplateWithData = ({
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const message = viewMode === 'extended' && getMessagePreview(room, lastMessage, t);
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const isExtended = viewMode === 'extended';
+	const activities = useSidebarUserActivities(rid, isExtended);
+
+	const message = isExtended && getMessagePreview(room, lastMessage, t);
+	const messagePreview = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const subtitle = isExtended && activities.length > 0 ? <UserActivityText activities={activities} /> : messagePreview;
 
 	return (
 		<RoomListItem
