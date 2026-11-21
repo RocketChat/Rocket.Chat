@@ -1,5 +1,6 @@
 import { Box, NavBarGroup } from '@rocket.chat/fuselage';
 import { usePermission, useUser } from '@rocket.chat/ui-contexts';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +24,7 @@ const SidebarRail = () => {
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
 	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
 	const showOmnichannel = useOmnichannelEnabled();
+	const showCalls = Boolean(useMediaCallAction());
 
 	return (
 		<Box
@@ -50,10 +52,14 @@ const SidebarRail = () => {
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 				</NavBarGroup>
-				<SidebarRailDivider />
-				<NavBarGroup vertical aria-label={t('Voice_Call')}>
-					<SidebarRailPhone />
-				</NavBarGroup>
+				{showCalls && (
+					<>
+						<SidebarRailDivider />
+						<NavBarGroup vertical aria-label={t('Voice_Call')}>
+							<SidebarRailPhone />
+						</NavBarGroup>
+					</>
+				)}
 				{showOmnichannel && (
 					<>
 						<SidebarRailDivider />
