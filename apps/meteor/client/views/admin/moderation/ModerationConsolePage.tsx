@@ -32,7 +32,13 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 				const permalink = await getPermaLink(mid);
 				const url = new URL(permalink, 'http://localhost');
 				const prefix = getRootUrlPathPrefix();
-				const pathname = prefix ? url.pathname.replace(new RegExp(`^(${escapeRegExp(prefix)})+`), '') : url.pathname;
+				let { pathname } = url;
+				if (prefix) {
+					pathname = pathname.replace(new RegExp(`^(${escapeRegExp(prefix)})+`), '');
+				}
+				if (!pathname.startsWith('/')) {
+					pathname = `/${pathname}`;
+				}
 				router.navigate(`${pathname}${url.search}${url.hash}` as LocationPathname);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
