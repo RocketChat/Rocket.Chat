@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { Listbox } from './fragments/listbox';
+
 /**
  * The call window: the separate browser window `VideoConf_Conference_Window_Enabled` opens a conference in.
  *
@@ -261,11 +263,17 @@ export class ConferenceWindow {
 		return this.dialogAddPeople.getByRole('button', { name: 'Add', exact: true });
 	}
 
+	get listboxPeople(): Listbox {
+		return new Listbox(this.page);
+	}
+
 	async addPeople(username: string): Promise<void> {
 		await this.btnAddPeople.click();
 		await this.inputAddPeople.click();
 		await this.inputAddPeople.fill(username);
-		await this.page.getByRole('option', { name: username, exact: true }).click();
+		await this.listboxPeople.selectOption(username, true);
+		// The list stays open after a pick, over the dialog's buttons.
+		await this.inputAddPeople.press('Tab');
 		await this.btnConfirmAddPeople.click();
 	}
 
