@@ -3,6 +3,7 @@ import type { Updater } from '@rocket.chat/models';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users, CallHistory } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
+import { replaceUsernameMentions } from './replaceUsernameMentions';
 import { setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
@@ -139,7 +140,7 @@ async function updateUsernameReferences({
 
 		const cursor = Messages.findByMention(previousUsername);
 		for await (const msg of cursor) {
-			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
+			const updatedMsg = replaceUsernameMentions(msg.msg, previousUsername, username);
 			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 		}
 
