@@ -25,7 +25,9 @@ addMigration({
 
 		result.forEach((result) => {
 			if (result.status === 'rejected') {
-				console.warn('Error dropping index', result.reason);
+				if (result.reason?.code !== 27 && result.reason?.codeName !== 'IndexNotFound') {
+					console.warn('Error dropping index', result.reason);
+				}
 			}
 		});
 	},
