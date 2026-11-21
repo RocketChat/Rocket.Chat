@@ -355,7 +355,11 @@ const _saveUser = (session?: ClientSession) =>
 			});
 
 			if (sendPassword) {
-				await sendPasswordEmail(userData);
+				await sendPasswordEmail({
+					...userData,
+					username: userData.username ?? oldUserData.username,
+					name: userData.name ?? oldUserData.name,
+				});
 			}
 
 			if (typeof userData.verified === 'boolean') {

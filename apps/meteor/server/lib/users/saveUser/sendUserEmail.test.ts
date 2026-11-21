@@ -14,7 +14,7 @@ type SendHelperFn = (user: { email?: string; password?: string; name?: string; u
 
 const userData = {
 	email: 'test@example.com',
-	password: '123456',
+	password: 'mock-test-password-token',
 	name: 'Test User',
 	username: 'test.user',
 };
