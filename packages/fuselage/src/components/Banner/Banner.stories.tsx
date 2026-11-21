@@ -73,6 +73,11 @@ export default {
 			description: 'Shows a close button that invokes `onClose` when clicked.',
 			table: { category: 'State' },
 		},
+		closeButtonLabel: {
+			control: 'text',
+			description: 'Accessible label for the close button.',
+			table: { category: 'Content', defaultValue: { summary: 'Close' } },
+		},
 		onAction: {
 			control: false,
 			description: 'Called when an actionable banner is clicked.',
