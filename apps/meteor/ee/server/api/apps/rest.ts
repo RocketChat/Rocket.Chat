@@ -774,36 +774,6 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'], applyMeteorContext: true },
 			{
 				async get() {
-					if (this.queryParams.marketplace && this.queryParams.version) {
-						const headers: Record<string, any> = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result: any;
-						try {
-							const request = await orchestrator
-								.getMarketplaceClient()
-								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
-								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, {
-									headers,
-									ignoreSsrfValidation: true,
-								});
-							if (request.status !== 200) {
-								orchestrator
-									.getRocketChatLogger()
-									.error({ msg: 'Error getting the App from the Marketplace:', response: await request.json() });
-								return API.v1.failure();
-							}
-							result = await request.json();
-						} catch (e) {
-							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-						}
-
-						return API.v1.success({ app: result[0] });
-					}
-
 					if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
@@ -833,14 +803,79 @@ export class AppsRestApi {
 
 						return API.v1.success({ app: result });
 					}
-					const app = manager.getOneById(this.urlParams.id);
-					if (!app) {
-						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+
+					if (this.queryParams.marketplace) {
+						const headers: Record<string, any> = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
+						const token = await getWorkspaceAccessToken();
+						if (token) {
+							headers.Authorization = `Bearer ${token}`;
+						}
+
+						let result: any;
+						try {
+							const path = this.queryParams.version
+								? `v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`
+								: `v1/apps/${this.urlParams.id}`;
+
+							const request = await orchestrator
+								.getMarketplaceClient()
+								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+								.fetch(path, {
+									headers,
+									ignoreSsrfValidation: true,
+								});
+							if (request.status !== 200) {
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App from the Marketplace:', response: await request.json() });
+								return API.v1.failure();
+							}
+							result = await request.json();
+						} catch (e) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+						}
+
+						const app = Array.isArray(result) ? result[0] : result;
+						if (!app) {
+							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+						}
+
+						return API.v1.success({ app });
 					}
 
-					return API.v1.success({
-						app: await formatAppInstanceForRest(app),
-					});
+					const app = manager.getOneById(this.urlParams.id);
+					if (app) {
+						return API.v1.success({
+							app: await formatAppInstanceForRest(app),
+						});
+					}
+
+					// Fallback: If not found locally, try fetching from Marketplace
+					try {
+						const headers: Record<string, any> = {};
+						const token = await getWorkspaceAccessToken();
+						if (token) {
+							headers.Authorization = `Bearer ${token}`;
+						}
+
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/apps/${this.urlParams.id}`, {
+								headers,
+								ignoreSsrfValidation: true,
+							});
+						if (request.status === 200) {
+							const result = await request.json();
+							const marketplaceApp = Array.isArray(result) ? result[0] : result;
+							if (marketplaceApp) {
+								return API.v1.success({ app: marketplaceApp });
+							}
+						}
+					} catch (e) {
+						// Ignore and fallback to notFound
+					}
+
+					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
 				async post() {
 					let buff;
