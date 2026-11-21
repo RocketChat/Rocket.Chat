@@ -44,6 +44,7 @@ import type { TypedAction } from '../definition';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
+import { parsePinned } from '../lib/parsePinned';
 
 const findDirectMessageRoom = async (
 	keys: { roomId?: string; username?: string },
@@ -657,7 +658,7 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 			rid: room._id,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
-			...(pinned?.toLowerCase() === 'true' && { pinned: true }),
+			...parsePinned(pinned),
 			_hidden: { $ne: true },
 		};
 		const sortObj = sort || { ts: -1 };
