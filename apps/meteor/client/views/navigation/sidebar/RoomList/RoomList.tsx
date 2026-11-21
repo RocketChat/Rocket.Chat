@@ -31,6 +31,14 @@ const RoomList = () => {
 		[isAnonymous, t],
 	);
 
+	const flatRooms = useMemo(
+		() =>
+			roomListGroups.flatMap(({ group, rooms }) =>
+				collapsedGroups.includes(group) ? [] : rooms.map((room) => ({ group, room })),
+			),
+		[roomListGroups, collapsedGroups],
+	);
+
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
 	const ref = useMergedRefsV2(resizeObserverRef, preventDefaultRef, shortcutOpenMenuRef);
@@ -52,6 +60,10 @@ const RoomList = () => {
 								unreadCount={unreadInfo}
 							/>
 						);
+					}}
+					computeItemKey={(index) => {
+						const item = flatRooms[index];
+						return item ? `${item.group}-${item.room._id || item.room.rid || index}` : index;
 					}}
 					{...(totalCount > 0 && {
 						itemContent: (index, groupIndex) => {
