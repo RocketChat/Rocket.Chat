@@ -2,6 +2,7 @@ import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
+import Sidepanel from './Sidepanel';
 import * as stories from './Sidepanel.stories';
 import SidepanelDivider from './SidepanelDivider';
 import SidepanelHeader from './SidepanelHeader';
@@ -39,5 +40,21 @@ describe('[Sidepanel bridges]', () => {
 
 		expect(screen.getByRole('separator')).toHaveClass('rcx-sidepanel--divider');
 		expect(screen.getByRole('separator')).not.toHaveClass('rcx-item-divider');
+	});
+});
+describe('[Sidepanel]', () => {
+	it('preserves the root element and HTML attributes', () => {
+		render(
+			<Sidepanel role='complementary' aria-label='Calls' className='custom-panel'>
+				Panel content
+			</Sidepanel>,
+		);
+
+		const panel = screen.getByRole('complementary', { name: 'Calls' });
+
+		expect(panel.tagName).toBe('DIV');
+		expect(panel).toHaveClass('rcx-sidepanel', 'custom-panel');
+		expect(panel).toHaveAttribute('aria-label', 'Calls');
+		expect(panel).toHaveTextContent('Panel content');
 	});
 });
