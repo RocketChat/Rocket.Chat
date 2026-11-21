@@ -8,8 +8,12 @@ const sandbox = sinon.createSandbox();
 
 const settingsGetMock = sandbox.stub();
 const initMock = sandbox.stub();
-const BridgeMock = sandbox.stub().callsFake(function (this: { init: typeof initMock }) {
+const bridges: Record<'init' | 'stop' | 'remove', sinon.SinonStub>[] = [];
+const BridgeMock = sandbox.stub().callsFake(function (this: Record<'init' | 'stop' | 'remove', sinon.SinonStub>) {
 	this.init = initMock;
+	this.stop = sandbox.stub();
+	this.remove = sandbox.stub();
+	bridges.push(this);
 });
 
 const { startIrcBridge } = p.noCallThru().load('./startIrcBridge', {
@@ -74,5 +78,16 @@ describe('startIrcBridge', () => {
 		resolveInit();
 		await starting;
 		expect(started).to.be.true;
+	});
+
+	it('should stop and remove the previous bridge before starting a new one', async () => {
+		await startIrcBridge();
+		const previous = bridges[bridges.length - 1];
+
+		await startIrcBridge();
+
+		expect(previous.stop.calledOnce).to.be.true;
+		expect(previous.remove.calledOnce).to.be.true;
+		expect(previous.remove.calledBefore(BridgeMock)).to.be.true;
 	});
 });
