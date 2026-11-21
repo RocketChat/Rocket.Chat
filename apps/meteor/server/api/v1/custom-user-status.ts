@@ -227,22 +227,25 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const userStatusData = {
-			_id: this.bodyParams._id,
-			name: this.bodyParams.name,
-			statusType: this.bodyParams.statusType || '',
-		};
+		const { _id, name, statusType } = this.bodyParams;
 
-		const customUserStatusToUpdate = await CustomUserStatus.findOneById(userStatusData._id);
+		const customUserStatusToUpdate = await CustomUserStatus.findOneById(_id);
 
-		// Ensure the message exists
+		// Ensure the custom user status exists
 		if (!customUserStatusToUpdate) {
-			return API.v1.failure(`No custom user status found with the id of "${userStatusData._id}".`);
+			return API.v1.failure(`No custom user status found with the id of "${_id}".`);
 		}
+
+		const userStatusData = {
+			_id,
+			name,
+			statusType: statusType === undefined ? undefined : (statusType ?? ''),
+			previousName: customUserStatusToUpdate.name,
+		};
 
 		await insertOrUpdateUserStatus(this.userId, userStatusData);
 
-		const customUserStatus = await CustomUserStatus.findOneById(userStatusData._id);
+		const customUserStatus = await CustomUserStatus.findOneById(_id);
 
 		if (!customUserStatus) {
 			throw new ClientSafeError('error-updating-custom-user-status', 'Error updating custom user status');
