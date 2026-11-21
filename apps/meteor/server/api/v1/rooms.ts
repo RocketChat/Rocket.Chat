@@ -428,6 +428,8 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 
 const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string; tmid?: IMessage['_id'] }>({
 	type: 'object',
+	description:
+		"Save the authenticated user's unsent composer text for a room, or for a thread when `tmid` is given. An empty `draft` clears it.",
 	properties: {
 		rid: { type: 'string', minLength: 1 },
 		draft: { type: 'string' },
