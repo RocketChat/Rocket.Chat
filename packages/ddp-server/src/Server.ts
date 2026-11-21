@@ -114,9 +114,18 @@ export class Server {
 
 			end?.();
 		} catch (err: unknown) {
-			session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
-			// A failed subscription must not outlive its handler.
-			publication?.emit('stop', session, packet);
+			// A failed subscription must not outlive its handler, even if the
+			// client cannot be told: the answer is best-effort, the retirement is not.
+			try {
+				// If the client already unsubscribed while the handler was awaiting,
+				// stop() has answered with a nosub; a second error nosub here could be
+				// read as a failure of a subscription that reused the ID.
+				if (!publication?._isDeactivated()) {
+					session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+				}
+			} finally {
+				publication?.deactivate();
+			}
 		}
 	}
 
