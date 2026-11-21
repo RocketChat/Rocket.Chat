@@ -2,7 +2,7 @@ import type { Document, Filter, FilterOperators, Sort, UpdateFilter } from 'mong
 
 import { getBSONType } from './bson.js';
 import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common.js';
-import { createPredicateFromFilter } from './filter.js';
+import { createPredicateFromFilter, createPredicateFromValueSelector } from './filter.js';
 import { createComparatorFromSort } from './sort.js';
 import { BSONType, type ArrayIndices } from './types.js';
 
@@ -316,6 +316,11 @@ const $pop = <TField extends string>(target: Record<TField, unknown[]>, field: T
 	}
 };
 
+const isElementOperatorQuery = (selector: Record<string, unknown>): boolean => {
+	const keys = Object.keys(selector);
+	return keys.length > 0 && keys.every((key) => key.startsWith('$') && !['$and', '$or', '$nor', '$where'].includes(key));
+};
+
 const $pull = <TField extends string, TDocument extends object>(
 	target: Record<TField, TDocument[]>,
 	field: TField,
@@ -335,8 +340,12 @@ const $pull = <TField extends string, TDocument extends object>(
 	}
 
 	let out;
-	if (arg != null && typeof arg === 'object' && !Array.isArray(arg)) {
-		const predicate = createPredicateFromFilter(arg);
+	if (arg != null && isPlainObject(arg)) {
+		const predicate = isElementOperatorQuery(arg) ? createPredicateFromValueSelector(arg) : createPredicateFromFilter(arg);
+
+		out = toPull.filter((element) => !predicate(element));
+	} else if ((arg as any) instanceof RegExp) {
+		const predicate = createPredicateFromValueSelector(arg);
 
 		out = toPull.filter((element) => !predicate(element));
 	} else {

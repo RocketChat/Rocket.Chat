@@ -14,6 +14,12 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ foo: 'c' })).toBe(false);
 	});
 
+	it('matches $in with empty object as literal value', () => {
+		const fn = createPredicateFromFilter({ foo: { $in: [{}] } });
+		expect(fn({ foo: {} })).toBe(true);
+		expect(fn({ foo: 'bar' })).toBe(false);
+	});
+
 	it('matches $nin', () => {
 		const fn = createPredicateFromFilter({ foo: { $nin: ['a', 'b'] } });
 		expect(fn({ foo: 'a' })).toBe(false);
