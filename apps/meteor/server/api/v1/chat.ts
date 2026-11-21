@@ -1555,6 +1555,6 @@ const chatEndpoints = API.v1
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends ChatEndpoints {}
 }

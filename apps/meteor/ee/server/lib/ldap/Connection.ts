@@ -358,7 +358,7 @@ export class LDAPConnection {
 					try {
 						const result = entryCallback(entry);
 						if (result) {
-							entries.push(result as T);
+							entries.push(result);
 						}
 						realEntries++;
 					} catch (err) {

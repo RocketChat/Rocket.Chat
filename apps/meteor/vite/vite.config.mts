@@ -113,7 +113,7 @@ const singlePackageFormat = (): Plugin => ({
 			return null;
 		}
 
-		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true } as typeof options);
+		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true });
 	},
 });
 

@@ -30,7 +30,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 				sort: params.sort,
 				err: e,
 			});
-			throw new ClientSafeError('error-invalid-sort', `Invalid sort parameter provided: \"${params.sort}\"`, {
+			throw new ClientSafeError('error-invalid-sort', `Invalid sort parameter provided: "${params.sort}"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}

@@ -97,7 +97,7 @@ export class AppHttpBridge extends HttpBridge {
 			url: info.url,
 			method: info.method,
 			statusCode: response.status,
-			headers: Object.fromEntries(response.headers as unknown as any),
+			headers: Object.fromEntries(response.headers),
 		};
 
 		const body = Buffer.from(await response.arrayBuffer());
