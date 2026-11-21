@@ -196,9 +196,7 @@ $-badge-backgrounds: (
 
 $shadow-colors: (
 	highlight: token($shadow, highlight),
-	// TODO(fuselage-tokens): no semantic "extra-light-error" shadow token yet;
-	// used for the danger button focus ring. Falls back to primitive red-200.
-	extra-light-error: primitive(r200),
+	extra-light-error: token($shadow, extra-light-error),
 	danger: token($shadow, danger),
 	elevation-1: token($shadow, elevation-1),
 	elevation-2x: token($shadow, elevation-2x),
