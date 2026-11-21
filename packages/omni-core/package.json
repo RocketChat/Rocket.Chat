@@ -17,6 +17,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/patch-injection": "workspace:^",
 		"mongodb": "6.16.0"
