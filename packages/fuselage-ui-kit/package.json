@@ -97,8 +97,8 @@
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@tanstack/react-query": "*",
 		"i18next": "*",
-		"react": "*",
-		"react-dom": "*",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
 		"react-i18next": "*"
 	},
 	"volta": {

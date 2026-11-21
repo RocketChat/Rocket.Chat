@@ -63,7 +63,7 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
-		"react": "*"
+		"react": "^19.0.0"
 	},
 	"volta": {
 		"extends": "../../package.json"
