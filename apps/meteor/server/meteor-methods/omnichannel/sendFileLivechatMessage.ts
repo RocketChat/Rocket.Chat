@@ -34,14 +34,11 @@ const isLivechatFileMessageData = ajv.compile<ISendFileLivechatMessage['msgData'
 
 export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgData = {} }: ISendFileLivechatMessage): Promise<boolean> => {
 	const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
+	const room = visitor && (await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken));
 
-	if (!visitor) {
-		return false;
-	}
-
-	const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
-
+	// The file is already stored, so a rejected message must not leave it behind.
 	if (!room) {
+		await FileUpload.getStore('Uploads').deleteById(file._id);
 		return false;
 	}
 
