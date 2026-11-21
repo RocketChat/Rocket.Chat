@@ -1,5 +1,5 @@
 import { css, keyframes } from '@rocket.chat/css-in-js';
-import type { AnimationEvent, AnimationEventHandler, ReactNode } from 'react';
+import type { AnimationEvent, AnimationEventHandler, ReactElement } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
@@ -16,7 +16,10 @@ const appendAnimation = (current: ClassNameProp, animation: string): ClassNamePr
 	typeof current === 'function' || Array.isArray(current) ? [...[current].flat(), animation] : appendClassName(current, animation);
 
 export type AnimatedVisibilityProps = {
-	children: ReactNode;
+	/**
+	 * An element that forwards `className` and `onAnimationEnd` to the DOM element it renders, which plays the animation; without them, hiding never completes and the element stays mounted.
+	 */
+	children: ReactElement;
 	visibility?: VisibilityType;
 };
 
