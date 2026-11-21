@@ -24,6 +24,11 @@ const { Router: router } = express;
 
 export const oAuthRouter = router();
 
+let oauthRateLimiter: ReturnType<typeof rateLimit> | undefined;
+
+// mounted before any service route, since some services register theirs at import time, ahead of configurePassport
+oAuthRouter.use(oAuthPaths, (req, res, next) => (oauthRateLimiter ? oauthRateLimiter(req, res, next) : next()));
+
 const oAuthApp = express();
 oAuthApp.set('trust proxy', 1);
 
@@ -72,13 +77,11 @@ export const configurePassport = (settings: ICachedSettings) => {
 			},
 		});
 
-	let oauthRateLimiter = createOAuthRateLimiter();
+	oauthRateLimiter = createOAuthRateLimiter();
 
 	settings.watchMultiple(['API_Enable_Rate_Limiter_Limit_Time_Default', 'API_Enable_Rate_Limiter_Limit_Calls_Default'], () => {
 		oauthRateLimiter = createOAuthRateLimiter();
 	});
-
-	oAuthRouter.use(oAuthPaths, (req, res, next) => oauthRateLimiter(req, res, next));
 
 	// Register OAuth Routes
 	oAuthApp.use(oAuthRouter);
