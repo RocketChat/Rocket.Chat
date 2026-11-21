@@ -1,0 +1,11 @@
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -3,6 +3,7 @@
+ 	"version": "0.4.4",
+ 	"description": "XML detection plugin for file-type",
+ 	"type": "module",
++	"main": "./lib/index.js",
+ 	"types": "./lib/index.d.ts",
+ 	"exports": "./lib/index.js",
+ 	"scripts": {

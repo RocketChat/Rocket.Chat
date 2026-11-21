@@ -19,12 +19,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 	const login = async (data: userType) => {
 		setUser(data);
-		navigate('/dashboard/profile', { replace: true });
+		await navigate('/dashboard/profile', { replace: true });
 	};
 
 	const logout = () => {
 		setUser(null);
-		navigate('/', { replace: true });
+		void navigate('/', { replace: true });
 	};
 
 	const value = useMemo(

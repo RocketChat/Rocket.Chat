@@ -24,7 +24,7 @@ const ProjectsThumbnail = ({ id, name: _name, date, blocks }: ProjectsThumbnailP
 	const toast = useToastBarDispatch();
 	const activeProjectHandler = () => {
 		dispatch(activeProjectAction(id));
-		navigate(`/${id}/${routes.project}`);
+		void navigate(`/${id}/${routes.project}`);
 	};
 
 	const deleteScreenHandler = () => {

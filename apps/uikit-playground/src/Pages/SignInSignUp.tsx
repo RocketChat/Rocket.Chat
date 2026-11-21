@@ -27,7 +27,7 @@ export type SignInSignUpProps = { route: string };
 const SignInSignUp = ({ route }: SignInSignUpProps) => {
 	const navigate = useNavigate();
 	const clickHandler = () => {
-		navigate(route === routes.login ? routes.signup : routes.login);
+		void navigate(route === routes.login ? routes.signup : routes.login);
 	};
 	return (
 		<FlexContainer justifyContent='center' alignItems='center'>

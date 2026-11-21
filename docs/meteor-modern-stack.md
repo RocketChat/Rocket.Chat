@@ -20,6 +20,12 @@ bash scripts/meteor-cache.sh --clean
 
 This removes only `build`, `bundler-cache`, `isopacks`, `plugin-cache`, `server-cache`, and temporary `.build*.build*` directories inside `apps/meteor/.meteor/local`. It preserves the local MongoDB data in `db` and leaves downloaded Meteor packages in `~/.meteor` alone. Meteor regenerates the deleted files on the next start, so that build will take longer. Avoid deleting all of `.meteor/local` or using `meteor reset` for routine cache cleanup: those also remove the local database.
 
+## Server-side npm entrypoints
+
+Meteor 3.5.2's server bundler resolves npm packages through `main`, not `exports`. The `@file-type/xml` 0.4.4 dependency of `is-svg` 6 declares only `exports`, so its Yarn patch adds `"main": "./lib/index.js"` while preserving the existing export and parser implementation. The patch is registered in the root `package.json` resolutions.
+
+Verify entrypoint changes by building and starting the production server bundle. A successful Node import from the checkout or a successful build alone does not prove that Meteor can load the dependency at runtime.
+
 ## Issues with File Watching
 
 The modern stack uses [@parcel/watcher](https://github.com/parcel-bundler/watcher) to watch for file changes. This is a module that supports multiple watcher backends and will use the best option available, following this priority order:
