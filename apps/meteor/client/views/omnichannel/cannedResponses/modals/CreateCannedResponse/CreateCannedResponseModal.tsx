@@ -1,5 +1,4 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { GenericError, GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
@@ -66,7 +65,7 @@ const CreateCannedResponseModal = ({ cannedResponseData, onClose, reloadCannedLi
 			confirmText={t('Save')}
 			confirmDisabled={!isDirty}
 			title={cannedResponseData?._id ? t('Edit_Canned_Response') : t('Create_canned_response')}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+			onSubmit={handleSubmit(handleCreate)}
 		>
 			<ReportableErrorBoundary
 				fallbackRender={({ error, componentStack }) => <GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />}

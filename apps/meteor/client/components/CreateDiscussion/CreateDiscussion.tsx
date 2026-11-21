@@ -118,7 +118,7 @@ const CreateDiscussion = ({
 			icon={null}
 			title={t('Discussion_title')}
 			onCancel={onClose}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+			onSubmit={handleSubmit(handleCreate)}
 			confirmText={t('Create')}
 			cancelText={t('Cancel')}
 			confirmLoading={createDiscussionMutation.isPending}
