@@ -15,7 +15,7 @@ Icons are scaled arbitrarily and recolored with `currentColor`, so the source fi
 
 - The `<svg>` element keeps only `viewBox` (normally `"0 0 32 32"`) and `xmlns`.
 - XLink references, such as masks and clip paths, are discarded.
-- `<path>` elements keep only the `d` attribute, with no styling attributes such as `fill` or `stroke`.
+- `<path>` elements keep only the `d` attribute, plus `fill-rule="evenodd"` on a path that cuts holes with it (see [Holes in the font glyph](#holes-in-the-font-glyph)). Styling attributes such as `fill` or `stroke` are removed.
 - `<g>` and any other element are removed by optimization tooling, leaving only `<path>` elements.
 
 A clean source file looks like this:
@@ -59,6 +59,18 @@ Check the source style before committing:
 ```sh
 yarn workspace @rocket.chat/icons lint
 ```
+
+### Holes in the font glyph
+
+A path with `fill-rule="evenodd"` can cut a hole whose subpath runs in the same direction as the shape around it. The SVG shows the hole, but a font glyph keeps no fill rule: it fills every subpath of every path with the nonzero rule, so the font fills the hole in. The fix is to reverse the direction of the hole's subpath, which keeps the hole under either rule and leaves the SVG unchanged.
+
+Check every `evenodd` icon before committing:
+
+```sh
+yarn workspace @rocket.chat/icons check:fill
+```
+
+It rasterizes each icon as the SVG fills it and as the font glyph does, and flags as `BROKEN` any icon where the two differ in a single pixel of a 256×256 raster. It expects a source cleaned as described in [Cleaning the SVG](#cleaning-the-svg): it reads `<path>` elements, inside `<g>` elements or not, with absolute `M`, `L`, `H`, `V`, `C` and `Z` commands, and reports any other element or command as an `ERROR`. Attributes other than `d` and `fill-rule`, such as `transform`, are ignored.
 
 ## Releasing
 
