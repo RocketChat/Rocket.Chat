@@ -152,3 +152,57 @@ describe('PresenceReaper', () => {
 		expect(onUpdateMock).toHaveBeenNthCalledWith(1, ['all-stale', 'mixed']);
 	});
 });
+
+describe('PresenceReaper schedule', () => {
+	const timers = jest.requireActual<typeof import('node:timers')>('node:timers');
+	const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
+
+	let reaper: PresenceReaper;
+	let tick: () => void;
+	let pendingRuns: { resolve: () => void; reject: (error: Error) => void }[];
+
+	beforeEach(() => {
+		pendingRuns = [];
+		jest.spyOn(timers, 'setInterval').mockImplementation(((callback: () => void) => {
+			tick = callback;
+			return {} as NodeJS.Timeout;
+		}) as unknown as typeof timers.setInterval);
+		jest.spyOn(timers, 'clearInterval').mockImplementation(() => undefined);
+
+		reaper = new PresenceReaper({
+			onUpdate: jest.fn(),
+			staleThresholdMs: 5 * 60 * 1000,
+			batchSize: 2,
+		});
+		jest.spyOn(reaper, 'run').mockImplementation(() => new Promise<void>((resolve, reject) => pendingRuns.push({ resolve, reject })));
+		reaper.start();
+	});
+
+	afterEach(() => {
+		reaper.stop();
+		jest.restoreAllMocks();
+	});
+
+	it('should not start a run while the previous one is still in progress', async () => {
+		tick();
+		tick();
+		tick();
+
+		expect(reaper.run).toHaveBeenCalledTimes(1);
+
+		pendingRuns[0].resolve();
+		await flushPromises();
+		tick();
+
+		expect(reaper.run).toHaveBeenCalledTimes(2);
+	});
+
+	it('should run again on the next tick after a run fails', async () => {
+		tick();
+		pendingRuns[0].reject(new Error('database unavailable'));
+		await flushPromises();
+		tick();
+
+		expect(reaper.run).toHaveBeenCalledTimes(2);
+	});
+});
