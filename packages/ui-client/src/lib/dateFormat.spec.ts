@@ -2,7 +2,9 @@
  * @jest-environment <rootDir>/tests/environments/timezone.ts
  * @jest-environment-options {"timezone": "America/Argentina/Buenos_Aires"}
  */
-import { formatDate, momentFormatToDateFns, toDate } from './dateFormat';
+import { de } from 'date-fns/locale/de';
+
+import { formatDate, formatMonthDay, formatTimeAgo, momentFormatToDateFns, toDate } from './dateFormat';
 
 describe('momentFormatToDateFns', () => {
 	it('maps locale tokens', () => {
@@ -168,5 +170,42 @@ describe('toDate', () => {
 	it('accepts epoch milliseconds', () => {
 		const ms = Date.UTC(2026, 6, 2, 12);
 		expect(toDate(ms).getTime()).toBe(ms);
+	});
+});
+
+describe('formatMonthDay', () => {
+	const sample = new Date(2026, 9, 20, 9, 0);
+
+	it('writes the day and month in the order of the language', () => {
+		expect(formatMonthDay(sample, 'en')).toBe('Oct 20');
+		expect(formatMonthDay(sample, 'de')).toBe('20. Okt.');
+		expect(formatMonthDay(sample, 'es')).toBe('20 oct');
+		expect(formatMonthDay(sample, 'pt-BR')).toBe('20 de out.');
+	});
+});
+
+describe('formatTimeAgo', () => {
+	const options = {
+		yesterdayLabel: 'Gestern',
+		sameDayFormat: 'H:mm',
+		lastWeekFormat: 'dddd',
+		otherFormat: (date: Date) => formatMonthDay(date, 'de'),
+		otherYearFormat: 'LL',
+	};
+
+	beforeEach(() => {
+		jest.useFakeTimers({ now: new Date(2026, 10, 21, 12, 0) });
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('formats dates earlier this year with a formatter function', () => {
+		expect(formatTimeAgo(new Date(2026, 9, 20, 9, 0), options, de)).toBe('20. Okt.');
+	});
+
+	it('formats dates from another year with the year format', () => {
+		expect(formatTimeAgo(new Date(2025, 9, 20, 9, 0), options, de)).toBe('20. Oktober 2025');
 	});
 });

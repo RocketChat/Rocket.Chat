@@ -224,6 +224,10 @@ export const formatDate = (date: DateInput, formatStr: string, locale?: Locale):
 	return safeFormat(toDate(date), formatStr, locale);
 };
 
+/** Short month and day, without the year, ordered and spelled as `language` writes them (`Oct 20`, `20. Okt.`). */
+export const formatMonthDay = (date: DateInput, language?: string): string =>
+	new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric' }).format(toDate(date));
+
 export const formatTimeAgo = (
 	date: DateInput,
 	options: {
@@ -231,7 +235,7 @@ export const formatTimeAgo = (
 		sameDayFormat: string;
 		lastDayFormat?: string; // if set, show "Yesterday" + format(time, lastDayFormat)
 		lastWeekFormat: string;
-		otherFormat: string;
+		otherFormat: string | ((date: Date) => string);
 		otherYearFormat: string;
 	},
 	locale?: Locale,
@@ -252,9 +256,13 @@ export const formatTimeAgo = (
 	if (diffDays > 1 && diffDays < 7) {
 		return safeFormat(d, options.lastWeekFormat, locale);
 	}
-	const diffYears = now.getFullYear() - d.getFullYear();
-	const fmt = diffYears !== 0 ? options.otherYearFormat : options.otherFormat;
-	return safeFormat(d, fmt, locale);
+	if (now.getFullYear() !== d.getFullYear()) {
+		return safeFormat(d, options.otherYearFormat, locale);
+	}
+	if (typeof options.otherFormat === 'function') {
+		return options.otherFormat(d);
+	}
+	return safeFormat(d, options.otherFormat, locale);
 };
 
 export const formatFromNow = (date: DateInput, addSuffix: boolean, locale?: Locale): string => {
