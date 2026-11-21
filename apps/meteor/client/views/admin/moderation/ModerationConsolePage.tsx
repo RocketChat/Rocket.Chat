@@ -1,3 +1,4 @@
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -9,6 +10,7 @@ import ModerationConsoleTable from './ModerationConsoleTable';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
 import { PageTabs } from '../../../components/PageTabs';
 import { getPermaLink } from '../../../lib/getPermaLink';
+import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
 
 type TabType = 'users' | 'messages';
 
@@ -29,7 +31,9 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 			try {
 				const permalink = await getPermaLink(mid);
 				const url = new URL(permalink, 'http://localhost');
-				router.navigate(`${url.pathname}${url.search}${url.hash}` as LocationPathname);
+				const prefix = getRootUrlPathPrefix();
+				const pathname = prefix ? url.pathname.replace(new RegExp(`^(${escapeRegExp(prefix)})+`), '') : url.pathname;
+				router.navigate(`${pathname}${url.search}${url.hash}` as LocationPathname);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
