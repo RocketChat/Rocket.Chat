@@ -4,6 +4,6 @@ import { Sidebar } from '../Sidebar/Sidebar';
 
 export type SidepanelProps = HTMLAttributes<HTMLDivElement>;
 
-const Sidepanel = (props: SidepanelProps) => <Sidebar variant='sidepanel' {...props} />;
+const Sidepanel = (props: SidepanelProps) => <Sidebar {...props} variant='sidepanel' />;
 
 export default Sidepanel;
