@@ -4,54 +4,55 @@ export enum TIMEUNIT {
 	minutes = 'minutes',
 }
 
-export const isValidTimespan = (timespan: number): boolean => {
-	if (Number.isNaN(timespan)) {
+export const isValidTimespan = (timespan: unknown): boolean => {
+	if (typeof timespan !== 'number' && typeof timespan !== 'string') {
 		return false;
 	}
 
-	if (!Number.isFinite(timespan)) {
+	if (typeof timespan === 'string' && timespan.trim() === '') {
 		return false;
 	}
 
-	if (timespan < 0) {
-		return false;
-	}
-
-	return true;
+	const value = Number(timespan);
+	return Number.isFinite(value) && value >= 0;
 };
 
-export const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
+export const timeUnitToMs = (unit: TIMEUNIT, timespan: number | string) => {
 	if (!isValidTimespan(timespan)) {
 		throw new Error(`timeUnitToMs - invalid timespan:${timespan}`);
 	}
 
+	const value = Number(timespan);
+
 	switch (unit) {
 		case TIMEUNIT.days:
-			return timespan * 24 * 60 * 60 * 1000;
+			return value * 24 * 60 * 60 * 1000;
 
 		case TIMEUNIT.hours:
-			return timespan * 60 * 60 * 1000;
+			return value * 60 * 60 * 1000;
 
 		case TIMEUNIT.minutes:
-			return timespan * 60 * 1000;
+			return value * 60 * 1000;
 
 		default:
 			throw new Error('timeUnitToMs - invalid time unit');
 	}
 };
 
-export const msToTimeUnit = (unit: TIMEUNIT, timespan: number) => {
+export const msToTimeUnit = (unit: TIMEUNIT, timespan: number | string) => {
 	if (!isValidTimespan(timespan)) {
 		throw new Error(`msToTimeUnit - invalid timespan:${timespan}`);
 	}
 
+	const value = Number(timespan);
+
 	switch (unit) {
 		case TIMEUNIT.days:
-			return timespan / 24 / 60 / 60 / 1000;
+			return value / 24 / 60 / 60 / 1000;
 		case TIMEUNIT.hours:
-			return timespan / 60 / 60 / 1000;
+			return value / 60 / 60 / 1000;
 		case TIMEUNIT.minutes:
-			return timespan / 60 / 1000;
+			return value / 60 / 1000;
 		default:
 			throw new Error('msToTimeUnit - invalid time unit');
 	}
