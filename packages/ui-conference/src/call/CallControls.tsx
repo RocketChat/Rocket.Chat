@@ -133,10 +133,11 @@ export type CallControlsProps = {
 	layout: StageLayout;
 	onLayoutChange: (layout: StageLayout) => void;
 	onOpenDiagnostics: () => void;
+	onOpenAppearance?: () => void;
 };
 
 /** The controls of a call running in this window: devices, sharing, hands, reactions, layout and leaving. */
-const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControlsProps) => {
+const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics, onOpenAppearance }: CallControlsProps) => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants } = useCallState();
 	const { toggleMic, toggleCamera, toggleScreenShare, toggleHand, sendReaction, leave } = useCallActions();
@@ -199,7 +200,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				/>
 			</SplitButton>
 			<SplitButton danger={!self.cameraOn} aria-label={t('Camera_controls')}>
-				<CameraPicker />
+				<CameraPicker onOpenAppearance={onOpenAppearance} />
 				<ToggleButton
 					label={t('Camera')}
 					icons={['video', 'video-off']}

@@ -67,8 +67,8 @@ as `@hono/node-server` or `hono/router/trie-router`, from app code, while worksp
   `remoteAddress` middleware) and DDP sessions. With more entries than the count, the one that many hops from the end
   is used. The Express apps keep their own `trust proxy` setting: passport trusts one proxy, the OAuth2 server
   `HTTP_FORWARDED_COUNT`.
-- **Compression:** the routes on the root app are not compressed, as the raw handlers they replace were not. Meteor's
-  gzip still applies to what it serves.
+- **Compression:** the routes on the root app are not compressed, as the raw handlers they replace were not, except the
+  files served through `serveFiles`, which are gzipped as they are sent. Meteor's gzip still applies to what it serves.
 
 ## Deployment
 

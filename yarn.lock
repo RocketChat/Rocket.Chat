@@ -4853,6 +4853,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@livekit/track-processors@https://github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz":
+  version: 0.8.3
+  resolution: "@livekit/track-processors@https://github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz"
+  dependencies:
+    "@mediapipe/tasks-vision": "npm:0.10.14"
+  peerDependencies:
+    "@types/dom-mediacapture-transform": ^0.1.9
+    livekit-client: ^1.12.0 || ^2.1.0
+  checksum: 10/740e215c2f6cc982702253ca2f16a4b37b18323ba6ac7b64ab75a7200b82bb36549db9e15f03cdca36e375e65a516ed9266b782b5681f21ef14cd2c7c4b22186
+  languageName: node
+  linkType: hard
+
+"@livekit/track-processors@patch:@livekit/track-processors@https%3A//github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz#~/.yarn/patches/@livekit-track-processors-https-5566479ef6.patch":
+  version: 0.8.3
+  resolution: "@livekit/track-processors@patch:@livekit/track-processors@https%3A//github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz#~/.yarn/patches/@livekit-track-processors-https-5566479ef6.patch::version=0.8.3&hash=02131c"
+  dependencies:
+    "@mediapipe/tasks-vision": "npm:0.10.14"
+  peerDependencies:
+    "@types/dom-mediacapture-transform": ^0.1.9
+    livekit-client: ^1.12.0 || ^2.1.0
+  checksum: 10/9a61b37afbc46f58ffc552354ba9e5c5192d1f7cb455c0f69782c68baf3088c22d1ff0c59705e6686650fb793b327baadfcd722ab1417bb2291f74f684fc7195
+  languageName: node
+  linkType: hard
+
 "@manypkg/find-root@npm:^1.1.0":
   version: 1.1.0
   resolution: "@manypkg/find-root@npm:1.1.0"
@@ -4914,6 +4938,13 @@ __metadata:
     "@types/react": ">=16"
     react: ">=16"
   checksum: 10/d566407af11e76f498f8133fbfa8a9d8a2ad80dc7a66ca109d29fcb92e953a2d2d7aaedc0c28571d126f1967faeb126dd2e4ab4ea474c994bf5c76fa204c5997
+  languageName: node
+  linkType: hard
+
+"@mediapipe/tasks-vision@npm:0.10.14":
+  version: 0.10.14
+  resolution: "@mediapipe/tasks-vision@npm:0.10.14"
+  checksum: 10/59bd0e5da5c14f2b449721c91e2d81c0602ba51222231455418bec7860281299021088db6e384d696093769fbad62b2a19818582714cd8a4e174d3561c322861
   languageName: node
   linkType: hard
 
@@ -9828,6 +9859,8 @@ __metadata:
     "@hono/node-server": "npm:2.1.5"
     "@kaciras/deasync": "npm:^1.1.0"
     "@livekit/components-react": "npm:2.9.23"
+    "@livekit/track-processors": "patch:@livekit/track-processors@https%3A//github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz#~/.yarn/patches/@livekit-track-processors-https-5566479ef6.patch"
+    "@mediapipe/tasks-vision": "npm:0.10.14"
     "@nivo/bar": "npm:0.88.0"
     "@nivo/core": "npm:0.88.0"
     "@nivo/heatmap": "npm:0.88.0"
@@ -11223,6 +11256,7 @@ __metadata:
   resolution: "@rocket.chat/ui-livekit@workspace:packages/ui-livekit"
   dependencies:
     "@livekit/components-react": "npm:2.9.23"
+    "@livekit/track-processors": "patch:@livekit/track-processors@https%3A//github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz#~/.yarn/patches/@livekit-track-processors-https-5566479ef6.patch"
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -11235,6 +11269,7 @@ __metadata:
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
+    "@types/dom-mediacapture-transform": "npm:~0.1.9"
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.7"
@@ -11246,6 +11281,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     typescript: "npm:~7.0.2"
   peerDependencies:
+    "@livekit/track-processors": "*"
     "@rocket.chat/fuselage-hooks": 0.44.0
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"
@@ -14863,6 +14899,22 @@ __metadata:
   version: 0.0.9
   resolution: "@types/doctrine@npm:0.0.9"
   checksum: 10/64ef06e6eea2f4f9684d259fedbcb8bf21c954630b96ea2e04875ca42763552b0ba3b01b3dd27ec0f9ea6f8b3b0dba4965d31d5a925cd4c6225fd13a93ae9354
+  languageName: node
+  linkType: hard
+
+"@types/dom-mediacapture-transform@npm:~0.1.9":
+  version: 0.1.12
+  resolution: "@types/dom-mediacapture-transform@npm:0.1.12"
+  dependencies:
+    "@types/dom-webcodecs": "npm:*"
+  checksum: 10/30bd6e71d2094e8ef4aca4ed2c25ce6b751ed0a0b954881cd59a9c34b3159b572a4a0cc21b554d4b2e003092cbb8783a5bb3f7d69a2aa2ad3b17a755f051fd04
+  languageName: node
+  linkType: hard
+
+"@types/dom-webcodecs@npm:*":
+  version: 0.1.19
+  resolution: "@types/dom-webcodecs@npm:0.1.19"
+  checksum: 10/196724993dbde852e20e7d22699c6818ddb646b8b689d1d71c5d9f52e3493b08828c2f83c20b77601db0a1f1c91d181acd5834b609b0755e3e0fdfd928a1f053
   languageName: node
   linkType: hard
 

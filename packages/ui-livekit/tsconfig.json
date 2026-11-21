@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		"rootDirs": ["./src", "./"],
 		"outDir": "./dist",
+		// The track processor is compiled from its source, which uses the insertable-streams types.
+		"types": ["node", "jest", "dom-mediacapture-transform"],
 	},
 	"include": ["./src/**/*", "./jest.config.ts"],
 	// Specs are typechecked too; the base config leaves them out.

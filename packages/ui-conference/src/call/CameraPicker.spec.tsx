@@ -5,8 +5,10 @@ import userEvent from '@testing-library/user-event';
 
 import CameraPicker from './CameraPicker';
 import { CallStateProvider } from './context';
+import type { BackgroundEffectSelection } from '../devices/BackgroundEffectContext';
+import { BackgroundEffectContext } from '../devices/BackgroundEffectContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import { buildCallState, buildDeviceSelection, buildVideoQuality, fakeDevices } from '../fixtures/callFixtures';
+import { buildBackgroundEffect, buildCallState, buildDeviceSelection, buildVideoQuality, fakeDevices } from '../fixtures/callFixtures';
 
 const getUserMedia = jest.fn();
 
@@ -22,12 +24,17 @@ beforeEach(() => {
 	getUserMedia.mockResolvedValue({ getTracks: () => [] });
 });
 
-const renderPicker = (devices: MediaDeviceInfo[]) =>
+const renderPicker = (
+	devices: MediaDeviceInfo[],
+	{ backgroundEffect, onOpenAppearance }: { backgroundEffect?: BackgroundEffectSelection; onOpenAppearance?: () => void } = {},
+) =>
 	render(
 		<CallStateProvider value={buildCallState()}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices })}>
 				<VideoQualityProvider value={buildVideoQuality()}>
-					<CameraPicker />
+					<BackgroundEffectContext.Provider value={backgroundEffect}>
+						<CameraPicker onOpenAppearance={onOpenAppearance} />
+					</BackgroundEffectContext.Provider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</CallStateProvider>,
@@ -70,4 +77,26 @@ it('asks nothing once the cameras are named', async () => {
 
 	expect(await screen.findByRole('menu')).toBeInTheDocument();
 	expect(getUserMedia).not.toHaveBeenCalled();
+});
+
+it('opens the appearance panel from the menu when the call can change the background', async () => {
+	const onOpenAppearance = jest.fn();
+	renderPicker(fakeDevices, { backgroundEffect: buildBackgroundEffect(), onOpenAppearance });
+
+	await userEvent.click(screen.getByRole('button'));
+	await userEvent.click(await screen.findByText('Camera_appearance'));
+
+	expect(onOpenAppearance).toHaveBeenCalledTimes(1);
+});
+
+it.each([
+	['the call cannot change the background', undefined],
+	['the browser is not yet known to run background effects', buildBackgroundEffect({ supported: undefined })],
+])('offers no appearance where %s', async (_, backgroundEffect) => {
+	renderPicker(fakeDevices, { backgroundEffect, onOpenAppearance: jest.fn() });
+
+	await userEvent.click(screen.getByRole('button'));
+
+	expect(await screen.findByRole('menu')).toBeInTheDocument();
+	expect(screen.queryByText('Camera_appearance')).not.toBeInTheDocument();
 });

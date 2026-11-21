@@ -21,6 +21,7 @@
 		"livekit-client": "^2.20.1"
 	},
 	"devDependencies": {
+		"@livekit/track-processors": "patch:@livekit/track-processors@https%3A//github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz#~/.yarn/patches/@livekit-track-processors-https-5566479ef6.patch",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -33,6 +34,7 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
+		"@types/dom-mediacapture-transform": "~0.1.9",
 		"@types/jest": "~30.0.0",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
@@ -44,6 +46,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
+		"@livekit/track-processors": "*",
 		"@rocket.chat/fuselage-hooks": "0.44.0",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",

@@ -11,6 +11,7 @@ import type { StageLayout } from '../call/CallStage';
 import CallStageArea from '../call/CallStageArea';
 import CallTopBarStatus from '../call/CallTopBarStatus';
 import EmbeddedCallMembersPanel from '../call/EmbeddedCallMembersPanel';
+import CallAppearancePanel from '../call/appearance/CallAppearancePanel';
 import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel';
 import CallBar from '../components/CallBar';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
@@ -124,6 +125,7 @@ const ConferenceWindow = () => {
 						    handed down rather than handed in. */}
 						{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
 						{activePanel === 'diagnostics' && embeddedCall && <CallDiagnosticsPanel onClose={() => togglePanel('diagnostics')} />}
+						{activePanel === 'appearance' && embeddedCall && <CallAppearancePanel onClose={() => togglePanel('appearance')} />}
 					</CallPanel>
 				</Box>
 
@@ -131,7 +133,12 @@ const ConferenceWindow = () => {
 				{embeddedCall && (
 					<CallBar
 						centre={
-							<CallControls layout={stageLayout} onLayoutChange={setStageLayout} onOpenDiagnostics={() => togglePanel('diagnostics')} />
+							<CallControls
+								layout={stageLayout}
+								onLayoutChange={setStageLayout}
+								onOpenDiagnostics={() => togglePanel('diagnostics')}
+								onOpenAppearance={() => setActivePanel('appearance')}
+							/>
 						}
 					/>
 				)}

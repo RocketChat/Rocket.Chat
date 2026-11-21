@@ -94,8 +94,10 @@ export const usePreviewVideoTrack = (
 		requestedQuality.current = { track: shownTrack, quality };
 
 		void shownTrack
-			// The device too: without it the restart opens the browser's default camera.
-			.restartTrack({ ...captureOptionsFor(quality), deviceId: shownTrack.mediaStreamTrack.getSettings().deviceId })
+			// The device too, read from the camera rather than from what an effect sends: without it the restart opens the
+			// browser's default camera.
+			.getDeviceId(false)
+			.then((deviceId) => shownTrack.restartTrack({ ...captureOptionsFor(quality), deviceId }))
 			.then(() => {
 				if (!cancelled) {
 					setError(false);

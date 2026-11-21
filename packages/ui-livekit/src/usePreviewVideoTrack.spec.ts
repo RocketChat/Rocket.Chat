@@ -13,11 +13,17 @@ jest.mock('livekit-client', () => ({
 const mockedCreateLocalVideoTrack = jest.mocked(createLocalVideoTrack);
 
 const makeTrack = () => {
-	const mediaStreamTrack = Object.assign(new EventTarget(), { readyState: 'live', getSettings: () => ({ deviceId: 'brio' }) });
+	// What a camera with a background effect sends has no device of its own; only the camera it reads from does.
+	const mediaStreamTrack = Object.assign(new EventTarget(), { readyState: 'live', getSettings: () => ({}) });
 	const stop = jest.fn(() => {
 		mediaStreamTrack.readyState = 'ended';
 	});
-	return { stop, mediaStreamTrack, restartTrack: jest.fn().mockResolvedValue(undefined) } as unknown as LocalVideoTrack;
+	return {
+		stop,
+		mediaStreamTrack,
+		getDeviceId: jest.fn().mockResolvedValue('brio'),
+		restartTrack: jest.fn().mockResolvedValue(undefined),
+	} as unknown as LocalVideoTrack;
 };
 
 beforeEach(() => {

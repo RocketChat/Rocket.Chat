@@ -78,6 +78,8 @@
 		"@hono/node-server": "2.1.5",
 		"@kaciras/deasync": "^1.1.0",
 		"@livekit/components-react": "2.9.23",
+		"@livekit/track-processors": "patch:@livekit/track-processors@https%3A//github.com/livekit/track-processors-js/archive/67aca1a86ab38ea27b0cf2223cee0390d4a1131c.tar.gz#~/.yarn/patches/@livekit-track-processors-https-5566479ef6.patch",
+		"@mediapipe/tasks-vision": "0.10.14",
 		"@nivo/bar": "0.88.0",
 		"@nivo/core": "0.88.0",
 		"@nivo/heatmap": "0.88.0",

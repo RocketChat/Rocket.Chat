@@ -57,6 +57,11 @@ export type VideoConferenceEndpoints = {
 		POST: (params: VideoConfRingProps) => { rang: boolean };
 	};
 
+	/** The backgrounds the workspace offers every call: the id a choice is remembered by, and the URL to load it from. */
+	'/v1/video-conference.backgrounds': {
+		GET: () => { backgrounds: { id: string; url: string }[] };
+	};
+
 	/**
 	 * What a member needs to set their call up. The provider's own key is present only when that provider needs
 	 * configuring: `livekit` carries the server, a token for this user and the room to join.

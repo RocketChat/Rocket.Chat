@@ -1,0 +1,10 @@
+selfie_multiclass_256x256_fp16.tflite
+
+Derived from Google's MediaPipe selfie_multiclass_256x256 model, licensed under the Apache License 2.0 (see LICENSE
+in this directory and the model card:
+https://storage.googleapis.com/mediapipe-assets/Model%20Card%20Multiclass%20Segmentation.pdf).
+
+Original: https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite
+
+Changed by Rocket.Chat: weights converted from float32 to float16, decoded back to float32 by DEQUANTIZE ops when the
+model loads; the original's associated files are kept.

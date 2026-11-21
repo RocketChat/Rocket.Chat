@@ -1,0 +1,40 @@
+diff --git a/package.json b/package.json
+index ae96ddd..d285f9b 100644
+--- a/package.json
++++ b/package.json
+@@ -2,10 +2,10 @@
+   "name": "@livekit/track-processors",
+   "version": "0.8.3",
+   "description": "LiveKit track processors",
+-  "main": "dist/index.js",
+-  "module": "dist/index.mjs",
++  "main": "src/index.ts",
++  "module": "src/index.ts",
+   "source": "src/index.ts",
+-  "types": "dist/src/index.d.ts",
++  "types": "src/index.ts",
+   "repository": {
+     "type": "git",
+     "url": "https://github.com/livekit/track-processors-js.git"
+diff --git a/src/transformers/BackgroundTransformer.ts b/src/transformers/BackgroundTransformer.ts
+index 4bd1e24..77830ff 100644
+--- a/src/transformers/BackgroundTransformer.ts
++++ b/src/transformers/BackgroundTransformer.ts
+@@ -76,7 +76,7 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
+     );
+   }
+ 
+-  async init({ outputCanvas, inputElement: inputVideo }: VideoTransformerInitOptions) {
++  override async init({ outputCanvas, inputElement: inputVideo }: VideoTransformerInitOptions) {
+     // Initialize WebGL with appropriate options based on our current state
+ 
+     await super.init({ outputCanvas, inputElement: inputVideo });
+@@ -125,7 +125,7 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
+     this.gl?.setTemporalSmoothing(this.options.temporalSmoothing ?? false);
+   }
+ 
+-  async destroy(options?: TrackTransformerDestroyOptions) {
++  override async destroy(options?: TrackTransformerDestroyOptions) {
+     // The segmenter renders into the canvas's WebGL context, which super.destroy() releases,
+     // so it is closed first. Disabling first passes frames that arrive during the close through.
+     this.isDisabled = true;

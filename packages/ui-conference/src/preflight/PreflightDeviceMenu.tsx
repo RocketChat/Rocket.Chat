@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { DeviceMenuChoices } from '@rocket.chat/ui-media';
+import type { DeviceMenuAction, DeviceMenuChoices } from '@rocket.chat/ui-media';
 import { DeviceMenu, deviceMenuSelection, useDeviceSelection } from '@rocket.chat/ui-media';
 
 import PreflightDeviceMenuButton from './PreflightDeviceMenuButton';
@@ -9,10 +9,11 @@ export type PreflightDeviceMenuProps = {
 	label: string;
 	/** Choices about the device, under it. */
 	choices?: DeviceMenuChoices[];
+	actions?: DeviceMenuAction[];
 };
 
 /** Which device of one kind to arrive on, named on the trigger, and what is done to it. */
-const PreflightDeviceMenu = ({ kind, label, choices }: PreflightDeviceMenuProps) => {
+const PreflightDeviceMenu = ({ kind, label, choices, actions }: PreflightDeviceMenuProps) => {
 	const { selected } = deviceMenuSelection(useDeviceSelection(), kind);
 
 	return (
@@ -22,6 +23,7 @@ const PreflightDeviceMenu = ({ kind, label, choices }: PreflightDeviceMenuProps)
 				title={label}
 				placement='top-start'
 				choices={choices}
+				actions={actions}
 				button={<PreflightDeviceMenuButton kind={kind} label={label} current={selected?.name} />}
 			/>
 		</Box>

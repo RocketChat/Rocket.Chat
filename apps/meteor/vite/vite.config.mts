@@ -271,6 +271,7 @@ const serverRoutes = [
 	'/data-export',
 	'/assets',
 	'/livechat',
+	'/video-conference',
 	'/theme.css',
 	'/robots.txt',
 	'^/css-theme',
