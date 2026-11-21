@@ -1,8 +1,7 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -15,10 +14,18 @@ const settingsMock = {
 	get: sinon.stub(),
 };
 
-const { runIsAgentAvailableToTakeContactInquiry } = proxyquire.noCallThru().load('./isAgentAvailableToTakeContactInquiry', {
-	'../../../server/settings': {
-		settings: settingsMock,
-	},
+let runIsAgentAvailableToTakeContactInquiry: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../server/settings', {
+			exports: {
+				settings: settingsMock,
+			},
+		}),
+	];
+	({ runIsAgentAvailableToTakeContactInquiry } = await import('./isAgentAvailableToTakeContactInquiry'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('isAgentAvailableToTakeContactInquiry', () => {

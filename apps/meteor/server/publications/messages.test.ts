@@ -1,10 +1,9 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const messagesMock = {
@@ -16,23 +15,40 @@ const messagesMock = {
 const canAccessRoomIdAsyncStub = sinon.stub().resolves(true);
 const getChannelHistoryStub = sinon.stub();
 
-const {
-	extractTimestampFromCursor,
-	mountCursorQuery,
-	mountCursorFromMessage,
-	mountNextCursor,
-	mountPreviousCursor,
-	handleWithoutPagination,
-	handleCursorPagination,
-	getMessageHistory,
-} = proxyquire.noCallThru().load('./messages', {
-	'../lib/authorization/canAccessRoom': {
-		canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
-	},
-	'../meteor-methods/messages/getChannelHistory': {
-		getChannelHistory: getChannelHistoryStub,
-	},
-	'@rocket.chat/core-services': { ClientSafeError },
+let extractTimestampFromCursor: any;
+let mountCursorQuery: any;
+let mountCursorFromMessage: any;
+let mountNextCursor: any;
+let mountPreviousCursor: any;
+let handleWithoutPagination: any;
+let handleCursorPagination: any;
+let getMessageHistory: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../lib/authorization/canAccessRoom', {
+			exports: {
+				canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
+			},
+		}),
+		mock.module('../meteor-methods/messages/getChannelHistory', {
+			exports: {
+				getChannelHistory: getChannelHistoryStub,
+			},
+		}),
+		mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
+	];
+	({
+		extractTimestampFromCursor,
+		mountCursorQuery,
+		mountCursorFromMessage,
+		mountNextCursor,
+		mountPreviousCursor,
+		handleWithoutPagination,
+		handleCursorPagination,
+		getMessageHistory,
+	} = await import('./messages'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('extractTimestampFromCursor', () => {

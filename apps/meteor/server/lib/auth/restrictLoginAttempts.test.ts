@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 import type { ILoginAttempt } from './ILoginAttempt';
@@ -23,9 +22,16 @@ const ServerEvents = {
 const Rooms = { findOneByNameOrFname: sandbox.stub() };
 const Users = { findOneById: sandbox.stub() };
 
-const { isValidLoginAttemptByIp, isValidAttemptByUser } = p.noCallThru().load('./restrictLoginAttempts.ts', {
-	'../../settings': { settings: { get: (key: string) => settingValues.get(key) } },
-	'../messages/sendMessage': { sendMessage },
+let isValidLoginAttemptByIp: typeof import('./restrictLoginAttempts').isValidLoginAttemptByIp;
+let isValidAttemptByUser: typeof import('./restrictLoginAttempts').isValidAttemptByUser;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } }),
+		mock.module('../messages/sendMessage', { exports: { sendMessage } }),
+	];
+	({ isValidLoginAttemptByIp, isValidAttemptByUser } = await import('./restrictLoginAttempts'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const lastFailedAt = new Date('2026-11-04T10:00:00.000Z');

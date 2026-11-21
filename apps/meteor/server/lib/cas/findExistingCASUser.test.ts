@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -10,8 +9,12 @@ const sandbox = sinon.createSandbox();
 const settingValues = new Map<string, unknown>();
 const Users = { findOne: sandbox.stub(), setCasExternalIdByUsername: sandbox.stub() };
 
-const { findExistingCASUser } = p.noCallThru().load('./findExistingCASUser.ts', {
-	'../../settings': { settings: { get: (key: string) => settingValues.get(key) } },
+let findExistingCASUser: typeof import('./findExistingCASUser').findExistingCASUser;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } })];
+	({ findExistingCASUser } = await import('./findExistingCASUser'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const localAlice = { _id: 'local-alice', username: 'alice' };

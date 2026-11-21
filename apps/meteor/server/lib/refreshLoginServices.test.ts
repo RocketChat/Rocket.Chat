@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test';
 
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 const LoginServiceConfiguration = { removeAll: sandbox.stub().resolves(['google-id', 'cas-id']) };
@@ -9,7 +10,7 @@ const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const updateOAuthServices = sandbox.stub().resolves();
 const updateCasServices = sandbox.stub().resolves();
 
-const { refreshLoginServices } = p.noCallThru().load('./refreshLoginServices.ts', {
+const { refreshLoginServices } = loadWithMocks('./refreshLoginServices.ts', {
 	'@rocket.chat/models': { LoginServiceConfiguration },
 	'./notifyListener': { notifyOnLoginServiceConfigurationChanged },
 	'./oauth/updateOAuthServices': { updateOAuthServices },

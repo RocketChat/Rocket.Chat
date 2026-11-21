@@ -1,13 +1,21 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { handleBrowserVersionCheck, isIEOlderThan11 } = proxyquire.noCallThru().load('./browserVersion', {
-	'../../../lib/utils/getURL': {
-		getURL: () => '',
-	},
+let handleBrowserVersionCheck: any;
+let isIEOlderThan11: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../lib/utils/getURL', {
+			exports: {
+				getURL: () => '',
+			},
+		}),
+	];
+	({ handleBrowserVersionCheck, isIEOlderThan11 } = await import('./browserVersion'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#isIEOlderThan11()', () => {

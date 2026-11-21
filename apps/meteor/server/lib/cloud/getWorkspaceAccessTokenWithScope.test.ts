@@ -1,7 +1,6 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { workspaceScopes } from './oauthScopes';
@@ -15,15 +14,21 @@ const fetchStub = sinon.stub();
 const settingsGetStub = sinon.stub();
 const loggerErrorStub = sinon.stub();
 
-const { getWorkspaceAccessTokenWithScope } = proxyquire.noCallThru().load('./getWorkspaceAccessTokenWithScope.ts', {
-	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
-	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
-	'./getRedirectUri': { getRedirectUri: () => 'https://open.rocket.chat/admin/cloud/oauth-callback' },
-	'./getWorkspaceAccessToken': { CloudWorkspaceAccessTokenError },
-	'./removeWorkspaceRegistrationInfo': { removeWorkspaceRegistrationInfo: removeWorkspaceRegistrationInfoStub },
-	'./retrieveRegistrationStatus': { retrieveRegistrationStatus: retrieveRegistrationStatusStub },
-	'../../settings': { settings: { get: settingsGetStub } },
-	'../logger/system': { SystemLogger: { error: loggerErrorStub } },
+let getWorkspaceAccessTokenWithScope: typeof import('./getWorkspaceAccessTokenWithScope').getWorkspaceAccessTokenWithScope;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } }),
+		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } }),
+		mock.module('./getRedirectUri', { exports: { getRedirectUri: () => 'https://open.rocket.chat/admin/cloud/oauth-callback' } }),
+		mock.module('./getWorkspaceAccessToken', { exports: { CloudWorkspaceAccessTokenError } }),
+		mock.module('./removeWorkspaceRegistrationInfo', { exports: { removeWorkspaceRegistrationInfo: removeWorkspaceRegistrationInfoStub } }),
+		mock.module('./retrieveRegistrationStatus', { exports: { retrieveRegistrationStatus: retrieveRegistrationStatusStub } }),
+		mock.module('../../settings', { exports: { settings: { get: settingsGetStub } } }),
+		mock.module('../logger/system', { exports: { SystemLogger: { error: loggerErrorStub } } }),
+	];
+	({ getWorkspaceAccessTokenWithScope } = await import('./getWorkspaceAccessTokenWithScope'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const now = new Date('2026-10-15T12:00:00.000Z');

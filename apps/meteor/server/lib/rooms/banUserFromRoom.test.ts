@@ -1,9 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -29,14 +28,23 @@ const notifyOnRoomChangedByIdMock = sinon.stub();
 const notifyOnSubscriptionChangedMock = sinon.stub();
 const afterBanFromRoomCallbackMock = { run: sinon.stub() };
 
-const { performUserBan, banUserFromRoom } = p.noCallThru().load('./banUserFromRoom.ts', {
-	'@rocket.chat/core-services': { Message: messageMock, ClientSafeError },
-	'../callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
-	'../roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
-	'../notifyListener': {
-		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
-		notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
-	},
+let performUserBan: any;
+let banUserFromRoom: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', { exports: { Message: messageMock, ClientSafeError } }),
+		mock.module('../callbacks/afterBanFromRoomCallback', { exports: { afterBanFromRoomCallback: afterBanFromRoomCallbackMock } }),
+		mock.module('../roles/removeUserFromRoles', { exports: { removeUserFromRolesAsync: removeUserFromRolesAsyncMock } }),
+		mock.module('../notifyListener', {
+			exports: {
+				notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
+				notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
+			},
+		}),
+	];
+	({ performUserBan, banUserFromRoom } = await import('./banUserFromRoom'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('banUserFromRoom', () => {

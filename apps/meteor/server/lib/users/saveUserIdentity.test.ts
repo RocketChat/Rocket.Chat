@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 // Create stubs for dependencies
@@ -20,24 +19,40 @@ const stubs = {
 	FileUpload: sinon.stub(),
 };
 
-const { saveUserIdentity } = proxyquire.noCallThru().load('./saveUserIdentity', {
-	'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-	'../media/file-upload': {
-		FileUpload: stubs.FileUpload,
-	},
-	'./setUsername': {
-		_setUsername: stubs.setUsername,
-		_setUsernameWithSession: () => stubs.setUsername,
-	},
-	'./setRealName': {
-		setRealName: stubs.setRealName,
-	},
-	'../rooms/updateGroupDMsName': {
-		updateGroupDMsName: sinon.stub(),
-	},
-	'../shared/validateName': {
-		validateName: stubs.validateName,
-	},
+let saveUserIdentity: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } }),
+		mock.module('../media/file-upload', {
+			exports: {
+				FileUpload: stubs.FileUpload,
+			},
+		}),
+		mock.module('./setUsername', {
+			exports: {
+				_setUsername: stubs.setUsername,
+				_setUsernameWithSession: () => stubs.setUsername,
+			},
+		}),
+		mock.module('./setRealName', {
+			exports: {
+				setRealName: stubs.setRealName,
+			},
+		}),
+		mock.module('../rooms/updateGroupDMsName', {
+			exports: {
+				updateGroupDMsName: sinon.stub(),
+			},
+		}),
+		mock.module('../shared/validateName', {
+			exports: {
+				validateName: stubs.validateName,
+			},
+		}),
+	];
+	({ saveUserIdentity } = await import('./saveUserIdentity'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Users - saveUserIdentity', () => {

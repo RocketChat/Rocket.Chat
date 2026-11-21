@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
@@ -23,11 +22,19 @@ const livechatStub = {
 
 const hasPermissionStub = sinon.stub();
 
-const { closeLivechatRoom } = proxyquire.noCallThru().load('./closeLivechatRoom.ts', {
-	'./closeRoom': livechatStub,
-	'../authorization/hasPermission': {
-		hasPermissionAsync: hasPermissionStub,
-	},
+let closeLivechatRoom: typeof import('./closeLivechatRoom').closeLivechatRoom;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./closeRoom', { exports: { default: livechatStub } }),
+		mock.module('../authorization/hasPermission', {
+			exports: {
+				hasPermissionAsync: hasPermissionStub,
+			},
+		}),
+	];
+	({ closeLivechatRoom } = await import('./closeLivechatRoom'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('closeLivechatRoom', () => {

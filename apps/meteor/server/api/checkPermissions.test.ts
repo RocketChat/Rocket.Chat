@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
 
 import type { PermissionsPayload } from './api.helpers';
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	'../lib/deprecationWarningLogger': {
@@ -13,7 +13,7 @@ const mocks = {
 		},
 	},
 };
-const { checkPermissions } = mock.noCallThru().load('./api.helpers', mocks);
+const { checkPermissions } = loadWithMocks('./api.helpers', mocks);
 
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {

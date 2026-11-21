@@ -1,7 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -21,12 +20,23 @@ const apnMock = {
 	'@noCallThru': true,
 };
 
-const { initAPN, shutdownAPN } = proxyquire.noCallThru().load('./apn', {
-	'@parse/node-apn': {
-		default: apnMock,
-		...apnMock,
-	},
-	'./logger': { logger: mocks.logger },
+let initAPN: any;
+let shutdownAPN: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@parse/node-apn', {
+			exports: {
+				default: {
+					default: apnMock,
+					...apnMock,
+				},
+			},
+		}),
+		mock.module('./logger', { exports: { logger: mocks.logger } }),
+	];
+	({ initAPN, shutdownAPN } = await import('./apn'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const baseOptions = {

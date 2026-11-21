@@ -202,12 +202,15 @@ extended with the nested `{ from, map, list }` branch so it fully reproduces `tr
 two were migrated by swapping their `transformMappedData` calls for the shared `mappedDecodeAsync`
 helper *in place*, rather than being wrapped in `create*Codec` factories. Reasons:
 
-1. **Test harness.** `messages.test.js` uses `proxyquire` to stub `@rocket.chat/models`,
-   `@rocket.chat/random` and `@rocket.chat/core-typings` (`isMessageFromVisitor`) on the `messages.ts`
-   module. `proxyquire` only replaces a module's *own* `require`s, so moving `convertAppMessage`'s
-   model/`Random` usage into a separate `codecs/messages.ts` module would bypass the stubs and break
-   the test (real `Rooms.findOneById` → no `GENERAL` room → the "proper schema"/"invalid room" cases
-   fail). Keeping that usage in the class preserves the harness without editing it.
+1. **Test harness (no longer applies).** At the time, `messages.test.js` used `proxyquire` to stub
+   `@rocket.chat/models`, `@rocket.chat/random` and `@rocket.chat/core-typings`
+   (`isMessageFromVisitor`) on the `messages.ts` module. `proxyquire` only replaces a module's *own*
+   `require`s, so moving `convertAppMessage`'s model/`Random` usage into a separate
+   `codecs/messages.ts` module would have bypassed the stubs and broken the test (real
+   `Rooms.findOneById` → no `GENERAL` room → the "proper schema"/"invalid room" cases fail). The test
+   now registers its model mocks with `mockModel`, which every module reads, and mocks
+   `@rocket.chat/random` and `@rocket.chat/core-typings` with `mock.module`, which applies to every
+   module loaded with `messages.ts`, so a codec module would see the same mocks.
 2. **Poor fit for the codec shape.** `convertMessage` builds its field map per call, closing over a
    per-message memoization cache (`WeakMap` + `cachedFunction`), the source `msgObj`
    (`isMessageFromVisitor`) and `mainFile`; `convertAppMessage` adds an `isPartial` flag and
@@ -218,7 +221,7 @@ The migration goal for these two is therefore narrower but still met: the `trans
 dependency is removed and the mapping logic is the shared, tested `mappedDecodeAsync`. The
 attachment sub-maps stayed per-converter because messages' and threads' variants differ (threads has
 extra `author`/`timestamp`/`fileId` guards) — sharing them would change behaviour. Wrapping messages
-in a codec later remains possible (e.g. via `proxyquire`'s `@global` stubs) if desired.
+in a codec later remains possible if desired; the test harness no longer stands in the way.
 
 ### Phase 5 — Cleanup (done)
 
@@ -246,8 +249,8 @@ messages and threads memoization, which remained in the class layer (see the Pha
   during the migration.
 - **Async codec ergonomics** — de-risked in Phase 0, but the factory wiring for rooms/messages should
   still be spiked before committing to Phase 3.
-- **Test rewrite** — the existing tests use `proxyquire.noCallThru()` against module paths; codec-ing
-  each converter means updating those loaders.
+- **Test rewrite** — the existing tests load converters by module path, with `loadWithMocks` or
+  `mock.module`; codec-ing each converter means updating those loaders.
 
 ## Type strategy for the mapping helpers
 

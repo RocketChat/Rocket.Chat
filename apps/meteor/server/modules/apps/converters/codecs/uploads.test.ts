@@ -2,11 +2,12 @@ import { beforeEach, describe, it } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import * as z from 'zod';
 
-const { createUploadsCodec } = proxyquire.noCallThru().load('./uploads', {
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
+
+const { createUploadsCodec } = loadWithMocks('./uploads', {
 	'../../../../lib/utils/getURL': { getURL: (path: string) => `http://localhost:3000${path}` },
 });
 

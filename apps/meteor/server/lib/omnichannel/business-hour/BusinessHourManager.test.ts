@@ -3,8 +3,9 @@ import { afterEach, before, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const formatStub = sinon.stub().returns('00:00');
 const isSameStub = sinon.stub().returns(true);
@@ -27,7 +28,7 @@ const LivechatBusinessHoursStub = {
 const saveBusinessHourStub = sinon.stub();
 const loggerStub = sinon.stub();
 
-const { BusinessHourManager } = proxyquire.noCallThru().load('./BusinessHourManager', {
+const { BusinessHourManager } = loadWithMocks('./BusinessHourManager', {
 	'../../../settings': {},
 	'../../callbacks': {},
 	'./AbstractBusinessHour': {},

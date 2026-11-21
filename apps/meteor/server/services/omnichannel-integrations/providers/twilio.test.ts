@@ -1,8 +1,7 @@
 import crypto from 'crypto';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = {
@@ -14,11 +13,17 @@ const twilioStub = {
 	isRequestFromTwilio: sinon.stub(),
 };
 
-const { Twilio } = proxyquire.noCallThru().load('./twilio.ts', {
-	'../../../settings': { settings: settingsStub },
-	'../../../lib/utils/restrictions': { fileUploadIsValidContentType: sinon.stub() },
-	'../../../lib/i18n': { i18n: sinon.stub() },
-	'../../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
+let Twilio: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../settings', { exports: { settings: settingsStub } }),
+		mock.module('../../../lib/utils/restrictions', { exports: { fileUploadIsValidContentType: sinon.stub() } }),
+		mock.module('../../../lib/i18n', { exports: { i18n: sinon.stub() } }),
+		mock.module('../../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
+	];
+	({ Twilio } = await import('./twilio'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 /**

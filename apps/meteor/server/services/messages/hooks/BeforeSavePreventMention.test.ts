@@ -1,7 +1,6 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
 const Authorization = {
 	hasPermission: async (_uid: string, _permission: string, _room?: string): Promise<boolean> => true,
@@ -9,16 +8,26 @@ const Authorization = {
 
 class ClientSafeError extends Error {}
 
-const { BeforeSavePreventMention } = proxyquire.noCallThru().load('./BeforeSavePreventMention', {
-	'@rocket.chat/core-services': {
-		Authorization,
-		ClientSafeError,
-	},
-	'../../../lib/i18n': {
-		i18n: {
-			t: (s: any) => s,
-		},
-	},
+let BeforeSavePreventMention: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				Authorization,
+				ClientSafeError,
+			},
+		}),
+		mock.module('../../../lib/i18n', {
+			exports: {
+				i18n: {
+					t: (s: any) => s,
+				},
+			},
+		}),
+	];
+	({ BeforeSavePreventMention } = await import('./BeforeSavePreventMention'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Prevent mention on messages', () => {

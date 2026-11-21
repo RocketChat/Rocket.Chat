@@ -2,8 +2,9 @@ import { beforeEach, describe, it } from 'node:test';
 
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 type RoomToCreate = Omit<IRoom, '_id' | '_updatedAt'>;
 type Guard = (data: { owner: IUser; room: RoomToCreate; members: string[] }) => Promise<void>;
@@ -16,7 +17,7 @@ const validateCreationAttributesMock = sinon.stub();
 
 let guard: Guard;
 
-p.noCallThru().load('./beforeCreateRoom.ts', {
+loadWithMocks('./beforeCreateRoom.ts', {
 	'@rocket.chat/core-services': { Abac: { validateCreationAttributes: validateCreationAttributesMock } },
 	'@rocket.chat/license': { License: licenseMock },
 	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },

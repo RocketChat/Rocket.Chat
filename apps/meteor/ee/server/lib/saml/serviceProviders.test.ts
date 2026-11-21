@@ -3,8 +3,9 @@ import { describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	const store = new Map<string, unknown>([
@@ -71,7 +72,7 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
 	const notifyOnLoginServiceConfigurationChanged = sinon.stub();
 
-	const samlSettings = proxyquire.noCallThru().load('./lib/settings', {
+	const samlSettings = loadWithMocks('./lib/settings', {
 		'@rocket.chat/license': { License },
 		'./Utils': { SAMLUtils },
 		'../../../../../server/lib/utils/getURL': { getWorkspaceURL: () => 'http://localhost:3000/' },
@@ -83,7 +84,7 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 		'../../../../../server/settings': { settings, settingsRegistry: {} },
 	});
 
-	const samlStartup = proxyquire.noCallThru().load('./serviceProviders', {
+	const samlStartup = loadWithMocks('./serviceProviders', {
 		'@rocket.chat/license': { License },
 		'./lib/Utils': { SAMLUtils },
 		'./lib/settings': samlSettings,
@@ -108,7 +109,7 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 
 describe('SAML startup', () => {
 	it('registers the enabled provider with its enterprise settings when the module is already licensed at startup', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { samlStartup, SAMLUtils, LoginServiceConfiguration } = setup({ samlModuleActiveAtStartup: true });
 
@@ -127,7 +128,7 @@ describe('SAML startup', () => {
 	});
 
 	it('registers the enabled provider with its enterprise settings once the license loads after startup', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { SAMLUtils, toggleSamlModule } = setup();
 
@@ -151,7 +152,7 @@ describe('SAML startup', () => {
 	});
 
 	it('clears the providers, removes the SAML login service and stops reacting to SAML settings when the license loses the module', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { SAMLUtils, LoginServiceConfiguration, notifyOnLoginServiceConfigurationChanged, changeSetting, toggleSamlModule } = setup();
 
@@ -187,7 +188,7 @@ describe('SAML startup', () => {
 	});
 
 	it('keeps the SAML login service when the server starts with the module', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { samlStartup, LoginServiceConfiguration, toggleSamlModule } = setup();
 
@@ -204,7 +205,7 @@ describe('SAML startup', () => {
 	});
 
 	it('logs a failure to remove the SAML login service when the license loses the module', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { SAMLUtils, LoginServiceConfiguration, toggleSamlModule } = setup();
 
@@ -223,7 +224,7 @@ describe('SAML startup', () => {
 	});
 
 	it('waits for the removal from a license loss before storing the login service again', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { SAMLUtils, LoginServiceConfiguration, toggleSamlModule } = setup();
 
@@ -255,7 +256,7 @@ describe('SAML startup', () => {
 	});
 
 	it('does not publish the providers of a build that finishes after the license lost the module', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		try {
 			const { SAMLUtils, LoginServiceConfiguration, toggleSamlModule } = setup();
 			let finishStoringService: () => void = () => undefined;

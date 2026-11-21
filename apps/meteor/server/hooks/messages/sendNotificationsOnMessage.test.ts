@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsValues: Record<string, unknown> = {};
 const hasPermissionAsync = sinon.stub();
@@ -20,7 +21,7 @@ const shortnameToUnicode = sinon.stub();
 
 const usersFindOneById = sinon.stub();
 
-const { sendNotification } = proxyquire.noCallThru().load('./sendNotificationsOnMessage', {
+const { sendNotification } = loadWithMocks('./sendNotificationsOnMessage', {
 	'./notifyUsersOnMessage': { getMentions: sinon.stub() },
 	'../../../lib/emoji-native/shortnameToUnicode': { shortnameToUnicode },
 	'../../lib/authorization/hasPermission': { hasPermissionAsync },
