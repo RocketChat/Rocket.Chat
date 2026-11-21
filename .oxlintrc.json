@@ -138,6 +138,10 @@
 							{
 								"name": "meteor/service-configuration",
 								"message": "Use the LoginServiceConfiguration model, then notifyOnLoginServiceConfigurationChanged or notifyOnLoginServiceConfigurationChangedByService so connected clients see the change."
+							},
+							{
+								"name": "meteor/email",
+								"message": "Send email with the Mailer from 'server/lib/notifications/email/api'."
 							}
 						]
 					}
@@ -382,6 +386,14 @@
 					{
 						"selector": "MemberExpression[object.name='Accounts'][property.name=/^setPassword(Async)?$/]",
 						"message": "Use Users.setPasswordHash(userId, await hashPassword(password)) with hashPassword from '@rocket.chat/account-utils' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(emailTemplates|urls|generateResetToken|generateVerificationToken|generateOptionsForEmail)$/]",
+						"message": "Use the templates and senders in 'server/lib/auth/accountEmails' instead."
+					},
+					{
+						"selector": "CallExpression > MemberExpression.callee[object.name='Accounts'][property.name=/^send(ResetPassword|Verification|Enrollment)Email$/]",
+						"message": "Use sendResetPasswordEmail, sendVerificationEmail or sendEnrollmentEmail from 'server/lib/auth/accountEmails' instead."
 					}
 				]
 			}
