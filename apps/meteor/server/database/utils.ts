@@ -1,5 +1,3 @@
-import type { OffCallbackHandler } from '@rocket.chat/emitter';
-import { Emitter } from '@rocket.chat/emitter';
 import { MongoInternals } from 'meteor/mongo';
 import type { ClientSession, MongoError } from 'mongodb';
 
@@ -44,14 +42,12 @@ export const onceTransactionCommitedSuccessfully = async <T extends ClientSessio
 			}
 		};
 
-		session.onceSuccesfulCommit(() => {
-			void withError();
-		});
+		session.onceSuccesfulCommit(withError);
 	}
 };
 
 type ExtendedSession = ClientSession & {
-	onceSuccesfulCommit: (cb: (session: ClientSession) => void) => OffCallbackHandler;
+	onceSuccesfulCommit: (cb: () => Promise<void>) => void;
 };
 
 const getExtendedSession = (session: ClientSession, onceSuccesfulCommit: ExtendedSession['onceSuccesfulCommit']): ExtendedSession => {
@@ -69,21 +65,20 @@ class UnsuccessfulTransactionError extends Error {
 export const wrapInSessionTransaction =
 	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
 	async (...args: T): Promise<Awaited<U>> => {
-		const ee = new Emitter<{ success: ClientSession }>();
+		const afterCommit: Array<() => Promise<void>> = [];
 
-		const extendedSession = getExtendedSession(client.startSession(), (cb) => ee.once('success', cb));
+		const extendedSession = getExtendedSession(client.startSession(), (cb) => {
+			afterCommit.push(cb);
+		});
 
-		const dispatch = (session: ClientSession) => ee.emit('success', session);
+		let result: Awaited<U>;
 		try {
 			extendedSession.startTransaction();
-			extendedSession.once('ended', dispatch);
 
-			const result = await curriedCallback(extendedSession).apply(this, args);
+			result = await curriedCallback(extendedSession).apply(this, args);
 			await extendedSession.commitTransaction();
-			return result;
 		} catch (error) {
 			await extendedSession.abortTransaction();
-			extendedSession.removeListener('ended', dispatch);
 			if (shouldRetryTransaction(error)) {
 				throw new UnsuccessfulTransactionError('');
 			}
@@ -91,4 +86,8 @@ export const wrapInSessionTransaction =
 		} finally {
 			await extendedSession.endSession();
 		}
+
+		await Promise.all(afterCommit.map((cb) => cb()));
+
+		return result;
 	};
