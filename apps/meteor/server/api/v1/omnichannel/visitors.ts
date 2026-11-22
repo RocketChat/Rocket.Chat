@@ -22,6 +22,7 @@ import {
 import { canAccessRoomAsync } from '../../../lib/authorization';
 import { normalizeMessagesForUser } from '../../../lib/utils/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../lib/getPaginationItems';
+import { parseSelector } from '../../lib/parseSelector';
 
 API.v1.addRoute(
 	'livechat/visitors.info',
@@ -120,7 +121,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { selector } = this.queryParams;
-			const { term, exceptions } = JSON.parse(selector);
+			const { term, exceptions } = parseSelector<{ term: string; exceptions?: string[] }>(selector);
 
 			return API.v1.success(
 				await findVisitorsToAutocomplete({

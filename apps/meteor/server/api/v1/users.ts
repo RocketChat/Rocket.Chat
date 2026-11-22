@@ -90,6 +90,7 @@ import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
 import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
+import { parseSelector } from '../lib/parseSelector';
 import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
@@ -1801,7 +1802,7 @@ API.v1.get(
 	async function action() {
 		const { selector: selectorRaw } = this.queryParams;
 
-		const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
+		const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = parseSelector(selectorRaw);
 
 		try {
 			if (selector?.conditions) {
