@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { act, screen, renderHook } from '@testing-library/react';
+import { act, screen, renderHook, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
@@ -107,5 +107,15 @@ describe('callbacks', () => {
 		expect(screen.queryByRole('heading', { name: 'Modal' })).not.toBeInTheDocument();
 
 		expect(handleClose).not.toHaveBeenCalled();
+	});
+});
+
+describe('confirm button', () => {
+	it('shows the confirm icon before the confirm text', async () => {
+		renderModal(<GenericModal title='Modal' confirmText='Schedule' confirmIcon='send' onConfirm={jest.fn()} />);
+
+		const button = await screen.findByRole('button', { name: 'Schedule' });
+
+		expect(within(button).getByText('Schedule').firstChild).toHaveClass('rcx-icon--name-send');
 	});
 });
