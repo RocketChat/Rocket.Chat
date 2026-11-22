@@ -106,10 +106,18 @@ describe('InstanceStatus expiration index', () => {
 	});
 
 	it('should check the index only once', async () => {
+		const lookup = createDeferred();
+		indexesMock.mockReturnValue(lookup.promise.then(() => []));
+
 		await InstanceStatus.registerInstance('test', {});
 		await InstanceStatus.registerInstance('test', {});
+
+		expect(indexesMock).toHaveBeenCalledTimes(1);
+
+		lookup.resolve();
 		await flushPromises();
 
 		expect(indexesMock).toHaveBeenCalledTimes(1);
+		expect(createIndexMock).toHaveBeenCalledTimes(1);
 	});
 });
