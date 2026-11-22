@@ -5,9 +5,10 @@ import { UsersRaw } from './Users';
 
 const findOne = jest.fn();
 const findOneAndUpdate = jest.fn();
+const countDocuments = jest.fn();
 
 const users = new UsersRaw({
-	collection: () => ({ findOne, findOneAndUpdate, createIndexes: jest.fn().mockResolvedValue(undefined) }),
+	collection: () => ({ findOne, findOneAndUpdate, countDocuments, createIndexes: jest.fn().mockResolvedValue(undefined) }),
 } as unknown as Db);
 
 describe('UsersRaw', () => {
@@ -34,5 +35,32 @@ describe('UsersRaw', () => {
 		await users.findOneById('alice');
 
 		expect(findOne.mock.calls[0][1].projection).toEqual({ __rooms: 0, roomRolePriorities: 0 });
+	});
+
+	describe('countByUsernameWithNumericSuffix', () => {
+		beforeEach(() => {
+			countDocuments.mockReset();
+		});
+
+		const getUsernameFilter = (): RegExp => countDocuments.mock.calls[0][0].username;
+
+		it('should count the usernames made of the given username and a number', async () => {
+			await users.countByUsernameWithNumericSuffix('john.doe');
+
+			expect(getUsernameFilter().test('john.doe-1')).toBe(true);
+			expect(getUsernameFilter().test('john.doe')).toBe(false);
+		});
+
+		it('should match the dots of the username literally', async () => {
+			await users.countByUsernameWithNumericSuffix('john.doe');
+
+			expect(getUsernameFilter().test('johnXdoe-1')).toBe(false);
+		});
+
+		it('should accept usernames with regular expression characters', async () => {
+			await users.countByUsernameWithNumericSuffix('c++');
+
+			expect(getUsernameFilter().test('c++-1')).toBe(true);
+		});
 	});
 });

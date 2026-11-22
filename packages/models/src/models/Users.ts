@@ -3409,7 +3409,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	countByUsernameWithNumericSuffix(username: string) {
-		return this.countDocuments({ username: new RegExp(`^${username}-[0-9]+`) });
+		return this.countDocuments({ username: new RegExp(`^${escapeRegExp(username)}-[0-9]+`) });
 	}
 
 	// here
