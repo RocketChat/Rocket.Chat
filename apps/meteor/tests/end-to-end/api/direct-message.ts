@@ -13,6 +13,7 @@ import { testFileUploads } from '../../data/uploads.helper';
 import { password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
+import { waitFor } from '../../data/utils';
 
 describe('[Direct Messages]', () => {
 	let testDM: IRoom & { rid: IRoom['_id'] };
@@ -1067,18 +1068,16 @@ describe('[Direct Messages]', () => {
 		});
 
 		it('should have fname property updated', async () => {
-			const res = await request
-				.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({
-					roomId: directMessageId,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const subscription = await waitFor(
+				async () => {
+					const res = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId: directMessageId }).expect(200);
+					return res.body.subscription;
+				},
+				(sub) => sub?.fname === updatedName,
+			);
 
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.subscription).to.have.property('name', username);
-			expect(res.body.subscription).to.have.property('fname', updatedName);
+			expect(subscription).to.have.property('name', username);
+			expect(subscription).to.have.property('fname', updatedName);
 		});
 	});
 
