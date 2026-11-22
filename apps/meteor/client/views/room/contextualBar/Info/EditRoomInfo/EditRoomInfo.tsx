@@ -15,6 +15,7 @@ import {
 	Accordion,
 	Callout,
 	NumberInput,
+	Select,
 	FieldGroup,
 	Button,
 	ButtonGroup,
@@ -39,8 +40,8 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetting, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
-import { useId, useMemo } from 'react';
+import type { ChangeEvent, Key } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -51,9 +52,10 @@ import { MessageTypesValues } from '../../../../../../lib/MessageTypes';
 import AbacAttributesRemovalWarning from '../../../../../components/ABAC/AbacAttributesRemovalWarning';
 import ModalCalloutContent from '../../../../../components/ModalCalloutContent';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
-import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
+import { isValidTimespan, msToTimeUnit, timeUnitToMs, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
+import { getHighestTimeUnit } from '../../../../admin/settings/Setting/inputs/TimespanSettingInput';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
@@ -88,6 +90,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionPolicy = useRetentionPolicy(room);
 	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, useSetting(getRetentionSetting(room.t), 2592000000)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
+	const initialRetentionMaxAge = defaultValues.retentionMaxAge ?? retentionMaxAgeDefault;
+	const initialRetentionMaxAgeUnit = isValidTimespan(initialRetentionMaxAge)
+		? getHighestTimeUnit(Math.round(timeUnitToMs(TIMEUNIT.days, initialRetentionMaxAge)))
+		: TIMEUNIT.days;
+	const [retentionMaxAgeUnit, setRetentionMaxAgeUnit] = useState(initialRetentionMaxAgeUnit);
+	const daysToRetentionUnit = (days: number, unit = retentionMaxAgeUnit) =>
+		isValidTimespan(days) ? Math.round(msToTimeUnit(unit, timeUnitToMs(TIMEUNIT.days, days))) : days;
+	const retentionUnitToDays = (amount: number, unit = retentionMaxAgeUnit) => msToTimeUnit(TIMEUNIT.days, timeUnitToMs(unit, amount));
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
@@ -110,6 +120,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	} = useForm<EditRoomInfoFormData>({ defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
+	const timeUnitOptions: SelectOption[] = useMemo(() => Object.values(TIMEUNIT).map((unit) => [unit, t(unit)]), [t]);
 
 	const { isDirty: isRoomNameDirty } = getFieldState('roomName');
 
@@ -580,21 +591,36 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 											</Callout>
 											<Field>
 												<FieldLabel htmlFor={retentionMaxAgeField}>{t('RetentionPolicyRoom_DeleteOlderThan')}</FieldLabel>
-												<FieldRow>
-													<Controller
-														control={control}
-														name='retentionMaxAge'
-														render={({ field: { onChange, ...field } }) => (
-															<NumberInput
-																id={retentionMaxAgeField}
-																{...field}
-																placeholder={String(retentionMaxAgeDefault)}
-																endAddon={t('days')}
-																onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.currentTarget.value))}
-															/>
-														)}
-													/>
-												</FieldRow>
+												<Controller
+													control={control}
+													name='retentionMaxAge'
+													render={({ field: { value, onChange, ...field } }) => (
+														<>
+															<FieldRow>
+																<NumberInput
+																	id={retentionMaxAgeField}
+																	{...field}
+																	value={daysToRetentionUnit(value)}
+																	placeholder={String(daysToRetentionUnit(retentionMaxAgeDefault))}
+																	onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																		onChange(retentionUnitToDays(Math.max(0, Number(e.currentTarget.value) || 0)))
+																	}
+																/>
+															</FieldRow>
+															<FieldRow>
+																<Select
+																	aria-label={t('Setting_time_unit', { setting: t('RetentionPolicyRoom_DeleteOlderThan') })}
+																	value={retentionMaxAgeUnit}
+																	options={timeUnitOptions}
+																	onChange={(nextUnit: Key) => {
+																		onChange(retentionUnitToDays(daysToRetentionUnit(value), nextUnit as TIMEUNIT));
+																		setRetentionMaxAgeUnit(nextUnit as TIMEUNIT);
+																	}}
+																/>
+															</FieldRow>
+														</>
+													)}
+												/>
 											</Field>
 											<Field>
 												<FieldRow>
@@ -658,7 +684,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset(defaultValues)}>
+					<Button
+						type='reset'
+						disabled={!isDirty || isSubmitting}
+						onClick={() => {
+							reset(defaultValues);
+							setRetentionMaxAgeUnit(initialRetentionMaxAgeUnit);
+						}}
+					>
 						{t('Reset')}
 					</Button>
 					<Button form={formId} type='submit' variant='primary' loading={isSubmitting} disabled={!isDirty}>

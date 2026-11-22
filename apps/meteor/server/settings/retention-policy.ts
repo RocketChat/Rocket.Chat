@@ -15,6 +15,7 @@ export const createRetentionSettings = () =>
 			public: true,
 			i18nLabel: 'RetentionPolicy_Enabled',
 			alert: 'RetentionPolicy_Enabled_Alert',
+			alertLink: 'https://docs.rocket.chat/docs/retention-policy',
 		});
 
 		await this.add('RetentionPolicy_Precision', '0', {
@@ -169,13 +170,6 @@ export const createRetentionSettings = () =>
 				],
 			});
 
-			await this.add('RetentionPolicy_DoNotPrunePinned', false, {
-				type: 'boolean',
-				public: true,
-				i18nLabel: 'RetentionPolicy_DoNotPrunePinned',
-				enableQuery: globalQuery,
-			});
-
 			await this.add('RetentionPolicy_FilesOnly', false, {
 				type: 'boolean',
 				public: true,
@@ -183,12 +177,20 @@ export const createRetentionSettings = () =>
 				i18nDescription: 'RetentionPolicy_FilesOnly_Description',
 				enableQuery: globalQuery,
 			});
+
+			await this.add('RetentionPolicy_DoNotPrunePinned', false, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'RetentionPolicyRoom_DeletePinned',
+				inverted: true,
+				enableQuery: globalQuery,
+			});
 			await this.add('RetentionPolicy_DoNotPruneDiscussion', true, {
 				group: 'RetentionPolicy',
 				type: 'boolean',
 				public: true,
-				i18nLabel: 'RetentionPolicy_DoNotPruneDiscussion',
-				i18nDescription: 'RetentionPolicy_DoNotPruneDiscussion_Description',
+				i18nLabel: 'RetentionPolicy_DeleteDiscussions',
+				inverted: true,
 				enableQuery: globalQuery,
 			});
 			await this.add('RetentionPolicy_DeleteDiscussionOrigin', true, {
@@ -203,8 +205,8 @@ export const createRetentionSettings = () =>
 				group: 'RetentionPolicy',
 				type: 'boolean',
 				public: true,
-				i18nLabel: 'RetentionPolicy_DoNotPruneThreads',
-				i18nDescription: 'RetentionPolicy_DoNotPruneThreads_Description',
+				i18nLabel: 'RetentionPolicyRoom_DeleteThreads',
+				inverted: true,
 				enableQuery: globalQuery,
 			});
 		});

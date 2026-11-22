@@ -44,7 +44,7 @@ export const links = {
 	/** @deprecated use `go.rocket.chat` links */
 	privacy: 'https://rocket.chat/privacy',
 	/** @deprecated use `go.rocket.chat` links */
-	retentionPolicy: 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies',
+	retentionPolicy: 'https://docs.rocket.chat/docs/retention-policy',
 	/** @deprecated use `go.rocket.chat` links */
 	rocketChat: 'https://rocket.chat/',
 	/** @deprecated use `go.rocket.chat` links */
