@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
+import { useScheduledMessageEditing } from './ScheduleMessage/useScheduledMessageEditing';
 import { createComposerAPI } from './createComposerAPI';
 import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
@@ -143,6 +144,10 @@ const MessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
+	const scheduledEdit = useScheduledMessageEditing(room._id, tmid, chat.composer, (value) =>
+		onSend?.({ value, tshow, previewUrls, isSlashCommandAllowed }),
+	);
+
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
@@ -150,6 +155,10 @@ const MessageBox = ({
 
 		const text = chat.composer?.text ?? '';
 		popup.clear();
+
+		if (scheduledEdit.handleSend(text)) {
+			return;
+		}
 
 		void onSend?.({
 			value: text,
@@ -160,6 +169,9 @@ const MessageBox = ({
 	});
 
 	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+		if (scheduledEdit.handleClose(event)) {
+			return;
+		}
 		const mid = chat.currentEditingMessage.getMID();
 		if (mid) {
 			event.preventDefault();
@@ -207,13 +219,17 @@ const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
+				if (scheduledEdit.handleClose(event)) {
+					event.stopPropagation();
+					return;
+				}
 				closeEditing(event);
 				if (!input.value.trim()) onEscape?.();
 				return;
 			}
 
 			case 'ArrowUp': {
-				if (input.selectionEnd === 0) {
+				if (input.selectionEnd === 0 && !scheduledEdit.editing) {
 					event.preventDefault();
 					event.stopPropagation();
 
@@ -391,11 +407,13 @@ const MessageBox = ({
 		<MessageBoxBase
 			rid={room._id}
 			tmid={tmid}
+			tshow={tshow}
 			composer={chat.composer}
 			messageComposerRef={messageComposerRef}
 			popup={popup}
 			shouldPopupPreview={shouldPopupPreview}
 			isEditing={isEditing}
+			isEditingScheduled={!!scheduledEdit.editing}
 			isRecording={isRecording}
 			isRecordingAudio={isRecordingAudio}
 			isRecordingVideo={isRecordingVideo}

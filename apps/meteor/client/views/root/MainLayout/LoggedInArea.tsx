@@ -13,6 +13,7 @@ import { useNotificationUserCalendar } from '../hooks/loggedIn/useNotificationUs
 import { useNotifyUser } from '../hooks/loggedIn/useNotifyUser';
 import { useRestrictedRoles } from '../hooks/loggedIn/useRestrictedRoles';
 import { useRootUrlChange } from '../hooks/loggedIn/useRootUrlChange';
+import { useScheduledMessagesUpdates } from '../hooks/loggedIn/useScheduledMessagesUpdates';
 import { useStoreCookiesOnLogin } from '../hooks/loggedIn/useStoreCookiesOnLogin';
 import { useTwoFactorAuthSetupCheck } from '../hooks/loggedIn/useTwoFactorAuthSetupCheck';
 import { useUnread } from '../hooks/loggedIn/useUnread';
@@ -32,6 +33,7 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useNotificationUserCalendar(user);
+	useScheduledMessagesUpdates();
 	useDesktopUnreadAlert();
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);

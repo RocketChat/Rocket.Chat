@@ -222,3 +222,8 @@ export const managedPresenceQueryKeys = {
 	list: (query: PaginatedRequest) => [...managedPresenceQueryKeys.all, query] as const,
 	byUsername: (username?: IUser['username']) => [...managedPresenceQueryKeys.all, 'byUsername', username] as const,
 };
+
+export const scheduledMessagesQueryKeys = {
+	all: ['scheduled-messages'] as const,
+	text: (ciphertext: string | undefined) => ['scheduled-message-text', ciphertext] as const,
+};

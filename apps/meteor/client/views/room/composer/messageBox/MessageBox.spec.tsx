@@ -1,8 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ComponentProps } from 'react';
 
 import MessageBox from './MessageBox';
+import { scheduledMessageEditing } from './ScheduleMessage/useScheduledMessageEditing';
 import type { createComposerAPI } from './createComposerAPI';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 import { useFileUpload } from '../../body/hooks/useFileUpload';
@@ -36,13 +38,18 @@ const createChatStub = () => {
 	return chat as unknown as ChatAPI & { composer?: ReturnType<typeof createComposerAPI> };
 };
 
-const renderMessageBox = (onSend: jest.Mock, endpointHandler: jest.Mock) => {
+const renderMessageBox = (
+	onSend: jest.Mock,
+	endpointHandler: jest.Mock,
+	root = mockAppRoot(),
+	props: Partial<ComponentProps<typeof MessageBox>> = {},
+) => {
 	const chat = createChatStub();
 
 	(useChat as jest.Mock).mockReturnValue(chat);
 
-	const view = render(<MessageBox showFormattingTips={false} onSend={onSend} />, {
-		wrapper: mockAppRoot().withUserPreference('sendOnEnter', 'normal').withEndpoint('POST', '/v1/rooms.saveDraft', endpointHandler).build(),
+	const view = render(<MessageBox showFormattingTips={false} onSend={onSend} {...props} />, {
+		wrapper: root.withUserPreference('sendOnEnter', 'normal').withEndpoint('POST', '/v1/rooms.saveDraft', endpointHandler).build(),
 	});
 
 	return { chat, ...view };
@@ -191,5 +198,35 @@ describe('MessageBox paste', () => {
 		await user.paste(clipboardData as unknown as DataTransfer);
 
 		expect(handleUploadFiles).not.toHaveBeenCalled();
+	});
+});
+
+describe('MessageBox send button', () => {
+	it('turns the send pair primary while there is text to send', async () => {
+		renderMessageBox(
+			jest.fn(),
+			jest.fn(),
+			mockAppRoot().withSetting('Message_Scheduling_Enabled', true).withPermission('schedule-message'),
+		);
+		const pair = screen.getByRole('group', { name: 'Send' });
+		expect(pair).not.toHaveClass('rcx-split-button--primary');
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Message #general' }), 'hello');
+
+		expect(pair).toHaveClass('rcx-split-button--primary');
+	});
+});
+
+describe('MessageBox scheduled edit', () => {
+	it('does not load the previous message into the composer while a scheduled message is being edited', async () => {
+		const onNavigateToPreviousMessage = jest.fn();
+		renderMessageBox(jest.fn(), jest.fn(), mockAppRoot(), { onNavigateToPreviousMessage });
+		act(() => scheduledMessageEditing.start({ rid: 'rid' }, { scheduledMessageId: 's1', msg: '' }));
+
+		await userEvent.click(screen.getByRole('textbox', { name: 'Message #general' }));
+		await userEvent.keyboard('{ArrowUp}');
+
+		expect(onNavigateToPreviousMessage).not.toHaveBeenCalled();
+		act(() => scheduledMessageEditing.stop({ rid: 'rid' }));
 	});
 });

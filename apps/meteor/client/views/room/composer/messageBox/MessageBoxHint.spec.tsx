@@ -17,6 +17,7 @@ const renderOptions = {
 	wrapper: mockAppRoot()
 		.withTranslations('en', 'core', {
 			Editing_message: 'Editing message',
+			Editing_scheduled_message: 'Editing scheduled message',
 			Editing_message_hint: '<strong>esc</strong> to cancel · <strong>enter</strong> to save',
 			This_room_is_read_only: 'This room is read only',
 			E2EE_Composer_Unencrypted_Message: "You're sending an unencrypted message",
@@ -44,6 +45,21 @@ describe('MessageBoxHint', () => {
 
 		it('renders hint without helpText when isEditing is true and it is mobile', () => {
 			render(<MessageBoxHint isEditing={true} isMobile={true} />, renderOptions);
+			expect(screen.queryByText(/to save/)).not.toBeInTheDocument();
+		});
+	});
+
+	describe('Editing scheduled message', () => {
+		it('renders the scheduled hint text with the clock-send icon and helpText when it is not mobile', () => {
+			const { container } = render(<MessageBoxHint isEditingScheduled={true} isMobile={false} />, renderOptions);
+			expect(screen.getByText('Editing scheduled message')).toBeInTheDocument();
+			expect(container.innerHTML).toContain('rcx-icon--name-clock-send');
+			expect(screen.getByText(/to save/)).toBeInTheDocument();
+		});
+
+		it('renders the scheduled hint without helpText when it is mobile', () => {
+			render(<MessageBoxHint isEditingScheduled={true} isMobile={true} />, renderOptions);
+			expect(screen.getByText('Editing scheduled message')).toBeInTheDocument();
 			expect(screen.queryByText(/to save/)).not.toBeInTheDocument();
 		});
 	});
