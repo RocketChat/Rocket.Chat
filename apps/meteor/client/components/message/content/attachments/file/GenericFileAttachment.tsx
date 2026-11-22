@@ -1,5 +1,6 @@
 import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
 import {
+	MessageBlock,
 	MessageGenericPreview,
 	MessageGenericPreviewContent,
 	MessageGenericPreviewIcon,
@@ -101,20 +102,22 @@ const GenericFileAttachment = ({
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
-				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-					<MessageGenericPreviewContent
-						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
-					>
-						<MessageGenericPreviewTitle download={!!openDocumentViewer} externalUrl={getExternalUrl()} onClick={handleTitleClick}>
-							{title}
-						</MessageGenericPreviewTitle>
-						{size && (
-							<MessageGenericPreviewDescription>
-								<AttachmentSize size={size} wrapper={false} />
-							</MessageGenericPreviewDescription>
-						)}
-					</MessageGenericPreviewContent>
-				</MessageGenericPreview>
+				<MessageBlock fixedWidth>
+					<MessageGenericPreview>
+						<MessageGenericPreviewContent
+							thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
+						>
+							<MessageGenericPreviewTitle download={!!openDocumentViewer} externalUrl={getExternalUrl()} onClick={handleTitleClick}>
+								{title}
+							</MessageGenericPreviewTitle>
+							{size && (
+								<MessageGenericPreviewDescription>
+									<AttachmentSize size={size} wrapper={false} />
+								</MessageGenericPreviewDescription>
+							)}
+						</MessageGenericPreviewContent>
+					</MessageGenericPreview>
+				</MessageBlock>
 			</MessageCollapsible>
 		</>
 	);

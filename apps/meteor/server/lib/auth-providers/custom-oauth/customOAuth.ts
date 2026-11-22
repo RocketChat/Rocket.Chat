@@ -15,6 +15,7 @@ import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
+import { validateUsername } from '../../users/validateUsername';
 
 const logger = new Logger('CustomOAuth');
 const BeforeUpdateOrCreateUserFromExternalService = new Map<
@@ -221,6 +222,8 @@ export class CustomOAuthStrategy extends Strategy {
 			identity.name = this.getName(identity);
 		}
 
+		identity.displayName = identity.name || identity.displayName;
+
 		return renameInvalidProperties(identity);
 	}
 
@@ -243,6 +246,7 @@ export class CustomOAuthStrategy extends Strategy {
 				const normalizedIdentity = this.normalizeIdentity(result);
 				//Nextcloud URL needed on addWebdavServer
 				normalizedIdentity.serverURL = this.serverURL;
+				normalizedIdentity._OAuthCustom = true;
 				return done(null, normalizedIdentity);
 			} catch (e) {
 				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
@@ -256,7 +260,9 @@ export class CustomOAuthStrategy extends Strategy {
 				return;
 			}
 
-			if (serviceData.username) {
+			const lookupValue = this.keyField === 'email' ? serviceData.email : serviceData.username;
+
+			if (lookupValue) {
 				let user: IUser | null = null;
 
 				if (this.keyField === 'username') {
@@ -353,6 +359,9 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 		}
 
 		if (instance.usernameField) {
+			if (!validateUsername(service.username)) {
+				throw new ClientSafeError('error-invalid-username', `${service.username} is not a valid username`);
+			}
 			user.username = service.username;
 		}
 

@@ -35,7 +35,7 @@ const renderConference = () => {
 	// read — the hook reads whenever it has reason to, which is not the test's business.
 	let membersWithoutAccess = [outsider._id];
 
-	const result = renderHook(() => useConferenceEmbedded(callId), {
+	const view = renderHook(() => useConferenceEmbedded(callId), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withStream('video-conference', streamRef)
@@ -45,7 +45,7 @@ const renderConference = () => {
 	});
 
 	return {
-		...result,
+		...view,
 		streamRef,
 		resolveChatAccess: () => {
 			membersWithoutAccess = [];

@@ -2,7 +2,8 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { BannerPlatform } from '@rocket.chat/core-typings';
 import type { Cloud, IBanner, IBannerDismiss, Optional } from '@rocket.chat/core-typings';
-import { registerModel, BaseRaw } from '@rocket.chat/models';
+import { BaseRaw } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { FindCursor, FindOptions, UpdateResult } from 'mongodb';
 import proxyquire from 'proxyquire';
@@ -78,9 +79,9 @@ const syncAnnouncement = (overrides: Partial<Cloud.Announcement> = {}): Cloud.An
 
 describe('Banners service', () => {
 	before(() => {
-		registerModel('IBannersModel', bannersModel);
-		registerModel('IBannersDismissModel', bannerDismissModel);
-		registerModel('IUsersModel', userModel);
+		mockModel('Banners', bannersModel);
+		mockModel('BannersDismiss', bannerDismissModel);
+		mockModel('Users', userModel);
 	});
 
 	afterEach(() => sinon.restore());

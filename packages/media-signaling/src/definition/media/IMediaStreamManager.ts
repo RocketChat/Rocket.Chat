@@ -1,6 +1,6 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
-import type { IMediaStreamWrapper } from './IMediaStreamWrapper';
+import type { IMediaStreamWrapper } from './IMediaStreamWrapper.js';
 
 export type MediaStreamManagerEvents = {
 	streamChanged: void;

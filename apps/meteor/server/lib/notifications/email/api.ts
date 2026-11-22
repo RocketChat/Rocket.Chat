@@ -134,6 +134,9 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 	body = inlinecss(`${contentHeader} {{body}} ${contentFooter}`);
 });
 
+const htmlToText = (html: string): string =>
+	stripHtml(html, { dumpLinkHrefsNearby: { enabled: true, wrapHeads: '(', wrapTails: ')' } }).result;
+
 export const checkAddressFormat = (adresses: string | string[]): boolean =>
 	([] as string[]).concat(adresses).every((address) => validateEmail(address));
 
@@ -159,7 +162,7 @@ export const sendNoWrap = async ({
 	}
 
 	if (!text) {
-		text = html ? stripHtml(html).result : undefined;
+		text = html ? htmlToText(html) : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -202,7 +205,7 @@ export const send = async ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		text: (text && replace(text, data)) || (html && htmlToText(replace(html, data))) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});

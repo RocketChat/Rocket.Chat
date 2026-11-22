@@ -2,6 +2,7 @@ import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typin
 import { getObjectKeys } from '@rocket.chat/tools';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
@@ -17,6 +18,47 @@ import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 import { Rooms, Subscriptions } from '../../../stores';
+
+const throwRoomDataError = async (
+	error: unknown,
+	{
+		type,
+		reference,
+		createDirectMessage,
+		directRoute,
+	}: {
+		type: RoomType;
+		reference: string;
+		createDirectMessage: EndpointFunction<'POST', '/v1/im.create'>;
+		directRoute: ReturnType<typeof useRoute>;
+	},
+): Promise<never> => {
+	const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
+
+	// "No permission" means the room exists but the user can't see it — surface the
+	// not-found/no-access screen rather than retrying it as a transient failure.
+	if (errorCode === 'error-no-permission') {
+		throw new RoomNotFoundError(undefined, { type, reference });
+	}
+
+	if (errorCode !== 'error-invalid-room') {
+		throw error;
+	}
+
+	if (type !== 'd') {
+		throw new RoomNotFoundError(undefined, { type, reference });
+	}
+
+	try {
+		const { room } = await createDirectMessage({ usernames: reference });
+
+		directRoute.push({ rid: room._id }, (prev) => prev);
+	} catch (error) {
+		throw new RoomNotFoundError(undefined, { type, reference });
+	}
+
+	throw new OldUrlRoomError(undefined, { type, reference });
+};
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -83,31 +125,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
-				const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
-
-				// "No permission" means the room exists but the user can't see it — surface the
-				// not-found/no-access screen rather than retrying it as a transient failure.
-				if (errorCode === 'error-no-permission') {
-					throw new RoomNotFoundError(undefined, { type, reference });
-				}
-
-				if (errorCode !== 'error-invalid-room') {
-					throw error;
-				}
-
-				if (type !== 'd') {
-					throw new RoomNotFoundError(undefined, { type, reference });
-				}
-
-				try {
-					const { room } = await createDirectMessage({ usernames: reference });
-
-					directRoute.push({ rid: room._id }, (prev) => prev);
-				} catch (error) {
-					throw new RoomNotFoundError(undefined, { type, reference });
-				}
-
-				throw new OldUrlRoomError(undefined, { type, reference });
+				return throwRoomDataError(error, { type, reference, createDirectMessage, directRoute });
 			}
 
 			if (!roomData._id) {

@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { MouseEventHandler } from 'react';
 
 import MessageHeaderRolesByScope from './MessageHeaderRolesByScope';
 import MessageRoles from './MessageRoles';
@@ -7,14 +6,13 @@ import { useMessageListUserRoles } from '../list/MessageListContext';
 
 type MessageHeaderRolesProps = {
 	message: IMessage;
-	onClick?: MouseEventHandler;
 };
 
-const MessageHeaderRoles = ({ message, onClick }: MessageHeaderRolesProps) => {
+const MessageHeaderRoles = ({ message }: MessageHeaderRolesProps) => {
 	const rolesFromList = useMessageListUserRoles(message.u._id, message.rid);
 
 	if (!rolesFromList) {
-		return <MessageHeaderRolesByScope message={message} onClick={onClick} />;
+		return <MessageHeaderRolesByScope message={message} />;
 	}
 
 	const { workspaceRoles, roomRoles } = rolesFromList;
@@ -23,7 +21,7 @@ const MessageHeaderRoles = ({ message, onClick }: MessageHeaderRolesProps) => {
 		return null;
 	}
 
-	return <MessageRoles workspaceRoles={workspaceRoles} roomRoles={roomRoles} isBot={!!message.bot} onClick={onClick} />;
+	return <MessageRoles workspaceRoles={workspaceRoles} roomRoles={roomRoles} isBot={!!message.bot} />;
 };
 
 export default MessageHeaderRoles;

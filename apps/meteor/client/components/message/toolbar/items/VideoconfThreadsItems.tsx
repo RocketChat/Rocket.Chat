@@ -14,7 +14,7 @@ const VideoconfThreadsItems = ({ message, room, subscription, onChangeMenuVisibi
 	return (
 		<>
 			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
-			<JumpToMessageAction id='jump-to-message' message={message} />
+			{!message.tmid && <JumpToMessageAction id='jump-to-message' message={message} />}
 		</>
 	);
 };

@@ -1,5 +1,7 @@
 import net from 'node:net';
 
+import { mockModel } from '@rocket.chat/models/testing';
+
 import { XMPPServer } from '../../src/XMPPServer';
 import type { Logger } from '../../src/logger';
 import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
@@ -17,13 +19,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	api: { broadcast: jest.fn() },
 	Message: {},
 	Room: {},
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	Users: { findOneByUsername: (...args: unknown[]) => findOneByUsername(...args) },
-	Rooms: { findByXMPPRole: () => ({ toArray: async () => [] }) },
-	Subscriptions: {},
-	Messages: {},
 }));
 
 jest.mock('@rocket.chat/logger', () => ({
@@ -73,6 +68,11 @@ const waitFor = (check: () => boolean, timeoutMs = 15000): Promise<void> =>
 	});
 
 describe('XMPPServerService handler observation', () => {
+	beforeAll(() => {
+		mockModel('Users', { findOneByUsername: (...args: unknown[]) => findOneByUsername(...args) });
+		mockModel('Rooms', { findByXMPPRole: () => ({ toArray: async () => [] }) });
+	});
+
 	const ports = new Map<string, number>();
 	const resolver: XmppDnsResolver = async (domain) => [{ host: '127.0.0.1', port: ports.get(domain) as number }];
 	const settled: { event: string; outcome: string }[] = [];

@@ -1,6 +1,6 @@
 import { compile, middleware, serialize, stringify } from 'stylis';
 
-import { createLogicalPropertiesMiddleware } from './middleware';
+import { createLogicalPropertiesMiddleware } from './middleware.js';
 
 /** Compiles `css` as if no logical property or value were supported. */
 const render = (css: string): string => {

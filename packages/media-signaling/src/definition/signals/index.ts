@@ -1,3 +1,3 @@
-export * from './client';
-export type * from './server';
-export type * from './Transport';
+export * from './client/index.js';
+export type * from './server/index.js';
+export type * from './Transport.js';

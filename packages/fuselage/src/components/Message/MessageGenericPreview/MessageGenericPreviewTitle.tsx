@@ -12,6 +12,7 @@ const MessageGenericPreviewTitle = ({ externalUrl, children, className, ...props
 		return (
 			<a
 				href={externalUrl}
+				// oxlint-disable-next-line react/jsx-no-target-blank -- adding rel=noreferrer would stop sending the Referer header to linked sites, a behavior change for consumers of this published component
 				target='_blank'
 				{...props}
 				className={cx('rcx-message-generic-preview__title rcx-message-generic-preview__title-link', className)}
@@ -21,7 +22,11 @@ const MessageGenericPreviewTitle = ({ externalUrl, children, className, ...props
 		);
 	}
 
-	return <span {...props} className={cx('rcx-message-generic-preview__title', className)} />;
+	return (
+		<span {...props} className={cx('rcx-message-generic-preview__title', className)}>
+			{children}
+		</span>
+	);
 };
 
 export default MessageGenericPreviewTitle;

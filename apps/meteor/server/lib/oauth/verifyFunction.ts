@@ -9,22 +9,27 @@ export const verifyFunction = async (
 	done: DoneCallback,
 	serviceName: string,
 ) => {
-	const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
+	const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string; email?: string };
 	const { _json, _raw, ...restProfile } = profileWithRaw;
 
-	const user = await Accounts.updateOrCreateUserFromExternalService(
-		serviceName,
-		{
-			accessToken,
-			refreshToken,
-			name: profile.displayName,
-			...profile,
-			...restProfile,
-			..._json,
-			email: profile?.emails?.[0]?.value,
-		},
-		{},
-	);
+	let user;
+	try {
+		user = await Accounts.updateOrCreateUserFromExternalService(
+			serviceName,
+			{
+				accessToken,
+				refreshToken,
+				...profile,
+				...restProfile,
+				..._json,
+				email: profile?.emails?.[0]?.value ?? restProfile.email,
+				name: profile.displayName || profile.name,
+			},
+			{},
+		);
+	} catch (error) {
+		return done(error);
+	}
 
 	if (!user?.userId || typeof user?.userId !== 'string') {
 		return done(new Error('User not found'));

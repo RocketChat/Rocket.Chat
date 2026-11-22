@@ -13,10 +13,11 @@ import {
 } from '@rocket.chat/fuselage-forms';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useEncryptedRoomDescription } from '../../navbar/NavBarPagesGroup/actions/useEncryptedRoomDescription';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
@@ -50,7 +51,7 @@ const CreateDiscussion = ({
 	nameSuggestion,
 	encryptedParentRoom = false,
 }: CreateDiscussionProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [encryptedDisabled, setEncryptedDisabled] = useState(encryptedParentRoom);
 

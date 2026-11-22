@@ -1,4 +1,4 @@
-import type { Block } from './Block';
-import type { ConditionalBlock } from './layout/ConditionalBlock';
+import type { Block } from './Block.js';
+import type { ConditionalBlock } from './layout/ConditionalBlock.js';
 
 export type RenderableBlock = Exclude<Block, ConditionalBlock>;

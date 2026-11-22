@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.68.0-rc.0",
+	"version": "1.68.0",
 	"description": "The public API and type definitions for Rocket.Chat App development.",
 	"keywords": [
 		"rocket.chat",
@@ -35,16 +35,32 @@
 			"email": "douglas.gubert@rocket.chat"
 		}
 	],
+	"exports": {
+		"./definition/*.js": {
+			"types": "./definition/*.d.ts",
+			"import": "./esm/definition/*.js",
+			"require": "./definition/*.js"
+		},
+		"./definition/*": {
+			"types": "./definition/*.d.ts",
+			"import": "./esm/definition/*.js",
+			"require": "./definition/*.js"
+		},
+		"./package.json": "./package.json"
+	},
 	"files": [
-		"definition/**"
+		"definition/**",
+		"esm/**"
 	],
 	"scripts": {
-		"build": "run-s build:clean build:default",
-		"build:clean": "rm -rf definition",
+		"build": "run-s build:clean build:default build:esm",
+		"build:clean": "rm -rf definition esm",
 		"build:default": "tsc -p tsconfig.json",
-		"dev": "yarn build:default --watch",
+		"build:esm": "node scripts/emit-esm-entries.mjs",
+		"dev": "yarn build && run-p \"build:default --watch\" \"build:esm --watch\"",
 		"gen-doc": "typedoc",
 		"lint": "yarn run -T oxlint",
+		"testunit": "node --test tests/*.test.mjs",
 		"typecheck": "run-s typecheck:default typecheck:types",
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:types": "tsc -p tsconfig-types-test.json"

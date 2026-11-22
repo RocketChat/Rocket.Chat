@@ -1,6 +1,6 @@
 import { UserStatus, type IUserSession, type IUserSessionConnection } from '@rocket.chat/core-typings';
-import { registerModel } from '@rocket.chat/models';
-import type { FindCursor, WithId } from 'mongodb';
+import { mockModel } from '@rocket.chat/models/testing';
+import type { Collection, FindCursor, WithId } from 'mongodb';
 
 import { PresenceReaper } from './PresenceReaper';
 
@@ -46,12 +46,12 @@ describe('PresenceReaper', () => {
 	const bulkWriteMock = jest.fn();
 	const findMock = jest.fn();
 	const onUpdateMock = jest.fn();
-	registerModel('IUsersSessionsModel', {
-		find: findMock,
-		col: {
-			bulkWrite: bulkWriteMock,
-		},
-	} as any);
+	beforeAll(() => {
+		mockModel('UsersSessions', {
+			find: findMock,
+			col: { bulkWrite: bulkWriteMock } as Partial<Collection<IUserSession>> as Collection<IUserSession>,
+		});
+	});
 
 	beforeEach(() => {
 		bulkWriteMock.mockClear();

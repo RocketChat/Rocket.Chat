@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { MediaStreamTrackWrapper } from './MediaStreamTrackWrapper';
-import type { IMediaSignalLogger } from '../../definition/logger';
-import type { IMediaStreamWrapper, MediaStreamEvents } from '../../definition/media/IMediaStreamWrapper';
+import { MediaStreamTrackWrapper } from './MediaStreamTrackWrapper.js';
+import type { IMediaSignalLogger } from '../../definition/logger.js';
+import type { IMediaStreamWrapper, MediaStreamEvents } from '../../definition/media/IMediaStreamWrapper.js';
 
 const AUDIO_STATS_INTERVAL = 50;
 

@@ -14,11 +14,7 @@ export function getUsersInRole<P extends Document = IUser>(
 	options: FindOptions<P extends IUser ? IUser : P>,
 ): Promise<FindCursor<P extends IUser ? IUser : P>>;
 
-export function getUsersInRole<P = IUser>(
-	roleId: IRole['_id'],
-	scope: string | undefined,
-	options?: any | undefined,
-): Promise<FindCursor<IUser | P>> {
+export function getUsersInRole<P = IUser>(roleId: IRole['_id'], scope: string | undefined, options?: any): Promise<FindCursor<IUser | P>> {
 	// TODO move the code from Roles.findUsersInRole to here and change all places to use this function
 	return Roles.findUsersInRole(roleId, scope, options);
 }
@@ -26,7 +22,7 @@ export function getUsersInRole<P = IUser>(
 export async function getUsersInRolePaginated(
 	roleId: IRole['_id'],
 	scope: string | undefined,
-	options?: any | undefined,
+	options?: any,
 ): Promise<FindPaginated<FindCursor<IUser>>> {
 	if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 		throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');

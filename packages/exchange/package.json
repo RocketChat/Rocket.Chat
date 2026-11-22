@@ -1,0 +1,39 @@
+{
+	"name": "@rocket.chat/exchange",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Server-to-server Exchange connection: Microsoft Graph and EWS providers behind one interface",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "TZ=UTC jest",
+		"testunit": "TZ=UTC jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/ntlm": "workspace:^",
+		"@rocket.chat/random": "workspace:^",
+		"@rocket.chat/server-fetch": "workspace:^",
+		"@rocket.chat/tools": "workspace:^",
+		"@xmldom/xmldom": "~0.8.15",
+		"mongodb": "6.16.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

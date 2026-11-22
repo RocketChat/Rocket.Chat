@@ -1,8 +1,7 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-
-const proxyquire = require('proxyquire');
+import proxyquire from 'proxyquire';
 
 let values: Record<string, unknown> = {};
 let modules: string[] = [];

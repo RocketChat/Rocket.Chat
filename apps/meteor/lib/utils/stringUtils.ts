@@ -90,7 +90,7 @@ export function pad(_str: unknown, _length: number, padStr?: string, type: 'righ
 	const str = makeString(_str);
 	const length = ~~_length;
 
-	let padlen = 0;
+	let padlen: number;
 
 	if (!padStr) padStr = ' ';
 	else if (padStr.length > 1) padStr = padStr.charAt(0);

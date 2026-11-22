@@ -2,9 +2,9 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/tools';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useAbsoluteUrl, useEndpoint, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useAbsoluteUrl, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { memo, useEffect, useState } from 'react';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import CreateOAuthModal from './CreateOAuthModal';
 import { strRight } from '../../../../../../lib/utils/stringUtils';
@@ -19,7 +19,7 @@ export type OAuthGroupPageProps = ISetting & {
 function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [settingSections, setSettingSections] = useState(sections);
 

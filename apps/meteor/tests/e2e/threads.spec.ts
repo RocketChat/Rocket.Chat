@@ -113,7 +113,7 @@ test.describe.serial('Threads', () => {
 			await expect(page).not.toHaveURL(/.*thread/);
 		});
 		test('expect delete the thread message and keep thread open if has more than one message', async ({ page }) => {
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('another reply message');
+			await poHomeChannel.threadComposer.inputMessage.type('another reply message');
 			await page.keyboard.press('Enter');
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
@@ -139,6 +139,26 @@ test.describe.serial('Threads', () => {
 			await page.keyboard.press('Enter');
 
 			await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
+		});
+
+		test('expect thread message actions to show on hover after resizing the window', async ({ page }) => {
+			await poHomeChannel.content.sendMessageInThread('thread reply for resizing');
+			const reply = poHomeChannel.content.lastUserThreadMessage;
+			await expect(reply).toContainText('thread reply for resizing');
+
+			const toolbar = reply.getByRole('toolbar', { name: 'Message actions', includeHidden: true });
+			const addReaction = poHomeChannel.content.getLastThreadMessageActionButton('Add reaction');
+
+			// 2552 lays the thread panel out on a fractional pixel, the case the toolbar must survive.
+			for (const width of [1440, 2552, 1920]) {
+				// Clear hover and focus so an already open toolbar cannot mask the next size's visibility check.
+				await poHomeChannel.threadComposer.inputMessage.click();
+				await expect(toolbar).not.toBeAttached();
+				await page.setViewportSize({ width, height: 1000 });
+				await reply.hover();
+
+				await expect(addReaction).toBeVisible();
+			}
 		});
 
 		test('expect star the thread message', async () => {

@@ -14,6 +14,10 @@ export interface IActionManager {
 	notifyIdle(): void;
 	generateTriggerId(appId: string | undefined): string;
 	emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>): Promise<void>;
+	suggestOptions(
+		appId: string,
+		interaction: DistributiveOmit<UiKit.BlockSuggestionUserInteraction, 'triggerId'>,
+	): Promise<UiKit.BlockSuggestionResponse>;
 	handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined;
 	getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']):
 		| {
@@ -23,6 +27,7 @@ export interface IActionManager {
 	openView(surface: 'modal', view: UiKit.ModalView): void;
 	openView(surface: 'banner', view: UiKit.BannerView): void;
 	openView(surface: 'contextual_bar', view: UiKit.ContextualBarView): void;
+	clearModals(appId: string): void;
 	// oxlint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 	disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']): void;
 }

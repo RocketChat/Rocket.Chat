@@ -186,7 +186,7 @@ API.v1
 			userWithoutUsername: true,
 			body: isUsersUpdateOwnBasicInfoParamsPOST,
 			rateLimiterOptions: {
-				numRequestsAllowed: 1,
+				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
 			},
 			response: {
@@ -1222,7 +1222,7 @@ API.v1.get(
 	async function action() {
 		const user = await Users.findOneById(this.userId);
 		if (user?.settings) {
-			const { preferences = {} } = user?.settings;
+			const { preferences = {} } = user.settings;
 			preferences.language = user?.language;
 
 			return API.v1.success({

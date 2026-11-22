@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
+import { GenericNoResults, useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
+import { useSidebarListDrag } from './useSidebarListDrag';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
@@ -36,13 +37,17 @@ const sidebarRowHeight: Record<SidebarViewMode, number> = {
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
-const RoomList = () => {
+type RoomListProps = {
+	filterText?: string;
+};
+
+const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	const { groups, groupKeys, filtering } = useRoomList({ collapsedGroups, filterText });
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
@@ -64,8 +69,6 @@ const RoomList = () => {
 		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
-	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
-
 	const virtualGroups = useMemo(
 		() =>
 			groups.map((group) => ({
@@ -82,7 +85,14 @@ const RoomList = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
+	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups, { groupKeys, canReorder: !filtering });
+	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, dragRef);
+
+	const isGroupDragged = (groupKey: string) => dragSource?.kind === 'group' && dragSource.key === groupKey;
+
+	if (filtering && groups.length === 0) {
+		return <GenericNoResults />;
+	}
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
@@ -95,17 +105,26 @@ const RoomList = () => {
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
 					<RoomListCollapser
+						data-drag-key={group.key}
+						data-drag-kind='group'
+						data-drag-group={group.key}
+						dragging={isGroupDragged(group.key)}
 						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
-						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
+						canMoveUp={!filtering && canMoveGroup(groups, index, 'up')}
+						canMoveDown={!filtering && canMoveGroup(groups, index, 'down')}
+						onMoveUp={() => moveCategory(groupKeys, group.key, 'up')}
+						onMoveDown={() => moveCategory(groupKeys, group.key, 'down')}
+						onClick={() => !filtering && handleClick(group.key)}
 					/>
 				)}
-				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
-					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} videoConfActions={ringingCalls.get(item.rid)} />
+				renderItem={(item, _itemIndex, group, _groupIndex, rowIndex) => (
+					<RoomListRowWrapper data-index={rowIndex} data-drag-key={item.rid} data-drag-kind='item' data-drag-group={group.key}>
+						<RoomListRow
+							data={itemData}
+							item={item}
+							videoConfActions={ringingCalls.get(item.rid)}
+							dragging={isGroupDragged(group.key) || (dragSource?.kind === 'item' && dragSource.key === item.rid)}
+						/>
 					</RoomListRowWrapper>
 				)}
 			/>

@@ -42,6 +42,22 @@ export class RoomSidebar extends Sidebar {
 		this.menuMoveTo = new MenuMoveTo(page);
 	}
 
+	get inboxHeading(): Locator {
+		return this.root.getByRole('heading', { name: 'Inbox' });
+	}
+
+	get btnSearchRooms(): Locator {
+		return this.root.getByRole('button', { name: 'Search rooms' });
+	}
+
+	get inputSearchRooms(): Locator {
+		return this.root.getByRole('textbox', { name: 'Search rooms' });
+	}
+
+	get searchNoResults(): Locator {
+		return this.root.getByRole('group', { name: 'No results found' });
+	}
+
 	get teamCollabFilters(): Locator {
 		return this.root.getByRole('tablist', { name: 'Team collaboration filters' });
 	}
@@ -217,6 +233,36 @@ export class RoomSidebar extends Sidebar {
 		await this.openRoomMenu(roomName);
 		await this.menuOptions.selectMenuItem('Move to', true);
 		await this.menuMoveTo.waitForDisplay();
+	}
+
+	/** The names of the groups, in the order the sidebar lists them. */
+	async getCategoryOrder(): Promise<string[]> {
+		const labels = await this.root
+			.getByRole('listitem', { name: /^(Collapse|Expand) / })
+			.evaluateAll((elements) => elements.map((element) => element.getAttribute('aria-label') ?? ''));
+		return labels.map((label) => label.replace(/^(Collapse|Expand) /, ''));
+	}
+
+	async dragRoomToCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.dragWithPointer(this.getSidebarItemLinkByName(roomName), this.getCategoryCollapser(categoryName), 'middle');
+	}
+
+	async dragCategoryAbove(categoryName: string, targetName: string): Promise<void> {
+		await this.dragWithPointer(this.getCategoryCollapser(categoryName), this.getCategoryCollapser(targetName), 'top');
+	}
+
+	/** Presses, moves in steps and releases, so the list sees a drag rather than a click. */
+	private async dragWithPointer(source: Locator, target: Locator, edge: 'top' | 'middle'): Promise<void> {
+		const from = await source.boundingBox();
+		const to = await target.boundingBox();
+		if (!from || !to) {
+			throw new Error('Drag source or target is not visible');
+		}
+
+		await this.page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+		await this.page.mouse.down();
+		await this.page.mouse.move(to.x + to.width / 2, to.y + to.height * (edge === 'top' ? 0.25 : 0.5), { steps: 10 });
+		await this.page.mouse.up();
 	}
 }
 

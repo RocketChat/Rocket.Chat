@@ -1,8 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import RoomMessage from './RoomMessage';
+import { selectedMessageStore } from '../../../views/room/providers/SelectedMessagesProvider';
 import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
 const message: IMessage = {
@@ -30,26 +32,6 @@ const message: IMessage = {
 	urls: [],
 };
 
-jest.mock('../../../hooks/useUserRolesByScope', () => ({
-	useUserRolesByScope: () => ({ workspaceRoles: [], roomRoles: [] }),
-}));
-jest.mock('../../../lib/utils/fireGlobalEvent', () => ({ fireGlobalEvent: () => undefined }));
-jest.mock('../../../views/room/hooks/useGoToRoom', () => ({ useGoToRoom: () => undefined }));
-jest.mock('../../../views/room/contextualBar/Threads/hooks/useGetMessageByID', () => undefined);
-jest.mock('../../../views/room/MessageList/hooks/useAutoTranslate', () => ({
-	useAutoTranslate: () => ({
-		autoTranslateEnabled: false,
-		autoTranslateLanguage: '',
-		showAutoTranslate: () => false,
-	}),
-}));
-jest.mock('../../../lib/actionLinks', () => undefined);
-jest.mock('../../../lib/RoomManager', () => ({
-	RoomManager: { getStore: jest.fn() },
-	useOpenedRoom: () => undefined,
-	getCollapsibleEventKey: (key: string) => `collapsibleToggled-${key}`,
-}));
-
 it('should show normal message', () => {
 	render(
 		<RoomMessage
@@ -71,46 +53,21 @@ it('should show normal message', () => {
 	expect(screen.queryByRole('button', { name: 'Message_Ignored' })).not.toBeInTheDocument();
 });
 
-it('should show fallback content for ignored user', () => {
+it.each([
+	['an ignored user', { ignoredUser: true }, message],
+	['an ignored message', { ignoredUser: false }, { ...message, ignored: true }],
+])('should hide the content of %s until the user asks to see it', async (_case, props, ignoredMessage) => {
 	render(
-		<RoomMessage
-			message={message}
-			sequential={false}
-			all={false}
-			mention={false}
-			unread={false}
-			ignoredUser={true}
-			showUserAvatar={true}
-		/>,
-		{
-			wrapper: mockAppRoot().build(),
-		},
+		<RoomMessage message={ignoredMessage} sequential={false} all={false} mention={false} unread={false} showUserAvatar={true} {...props} />,
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	expect(screen.getByRole('figure')).toBeInTheDocument();
 	expect(screen.queryByText('message body')).not.toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();
-});
 
-it('should show ignored message', () => {
-	render(
-		<RoomMessage
-			message={{ ...message, ignored: true }}
-			sequential={false}
-			all={false}
-			mention={false}
-			unread={false}
-			ignoredUser={false}
-			showUserAvatar={true}
-		/>,
-		{
-			wrapper: mockAppRoot().build(),
-		},
-	);
+	await userEvent.click(screen.getByRole('button', { name: 'Message_Ignored' }));
 
-	expect(screen.getByRole('figure')).toBeInTheDocument();
-	expect(screen.queryByText('message body')).not.toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();
+	expect(screen.getByText('message body')).toBeInTheDocument();
 });
 
 it('should show read receipt', () => {
@@ -220,4 +177,61 @@ it('should render the content again once the message is fixed', () => {
 
 	expect(screen.queryByText('Message_could_not_be_displayed')).not.toBeInTheDocument();
 	expect(screen.getByText('message body')).toBeInTheDocument();
+});
+
+describe('selecting messages', () => {
+	const renderMessage = () =>
+		render(<RoomMessage message={message} sequential={false} all={false} mention={false} unread={false} showUserAvatar={true} />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+	afterEach(() => {
+		selectedMessageStore.reset();
+	});
+
+	describe('while selecting', () => {
+		beforeEach(() => {
+			selectedMessageStore.setIsSelecting(true);
+		});
+
+		it('should select the message on a click', async () => {
+			renderMessage();
+
+			await userEvent.click(screen.getByRole('listitem'));
+
+			expect(selectedMessageStore.isSelected(message._id)).toBe(true);
+		});
+
+		it.each(['Space', 'Enter'])('should select the message with the %s key', (code) => {
+			renderMessage();
+
+			fireEvent.keyDown(screen.getByRole('listitem'), { code });
+
+			expect(selectedMessageStore.isSelected(message._id)).toBe(true);
+		});
+
+		it('should ignore other keys', () => {
+			renderMessage();
+
+			fireEvent.keyDown(screen.getByRole('listitem'), { code: 'KeyA' });
+
+			expect(selectedMessageStore.isSelected(message._id)).toBe(false);
+		});
+
+		it('should replace the avatar with a checkbox', () => {
+			renderMessage();
+
+			expect(screen.getByRole('checkbox')).toBeInTheDocument();
+		});
+	});
+
+	it('should not select the message outside selection', async () => {
+		renderMessage();
+
+		await userEvent.click(screen.getByRole('listitem'));
+		fireEvent.keyDown(screen.getByRole('listitem'), { code: 'Enter' });
+
+		expect(selectedMessageStore.isSelected(message._id)).toBe(false);
+		expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+	});
 });

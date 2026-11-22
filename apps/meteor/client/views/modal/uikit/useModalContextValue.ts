@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import type { Dispatch, ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
+import { useUiKitFileUpload } from '../../../hooks/uikit/useUiKitFileUpload';
 
 type UseModalContextValueParams = {
 	view: UiKit.ModalView;
@@ -38,6 +39,7 @@ export const useModalContextValue = ({
 
 	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
 	const debouncedEmitInteraction = useDebouncedCallback(emitInteraction, 700);
+	const fileUpload = useUiKitFileUpload(rid);
 
 	return {
 		action: async ({ actionId, viewId, appId, dispatchActionConfig, blockId, value }) => {
@@ -60,6 +62,25 @@ export const useModalContextValue = ({
 				},
 			});
 		},
+		suggest: async ({ appId, actionId, blockId, value, viewId }) => {
+			if (!viewId) {
+				return {};
+			}
+
+			return actionManager.suggestOptions(appId, {
+				type: 'blockSuggestion',
+				actionId,
+				blockId,
+				appId,
+				value,
+				container: {
+					type: 'view',
+					id: viewId,
+				},
+				viewId,
+				rid,
+			});
+		},
 		updateState: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 			updateValues({
 				actionId,
@@ -70,6 +91,7 @@ export const useModalContextValue = ({
 			});
 		},
 		...view,
+		...fileUpload,
 		errors,
 		values,
 		viewId: view.id,

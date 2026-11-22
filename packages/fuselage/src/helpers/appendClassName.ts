@@ -9,5 +9,5 @@ export const appendClassName = <T extends string | string[] | undefined>(current
 		return [...currentClassName, newClassName] as R<T>;
 	}
 
-	return `${currentClassName} ${newClassName}` as R<T>;
+	return `${String(currentClassName)} ${newClassName}` as R<T>;
 };

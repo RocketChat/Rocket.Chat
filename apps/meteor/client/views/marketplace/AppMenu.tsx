@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { MenuItem, MenuItemContent, MenuSection, Menu, Skeleton } from '@rocket.chat/fuselage';
+import { MenuItem, MenuItemContent, MenuItemIcon, MenuSection, Menu, Skeleton, Text } from '@rocket.chat/fuselage';
 import { useHandleMenuAction } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,16 @@ const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 				<MenuSection key={idx} items={items}>
 					{items.map((option) => (
 						<MenuItem key={option.id}>
-							<MenuItemContent>{option.content}</MenuItemContent>
+							{option.icon && <MenuItemIcon name={option.icon} color={option.color} />}
+							<MenuItemContent>
+								{option.color ? (
+									<Text is='span' color={option.color}>
+										{option.content}
+									</Text>
+								) : (
+									option.content
+								)}
+							</MenuItemContent>
 						</MenuItem>
 					))}
 				</MenuSection>

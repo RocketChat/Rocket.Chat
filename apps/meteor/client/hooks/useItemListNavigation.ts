@@ -4,8 +4,15 @@ import { useCallback, useRef } from 'react';
 
 const isItemLink = (node: Element) => node.classList.contains('rcx-item__link');
 
-const isTextField = (element: HTMLElement) =>
+export const isTextField = (element: HTMLElement) =>
 	element.isContentEditable || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT';
+
+// The arrows with these modifiers move the focused row instead of the focus.
+export const isMoveRowShortcut = (e: KeyboardEvent) =>
+	(e.key === 'ArrowUp' || e.key === 'ArrowDown') && e.shiftKey && (e.metaKey || e.ctrlKey) && !e.altKey;
+
+const isMediaWithControls = (element: HTMLElement) =>
+	(element instanceof HTMLVideoElement || element instanceof HTMLAudioElement) && element.controls;
 
 const findScroller = (element: HTMLElement) => {
 	for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
@@ -41,8 +48,9 @@ type ItemListNavigationOptions = {
 /**
  * Makes a list a single tab stop: the up and down arrows move between rows, including rows a virtualized list has not
  * rendered yet; Tab walks the controls of the focused row, and Tab past its last control leaves the list instead of entering
- * the next row; Escape returns from a control to its row. The left and right arrows stay with the focused control. Coming
- * back to the list by keyboard returns to the row focused last.
+ * the next row; Escape returns from a control to its row. The left and right arrows stay with the focused control, and Tab
+ * still reaches the native controls of a video or audio player. Coming back to the list by keyboard returns to the row
+ * focused last.
  *
  * Pass module-level functions as options to keep the ref stable.
  */
@@ -64,24 +72,22 @@ export const useItemListNavigation = ({
 			const focusManager = createFocusManager({ current: node });
 			const documentFocusManager = createFocusManager({ current: node.ownerDocument.body });
 			let lastItem: HTMLElement | null = null;
+			// A Tab the browser handles on a media player, to bring the focus back to the row once it leaves the player's controls
+			let mediaTab: { media: HTMLElement; direction: 'next' | 'previous' } | null = null;
 
-			const leaveList = (e: KeyboardEvent) => {
-				if (onLeave?.(e.shiftKey ? 'previous' : 'next', node)) {
-					e.preventDefault();
-					e.stopPropagation();
+			const leaveList = (direction: 'next' | 'previous') => {
+				if (onLeave?.(direction, node)) {
 					return;
 				}
 
 				const outsideList = { tabbable: true, accept: (element: Element) => !node.contains(element) };
 				// With nothing past the list, wrap to the other end of the page; with nothing outside it at all, stay, rather than
 				// letting the browser stop on another row
-				if (e.shiftKey) {
+				if (direction === 'previous') {
 					documentFocusManager.focusPrevious({ ...outsideList, from: node }) ?? documentFocusManager.focusLast(outsideList);
 				} else {
 					documentFocusManager.focusNext({ ...outsideList, from: node }) ?? documentFocusManager.focusFirst(outsideList);
 				}
-				e.preventDefault();
-				e.stopPropagation();
 			};
 
 			// A row's focus target must take focus: a sidebar row matches as a whole, while its link is what receives focus
@@ -149,17 +155,29 @@ export const useItemListNavigation = ({
 			};
 
 			// Tab walks the focused row only, then leaves the list instead of entering the next row
-			const tabThroughRow = (e: KeyboardEvent, target: HTMLElement) => {
+			const moveFromStop = (target: HTMLElement, direction: 'next' | 'previous') => {
 				const found = findRowStops(target);
-				const next = found?.stops[found.index + (e.shiftKey ? -1 : 1)];
+				const next = found?.stops[found.index + (direction === 'previous' ? -1 : 1)];
 				if (!next) {
-					leaveList(e);
+					leaveList(direction);
+					return;
+				}
+
+				next.element.focus();
+			};
+
+			const tabThroughRow = (e: KeyboardEvent, target: HTMLElement) => {
+				const direction = e.shiftKey ? 'previous' : 'next';
+
+				// The player's own controls are out of reach of the row's stops, so the browser walks them
+				if (isMediaWithControls(target)) {
+					mediaTab = { media: target, direction };
 					return;
 				}
 
 				e.preventDefault();
 				e.stopPropagation();
-				next.element.focus();
+				moveFromStop(target, direction);
 			};
 
 			const returnToRow = (e: KeyboardEvent, target: HTMLElement) => {
@@ -172,7 +190,13 @@ export const useItemListNavigation = ({
 			};
 
 			const onKeyDown = (e: Event) => {
+				mediaTab = null;
+
 				if (!(e instanceof KeyboardEvent) || !(e.target instanceof HTMLElement) || !node.contains(e.target) || isTextField(e.target)) {
+					return;
+				}
+
+				if (isMoveRowShortcut(e)) {
 					return;
 				}
 
@@ -217,13 +241,36 @@ export const useItemListNavigation = ({
 				}
 			};
 
+			// Past the player's controls, the browser would stop wherever the page goes next, such as another row
+			const onDocumentFocusIn = (e: FocusEvent) => {
+				const tab = mediaTab;
+				mediaTab = null;
+				if (!tab || e.relatedTarget !== tab.media || !(e.target instanceof HTMLElement) || !e.target.matches(':focus-visible')) {
+					return;
+				}
+
+				if (tab.media.closest(rowSelector)?.contains(e.target)) return;
+
+				e.stopPropagation();
+				moveFromStop(tab.media, tab.direction);
+			};
+
+			// A click or touch ends the Tab: the focus it moves belongs to the user, even into a text field, which is always focus-visible
+			const onDocumentPointerDown = () => {
+				mediaTab = null;
+			};
+
 			// The document's capture phase runs before React's capture handlers at the app root, such as a toolbar's
 			// `onKeyDownCapture`, so the list decides first how its rows handle these keys
 			const doc = node.ownerDocument;
 			doc.addEventListener('keydown', onKeyDown, { capture: true });
+			doc.addEventListener('focusin', onDocumentFocusIn, { capture: true });
+			doc.addEventListener('pointerdown', onDocumentPointerDown, { capture: true });
 			node.addEventListener('focusin', onFocusIn);
 			cleanupRef.current = () => {
 				doc.removeEventListener('keydown', onKeyDown, { capture: true });
+				doc.removeEventListener('focusin', onDocumentFocusIn, { capture: true });
+				doc.removeEventListener('pointerdown', onDocumentPointerDown, { capture: true });
 				node.removeEventListener('focusin', onFocusIn);
 			};
 		},

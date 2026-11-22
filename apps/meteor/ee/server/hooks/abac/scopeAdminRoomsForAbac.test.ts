@@ -1,7 +1,8 @@
 import { strict as assert } from 'node:assert';
-import { describe, it } from 'node:test';
+import { before, describe, it } from 'node:test';
 
 import type { IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -23,7 +24,6 @@ const { isABACManagedRoom } = proxyquire.noCallThru().load('../../../../server/l
 proxyquire.noCallThru().load('./scopeAdminRoomsForAbac.ts', {
 	'@rocket.chat/core-services': { Abac: { scopeRoomsForAdmin } },
 	'@rocket.chat/license': { License: { hasModule: () => true } },
-	'@rocket.chat/models': { Users: { findOneById } },
 	'../../../../server/api/lib/scopeAdminRoomsForAbac': {
 		scopeAdminRoomsForAbac: {
 			patch: (fn: Scope) => {
@@ -35,6 +35,10 @@ proxyquire.noCallThru().load('./scopeAdminRoomsForAbac.ts', {
 });
 
 describe('scopeAdminRoomsForAbac', () => {
+	before(() => {
+		mockModel('Users', { findOneById });
+	});
+
 	it('redacts managed rooms for an admin without a username', async () => {
 		findOneById.resolves({ _id: 'u1' });
 		scopeRoomsForAdmin.resetHistory();

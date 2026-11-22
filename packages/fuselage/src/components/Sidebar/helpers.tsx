@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-multi-comp -- shared story fixtures; splitting creates an import cycle with the fixture data */
 import type { Decorator } from '@storybook/react';
 
 import {
@@ -57,9 +58,9 @@ export const MenuTemplate = () => (
 	</Menu>
 );
 
-export const GenericCondensedItem = ({ i = 0 }: { i: number }) => (
+export const GenericCondensedItem = ({ i = 0, selected = i === 2 }: { i: number; selected?: boolean }) => (
 	<SidebarListItem>
-		<SidebarItem selected={i === 2} href='#'>
+		<SidebarItem selected={selected} href='#'>
 			<SidebarItemAvatarWrapper>
 				<Avatar size='x20' url={leterAvatarUrls[i % 4]} alt='avatar' />
 			</SidebarItemAvatarWrapper>

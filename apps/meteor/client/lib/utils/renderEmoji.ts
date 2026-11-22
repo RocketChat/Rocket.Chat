@@ -46,7 +46,7 @@ const createGetEmojiClassNameAndDataTitle =
 					];
 
 		return {
-			'className': [image ? 'rcx-message__emoji--custom' : '', emojiElement.getAttribute('class') || ''].filter(Boolean).join(' '),
+			'className': emojiElement.getAttribute('class') || '',
 			'data-title': emojiElement.getAttribute('data-title') || '',
 			'name': emojiElement.getAttribute('name') || '',
 			'children': emojiElement.innerHTML,

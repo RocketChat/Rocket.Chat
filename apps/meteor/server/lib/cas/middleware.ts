@@ -23,6 +23,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
 		callback();
+		return;
 	}
 
 	// get ticket and validate.

@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 
 import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
+import MagicString from 'magic-string';
 import { defineConfig, type Plugin } from 'vite';
 
 import pkg from './package.json' with { type: 'json' };
@@ -62,6 +63,24 @@ const stripViteHashMarker = (): Plugin => ({
 	},
 });
 
+/**
+ * Bundled dependencies such as Tamagui's runtime read `process.env.*` at run
+ * time, which throws in bundlers that only define `NODE_ENV`. The published
+ * bundle settles every other variable at build time; `NODE_ENV` stays for the
+ * consumer to pick the development or production build.
+ */
+const inlineProcessEnv = (): Plugin => ({
+	name: 'fuselage-inline-process-env',
+	renderChunk(code) {
+		const output = new MagicString(code);
+		for (const match of code.matchAll(/\bprocess\.env\.(?!NODE_ENV\b)([A-Za-z_][A-Za-z0-9_]*)\b/g)) {
+			output.overwrite(match.index, match.index + match[0].length, match[1] === 'TAMAGUI_TARGET' ? '"web"' : 'undefined');
+		}
+
+		return output.hasChanged() ? { code: output.toString(), map: output.generateMap({ hires: true }) } : null;
+	},
+});
+
 const external = [...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})].map(
 	(dep) => new RegExp(`^${dep}(/.+)?$`),
 );
@@ -70,7 +89,7 @@ export default defineConfig(({ mode }) => {
 	const production = mode === 'production';
 
 	return {
-		plugins: [stripViteHashMarker()],
+		plugins: [stripViteHashMarker(), inlineProcessEnv()],
 		// Without this the emitted url is root-absolute (`/fonts/...`), which only
 		// resolves for consumers serving the stylesheet from the domain root.
 		base: './',

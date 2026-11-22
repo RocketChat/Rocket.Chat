@@ -84,7 +84,7 @@ export const useChatEffects = () => {
 				messages,
 				message,
 				({ _id }) => _id === message._id,
-				({ ts }) => ts,
+				({ ts }) => ts as string,
 			),
 		});
 	});

@@ -8,14 +8,7 @@ export type ThreadMessageOriginProps = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const ThreadMessageOrigin = ({ children, system, className, ...props }: ThreadMessageOriginProps) => (
-	<div
-		{...props}
-		className={cx(
-			'rcx-box rcx-box--full rcx-message-thread__origin',
-			system && 'rcx-box rcx-box--full rcx-message-thread__origin--system',
-			className,
-		)}
-	>
+	<div {...props} className={cx('rcx-message-thread__origin', system && 'rcx-message-thread__origin--system', className)}>
 		{children}
 	</div>
 );

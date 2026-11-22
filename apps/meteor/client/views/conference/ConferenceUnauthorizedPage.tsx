@@ -1,9 +1,10 @@
 import { ConferenceStatePage } from '@rocket.chat/ui-conference';
-import { UserContext, useTranslation, useUser, useRoute } from '@rocket.chat/ui-contexts';
+import { UserContext, useUser, useRoute } from '@rocket.chat/ui-contexts';
 import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ConferenceUnauthorizedPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	// Use the raw context logout (not `useLogout`, which redirects to `/`) so we stay on the
 	// `/conference/:id` URL — after logging back in, the user lands right back on this conference.

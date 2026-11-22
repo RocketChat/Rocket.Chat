@@ -1,12 +1,7 @@
-export class AppOutboundProcessError implements Error {
+export class AppOutboundProcessError extends Error {
 	public name = 'OutboundProviderError';
 
-	public message: string;
-
 	constructor(message: string, where?: string) {
-		this.message = message;
-		if (where) {
-			this.message += ` (${where})`;
-		}
+		super(where ? `${message} (${where})` : message);
 	}
 }

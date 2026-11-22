@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IMediaCall } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -44,7 +45,6 @@ const { MediaCallService } = proxyquire.noCallThru().load('./service', {
 	},
 	'@rocket.chat/media-calls': { callServer: callServerMock, getSignalsForExistingCall: sandbox.stub() },
 	'@rocket.chat/media-signaling': { isClientMediaSignal: sandbox.stub() },
-	'@rocket.chat/models': { CallHistory, MediaCalls, Rooms, Users },
 	'@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload': { callStateToTranslationKey, getHistoryMessagePayload },
 	'./appEvents': {
 		notifyAppsOfMediaCallEnded: sandbox.stub(),
@@ -83,6 +83,13 @@ function makeCall(overrides: Partial<IMediaCall> = {}): IMediaCall {
 
 describe('media call history pipeline', () => {
 	let service: any;
+
+	before(() => {
+		mockModel('CallHistory', CallHistory);
+		mockModel('MediaCalls', MediaCalls);
+		mockModel('Rooms', Rooms);
+		mockModel('Users', Users);
+	});
 
 	beforeEach(() => {
 		sandbox.reset();

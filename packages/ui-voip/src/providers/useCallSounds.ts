@@ -1,10 +1,10 @@
-import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { useVoipSounds } from '../context';
 import type { State } from '../context/definitions';
 
 export const useCallSounds = (state: State, subscribeCallEnded: (callback: () => void) => (() => void) | undefined) => {
-	const { voipSounds } = useCustomSound();
+	const voipSounds = useVoipSounds();
 
 	useEffect(() => {
 		if (state === 'calling') {

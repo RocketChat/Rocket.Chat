@@ -68,6 +68,10 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 		}
 	}, [cursor, optionIdPrefix]);
 
+	const activeType = options[cursor]?.[4];
+	const activeDescendant =
+		options[cursor] && activeType !== 'heading' && activeType !== 'divider' ? `${optionIdPrefix}-${cursor}` : undefined;
+
 	const optionsMemoized = useMemo(
 		() =>
 			options.map(([value, label, selected, disabled, type, url], i) => {
@@ -114,7 +118,7 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 						aria-multiselectable={!!multiple}
 						role='listbox'
 						id={id}
-						aria-activedescendant={options?.[cursor]?.[0] ? String(options?.[cursor]?.[0]) : undefined}
+						aria-activedescendant={activeDescendant}
 					>
 						{!options.length && <EmptyComponent customEmpty={customEmpty} />}
 						{optionsMemoized}

@@ -1,4 +1,4 @@
-import { isValidAppId } from './isValidAppId';
+import { isValidAppId } from './isValidAppId.js';
 
 it.each([
 	'ce0e318b-ffc0-4ce4-832b-f1b464beb22a',
