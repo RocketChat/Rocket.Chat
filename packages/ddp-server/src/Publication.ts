@@ -1,10 +1,13 @@
 import { EventEmitter } from 'events';
 
+import { Logger } from '@rocket.chat/logger';
 import type { IPublication } from '@rocket.chat/streamer';
 
 import type { IPacket } from './IPacket';
 import type { Session } from './Session';
 import { encodeAdded, encodeChanged, encodeNosub, encodeReady, encodeRemoved } from './codec';
+
+const logger = new Logger('DDP-Publication');
 
 export class Publication extends EventEmitter implements IPublication {
 	_session: IPublication['_session'];
@@ -21,7 +24,13 @@ export class Publication extends EventEmitter implements IPublication {
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);
 
-		const onClientClose = () => this._stop();
+		const onClientClose = () => {
+			try {
+				this._stop();
+			} catch (err: unknown) {
+				logger.error({ msg: 'Publication cleanup failed on disconnect', err });
+			}
+		};
 		client.once('close', onClientClose);
 		this.once('stop', () => {
 			client.removeListener('close', onClientClose);

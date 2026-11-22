@@ -3,6 +3,14 @@ import { Streamer } from '@rocket.chat/streamer';
 import { Publication } from './Publication';
 import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
 
+const mockLoggerError = jest.fn();
+
+jest.mock('@rocket.chat/logger', () => ({
+	Logger: jest.fn().mockReturnValue({
+		error: (...args: unknown[]) => mockLoggerError(...args),
+	}),
+}));
+
 // The streamer is abstract; this spec only needs _publish and the activity check.
 class TestStreamer extends Streamer<any> {
 	registerPublication(): void {
@@ -68,6 +76,24 @@ describe('Publication', () => {
 
 		expect(first).toHaveBeenCalledTimes(1);
 		expect(second).toHaveBeenCalledTimes(1);
+	});
+
+	it('cleans up the other publications when a stop callback fails on disconnect', () => {
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
+		const failure = new Error('cleanup failed');
+		const onOtherStop = jest.fn();
+		publication.onStop(() => {
+			throw failure;
+		});
+		other.onStop(onOtherStop);
+
+		expect(() => session.emit('close')).not.toThrow();
+
+		expect(mockLoggerError).toHaveBeenCalledWith({ msg: 'Publication cleanup failed on disconnect', err: failure });
+		expect(onOtherStop).toHaveBeenCalledTimes(1);
+		expect(other._isDeactivated()).toBe(true);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.send).not.toHaveBeenCalled();
 	});
 
 	it('runs all stop callbacks before rethrowing the first failure', () => {
