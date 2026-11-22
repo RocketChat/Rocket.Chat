@@ -383,12 +383,11 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			await setPresenceDisabled(bystander._id, true).expect(200);
 
-			const status = await waitFor(
-				() => statusSeenBy(viewerCredentials, bystander._id),
-				(seen) => seen === UserStatus.OFFLINE,
+			const statuses = await waitFor(
+				() => Promise.all([statusSeenBy(viewerCredentials, bystander._id), statusSeenBy(hiderCredentials, bystander._id)]),
+				(seen) => seen.every((status) => status === UserStatus.OFFLINE),
 			);
-			expect(status).to.be.equal(UserStatus.OFFLINE);
-			expect(await statusSeenBy(hiderCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+			expect(statuses).to.deep.equal([UserStatus.OFFLINE, UserStatus.OFFLINE]);
 		});
 
 		it('should keep the target visible to themselves', async () => {

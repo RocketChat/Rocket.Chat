@@ -17,7 +17,7 @@ export function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: numb
 	});
 }
 
-export const waitFor = <T>(read: () => Promise<T>, isDone: (value: T) => boolean, ms = 10000): Promise<T> =>
+export const waitFor = <T>(read: () => Promise<T>, isDone: (value: T) => boolean, ms = 5000): Promise<T> =>
 	withTimeout(async (signal) => {
 		for (;;) {
 			const value = await read();

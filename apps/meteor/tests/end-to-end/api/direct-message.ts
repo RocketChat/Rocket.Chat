@@ -1070,7 +1070,13 @@ describe('[Direct Messages]', () => {
 		it('should have fname property updated', async () => {
 			const subscription = await waitFor(
 				async () => {
-					const res = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId: directMessageId }).expect(200);
+					const res = await request
+						.get(api('subscriptions.getOne'))
+						.set(credentials)
+						.query({ roomId: directMessageId })
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+					expect(res.body).to.have.property('success', true);
 					return res.body.subscription;
 				},
 				(sub) => sub?.fname === updatedName,
