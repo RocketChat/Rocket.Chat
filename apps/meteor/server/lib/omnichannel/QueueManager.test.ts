@@ -2,7 +2,8 @@ import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { ILivechatInquiryRecord, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatInquiryRaw, LivechatRoomsRaw, registerModel } from '@rocket.chat/models';
+import { LivechatInquiryRaw, LivechatRoomsRaw } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { Db, Document } from 'mongodb';
 import { MongoClient } from 'mongodb';
@@ -36,8 +37,8 @@ describe('QueueManager.startConversation', () => {
 		const rooms = new LivechatRoomsRaw(db);
 		const inquiries = new LivechatInquiryRaw(db);
 		await Promise.all([rooms.createIndexes(), inquiries.createIndexes()]);
-		registerModel('ILivechatRoomsModel', rooms);
-		registerModel('ILivechatInquiryModel', inquiries);
+		mockModel('LivechatRooms', rooms);
+		mockModel('LivechatInquiry', inquiries);
 
 		const databaseUtils = proxyquire.noCallThru().load('../../database/utils', {
 			'meteor/mongo': {
