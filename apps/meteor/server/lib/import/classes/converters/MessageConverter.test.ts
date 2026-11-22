@@ -163,6 +163,72 @@ describe('Message Converter', () => {
 		});
 	});
 
+	describe('[convertMessageMentions]', () => {
+		const convertMentions = async (msg: string, users: Record<string, string>) => {
+			const converter = new MessageConverter({ workInMemory: true });
+			for (const [importId, username] of Object.entries(users)) {
+				converter._cache.addUser(importId, `id-${username}`, username);
+				converter._cache.addUserDisplayName(importId, username);
+			}
+
+			const message = { ...messageToImport, msg, mentions: Object.keys(users) };
+			await converter.convertMessageMentions(message);
+			return message.msg;
+		};
+
+		it('should replace every mention of an imported user, regardless of case', async () => {
+			expect(await convertMentions('hi @U1, @u1 and @U1.', { U1: 'alice' })).to.equal('hi @alice, @alice and @alice.');
+		});
+
+		it('should leave mentions of a longer import id that starts with the same characters', async () => {
+			expect(await convertMentions('ping @U1 and @U12', { U1: 'alice', U12: 'bob' })).to.equal('ping @alice and @bob');
+		});
+
+		it('should match the import id literally', async () => {
+			expect(await convertMentions('@johnxdoe and @john.doe', { 'john.doe': 'jd' })).to.equal('@johnxdoe and @jd');
+		});
+
+		it('should replace mentions of an import id with regular expression characters', async () => {
+			expect(await convertMentions('hi @c++', { 'c++': 'cpp' })).to.equal('hi @cpp');
+		});
+
+		it('should leave email addresses alone', async () => {
+			expect(await convertMentions('write to x@U1, @U1', { U1: 'alice' })).to.equal('write to x@U1, @alice');
+		});
+
+		it('should insert the username literally', async () => {
+			expect(await convertMentions('hi @U1', { U1: 'a$&b' })).to.equal('hi @a$&b');
+		});
+	});
+
+	describe('[convertMessageChannels]', () => {
+		const convertChannels = async (msg: string, rooms: Record<string, string>) => {
+			const converter = new MessageConverter({ workInMemory: true });
+			for (const [importId, name] of Object.entries(rooms)) {
+				converter._cache.addRoom(importId, `id-${name}`);
+				converter._cache.addRoomName(importId, name);
+			}
+
+			const message = { ...messageToImport, msg, channels: Object.keys(rooms) };
+			await converter.convertMessageChannels(message);
+			return message.msg;
+		};
+
+		it('should replace mentions of an imported channel', async () => {
+			expect(await convertChannels('see #general.', { general: 'lobby' })).to.equal('see #lobby.');
+		});
+
+		it('should leave mentions of a longer channel name that starts with the same characters', async () => {
+			expect(await convertChannels('#general and #general-2', { 'general': 'lobby', 'general-2': 'random' })).to.equal(
+				'#lobby and #random',
+			);
+		});
+
+		it('should match the channel name literally', async () => {
+			expect(await convertChannels('#devXops and #dev.ops', { 'dev.ops': 'devops' })).to.equal('#devXops and #devops');
+		});
+	});
+
 	describe('callbacks', () => {
 		it('beforeImportFn should be triggered', async () => {
 			const beforeImportFn = sinon.stub();

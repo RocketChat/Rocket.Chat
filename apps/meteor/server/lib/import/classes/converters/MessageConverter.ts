@@ -25,6 +25,19 @@ type IMessageReaction = {
 
 type IMessageReactions = Record<string, IMessageReaction>;
 
+const nameChar = '[\\p{L}\\p{M}\\p{N}_-]';
+
+const escapeName = (name: string) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Rewrites the whole mentions of an imported user or channel, leaving longer names and email addresses untouched.
+ */
+const replaceMentions = (text: string, symbol: '@' | '#', importId: string, name: string): string =>
+	text.replace(
+		new RegExp(`(?<![\\p{L}\\p{M}\\p{N}_.@-])${symbol}${escapeName(importId)}(?!${nameChar}|\\.${nameChar})`, 'giu'),
+		() => `${symbol}${name}`,
+	);
+
 const createUniqueClock = () => {
 	let last = 0;
 	return (): Date => {
@@ -140,7 +153,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				continue;
 			}
 
-			message.msg = message.msg.replace(new RegExp(`#${importId}`, 'gi'), `#${name}`);
+			message.msg = replaceMentions(message.msg, '#', importId, name);
 
 			result.push({
 				_id,
@@ -181,7 +194,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
-			message.msg = message.msg.replace(new RegExp(`@${importId}`, 'gi'), `@${data.username}`);
+			message.msg = replaceMentions(message.msg, '@', importId, data.username);
 
 			result.push({
 				_id: data._id,
