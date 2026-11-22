@@ -132,7 +132,7 @@ describe('deleteUser', () => {
 		Users.findOneById.resolves(null);
 
 		expect(await deleteUser('uid')).to.deep.equal({ deletedRooms: [] });
-		expect(Users.findOneById.calledOnceWith('uid', { projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 } })).to.be.true;
+		expect(Users.findOneById.calledOnceWith('uid', { projection: { services: 0 } })).to.be.true;
 		expect(Users.removeById.called).to.be.false;
 		expect(callbacksRun.called).to.be.false;
 	});
