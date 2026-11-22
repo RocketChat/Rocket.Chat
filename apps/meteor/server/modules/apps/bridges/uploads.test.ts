@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const findOneById = sinon.stub();
 const insert = sinon.stub();
@@ -10,7 +11,7 @@ const sendFileMessage = sinon.stub();
 const sendFileLivechatMessage = sinon.stub();
 const getSetting = sinon.stub();
 
-const { AppUploadBridge } = proxyquire.noCallThru().load('./uploads', {
+const { AppUploadBridge } = loadWithMocks('./uploads', {
 	'@rocket.chat/apps/dist/server/bridges/UploadBridge': { UploadBridge: class {} },
 	'@rocket.chat/models': { Messages: { findOneById } },
 	'../../../../ee/lib/misc/determineFileType': { determineFileType: () => 'text/plain' },
