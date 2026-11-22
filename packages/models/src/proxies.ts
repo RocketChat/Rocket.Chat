@@ -82,6 +82,7 @@ import type {
 	IAbacAttributesModel,
 	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
+	IScheduledMessagesModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -172,3 +173,4 @@ export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorksp
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
+export const ScheduledMessages = proxify<IScheduledMessagesModel>('IScheduledMessagesModel');

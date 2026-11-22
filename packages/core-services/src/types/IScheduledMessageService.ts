@@ -1,0 +1,20 @@
+import type { IMessage, IRoom, IScheduledMessage, IUser, ScheduledMessageEditableFields } from '@rocket.chat/core-typings';
+
+export type ScheduledMessageCreateParams = Pick<
+	IScheduledMessage,
+	'rid' | 'msg' | 'scheduledAt' | 'tmid' | 'tshow' | 'files' | 't' | 'content' | 'e2eMentions'
+>;
+
+export interface IScheduledMessageService {
+	create(uid: IUser['_id'], params: ScheduledMessageCreateParams): Promise<IScheduledMessage>;
+	list(uid: IUser['_id'], params: { offset: number; count: number }): Promise<{ scheduledMessages: IScheduledMessage[]; total: number }>;
+	update(
+		uid: IUser['_id'],
+		scheduledMessageId: IScheduledMessage['_id'],
+		params: ScheduledMessageEditableFields,
+	): Promise<IScheduledMessage>;
+	delete(uid: IUser['_id'], scheduledMessageId: IScheduledMessage['_id']): Promise<void>;
+	sendNow(uid: IUser['_id'], scheduledMessageId: IScheduledMessage['_id']): Promise<IMessage>;
+	deleteByRoomId(rid: IRoom['_id']): Promise<void>;
+	deleteByUserId(uid: IUser['_id']): Promise<void>;
+}

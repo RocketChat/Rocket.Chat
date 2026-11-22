@@ -78,6 +78,7 @@ import {
 	AbacAttributesRaw,
 	TwoFactorChallengesRaw,
 	SamlUsedAssertionsRaw,
+	ScheduledMessagesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -167,3 +168,4 @@ registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
 registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
 registerModel('ISamlUsedAssertionsModel', new SamlUsedAssertionsRaw(db));
+registerModel('IScheduledMessagesModel', new ScheduledMessagesRaw(db));

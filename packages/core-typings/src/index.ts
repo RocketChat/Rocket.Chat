@@ -56,6 +56,7 @@ export type * from './ICredentialToken';
 export type * from './ILoginCode';
 export type * from './IUiKitView';
 export type * from './ISamlUsedAssertions';
+export type * from './IScheduledMessage';
 export type * from './IAvatar';
 export type * from './ICustomUserStatus';
 export type * from './IEmailMessageHistory';
