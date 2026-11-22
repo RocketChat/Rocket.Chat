@@ -114,8 +114,9 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
-			{isSuccess && data?.sla.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.sla.length === 0 && queryHasChanged && (
+				<GenericNoResults aria-busy={params !== query || isFetching} aria-live='polite' />
+			)}
 			{isSuccess && data?.sla.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='flag'

@@ -122,9 +122,8 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
-			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && <GenericNoResults />}
-			{isSuccess && data?.departments.length === 0 && !queryHasChanged && !archived && (
+			
+			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && (
 				<GenericNoResults
 					icon='folder'
 					title={t('No_departments_yet')}
@@ -133,6 +132,8 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 					buttonTitle={t('Create_department')}
 					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_departments')}
+					aria-busy={params !== query || isFetching}
+					aria-live='polite'
 				/>
 			)}
 			{isSuccess && data?.departments.length > 0 && (
