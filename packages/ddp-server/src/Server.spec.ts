@@ -8,9 +8,11 @@ import type { RemoteMethodCall } from './Server';
 import { Server } from './Server';
 import { makeSession, makePacket, makeSubscription, sentPackets } from './__tests__/helpers';
 
+const mockLoggerError = jest.fn();
+
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({
-		error: jest.fn(),
+		error: (...args: unknown[]) => mockLoggerError(...args),
 	}),
 }));
 
@@ -186,6 +188,7 @@ describe('Server subscriptions', () => {
 	let session: ReturnType<typeof makeSession>;
 
 	beforeEach(() => {
+		mockLoggerError.mockClear();
 		server = new Server();
 		session = makeSession();
 	});
@@ -337,9 +340,7 @@ describe('Server subscriptions', () => {
 		const failed = published[0];
 		expect(published).toHaveLength(1);
 		expect(Streamer.isPublicationActive(failed)).toBe(false);
-		expect(sentPackets(session)).toEqual([
-			{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() },
-		]);
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() }]);
 
 		const late = jest.fn();
 		failed.onStop(late);
@@ -374,11 +375,12 @@ describe('Server subscriptions', () => {
 			release = resolve;
 		});
 		const published: Publication[] = [];
+		const failure = new Error('subscribe handler failed');
 		server.publish('messages', function (this: Publication) {
 			published.push(this);
 			entered();
 			return pending.then(() => {
-				throw new ClientSafeError(403, 'Forbidden');
+				throw failure;
 			});
 		});
 
@@ -392,6 +394,7 @@ describe('Server subscriptions', () => {
 
 		// stop() answered the client once; the failed handler must not add an error nosub.
 		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+		expect(mockLoggerError).toHaveBeenCalledWith({ msg: 'Subscription error', err: failure });
 		expect(published[0]._isDeactivated()).toBe(true);
 		expect(session.subscriptions.size).toBe(0);
 	});

@@ -70,6 +70,29 @@ describe('Publication', () => {
 		expect(second).toHaveBeenCalledTimes(1);
 	});
 
+	it('runs all stop callbacks before rethrowing the first failure', () => {
+		const failure = new Error('first cleanup failed');
+		const first = jest.fn(() => {
+			throw failure;
+		});
+		const second = jest.fn(() => {
+			throw new Error('second cleanup failed');
+		});
+		const last = jest.fn();
+		publication.onStop(first);
+		publication.onStop(second);
+		publication.onStop(last);
+
+		expect(() => publication.stop()).toThrow(failure);
+		publication.stop();
+		session.emit('close');
+
+		expect(first).toHaveBeenCalledTimes(1);
+		expect(second).toHaveBeenCalledTimes(1);
+		expect(last).toHaveBeenCalledTimes(1);
+		expect(session.subscriptions.size).toBe(0);
+	});
+
 	it('removes its session close listener when stopped', () => {
 		expect(session.listenerCount('close')).toBe(1);
 
@@ -203,14 +226,25 @@ describe('Publication', () => {
 		expect(listeners.size).toBe(0);
 	});
 
-	it('deactivates a publication whose session closed, so a late continuation cannot revive it', async () => {
-		// Streamer._publish re-checks _isDeactivated() after every await; a continuation
-		// that resumes once the client has gone must not attach anything.
-		const continuation = Promise.resolve().then(() => (publication._isDeactivated() ? 'aborted' : 'attached'));
+	it('does not register a subscription if the client disconnects during its permission check', async () => {
+		const streamer = new TestStreamer('disconnect-during-authorization');
+		let allowRead!: (value: boolean) => void;
+		const permission = new Promise<boolean>((resolve) => {
+			allowRead = resolve;
+		});
+		const checkPermission = jest.fn(() => permission);
+		streamer.allowRead('rooms-changed', checkPermission);
+		const onStop = jest.spyOn(publication, 'onStop');
+
+		const publish = streamer._publish(publication, 'rooms-changed', false);
+		expect(checkPermission).toHaveBeenCalledTimes(1);
 
 		session.emit('close');
+		allowRead(true);
 
-		await expect(continuation).resolves.toBe('aborted');
+		await expect(publish).rejects.toThrow('publication-client-disconnected');
+		expect(streamer.subscriptions.size).toBe(0);
+		expect(onStop).not.toHaveBeenCalled();
 	});
 
 	it('does not attach a listener when the client disconnects during a publish', async () => {

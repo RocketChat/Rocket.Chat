@@ -83,7 +83,22 @@ export class Publication extends EventEmitter implements IPublication {
 
 		this._stopped = true;
 		this._session = null;
-		this.emit('stop', this.client, this.packet);
+
+		const listeners = this.listeners('stop');
+		this.removeAllListeners('stop');
+
+		let failure: { error: unknown } | undefined;
+		for (const listener of listeners) {
+			try {
+				listener.call(this, this.client, this.packet);
+			} catch (error: unknown) {
+				failure ??= { error };
+			}
+		}
+
+		if (failure) {
+			throw failure.error;
+		}
 	}
 
 	added(collection: string, id: string, fields: any): void {
