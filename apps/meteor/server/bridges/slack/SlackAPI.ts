@@ -4,6 +4,13 @@
 // @ts-nocheck
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+const SLACK_FILE_HOSTS = ['slack.com', 'slack-files.com'];
+
+const isSlackFileUrl = (fileUrl) => {
+	const { protocol, hostname } = new URL(fileUrl);
+	return protocol === 'https:' && SLACK_FILE_HOSTS.some((host) => hostname === host || hostname.endsWith(`.${host}`));
+};
+
 export class SlackAPI {
 	constructor(apiOrBotToken) {
 		this.token = apiOrBotToken;
@@ -221,6 +228,29 @@ export class SlackAPI {
 		});
 		const response = await request.json();
 		return response && response && request.status === 200 && request.ok && response.user;
+	}
+
+	/**
+	 * Downloads a private Slack file, refusing to send the token anywhere but Slack's own hosts.
+	 * @param fileUrl the file's `url_private_download`
+	 * @param maxSize largest body accepted, in bytes; zero or less means no limit
+	 */
+	async downloadFile(fileUrl, maxSize) {
+		if (!isSlackFileUrl(fileUrl)) {
+			throw new Error('error-invalid-slack-file-url');
+		}
+
+		const request = await fetch(fileUrl, {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+			...(maxSize > 0 && { size: maxSize }),
+		});
+		if (!request.ok) {
+			throw new Error(`Unexpected response status ${request.status}`);
+		}
+
+		return { content: await request.buffer(), contentType: request.headers.get('content-type') };
 	}
 
 	static async verifyToken(token) {

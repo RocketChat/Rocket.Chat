@@ -26,6 +26,7 @@ import { saveRoomName, saveRoomTopic } from '../../lib/rooms/settings';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
 import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { parseFileIntoMessageAttachments } from '../../meteor-methods/messages/sendFileMessage';
 import { settings } from '../../settings';
 
 export default class SlackAdapter {
@@ -920,35 +921,87 @@ export default class SlackAdapter {
 		}
 	}
 
+	/**
+	 * Saves a Slack message with files as a Rocket.Chat file message, keeping its text as the caption.
+	 * A file that can't be imported is linked by its Slack permalink instead.
+	 */
 	async processFileShare(slackMessage) {
 		if (!settings.get('SlackBridge_FileUpload_Enabled')) {
 			return;
 		}
-		const file = slackMessage.files[0];
 
-		if (file?.url_private_download !== undefined) {
-			const rocketChannel = await this.rocket.getChannel(slackMessage);
-			const rocketUser = await this.rocket.getUser(slackMessage.user);
-
-			// Hack to notify that a file was attempted to be uploaded
-			delete slackMessage.subtype;
-
-			// If the text includes the file link, simply use the same text for the rocket message.
-			// If the link was not included, then use it instead of the message.
-
-			if (slackMessage.text.indexOf(file.permalink) < 0) {
-				slackMessage.text = file.permalink;
-			}
-
-			const ts = new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000);
-			const msgDataDefaults = {
-				_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),
-				ts,
-				updatedBySlack: true,
-			};
-
-			await this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, false);
+		const rocketChannel = await this.rocket.getChannel(slackMessage);
+		const rocketUser = await this.rocket.getUser(slackMessage.user);
+		if (!rocketChannel || !rocketUser) {
+			return;
 		}
+
+		const _id = this.rocket.createRocketID(slackMessage.channel, slackMessage.ts);
+		if (await Messages.findOneById(_id, { projection: { _id: 1 } })) {
+			return;
+		}
+
+		// Hack to notify that a file was attempted to be uploaded
+		delete slackMessage.subtype;
+
+		const files = [];
+		const attachments = [];
+		const unimportedLinks = [];
+		for await (const file of slackMessage.files) {
+			try {
+				const upload = await this.importSlackFile(file, rocketChannel, rocketUser);
+				const parsed = await parseFileIntoMessageAttachments(upload, rocketChannel._id, rocketUser);
+				files.push(...parsed.files);
+				attachments.push(...parsed.attachments);
+			} catch (err) {
+				slackLogger.error({ msg: 'Could not import file from Slack', fileId: file.id, err });
+				if (file.permalink) {
+					unimportedLinks.push(file.permalink);
+				}
+			}
+		}
+
+		const caption = slackMessage.text || '';
+		slackMessage.text = [caption, ...unimportedLinks.filter((link) => !caption.includes(link))].filter(Boolean).join('\n');
+
+		const msgDataDefaults = {
+			_id,
+			ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+			updatedBySlack: true,
+			...(files.length > 0 && { file: files[0], files, attachments, groupable: false }),
+		};
+
+		await this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, false);
+	}
+
+	async importSlackFile(file, rocketChannel, rocketUser) {
+		// Files hidden by the workspace plan or hosted outside Slack have no download URL
+		if (!file.url_private_download) {
+			throw new Error('error-slack-file-not-downloadable');
+		}
+
+		const maxFileSize = settings.get('FileUpload_MaxFileSize');
+		if (maxFileSize > -1 && file.size > maxFileSize) {
+			throw new Error('error-file-too-large');
+		}
+
+		const { content, contentType } = await this.slackAPI.downloadFile(file.url_private_download, maxFileSize);
+
+		// Without the files:read scope Slack answers with its sign-in page instead of an error
+		if (contentType?.startsWith('text/html') && file.mimetype !== 'text/html') {
+			throw new Error('error-slack-file-download-denied');
+		}
+
+		return FileUpload.getStore('Uploads').insert(
+			{
+				name: file.name,
+				size: content.length,
+				type: file.mimetype,
+				rid: rocketChannel._id,
+				userId: rocketUser._id,
+			},
+			content,
+		);
 	}
 
 	/*
