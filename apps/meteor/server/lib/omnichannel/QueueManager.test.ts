@@ -18,7 +18,8 @@ describe('QueueManager.startConversation', () => {
 	let db: Db;
 	let startConversation: (room?: Partial<IOmnichannelRoom>) => Promise<{ room: IOmnichannelRoom; inquiry: ILivechatInquiryRecord }>;
 
-	const failCommand = (mode: Document, data: Document) => client.db('admin').command({ configureFailPoint: 'failCommand', mode, data });
+	const failCommand = (mode: 'off' | 'alwaysOn' | { times: number }, data: Document) =>
+		client.db('admin').command({ configureFailPoint: 'failCommand', mode, data });
 
 	const stored = async () => ({
 		rooms: await db.collection('rocketchat_room').find().toArray(),
