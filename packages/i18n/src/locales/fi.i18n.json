@@ -1931,6 +1931,7 @@
   "Example_payload": "Esimerkkikuorma",
   "Example_s": "Esimerkki: <code>{{value}}</code>",
   "except_pinned": "(paitsi kiinnitetyt)",
+  "Exchange_Graph_Client_Secret": "Asiakasohjelman salasana",
   "Exclude_Botnames": "Älä sisällytä botteja",
   "Exclude_Botnames_Description": "Älä levitä viestejä boteilta, joiden nimi vastaa edellä mainittua säännöllistä lauseketta. Jos jätät tämän tyhjäksi, kaikkien bottien viestit levitetään.",
   "Exclude_pinned": "Älä sisällytä kiinnitettyjä viestejä",
