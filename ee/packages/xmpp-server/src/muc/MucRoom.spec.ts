@@ -211,6 +211,59 @@ describe('MucRoom', () => {
 		).toContain('307');
 		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
 	});
+	it('removes a remote occupant whose nick a Rocket.Chat member takes, telling them with 110 and 307 and the others with 307 (hosted-muc R20)', async () => {
+		const { room, sent, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'diego'));
+		await room.handleJoin(join('bob@remote.tld/pc', 'bob'));
+		sent.length = 0;
+		events.length = 0;
+
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+
+		const codesOf = (stanza: Element) =>
+			stanza
+				.getChild('x')
+				?.getChildren('status')
+				.map((s) => s.attrs.code);
+		const removals = sent.filter((s) => s.attrs.from === `${ROOM}/diego` && s.attrs.type === 'unavailable');
+		expect(removals.map((s) => [s.attrs.to, codesOf(s)])).toEqual([
+			['bob@remote.tld/pc', ['307']],
+			['alice@remote.tld/pc', ['110', '307']],
+		]);
+		const arrival = sent.filter((s) => s.attrs.from === `${ROOM}/diego` && s.attrs.type !== 'unavailable');
+		expect(arrival.map((s) => [s.attrs.to, s.getChild('x')?.getChild('item')?.attrs.jid])).toEqual([['bob@remote.tld/pc', 'diego@rc.tld']]);
+		expect(room.listOccupants().map((o) => [o.nick, o.realJid])).toEqual([
+			['bob', 'bob@remote.tld/pc'],
+			['diego', 'diego@rc.tld'],
+		]);
+		expect(events).toEqual([{ event: 'occupantLeft', args: [expect.objectContaining({ realJid: 'alice@remote.tld/pc' }), 'displaced'] }]);
+	});
+
+	it('refuses the displaced occupant the nick when they join with it again (hosted-muc R20, R5)', async () => {
+		const { room, sent } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'diego'));
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+		sent.length = 0;
+
+		await room.handleJoin(join('alice@remote.tld/pc', 'diego'));
+
+		expect(sent.map((s) => [s.attrs.type, s.getChild('error')?.getChild('conflict') !== undefined])).toEqual([['error', true]]);
+	});
+
+	it('leaves a Rocket.Chat member registered again in place, without a removal (hosted-muc R2, R20)', async () => {
+		const { room, sent, events } = setup();
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		sent.length = 0;
+		events.length = 0;
+
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+
+		expect(sent.filter((s) => s.attrs.type === 'unavailable')).toEqual([]);
+		expect(events).toEqual([]);
+		expect(room.listOccupants().map((o) => o.nick)).toEqual(['diego', 'alice']);
+	});
+
 	it('removes an unreachable occupant, telling the others with 333 and no 307 (hosted-muc R19)', async () => {
 		const { room, sent, events } = setup();
 		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });

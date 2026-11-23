@@ -98,6 +98,11 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   333 and no 307 (XEP-0045 §11.1). Their Rocket.Chat subscription stays, so they can join
   again as R4 admits an invited member. A closed S2S connection removes nobody: peers close
   idle streams (RFC 6120 §4.6.3), and a removal waits for one of the failures above.
+- **R20** A Rocket.Chat member published as an occupant (R2, R16) under a nick a remote
+  occupant holds takes the nick. The remote occupant is removed first: they receive their own
+  `unavailable` presence with status codes 110 and 307, and the other remote occupants receive
+  it with 307 (XEP-0045 §8.2). Their Rocket.Chat subscription stays, so they can join again
+  under another nick; the taken one is refused as R5 says.
 
 **Invitations**
 
@@ -131,7 +136,8 @@ MUC domain. `MucRoom` is the state machine: occupants keyed by nick with an `isL
 join authorization through the `authorizeMucJoin` delegate, presence fan-out to remote
 occupants only, groupchat reflection. The service implements the delegate against the
 rooms and subscriptions collections, handles `muc.occupantJoined`, `muc.occupantLeft` (left
-only: a kick is the echo of a removal, and an unreachable occupant keeps their membership)
+only: a kick is the echo of a removal, and an unreachable or displaced occupant keeps their
+membership)
 and `muc.messageReceived`, and exposes
 `registerHostedRoom`, `addHostedRoomMember`, `removeHostedRoomMember` and
 `inviteToHostedRoom` to the Meteor hooks. Flows are drawn in
@@ -183,17 +189,6 @@ from the registry: the fix must also send each occupant the unavailable presence
 `<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`,
 "closes the room when it is deleted in Rocket.Chat".
 
-### D5 A Rocket.Chat member takes the nick of an XMPP occupant
-
-Rocket.Chat members occupy the room under their username (R2). When a Rocket.Chat user is
-added to a room where an XMPP occupant already holds that name as nick, the member replaces
-the occupant in the roster without a word: the XMPP user stops receiving the room's messages
-and presence, their own messages are dropped as coming from a non-occupant, and their client
-takes the newcomer's messages for reflections of its own. R5's conflict check only guards
-XMPP joins. Where: `MucRoom.addLocalOccupant`. How to settle the clash is Q3. Test:
-`hosted-muc.spec.ts`, "never leaves an XMPP occupant unaware that a Rocket.Chat member took
-their nick".
-
 ### D6 An XMPP user listed when a room is created joins any room
 
 R12 holds for members added to an existing room, not for the member list a room is created
@@ -225,10 +220,6 @@ a banned XMPP occupant and keeps them out after they leave".
   ignores it.
 - **Q2** Should the room send history on join from Rocket.Chat's message history, or is that
   a job for MAM (pending triage)?
-- **Q3** How is a nick clash between an XMPP occupant and a Rocket.Chat member settled
-  (D5)? Either an XMPP join is refused with `conflict` under any Rocket.Chat username, which
-  costs a user lookup per join, or the occupant is removed with status 307 when the member
-  arrives.
 
 ## References
 
