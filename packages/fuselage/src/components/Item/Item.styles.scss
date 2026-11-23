@@ -365,6 +365,7 @@ $item-group-narrow-width: 320px;
 	--rcx-item-gap: #{lengths.margin(4)};
 	// A unitless zero would make the padding calc() invalid.
 	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+	--rcx-item-inset-block: 0px; /* stylelint-disable-line length-zero-no-unit */
 
 	position: relative;
 
@@ -375,7 +376,7 @@ $item-group-narrow-width: 320px;
 	min-width: 0;
 	min-height: lengths.size(28);
 	margin: 0;
-	padding-block: $item-padding;
+	padding-block: calc(#{$item-padding} + var(--rcx-item-inset-block));
 	padding-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
 
 	list-style: none;
@@ -388,12 +389,14 @@ $item-group-narrow-width: 320px;
 	@include use-font-scale(c2);
 	@include inset-scale;
 
+	@include inset-block-scale;
+
 	&--sticky {
 		position: sticky;
 		z-index: 2;
 		top: 0;
 
-		background-color: $item-group-header-color-surface;
+		background-color: var(--rcx-surface, #{$item-group-header-color-surface});
 	}
 
 	&:has(.rcx-item-group-title:is(button)):hover {
