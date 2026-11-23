@@ -14,7 +14,12 @@ import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemM
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
-const SidebarRail = () => {
+type SidebarRailProps = {
+	inboxOpen: boolean;
+	onToggleInbox: () => void;
+};
+
+const SidebarRail = ({ inboxOpen, onToggleInbox }: SidebarRailProps) => {
 	const { t } = useTranslation();
 	const user = useUser();
 
@@ -43,7 +48,7 @@ const SidebarRail = () => {
 		>
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
-					<NavBarItem icon='inbox' title={t('Inbox')} aria-current='page' pressed />
+					<NavBarItem icon='inbox' title={t('Inbox')} onClick={onToggleInbox} pressed={inboxOpen} />
 					<SidebarRailSort />
 					<SidebarRailCreateNew />
 					<NavBarItemDirectoryPage title={t('Directory')} />

@@ -22,6 +22,7 @@ const NavbarNavigation = () => {
 				<FeaturePreviewOn>
 					<NavBarItemHomePage title={t('Home')} pressed={false} />
 				</FeaturePreviewOn>
+				<FeaturePreviewOff>{null}</FeaturePreviewOff>
 			</FeaturePreview>
 			<FocusScope>
 				<FeaturePreview feature='aiSearch'>
