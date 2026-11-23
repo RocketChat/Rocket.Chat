@@ -11,7 +11,6 @@ import { MongoClient } from 'mongodb';
 import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
-import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
 import { withDatabase } from '../../data/database.helper';
 import { imgURL, tiffURL } from '../../data/interactions';
@@ -26,7 +25,6 @@ import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, login, deleteUser, deleteUserIfExists, findUserByUsername, getUserByUsername } from '../../data/users.helper';
-import { withTimeout } from '../../data/utils';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
@@ -3737,17 +3735,6 @@ describe('[Users]', () => {
 				return fields;
 			};
 
-			const waitForStatusFields = (predicate: (fields: Partial<IUser>) => boolean) =>
-				withTimeout(async (signal) => {
-					for (;;) {
-						const fields = await findStatusFields();
-						if ((fields && predicate(fields)) || signal.aborted) {
-							return fields;
-						}
-						await sleep(200);
-					}
-				}, 15000);
-
 			const updateStatusText = (statusText: string) =>
 				request.post(api('users.update')).set(credentials).send({ userId: statusUser._id, data: { statusText } }).expect(200);
 
@@ -3770,8 +3757,7 @@ describe('[Users]', () => {
 				const { body } = await updateStatusText('set by an admin');
 				expect(body.user).to.have.property('statusText', 'set by an admin');
 
-				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
-				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
+				expect(await findStatusFields()).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
 			});
 
 			it('should not leave the user busy when the message is replaced during a meeting', async () => {
@@ -3784,8 +3770,7 @@ describe('[Users]', () => {
 
 				await updateStatusText('set by an admin');
 
-				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
-				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
+				expect(await findStatusFields()).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
 			});
 		});
 
