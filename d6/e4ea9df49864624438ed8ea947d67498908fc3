@@ -1,0 +1,20 @@
+ee/packages/xmpp-server/docs/operations.md
+  s_d3d4819c94d694::t_df1bbeb4c670fd 28,228,327-328
+  s_d3d4819c94d694::t_219c7ce2296b61 329
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d6e4ea9df49864624438ed8ea947d67498908fc3",
+  "prompts": {},
+  "sessions": {
+    "s_d3d4819c94d694": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ff55fc1-9a6d-4a66-b784-44f121684984",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
