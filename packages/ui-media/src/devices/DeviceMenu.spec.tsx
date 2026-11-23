@@ -21,8 +21,8 @@ const renderMenu = (choices: DeviceMenuChoices[], select = jest.fn()) =>
 const qualities = (onSelect: jest.Mock): DeviceMenuChoices => ({
 	title: 'Resolution',
 	choices: [
-		{ id: 'auto', name: 'Auto', selected: true, onSelect },
-		{ id: 'h720', name: '720p', note: 'Sending 720p', selected: false, onSelect },
+		{ type: 'choice', id: 'auto', name: 'Auto', selected: true, onSelect },
+		{ type: 'choice', id: 'h720', name: '720p', note: 'Sending 720p', selected: false, onSelect },
 	],
 });
 
@@ -54,7 +54,7 @@ it('does nothing for the choice already in use', async () => {
 
 it('offers a disabled choice as unavailable', async () => {
 	const onSelect = jest.fn();
-	renderMenu([{ title: 'Resolution', choices: [{ id: 'h720', name: '720p', selected: false, disabled: true, onSelect }] }]);
+	renderMenu([{ title: 'Resolution', choices: [{ type: 'choice', id: 'h720', name: '720p', selected: false, disabled: true, onSelect }] }]);
 
 	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
 

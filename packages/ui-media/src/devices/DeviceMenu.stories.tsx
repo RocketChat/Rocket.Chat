@@ -46,6 +46,7 @@ export const RowKinds: Story = {
 					{
 						title: 'Video quality',
 						choices: ['auto', '720p', '360p'].map((id) => ({
+							type: 'choice' as const,
 							id,
 							name: id === 'auto' ? 'Auto' : id,
 							selected: id === quality,

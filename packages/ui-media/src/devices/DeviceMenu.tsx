@@ -13,7 +13,7 @@ type DevicePick = { kind: MediaDeviceKind; deviceId: string; inUse: boolean };
 
 /** One option of a choice about the devices, rather than a device. */
 export type DeviceMenuChoice = {
-	type?: 'choice';
+	type: 'choice';
 	id: string;
 	name: string;
 	/** Said on its own line, under the name. */
@@ -59,20 +59,22 @@ const activate = (row: DeviceMenuRow) => {
 		case 'action':
 			row.onAction();
 			return;
-		default:
+		case 'choice':
 			if (!row.selected) {
 				row.onSelect();
 			}
 	}
 };
 
+const inUse = (row: DeviceMenuRow) => (row.type === 'toggle' && row.checked) || (row.type === 'choice' && row.selected);
+
 const rowAddon = (row: DeviceMenuRow) => {
 	switch (row.type) {
 		case 'toggle':
-			return <ToggleSwitch checked={row.checked} disabled={row.disabled} readOnly tabIndex={-1} />;
+			return <ToggleSwitch checked={row.checked} disabled={row.disabled} readOnly tabIndex={-1} aria-hidden />;
 		case 'action':
 			return undefined;
-		default:
+		case 'choice':
 			return <RadioButton checked={row.selected} disabled={row.disabled} />;
 	}
 };
@@ -155,7 +157,7 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 		items: rows.map((row): GenericMenuItemProps => {
 			const id = choiceKey(sectionIndex, row.id);
 			choiceActions.set(id, row);
-			if ((row.type === 'toggle' && row.checked) || (row.type !== 'toggle' && row.type !== 'action' && row.selected)) {
+			if (inUse(row)) {
 				selectedKeys.push(id);
 			}
 			return {
