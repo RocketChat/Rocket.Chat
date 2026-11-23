@@ -32,7 +32,7 @@ Apply every rule to every candidate before it goes in the report. A candidate th
 
 1. **Check intent.** Read the introducing PR's description ("Proposed changes", "Steps to test", "Further comments"), its `.changeset/*.md`, the linked Jira task, and the documentation for the feature (`docs/features/`, docs.rocket.chat). If any of them describes the observed behavior, it is an intentional change, not a regression. Add a UX note if the result is still rough for users.
 2. **Confirm at runtime.** Reproduce user-facing flows on both the baseline and the target with human-like input (typing and clicking as a user would, at normal speed). For API or data-integrity paths, use the relevant runtime surface; code-only evidence stays `suspected`.
-3. **Rule out the environment.** Run the baseline and the target with the same edition, licence and settings before reporting. Many apparent regressions are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
+3. **Rule out the environment.** Run the baseline and the target with the same edition, licence and settings before reporting. Many apparent regressions are an enterprise feature without a licence, a different default setting, or a licence module that one side has and the other does not.
 4. **Scan the whole release.** List every changeset in the range before checking any commit. Scan `apps/meteor/client/` first, then `apps/meteor/server/` and `apps/meteor/app/`, then `ee/`, then `packages/`. A pass that skipped any of these is not a full pass.
 
 ## Comparison range
