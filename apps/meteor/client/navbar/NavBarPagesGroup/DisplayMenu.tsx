@@ -1,4 +1,4 @@
-import { Box, Menu, MenuItem, MenuSection, MenuSubmenuTrigger } from '@rocket.chat/fuselage';
+import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger } from '@rocket.chat/fuselage';
 import type { MenuProps } from '@rocket.chat/fuselage';
 import { GenericMenuItem, useHandleMenuAction, useIsEnterprise } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -68,20 +68,7 @@ const DisplayMenu = ({ is, placement, className }: DisplayMenuProps) => {
 									disabledKeys={allGroups.disabledKeys}
 								>
 									<MenuItem>
-										<GenericMenuItem
-											id='all-groups'
-											icon='customize'
-											content={
-												<Box>
-													<Box>{t('All_groups')}</Box>
-													{allGroups.mixed && (
-														<Box fontScale='c1' color='hint'>
-															{t('Set_per_group')}
-														</Box>
-													)}
-												</Box>
-											}
-										/>
+										<GenericMenuItem id='all-groups' icon='customize' content={t('All_groups')} />
 									</MenuItem>
 									<MenuSection title={t('Filter')} items={allGroups.filterItems}>
 										{renderItem}

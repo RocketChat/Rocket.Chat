@@ -323,8 +323,8 @@ speaks for — the static system groups and the custom categories, never the dyn
 checked only while every group agrees. Choosing a value writes it to every group's `sidebarCategories` entry
 in one `users.setPreferences` call, creating the entries that do not exist yet, so a global choice overrides
 whatever the groups had. Changing one group from its own kebab afterwards makes the groups disagree, so the
-global reads as unset again: nothing is checked for that setting and the trigger says "Set per group" below
-its name. A toggle the groups disagree on shows off, and turning it on turns it on everywhere.
+global reads as unset again: nothing is checked for that setting. A toggle the groups disagree on shows off,
+and turning it on turns it on everywhere.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
