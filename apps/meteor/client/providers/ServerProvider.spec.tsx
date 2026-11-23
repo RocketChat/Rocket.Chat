@@ -10,6 +10,7 @@ jest.mock('../../rocketchat.info', () => ({ Info: {} }));
 
 jest.mock('../meteor/connection', () => ({
 	getConnectionStatus: jest.fn(() => ({ status: 'connected', connected: true, retryCount: 0 })),
+	getConnectionSessionId: jest.fn(() => 'session-id'),
 	disconnect: jest.fn(),
 	reconnect: jest.fn(),
 }));
