@@ -214,11 +214,11 @@ jobs:
       # every UI shard of a release reports into one Qase run, and a later CI run of the same release
       # picks up the run an earlier one left open; a failure here only skips the report
       - id: qase-release-run
-        if: github.event_name == 'release' || github.event.number == 43806
+        if: github.event_name == 'release'
         continue-on-error: true
         env:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-          RELEASE_TAG: ${{ github.event.release.tag_name || 'rehearsal-pr-43806-edition' }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           title="UI E2E Tests - Release ${RELEASE_TAG}"
 
