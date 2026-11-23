@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import BackgroundEffectPicker from './BackgroundEffectPicker';
 import CallPanelHeader from '../components/CallPanelHeader';
 
-const BackgroundEffectsPanel = ({ onClose }: { onClose: () => void }) => {
+export type BackgroundEffectsPanelProps = { onClose: () => void };
+
+const BackgroundEffectsPanel = ({ onClose }: BackgroundEffectsPanelProps) => {
 	const { t } = useTranslation();
 
 	return (

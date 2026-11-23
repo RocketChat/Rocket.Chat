@@ -1,14 +1,7 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 
-const coverStyles = css`
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-`;
+export type ImageThumbnailProps = { url: string };
 
-const ImageThumbnail = ({ url }: { url: string }) => <Box is='img' src={url} alt='' className={coverStyles} />;
+const ImageThumbnail = ({ url }: ImageThumbnailProps) => <Box is='img' src={url} alt='' width='full' height='full' objectFit='cover' />;
 
 export default ImageThumbnail;

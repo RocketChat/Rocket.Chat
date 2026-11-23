@@ -1,38 +1,28 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, ReactNode } from 'react';
-import { forwardRef } from 'react';
+import { Box, Stack, Text } from '@rocket.chat/fuselage';
+import type { HTMLAttributes, ReactNode, Ref } from 'react';
 
 const gridStyles = css`
-	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.75rem;
-	margin: 0;
-	padding: 0;
-	list-style: none;
 	outline: none;
 `;
 
-type EffectTileGroupProps = HTMLAttributes<HTMLElement> & {
+export type EffectTileGroupProps = Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'color'> & {
+	ref?: Ref<HTMLDivElement>;
 	heading: ReactNode;
 	headingId: string;
 	children: ReactNode;
 };
 
-const EffectTileGroup = forwardRef<HTMLDivElement, EffectTileGroupProps>(function EffectTileGroup(
-	{ heading, headingId, children, ...gridProps },
-	ref,
-) {
-	return (
-		<Box display='flex' flexDirection='column' style={{ gap: '0.5rem' }}>
-			<Box is='span' id={headingId} fontScale='c2' color='hint'>
-				{heading}
-			</Box>
-			<Box {...gridProps} is='div' ref={ref} className={gridStyles}>
-				{children}
-			</Box>
+const EffectTileGroup = ({ ref, heading, headingId, children, ...gridProps }: EffectTileGroupProps) => (
+	<Stack gap={8}>
+		<Text is='span' id={headingId} fontScale='c2' color='hint'>
+			{heading}
+		</Text>
+		<Box {...gridProps} ref={ref} className={gridStyles} display='grid' gap={12}>
+			{children}
 		</Box>
-	);
-});
+	</Stack>
+);
 
 export default EffectTileGroup;

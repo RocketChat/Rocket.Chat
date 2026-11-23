@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 import type { BackgroundEffect } from '../devices/BackgroundEffectContext';
 
@@ -8,7 +8,10 @@ export type EffectEntry = {
 	thumbnail: ReactNode;
 	/** Absent on "Custom…", which asks for a picture instead. */
 	effect?: BackgroundEffect;
+	note?: string;
+	disabled?: boolean;
 	onRemove?: () => void;
+	tileRef?: Ref<HTMLDivElement>;
 };
 
 export type EffectEntryGroup = { key: string; title: string; entries: EffectEntry[] };

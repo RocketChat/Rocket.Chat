@@ -5,7 +5,7 @@ import { useCallState } from './context';
 import { useBackgroundEffectChoices } from '../devices/useBackgroundEffectChoices';
 import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
 
-type CameraPickerProps = {
+export type CameraPickerProps = {
 	onOpenBackgrounds: () => void;
 };
 

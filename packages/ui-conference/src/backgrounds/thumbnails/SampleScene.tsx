@@ -1,21 +1,23 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 
-const fillStyles = css`
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-`;
+export type SampleSceneProps = {
+	blur?: number;
+	/** Laid over the middle of the scene. */
+	children?: ReactNode;
+};
 
 /** A drawn room with a person in front, to show an effect on; `blur` softens the room only. */
-const SampleScene = ({ blur }: { blur?: number }) => (
-	<>
+const SampleScene = ({ blur, children }: SampleSceneProps) => (
+	<Box position='relative' width='full' height='full'>
 		<Box
 			is='svg'
 			viewBox='0 0 160 90'
 			preserveAspectRatio='xMidYMid slice'
-			className={fillStyles}
+			position='absolute'
+			inset={0}
+			width='full'
+			height='full'
 			style={blur ? { filter: `blur(${blur}px)`, transform: 'scale(1.1)' } : undefined}
 			aria-hidden
 		>
@@ -32,11 +34,25 @@ const SampleScene = ({ blur }: { blur?: number }) => (
 			<rect x='18' y='70' width='8' height='14' fill='#8A6A4A' />
 			<rect y='80' width='160' height='10' fill='#A88B6A' />
 		</Box>
-		<Box is='svg' viewBox='0 0 160 90' preserveAspectRatio='xMidYMid slice' className={fillStyles} aria-hidden>
+		<Box
+			is='svg'
+			viewBox='0 0 160 90'
+			preserveAspectRatio='xMidYMid slice'
+			position='absolute'
+			inset={0}
+			width='full'
+			height='full'
+			aria-hidden
+		>
 			<circle cx='80' cy='42' r='14' fill='#3B4252' />
 			<path d='M52 90 C52 66 66 60 80 60 C94 60 108 66 108 90 Z' fill='#3B4252' />
 		</Box>
-	</>
+		{children && (
+			<Box position='absolute' inset={0} display='flex' alignItems='center' justifyContent='center'>
+				{children}
+			</Box>
+		)}
+	</Box>
 );
 
 export default SampleScene;

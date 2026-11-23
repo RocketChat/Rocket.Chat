@@ -3,14 +3,13 @@ import { useCollator, useLocale } from '@react-aria/i18n';
 import { ListKeyboardDelegate } from '@react-aria/selection';
 import { Item } from '@react-stately/collections';
 import { useListState } from '@react-stately/list';
-import type { Key } from 'react';
 import { useId, useMemo, useRef } from 'react';
 
 import EffectGridItem from './EffectGridItem';
 import type { EffectEntry, EffectEntryGroup } from './effectEntries';
 import EffectTileGroup from './layout/EffectTileGroup';
 
-type EffectGridProps = {
+export type EffectGridProps = {
 	group: EffectEntryGroup;
 	selectedKey?: string;
 	applyingKey?: string;
@@ -18,7 +17,10 @@ type EffectGridProps = {
 	onChoose: (entry: EffectEntry) => void;
 };
 
-/** Tab reaches the focused tile's own button before leaving the grid. */
+/**
+ * One group of effects as a grid of tiles. Arrows move focus without choosing, since an effect is costly to start; Enter
+ * or Space chooses.
+ */
 const EffectGrid = ({ group, selectedKey, applyingKey, disabled, onChoose }: EffectGridProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const headingId = useId();
@@ -33,17 +35,14 @@ const EffectGrid = ({ group, selectedKey, applyingKey, disabled, onChoose }: Eff
 		),
 		selectionMode: 'single',
 		selectionBehavior: 'toggle',
+		disallowEmptySelection: true,
 		selectedKeys: selectedKey ? [selectedKey] : [],
-		disabledKeys: disabled ? [...entries.keys()] : [],
+		disabledKeys: group.entries.filter((entry) => disabled || entry.disabled).map((entry) => entry.key),
 		disabledBehavior: 'all',
 		onSelectionChange: (keys) => {
-			if (keys === 'all') {
-				return;
-			}
-			// Choosing the tile in use again keeps it selected.
-			const [key] = [...keys] as Key[];
-			const chosen = entries.get(String(key ?? selectedKey));
-			if (chosen && chosen.key !== selectedKey) {
+			const [key] = keys === 'all' ? [] : keys;
+			const chosen = entries.get(String(key));
+			if (chosen) {
 				onChoose(chosen);
 			}
 		},

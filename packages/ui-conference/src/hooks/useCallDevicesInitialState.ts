@@ -98,7 +98,6 @@ const sanitise = (value: unknown): StoredCallPreferences => {
 		stored.noiseMethod = DEFAULTS.noiseMethod;
 	}
 
-	// Unknown or broken effects read as none.
 	if (!isBackgroundEffect(stored.backgroundEffect)) {
 		stored.backgroundEffect = DEFAULTS.backgroundEffect;
 	}

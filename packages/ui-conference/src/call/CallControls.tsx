@@ -144,6 +144,8 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics, onOpenBackgro
 
 	useAutoLowerHand(self.handRaised, self.microphoneStream, toggleHand);
 
+	const startingTitle = t('Starting_background_effect');
+
 	// A call with one other person is left *with* them, so it can name them; a group call has no single other side.
 	const hangupLabel =
 		remoteParticipants.length === 1 ? t('Voice_call__user__hangup', { user: remoteParticipants[0].displayName }) : t('Leave_call');
@@ -201,29 +203,19 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics, onOpenBackgro
 			</SplitButton>
 			<SplitButton danger={!self.cameraOn && !self.cameraStarting} aria-label={t('Camera_controls')}>
 				<CameraPicker onOpenBackgrounds={onOpenBackgrounds} />
-				{self.cameraStarting ? (
-					// Busy while the effect starts: toggling now would race it.
-					<ToggleButton
-						label={t('Camera')}
-						icons={['video', 'video']}
-						titles={[t('Starting_background_effect'), t('Starting_background_effect')]}
-						aria-busy
-						disabled
-						size='large'
-					/>
-				) : (
-					<ToggleButton
-						label={t('Camera')}
-						icons={['video', 'video-off']}
-						titles={[t('Stop_camera'), t('Start_camera')]}
-						pressed={!self.cameraOn}
-						// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
-						aria-pressed={self.cameraOn}
-						dangerWhenPressed
-						size='large'
-						onToggle={toggleCamera}
-					/>
-				)}
+				<ToggleButton
+					label={t('Camera')}
+					icons={['video', 'video-off']}
+					titles={self.cameraStarting ? [startingTitle, startingTitle] : [t('Stop_camera'), t('Start_camera')]}
+					pressed={!self.cameraOn && !self.cameraStarting}
+					// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
+					aria-pressed={self.cameraOn}
+					aria-busy={self.cameraStarting}
+					disabled={self.cameraStarting}
+					dangerWhenPressed
+					size='large'
+					onToggle={toggleCamera}
+				/>
 			</SplitButton>
 			<ToggleButton
 				label={t('Share_screen')}

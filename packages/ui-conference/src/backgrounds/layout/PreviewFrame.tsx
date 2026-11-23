@@ -1,12 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const PreviewFrame = ({ children }: { children: ReactNode }) => (
+export type PreviewFrameProps = { children: ReactNode };
+
+const PreviewFrame = ({ children }: PreviewFrameProps) => (
 	<Box
 		position='relative'
 		overflow='hidden'
 		borderRadius='medium'
-		marginBlockEnd={16}
 		display='flex'
 		alignItems='center'
 		justifyContent='center'

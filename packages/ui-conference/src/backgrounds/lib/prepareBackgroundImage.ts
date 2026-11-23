@@ -1,5 +1,4 @@
-/** Larger pictures are scaled down to this before use. */
-export const BACKGROUND_IMAGE_MAX_SIDE = 2560;
+const BACKGROUND_IMAGE_MAX_SIDE = 2560;
 
 const encode = async (bitmap: ImageBitmap, width: number, height: number): Promise<Blob> => {
 	if (typeof OffscreenCanvas !== 'undefined') {

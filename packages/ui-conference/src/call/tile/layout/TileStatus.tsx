@@ -1,21 +1,28 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Stack } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const TileStatus = ({ avatar, children }: { avatar: ReactNode; children: ReactNode }) => (
-	<Box position='relative' display='flex' flexDirection='column' alignItems='center' style={{ gap: '0.5rem' }}>
-		{avatar}
-		<Box
-			role='status'
-			display='flex'
-			alignItems='center'
-			fontScale='c1'
-			paddingInline={8}
-			paddingBlock={2}
-			borderRadius='small'
-			style={{ gap: '0.5rem', color: 'white', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-		>
-			{children}
-		</Box>
+export type TileStatusProps = { avatar: ReactNode; children: ReactNode };
+
+/** A tile's avatar with a line under it saying what the tile is waiting for. */
+const TileStatus = ({ avatar, children }: TileStatusProps) => (
+	<Box position='relative'>
+		<Stack gap={8} align='center'>
+			{avatar}
+			<Box
+				role='status'
+				display='flex'
+				alignItems='center'
+				gap={8}
+				fontScale='c1'
+				paddingInline={8}
+				paddingBlock={2}
+				borderRadius='small'
+				backgroundColor='overlay'
+				color='pure-white'
+			>
+				{children}
+			</Box>
+		</Stack>
 	</Box>
 );
 

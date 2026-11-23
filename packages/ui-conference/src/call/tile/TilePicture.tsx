@@ -1,28 +1,10 @@
-/* oxlint-disable no-nested-ternary */
-import { css } from '@rocket.chat/css-in-js';
-import { Avatar, Box, Icon, Throbber } from '@rocket.chat/fuselage';
+import { Avatar, Icon, Throbber } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 
-import { useStreamHasLiveVideo } from '../hooks/useStreamHasLiveVideo';
-import { backdropTint } from '../lib/speakingRing';
-import type { TileParticipant } from '../lib/stageTiles';
+import AvatarBackdrop from './AvatarBackdrop';
 import TileStatus from './layout/TileStatus';
-
-const avatarBackdropStyles = css`
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	pointer-events: none;
-	filter: blur(15cqw);
-`;
-
-const avatarBackdropOverlayStyles = css`
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-`;
+import { useStreamHasLiveVideo } from '../hooks/useStreamHasLiveVideo';
+import type { TileParticipant } from '../lib/stageTiles';
 
 export type TilePictureProps = Pick<TileParticipant, 'displayName' | 'avatarUrl' | 'cameraStream'> & {
 	avatarSize: 'x32' | 'x48';
@@ -41,33 +23,24 @@ export type TilePictureProps = Pick<TileParticipant, 'displayName' | 'avatarUrl'
 const TilePicture = ({ displayName, avatarUrl, cameraStream, avatarSize, mirrored, status }: TilePictureProps) => {
 	const cameraActive = useStreamHasLiveVideo(cameraStream);
 
-	if (!cameraActive && status) {
-		return (
-			<>
-				{avatarUrl && (
-					<>
-						<Box is='img' src={avatarUrl} alt='' className={avatarBackdropStyles} />
-						<Box className={avatarBackdropOverlayStyles} style={{ backgroundColor: backdropTint(displayName) }} />
-					</>
-				)}
-				<TileStatus avatar={avatarUrl ? <Avatar url={avatarUrl} size={avatarSize} /> : <Icon name='user' size={avatarSize} />}>
+	if (cameraActive) {
+		return <StreamVideo stream={cameraStream} fit='cover' mirrored={mirrored} style={{ position: 'absolute', inset: 0 }} />;
+	}
+
+	const avatar = avatarUrl ? <Avatar url={avatarUrl} size={avatarSize} /> : <Icon name='user' size={avatarSize} />;
+
+	return (
+		<>
+			{avatarUrl && <AvatarBackdrop avatarUrl={avatarUrl} displayName={displayName} />}
+			{status ? (
+				<TileStatus avatar={avatar}>
 					<Throbber size='x8' inheritColor />
 					{status}
 				</TileStatus>
-			</>
-		);
-	}
-
-	return cameraActive ? (
-		<StreamVideo stream={cameraStream} fit='cover' mirrored={mirrored} style={{ position: 'absolute', inset: 0 }} />
-	) : avatarUrl ? (
-		<>
-			<Box is='img' src={avatarUrl} alt='' className={avatarBackdropStyles} />
-			<Box className={avatarBackdropOverlayStyles} style={{ backgroundColor: backdropTint(displayName) }} />
-			<Avatar url={avatarUrl} size={avatarSize} />
+			) : (
+				avatar
+			)}
 		</>
-	) : (
-		<Icon name='user' size={avatarSize} />
 	);
 };
 

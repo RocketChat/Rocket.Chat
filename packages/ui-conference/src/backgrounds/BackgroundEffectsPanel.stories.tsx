@@ -53,6 +53,11 @@ export const OwnImagesOffered: Story = {
 	decorators: [withCall({ backgroundEffect: { effect: { kind: 'blur', level: 'medium' }, images: fakeImages } })],
 };
 
+/** With as many pictures as may be kept, "Custom…" waits for one to be removed. */
+export const OwnImagesLimitReached: Story = {
+	decorators: [withCall({ backgroundEffect: { effect: { kind: 'none' }, images: fakeImages, imageLimit: fakeImages.length } })],
+};
+
 /** While an effect starts, nothing else can be chosen or removed. */
 export const Starting: Story = {
 	decorators: [

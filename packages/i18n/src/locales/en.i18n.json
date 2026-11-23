@@ -1188,6 +1188,7 @@
   "Background_effects": "Background effects",
   "Background_image_could_not_be_used": "This image could not be used as a background",
   "Background_images": "Images",
+  "Background_images_limit_reached": "Limit of {{count}} images reached",
   "Background_no_effect": "No effect",
   "Background_preset_plain_dark": "Plain dark",
   "Background_preset_plain_light": "Plain light",
