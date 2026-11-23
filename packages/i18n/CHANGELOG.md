@@ -1,5 +1,11 @@
 # @rocket.chat/i18n
 
+## 6.0.0-rc.1
+
+### Patch Changes
+
+- ([#43756](https://github.com/RocketChat/Rocket.Chat/pull/43756)) Shows why an OAuth login failed on the login page, instead of an "Internal Server Error" page or a popup that never closes. Popup OAuth login now also completes with providers that send `Cross-Origin-Opener-Policy`.
+
 ## 6.0.0-rc.0
 
 ### Minor Changes

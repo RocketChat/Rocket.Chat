@@ -1,5 +1,23 @@
 # @rocket.chat/meteor
 
+## 9.1.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43756](https://github.com/RocketChat/Rocket.Chat/pull/43756)) Shows why an OAuth login failed on the login page, instead of an "Internal Server Error" page or a popup that never closes. Popup OAuth login now also completes with providers that send `Cross-Origin-Opener-Policy`.
+
+- ([#43877](https://github.com/RocketChat/Rocket.Chat/pull/43877)) Bumps the Node.js runtime in the Docker images to 24.22.3.
+
+- <details><summary>Updated dependencies [4d4a5eb533168d1fd1d4a64711c7cf51a772a31d]:</summary>
+  - @rocket.chat/ui-registration@37.0.0-rc.1
+  - @rocket.chat/i18n@6.0.0-rc.1
+  - @rocket.chat/core-typings@9.1.0-rc.2
+  - @rocket.chat/rest-typings@9.1.0-rc.2
+
+  </details>
+
 ## 9.1.0-rc.1
 
 ### Patch Changes
