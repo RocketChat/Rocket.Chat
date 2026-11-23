@@ -219,7 +219,13 @@ List existing bugs found along the way after the PR's own bugs:
 ```markdown
 ## Existing bugs (not caused by this PR)
 
-- [Bug title]: [one-line repro]; also on [base branch / version]. Jira: [key or "not filed yet"]
+### [Bug title]
+
+**Repro**: [one-line repro]
+**Intent check**: [PR / changeset / Jira task / docs reviewed; behavior not documented as intended]
+**Base check**: also on [base branch / version]
+**Environment**: [edition, licence and settings, matched on both sides]
+**Jira**: [key or "not filed yet"]
 ```
 
 If no bug is confirmed, use:
