@@ -11209,6 +11209,7 @@ __metadata:
   dependencies:
     "@livekit/components-react": "npm:2.9.23"
     "@livekit/track-processors": "npm:0.8.3"
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -11232,6 +11233,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     typescript: "npm:~7.0.2"
   peerDependencies:
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage-hooks": 0.44.0
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"

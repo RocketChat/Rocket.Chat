@@ -1,31 +1,38 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * Keeps LiveKit from publishing the camera on arrival while a background effect is wanted, until the camera has been
  * published with it. Decided once per join; `video` stays on afterwards, so a reconnect republishes the camera.
  */
 export const useArrivalHoldBack = (connect: boolean, arriveWithCamera: boolean, effectWanted: boolean) => {
-	const join = useRef<{ heldBack: boolean; taken: boolean } | undefined>(undefined);
+	const [decided, setDecided] = useState<boolean>();
 	const [published, setPublished] = useState(false);
+	const taken = useRef(false);
 
-	if (!connect) {
-		join.current = undefined;
-		if (published) {
-			setPublished(false);
-		}
-	} else {
-		join.current ??= { heldBack: arriveWithCamera && effectWanted, taken: false };
+	if (connect && decided === undefined) {
+		setDecided(arriveWithCamera && effectWanted);
+	}
+	if (!connect && decided !== undefined) {
+		setDecided(undefined);
+		setPublished(false);
 	}
 
-	const video = arriveWithCamera && (!join.current?.heldBack || published);
+	useEffect(() => {
+		if (!connect) {
+			taken.current = false;
+		}
+	}, [connect]);
+
+	const heldBack = connect && (decided ?? (arriveWithCamera && effectWanted));
+	const video = arriveWithCamera && (!heldBack || published);
 
 	/** True once per join when the camera was held back, for the caller to start it with its effect. */
 	const takeHeldBackCamera = useStableCallback(() => {
-		if (!join.current?.heldBack || join.current.taken) {
+		if (!heldBack || taken.current) {
 			return false;
 		}
-		join.current.taken = true;
+		taken.current = true;
 		return true;
 	});
 

@@ -8,6 +8,8 @@ export type AccountBackgroundImages = { loaded: boolean; images: BackgroundImage
 
 const NOT_LOADED: AccountBackgroundImages = { loaded: false, images: [] };
 
+export const BACKGROUND_IMAGE_LIMIT = 5;
+
 /**
  * Each account's background pictures in this browser. Storage failures are ignored: a picture that could not be saved
  * is still offered until the page is closed.
@@ -44,7 +46,11 @@ class BackgroundImageStore extends Emitter<{ change: void }> {
 			});
 	}
 
+	/** Rejects a file that is not a picture, and any picture past the limit. */
 	async add(uid: string, file: File): Promise<BackgroundImage> {
+		if (this.get(uid).images.length >= BACKGROUND_IMAGE_LIMIT) {
+			throw new Error('No room for another background picture');
+		}
 		const blob = await prepareBackgroundImage(file);
 		const image: BackgroundImage = { id: crypto.randomUUID(), name: file.name, url: URL.createObjectURL(blob) };
 		const current = this.get(uid);

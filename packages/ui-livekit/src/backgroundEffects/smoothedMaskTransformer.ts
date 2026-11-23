@@ -4,24 +4,19 @@ type SegmentationMask = { width: number; height: number; getAsWebGLTexture(): We
 
 type InitOptions = Parameters<BackgroundTransformer['init']>[0];
 
-/** Which confidence mask to read, and whether it scores the person rather than the background the compositor expects. */
-const CONFIDENCE_MASK = { index: 0, scoresPerson: false };
+/** The multiclass model's first mask, which scores the background as the compositor expects. */
+const BACKGROUND_MASK_INDEX = 0;
 
-/** How much of the previous mask each frame keeps: higher steadies the edges but makes them trail movement. */
+/** How much of the previous mask each frame keeps. */
 const MASK_SMOOTHING = 0.5;
 
-/** Radius, in mask texels (0 to 4), averaged around each texel: higher softens the edge further, 0 leaves it as segmented. */
-const MASK_FEATHER = 2;
+/** In mask texels, averaged around each texel to soften the edge. */
+const FEATHER_RADIUS = 2;
 
-/**
- * Added to the background score (0 to about 0.3): higher pulls the edge into the person and trims the halo, but very
- * high values start cutting into hair and shoulders; 0 leaves the edge where the segmenter put it.
- */
+const FEATHER_TEXELS = (2 * FEATHER_RADIUS + 1) ** 2;
+
+/** Added to the background score, pulling the edge into the person to trim the halo. */
 const MASK_SHRINK = 0.1;
-
-const featherRadius = Math.min(4, Math.max(0, Math.round(MASK_FEATHER)));
-
-const featheredScore = featherRadius === 0 ? 'score(texel)' : 'feathered(texel)';
 
 const vertexShader = `#version 300 es
 void main() {
@@ -37,20 +32,20 @@ uniform float u_smoothing;
 out vec4 fragColor;
 float score(ivec2 texel) {
 	ivec2 last = textureSize(u_raw, 0) - 1;
-	return ${CONFIDENCE_MASK.scoresPerson ? '1.0 - ' : ''}texelFetch(u_raw, clamp(texel, ivec2(0), last), 0).r;
+	return texelFetch(u_raw, clamp(texel, ivec2(0), last), 0).r;
 }
 float feathered(ivec2 texel) {
 	float sum = 0.0;
-	for (int y = -${featherRadius}; y <= ${featherRadius}; y++) {
-		for (int x = -${featherRadius}; x <= ${featherRadius}; x++) {
+	for (int y = -${FEATHER_RADIUS}; y <= ${FEATHER_RADIUS}; y++) {
+		for (int x = -${FEATHER_RADIUS}; x <= ${FEATHER_RADIUS}; x++) {
 			sum += score(texel + ivec2(x, y));
 		}
 	}
-	return sum / ${(2 * featherRadius + 1) ** 2}.0;
+	return sum / ${FEATHER_TEXELS}.0;
 }
 void main() {
 	ivec2 texel = ivec2(gl_FragCoord.xy);
-	float raw = clamp(${featheredScore} + ${MASK_SHRINK.toFixed(3)}, 0.0, 1.0);
+	float raw = clamp(feathered(texel) + ${MASK_SHRINK.toFixed(3)}, 0.0, 1.0);
 	fragColor = vec4(mix(raw, texelFetch(u_previous, texel, 0).r, u_smoothing), 0.0, 0.0, 1.0);
 }`;
 
@@ -180,12 +175,15 @@ class MaskSmoother {
 	}
 }
 
-/** The library's transformer, compositing on confidence masks smoothed over time to soften and steady the edges. */
+/**
+ * The library's transformer, compositing on confidence masks smoothed over time to soften and steady the edges. Refuses
+ * to start on a library whose transformer no longer has the mask step it replaces, rather than composite without a mask.
+ */
 export const withSmoothedMask = (Base: typeof BackgroundTransformer): typeof BackgroundTransformer =>
 	class SmoothedMaskTransformer extends Base {
 		#smoother: MaskSmoother | undefined;
 
-		/** Set when the smoothing pass cannot run here; masks then go through as the segmenter made them, unsmoothed and uninverted. */
+		/** Set when the smoothing pass cannot run here; masks then go through as the segmenter made them. */
 		#unsmoothable = false;
 
 		constructor(...args: ConstructorParameters<typeof BackgroundTransformer>) {
@@ -197,8 +195,11 @@ export const withSmoothedMask = (Base: typeof BackgroundTransformer): typeof Bac
 		override async init(options: InitOptions) {
 			this.#smoother = undefined;
 			await super.init(options);
+			if (typeof Reflect.get(Base.prototype, 'updateMask') !== 'function' || !this.imageSegmenter || !this.gl) {
+				throw new Error('This version of @livekit/track-processors cannot composite on confidence masks');
+			}
 			// The library asks for a binary category mask; confidence keeps the edges soft once scaled up.
-			await this.imageSegmenter?.setOptions({ outputCategoryMask: false, outputConfidenceMasks: true });
+			await this.imageSegmenter.setOptions({ outputCategoryMask: false, outputConfidenceMasks: true });
 		}
 
 		override async restart(options: InitOptions) {
@@ -213,7 +214,7 @@ export const withSmoothedMask = (Base: typeof BackgroundTransformer): typeof Bac
 		}
 
 		#updateMask() {
-			const mask = this.segmentationResults?.confidenceMasks?.[CONFIDENCE_MASK.index];
+			const mask = this.segmentationResults?.confidenceMasks?.[BACKGROUND_MASK_INDEX];
 			const gl = this.canvas?.getContext('webgl2');
 			if (!mask || !gl || !this.gl) {
 				return;

@@ -1,7 +1,7 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
-import { backgroundImageStore } from '../backgrounds/lib/backgroundImageStore';
+import { BACKGROUND_IMAGE_LIMIT, backgroundImageStore } from '../backgrounds/lib/backgroundImageStore';
 
 const subscribe = (listener: () => void) => backgroundImageStore.on('change', listener);
 
@@ -15,6 +15,8 @@ export const useBackgroundImages = () => {
 
 	const addImage = useCallback((file: File) => backgroundImageStore.add(uid, file), [uid]);
 	const removeImage = useCallback((id: string) => backgroundImageStore.remove(uid, id), [uid]);
+	/** Answers for a picture as soon as it is added, before the next render lists it. */
+	const getImageUrl = useCallback((id: string) => backgroundImageStore.get(uid).images.find((image) => image.id === id)?.url, [uid]);
 
-	return { images, loaded, addImage, removeImage };
+	return { images, loaded, imageLimit: BACKGROUND_IMAGE_LIMIT, addImage, removeImage, getImageUrl };
 };

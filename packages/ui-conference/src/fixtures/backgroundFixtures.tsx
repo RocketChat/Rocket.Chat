@@ -55,6 +55,7 @@ const FakeBackgroundEffectProvider = ({
 	applying: heldApplying,
 	presets = fakePresets,
 	images: initialImages = [],
+	imageLimit = 5,
 	lastEffect = { kind: 'blur', level: 'medium' },
 	applyMs = 1200,
 	children,
@@ -93,6 +94,7 @@ const FakeBackgroundEffectProvider = ({
 			applying,
 			presets,
 			images,
+			imageLimit,
 			select: (next) => {
 				action('selectBackgroundEffect')(next);
 				apply(next);
@@ -117,7 +119,7 @@ const FakeBackgroundEffectProvider = ({
 				}
 			},
 		}),
-		[supported, effect, applying, presets, images, apply, lastEffect],
+		[supported, effect, applying, presets, images, imageLimit, apply, lastEffect],
 	);
 
 	return <BackgroundEffectProvider value={value}>{children}</BackgroundEffectProvider>;

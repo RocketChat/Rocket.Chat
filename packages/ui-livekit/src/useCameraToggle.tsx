@@ -38,8 +38,6 @@ export const useCameraToggle = ({
 }: UseCameraToggleOptions) => {
 	const setModal = useSetModal();
 	const [cameraStarting, setCameraStarting] = useState(false);
-	// After an effect failed to start, turning the camera on without one asks first.
-	const [askBeforeBareCamera, setAskBeforeBareCamera] = useState(false);
 
 	const setCameraEnabled = (enabled: boolean) => {
 		localParticipant.setCameraEnabled(enabled).then(() => onToggled(enabled), onError);
@@ -57,7 +55,6 @@ export const useCameraToggle = ({
 		} catch (err) {
 			console.warn('the camera could not start with its background effect', err);
 			background.reportStartFailure();
-			setAskBeforeBareCamera(true);
 		} finally {
 			setCameraStarting(false);
 		}
@@ -70,11 +67,6 @@ export const useCameraToggle = ({
 		}
 	}, [connected, camEnabled, takeHeldBackCamera, startWithEffect]);
 
-	const enableBareCamera = () => {
-		setAskBeforeBareCamera(false);
-		setCameraEnabled(true);
-	};
-
 	const turnOn = () => {
 		if (background.wanted.kind !== 'none') {
 			// A processor that has produced frames already keeps the reopened camera processed.
@@ -85,15 +77,16 @@ export const useCameraToggle = ({
 			void startWithEffect();
 			return;
 		}
-		if (!askBeforeBareCamera) {
-			enableBareCamera();
+		if (!background.bareCameraUnconfirmed) {
+			setCameraEnabled(true);
 			return;
 		}
 		setModal(
 			<CameraWithoutEffectModal
 				onConfirm={() => {
 					setModal(null);
-					enableBareCamera();
+					background.confirmBareCamera();
+					setCameraEnabled(true);
 				}}
 				onCancel={() => setModal(null)}
 			/>,

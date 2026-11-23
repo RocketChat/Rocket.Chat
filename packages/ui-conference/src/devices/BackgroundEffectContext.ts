@@ -17,6 +17,8 @@ export type BackgroundEffectSelection = {
 	applying?: BackgroundEffect;
 	presets: BackgroundPreset[];
 	images: BackgroundImage[];
+	/** How many pictures of their own a participant may keep. */
+	imageLimit: number;
 	select: (effect: BackgroundEffect) => void;
 	/** Off is *None*; on is the last effect used. */
 	toggle: () => void;
@@ -71,6 +73,7 @@ export const BACKGROUND_EFFECTS_UNAVAILABLE: BackgroundEffectSelection = {
 	effect: { kind: 'none' },
 	presets: [],
 	images: [],
+	imageLimit: 0,
 	select: ignore,
 	toggle: ignore,
 	addImage: ignore,

@@ -71,7 +71,14 @@ jest.mock('./useSpeakingWhileMuted', () => ({ useSpeakingWhileMuted: () => false
 jest.mock('./useVideoQuality', () => ({ useVideoQuality: () => ({}) }));
 jest.mock('./useNoiseSuppression', () => ({ useNoiseSuppression: () => ({}) }));
 jest.mock('./backgroundEffects/useBackgroundEffect', () => ({
-	useBackgroundEffect: () => ({ selection: {}, wanted: { kind: 'none' }, reportStartFailure: jest.fn(), sourceFor: jest.fn() }),
+	useBackgroundEffect: () => ({
+		selection: {},
+		wanted: { kind: 'none' },
+		reportStartFailure: jest.fn(),
+		sourceFor: jest.fn(),
+		bareCameraUnconfirmed: false,
+		confirmBareCamera: jest.fn(),
+	}),
 }));
 jest.mock('./backgroundEffects/effectProcessor', () => ({ processorOf: () => undefined }));
 

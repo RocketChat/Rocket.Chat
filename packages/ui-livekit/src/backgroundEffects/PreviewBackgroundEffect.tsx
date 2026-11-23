@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { useBackgroundEffect } from './useBackgroundEffect';
 import type { PreviewVideo } from '../usePreviewVideoTrack';
 
-type PreviewBackgroundEffectProps = { preview: PreviewVideo; baseUrl: string; children: ReactNode };
+export type PreviewBackgroundEffectProps = { preview: PreviewVideo; baseUrl: string; children: ReactNode };
 
 const PreviewBackgroundEffect = ({ preview, baseUrl, children }: PreviewBackgroundEffectProps) => {
 	const { selection } = useBackgroundEffect({ track: preview.track, baseUrl });

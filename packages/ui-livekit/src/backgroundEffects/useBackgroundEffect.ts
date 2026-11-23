@@ -3,21 +3,15 @@ import type { BackgroundEffect, BackgroundEffectSelection, BackgroundPreset } fr
 import { NO_BACKGROUND_EFFECT, isSameEffect, useBackgroundEffectPreference, useBackgroundImages } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { LocalVideoTrack } from 'livekit-client';
-import { TrackEvent } from 'livekit-client';
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { EffectSource } from './effectProcessor';
-import {
-	EFFECT_STALL_LIMIT_MS,
-	applyEffect,
-	forgetProcessor,
-	frameHeightOf,
-	processorOf,
-	supportsBackgroundEffects,
-	switchOptionsFor,
-} from './effectProcessor';
+import { applyEffect, frameHeightOf, supportsBackgroundEffects } from './effectProcessor';
 import { useBackgroundEffectAssets } from './useBackgroundEffectAssets';
+import { useBlurFollowsFrameHeight } from './useBlurFollowsFrameHeight';
+import { useEffectProcessor, useProcessedTrack } from './useEffectProcessor';
+import { useEffectStallWatchdog } from './useEffectStallWatchdog';
 
 const MEDIUM_BLUR: BackgroundEffect = { kind: 'blur', level: 'medium' };
 
@@ -25,18 +19,21 @@ export type UseBackgroundEffectOptions = {
 	/** Absent while the camera is off. */
 	track?: LocalVideoTrack;
 	baseUrl: string;
-	/** The owner turns the camera off, so the room is never sent. */
+	/** Without it, a running effect is not watched for stalls. */
 	onStalled?: () => void;
 };
 
 export type BackgroundEffectControl = {
 	selection: BackgroundEffectSelection;
-	/** The effect chosen, unless this browser cannot run one. */
+	/** The effect chosen, unless this browser cannot run one or it failed in this call. */
 	wanted: BackgroundEffect;
 	sourceFor: (frameHeight: number) => Promise<EffectSource>;
 	selfViewStream?: MediaStream;
 	/** The effect stays remembered, but this call goes on without one. */
 	reportStartFailure: () => void;
+	/** The effect failed, and the participant has not yet agreed to a camera without it. */
+	bareCameraUnconfirmed: boolean;
+	confirmBareCamera: () => void;
 };
 
 /**
@@ -48,44 +45,39 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { assets, load: loadAssets } = useBackgroundEffectAssets(baseUrl);
 	const { backgroundEffect, backgroundHistory, selectBackgroundEffect, forgetBackgroundEffect } = useBackgroundEffectPreference();
-	const { images, loaded: imagesLoaded, addImage, removeImage } = useBackgroundImages();
+	const { images, loaded: imagesLoaded, imageLimit, addImage, removeImage, getImageUrl } = useBackgroundImages();
 	const supported = supportsBackgroundEffects();
 
-	// Pictures added in this render are not in `images` yet.
-	const imageUrls = useRef(new Map<string, string>());
-	images.forEach((image) => imageUrls.current.set(image.id, image.url));
-
-	const [startFailed, setStartFailed] = useState(false);
+	const [failure, setFailure] = useState<'unconfirmed' | 'confirmed'>();
 	const [applying, setApplying] = useState<BackgroundEffect>();
-	const [, refresh] = useReducer((n: number) => n + 1, 0);
+	const failed = failure !== undefined;
 
 	const available = (effect: BackgroundEffect) =>
 		!(effect.kind === 'image' && imagesLoaded && !images.some((image) => image.id === effect.id)) &&
 		!(effect.kind === 'preset' && assets && !assets.presets.some((preset) => preset.id === effect.id));
 
 	const remembered = available(backgroundEffect) ? backgroundEffect : NO_BACKGROUND_EFFECT;
-	const wanted = supported && !startFailed ? remembered : NO_BACKGROUND_EFFECT;
+	const wanted = supported && !failed ? remembered : NO_BACKGROUND_EFFECT;
 
-	const running = processorOf(track)?.effect ?? NO_BACKGROUND_EFFECT;
+	const running = useEffectProcessor(track).effect ?? NO_BACKGROUND_EFFECT;
 	const shown = track ? running : wanted;
 
 	const sourceFor = useStableCallback(async (frameHeight: number): Promise<EffectSource> => ({
 		assets: await loadAssets(),
-		imageUrl: (id) => imageUrls.current.get(id),
+		imageUrl: getImageUrl,
 		frameHeight,
 	}));
 
-	const failed = useStableCallback((message = t('Background_effect_could_not_be_applied')) =>
+	const reportFailure = useStableCallback((message = t('Background_effect_could_not_be_applied')) =>
 		dispatchToastMessage({ type: 'error', message }),
 	);
 
-	// A new attempt or track abandons the previous one.
 	const attempt = useRef(0);
 
 	const apply = useStableCallback(async (effect: BackgroundEffect) => {
 		if (!track) {
 			selectBackgroundEffect(effect);
-			setStartFailed(false);
+			setFailure(undefined);
 			return;
 		}
 		const id = ++attempt.current;
@@ -94,28 +86,22 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 			await applyEffect(track, effect, await sourceFor(frameHeightOf(track)));
 			if (id === attempt.current) {
 				selectBackgroundEffect(effect);
-				setStartFailed(false);
+				setFailure(undefined);
 			}
 		} catch (err) {
 			console.warn('the background effect could not be applied', err);
 			if (id === attempt.current) {
-				failed();
+				reportFailure();
 			}
 		} finally {
 			if (id === attempt.current) {
 				setApplying(undefined);
-				refresh();
 			}
 		}
 	});
 
-	// A new or resumed camera gets the effect chosen meanwhile.
 	useEffect(() => {
-		if (!track || !imagesLoaded) {
-			return;
-		}
-		const current = processorOf(track)?.effect ?? NO_BACKGROUND_EFFECT;
-		if (isSameEffect(current, wanted)) {
+		if (!track || !imagesLoaded || isSameEffect(running, wanted)) {
 			return;
 		}
 		void apply(wanted);
@@ -123,64 +109,13 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [track, imagesLoaded]);
 
-	// LiveKit restarts the processor with the camera.
-	useEffect(() => {
-		if (!track) {
-			return;
-		}
-		track.on(TrackEvent.TrackProcessorUpdate, refresh);
-		return () => {
-			track.off(TrackEvent.TrackProcessorUpdate, refresh);
-		};
-	}, [track]);
+	useBlurFollowsFrameHeight(track);
 
-	// A blur is a share of the frame's height.
-	const frameHeight = frameHeightOf(track);
-	useEffect(() => {
-		const current = processorOf(track);
-		if (current?.effect.kind !== 'blur' || !assets) {
-			return;
-		}
-		void current.processor
-			.switchTo(switchOptionsFor(current.effect, { assets, imageUrl: () => undefined, frameHeight }))
-			.catch(() => undefined);
-	}, [track, frameHeight, assets]);
-
-	// A processor that stops producing frames is treated as failed.
-	const watching = Boolean(onStalled && track && running.kind !== 'none' && !applying);
-	useEffect(() => {
-		if (!watching || !track) {
-			return;
-		}
-		const current = processorOf(track);
-		if (!current) {
-			return;
-		}
-		const resetClock = () => {
-			current.lastFrameAt = performance.now();
-		};
-		resetClock();
-		document.addEventListener('visibilitychange', resetClock);
-		const interval = setInterval(() => {
-			if (document.visibilityState !== 'visible' || track.isMuted) {
-				resetClock();
-				return;
-			}
-			if (performance.now() - current.lastFrameAt > EFFECT_STALL_LIMIT_MS) {
-				clearInterval(interval);
-				forgetProcessor(track);
-				onStalled?.();
-				void track.stopProcessor().catch(() => undefined);
-				setStartFailed(true);
-				failed();
-				refresh();
-			}
-		}, 1000);
-		return () => {
-			clearInterval(interval);
-			document.removeEventListener('visibilitychange', resetClock);
-		};
-	}, [watching, track, onStalled, failed]);
+	useEffectStallWatchdog(track, Boolean(onStalled && running.kind !== 'none' && !applying), () => {
+		onStalled?.();
+		setFailure('unconfirmed');
+		reportFailure();
+	});
 
 	const presets = useMemo(
 		(): BackgroundPreset[] =>
@@ -189,7 +124,7 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 	);
 
 	const select = useStableCallback((effect: BackgroundEffect) => {
-		if (applying || (isSameEffect(effect, shown) && !startFailed)) {
+		if (applying || (isSameEffect(effect, shown) && !failed)) {
 			return;
 		}
 		void apply(effect);
@@ -198,19 +133,17 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 	const selection = useMemo(
 		(): BackgroundEffectSelection => ({
 			supported,
-			effect: startFailed ? NO_BACKGROUND_EFFECT : shown,
+			effect: failed ? NO_BACKGROUND_EFFECT : shown,
 			applying,
 			presets,
 			images,
+			imageLimit,
 			select,
-			toggle: () => select(shown.kind === 'none' || startFailed ? (backgroundHistory.at(-1) ?? MEDIUM_BLUR) : NO_BACKGROUND_EFFECT),
+			toggle: () => select(shown.kind === 'none' || failed ? (backgroundHistory.at(-1) ?? MEDIUM_BLUR) : NO_BACKGROUND_EFFECT),
 			addImage: (file) => {
 				addImage(file).then(
-					(image) => {
-						imageUrls.current.set(image.id, image.url);
-						select({ kind: 'image', id: image.id });
-					},
-					() => failed(t('Background_image_could_not_be_used')),
+					(image) => select({ kind: 'image', id: image.id }),
+					() => reportFailure(t('Background_image_could_not_be_used')),
 				);
 			},
 			removeImage: (id) => {
@@ -221,20 +154,20 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 					void apply(fallback);
 				}
 				removeImage(id);
-				imageUrls.current.delete(id);
 			},
 		}),
 		[
 			supported,
-			startFailed,
+			failed,
 			shown,
 			applying,
 			presets,
 			images,
+			imageLimit,
 			select,
 			backgroundHistory,
 			addImage,
-			failed,
+			reportFailure,
 			t,
 			forgetBackgroundEffect,
 			track,
@@ -244,13 +177,23 @@ export const useBackgroundEffect = ({ track, baseUrl, onStalled }: UseBackground
 		],
 	);
 
-	const processedTrack = track?.getProcessor()?.processedTrack;
+	const processedTrack = useProcessedTrack(track);
 	const selfViewStream = useMemo(() => (processedTrack ? new MediaStream([processedTrack]) : track?.mediaStream), [processedTrack, track]);
 
 	const reportStartFailure = useStableCallback(() => {
-		setStartFailed(true);
-		failed();
+		setFailure('unconfirmed');
+		reportFailure();
 	});
 
-	return { selection, wanted, sourceFor, selfViewStream, reportStartFailure };
+	const confirmBareCamera = useStableCallback(() => setFailure('confirmed'));
+
+	return {
+		selection,
+		wanted,
+		sourceFor,
+		selfViewStream,
+		reportStartFailure,
+		bareCameraUnconfirmed: failure === 'unconfirmed',
+		confirmBareCamera,
+	};
 };
