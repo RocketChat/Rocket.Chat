@@ -997,6 +997,7 @@
   "Everyone_can_access_this_channel": "Almal het toegang tot hierdie kanaal",
   "Example_s": "Voorbeeld: <code>{{value}}</code>",
   "except_pinned": "(behalwe dié wat vasgespyker is)",
+  "Exchange_Graph_Client_Secret": "Kliëntgeheim",
   "Exclude_Botnames": "Bots uitgesluit",
   "Exclude_Botnames_Description": "Moenie boodskappe van bots versprei wie se naam ooreenstem met die reguliere uitdrukking hierbo nie. Indien leeg gelaat, sal alle boodskappe van bots gepropageer word.",
   "Exclude_pinned": "Sluit uitgespelde boodskappe uit",
