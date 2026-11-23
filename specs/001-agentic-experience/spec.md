@@ -19,7 +19,7 @@
 
 ### DC-2: No shortcut on access scope
 
-- The following requirements MUST ship in full form: FR-004, FR-009, FR-013, FR-014, FR-015, FR-016, FR-017, FR-022, FR-031, FR-037, FR-038, FR-039, FR-040, FR-043, FR-050, FR-053, FR-054, FR-055, and FR-056.
+- The following requirements MUST ship in full form: FR-004, FR-009, FR-013, FR-014, FR-015, FR-016, FR-017, FR-022, FR-031, FR-037, FR-038, FR-039, FR-040, FR-043, FR-050, FR-053, FR-054, FR-055, FR-056, FR-061, and FR-062.
 - A shortcut MUST NOT widen what an agent can read or do beyond its effective scope and room allow list.
 - A shortcut MUST NOT break existing bot accounts, personal access tokens, integrations, or MCP use by human users.
 - The constitution rules still apply to every shortcut, including tests for the behavior that ships.
@@ -92,6 +92,8 @@ An admin opens the agent in the existing user administration, and adds the rooms
 2. **Given** an agent, **When** the agent tries to read, post in, or join a room outside its room allow list, **Then** the system denies the call, returns an error that names the room, and records the denial in the audit trail.
 3. **Given** an admin removes a room from the agent room allow list, **When** the change saves, **Then** the agent leaves the room and loses access to its history.
 4. **Given** a user without the agent management permission, **When** that user opens the administration area, **Then** the user cannot see or change agents.
+5. **Given** a user without the agent management permission, **When** that user adds an agent to a room on any path, **Then** the system refuses the add, names the agent management permission as the requirement, and records the refusal in the audit trail.
+6. **Given** a room owner without the agent management permission, **When** the owner removes an agent from the room, **Then** the agent leaves the room, the room leaves the agent room allow list, and the audit trail records the removal.
 
 ---
 
@@ -157,6 +159,9 @@ An admin finds an agent in the existing user administration. An admin or the own
 - An agent credential leaks: an admin or the owner revokes it, and every call with it fails from that moment on.
 - An admin narrows an agent scope while the agent holds an open MCP session: the next tool list and the next tool call use the new scope.
 - An admin deletes a room on the agent room allow list: the system removes the room from the list.
+- A user mentions an agent that is not a member of the room, and the client offers to add it: the add follows FR-062 like every other path.
+- A human starts a group direct message that includes an agent: the spec sets no special rule for this case in this iteration. The plan records the behavior that ships.
+- An automated join, such as an LDAP, SAML, or OAuth group sync, a bridge, or a video conference, targets an agent: no automated join adds an agent to a room.
 - A human renames an account to the name of an agent: the agent badge still separates the two accounts.
 - An agent replies to a message that is already in a thread: the reply goes to that same thread.
 - An agent replies in a room where threads are disabled: the reply goes to the main timeline.
@@ -229,6 +234,10 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 - **FR-020**: An admin with the agent management permission MUST be able to add rooms to and remove rooms from an agent room allow list.
 - **FR-021**: The system MUST add the agent to a room when an admin adds the room, and remove it when an admin removes the room.
 - **FR-022**: An agent MUST NOT read, post in, or join a room outside its room allow list.
+- **FR-061**: The room allow list MUST be the set of rooms where the agent is a member. The system MUST NOT keep a separate list.
+- **FR-062**: The system MUST refuse to add an agent to a room, on every path, unless the actor holds the agent management permission. The refusal MUST name that permission.
+- **FR-063**: A user who may remove members from a room MUST be able to remove an agent from it. A removal only narrows the agent scope, so it needs no agent permission.
+- **FR-064**: The audit trail MUST record each add and each removal of an agent in a room, and each add that FR-062 refuses, with the actor, the agent, the room, and the time.
 - **FR-023**: An agent MUST be able to read and reply in a direct message that a human starts with it. An agent MUST NOT start a direct message unless its effective scope allows it. The agent role does not allow it by default.
 
 #### Reply behavior
@@ -290,13 +299,21 @@ The plan's research phase MUST answer each question below and record the answer 
 | RQ-4 | Do one agent role and declared capabilities per MCP tool give enough control, or does the agent need finer scope, for example per room or read versus write? | FR-014, FR-015, FR-043 | The spec decides one agent role on the existing permissions. A finer model is a spec change. |
 | RQ-5 | How does an agent learn to compose valid UiKit blocks? Candidates: the JSON schema in the MCP tool input, an MCP resource or prompt with the UiKit reference and examples, a published skill for agent frameworks, and validation errors that state the fix. | FR-036, FR-057 | The agent sees only what the MCP server exposes, so the answer must reach the agent through MCP. |
 
+### Open product questions
+
+Each question below needs a product decision before the plan relies on it.
+
+| ID | Question | Requirements it affects | Notes |
+|----|----------|-------------------------|-------|
+| PQ-1 | Does a new agent join the workspace default channels? | FR-010, FR-061, FR-062 | Under FR-061, a join to a default channel puts the room on the allow list. FR-010 asks for an empty list at creation. |
+
 ### Key Entities
 
 - **Agent**: A user of the agent type. It holds a name, a description, an avatar, an owner, a reply mode, a status (active, suspended), declared capabilities, and a room allow list.
 - **Agent role**: The role that every agent holds. It sets the widest scope that any agent can reach.
 - **Declared capabilities**: The MCP tools that an agent asks for at registration.
 - **Effective scope**: The declared capabilities that both the agent role and the owner's current permissions allow, inside the room allow list.
-- **Room allow list**: The list of rooms where an admin authorizes an agent to operate.
+- **Room allow list**: The rooms where the agent is a member (FR-061). Only an actor with the agent management permission adds an agent to a room.
 - **Agent credential**: A secret that authenticates one agent on the MCP server, and on DDP for subscriptions only. It holds an issue date and a status (active, revoked).
 - **Registration path**: A way for an agent to come to exist, such as the MCP tool, an OAuth consent, or a registration token. Every path produces the same agent entity.
 - **Agent owner**: The human identity that authorized the agent registration. The info panel shows the owner, and the MCP server returns it.
@@ -348,7 +365,8 @@ The plan's research phase MUST answer each question below and record the answer 
 - Agent-to-agent handoff. An agent may mention another agent like any user, with no handoff semantics.
 - A dedicated agent dashboard to manage agent definitions (prompts, tools), LLM providers, and workflows, with its own admin visibility views and audit log. The agent records in the existing platform audit trail (FR-017, FR-035, FR-048) stay in scope.
 - A platform-enforced approval gate that blocks an agent action until a human approves it.
-- Room-owner controls over agents. Only admins manage the room allow list.
+- Room-owner controls to add agents. Only an actor with the agent management permission adds an agent to a room. A room owner may still remove an agent (FR-063).
+- A granular permission to add agents to rooms, without the full agent management permission. It waits for a use case.
 - Conversion of existing bot accounts into agents.
 
 ## Clarifications
@@ -384,4 +402,8 @@ The plan's research phase MUST answer each question below and record the answer 
 - Q: What happens to the admin agent controls without the AI license module or with the MCP server off? → A: The agent-specific controls do not show, and the server refuses an edit of the agent-specific properties. An admin can still revoke the agent credential and delete the agent user. The badge and the info panel stay.
 - Q: Does an agent take a license seat? → A: Yes. A suspended agent keeps its seat. A deactivated agent user frees its seat.
 - Q: Which capabilities does an agent from the admin form get? → A: A fixed set: read the rooms it joined (room info, member list, messages), send messages to those rooms, and post and read approval cards. The MCP and REST paths keep the declared list (SH-009).
+- Q: What is the room allow list? → A: The rooms where the agent is a member. The platform keeps no separate list (FR-061).
+- Q: What happens when a regular user invites an agent to a room? → A: The system refuses the add unless the user holds the agent management permission, on every path (FR-062). A granular permission waits for a use case.
+- Q: May a room owner remove an agent? → A: Yes. A removal only narrows the agent scope (FR-063).
+- Q: Must the audit trail record agent room membership changes? → A: Yes, each add, each removal, and each refused add (FR-064).
 
