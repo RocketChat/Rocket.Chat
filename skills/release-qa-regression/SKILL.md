@@ -38,11 +38,13 @@ git log --oneline --no-merges <baseline>..<target> -- apps/meteor ee packages
 git diff --stat <baseline>..<target> -- apps/meteor ee packages
 ```
 
-Before checking commits, map what the release meant to change. List every changeset in the range and read the release notes, then keep that list at hand: a candidate that matches an entry there is probably an intentional change.
+Before checking commits, map what the release meant to change. List every changeset added in the range and read the release notes, then keep that list at hand: a candidate that matches an entry there is probably an intentional change.
+
+Read changesets from the range's history, not from a diff of its two ends: a release consumes its changesets into the changelogs, so a diff between two release tags usually shows none.
 
 ```bash
-git diff --name-only <baseline>..<target> -- .changeset
-git diff <baseline>..<target> -- .changeset
+git log --diff-filter=A -p --format='%h %s' <baseline>..<target> -- '.changeset/*.md'
+git diff <baseline>..<target> -- '*CHANGELOG.md'
 ```
 
 ## High-yield areas
@@ -84,7 +86,7 @@ Do not report:
 
 - pure refactors with no observable behavior change
 - weak code-only suspicions presented as confirmed runtime failures
-- intentional product changes unless the user explicitly wants them included
+- intentional product changes unless the user explicitly wants them included; a short UX note on an intentional change that is still rough for users is fine
 - duplicates unless they add clearly new user-facing scope
 
 ## Investigation flow
@@ -98,7 +100,7 @@ Recommended commands:
 ```bash
 git diff --name-only <baseline>..<target> -- apps/meteor ee packages
 git diff --diff-filter=D --name-status <baseline>..<target> -- apps/meteor ee packages
-rg -n "moment|date-fns|supportedValuesOf|onBlur|formatDistance|formatDuration|new URL\\(" apps/meteor/client packages
+rg -n "moment|date-fns|supportedValuesOf|onBlur|formatDistance|formatDuration|new URL\\(" apps/meteor/client apps/meteor/server apps/meteor/app ee packages
 ```
 
 Scan `apps/meteor/client` first, then server, `ee/` and `packages/` changes in areas tied to user-facing flows.
@@ -139,13 +141,13 @@ Do not claim a full pass unless every commit in the release range was classified
 
 For each candidate:
 
-1. Confirm the old behavior in the baseline at runtime, with human-like input (typing and clicking as a user would, not only filling fields or calling APIs directly).
+1. Confirm the old behavior in the baseline at runtime. When the UI exposes the path, use human-like input (typing and clicking as a user would, not only filling fields or calling APIs directly); otherwise run the same API or database check.
 2. Confirm the new behavior in the target the same way.
-3. Rule out the environment. Use the same edition, licence and settings on both. Many apparent regressions are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
+3. Rule out the environment. Use the same edition, licence and settings on both. Many apparent regressions are an enterprise feature without a licence, a licence that lacks the module the feature needs (such as `experimental-enterprise-features`), or a different default setting. When the behavior depends on a default, also try each release with its own defaults: a changed default can be the regression.
 4. Explain the user-facing impact.
 5. Identify the introducing PR or commit.
-6. Check intent. Read the introducing PR's description ("Proposed changes", "Steps to test", "Further comments"), its `.changeset/*.md` and the linked Jira ticket. If they describe the observed behavior, classify it as an intentional change, not a regression. Add a UX note if the result is still rough for users.
-7. Check Jira. Search for an open ticket about the same behavior, and check whether it is already fixed on `develop` or on the release branch. If a ticket exists, add to it instead of reporting a new regression.
+6. Check intent. Read the introducing PR's description ("Proposed changes", "Steps to test", "Further comments"), its `.changeset/*.md` and the linked Jira ticket. If they describe the observed behavior as intended (not as a known defect), classify it as an intentional change, not a regression. Add a UX note if the result is still rough for users.
+7. Check Jira. Search for an open ticket about the same behavior, and check whether it is already fixed on `develop` or on the release branch. If a ticket exists, still list the regression in the report with that ticket linked, and add to the ticket instead of filing a duplicate.
 
 Useful commands:
 

@@ -13,7 +13,7 @@ Use this workflow when you want a QA-style pass on the current branch or a pull 
 2. Classify the risky surfaces touched by the PR.
 3. Turn risky changes into concrete bug hypotheses.
 4. Validate each hypothesis with the smallest useful proof.
-5. Report only confirmed bugs, strong suspicions, and targeted test suggestions.
+5. Report confirmed bugs, strong suspicions and targeted test suggestions; list existing bugs (also on the base branch) separately, and add short UX notes only for rough intentional changes.
 
 ## Task framing
 
@@ -57,7 +57,7 @@ Do not report:
 - pure refactors with no observable behavior change
 - style-only issues unless they block use or accessibility
 - speculative bugs with no concrete path to failure
-- intentional product changes unless the user wants them called out
+- intentional product changes unless the user wants them called out; a short UX note on an intentional change that is still rough for users is fine
 
 ## Rocket.Chat risk map
 
@@ -150,9 +150,9 @@ git diff <merge-base>..HEAD -- '.changeset/*.md'
 
 Validation guidance:
 
-- Check intent before reporting a behavior change. Read the PR's description ("Proposed changes", "Steps to test", "Further comments") and its `.changeset/*.md`. If they describe the observed behavior, check the linked Jira ticket or a maintainer's statement too. Classify it as an intentional change only when a second source confirms it; otherwise report it as `suspected`. Add a UX note if the result is still rough for users.
-- Rule out the environment. Run the PR and the base with the same edition, licence and settings. Many apparent bugs are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
-- Check Jira before reporting. Search for an open ticket about the same behavior; if one exists, link it instead of reporting the bug as new.
+- Check intent before reporting a behavior change. Read the PR's description ("Proposed changes", "Steps to test", "Further comments") and its `.changeset/*.md`. Read the linked Jira ticket too, even if it is closed. If they describe the observed behavior as intended (not as a known defect), classify it as an intentional change, not a bug. If the change removes or restricts something users rely on and no ticket backs it, report it as an intentional change to confirm with product. Add a UX note if the result is still rough for users.
+- Rule out the environment. Run the PR and the base with the same edition, licence and settings. Many apparent bugs are an enterprise feature without a licence, a licence that lacks the module the feature needs (such as `experimental-enterprise-features`), or a different default setting.
+- Check Jira before reporting. Search for an open ticket about the same behavior; if one exists, link it in the report and don't file a duplicate.
 - Prefer targeted test commands over whole-repo suites.
 - If no relevant test exists, say that clearly and propose the smallest missing check.
 - Use manual repro steps when the issue is primarily UX or workflow-visible.
@@ -234,6 +234,6 @@ If no bug is confirmed, use:
 ## Output bar
 
 - Prefer one strong confirmed bug over five weak suspicions.
-- Use `confirmed` only after a runtime reproduction or a failing test.
+- Use `confirmed` only when the PR causes the failure: a runtime reproduction on the PR that does not happen on the base branch, or a test that passes on the base branch and fails on the PR.
 - Use `suspected` when the risk is real but validation is incomplete.
 - Always include why the bug matters to a user, not just why the code looks wrong.
