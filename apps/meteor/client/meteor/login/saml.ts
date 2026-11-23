@@ -1,7 +1,7 @@
 import { Random } from '@rocket.chat/random';
 import type { Meteor } from 'meteor/meteor';
 
-import { handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { handleLogin, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
 import { settings } from '../../lib/settings';
@@ -105,4 +105,6 @@ const loginWithSamlTokenAndTOTP = (credentialToken: string, code: string) =>
 		],
 	});
 
-export const loginWithSamlToken = handleLogin(loginWithSamlTokenOnly, loginWithSamlTokenAndTOTP);
+const runSamlLogin = handleLogin(loginWithSamlTokenOnly, loginWithSamlTokenAndTOTP);
+
+export const loginWithSamlToken = (credentialToken: string, callback?: LoginCallback) => runSamlLogin([credentialToken], callback);
