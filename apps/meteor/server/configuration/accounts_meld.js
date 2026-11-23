@@ -1,6 +1,10 @@
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
+
+// Reason stored by older versions when an external login was melded into an account with an unverified email
+const UNVERIFIED_EMAIL_REASON = 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password';
+
+const isSameEmailAddress = (a, b) => typeof a === 'string' && typeof b === 'string' && a.trim().toLowerCase() === b.trim().toLowerCase();
 
 export async function configureAccounts() {
 	const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
@@ -13,22 +17,26 @@ export async function configureAccounts() {
 
 		if (serviceData.email) {
 			const user = await Users.findOneByEmailAddress(serviceData.email);
-			if (user != null && user.services?.[serviceName]?.id !== serviceData.id) {
-				const findQuery = {
-					address: serviceData.email,
-					verified: true,
-				};
+			if (user != null) {
+				// the lookup above is case insensitive, so the comparison here must be too
+				const matchingEmail = user.emails?.find(({ address }) => isSameEmailAddress(address, serviceData.email));
 
-				if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
-					await Users.resetPasswordAndSetRequirePasswordChange(
-						user._id,
-						true,
-						'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password',
-					);
+				if (user.services?.[serviceName]?.id !== serviceData.id) {
+					if (user.services?.password && matchingEmail?.verified !== true) {
+						// Nobody proved ownership of this address, so the local password can't be trusted: drop it and
+						// let the external service be the way in. Requiring a password change here would trap the user,
+						// since there is no longer a password to change (and OAuth users may not be allowed to set one).
+						await Users.unsetPassword(user._id);
+					}
+
+					await Users.setServiceId(user._id, serviceName, serviceData.id);
+					await Users.setEmailVerified(user._id, matchingEmail?.address ?? serviceData.email);
 				}
 
-				await Users.setServiceId(user._id, serviceName, serviceData.id);
-				await Users.setEmailVerified(user._id, serviceData.email);
+				// Release accounts that older versions locked on the reset password page after melding
+				if (user.requirePasswordChange && user.requirePasswordChangeReason === UNVERIFIED_EMAIL_REASON && !user.services?.password) {
+					await Users.unsetRequirePasswordChange(user._id);
+				}
 			}
 		}
 

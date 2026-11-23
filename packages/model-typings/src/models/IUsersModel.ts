@@ -597,6 +597,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
 
+	unsetPassword(userId: string): Promise<UpdateResult>;
+
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
 		requirePasswordChange: boolean,

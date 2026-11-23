@@ -3151,6 +3151,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, { $set: { 'services.password.enroll': tokenRecord } });
 	}
 
+	unsetPassword(_id: IUser['_id']) {
+		const update = {
+			$unset: {
+				'services.password': 1 as const,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
 		const update = {
 			$unset: {
