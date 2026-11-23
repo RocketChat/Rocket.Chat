@@ -67,6 +67,9 @@ export async function bumpNextVersion({
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
 
+	core.info('update lockfile after version bump');
+	await exec('yarn', ['install', '--no-immutable']);
+
 	// TODO check if branch exists
 	await createBranch(newBranch);
 
