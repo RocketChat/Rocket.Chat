@@ -24,6 +24,15 @@ When asked to review a branch or PR from a QA perspective:
 - validate with the smallest useful proof available
 - report confirmed bugs first, then strong suspicions, then targeted test suggestions if no bug is confirmed
 
+## Mandatory rules
+
+Apply every rule to every finding before it goes in the report. A finding that skipped one is not reportable.
+
+1. **Check intent.** Read the PR's description ("Proposed changes", "Steps to test", "Further comments"), its `.changeset/*.md`, the linked Jira task, and the documentation for the feature (`docs/features/`, docs.rocket.chat). If any of them describes the observed behavior, it is an intentional change, not a bug. Add a UX note if the result is still rough for users.
+2. **Confirm at runtime.** Reproduce on both the base branch and the PR with human-like input (typing and clicking as a user would, at normal speed, not only filling fields or calling APIs directly). A finding backed only by code stays `suspected`.
+3. **Rule out the environment.** Run the base and the PR with the same edition, licence and settings before reporting. Many apparent bugs are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
+4. **Separate existing bugs.** A bug that also reproduces on the base branch is an existing bug, not caused by this PR. Classify it as `existing bug` and report it only in the "Existing bugs" section, never as one of the PR's bugs.
+
 ## Comparison range
 
 Default to the current branch against its merge base with the default branch unless the user gave a base branch, diff range, or PR number.
@@ -100,6 +109,7 @@ Review commit by commit when the PR is non-trivial. Classify each commit as:
 - checked, no bug found
 - confirmed bug
 - suspected bug
+- existing bug (also on the base branch, not caused by this PR)
 - intentional change
 
 Do not claim a full QA pass unless the whole requested range was checked.
@@ -133,7 +143,9 @@ Use the cheapest proof that can support or reject the hypothesis:
 2. targeted unit or integration tests
 3. local app flow or UI repro
 4. API repro
-5. code-path proof when runtime setup is impractical
+5. code-path proof when runtime setup is impractical; a finding backed only by code is `suspected`, never `confirmed`
+
+Whatever the proof, apply the [mandatory rules](#mandatory-rules) before reporting: intent, runtime on both sides, same environment, existing-bug check.
 
 Useful commands:
 
@@ -141,6 +153,8 @@ Useful commands:
 git diff <merge-base>..HEAD -- <path>
 git log --oneline <merge-base>..HEAD -- <path>
 git show <merge-base>:<path>
+gh pr view <number> --json body,files -q '.body'
+git diff <merge-base>..HEAD -- '.changeset/*.md'
 ```
 
 Validation guidance:
@@ -195,6 +209,17 @@ Use this structure:
 **Root cause**: commit `[sha]` / PR #[number if known]
 - [behavior-changing code change]
 - [relevant files]
+
+**Intent check**: [PR / changeset / Jira task / docs reviewed; behavior not documented as intended]
+**Base check**: [base branch result with the same edition, licence and settings]
+```
+
+List existing bugs found along the way after the PR's own bugs:
+
+```markdown
+## Existing bugs (not caused by this PR)
+
+- [Bug title]: [one-line repro]; also on [base branch / version]. Jira: [key or "not filed yet"]
 ```
 
 If no bug is confirmed, use:
@@ -216,6 +241,7 @@ If no bug is confirmed, use:
 ## Output bar
 
 - Prefer one strong confirmed bug over five weak suspicions.
-- Use `confirmed` only after reproduction, failing test evidence, or equivalent code-path proof.
-- Use `suspected` when the risk is real but validation is incomplete.
+- Use `confirmed` only after reproducing at runtime on the PR and checking that the base branch, run with the same edition, licence and settings, does not fail.
+- Use `suspected` when the risk is real but validation is incomplete, including every finding backed only by code.
+- Never report a behavior the PR, changeset, Jira task or documentation describes as intended as a bug.
 - Always include why the bug matters to a user, not just why the code looks wrong.
