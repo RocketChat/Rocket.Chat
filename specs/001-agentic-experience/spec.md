@@ -8,40 +8,6 @@
 
 **Input**: User description: "Today there is no dedicated agent identity in Rocket.Chat. Developers use regular bot accounts which carry no visual distinction, offer no scoped auth tokens, and require manual room membership setup. As agentic workloads grow — especially with a dedicated and purpose-built ADK or MCP-based integrations such as Mastra — the absence of a first-class agent type creates security gaps (overly permissive tokens), UX confusion (users can't distinguish agents from humans), and operational friction (no approval gate for high-stakes actions). Jobs To Be Done: (1) Room members need to know immediately when they're interacting with an agent, not a human — so they can calibrate trust and act accordingly. (2) Admins and operators need a clear onboarding path with scoped permissions and room-level access control so agents have only the access they need and can be managed like any other platform resource."
 
-## Clarifications
-
-### Session 2026-11-18
-
-- Q: Is the human approval gate for high-stakes agent actions in scope? → A: Yes, as an in-channel approval card that the agent posts, with approve and reject actions. A platform-enforced gate is out of scope. (This answer replaces an earlier "out of scope" answer.)
-- Q: Can an admin convert existing bot accounts into agents? → A: No. The agent type is for new accounts only.
-- Q: Does this spec deliver an MCP server or an ADK? → A: The workspace MCP server already exists. This spec makes it serve agents and evaluates which new tools agents need. An ADK is out of scope.
-- Q: What delivery constraint applies? → A: Take the fastest path to delivery. Record every shortcut so the next iteration resolves it.
-- Q: How does an agent account come to exist? → A: The agent registers itself through an MCP tool. The identity that calls the tool becomes the agent owner. An admin can also register an agent in the user administration (RP-5).
-- Q: How fast must an agent learn of a message addressed to it? → A: Within 5 seconds. The target is provisional.
-- Q: How many messages may an agent post? → A: 60 messages per minute per agent. The target is provisional.
-- Q: Must the platform enforce one identity per harness instance in this iteration? → A: No. Each agent has one active credential, and the owner or an admin can revoke it. Detection of a shared credential goes to the next iteration (SH-002).
-- Q: What does the product brief exclude? → A: Per-user MCP authorization, tool-loop visibility, the sidebar awareness badge, realtime interactions, agent-to-agent handoff, the dedicated agent dashboard with its audit log, and the Agent Builder UI. See "Out of scope".
-- Q: Is the MCP tool the only registration path? → A: No. The registration scope is broader. The plan evaluates the registration paths in "Registration paths to evaluate". The MCP tool is the baseline path.
-- Q: What scope does the agent credential carry? → A: The MCP capabilities that the agent declares at registration, and nothing beyond them.
-- Q: Who controls the rooms an agent may operate in? → A: An admin, through a room allow list per agent.
-- Q: Where do agent replies go? → A: In a room, into the thread of the message that triggered the reply. In a direct message with a human, into the conversation itself.
-
-### Session 2026-11-19
-
-- Q: Where may an agent credential be used? → A: Agent calls go through the workspace MCP server only. The REST API refuses an agent credential. DDP accepts it for subscriptions only (see below).
-- Q: When the MCP server is disabled or the workspace lacks its license, what happens to agents? → A: Agents cannot register or call the system. Their messages and settings stay. They work again when the MCP server comes back.
-- Q: Over DDP, may an agent only subscribe to events, or may it also call methods? → A: Subscriptions only. DDP accepts an agent credential to deliver events from the agent's allowed rooms and direct messages, and refuses every agent method call.
-- Q: Which events may an agent receive over a DDP subscription? → A: Every event in a room or direct message whose history the agent's effective scope lets it read. The reply mode decides what the agent responds to, not what it may read.
-- Q: Must the audit trail record each refused agent call on REST or a DDP method? → A: Yes, with at most one entry per agent per entry point per minute.
-- Q: How does an MCP client that follows the MCP authorization flow register an agent? → A: RP-2 ships. The client gets an OAuth token through dynamic client registration and a human's consent, and calls the registration tool with that token. The consenting human becomes the owner. The registration revokes the OAuth token, so the client keeps only the agent credential.
-
-### Session 2026-11-23
-
-- Q: Does the "no manual setup" goal rule out an admin form (RP-5)? → A: No. The goal targets manual room membership, not account creation. The user administration already edits agents (US3, US6), so RP-5 ships after F-4.
-- Q: What happens to the admin agent controls without the AI license module or with the MCP server off? → A: The agent-specific controls do not show, and the server refuses an edit of the agent-specific properties. An admin can still revoke the agent credential and delete the agent user. The badge and the info panel stay.
-- Q: Does an agent take a license seat? → A: Yes. A suspended agent keeps its seat. A deactivated agent user frees its seat.
-- Q: Which capabilities does an agent from the admin form get? → A: A fixed set: read the rooms it joined (room info, member list, messages), send messages to those rooms, and post and read approval cards. The MCP and REST paths keep the declared list (SH-009).
-
 ## Delivery Constraints *(mandatory for this feature)*
 
 ### DC-1: Fastest path to delivery
@@ -384,3 +350,38 @@ The plan's research phase MUST answer each question below and record the answer 
 - A platform-enforced approval gate that blocks an agent action until a human approves it.
 - Room-owner controls over agents. Only admins manage the room allow list.
 - Conversion of existing bot accounts into agents.
+
+## Clarifications
+
+### Session 2026-11-18
+
+- Q: Is the human approval gate for high-stakes agent actions in scope? → A: Yes, as an in-channel approval card that the agent posts, with approve and reject actions. A platform-enforced gate is out of scope. (This answer replaces an earlier "out of scope" answer.)
+- Q: Can an admin convert existing bot accounts into agents? → A: No. The agent type is for new accounts only.
+- Q: Does this spec deliver an MCP server or an ADK? → A: The workspace MCP server already exists. This spec makes it serve agents and evaluates which new tools agents need. An ADK is out of scope.
+- Q: What delivery constraint applies? → A: Take the fastest path to delivery. Record every shortcut so the next iteration resolves it.
+- Q: How does an agent account come to exist? → A: The agent registers itself through an MCP tool. The identity that calls the tool becomes the agent owner. An admin can also register an agent in the user administration (RP-5).
+- Q: How fast must an agent learn of a message addressed to it? → A: Within 5 seconds. The target is provisional.
+- Q: How many messages may an agent post? → A: 60 messages per minute per agent. The target is provisional.
+- Q: Must the platform enforce one identity per harness instance in this iteration? → A: No. Each agent has one active credential, and the owner or an admin can revoke it. Detection of a shared credential goes to the next iteration (SH-002).
+- Q: What does the product brief exclude? → A: Per-user MCP authorization, tool-loop visibility, the sidebar awareness badge, realtime interactions, agent-to-agent handoff, the dedicated agent dashboard with its audit log, and the Agent Builder UI. See "Out of scope".
+- Q: Is the MCP tool the only registration path? → A: No. The registration scope is broader. The plan evaluates the registration paths in "Registration paths to evaluate". The MCP tool is the baseline path.
+- Q: What scope does the agent credential carry? → A: The MCP capabilities that the agent declares at registration, and nothing beyond them.
+- Q: Who controls the rooms an agent may operate in? → A: An admin, through a room allow list per agent.
+- Q: Where do agent replies go? → A: In a room, into the thread of the message that triggered the reply. In a direct message with a human, into the conversation itself.
+
+### Session 2026-11-19
+
+- Q: Where may an agent credential be used? → A: Agent calls go through the workspace MCP server only. The REST API refuses an agent credential. DDP accepts it for subscriptions only (see below).
+- Q: When the MCP server is disabled or the workspace lacks its license, what happens to agents? → A: Agents cannot register or call the system. Their messages and settings stay. They work again when the MCP server comes back.
+- Q: Over DDP, may an agent only subscribe to events, or may it also call methods? → A: Subscriptions only. DDP accepts an agent credential to deliver events from the agent's allowed rooms and direct messages, and refuses every agent method call.
+- Q: Which events may an agent receive over a DDP subscription? → A: Every event in a room or direct message whose history the agent's effective scope lets it read. The reply mode decides what the agent responds to, not what it may read.
+- Q: Must the audit trail record each refused agent call on REST or a DDP method? → A: Yes, with at most one entry per agent per entry point per minute.
+- Q: How does an MCP client that follows the MCP authorization flow register an agent? → A: RP-2 ships. The client gets an OAuth token through dynamic client registration and a human's consent, and calls the registration tool with that token. The consenting human becomes the owner. The registration revokes the OAuth token, so the client keeps only the agent credential.
+
+### Session 2026-11-23
+
+- Q: Does the "no manual setup" goal rule out an admin form (RP-5)? → A: No. The goal targets manual room membership, not account creation. The user administration already edits agents (US3, US6), so RP-5 ships after F-4.
+- Q: What happens to the admin agent controls without the AI license module or with the MCP server off? → A: The agent-specific controls do not show, and the server refuses an edit of the agent-specific properties. An admin can still revoke the agent credential and delete the agent user. The badge and the info panel stay.
+- Q: Does an agent take a license seat? → A: Yes. A suspended agent keeps its seat. A deactivated agent user frees its seat.
+- Q: Which capabilities does an agent from the admin form get? → A: A fixed set: read the rooms it joined (room info, member list, messages), send messages to those rooms, and post and read approval cards. The MCP and REST paths keep the declared list (SH-009).
+
