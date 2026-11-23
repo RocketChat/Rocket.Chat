@@ -1,15 +1,16 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const routes = { get: sinon.stub() };
 const loginErrorCallback = sinon.stub();
 const passportOAuthErrorCallback = sinon.stub().returns(loginErrorCallback);
 const authenticate = sinon.stub();
 
-const { addPassportCustomOAuth } = p.noCallThru().load('./addPassportCustomOAuth.ts', {
+const { addPassportCustomOAuth } = loadWithMocks('./addPassportCustomOAuth.ts', {
 	'passport': { use: sinon.stub(), unuse: sinon.stub(), authenticate },
 	'./allowPassportOAuthMiddleware': { allowPassportOAuthMiddleware: () => sinon.stub() },
 	'./passportOAuthCallback': { passportOAuthCallback: () => sinon.stub(), passportOAuthErrorCallback },
