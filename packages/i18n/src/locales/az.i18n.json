@@ -997,6 +997,7 @@
   "Everyone_can_access_this_channel": "Hər kəs bu kanaldan istifadə edə bilər",
   "Example_s": "Məsələn: <code>{{value}}</code>",
   "except_pinned": "(qapalı olanlar istisna olmaqla)",
+  "Exchange_Graph_Client_Secret": "Müştəri sirri",
   "Exclude_Botnames": "Botları istisna et",
   "Exclude_Botnames_Description": "Adı yuxarıda göstərilən qaydada eşleşen botlardan mesaj yaymamaq. Boşsa, botlardan gələn bütün mesajlar yayılacaq.",
   "Exclude_pinned": "Səslənən mesajları həddindən kənarlaşdırın",
