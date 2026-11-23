@@ -31,7 +31,7 @@ Apply every rule to every finding before it goes in the report. A finding that s
 1. **Check intent.** Read the PR's description ("Proposed changes", "Steps to test", "Further comments"), its `.changeset/*.md`, the linked Jira task, and the documentation for the feature (`docs/features/`, docs.rocket.chat). If any of them describes the observed behavior, it is an intentional change, not a bug. Add a UX note if the result is still rough for users.
 2. **Confirm at runtime.** Reproduce on both the base branch and the PR with human-like input (typing and clicking as a user would, at normal speed, not only filling fields or calling APIs directly). A finding backed only by code stays `suspected`.
 3. **Rule out the environment.** Run the base and the PR with the same edition, licence and settings before reporting. Many apparent bugs are an enterprise feature without a licence, a different default setting, or an experimental flag such as `experimental-enterprise-features`.
-4. **Separate existing bugs.** A bug that also reproduces on the base branch is an existing bug, not caused by this PR. Classify it as `existing bug` and report it only in the "Existing bugs" section, never as one of the PR's bugs.
+4. **Separate existing bugs.** A bug that reproduces identically on the base branch is an existing bug. If the PR makes it more frequent, broader, or more severe, report that change as a PR regression and note the baseline behavior.
 
 ## Comparison range
 
