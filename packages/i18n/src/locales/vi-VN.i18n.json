@@ -1095,6 +1095,7 @@
   "Everyone_can_access_this_channel": "Mọi người đều có thể truy cập vào kênh này",
   "Example_s": "Ví dụ: <code>{{value}}</code>",
   "except_pinned": "(ngoại trừ những thứ được ghim)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Loại trừ Bots",
   "Exclude_Botnames_Description": "Không truyền bá tin nhắn từ các bots có tên trùng với Regular Expression ở trên. Nếu để trống, tất cả các tin nhắn từ chương trình sẽ được truyền.",
   "Exclude_pinned": "Loại trừ các thư đã ghim",
