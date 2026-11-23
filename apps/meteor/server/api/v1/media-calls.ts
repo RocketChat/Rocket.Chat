@@ -1,8 +1,8 @@
-import { MediaCall } from '@rocket.chat/core-services';
+import { MediaCall, VideoConf } from '@rocket.chat/core-services';
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { CallAnswer, CallFeature, ServerMediaCallSignal } from '@rocket.chat/media-signaling';
 import { callFeatureList, callAnswerList } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
+import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import {
 	ajv,
 	validateNotFoundErrorResponse,
@@ -345,6 +345,90 @@ type MediaCallsInfoEndpoints = ExtractRoutesFromAPI<typeof mediaCallsInfoEndpoin
 declare module '@rocket.chat/rest-typings' {
 	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsInfoEndpoints {}
+}
+
+type MediaCallsConferenceParams = {
+	callId: string;
+};
+
+const MediaCallsConferenceSchema: JSONSchemaType<MediaCallsConferenceParams> = {
+	type: 'object',
+	properties: {
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['callId'],
+	additionalProperties: false,
+};
+
+export const isMediaCallsConferenceProps = ajv.compile<MediaCallsConferenceParams>(MediaCallsConferenceSchema);
+
+/** The conference a voice call was escalated into, without joining it; still answers after the voice call has ended. */
+const mediaCallsConferenceEndpoints = API.v1.get(
+	'media-calls.conference',
+	{
+		response: {
+			200: ajv.compile<{
+				conferenceId: string;
+				providerName: string;
+				url: string;
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					conferenceId: {
+						type: 'string',
+						description: 'The id of the conference the call was escalated into.',
+					},
+					providerName: {
+						type: 'string',
+						description: 'The name of the conference provider.',
+					},
+					url: {
+						type: 'string',
+						description: 'The url of the conference.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['conferenceId', 'providerName', 'url', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+		query: isMediaCallsConferenceProps,
+		authRequired: true,
+	},
+	async function action() {
+		const { callId } = this.queryParams;
+
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'uids'>>(callId, { projection: { uids: 1 } });
+		if (!call?.uids.includes(this.userId)) {
+			return API.v1.notFound();
+		}
+
+		const conference = await VideoConferenceModel.findOneByMediaCallId(callId, { projection: { providerName: 1 } });
+		if (!conference) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({
+			conferenceId: conference._id,
+			providerName: conference.providerName,
+			url: await VideoConf.makePersistentChatUrlForConference(conference._id),
+		});
+	},
+);
+
+type MediaCallsConferenceEndpoints = ExtractRoutesFromAPI<typeof mediaCallsConferenceEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsConferenceEndpoints {}
 }
 
 const mediaCallsDevicesEndpoints = API.v1.get(
