@@ -2,6 +2,7 @@ import type {
 	AvailableAgentsAggregation,
 	AtLeast,
 	DeepWritable,
+	EmailVerificationTokenRecord,
 	ILivechatAgent,
 	ILoginToken,
 	IMeteorLoginToken,
@@ -9,6 +10,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	PasswordTokenRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -3141,6 +3143,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	setPasswordResetToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord) {
+		return this.updateOne({ _id }, { $set: { 'services.password.reset': tokenRecord } });
+	}
+
+	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord) {
+		return this.updateOne({ _id }, { $set: { 'services.password.enroll': tokenRecord } });
+	}
+
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
 		const update = {
 			$unset: {
@@ -3524,6 +3534,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			return 0;
 		}
 		return this.countDocuments({ _id: { $in: room.uids }, active: true });
+	}
+
+	addEmailVerificationToken(_id: IUser['_id'], tokenRecord: EmailVerificationTokenRecord) {
+		return this.updateOne({ _id }, { $push: { 'services.email.verificationTokens': tokenRecord } });
 	}
 
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string) {
