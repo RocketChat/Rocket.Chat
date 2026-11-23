@@ -181,6 +181,9 @@ remote occupant leaves → muc.occupantLeft ('left' only) → performUserRemoval
                          callbacks and therefore cannot bounce back as a kick
 occupant unreachable   → muc.occupantLeft ('unreachable') → nothing: the subscription stays,
                          so the occupant can join again
+member takes a nick    → the remote occupant holding it is removed with 110/307
+                       → muc.occupantLeft ('displaced') → nothing: the subscription stays,
+                         so the occupant can join again under another nick
 ```
 
 For `remote-muc` (mirrored) rooms, where membership is a client session rather than a roster
