@@ -21,7 +21,6 @@ import { useTimeAgo, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
-import CallHistoryItem from './layout/CallHistoryItem';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
@@ -54,61 +53,59 @@ const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConf
 	const goToRoom = useGoToRoom();
 
 	return (
-		<CallHistoryItem>
-			<Message hoverable={false}>
-				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
-				<MessageContainer>
-					<MessageHeader>
-						<MessageName title={username}>{displayName}</MessageName>
-						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
-					</MessageHeader>
-					<MessageBody clamp={2} />
-					<MessageBlock>
-						<Stack direction='row' align='center' gap='x8'>
-							<ButtonGroup>
-								<Button disabled={Boolean(endedAt)} size='small' onClick={handleJoinConference}>
-									{endedAt ? t('Call_ended') : t('Join_call')}
-								</Button>
-								{discussionRid && (
-									<IconButton
-										size='small'
-										icon='discussion'
-										data-drid={discussionRid}
-										title={t('Join_discussion')}
-										onClick={() => goToRoom(discussionRid)}
-									/>
-								)}
-							</ButtonGroup>
-							{joinedUsers.length > 0 && (
-								<Stack direction='row' align='center' gap='x4'>
-									<AvatarStack>
-										{joinedUsers.map(
-											(user, index) =>
-												user.username &&
-												index + 1 <= VIDEOCONF_STACK_MAX_USERS && (
-													<UserAvatar
-														data-tooltip={user.username}
-														key={user.username}
-														username={user.username}
-														etag={user.avatarETag ?? undefined}
-														size='x28'
-													/>
-												),
-										)}
-									</AvatarStack>
-									<Text fontScale='c1'>
-										{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-											? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
-											: t('joined')}
-									</Text>
-								</Stack>
+		<Message hoverable={false} insetBlock='md'>
+			<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageName title={username}>{displayName}</MessageName>
+					<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody clamp={2} />
+				<MessageBlock>
+					<Stack direction='row' align='center' gap='x8'>
+						<ButtonGroup>
+							<Button disabled={Boolean(endedAt)} size='small' onClick={handleJoinConference}>
+								{endedAt ? t('Call_ended') : t('Join_call')}
+							</Button>
+							{discussionRid && (
+								<IconButton
+									size='small'
+									icon='discussion'
+									data-drid={discussionRid}
+									title={t('Join_discussion')}
+									onClick={() => goToRoom(discussionRid)}
+								/>
 							)}
-							{joinedUsers.length === 0 && !endedAt && <Text fontScale='c1'>{t('Be_the_first_to_join')}</Text>}
-						</Stack>
-					</MessageBlock>
-				</MessageContainer>
-			</Message>
-		</CallHistoryItem>
+						</ButtonGroup>
+						{joinedUsers.length > 0 && (
+							<Stack direction='row' align='center' gap='x4'>
+								<AvatarStack>
+									{joinedUsers.map(
+										(user, index) =>
+											user.username &&
+											index + 1 <= VIDEOCONF_STACK_MAX_USERS && (
+												<UserAvatar
+													data-tooltip={user.username}
+													key={user.username}
+													username={user.username}
+													etag={user.avatarETag ?? undefined}
+													size='x28'
+												/>
+											),
+									)}
+								</AvatarStack>
+								<Text fontScale='c1'>
+									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
+										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
+										: t('joined')}
+								</Text>
+							</Stack>
+						)}
+						{joinedUsers.length === 0 && !endedAt && <Text fontScale='c1'>{t('Be_the_first_to_join')}</Text>}
+					</Stack>
+				</MessageBlock>
+			</MessageContainer>
+		</Message>
 	);
 };
 
