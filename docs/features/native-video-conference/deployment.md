@@ -151,3 +151,6 @@ mounted read-only at `/etc/livekit/tls`, or use a certificate of your own.
 - **Monitoring:** `prometheus_port: 6789` in `livekit.yaml` exposes metrics for the monitoring stack.
 - **Port ranges:** the single UDP port covers most deployments. A port range needs `network_mode: host`; mapping
   thousands of ports through Docker spawns one proxy process per port.
+- **Airgapped workspaces:** background effects need nothing beyond the workspace and LiveKit. The workspace serves the
+  segmentation runtime, model and preset pictures itself, under `/video-conference/background-effects/`; clients never
+  reach a third party for them.

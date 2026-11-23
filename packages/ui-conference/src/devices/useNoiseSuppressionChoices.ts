@@ -12,6 +12,7 @@ export const useNoiseSuppressionChoices = (): DeviceMenuChoices => {
 	return {
 		title: t('Noise_cancellation'),
 		choices: methods.map((method) => ({
+			type: 'choice' as const,
 			id: method,
 			name: t(NOISE_METHOD_LABELS[method]),
 			note: method === 'rnnoise' ? t('Noise_cancellation_on_this_device') : undefined,

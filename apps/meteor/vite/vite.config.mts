@@ -16,6 +16,7 @@ import postcssNested from 'postcss-nested';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
+import { backgroundEffectsAssets } from './backgroundEffectsAssets';
 import { staticBox } from './staticBox/plugin';
 import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
@@ -419,6 +420,7 @@ export default defineConfig({
 		...(servedByServer ? [] : [nativeModules()]),
 		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
 		devPage(),
+		backgroundEffectsAssets(),
 		// Fuselage's `styled()` frames compile to static classes and CSS, so no Tamagui code ships to the browser.
 		// `components` stays empty: warming up Fuselage evaluates its stylesheets outside this config and fails.
 		tamaguiPlugin({

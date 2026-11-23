@@ -1,8 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PreflightDeviceMenu from './PreflightDeviceMenu';
 import { usePreviewMedia } from './PreviewMediaContext';
+import BackgroundEffectsModal from '../backgrounds/BackgroundEffectsModal';
+import { useBackgroundEffectChoices } from '../devices/useBackgroundEffectChoices';
 import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices';
 import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
 
@@ -12,6 +15,8 @@ const PreflightDevices = () => {
 	const { capabilities } = usePreviewMedia();
 	const videoQuality = useVideoQualityChoices();
 	const noiseSuppression = useNoiseSuppressionChoices();
+	const [backgroundsOpen, setBackgroundsOpen] = useState(false);
+	const background = useBackgroundEffectChoices(() => setBackgroundsOpen(true));
 
 	return (
 		<Box
@@ -27,7 +32,10 @@ const PreflightDevices = () => {
 		>
 			{capabilities.mic && <PreflightDeviceMenu kind='audioinput' label={t('Microphone')} choices={[noiseSuppression]} />}
 			<PreflightDeviceMenu kind='audiooutput' label={t('Speaker')} />
-			{capabilities.cam && <PreflightDeviceMenu kind='videoinput' label={t('Camera')} choices={[videoQuality]} />}
+			{capabilities.cam && (
+				<PreflightDeviceMenu kind='videoinput' label={t('Camera')} choices={background ? [background, videoQuality] : [videoQuality]} />
+			)}
+			{backgroundsOpen && <BackgroundEffectsModal onClose={() => setBackgroundsOpen(false)} />}
 		</Box>
 	);
 };

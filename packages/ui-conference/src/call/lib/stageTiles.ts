@@ -8,6 +8,7 @@ export type StageSelf = {
 	displayName: string;
 	/** How tall the picture actually going out is, for the reader's own tile to say so. */
 	sendHeight?: number;
+	cameraStarting?: boolean;
 	avatarUrl?: string;
 	muted: boolean;
 	held: boolean;
@@ -32,7 +33,9 @@ export type TileParticipant = {
 };
 
 /** The reader's tile says what it sends; nobody else's can. */
-export type StageTile = TileParticipant & { id: string } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
+export type StageTile = TileParticipant & { id: string } & (
+		{ kind: 'self'; sendHeight?: number; cameraStarting?: boolean } | { kind: 'participant' }
+	);
 
 export type StageSize = { width: number; height: number };
 
@@ -73,6 +76,7 @@ export const buildStageTiles = (
 		handPosition: handPositions?.[self.id],
 		reaction: reactions?.[self.id],
 		sendHeight: self.sendHeight,
+		cameraStarting: self.cameraStarting,
 	},
 	...remoteParticipants.map((p): StageTile => ({
 		kind: 'participant',

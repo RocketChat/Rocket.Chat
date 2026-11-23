@@ -12,6 +12,9 @@ import * as cameraPicker from './CameraPicker.stories';
 import * as voiceActivity from './VoiceActivity.stories';
 import * as callDiagnosticsPanel from './diagnostics/CallDiagnosticsPanel.stories';
 import * as participantTile from './tile/ParticipantTile.stories';
+import * as backgroundEffectsModal from '../backgrounds/BackgroundEffectsModal.stories';
+import * as backgroundEffectsPanel from '../backgrounds/BackgroundEffectsPanel.stories';
+import * as cameraWithoutEffectModal from '../backgrounds/CameraWithoutEffectModal.stories';
 import * as callBar from '../components/CallBar.stories';
 import * as callPresenting from '../components/CallPresenting.stories';
 import * as callRaisedHands from '../components/CallRaisedHands.stories';
@@ -23,6 +26,9 @@ const casesOf = (file: string, stories: Record<string, ComposedStory>) =>
 
 const testCases = [
 	...casesOf('AudioDevicePicker', composeStories(audioDevicePicker)),
+	...casesOf('BackgroundEffectsModal', composeStories(backgroundEffectsModal)),
+	...casesOf('BackgroundEffectsPanel', composeStories(backgroundEffectsPanel)),
+	...casesOf('CameraWithoutEffectModal', composeStories(cameraWithoutEffectModal)),
 	...casesOf('CallBar', composeStories(callBar)),
 	...casesOf('CallControls', composeStories(callControls)),
 	...casesOf('CallDiagnosticsPanel', composeStories(callDiagnosticsPanel)),

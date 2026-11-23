@@ -19,6 +19,7 @@ const ThumbnailTile = ({ tile }: ThumbnailTileProps) =>
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
 			sendHeight={tile.sendHeight}
+			cameraStarting={tile.cameraStarting}
 		/>
 	) : (
 		<ParticipantThumbnail

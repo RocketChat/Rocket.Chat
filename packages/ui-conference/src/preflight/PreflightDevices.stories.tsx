@@ -46,3 +46,19 @@ export const CameraMenuOpen: Story = {
 		await userEvent.click(await within(canvasElement).findByRole('button', { name: /^Camera/ }));
 	},
 };
+
+/** The camera menu with a background effect on. */
+export const CameraMenuWithEffect: Story = {
+	decorators: [withPreviewMedia({ backgroundEffect: { effect: { kind: 'blur', level: 'medium' } } })],
+	play: async ({ canvasElement }) => {
+		await userEvent.click(await within(canvasElement).findByRole('button', { name: /^Camera/ }));
+	},
+};
+
+export const BackgroundsDialogOpen: Story = {
+	decorators: [withPreviewMedia()],
+	play: async ({ canvasElement }) => {
+		await userEvent.click(await within(canvasElement).findByRole('button', { name: /^Camera/ }));
+		await userEvent.click(await within(canvasElement.ownerDocument.body).findByText('Background settings…'));
+	},
+};

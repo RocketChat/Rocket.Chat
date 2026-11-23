@@ -98,6 +98,70 @@ had before there was a choice.
 - **A browser that cannot run RNNoise** (no AudioWorklet) never tries: a remembered *Advanced* runs, and shows, as
   *Standard*.
 
+## Background effects
+
+The backgrounds panel (beside the call; a dialog over the preflight) offers one choice: *Light*, *Medium* or *Strong*
+blur, a preset picture, a picture of the participant's own, or *No effect*. The camera menu has a quick toggle that
+turns the last effect used back on (*Medium* blur for someone who never used one) and a way to the panel. Processing
+is `@livekit/track-processors`, running MediaPipe's selfie multiclass segmentation model on the participant's
+device.
+
+- **Remembered per account in this browser,** with the other call preferences, along with the effects used before:
+  what the toggle turns back on, and what takes over when a picture in use is removed. A choice made with the camera
+  off is remembered at once; one made with it on, once it is in place. A failure leaves the remembered effect alone.
+- **Others never receive a frame of the room while an effect is wanted.** A camera starting with an effect (on arrival,
+  or turned on with one chosen since) is opened with its processor and published only once that processor has produced
+  a frame; until then the camera button is busy and the self tile says the effect is starting. A camera turned back on
+  with a processor that has already produced frames goes through LiveKit's own unmute, since that processor sends no
+  unprocessed frame when restarted. A switch keeps the old effect until the new one is ready.
+- **Failures:** an effect that does not start in time fails with a toast and shows *No effect*; if it was starting
+  the camera, the camera stays off. A running effect that stops producing frames turns the camera off with the same
+  toast. Only time on a visible page counts for either. After a failure, turning the camera on without the effect asks
+  first, until the participant agrees or chooses an effect again.
+- **Blur strength** is a share of the frame's height, so a level looks the same at every resolution. Each level has a
+  floor, since the library blurs a quarter-size copy and small radii would otherwise all look alike.
+- **The participant's own pictures** are decoded, turned upright and scaled down in the browser, and kept in IndexedDB
+  for their account, up to a fixed number of them. They are never uploaded; the processor reads them from a `blob:`
+  URL.
+- **The workspace serves the files** at `/video-conference/rnnoise/` from the installed package, by its package exports,
+  so clients never reach a third party. About 125 KB gzipped, fetched the first time it is chosen; the WebAssembly is
+  kept for the page. The URLs carry no version, so the files are revalidated (`Last-Modified`) rather than cached for
+  a while: an upgrade would otherwise pair a new client with an old worklet.
+- **A browser that cannot run RNNoise** (no AudioWorklet) never tries: a remembered *Advanced* runs, and shows, as
+  *Standard*.
+
+## Background effects
+
+The backgrounds panel (beside the call; a dialog over the preflight) offers one choice: *Light*, *Medium* or *Strong*
+blur, a preset picture, a picture of the participant's own, or *No effect*. The camera menu has a quick toggle that
+turns the last effect used back on (*Medium* blur for someone who never used one) and a way to the panel. Processing
+is `@livekit/track-processors`, running MediaPipe's selfie multiclass segmentation model on the participant's
+device.
+
+- **Remembered per account in this browser,** with the other call preferences, along with the effects used before:
+  what the toggle turns back on, and what takes over when a picture in use is removed. A choice made with the camera
+  off is remembered at once; one made with it on, once it is in place. A failure leaves the remembered effect alone.
+- **Others never receive a frame of the room while an effect is wanted.** A camera starting with an effect (on arrival,
+  or turned on with one chosen since) is opened with its processor and published only once that processor has produced
+  a frame; until then the camera button is busy and the self tile says the effect is starting. A camera turned back on
+  with a processor that has already produced frames goes through LiveKit's own unmute, since that processor sends no
+  unprocessed frame when restarted. A switch keeps the old effect until the new one is ready.
+- **Failures:** an effect that does not start in time fails with a toast and shows *No effect*; if it was starting
+  the camera, the camera stays off. A running effect that stops producing frames turns the camera off with the same
+  toast. Only time on a visible page counts for either. After a failure, turning the camera on without the effect asks
+  first, until the participant agrees or chooses an effect again.
+- **Blur strength** is a share of the frame's height, so a level looks the same at every resolution. Each level has a
+  floor, since the library blurs a quarter-size copy and small radii would otherwise all look alike.
+- **The participant's own pictures** are decoded, turned upright and scaled to at most 2560 px in the browser, and kept
+  in IndexedDB for their account. They are never uploaded; the processor reads them from a `blob:` URL.
+- **The workspace serves the files** under `/video-conference/background-effects/`: the MediaPipe runtime from the
+  installed `@mediapipe/tasks-vision`, the model and the preset pictures from `@rocket.chat/background-effects-assets`.
+  A `manifest.json` (revalidated) names them; every other URL carries its version (runtime version, model checksum,
+  picture hash) and is cached for a year. The model is fetched at build time and checked against a pinned SHA-256.
+  Nothing is fetched until an effect first starts, apart from the manifest and the preset thumbnails.
+- **Where it cannot run** (no WebGL2, no `OffscreenCanvas`, hardware acceleration off), no effect is offered, and a
+  remembered one stays remembered.
+
 ## Data-channel messages
 
 | Type | Reliable | Payload | Meaning |
@@ -134,4 +198,6 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
-- Background blur ships in a follow-up.
+- Background effects segment on the page's main thread, tens of milliseconds per frame, and blur a quarter-size copy,
+  so a 1080p background is blockier than a 360p one. In Firefox and Safari a hidden tab runs the effect at about one
+  frame per second: the library's frame ticker needs a `blob:` worker, which the Content-Security-Policy refuses.

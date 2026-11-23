@@ -1,0 +1,18 @@
+{
+	"name": "@rocket.chat/background-effects-assets",
+	"version": "0.1.0",
+	"private": true,
+	"description": "The segmentation model and preset images the workspace serves for background effects in native video calls",
+	"main": "./index.js",
+	"typings": "./index.d.ts",
+	"files": [
+		"/index.js",
+		"/index.d.ts",
+		"/dist",
+		"/presets",
+		"/NOTICE"
+	],
+	"scripts": {
+		"build": "node scripts/fetchModel.mjs"
+	}
+}
