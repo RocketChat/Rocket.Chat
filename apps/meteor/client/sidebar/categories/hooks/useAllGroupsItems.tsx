@@ -16,7 +16,7 @@ export const getAllGroupsFilterItemId = (hours: number | undefined): string => `
 /**
  * The items of the "All groups" submenu in the Display menu: the activity filter windows, then the unread toggles,
  * each read across every group and written to all of them at once. While the groups disagree on a setting nothing
- * is checked for it, and `mixed` says so, for the trigger to tell that the groups are set one by one.
+ * is checked for it.
  */
 export const useAllGroupsItems = () => {
 	const { t } = useTranslation();
@@ -89,7 +89,6 @@ export const useAllGroupsItems = () => {
 		...(keepUnreadsOnTopOn && !sidebarShowUnread ? [ALL_GROUPS_KEEP_UNREADS_ON_TOP_ITEM_ID] : []),
 	];
 	const disabledKeys = sidebarShowUnread ? [ALL_GROUPS_SHOW_UNREADS_ITEM_ID, ALL_GROUPS_KEEP_UNREADS_ON_TOP_ITEM_ID] : [];
-	const mixed = activityFilterHours.mixed || showUnreads.mixed || keepUnreadsOnTop.mixed;
 
-	return { filterItems, unreadItems, selectedKeys, disabledKeys, mixed };
+	return { filterItems, unreadItems, selectedKeys, disabledKeys };
 };

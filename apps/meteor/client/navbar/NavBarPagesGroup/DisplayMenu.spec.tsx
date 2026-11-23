@@ -45,7 +45,6 @@ const appRoot = (sidebarShowUnread = false) =>
 			Favorites: 'Favorites',
 			Types: 'Types',
 			All_groups: 'All groups',
-			Set_per_group: 'Set per group',
 			Filter: 'Filter',
 			All: 'All',
 			Last_24_hours: 'Last 24 hours',
@@ -107,7 +106,6 @@ describe('the Display menu', () => {
 		expect(screen.getByRole('menuitemcheckbox', { name: 'All' })).toHaveAttribute('aria-checked', 'false');
 		expect(screen.getByRole('menuitemcheckbox', { name: 'Always display' })).toHaveAttribute('aria-checked', 'false');
 		expect(screen.getByRole('menuitemcheckbox', { name: 'Keep on top' })).toHaveAttribute('aria-checked', 'true');
-		expect(screen.queryByText('Set per group')).not.toBeInTheDocument();
 
 		// Only the submenu is checked: the root menu's radio and checkbox addons predate this change.
 		// `aria-allowed-role` and `region`: Fuselage renders a menu item as a label and the menu as a section.
@@ -117,18 +115,13 @@ describe('the Display menu', () => {
 		).toHaveNoViolations();
 	});
 
-	it('checks nothing for a setting the groups disagree on, and says they are set per group', async () => {
+	it('checks nothing for a setting the groups disagree on', async () => {
 		withCategories([
 			{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168 },
 			{ _id: 'Teams', name: 'Teams', default: true, activityFilterHours: 24 },
 		]);
 
-		await openMenu();
-		// The hint is part of the item, so it is part of what the item announces.
-		expect(screen.getByRole('menuitem', { name: /All groups.*Set per group/ })).toBeInTheDocument();
-
-		await userEvent.click(screen.getByRole('menuitem', { name: /All groups/ }));
-		expect(await screen.findByRole('menuitemcheckbox', { name: 'All' })).toBeInTheDocument();
+		await openAllGroups();
 
 		for (const name of ['All', 'Last 24 hours', 'Last 7 days', 'Last 14 days', 'Last 30 days']) {
 			expect(screen.getByRole('menuitemcheckbox', { name })).toHaveAttribute('aria-checked', 'false');
