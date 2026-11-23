@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 9.1.0-rc.1
+
 ## 9.1.0-rc.0
 
 ### Minor Changes
