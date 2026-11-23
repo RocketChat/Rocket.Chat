@@ -307,6 +307,33 @@ describe('useRoomToolboxActions', () => {
 			});
 		});
 
+		it.each([false, true])('shows the count of an action next to its title in the menu (layout preview: %s)', (preview) => {
+			const counted: RoomToolboxActionConfig = {
+				id: 'discussions',
+				title: 'Files',
+				icon: 'clip',
+				groups: ['channel'],
+				count: 2,
+				tabComponent: MockTabComponent,
+			};
+			const { result } = renderHook(() => useRoomToolboxActions({ actions: [counted], openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withTranslations('en', 'core', { Files: 'Files' })
+					.withSetting('Accounts_AllowFeaturePreview', preview)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: preview }])
+					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
+					.wrap((children) => (
+						<LayoutContext.Provider value={collapsedLayoutContextValue}>
+							<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>
+						</LayoutContext.Provider>
+					))
+					.build(),
+			});
+
+			const items = result.current.hiddenActions.flatMap((section) => section.items);
+			expect(items.find(({ id }) => id === 'discussions')?.content).toBe('Files (2)');
+		});
+
 		it('should handle unexpanded layout properly (roomToolboxExpanded = false)', () => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
 				wrapper: mockAppRoot()

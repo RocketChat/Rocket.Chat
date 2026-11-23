@@ -25,6 +25,7 @@ import {
 	AbacAttributesRaw,
 	ServerEventsRaw,
 	SamlUsedAssertionsRaw,
+	ScheduledMessagesRaw,
 	CronHistoryRaw,
 	VideoConferenceRaw,
 } from './modelClasses';
@@ -80,5 +81,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	// process holds the stream — ddp-streamer, once the services are split out.
 	registerModel('IVideoConferenceModel', () => new VideoConferenceRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
+	registerModel('IScheduledMessagesModel', () => new ScheduledMessagesRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
 }

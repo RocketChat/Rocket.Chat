@@ -1,3 +1,7 @@
+import type { ScheduledMessagesEndpoints } from './scheduledMessages';
+
+export type * from './scheduledMessages';
+
 /**
  * Opt-in typings for experimental REST endpoints (`/api/experimental/...`).
  *
@@ -22,7 +26,7 @@
  * };
  * ```
  */
-export type ExperimentalEndpoints = {
+export type ExperimentalEndpoints = ScheduledMessagesEndpoints & {
 	'/experimental/rooms.setCategory': {
 		POST: (params: { roomIds: string[]; category: string | null }) => { success: true };
 	};
