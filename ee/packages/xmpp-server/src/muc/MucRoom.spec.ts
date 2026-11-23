@@ -250,6 +250,22 @@ describe('MucRoom', () => {
 		expect(sent.map((s) => [s.attrs.type, s.getChild('error')?.getChild('conflict') !== undefined])).toEqual([['error', true]]);
 	});
 
+	it('takes only the clashing nick from a remote JID that holds several (hosted-muc R20)', async () => {
+		const { room, sent, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'diego'));
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		sent.length = 0;
+		events.length = 0;
+
+		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
+
+		expect(room.listOccupants().map((o) => [o.nick, o.isLocal])).toEqual([
+			['alice', false],
+			['diego', true],
+		]);
+		expect(events.map((e) => (e.args[0] as { nick: string }).nick)).toEqual(['diego']);
+	});
+
 	it('leaves a Rocket.Chat member registered again in place, without a removal (hosted-muc R2, R20)', async () => {
 		const { room, sent, events } = setup();
 		room.addLocalOccupant({ nick: 'diego', realJid: 'diego@rc.tld' });
