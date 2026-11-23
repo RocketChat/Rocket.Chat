@@ -261,6 +261,7 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 - **FR-026**: When an agent replies to a message in a room, the reply MUST go to the thread of that message by default.
 - **FR-027**: When an agent replies in a direct message with a human, the reply MUST go to the conversation, not to a thread.
 - **FR-028**: An agent in autonomous mode MUST be able to post a message without a triggering message in the main timeline of an allowed room.
+- **FR-057**: An agent MUST be able to add non-interactive UiKit blocks to each message it posts under FR-026 to FR-028. The system MUST reject a message with an invalid block or an interactive element, with an error that names each rejected block. An interactive element is any element that sends a block action, for example a button, a select, an overflow menu, or an input.
 
 #### Approval card
 
@@ -310,6 +311,7 @@ The plan's research phase MUST answer each question below and record the answer 
 | RQ-2 | Can the platform detect or block one credential in use by two harness instances, and at what cost? | FR-052, SH-002 | The answer feeds the next iteration. It does not block this iteration. |
 | RQ-3 | Do the REST API rate limits that the MCP server inherits meet FR-050 and FR-051? If not, which agent-specific guards are needed, for example per-agent limits or a cap on posts at agent start-up? | FR-050, FR-051 | Agents can post in bursts, for example a mass post at start-up. |
 | RQ-4 | Do one agent role and declared capabilities per MCP tool give enough control, or does the agent need finer scope, for example per room or read versus write? | FR-014, FR-015, FR-043 | The spec decides one agent role on the existing permissions. A finer model is a spec change. |
+| RQ-5 | How does an agent learn to compose valid UiKit blocks? Candidates: the JSON schema in the MCP tool input, an MCP resource or prompt with the UiKit reference and examples, a published skill for agent frameworks, and validation errors that state the fix. | FR-036, FR-057 | The agent sees only what the MCP server exposes, so the answer must reach the agent through MCP. |
 
 ### Key Entities
 
@@ -364,6 +366,7 @@ The plan's research phase MUST answer each question below and record the answer 
 - Per-user MCP authorization: a consent card for an agent to access a user's personal resources (Phase 2+). RP-2 is different: its consent authorizes the creation of an agent, not access to the approving user's resources.
 - Tool-loop visibility and thinking streams.
 - Realtime interactions: streaming replies and live tool progress. An agent posts each reply as a complete message.
+- Interactive UiKit elements in agent messages (deferred). FR-057 allows non-interactive blocks only, because no path delivers block actions to an agent yet. The approval card (FR-029) is the exception, since the platform owns its actions.
 - A cross-channel awareness badge in the sidebar. The agent badge shows only on the surfaces in FR-002.
 - Agent-to-agent handoff. An agent may mention another agent like any user, with no handoff semantics.
 - A dedicated agent dashboard to manage agent definitions (prompts, tools), LLM providers, and workflows, with its own admin visibility views and audit log. The agent records in the existing platform audit trail (FR-017, FR-035, FR-048) stay in scope.
