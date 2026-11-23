@@ -3,8 +3,6 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 import * as constants from './tests/e2e/config/constants';
 
 export default {
-	// the edition, so a release's Qase run keeps the CE and EE results of a test apart
-	name: process.env.QASE_TESTOPS_RUN_ID && (constants.IS_EE ? 'EE' : 'CE'),
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
 		channel: 'chromium',
@@ -55,7 +53,6 @@ export default {
 			{
 				mode: 'testops',
 				rootSuite: 'Rocket.chat automation',
-				framework: { browser: { addAsParameter: true, parameterName: 'Edition' } },
 				testops: {
 					api: { token: process.env.QASE_API_TOKEN },
 					project: 'RC',
