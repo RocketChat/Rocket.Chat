@@ -72,7 +72,7 @@
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-color-alternative {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-color-primary {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-style-headline {",
-		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box.rcx-\\@s6mi60{margin:0.75rem !important;}.rcx-box.rcx-\\@19aubzx{margin:2rem !important;}.rcx-box.rcx-\\@1kgm1vs{-webkit-align-items:c",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box.rcx-\\\\@s6mi60{margin:0.75rem !important;}.rcx-box.rcx-\\\\@19aubzx{margin:2rem !important;}.rcx-box.rcx-\\\\@1kgm1vs{-webkit-align-item",
 		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {",
 		"packages/fuselage/src/components/Skeleton/Skeleton.styles.scss: @extend .rcx-box;"
 	],
