@@ -234,7 +234,7 @@ jobs:
             response="$(curl -sS --fail-with-body --max-time 30 https://api.qase.io/v1/run/RC \
               -H "Token: ${QASE_API_TOKEN}" \
               -H 'Content-Type: application/json' \
-              -d "$(jq -n --arg title "$title" '{title: $title}')")"
+              -d "$(jq -n --arg title "$title" '{title: $title, is_autotest: true}')")"
             run_id="$(jq -er '.result.id' <<< "$response")"
             echo "Created Qase run ${run_id}"
           fi
