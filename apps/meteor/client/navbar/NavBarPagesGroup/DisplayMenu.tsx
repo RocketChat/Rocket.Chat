@@ -6,7 +6,7 @@ import type { ElementType } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSortMenu } from './hooks/useSortMenu';
-import { useAllRoomsItems } from '../../sidebar/categories/hooks/useAllRoomsItems';
+import { useAllGroupsItems } from '../../sidebar/categories/hooks/useAllGroupsItems';
 
 type DisplayMenuProps = {
 	/** The component rendering the trigger, an icon button. */
@@ -22,17 +22,17 @@ const renderItem = (item: GenericMenuItemProps) => (
 );
 
 /**
- * The sidebar's Display menu: view mode, sort and grouping, and on a licensed workspace an "All rooms" submenu
- * that sets the activity filter and the unread toggles of every group at once (`useAllRoomsItems`).
+ * The sidebar's Display menu: view mode, sort and grouping, and on a licensed workspace an "All groups" submenu
+ * that sets the activity filter and the unread toggles of every group at once (`useAllGroupsItems`).
  */
 const DisplayMenu = ({ is, placement, className }: DisplayMenuProps) => {
 	const { t } = useTranslation();
 	const sections = useSortMenu();
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
-	const allRooms = useAllRoomsItems();
+	const allGroups = useAllGroupsItems();
 
-	const allRoomsItems = isEnterprise ? [...allRooms.filterItems, ...allRooms.unreadItems] : [];
-	const allItems = [...sections.flatMap(({ items }) => items), ...allRoomsItems];
+	const allGroupsItems = isEnterprise ? [...allGroups.filterItems, ...allGroups.unreadItems] : [];
+	const allItems = [...sections.flatMap(({ items }) => items), ...allGroupsItems];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(allItems);
 
@@ -59,22 +59,22 @@ const DisplayMenu = ({ is, placement, className }: DisplayMenuProps) => {
 				)),
 				...(isEnterprise
 					? [
-							<MenuSection key='all-rooms' aria-label={t('All_rooms')}>
+							<MenuSection key='all-groups' aria-label={t('All_groups')}>
 								<MenuSubmenuTrigger
-									key='all-rooms'
-									textValue={t('All_rooms')}
+									key='all-groups'
+									textValue={t('All_groups')}
 									selectionMode='multiple'
-									selectedKeys={allRooms.selectedKeys}
-									disabledKeys={allRooms.disabledKeys}
+									selectedKeys={allGroups.selectedKeys}
+									disabledKeys={allGroups.disabledKeys}
 								>
 									<MenuItem>
 										<GenericMenuItem
-											id='all-rooms'
+											id='all-groups'
 											icon='customize'
 											content={
 												<Box>
-													<Box>{t('All_rooms')}</Box>
-													{allRooms.mixed && (
+													<Box>{t('All_groups')}</Box>
+													{allGroups.mixed && (
 														<Box fontScale='c1' color='hint'>
 															{t('Set_per_group')}
 														</Box>
@@ -83,10 +83,10 @@ const DisplayMenu = ({ is, placement, className }: DisplayMenuProps) => {
 											}
 										/>
 									</MenuItem>
-									<MenuSection title={t('Filter')} items={allRooms.filterItems}>
+									<MenuSection title={t('Filter')} items={allGroups.filterItems}>
 										{renderItem}
 									</MenuSection>
-									<MenuSection title={t('Unreads')} items={allRooms.unreadItems}>
+									<MenuSection title={t('Unreads')} items={allGroups.unreadItems}>
 										{renderItem}
 									</MenuSection>
 								</MenuSubmenuTrigger>
