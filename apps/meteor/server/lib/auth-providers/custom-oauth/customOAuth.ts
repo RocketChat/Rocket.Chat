@@ -78,7 +78,7 @@ export class CustomOAuthStrategy extends Strategy {
 		const tokenURL = resolveEndpoint(config.serverURL, config.tokenPath || '/oauth/token');
 
 		const options: StrategyOptions = {
-			authorizationURL: resolveEndpoint(config.serverURL, config.authorizePath),
+			authorizationURL: resolveEndpoint(config.serverURL, config.authorizePath || '/oauth/authorize'),
 			tokenURL,
 			clientID: config.clientId,
 			clientSecret: config.clientSecret,

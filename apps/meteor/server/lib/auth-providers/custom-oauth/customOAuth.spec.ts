@@ -206,6 +206,12 @@ describe('CustomOAuthStrategy', () => {
 			expect(strategy.options.tokenURL).toBe('https://tokens.example.com/token');
 		});
 
+		it.each(['', undefined])('passes the default authorization endpoint to Passport when authorizePath is %p', (authorizePath) => {
+			expect(env.createStrategy({ authorizePath: authorizePath as string }).options.authorizationURL).toBe(
+				'https://identity.example.com/oauth/authorize',
+			);
+		});
+
 		it.each(['', undefined])('passes the default token endpoint to Passport when tokenPath is %p', (tokenPath) => {
 			expect(env.createStrategy({ tokenPath: tokenPath as string }).options.tokenURL).toBe('https://identity.example.com/oauth/token');
 		});
