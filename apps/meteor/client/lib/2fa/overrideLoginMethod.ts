@@ -57,13 +57,16 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 	});
 };
 
-export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<any>>(
-	login: TLoginFunction,
-	loginWithTOTP: (...args: [...args: Parameters<TLoginFunction>, code: string]) => ReturnType<TLoginFunction>,
+const isLoginCallback = (value: unknown): value is LoginCallback => typeof value === 'function';
+
+export const handleLogin = <TArgs extends [...unknown[], string], TResult>(
+	login: (...args: TArgs) => Promise<TResult>,
+	loginWithTOTP: (...args: [...TArgs, code: string]) => Promise<TResult>,
 ) => {
-	return (...args: [...loginArgs: Parameters<TLoginFunction>, callback?: LoginCallback]) => {
-		const loginArgs = args.slice(0, -1) as Parameters<TLoginFunction>;
-		const callback = args.slice(-1)[0] as LoginCallback | undefined;
+	return (...args: [...loginArgs: TArgs, callback?: LoginCallback]) => {
+		const last: unknown = args[args.length - 1];
+		const callback = isLoginCallback(last) ? last : undefined;
+		const loginArgs = args.slice(0, callback || last === undefined ? -1 : args.length) as TArgs;
 
 		return login(...loginArgs)
 			.catch(async (error: MeteorErrorLike | undefined) => {
