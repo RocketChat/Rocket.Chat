@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Bumps Node.js to 24.22.3 for development, CI, and Docker images.
+Bumps the Node.js runtime in the Docker images to 24.22.3.
