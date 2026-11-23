@@ -4,5 +4,14 @@
  */
 export const MAILBOX_CONCURRENCY = 5;
 
+/** Photos above this are skipped rather than stored. */
+export const MAX_CONTACT_PHOTO_BYTES = 500 * 1024;
+
+/**
+ * Photo deletes are one round trip each on every backend but the local ones, so a folder prune would
+ * otherwise run them in single file.
+ */
+export const AVATAR_DELETE_CONCURRENCY = 5;
+
 /** Busy presence refreshes at once after a calendar run. They never reach Exchange, so its throttling does not bound them. */
 export const PRESENCE_REFRESH_CONCURRENCY = 10;
