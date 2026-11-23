@@ -6,13 +6,9 @@ import sinon from 'sinon';
 import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const configureMailTransport = sinon.stub();
-const sendNoWrap = sinon.stub().resolves();
-const Email: { customTransport?: (mail: Record<string, unknown>) => Promise<void> } = {};
 
 const { configureSMTP } = loadWithMocks('./configureSMTP', {
-	'meteor/email': { Email },
 	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
-	'../lib/notifications/email/api': { sendNoWrap },
 	'../lib/notifications/email/transport': { configureMailTransport },
 });
 
@@ -45,16 +41,6 @@ describe('configureSMTP', () => {
 		} else {
 			process.env.MAIL_URL = originalMailUrl;
 		}
-	});
-
-	it("should send Meteor email through the Mailer, without Meteor's text part or package settings", async () => {
-		sendNoWrap.resetHistory();
-		applySettings(smtpSettings);
-
-		const mail = { to: 'someone@example.com', from: 'rocket.chat@example.com', subject: 'Reset your password', html: '<p>link</p>' };
-		await Email.customTransport?.({ packageSettings: {}, text: 'Hello, To reset your password, simply click the link below.', ...mail });
-
-		sinon.assert.calledOnceWithExactly(sendNoWrap, mail);
 	});
 
 	it('should leave email unsent when there is no SMTP host, even with MAIL_URL set', () => {

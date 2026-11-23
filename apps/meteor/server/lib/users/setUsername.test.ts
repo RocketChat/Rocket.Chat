@@ -19,8 +19,8 @@ describe('setUsername', () => {
 		Subscriptions: {
 			findUserFederatedRoomIds: sinon.stub(),
 		},
-		Accounts: {
-			sendEnrollmentEmail: sinon.stub(),
+		accountEmails: {
+			sendEnrollmentEmail: sinon.stub().resolves(),
 		},
 		settings: {
 			get: sinon.stub(),
@@ -52,7 +52,7 @@ describe('setUsername', () => {
 	const { setUsernameWithValidation, _setUsername } = loadWithMocks('./setUsername', {
 		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 		'@rocket.chat/core-services': { api: stubs.api, ClientSafeError },
-		'meteor/accounts-base': { Accounts: stubs.Accounts },
+		'../auth/accountEmails': stubs.accountEmails,
 		'underscore': stubs.underscore,
 		'../../settings': { settings: stubs.settings },
 		'../notifyListener': { notifyOnUserChange: stubs.notifyOnUserChange },
@@ -84,7 +84,7 @@ describe('setUsername', () => {
 		stubs.Users.findOneById.reset();
 		stubs.Users.setUsername.reset();
 		stubs.Subscriptions.findUserFederatedRoomIds.reset();
-		stubs.Accounts.sendEnrollmentEmail.reset();
+		stubs.accountEmails.sendEnrollmentEmail.resetHistory();
 		stubs.settings.get.reset();
 		stubs.api.broadcast.reset();
 		stubs.Invites.findOneById.reset();

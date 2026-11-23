@@ -7,11 +7,11 @@ import sinon from 'sinon';
 import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const findOneByEmailAddress = sinon.stub();
-const sendResetPasswordEmail = sinon.stub();
+const sendResetPasswordEmail = sinon.stub().resolves();
 const settingsGet = sinon.stub();
 
 const { sendForgotPasswordEmail } = loadWithMocks('./sendForgotPasswordEmail', {
-	'meteor/accounts-base': { Accounts: { sendResetPasswordEmail } },
+	'../../lib/auth/accountEmails': { sendResetPasswordEmail },
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../../settings': { settings: { get: settingsGet } },
 });
@@ -25,7 +25,7 @@ describe('sendForgotPasswordEmail', () => {
 
 	beforeEach(() => {
 		findOneByEmailAddress.reset();
-		sendResetPasswordEmail.reset();
+		sendResetPasswordEmail.resetHistory();
 		settingsGet.reset();
 	});
 
