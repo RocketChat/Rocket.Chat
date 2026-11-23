@@ -58,6 +58,8 @@ export default {
 					project: 'RC',
 					run: { id: Number(process.env.QASE_TESTOPS_RUN_ID), complete: false },
 					uploadAttachments: false,
+					// CE and EE share each test's entry, so one edition's skip must not hide the other's result
+					statusFilter: ['skipped'],
 				},
 			},
 		],
