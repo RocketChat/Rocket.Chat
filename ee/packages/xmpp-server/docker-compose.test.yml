@@ -17,7 +17,7 @@ services:
       - ./docker-compose/certs:/certs
 
   mongo:
-    image: mongo:8.0
+    image: mongo:9.0
     entrypoint: |
       bash -c
         "mongod --replSet rs0 --bind_ip_all &
