@@ -1,10 +1,15 @@
 import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
 import type { StreamControllerRef } from '@rocket.chat/mock-providers';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { isIncomingCallMessage, useSubscribeToIncomingMessages } from './useSubscribeToIncomingMessages';
 import { createFakeMessage } from '../../../../tests/mocks/data';
+import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
+
+jest.mock('../../../lib/e2ee/rocketchat.e2e', () => ({ e2e: { decryptMessage: jest.fn() } }));
+
+const decryptMessage = jest.mocked(e2e.decryptMessage);
 
 const rid = 'room-id';
 const joinedAt = new Date('2026-11-03T10:00:00.000Z');
@@ -39,6 +44,10 @@ describe('isIncomingCallMessage', () => {
 		expect(isIncomingCallMessage(incoming({ t: 'uj' }), scope)).toBe(false);
 	});
 
+	it('leaves out messages from people the reader ignores', () => {
+		expect(isIncomingCallMessage(incoming(), { ...scope, ignored: [grace._id] })).toBe(false);
+	});
+
 	it('takes encrypted messages', () => {
 		expect(isIncomingCallMessage(incoming({ t: 'e2e', e2e: 'pending' }), scope)).toBe(true);
 	});
@@ -68,6 +77,11 @@ describe('isIncomingCallMessage', () => {
 });
 
 describe('useSubscribeToIncomingMessages', () => {
+	beforeEach(() => {
+		decryptMessage.mockReset();
+		decryptMessage.mockImplementation(async (message) => message);
+	});
+
 	const render = (since?: Date) => {
 		const streamRef: StreamControllerRef<'room-messages'> = {};
 
@@ -82,23 +96,25 @@ describe('useSubscribeToIncomingMessages', () => {
 		expect(render().subscribe).toBeUndefined();
 	});
 
-	it('hands over who sent a message and a plain-text preview of it', () => {
+	it('hands over who sent a message and a plain-text preview of it', async () => {
 		const { subscribe, streamRef } = render(joinedAt);
 		const listener = jest.fn();
 		subscribe?.(listener);
 
 		streamRef.controller?.emit(rid, [incoming({ _id: 'message-id', msg: '*Can* everyone see my screen?' })]);
 
-		expect(listener).toHaveBeenCalledWith({
-			_id: 'message-id',
-			username: 'grace',
-			name: 'Grace Hopper',
-			preview: 'Can everyone see my screen?',
-		});
+		await waitFor(() =>
+			expect(listener).toHaveBeenCalledWith({
+				_id: 'message-id',
+				username: 'grace',
+				name: 'Grace Hopper',
+				text: 'Can everyone see my screen?',
+			}),
+		);
 	});
 
 	// The stream sends the whole message again on every change to it, such as a link preview arriving.
-	it('hands each message over once', () => {
+	it('hands each message over once', async () => {
 		const { subscribe, streamRef } = render(joinedAt);
 		const listener = jest.fn();
 		subscribe?.(listener);
@@ -107,28 +123,52 @@ describe('useSubscribeToIncomingMessages', () => {
 		streamRef.controller?.emit(rid, [message]);
 		streamRef.controller?.emit(rid, [{ ...message, urls: [{ url: 'https://rocket.chat', meta: {} }] }]);
 
+		await waitFor(() => expect(listener).toHaveBeenCalled());
 		expect(listener).toHaveBeenCalledTimes(1);
 	});
 
-	it('says an encrypted message cannot be previewed', () => {
+	// Blocks alone, or an attachment with nothing to name it, would be a preview with a sender and no message.
+	it('leaves out a message with no text to show', async () => {
 		const { subscribe, streamRef } = render(joinedAt);
 		const listener = jest.fn();
 		subscribe?.(listener);
 
-		streamRef.controller?.emit(rid, [
-			incoming({ t: 'e2e', e2e: 'pending', msg: '', content: { algorithm: 'rc.v1.aes-sha2', ciphertext: 'x' } }),
-		]);
+		streamRef.controller?.emit(rid, [incoming({ _id: 'blocks-only', msg: '' })]);
+		streamRef.controller?.emit(rid, [incoming({ _id: 'with-text' })]);
 
-		expect(listener).toHaveBeenCalledWith(expect.objectContaining({ preview: 'Encrypted_message_preview_unavailable' }));
+		await waitFor(() => expect(listener).toHaveBeenCalledWith(expect.objectContaining({ _id: 'with-text' })));
+		expect(listener).toHaveBeenCalledTimes(1);
 	});
 
-	it('stops handing messages over once unsubscribed', () => {
+	it('previews an encrypted message this session can decrypt', async () => {
+		const { subscribe, streamRef } = render(joinedAt);
+		const listener = jest.fn();
+		subscribe?.(listener);
+		decryptMessage.mockImplementation(async (message) => ({ ...message, e2e: 'done', msg: 'Hello in private' }));
+
+		streamRef.controller?.emit(rid, [incoming({ t: 'e2e', e2e: 'pending', msg: '' })]);
+
+		await waitFor(() => expect(listener).toHaveBeenCalledWith(expect.objectContaining({ text: 'Hello in private' })));
+	});
+
+	it('hands over an encrypted message it cannot decrypt with no text', async () => {
+		const { subscribe, streamRef } = render(joinedAt);
+		const listener = jest.fn();
+		subscribe?.(listener);
+
+		streamRef.controller?.emit(rid, [incoming({ _id: 'message-id', t: 'e2e', e2e: 'pending', msg: '' })]);
+
+		await waitFor(() => expect(listener).toHaveBeenCalledWith(expect.objectContaining({ _id: 'message-id', text: undefined })));
+	});
+
+	it('stops handing messages over once unsubscribed', async () => {
 		const { subscribe, streamRef } = render(joinedAt);
 		const listener = jest.fn();
 		const unsubscribe = subscribe?.(listener);
 
-		unsubscribe?.();
 		streamRef.controller?.emit(rid, [incoming()]);
+		unsubscribe?.();
+		await Promise.resolve();
 
 		expect(listener).not.toHaveBeenCalled();
 	});

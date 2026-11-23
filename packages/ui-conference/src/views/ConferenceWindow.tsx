@@ -1,7 +1,7 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import ConferencePanelToggles from './ConferencePanelToggles.js';
 import ConferenceWindowGate from './ConferenceWindowGate.js';
@@ -17,6 +17,7 @@ import CallBar from '../components/CallBar.js';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel.js';
 import CallMessagePreviews from '../components/CallMessagePreviews/CallMessagePreviews.js';
 import CallPanel from '../components/CallPanel.js';
+import CallStageNotices from '../components/CallStageNotices.js';
 import CallTopBar from '../components/CallTopBar.js';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice.js';
 import ConferenceIframe from '../components/ConferenceIframe.js';
@@ -24,7 +25,9 @@ import { useCallSounds } from '../context/CallSoundsContext.js';
 import { ChatPanelContext } from '../context/ChatPanelContext.js';
 import type { ConferencePanel } from '../context/ConferenceContext.js';
 import { useConference } from '../context/ConferenceContext.js';
+import { useCallMessagePreviews } from '../hooks/useCallMessagePreviews.js';
 import { useRinging } from '../hooks/useRinging.js';
+import { MESSAGE_PREVIEWS_SHOWN, MESSAGE_PREVIEWS_SHOWN_COMPACT } from '../lib/constants.js';
 
 /**
  * The conference window: the call, the bar above it, and the panels beside it.
@@ -65,6 +68,16 @@ const ConferenceWindow = () => {
 	// wide — past `md` — and far too short to dock a panel beside the call.
 	const sheetPanel = !breakpoints.includes('md') || tooShortToSplit;
 
+	// Only once in the call, and not while the chat is being read or a sheet has risen over the corner they show in.
+	const messagePreviews = useCallMessagePreviews(session.joined ? room.incomingMessages?.subscribe : undefined, {
+		paused: chatVisible || (sheetPanel && !!activePanel),
+		limit: sheetPanel ? MESSAGE_PREVIEWS_SHOWN_COMPACT : MESSAGE_PREVIEWS_SHOWN,
+	});
+
+	// Where the keyboard's focus is left when the preview it was on goes: beside the chat those previews came from.
+	const chatButtonRef = useRef<HTMLButtonElement>(null);
+	const focusChatButton = () => chatButtonRef.current?.focus();
+
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);
 
 	const callSounds = useCallSounds();
@@ -83,7 +96,13 @@ const ConferenceWindow = () => {
 	const embeddedCall = !session.url && session.embedded;
 
 	const panelToggles = (
-		<ConferencePanelToggles activePanel={activePanel} presentCount={present.length} unread={room.unread} onToggle={togglePanel} />
+		<ConferencePanelToggles
+			activePanel={activePanel}
+			presentCount={present.length}
+			unread={room.unread}
+			chatButtonRef={chatButtonRef}
+			onToggle={togglePanel}
+		/>
 	);
 
 	const CallScope = embeddedCall ? CallPinScope : Fragment;
@@ -115,16 +134,20 @@ const ConferenceWindow = () => {
 					<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 						<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
 							{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
-							{room.subscribeToIncomingMessages && (
+							<CallStageNotices>
 								<CallMessagePreviews
-									subscribe={room.subscribeToIncomingMessages}
-									chatVisible={chatVisible}
+									ref={messagePreviews.holdRef}
+									messages={messagePreviews.messages}
+									compact={sheetPanel}
 									onOpen={(mid) => {
+										focusChatButton();
 										setActivePanel('chat');
-										room.jumpToMessage?.(mid);
+										room.incomingMessages?.open(mid);
 									}}
+									onDismiss={messagePreviews.dismiss}
+									onFocusLeave={focusChatButton}
 								/>
-							)}
+							</CallStageNotices>
 						</Box>
 
 						<CallPanel visible={!!activePanel} sheet={sheetPanel}>

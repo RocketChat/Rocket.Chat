@@ -82,7 +82,17 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		rid: room.rid,
 		tmid: room.tmid,
 		since: call.members.find(({ _id }) => _id === uid)?.joinedAt,
+		ignored: subscription?.ignored,
 	});
+
+	const incomingMessages = useMemo(
+		() =>
+			subscribeToIncomingMessages && {
+				subscribe: subscribeToIncomingMessages,
+				open: (mid: string) => void setMessageJumpQueryStringParameter(mid),
+			},
+		[subscribeToIncomingMessages],
+	);
 
 	/**
 	 * Which panel the window is showing, held here rather than in the window because a provider's page can carry
@@ -190,8 +200,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 					variant: unreadVariant,
 					title: unreadTitle,
 				},
-				subscribeToIncomingMessages,
-				jumpToMessage: (mid) => void setMessageJumpQueryStringParameter(mid),
+				incomingMessages,
 			},
 			session: {
 				url: conference.url,
@@ -234,7 +243,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			uid,
 			useRealName,
 			showUnread,
-			subscribeToIncomingMessages,
+			incomingMessages,
 			subscription,
 			thread,
 			unreadCount.total,

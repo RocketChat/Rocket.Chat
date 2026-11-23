@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { DeviceSelection } from '@rocket.chat/ui-media';
 import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow.js';
@@ -127,7 +127,10 @@ describe('a call that runs in this window', () => {
 	const renderNative = ({ state, ...overrides }: Partial<ConferenceContextValue> & { state?: CallState } = {}) => {
 		const AppRoot = mockAppRoot()
 			.withJohnDoe()
-			.withTranslations('en', 'core', { __name__raised_their_hand: '{{name}} raised their hand' })
+			.withTranslations('en', 'core', {
+				__name__raised_their_hand: '{{name}} raised their hand',
+				Chat_message_from_name: '{{name}}: {{message}}',
+			})
 			.build();
 
 		const value = buildConferenceContext({
@@ -193,17 +196,19 @@ describe('a call that runs in this window', () => {
 
 	it('opens the chat at a previewed message', async () => {
 		const set = jest.fn();
-		const jumpToMessage = jest.fn();
+		const open = jest.fn();
 
 		renderNative({
 			room: {
 				...buildConferenceContext().room,
 				rid: 'room-id',
-				subscribeToIncomingMessages: (listener) => {
-					listener({ _id: 'message-id', username: 'ada', preview: 'Can everyone see my screen?' });
-					return () => undefined;
+				incomingMessages: {
+					subscribe: (listener) => {
+						listener({ _id: 'message-id', username: 'ada', text: 'Can everyone see my screen?' });
+						return () => undefined;
+					},
+					open,
 				},
-				jumpToMessage,
 			},
 			panel: { set },
 		});
@@ -211,7 +216,7 @@ describe('a call that runs in this window', () => {
 		await userEvent.click(screen.getByRole('button', { name: /Can everyone see my screen\?/ }));
 
 		expect(set).toHaveBeenCalledWith('chat');
-		expect(jumpToMessage).toHaveBeenCalledWith('message-id');
+		expect(open).toHaveBeenCalledWith('message-id');
 	});
 });
 

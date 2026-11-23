@@ -324,9 +324,13 @@ When the preflight opens for a conference that has already ended (`endedAt` is s
 
 ### New message previews
 
-While the chat panel is closed, each new message someone else sends to the call's chat is previewed over the call, in the corner under the chat button. A preview names the sender and shows the message as plain text, two lines at most. It goes away after a few seconds or when dismissed, and stays while it is hovered or focused so it can be reached from the keyboard. Clicking it opens the chat at that message. At most three are shown, the latest ones, and opening the chat clears them.
+While the chat panel is closed, each new message someone else sends to the call's chat is previewed over the call, next to the button that opens the chat. A preview names the sender and shows the message as plain text. It leaves on its own after a short while or when dismissed, and opening it opens the chat at that message. Only the latest few are shown, and opening the chat clears them.
 
-The application decides what is new from the room's message stream: messages from other people, sent after the reader joined the call, in the call's chat — the room's own messages in main room mode, the thread's in thread mode. The stream sends a message again on every change to it (a reaction, an edit, a reply in its thread), so each message is previewed once, and one sent before the reader joined never is.
+Nothing leaves or is replaced while the pointer is over the previews or the keyboard's focus is inside them, so a preview can be read and reached before it goes. Each one is announced to screen readers as it arrives.
+
+On a window too small to dock a panel beside the call, such as a phone, one preview is shown at a time, on a single line, and it can be swiped away. Previews stop while any panel covers the call there.
+
+The application decides what is new from the room's message stream: messages from other people, sent after the reader joined the call, in the call's chat — the room's own messages in main room mode, the thread's in thread mode. Messages from people the reader ignores are left out, as are messages with no text to show. An encrypted message is decrypted when this session can, and otherwise previewed as unavailable. The stream sends a message again on every change to it (a reaction, an edit, a reply in its thread), so each message is previewed once, and one sent before the reader joined never is.
 
 ### Thread Auto-Follow
 

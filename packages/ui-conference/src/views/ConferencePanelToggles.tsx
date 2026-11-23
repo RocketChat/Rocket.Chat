@@ -1,4 +1,5 @@
 import { Badge, Icon, IconButton } from '@rocket.chat/fuselage';
+import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ConferencePanel } from '../context/ConferenceContext.js';
@@ -8,10 +9,18 @@ export type ConferencePanelTogglesProps = {
 	activePanel: ConferencePanel | undefined;
 	presentCount: number;
 	unread: ConferenceRoom['unread'];
+	/** The chat toggle, for a caller that sends focus to it. */
+	chatButtonRef?: Ref<HTMLButtonElement>;
 	onToggle: (panel: ConferencePanel) => void;
 };
 
-const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread, onToggle }: ConferencePanelTogglesProps) => {
+const ConferencePanelToggles = ({
+	activePanel,
+	presentCount,
+	unread: roomUnread,
+	chatButtonRef,
+	onToggle,
+}: ConferencePanelTogglesProps) => {
 	const { t } = useTranslation();
 	const chatVisible = activePanel === 'chat';
 
@@ -38,6 +47,7 @@ const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread,
 			<IconButton
 				size='small'
 				variant='secondary'
+				ref={chatButtonRef}
 				// The badge is `aria-hidden`, so what it says has to be in the button's name.
 				aria-label={showChatBadge && unreadTitle ? `${t('Chat')}, ${unreadTitle}` : t('Chat')}
 				title={t('Chat')}
