@@ -67,7 +67,7 @@ const findDirectMessageRoom = async (
 		type: 'd',
 	});
 
-	if (!room || room?.t !== 'd') {
+	if (room?.t !== 'd') {
 		throw new ClientSafeError('error-room-not-found', 'The required "roomId" param provided does not match any direct message');
 	}
 
@@ -802,7 +802,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
-		if (!room || room?.t !== 'd') {
+		if (room?.t !== 'd') {
 			throw new ClientSafeError('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 		}
 
@@ -1042,6 +1042,6 @@ const dmEndpoints = API.v1
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends DmEndpoints {}
 }

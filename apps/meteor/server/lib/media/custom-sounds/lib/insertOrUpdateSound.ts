@@ -25,7 +25,7 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 
 	// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 	// more practical than allowing specific sets of characters; also allows foreign languages
-	const nameValidation = /[\s,:><&"'\/\\\(\)]/;
+	const nameValidation = /[\s,:><&"'/\\()]/;
 
 	if (nameValidation.test(soundData.name)) {
 		throw new ClientSafeError('error-input-is-not-a-valid-field', `${soundData.name} is not a valid name`, {

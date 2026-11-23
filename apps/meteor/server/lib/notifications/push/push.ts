@@ -216,7 +216,7 @@ class PushClass {
 				userTokens: pushToken.tokenValue,
 				notification,
 				_removeToken: this.removeToken,
-				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
+				options: sendGCMOptions,
 			});
 			return;
 		}
