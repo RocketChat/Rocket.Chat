@@ -99,10 +99,10 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   again as R4 admits an invited member. A closed S2S connection removes nobody: peers close
   idle streams (RFC 6120 §4.6.3), and a removal waits for one of the failures above.
 - **R20** A Rocket.Chat member published as an occupant (R2, R16) under a nick a remote
-  occupant holds takes the nick. The remote occupant is removed first: they receive their own
-  `unavailable` presence with status codes 110 and 307, and the other remote occupants receive
-  it with 307 (XEP-0045 §8.2). Their Rocket.Chat subscription stays, so they can join again
-  under another nick; the taken one is refused as R5 says.
+  occupant holds MUST take the nick. The remote occupant MUST be removed first: they receive
+  their own `unavailable` presence with status codes 110 and 307, and the other remote
+  occupants receive it with 307 (XEP-0045 §8.2). Their Rocket.Chat subscription stays, so
+  they can join again under another nick; the taken one is refused as R5 says.
 
 **Invitations**
 
@@ -220,6 +220,8 @@ a banned XMPP occupant and keeps them out after they leave".
   ignores it.
 - **Q2** Should the room send history on join from Rocket.Chat's message history, or is that
   a job for MAM (pending triage)?
+- ~~**Q3** How is a nick clash between an XMPP occupant and a Rocket.Chat member settled
+  (D5)?~~ Answered by R20: the occupant is removed with status 307 when the member arrives.
 
 ## References
 
