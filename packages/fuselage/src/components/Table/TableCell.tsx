@@ -10,7 +10,7 @@ export type TableCellProps = Omit<
 	'align'
 > & {
 	is?: 'td' | 'th';
-	align?: 'start' | 'center' | 'end' | 'justify' | object;
+	align?: 'start' | 'center' | 'end' | 'justify';
 	clickable?: boolean;
 	/** Renders the cell as the header of its row, like the label of a key/value pair. */
 	rowHeader?: boolean;

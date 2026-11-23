@@ -309,6 +309,7 @@
 				"apps/meteor/server/**/*.ts",
 				"packages/fuselage-ui-kit/**/*.{ts,tsx}",
 				"packages/ui-account/**/*.{ts,tsx}",
+				"packages/ui-contacts/**/*.{ts,tsx}",
 				"packages/ui-client/**/*.{ts,tsx}",
 				"packages/ui-registration/**/*.{ts,tsx}",
 				"packages/ui-voip/**/*.{ts,tsx}"
