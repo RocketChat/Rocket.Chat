@@ -48,8 +48,9 @@ export const useVideoQuality = (room: Room, videoTrack: LocalVideoTrack | undefi
 	const restart = useStableCallback(async (track: LocalVideoTrack, next: VideoQuality) => {
 		setPending(true);
 		try {
-			// The device too: without it the restart opens the browser's default camera.
-			await track.restartTrack({ ...captureOptionsFor(next), deviceId: track.mediaStreamTrack.getSettings().deviceId });
+			// The device too, read from the camera rather than from what an effect sends: without it the restart opens the
+			// browser's default camera.
+			await track.restartTrack({ ...captureOptionsFor(next), deviceId: await track.getDeviceId(false) });
 			applied.current = { track, quality: next };
 		} finally {
 			setPending(false);

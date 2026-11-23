@@ -40,6 +40,15 @@ export const Open: Story = {
 	},
 };
 
+/** A call that can change the background adds a way to the panel for it, after the choices. */
+export const OpenWithAppearance: Story = {
+	args: { onOpenAppearance: () => undefined },
+	decorators: [withCall({ state: { self: { cameraOn: true } }, backgroundEffect: {} })],
+	play: async ({ canvasElement }) => {
+		await userEvent.click(await within(canvasElement).findByRole('button', { name: 'Camera options' }));
+	},
+};
+
 /** No camera to list: the menu has nothing to offer, so it cannot be opened. */
 export const NoCamera: Story = {
 	decorators: [withCall({ deviceSelection: { devices: [] } })],

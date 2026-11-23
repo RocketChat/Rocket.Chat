@@ -60,3 +60,26 @@ it('offers a disabled choice as unavailable', async () => {
 
 	expect(await screen.findByRole('menuitemradio', { name: /720p/ })).toHaveAttribute('aria-disabled', 'true');
 });
+
+it('runs an action last in the menu without switching the device', async () => {
+	const onSelect = jest.fn();
+	const select = jest.fn();
+	render(
+		<DeviceSelectionProvider value={{ devices, selectedIds: { videoinput: 'brio' }, select }}>
+			<DeviceMenu
+				kinds={['videoinput']}
+				title='Camera'
+				placement='top-end'
+				actions={[{ id: 'appearance', name: 'Appearance', onSelect }]}
+				button={<button type='button' />}
+			/>
+		</DeviceSelectionProvider>,
+		{ wrapper: mockAppRoot().build() },
+	);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Camera' }));
+	await userEvent.click(await screen.findByText('Appearance'));
+
+	expect(onSelect).toHaveBeenCalledTimes(1);
+	expect(select).not.toHaveBeenCalled();
+});

@@ -13,4 +13,5 @@ import './abac';
 import './contacts';
 import './exchange';
 import './mcp';
+import './videoConferenceBackgrounds';
 import './videoConferenceCallConfig';
