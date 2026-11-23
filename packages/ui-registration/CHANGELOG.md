@@ -1,5 +1,16 @@
 # @rocket.chat/ui-registration
 
+## 37.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4b01d9d23e2e12378c166f78b745a0d27f870ce0, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 0270870289ea9e3449f658ad7bff80d1525e9937, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/layout@2.0.0-rc.0
+  - @rocket.chat/tools@0.6.0-rc.0
+  - @rocket.chat/ui-contexts@37.0.0-rc.0
+
+  </details>
+
 ## 36.0.0
 
 ### Patch Changes

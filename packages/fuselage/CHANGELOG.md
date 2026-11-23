@@ -1,5 +1,126 @@
 # Change Log
 
+## 2.0.0-rc.0
+
+### Major Changes
+
+- ([#43167](https://github.com/RocketChat/Rocket.Chat/pull/43167)) Makes Fuselage components keep what a consumer passes and style themselves with static CSS.
+
+  - **`className`, props and `ref` are kept:**
+    - The `States`, `Message`, `ThreadMessage`, `NavBar`, `Pagination`, `Sidebar` and `Option` parts, `MessageBlock`, `MessageReactions`, `NavBarItem`, `Position` and the card parts keep a consumer `className` next to their own class instead of replacing or dropping it. `InputBox` puts it on the wrapper when it has an addon, and on the input otherwise.
+    - The modal footer parts, the generic preview, status indicator and thread origin parts, `OptionHeader` and `OptionTitle` forward the HTML attributes they used to drop.
+    - Props override the defaults of `ContextualbarIcon`, `ContextualbarAction`, `ModalClose`, `StatesIcon` and `MessageMetricsFollowing`.
+    - `PaginatedMultiSelect` keeps the consumer `ref`.
+  - **Fixes:**
+    - `SelectLegacy` and `SelectFiltered` follow a controlled `value` that changes after mount.
+    - `Select` applies `style` to its trigger.
+    - `Options` only sets `aria-multiselectable` for multiple selection.
+    - `TabsItem` forwards `disabled` to its button.
+    - `FramedIcon` honors `size`.
+    - `Chip` keeps `onMouseDown` and `onClick` on their own events.
+    - `ToastBar` renders its `id`.
+    - `Button` keeps the `rel` it is given.
+    - `Field` parts log an error instead of throwing when used outside a `Field`.
+  - **New props:**
+    - `Dropdown`, `CardGrid`, `Slider` and `AudioPlayer` accept the HTML attributes of their element.
+    - `AccordionItem` honors `expanded` and reports toggles through `onToggle`.
+    - `Item` takes `multiline` and `interactive`.
+  - **Breaking changes**, all in the types; code that compiled only through them no longer does:
+    - `borderRadius`, `borderWidth`, `fontFamily`, `fontScale`, `strokeColor`, `fontColor` and `backgroundColor` only accept names from the token lists, and always return a value. An arbitrary string is a type error.
+    - `SidebarLink` is typed as an anchor, and `SidebarItemAction`'s `onClick` receives a React mouse event.
+    - The `ref` of `Option` is typed for an `HTMLElement`, the row it renders.
+    - Props that never had an effect are removed: `clamp` from `MessageGenericPreviewFooter`, `actions` from `SidebarCollapseGroup`, `small` and `large` from `CardGroup`, and `hasAction` from `TableRow`. Passing them is a type error; drop them.
+
+### Minor Changes
+
+- ([#43817](https://github.com/RocketChat/Rocket.Chat/pull/43817)) Removes the Box styling props from `Accordion` and `AccordionItem`. Neither is rendered through `StylingBox` any more; `AccordionItem` still forwards `className` and any other attribute to its `section`.
+
+  ### Breaking for npm consumers
+  - `Accordion` no longer accepts Box styling props (`margin`, `padding`, `width`, ...). Wrap it in a layout element instead.
+  - `AccordionItem` no longer accepts Box styling props.
+
+- ([#43638](https://github.com/RocketChat/Rocket.Chat/pull/43638)) `AnimatedVisibility` now passes its animation class and `onAnimationEnd` handler to its direct children as props instead of through `BoxTransforms`, so a child that is not a `Box` receives them too.
+
+  Breaking for npm consumers: a direct child must accept `className` and `onAnimationEnd` and forward them to its DOM element; a child that relied on `AnimatedVisibility` reaching a nested `Box` through `BoxTransforms` no longer animates.
+
+- ([#43817](https://github.com/RocketChat/Rocket.Chat/pull/43817)) Narrows `CardBody` `flexDirection` and `height` to the values it is used with.
+
+  ### Breaking for npm consumers
+  - `CardBody` `flexDirection` is now `'row' | 'column'` and `height` is now `'full'`.
+
+- ([#43302](https://github.com/RocketChat/Rocket.Chat/pull/43302)) Exports `useBoxTransform` and `extractStylingProps`, so a build step can render a `Box` whose styling props are static without the `Box` runtime
+
+- ([#43190](https://github.com/RocketChat/Rocket.Chat/pull/43190)) `Button`, `IconButton` and `Menu` no longer accept their deprecated boolean props. Use `variant` instead of `primary`, `secondary`, `info` (`IconButton`), `danger`, `warning` and `success`, combining `secondary` with a kind as `secondary-danger`, `secondary-warning` or `secondary-success`; and `size` instead of `mini`, `tiny`, `small`, `medium` and `large`. The `IconButtonSize` type is removed, and a `Menu` trigger defaults to `size='small'` as before.
+
+- ([#43167](https://github.com/RocketChat/Rocket.Chat/pull/43167)) Components no longer take a visual state from class names. The classes `hover`, `is-hovered`, `active`, `is-active`, `focus`, `is-focused`, `disabled`, `is-disabled`, `invalid` and `is-visited` used to force the hovered, pressed, focused, disabled, invalid or visited look on buttons, inputs, selection controls, links, tabs, sidebar and accordion items, pagination and chips. States now come only from the element itself (`:hover`, `:active`, `:focus`, `:focus-visible`, `:disabled`, `:invalid`, `:visited`) or from the component's props, so a consumer class with one of those names no longer changes how a component looks.
+
+  Along with it:
+
+  - `SelectLegacy` no longer needs two clicks to open again after it lost focus while open.
+  - Inputs with only a start addon show the invalid border, and inputs with an addon drop it when their value is changed programmatically.
+  - The selected point of a UiKit linear scale element is a primary button when the element is not in an error state, and is announced as pressed.
+  - The transcript subject field of the close chat modal shows its focus ring.
+
+- ([#43824](https://github.com/RocketChat/Rocket.Chat/pull/43824)) Exports `textClassName`, `stackStylingProps` and `stackHostProps`, so a build step can render a `Text` or a `Stack` whose props are static without their runtime
+
+- ([#42995](https://github.com/RocketChat/Rocket.Chat/pull/42995)) Adds drag-and-drop states to the `Item` components:
+
+  - `Item`: `grabbable`, `dragging`, `dropIndicator` (`before` | `after`), `dropTarget` (`available` | `active`), `dropDisabled` and `dropped`.
+  - `ItemGroup`: `dragging`, `dropIndicator`, `dropTarget`, `dropDisabled` and `dropped`.
+  - `ItemDragHandle`, an optional trailing grip with a `disabled` state, and `ItemDropSlot`, the place to drop into an empty group.
+  - Classes a list draws while a row is dragged or moved by keyboard: drop line, drop box (active and available), drag preview, pointer shield and announcer. Drop lines and targets stay visible in forced colors, and the landing flash respects reduced motion.
+
+- ([#43625](https://github.com/RocketChat/Rocket.Chat/pull/43625)) Adds a `truncate` prop to `ItemTitle` and `ItemDescription`; set it to `false` to wrap long text instead of ending it in an ellipsis. Adds `size="large"` to `ItemDescription`, which uses the title's text size.
+
+- ([#43820](https://github.com/RocketChat/Rocket.Chat/pull/43820)) Adds `ModalBackdrop` `contained`, which covers its positioned container instead of the viewport. The expanded thread view uses it instead of overriding the backdrop's `position`.
+
+- ([#43818](https://github.com/RocketChat/Rocket.Chat/pull/43818)) Replaces `Modal`'s `wrapper` and `wrapperFunction` with `onSubmit` and `formId`: `Modal` renders its own surface, as a `form` when `onSubmit` is given. The handler takes no event, and `Modal` prevents the browser's own submission. `GenericModal`'s `wrapperFunction` becomes `onSubmit`, and the app's `ModalForm` is removed.
+
+  ### Breaking for npm consumers
+  - `Modal` no longer accepts `wrapper` or `wrapperFunction`. Pass `onSubmit` (and `formId` when the form needs an `id`) instead of rendering a `form` yourself.
+  - `GenericModal` no longer accepts `wrapperFunction`. Pass `onSubmit`; the confirm button is still a `type='submit'` button when it is given.
+
+- ([#43818](https://github.com/RocketChat/Rocket.Chat/pull/43818)) Narrows `Modal` `width`, `height` and `maxHeight`, and `ModalHeroImage` `width` and `height`, to a Fuselage size (`x480`) or a number of pixels.
+
+  ### Breaking for npm consumers
+  - `Modal` `width`, `height` and `maxHeight`, and `ModalHeroImage` `width` and `height`, no longer accept arbitrary Box size values such as percentages or `'full'`.
+
+- ([#43670](https://github.com/RocketChat/Rocket.Chat/pull/43670)) `SidebarBanner` takes its action as children: `SidebarBannerLink` when it navigates, `SidebarBannerButton` when it runs code, so the action can be reached and activated from the keyboard.
+
+  Breaking for npm consumers: `linkText` and `linkProps` are removed; pass a `SidebarBannerLink` as a child instead.
+
+- ([#43689](https://github.com/RocketChat/Rocket.Chat/pull/43689)) Adds `SidepanelSearch`, a search input laid out for the panel, with a `rooms-list` variant that pads it 8px by 12px to line up with a rooms list, and `SidepanelHeaderActions`, which groups the buttons of a `SidepanelHeader`
+
+- ([#43615](https://github.com/RocketChat/Rocket.Chat/pull/43615)) `Stack` takes `is` to render as a `section`, a `ul` or `li`, a `form`, a `fieldset` or a `span`. A `ul` drops its markers and indentation and a `fieldset` its border and spacing, so they lay out like any other stack
+
+- ([#43817](https://github.com/RocketChat/Rocket.Chat/pull/43817)) Closes `TableCell` `align` to `'start' | 'center' | 'end' | 'justify'`.
+
+  ### Breaking for npm consumers
+  - `TableCell` `align` no longer accepts an object.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `focus_on_load` to `static_select` and `multi_static_select`, and makes the Fuselage filtered selects focus their input when given `autoFocus`.
+
+### Patch Changes
+
+- ([#43351](https://github.com/RocketChat/Rocket.Chat/pull/43351) by [@lakshaydevoo-arch](https://github.com/lakshaydevoo-arch)) Fixes the `chevron-left` and `chevron-right` icons, which pointed opposite to their names, and updates the components that used the opposite icon to compensate. The marketplace screenshot carousel's previous and next buttons now have accessible labels
+
+- ([#43167](https://github.com/RocketChat/Rocket.Chat/pull/43167)) Fixes two message parts rendering broken class names: `MessageStatusPrivateIndicator` rendered a stray backtick instead of `rcx-message-status-indicator__item--private`, and `MessageReactionCounter` added an `undefined` class when it got no `className`.
+
+- ([#43655](https://github.com/RocketChat/Rocket.Chat/pull/43655)) Fixes option lists announcing the wrong active option to screen readers
+
+- ([#43638](https://github.com/RocketChat/Rocket.Chat/pull/43638)) Fixes Fuselage components rendering with `content-box` sizing in apps that don't load a `box-sizing: border-box` reset
+
+- ([#43817](https://github.com/RocketChat/Rocket.Chat/pull/43817)) `MessageStatusIndicator` renders nothing when it has no children, instead of an empty element hidden with `:empty`.
+
+- <details><summary>Updated dependencies [183bca8af1fc26ab280120fef087f72f92982302, be88a0ba4a3a72f9a606f054d5c2d051650140ee, fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4, 9971f492da4960edce747fa9feb07c7fc332dbac]:</summary>
+  - @rocket.chat/icons@0.53.0-rc.0
+  - @rocket.chat/css-in-js@0.34.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/memo@0.32.0-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.1-rc.0
+
+  </details>
+
 ## 1.0.0
 
 ### Minor Changes
