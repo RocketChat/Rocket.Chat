@@ -1,7 +1,7 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { useCallback, useMemo } from 'react';
 
-import { isActivityFilterable } from './useActivityFilter';
+import { isActivityFilterable, useStoredActivityFilters } from './useActivityFilter';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { withDynamicFirst } from '../../hooks/useCategoryList';
@@ -46,7 +46,11 @@ export const useAllRoomsSettings = () => {
 
 	const entries = useMemo(() => groupKeys.map((id) => rawCategories.find((entry) => entry._id === id)), [groupKeys, rawCategories]);
 
-	const activityFilterHours = useMemo(() => sharedValue(entries.map((entry) => entry?.activityFilterHours)), [entries]);
+	// UI-PREVIEW ONLY: the activity filter lives in this browser's localStorage here (see useActivityFilter), so
+	// "All rooms" reads the window there and writes it there for every group; the unread toggles still go to the
+	// preference, which the server already accepts.
+	const [filters, setFilters] = useStoredActivityFilters();
+	const activityFilterHours = useMemo(() => sharedValue(groupKeys.map((id) => filters[id])), [groupKeys, filters]);
 	const showUnreads = useMemo(() => sharedValue(entries.map((entry) => Boolean(entry?.showUnreads))), [entries]);
 	const keepUnreadsOnTop = useMemo(() => sharedValue(entries.map((entry) => Boolean(entry?.keepUnreadsOnTop))), [entries]);
 
@@ -67,8 +71,19 @@ export const useAllRoomsSettings = () => {
 	);
 
 	const setActivityFilterHours = useCallback(
-		(hours: number | undefined) => setForAllGroups({ activityFilterHours: hours }),
-		[setForAllGroups],
+		(hours: number | undefined) =>
+			setFilters((current) => {
+				const next = { ...current };
+				for (const id of groupKeys) {
+					if (hours) {
+						next[id] = hours;
+					} else {
+						delete next[id];
+					}
+				}
+				return next;
+			}),
+		[groupKeys, setFilters],
 	);
 	const setShowUnreads = useCallback((enabled: boolean) => setForAllGroups({ showUnreads: enabled }), [setForAllGroups]);
 	const setKeepUnreadsOnTop = useCallback((enabled: boolean) => setForAllGroups({ keepUnreadsOnTop: enabled }), [setForAllGroups]);

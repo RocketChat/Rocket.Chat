@@ -8,6 +8,7 @@ import { useUserSidebarCategories } from './useUserSidebarCategories';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
+	useUserId: () => 'user-1',
 }));
 
 jest.mock('./usePersistCategoriesMutation', () => ({
@@ -20,9 +21,6 @@ jest.mock('./useUserSidebarCategories', () => ({
 
 const mutate = jest.fn();
 
-const persisted = (): ISidebarCategory[] => mutate.mock.calls[0][0];
-const persistedEntry = (id: string): ISidebarCategory | undefined => persisted().find((entry) => entry._id === id);
-
 const withCategories = (rawCategories: ISidebarCategory[]) =>
 	jest
 		.mocked(useUserSidebarCategories)
@@ -30,7 +28,13 @@ const withCategories = (rawCategories: ISidebarCategory[]) =>
 
 const STATIC_GROUPS = ['Favorites', 'Teams', 'Discussions', 'Channels', 'Direct_Messages', 'Conversations'];
 
+// UI-PREVIEW ONLY: the activity filters live in localStorage, under the key fuselage-hooks derives.
+const STORAGE_KEY = 'fuselage-localStorage-sidebarActivityFilters-user-1';
+const storedFilters = (): Record<string, number> => JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+const withStoredFilters = (filters: Record<string, number>) => localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
+
 beforeEach(() => {
+	localStorage.clear();
 	mutate.mockClear();
 	jest.mocked(useUserPreference).mockReturnValue(undefined); // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
 	jest.mocked(usePersistCategoriesMutation).mockReturnValue({ mutate } as any);
@@ -54,7 +58,8 @@ describe('useAllRoomsGroupKeys', () => {
 
 describe('useAllRoomsSettings', () => {
 	it('reads a setting as the value every group shares, a missing entry counting as none', () => {
-		withCategories([...STATIC_GROUPS, 'work'].map((id) => ({ _id: id, name: id, default: id !== 'work', activityFilterHours: 168 })));
+		withCategories([{ _id: 'work', name: 'Work' }]);
+		withStoredFilters(Object.fromEntries([...STATIC_GROUPS, 'work'].map((id) => [id, 168])));
 
 		const { result } = renderHook(() => useAllRoomsSettings());
 
@@ -71,9 +76,10 @@ describe('useAllRoomsSettings', () => {
 
 	it('reads a setting as mixed once one group differs, each setting on its own', () => {
 		withCategories([
-			{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168, showUnreads: true },
+			{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true },
 			{ _id: 'work', name: 'Work', showUnreads: true },
 		]);
+		withStoredFilters({ Channels: 168 });
 
 		const { result } = renderHook(() => useAllRoomsSettings());
 
@@ -84,7 +90,8 @@ describe('useAllRoomsSettings', () => {
 	});
 
 	it('ignores what a dynamic group has stored', () => {
-		withCategories([{ _id: 'Unread', name: 'Unread', default: true, activityFilterHours: 24, showUnreads: true }]);
+		withCategories([{ _id: 'Unread', name: 'Unread', default: true, showUnreads: true }]);
+		withStoredFilters({ Unread: 24 });
 
 		const { result } = renderHook(() => useAllRoomsSettings());
 
@@ -92,41 +99,30 @@ describe('useAllRoomsSettings', () => {
 		expect(result.current.showUnreads).toEqual({ mixed: false, value: false });
 	});
 
-	it('writes the window to every static group and custom category, creating the entries that are missing', () => {
-		withCategories([
-			{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 },
-			{ _id: 'work', name: 'Work', activityFilterHours: 720, showUnreads: true },
-		]);
+	it('writes the window for every static group and custom category, leaving the dynamic groups alone', () => {
+		withCategories([{ _id: 'work', name: 'Work', showUnreads: true }]);
+		withStoredFilters({ Channels: 24, work: 720, Unread: 24 });
 
 		const { result } = renderHook(() => useAllRoomsSettings());
 
 		act(() => result.current.setActivityFilterHours(168));
 
-		expect(mutate).toHaveBeenCalledTimes(1);
-		for (const id of [...STATIC_GROUPS, 'work']) {
-			expect(persistedEntry(id)?.activityFilterHours).toBe(168);
-		}
-		// The rest of an entry is kept, and the dynamic groups are listed untouched.
-		expect(persistedEntry('work')).toEqual({ _id: 'work', name: 'Work', activityFilterHours: 168, showUnreads: true });
-		expect(persistedEntry('Unread')).toEqual({ _id: 'Unread', name: 'Unread', default: true });
-		expect(
-			persisted()
-				.map((entry) => entry._id)
-				.slice(0, 5),
-		).toEqual(['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats', 'Unread']);
+		// UI-PREVIEW ONLY: the windows go to localStorage, not to the preference.
+		expect(mutate).not.toHaveBeenCalled();
+		expect(storedFilters()).toEqual({ ...Object.fromEntries([...STATIC_GROUPS, 'work'].map((id) => [id, 168])), Unread: 24 });
 	});
 
 	it('clears the window everywhere', () => {
-		withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 }]);
+		withStoredFilters({ Channels: 24, Teams: 168 });
 
 		const { result } = renderHook(() => useAllRoomsSettings());
 
 		act(() => result.current.setActivityFilterHours(undefined));
 
-		expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: undefined });
+		expect(storedFilters()).toEqual({});
 	});
 
-	it('writes the unread toggles to every group, keeping their windows', () => {
+	it('writes the unread toggles to every group, keeping their entries', () => {
 		withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 }]);
 
 		const { result } = renderHook(() => useAllRoomsSettings());

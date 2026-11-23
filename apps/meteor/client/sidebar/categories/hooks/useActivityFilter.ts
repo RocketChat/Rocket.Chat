@@ -20,7 +20,7 @@ type StoredActivityFilters = Record<string, number>;
  * `sidebarCategories` preference, so the web client can be previewed against a server without the server side
  * of RocketChat/Rocket.Chat#42525. Not for merging.
  */
-const useStoredActivityFilters = () => {
+export const useStoredActivityFilters = () => {
 	const userId = useUserId();
 	return useLocalStorage<StoredActivityFilters>(`sidebarActivityFilters-${userId ?? 'anonymous'}`, {});
 };

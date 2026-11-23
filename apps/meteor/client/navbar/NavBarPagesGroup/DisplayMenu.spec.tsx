@@ -60,10 +60,12 @@ const appRoot = (sidebarShowUnread = false) =>
 		.build();
 
 beforeEach(() => {
+	localStorage.clear();
 	mutate.mockClear();
 	jest.mocked(useIsEnterprise).mockReturnValue({ data: { isEnterprise: true } } as any);
 	jest.mocked(usePersistCategoriesMutation).mockReturnValue({ mutate } as any);
-	withCategories(STATIC_GROUPS.map((id) => ({ _id: id, name: id, default: true, activityFilterHours: 168 })));
+	withCategories(STATIC_GROUPS.map((id) => ({ _id: id, name: id, default: true })));
+	withStoredFilters(Object.fromEntries(STATIC_GROUPS.map((id) => [id, 168])));
 });
 
 const openMenu = async (sidebarShowUnread = false) => {
@@ -79,6 +81,11 @@ const openAllRooms = async (sidebarShowUnread = false) => {
 };
 
 const persisted = (): ISidebarCategory[] => mutate.mock.calls[0][0];
+
+// UI-PREVIEW ONLY: the activity filters live in localStorage, under the key fuselage-hooks derives for John Doe.
+const STORAGE_KEY = 'fuselage-localStorage-sidebarActivityFilters-john.doe';
+const storedFilters = (): Record<string, number> => JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+const withStoredFilters = (filters: Record<string, number>) => localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
 
 describe('the Display menu', () => {
 	it('keeps its sections and offers All rooms', async () => {
@@ -99,7 +106,7 @@ describe('the Display menu', () => {
 	});
 
 	it('checks the window every group shares and the toggles that are on everywhere', async () => {
-		withCategories(STATIC_GROUPS.map((id) => ({ _id: id, name: id, default: true, activityFilterHours: 168, keepUnreadsOnTop: true })));
+		withCategories(STATIC_GROUPS.map((id) => ({ _id: id, name: id, default: true, keepUnreadsOnTop: true })));
 
 		await openAllRooms();
 
@@ -118,10 +125,7 @@ describe('the Display menu', () => {
 	});
 
 	it('checks nothing for a setting the groups disagree on, and says they are set per group', async () => {
-		withCategories([
-			{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168 },
-			{ _id: 'Teams', name: 'Teams', default: true, activityFilterHours: 24 },
-		]);
+		withStoredFilters({ Channels: 168, Teams: 24 });
 
 		await openMenu();
 		// The hint is part of the item, so it is part of what the item announces.
@@ -140,10 +144,9 @@ describe('the Display menu', () => {
 
 		await userEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Last 30 days' }));
 
-		expect(mutate).toHaveBeenCalledTimes(1);
-		for (const id of STATIC_GROUPS) {
-			expect(persisted().find((entry) => entry._id === id)?.activityFilterHours).toBe(720);
-		}
+		// UI-PREVIEW ONLY: the windows go to localStorage, not to the preference.
+		expect(mutate).not.toHaveBeenCalled();
+		expect(storedFilters()).toEqual(Object.fromEntries(STATIC_GROUPS.map((id) => [id, 720])));
 	});
 
 	it('turns a toggle on for every group when the groups disagree', async () => {
