@@ -18,6 +18,7 @@ const blocks = {
 
 const cappedCount = (...list: object[]) => {
 	const { container } = render(<MockedServerContext>{renderMessage(list as never)}</MockedServerContext>);
+	// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the cap is a plain Box with no role, label or text of its own
 	return container.querySelectorAll('.rcx-uikit-message-block').length;
 };
 

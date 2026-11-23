@@ -73,7 +73,7 @@ it('does not dispatch the action when the user presses Escape', async () => {
 	const { action } = renderButton(true);
 
 	await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-	await screen.findByText('Are you sure?');
+	expect(await screen.findByText('Are you sure?')).toBeInTheDocument();
 	await userEvent.keyboard('{Escape}');
 
 	await waitFor(() => expect(screen.queryByText('Are you sure?')).not.toBeInTheDocument());
