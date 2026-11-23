@@ -85,7 +85,7 @@ Phase 0 output for [plan.md](plan.md). Each entry gives the decision, the ration
 | RP-2 OAuth consent | Ships | The MCP server already accepts an OAuth Bearer token, and the loopback passes it to `agents.register`. The consenting human is the caller, so FR-009 and FR-013 hold with no change. Small size. |
 | RP-3 Registration token | Deferred (SH-005) | A new model and two endpoints. It solves the headless case, which RP-1 covers with a one-time call by the developer. |
 | RP-4 Pending self-registration | Out of scope this iteration (SH-005) | It needs a public, unauthenticated endpoint with abuse limits. |
-| RP-5 Admin form | Out of scope this iteration (SH-005) | An admin holds `register-agents` and can use RP-1 or RP-7. A form conflicts with the "no manual setup" goal. |
+| RP-5 Admin form | Ships, after F-4 (F-12) | The user administration already edits agents (US3, US6). The form calls `agents.register` with a fixed capability set (SH-009), and the admin is the owner. |
 | RP-6 Apps Engine | Deferred (SH-005) | The users bridge creates `bot` and `app` users but has no credential flow. |
 
 RP-2 flow:
@@ -231,7 +231,8 @@ The RP-1 open question: a headless agent has no human session. The developer run
 
 - **Decision**:
   - The agent calls stop, because D-15 makes the MCP route their only way in, and that route checks the license and `MCP_Enabled`.
-  - `agents.register` refuses with `error-agent-mcp-unavailable` (403) when the MCP server is off or unlicensed. A human could otherwise register over REST (RP-7).
+  - `agents.register`, `agents.update`, `agents.suspend`, `agents.reactivate`, and `agents.credential.rotate` refuse with `error-agent-mcp-unavailable` (403) when the MCP server is off or unlicensed. A human could otherwise register over REST (RP-7). `agents.credential.revoke` and `agents.delete` do not refuse, so an admin can end a leaked credential and free the seat (FR-060).
+  - The user administration hides the agent-specific controls in the same state (FR-060). The badge and the info panel stay.
   - `canAgentLogIn` refuses DDP logins in the same state (D-13).
   - When `MCP_Enabled` turns off or the license loses the AI module, the server broadcasts `user.forceLogout` for every agent.
   - The agent users, their messages, and their settings stay. Nothing is deleted.

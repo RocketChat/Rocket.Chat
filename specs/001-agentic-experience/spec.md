@@ -16,7 +16,7 @@
 - Q: Can an admin convert existing bot accounts into agents? → A: No. The agent type is for new accounts only.
 - Q: Does this spec deliver an MCP server or an ADK? → A: The workspace MCP server already exists. This spec makes it serve agents and evaluates which new tools agents need. An ADK is out of scope.
 - Q: What delivery constraint applies? → A: Take the fastest path to delivery. Record every shortcut so the next iteration resolves it.
-- Q: How does an agent account come to exist? → A: The agent registers itself through an MCP tool. The identity that calls the tool becomes the agent owner. No admin creates the account by hand.
+- Q: How does an agent account come to exist? → A: The agent registers itself through an MCP tool. The identity that calls the tool becomes the agent owner. An admin can also register an agent in the user administration (RP-5).
 - Q: How fast must an agent learn of a message addressed to it? → A: Within 5 seconds. The target is provisional.
 - Q: How many messages may an agent post? → A: 60 messages per minute per agent. The target is provisional.
 - Q: Must the platform enforce one identity per harness instance in this iteration? → A: No. Each agent has one active credential, and the owner or an admin can revoke it. Detection of a shared credential goes to the next iteration (SH-002).
@@ -34,6 +34,13 @@
 - Q: Which events may an agent receive over a DDP subscription? → A: Every event in a room or direct message whose history the agent's effective scope lets it read. The reply mode decides what the agent responds to, not what it may read.
 - Q: Must the audit trail record each refused agent call on REST or a DDP method? → A: Yes, with at most one entry per agent per entry point per minute.
 - Q: How does an MCP client that follows the MCP authorization flow register an agent? → A: RP-2 ships. The client gets an OAuth token through dynamic client registration and a human's consent, and calls the registration tool with that token. The consenting human becomes the owner. The registration revokes the OAuth token, so the client keeps only the agent credential.
+
+### Session 2026-11-23
+
+- Q: Does the "no manual setup" goal rule out an admin form (RP-5)? → A: No. The goal targets manual room membership, not account creation. The user administration already edits agents (US3, US6), so RP-5 ships after F-4.
+- Q: What happens to the admin agent controls without the AI license module or with the MCP server off? → A: The agent-specific controls do not show, and the server refuses an edit of the agent-specific properties. An admin can still revoke the agent credential and delete the agent user. The badge and the info panel stay.
+- Q: Does an agent take a license seat? → A: Yes. A suspended agent keeps its seat. A deactivated agent user frees its seat.
+- Q: Which capabilities does an agent from the admin form get? → A: A fixed set: read the rooms it joined (room info, member list, messages), send messages to those rooms, and post and read approval cards. The MCP and REST paths keep the declared list (SH-009).
 
 ## Delivery Constraints *(mandatory for this feature)*
 
@@ -101,6 +108,7 @@ A developer connects an agent framework, such as Mastra, to the workspace. The a
 8. **Given** an agent credential, **When** the agent calls the REST API directly or calls a DDP method, **Then** the system refuses the call, names the MCP server as the entry point, and records the refusal in the audit trail.
 9. **Given** an agent credential, **When** the agent subscribes over DDP to a room on its allow list, **Then** the agent receives the room events only if its effective scope lets it read that room's history.
 10. **Given** an OAuth token that a human approved for an agent framework, **When** the framework registers an agent with that token, **Then** the system records that human as the owner, returns the agent credential once, and revokes the OAuth token.
+11. **Given** an admin with the agent registration permission, **When** the admin registers an agent in the user administration with a name, a username, a description, and a reply mode, **Then** the system creates the agent with the fixed capability set, records the admin as its owner, and shows the credential once.
 
 ---
 
@@ -213,7 +221,7 @@ An admin finds an agent in the existing user administration. An admin or the own
 #### Registration and ownership
 
 - **FR-007**: The MCP server MUST offer a registration tool that creates an agent account. This is the baseline registration path. Every other path that ships MUST meet FR-008 to FR-014 the same way.
-- **FR-008**: Every registration path MUST collect a name, a description, a reply mode, and a list of declared capabilities. A capability is an MCP tool.
+- **FR-008**: Every registration path MUST collect a name, a description, a reply mode, and a list of declared capabilities. A capability is an MCP tool. The admin form (FR-058) collects no list and sends a fixed capability set instead (SH-009).
 - **FR-009**: The system MUST record the human identity that authorizes the registration as the agent owner. The registrant MUST NOT name another identity as the owner.
 - **FR-010**: The system MUST create a new agent with an empty room allow list.
 - **FR-011**: The system MUST NOT convert an existing bot or human account into an agent.
@@ -221,6 +229,9 @@ An admin finds an agent in the existing user administration. An admin or the own
 - **FR-013**: Only a human identity with the agent registration permission MUST be able to authorize a registration. An agent MUST NOT be able to register or authorize another agent.
 - **FR-014**: The system MUST reject a registration that declares a capability beyond the agent role or beyond the owner's own permissions, and MUST name each refused capability.
 - **FR-056**: A registration that an OAuth token authorizes MUST revoke the OAuth tokens of that client for that human once the agent exists. The registrant keeps only the agent credential.
+- **FR-058**: An admin with the agent registration permission MUST be able to register an agent from the user administration (RP-5). The form MUST collect the name, the username, the description, and the reply mode. The agent MUST get the fixed capability set (SH-009). The form MUST meet FR-009 to FR-014 like every other path, and MUST show the agent credential once (FR-012).
+- **FR-059**: An agent MUST take a license seat. Every registration path MUST refuse a registration when the workspace has no free seat.
+- **FR-060**: While the workspace lacks the AI license module or the MCP server is off, the user administration MUST NOT show the agent-specific controls, and the system MUST refuse an edit of the agent-specific properties. An admin MUST still be able to revoke the agent credential and delete the agent user. The agent badge and the info panel stay.
 
 #### Registration paths to evaluate
 
@@ -232,7 +243,7 @@ The plan's research phase MUST evaluate each path below against FR-008 to FR-014
 | RP-2 | OAuth consent: the agent framework registers as an OAuth client and asks a human to approve the agent and its capabilities on a consent screen | The human who approves the consent | MCP clients that follow the MCP authorization flow | How the consent screen shows capabilities; how a consent creates an agent identity, not a token for the human |
 | RP-3 | Registration token: an admin or a permitted user issues a one-time token bound to capabilities, and the agent redeems it | The human who issued the token | Headless and server-side agents with no human at run time | Token lifetime; whether the token can also preset rooms |
 | RP-4 | Pending self-registration: the agent registers without a human, and the agent stays pending until a permitted human approves it in a queue | The human who approves it | Open ecosystems with many agents | Abuse and spam limits on unauthenticated registration |
-| RP-5 | Admin form: an admin creates the agent in the administration area | The admin, or an owner the admin picks | Operators who prefer manual control | Whether it conflicts with the "no manual admin setup" goal |
+| RP-5 | Admin form: an admin creates the agent in the administration area | The admin | Operators who prefer manual control | Decided: ships after F-4 (FR-058) |
 | RP-6 | Apps Engine: an installed app declares its agents, and installation registers them | The admin who installs the app | Agents shipped as Marketplace apps | How app permissions map to declared capabilities |
 | RP-7 | REST registration: the same contract as RP-1 over the REST API | Same as RP-1 | Humans who register an agent without an MCP client. The agent itself still calls over MCP (FR-053) | Whether it differs from RP-1 at all |
 
@@ -297,7 +308,7 @@ The 5-second and 60-messages-per-minute targets are provisional, and a spec revi
 
 - **FR-044**: The existing user administration MUST show the agent badge and status on agent entries. A dedicated agent dashboard is out of scope.
 - **FR-045**: An admin MUST be able to edit an agent description, owner, reply mode, and room allow list.
-- **FR-046**: An admin or the owner MUST be able to suspend and reactivate an agent. An admin MUST be able to delete an agent.
+- **FR-046**: An admin or the owner MUST be able to suspend and reactivate an agent. An admin MUST be able to delete an agent. A suspended agent keeps its license seat (FR-059).
 - **FR-047**: A suspended agent MUST NOT be able to call the system. Its messages MUST stay visible.
 - **FR-048**: The audit trail MUST record every registration, edit, credential revoke, credential rotation, suspension, and deletion of an agent, with the actor and the time.
 

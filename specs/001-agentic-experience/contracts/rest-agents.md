@@ -13,7 +13,8 @@ Every endpoint uses the validated `API.v1.get()` / `.post()` pattern, with reque
 | `error-not-an-agent` | 403 | A human calls an agent-only endpoint. |
 | `error-agent-cannot-register` | 403 | An agent calls `agents.register`. |
 | `error-agent-mcp-only` | 403 | An agent calls a REST route directly, not through the MCP server (FR-053). `details.entryPoint` holds `/api/v1/mcp`. |
-| `error-agent-mcp-unavailable` | 403 | `agents.register` runs while the MCP server is off or unlicensed (D-18). |
+| `error-agent-mcp-unavailable` | 403 | `agents.register`, `agents.update`, `agents.suspend`, `agents.reactivate`, or `agents.credential.rotate` runs while the MCP server is off or unlicensed (D-18, FR-060). |
+| `error-license-user-limit-reached` | 400 | `agents.register` runs while the workspace has no free license seat (FR-059). |
 
 The guard writes an `agent.call.denied` audit event for each of the first four errors. It writes `agent.entry.refused` for `error-agent-mcp-only`, at most once per agent per minute (FR-055).
 
@@ -49,6 +50,8 @@ Response `200`:
 Response `400` with `error-agent-capabilities-refused`. `details.refused` lists each refused capability with a reason: `unknown-tool`, `not-allowed-for-agents`, `owner-lacks-permission`.
 
 The request has no owner field. The owner is always the caller (FR-009).
+
+An agent takes a license seat. The endpoint refuses with `error-license-user-limit-reached` when no seat is free, on every path (FR-059). The admin form (RP-5) calls this endpoint and sends the fixed capability set (SH-009).
 
 The caller authenticates with a PAT (RP-1, RP-7) or an OAuth access token (RP-2). With an OAuth token, the endpoint deletes every access token and refresh token of that client for the caller after it creates the agent (FR-056). A later call with the token gets `401`. A refused registration keeps the token. A PAT is never revoked. The deletes go through `OAuthAccessTokens.deleteByClientIdAndUserId` and `OAuthRefreshTokens.deleteByClientIdAndUserId`, two new model methods.
 

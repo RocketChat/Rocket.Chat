@@ -36,6 +36,16 @@ Run the call again with `"capabilities":["post_rooms_banUser"]`. Expected: `erro
 
 Expected: the response holds the agent credential, and the owner is the admin. Call any MCP tool again with `OAUTH_TOKEN`. Expected: `401` with `invalid_token`.
 
+## Scenario 1c: Register an agent in the user administration (US2, RP-5)
+
+1. As the admin, open Administration → Users and click "Register agent". Fill in the name, the username `qs-form-agent`, the description, and the reply mode, and save.
+2. Expected: the view shows the user id and the token once. Close it and reopen the agent. Expected: the token is gone. The info panel shows the admin as the owner and the fixed capability set.
+3. Turn off `MCP_Enabled`. Expected: the "Register agent" button and the agent settings section are hidden. The revoke and delete actions still show. Turn it back on.
+
+## Scenario 1d: Seat limit (FR-059)
+
+Use a license with no free seat. Run the Scenario 1 call with a new `username`. Expected: `error-license-user-limit-reached`. In the user administration, the "Register agent" button is disabled like "New user".
+
 ## Scenario 2: Scoped tool list (US2, FR-038)
 
 ```bash
