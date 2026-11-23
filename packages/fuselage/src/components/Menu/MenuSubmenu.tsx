@@ -18,7 +18,13 @@ type MenuSubmenuProps = {
 		props?: Partial<
 			Pick<
 				MenuSubmenuTriggerProps<unknown>,
-				'children' | 'selectionMode' | 'selectedKeys' | 'defaultSelectedKeys' | 'onSelectionChange' | 'disallowEmptySelection'
+				| 'children'
+				| 'selectionMode'
+				| 'selectedKeys'
+				| 'defaultSelectedKeys'
+				| 'onSelectionChange'
+				| 'disallowEmptySelection'
+				| 'disabledKeys'
 			>
 		>;
 	};
@@ -80,8 +86,8 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 		submenuTriggerProps.onKeyDown?.(event);
 	};
 
-	// The submenu has its own collection and tree state, so its selection is declared on the trigger.
-	const { selectionMode, selectedKeys, defaultSelectedKeys, onSelectionChange, disallowEmptySelection } = item.props ?? {};
+	// The submenu has its own collection and tree state, so its selection and disabled items are declared on the trigger.
+	const { selectionMode, selectedKeys, defaultSelectedKeys, onSelectionChange, disallowEmptySelection, disabledKeys } = item.props ?? {};
 
 	const { isFocusVisible } = useFocusVisible();
 	const { menuItemProps, isFocused, isDisabled } = useMenuItem(
@@ -125,6 +131,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 						defaultSelectedKeys={defaultSelectedKeys}
 						onSelectionChange={onSelectionChange}
 						disallowEmptySelection={disallowEmptySelection}
+						disabledKeys={disabledKeys}
 					>
 						{item.props?.children as CollectionChildren<object>}
 					</MenuDropDown>
