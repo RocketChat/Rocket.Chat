@@ -995,6 +995,7 @@
   "Everyone_can_access_this_channel": "Ĉiuj povas aliri ĉi tiun kanalon",
   "Example_s": "Ekzemplo: <code>{{value}}</code>",
   "except_pinned": "(krom tiuj, kiuj estas kovritaj)",
+  "Exchange_Graph_Client_Secret": "Kliento Sekreta",
   "Exclude_Botnames": "Ekskludi Botojn",
   "Exclude_Botnames_Description": "Ne propagu mesaĝojn de bots kies nomo kongruas kun la normala esprimo supre. Se vi lasas malplenan, ĉiuj mesaĝoj de bots estos disvastigitaj.",
   "Exclude_pinned": "Ekskludi kovritajn mesaĝojn",
