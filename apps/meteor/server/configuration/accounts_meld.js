@@ -1,7 +1,7 @@
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../settings';
+const LEGACY_MELD_RESET_REASON = 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password';
 
 export async function configureAccounts() {
 	const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
@@ -20,21 +20,20 @@ export async function configureAccounts() {
 					const isEmailVerified = (user.emails ?? []).some(
 						(email) => email.address?.toLowerCase() === normalizedEmail && email.verified === true,
 					);
-					const trustExternalEmail = Boolean(settings.get('Accounts_Verify_Email_For_External_Accounts'));
-					const canOAuthUserChangePassword =
-						Boolean(settings.get('Accounts_AllowPasswordChange')) && Boolean(settings.get('Accounts_AllowPasswordChangeForOAuthUsers'));
 
-					if (user.services?.password && !isEmailVerified && !trustExternalEmail) {
-						await Users.resetPasswordAndSetRequirePasswordChange(
-							user._id,
-							false,
-							canOAuthUserChangePassword ? 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password' : '',
-						);
+					if (user.services?.password && !isEmailVerified) {
+						await Users.resetPasswordAndSetRequirePasswordChange(user._id, false, '');
 					}
 
 					await Users.setServiceId(user._id, serviceName, serviceData.id);
 					await Users.setEmailVerified(user._id, serviceData.email);
-				} else if (user.requirePasswordChange === true && !user.services?.password?.bcrypt) {
+				}
+
+				if (
+					user.requirePasswordChange === true &&
+					!user.services?.password?.bcrypt &&
+					user.requirePasswordChangeReason === LEGACY_MELD_RESET_REASON
+				) {
 					await Users.unsetRequirePasswordChange(user._id);
 				}
 			}
