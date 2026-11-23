@@ -44,7 +44,7 @@ const appRoot = (sidebarShowUnread = false) =>
 			Unread: 'Unread',
 			Favorites: 'Favorites',
 			Types: 'Types',
-			All_rooms: 'All rooms',
+			All_groups: 'All groups',
 			Set_per_group: 'Set per group',
 			Filter: 'Filter',
 			All: 'All',
@@ -72,22 +72,22 @@ const openMenu = async (sidebarShowUnread = false) => {
 	return screen.findByRole('menu');
 };
 
-const openAllRooms = async (sidebarShowUnread = false) => {
+const openAllGroups = async (sidebarShowUnread = false) => {
 	await openMenu(sidebarShowUnread);
-	await userEvent.click(await screen.findByRole('menuitem', { name: /All rooms/ }));
+	await userEvent.click(await screen.findByRole('menuitem', { name: /All groups/ }));
 	expect(await screen.findByRole('menuitemcheckbox', { name: 'All' })).toBeInTheDocument();
 };
 
 const persisted = (): ISidebarCategory[] => mutate.mock.calls[0][0];
 
 describe('the Display menu', () => {
-	it('keeps its sections and offers All rooms', async () => {
+	it('keeps its sections and offers All groups', async () => {
 		const menu = await openMenu();
 
 		// The root menu selects in multiple mode, as it did before this change, so its plain items are checkbox items.
 		expect(within(menu).getByRole('menuitemcheckbox', { name: 'Activity' })).toBeInTheDocument();
 		expect(within(menu).getByRole('menuitemcheckbox', { name: 'Types' })).toBeInTheDocument();
-		expect(within(menu).getByRole('menuitem', { name: 'All rooms' })).toBeInTheDocument();
+		expect(within(menu).getByRole('menuitem', { name: 'All groups' })).toBeInTheDocument();
 	});
 
 	it('is not offered without the license module', async () => {
@@ -95,13 +95,13 @@ describe('the Display menu', () => {
 
 		const menu = await openMenu();
 
-		expect(within(menu).queryByRole('menuitem', { name: /All rooms/ })).not.toBeInTheDocument();
+		expect(within(menu).queryByRole('menuitem', { name: /All groups/ })).not.toBeInTheDocument();
 	});
 
 	it('checks the window every group shares and the toggles that are on everywhere', async () => {
 		withCategories(STATIC_GROUPS.map((id) => ({ _id: id, name: id, default: true, activityFilterHours: 168, keepUnreadsOnTop: true })));
 
-		await openAllRooms();
+		await openAllGroups();
 
 		expect(screen.getByRole('menuitemcheckbox', { name: 'Last 7 days' })).toHaveAttribute('aria-checked', 'true');
 		expect(screen.getByRole('menuitemcheckbox', { name: 'All' })).toHaveAttribute('aria-checked', 'false');
@@ -125,9 +125,9 @@ describe('the Display menu', () => {
 
 		await openMenu();
 		// The hint is part of the item, so it is part of what the item announces.
-		expect(screen.getByRole('menuitem', { name: /All rooms.*Set per group/ })).toBeInTheDocument();
+		expect(screen.getByRole('menuitem', { name: /All groups.*Set per group/ })).toBeInTheDocument();
 
-		await userEvent.click(screen.getByRole('menuitem', { name: /All rooms/ }));
+		await userEvent.click(screen.getByRole('menuitem', { name: /All groups/ }));
 		expect(await screen.findByRole('menuitemcheckbox', { name: 'All' })).toBeInTheDocument();
 
 		for (const name of ['All', 'Last 24 hours', 'Last 7 days', 'Last 14 days', 'Last 30 days']) {
@@ -136,7 +136,7 @@ describe('the Display menu', () => {
 	});
 
 	it('writes the chosen window to every group', async () => {
-		await openAllRooms();
+		await openAllGroups();
 
 		await userEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Last 30 days' }));
 
@@ -149,7 +149,7 @@ describe('the Display menu', () => {
 	it('turns a toggle on for every group when the groups disagree', async () => {
 		withCategories([{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true }]);
 
-		await openAllRooms();
+		await openAllGroups();
 		expect(screen.getByRole('menuitemcheckbox', { name: 'Always display' })).toHaveAttribute('aria-checked', 'false');
 
 		await userEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Always display' }));
@@ -160,7 +160,7 @@ describe('the Display menu', () => {
 	});
 
 	it('disables the unread toggles while the Unread group is on', async () => {
-		await openAllRooms(true);
+		await openAllGroups(true);
 
 		const alwaysDisplay = screen.getByRole('menuitemcheckbox', { name: 'Always display' });
 		expect(alwaysDisplay).toHaveAttribute('aria-disabled', 'true');

@@ -14,10 +14,10 @@ const sharedValue = <T>(values: T[]): SharedSetting<T> =>
 	values.every((value) => value === values[0]) ? { mixed: false, value: values[0] } : { mixed: true };
 
 /**
- * The groups "All rooms" speaks for: the static system groups and the custom categories, in the sidebar's order.
+ * The groups "All groups" speaks for: the static system groups and the custom categories, in the sidebar's order.
  * The dynamic groups (calls, queued chats, Unread) list rooms that need attention now, so they keep their own rules.
  */
-export const useAllRoomsGroupKeys = (): string[] => {
+export const useAllGroupsGroupKeys = (): string[] => {
 	const { rawCategories } = useUserSidebarCategories();
 	const sidebarSectionsOrder = useSidebarSectionsOrder();
 
@@ -32,15 +32,15 @@ export const useAllRoomsGroupKeys = (): string[] => {
 };
 
 /**
- * The settings every group has in common, and the writers that set one on all of them at once. "All rooms" keeps
+ * The settings every group has in common, and the writers that set one on all of them at once. "All groups" keeps
  * no state of its own: it reads as a value while every group agrees and as mixed once one group is changed on its
  * own, and setting it writes the same value to each group's `sidebarCategories` entry, creating the entries that
  * do not exist yet.
  */
-export const useAllRoomsSettings = () => {
+export const useAllGroupsSettings = () => {
 	const { rawCategories } = useUserSidebarCategories();
 	const sidebarSectionsOrder = useSidebarSectionsOrder();
-	const groupKeys = useAllRoomsGroupKeys();
+	const groupKeys = useAllGroupsGroupKeys();
 	// A rejected write is reported by the mutation itself, so there is nothing for a caller to await or catch.
 	const { mutate: persistCategories } = usePersistCategoriesMutation();
 

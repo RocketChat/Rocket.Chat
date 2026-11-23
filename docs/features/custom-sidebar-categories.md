@@ -272,12 +272,12 @@ checked (`aria-checked`) and marked with a checkmark. Picking one closes the men
 The sidebar's Display menu (the sort icon in the rail, and in the navbar without the secondary sidebar) is a
 Fuselage `Menu` since it gained a submenu; `NavBarItemSort` and `SidebarRailSort` only pick the trigger. Its
 sections are unchanged (Display / Sort by / Group by, from `useSortMenu`). On a licensed workspace a last
-section holds **All rooms ›**, a submenu that sets every group at once:
+section holds **All groups ›**, a submenu that sets every group at once:
 
 - Filter: All / Last 24 hours / Last 7 days / Last 14 days / Last 30 days
 - Unreads: Always display / Keep on top toggles (disabled, like the per-group ones, while the Unread group is on)
 
-"All rooms" keeps no state of its own (`useAllRoomsSettings`): it reads each setting across the groups it
+"All groups" keeps no state of its own (`useAllGroupsSettings`): it reads each setting across the groups it
 speaks for — the static system groups and the custom categories, never the dynamic groups — and shows it
 checked only while every group agrees. Choosing a value writes it to every group's `sidebarCategories` entry
 in one `users.setPreferences` call, creating the entries that do not exist yet, so a global choice overrides
@@ -337,7 +337,7 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Activity filter announcement | `apps/meteor/client/sidebar/hooks/useActivityFilterAnnouncement.ts` |
 | Filter chip | `apps/meteor/client/sidebar/RoomList/RoomListActivityFilterChip.tsx` |
 | Filter menu items + labels | `apps/meteor/client/sidebar/categories/hooks/useActivityFilterItems.tsx` |
-| All rooms (every group at once) | `apps/meteor/client/sidebar/categories/hooks/useAllRoomsSettings.ts`, `apps/meteor/client/sidebar/categories/hooks/useAllRoomsItems.tsx` |
+| All groups (every group at once) | `apps/meteor/client/sidebar/categories/hooks/useAllGroupsSettings.ts`, `apps/meteor/client/sidebar/categories/hooks/useAllGroupsItems.tsx` |
 | Display menu | `apps/meteor/client/navbar/NavBarPagesGroup/DisplayMenu.tsx` |
 | Preference validation (server) | `apps/meteor/server/meteor-methods/users/saveUserPreferences.ts`, `packages/rest-typings/src/v1/users/UsersSetPreferenceParamsPOST.ts` |
 | Name validation | `apps/meteor/client/sidebar/categories/hooks/useValidateCategoryName.ts` |
