@@ -91,7 +91,8 @@ const CallParticipantControls = ({ name, participant, isSelf = false, features, 
 	}
 
 	// A hand is the participant's own signal, so the label follows theirs rather than asking them to guess.
-	if (offers('raise-hand')) {
+	// Raising one is only ever their own act: on somebody else's row a host may only put a raised hand down.
+	if ((isSelf || participant.raisedHand) && offers('raise-hand')) {
 		items.push({
 			id: 'raise-hand',
 			icon: 'hand',

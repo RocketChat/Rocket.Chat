@@ -123,13 +123,29 @@ describe('CallParticipantControls', () => {
 		expect(await screen.findByRole('menuitem', { name: 'Mute' })).toBeInTheDocument();
 		expect(screen.getByRole('menuitem', { name: 'Spotlight' })).toBeInTheDocument();
 		expect(screen.getByRole('menuitem', { name: 'Make host' })).toBeInTheDocument();
-		expect(screen.getByRole('menuitem', { name: 'Raise hand' })).toBeInTheDocument();
 		expect(screen.getByRole('menuitem', { name: 'Disconnect' })).toBeInTheDocument();
 
 		// Announced by the provider and answered by it, but not offered here: neither is a feature this window
 		// supports yet, so the protocol carries them and the menu does not.
 		expect(screen.queryByRole('menuitem', { name: 'Transfer' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('menuitem', { name: 'Send DTMF' })).not.toBeInTheDocument();
+	});
+
+	// A hand goes up only by its owner's choice: a host can put somebody else's down, never raise it for them.
+	it('lets a host lower the hand of somebody else but never raise it', async () => {
+		const { unmount } = renderControls(buildParticipant(), [...PLUGIN_FEATURES]);
+
+		await openMenu();
+
+		expect(await screen.findByRole('menuitem', { name: 'Spotlight' })).toBeInTheDocument();
+		expect(screen.queryByRole('menuitem', { name: 'Raise hand' })).not.toBeInTheDocument();
+
+		unmount();
+		renderControls(buildParticipant({ raisedHand: true }), [...PLUGIN_FEATURES]);
+
+		await openMenu();
+
+		expect(await screen.findByRole('menuitem', { name: 'Lower hand' })).toBeInTheDocument();
 	});
 
 	// Your own row keeps what works on you and drops what cannot. The plugin API reaches no device: `mute` and
