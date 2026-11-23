@@ -50,9 +50,12 @@ git diff --stat <baseline>..<target> -- apps/meteor ee packages
 Before checking any commit, map what the release meant to change. List every changeset in the range and read the release notes, then keep that list at hand: a candidate that matches an entry there is probably an intentional change. Include the list in the report.
 
 ```bash
-git diff --name-only <baseline>..<target> -- .changeset
-git diff <baseline>..<target> -- .changeset
+git log --diff-filter=A --name-only --format= <baseline>..<target> -- .changeset | sort -u
+git log --diff-filter=A --format='%h %s' --name-only <baseline>..<target> -- .changeset
+git show <adding-commit>:.changeset/<file>.md
 ```
+
+List changesets from the range history, not the endpoint diff: a changeset added and consumed inside the range is absent from both endpoints. When tracing a single changeset file, add `--full-history` so changes that arrived through merges are not hidden.
 
 ## High-yield areas
 
