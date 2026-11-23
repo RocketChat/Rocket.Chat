@@ -2,7 +2,6 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	Button,
 	Modal,
-	Box,
 	ModalHeader,
 	ModalIcon,
 	ModalTitle,
@@ -68,7 +67,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 	}, [setValue, transcriptRequest]);
 
 	return (
-		<Modal open wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
+		<Modal open onSubmit={handleSubmit(submit)} {...props}>
 			<ModalHeader>
 				<ModalIcon name='mail-arrow-top-right' />
 				<ModalTitle>{t('Transcript')}</ModalTitle>
