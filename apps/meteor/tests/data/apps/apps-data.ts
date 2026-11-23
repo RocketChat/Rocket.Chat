@@ -1,6 +1,7 @@
 import type { Path } from '@rocket.chat/rest-typings';
 
-export const APP_URL = 'https://github.com/RocketChat/Apps.RocketChat.Tester/raw/master/dist/appsrocketchattester_0.3.0.zip?raw=true';
+// The Rocket.Chat server downloads this, so it names the mock-server by its address inside the CI network.
+export const APP_URL = 'http://mock-server.dev:8080/__fixtures/appsrocketchattester_0.3.0.zip';
 export const APP_NAME = 'Apps.RocketChat.Tester';
 
 type PathWithoutPrefix<TPath> = TPath extends `/apps${infer U}` ? U : never;

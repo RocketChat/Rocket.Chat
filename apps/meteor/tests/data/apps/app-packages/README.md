@@ -1903,3 +1903,11 @@ export class AbacRoomCreationTestApp extends App {
 ```
 
 </details>
+
+#### Apps.RocketChat.Tester
+
+File name: `appsrocketchattester_0.3.0.zip`
+
+The general-purpose test app most suites install through `installTestApp()`: a video conference provider, slash commands, message senders and livechat hooks. Its source lives in [RocketChat/Apps.RocketChat.Tester](https://github.com/RocketChat/Apps.RocketChat.Tester); this is a copy of `dist/appsrocketchattester_0.3.0.zip` from that repository, kept here so no test downloads it at run time.
+
+`tests/end-to-end/apps/installation.ts` covers installing from a URL with the same package: in CI the mock-server serves this folder under `/__fixtures/`, and `APP_URL` points there.

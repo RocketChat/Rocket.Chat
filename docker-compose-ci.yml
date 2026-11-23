@@ -261,12 +261,14 @@ services:
           - httpbin.dev
 
   mock-server:
-    image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
+    image: ghcr.io/rocketchat/mockserver@sha256:2bdadad09dffeddace6883d229956d5f2c0bf82db7938ab77c0644afb7a26a6d
     profiles:
       - api
       - ui
     ports:
       - 4000:8080
+    volumes:
+      - ./apps/meteor/tests/data/apps/app-packages:/fixtures:ro
     networks:
       default:
         # single-label hostnames fail server-fetch SSRF domain validation and message-parser only links TLDs
