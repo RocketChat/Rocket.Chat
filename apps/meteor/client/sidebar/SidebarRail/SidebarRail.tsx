@@ -1,4 +1,4 @@
-import { Box, NavBarGroup } from '@rocket.chat/fuselage';
+import { Box, NavBarGroup, NavBarItem } from '@rocket.chat/fuselage';
 import { usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,6 @@ import SidebarRailPhone from './SidebarRailPhone';
 import SidebarRailSort from './SidebarRailSort';
 import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
-import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -44,7 +43,7 @@ const SidebarRail = () => {
 		>
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
-					<NavBarItemHomePage title={t('Home')} />
+					<NavBarItem icon='inbox' title={t('Inbox')} aria-current='page' pressed />
 					<SidebarRailSort />
 					<SidebarRailCreateNew />
 					<NavBarItemDirectoryPage title={t('Directory')} />

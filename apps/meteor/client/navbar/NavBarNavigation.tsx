@@ -4,16 +4,25 @@ import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.cha
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import NavBarItemHomePage from './NavBarPagesGroup/NavBarItemHomePage';
 import NavBarSearch from './NavBarSearch';
 import NavBarAISearch from './NavBarSearch/NavBarAISearch';
 
 const NavbarNavigation = () => {
 	const { t } = useTranslation();
 	const { navigate } = useRouter();
-	const { isMobile } = useLayout();
+	const {
+		isMobile,
+		sidebar: { shouldToggle },
+	} = useLayout();
 
 	return (
 		<Box display='flex' flexGrow={1} justifyContent='center'>
+			<FeaturePreview feature='sidebarRail' disabled={shouldToggle}>
+				<FeaturePreviewOn>
+					<NavBarItemHomePage title={t('Home')} pressed={false} />
+				</FeaturePreviewOn>
+			</FeaturePreview>
 			<FocusScope>
 				<FeaturePreview feature='aiSearch'>
 					<FeaturePreviewOff>
