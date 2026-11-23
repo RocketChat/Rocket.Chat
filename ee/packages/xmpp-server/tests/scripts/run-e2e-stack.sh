@@ -24,9 +24,10 @@ usage() {
 	cat <<EOF
 Usage: $(basename "$0") [options] [-- <node --test arguments>]
 
-Builds Rocket.Chat, account-service, authorization-service, presence-service, ddp-streamer and
-xmpp-server-service from the working tree, starts them with Openfire, runs the end-to-end suite,
-and tears everything down.
+Builds Rocket.Chat and these services from the working tree, starts them with Openfire, runs
+the end-to-end suite, and tears everything down:
+
+  ${SERVICES[*]}
 
   --image-tag TAG   use the images CI published to ghcr.io/rocketchat/rocket.chat/* under TAG
                     (for example pr-12345 or develop) instead of building
@@ -176,7 +177,7 @@ wait_for() {
 finish() {
 	local status=$?
 	if ((status != 0)); then
-		"${COMPOSE[@]}" logs --tail 100 rocketchat xmpp-server-service openfire || true
+		"${COMPOSE[@]}" logs --tail 100 rocketchat ddp-streamer xmpp-server-service openfire || true
 	fi
 	if [[ "$KEEP_RUNNING" == true ]]; then
 		log "Stack left running:"
