@@ -462,8 +462,9 @@ export class LDAPManager {
 			}
 		}
 
-		if (settings.get('LDAP_Default_Domain') !== '' && username) {
-			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
+		const defaultDomain = settings.get<string>('LDAP_Default_Domain');
+		if (defaultDomain !== '' && username) {
+			return [`${username}@${defaultDomain}`];
 		}
 
 		if (ldapUser.mail?.includes('@')) {

@@ -255,7 +255,7 @@ export class CustomOAuthStrategy extends Strategy {
 				normalizedIdentity._OAuthCustom = true;
 				return done(null, normalizedIdentity);
 			} catch (e) {
-				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
+				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${String(e)}`));
 			}
 		});
 	}

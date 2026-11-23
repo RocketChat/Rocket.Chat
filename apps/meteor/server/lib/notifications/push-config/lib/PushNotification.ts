@@ -44,7 +44,7 @@ function hash(str: string): number {
 
 class PushNotification {
 	getNotificationId(roomId: string): number {
-		const serverId = settings.get('uniqueID');
+		const serverId = settings.get<string>('uniqueID');
 		return hash(`${serverId}|${roomId}`); // hash
 	}
 

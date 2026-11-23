@@ -30,9 +30,9 @@ export class Filter {
 			fileTooLargeError: (fileSize, maxFileSize) =>
 				new ClientSafeError('file-too-large', `File size (size = ${fileSize}) is too large (max = ${maxFileSize})`),
 			invalidFileExtension: (fileExtension, allowedExtensions) =>
-				new ClientSafeError('invalid-file-extension', `File extension "${fileExtension}" is not accepted (${allowedExtensions})`),
+				new ClientSafeError('invalid-file-extension', `File extension "${fileExtension}" is not accepted (${allowedExtensions.join(',')})`),
 			invalidFileType: (fileType, allowedContentTypes) =>
-				new ClientSafeError('invalid-file-type', `File type "${fileType}" is not accepted (${allowedContentTypes})`),
+				new ClientSafeError('invalid-file-type', `File type "${fileType}" is not accepted (${allowedContentTypes.join(',')})`),
 			onCheck: this.onCheck,
 			...options,
 		};

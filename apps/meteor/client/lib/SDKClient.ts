@@ -91,22 +91,23 @@ const createNewDdpSdkStream = (
 		.then(() => {
 			if (stopped) return;
 			const sdk = getDdpSdk();
-			subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+			const streamSubscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+			subscription = streamSubscription;
 
 			// A failure before ready goes through the ready/error path below.
-			subscription.onStop((error) => {
+			streamSubscription.onStop((error) => {
 				if (stopped || !meta.ready) return;
 				meta.ready = false;
 				stopError = error ?? new Error(`Stream ${streamName} was stopped by the server`);
 				ee.emit('stop', error);
 			});
 
-			subscription
+			streamSubscription
 				.ready()
 				.then(() => {
 					if (stopped) return;
 					meta.ready = true;
-					ee.emit('ready', [undefined, { msg: 'ready', subs: [subscription!.id] }]);
+					ee.emit('ready', [undefined, { msg: 'ready', subs: [streamSubscription.id] }]);
 				})
 				.catch((err) => {
 					if (stopped) return;

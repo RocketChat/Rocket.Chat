@@ -119,7 +119,7 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 
 		// result is the fetch response
 		expect(result).to.be.ok;
-		expect(result!.status).to.equal(200);
+		expect(result?.status).to.equal(200);
 
 		// debug logging invoked at least once
 		expect(stubs.logger.debug.called).to.be.true;

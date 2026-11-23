@@ -530,10 +530,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			throw new ClientSafeError('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes.join(',')}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes.join(',')}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {

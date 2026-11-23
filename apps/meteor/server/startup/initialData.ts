@@ -53,7 +53,7 @@ export async function insertAdminUserFromEnv() {
 				let nameValidation;
 
 				try {
-					nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
+					nameValidation = new RegExp(`^${settings.get<string>('UTF8_User_Names_Validation')}$`);
 				} catch (error) {
 					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 				}
@@ -210,13 +210,16 @@ export const insertInitialData = async (): Promise<void> => {
 	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		console.log(colors.green('Inserting admin test user:'));
 
+		const adminUsername = 'rocketchat.internal.admin.test';
+		const adminEmail = 'rocketchat.internal.admin.test@rocket.chat';
+
 		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {
 			_id: 'rocketchat.internal.admin.test',
 			name: 'RocketChat Internal Admin Test',
-			username: 'rocketchat.internal.admin.test',
+			username: adminUsername,
 			emails: [
 				{
-					address: 'rocketchat.internal.admin.test@rocket.chat',
+					address: adminEmail,
 					verified: true,
 				},
 			],
@@ -228,16 +231,16 @@ export const insertInitialData = async (): Promise<void> => {
 		};
 
 		console.log(colors.green(`Name: ${adminUser.name}`));
-		console.log(colors.green(`Email: ${adminUser.emails![0].address}`));
-		console.log(colors.green(`Username: ${adminUser.username}`));
+		console.log(colors.green(`Email: ${adminEmail}`));
+		console.log(colors.green(`Username: ${adminUsername}`));
 		console.log(colors.green(`Password: ${adminUser._id}`));
 
-		if (await Users.findOneByEmailAddress(adminUser.emails![0].address)) {
-			throw new ClientSafeError(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
+		if (await Users.findOneByEmailAddress(adminEmail)) {
+			throw new ClientSafeError(`Email ${adminEmail} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		if (!(await checkUsernameAvailability(adminUser.username!))) {
-			throw new ClientSafeError(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
+		if (!(await checkUsernameAvailability(adminUsername))) {
+			throw new ClientSafeError(`Username ${adminUsername} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		await Users.create(adminUser);

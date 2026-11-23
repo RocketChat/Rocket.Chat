@@ -29,7 +29,7 @@ export type EmojiEntry = {
 };
 
 function hexFromEmoji(emoji: string): string {
-	return [...emoji].map((cp) => cp.codePointAt(0)!.toString(16)).join('-');
+	return [...emoji].flatMap((char) => char.codePointAt(0)?.toString(16) ?? []).join('-');
 }
 
 function isRegionalIndicator(hexcode: string): boolean {

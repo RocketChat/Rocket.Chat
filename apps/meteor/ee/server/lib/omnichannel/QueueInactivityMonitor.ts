@@ -1,5 +1,6 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
 import type { Db } from 'mongodb';
@@ -111,7 +112,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		const { inquiryId } = data;
 		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
 		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		if (inquiry?.status !== 'queued') {
+		if (inquiry?.status !== LivechatInquiryStatus.QUEUED) {
 			return;
 		}
 

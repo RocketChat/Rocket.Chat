@@ -1,4 +1,4 @@
-import type { ILivechatContact, ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel, IVisitorExternalIdentifier, Serialized } from '@rocket.chat/core-typings';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemMeta, ItemRow, ItemTitle } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
@@ -34,7 +34,8 @@ const ContactInfoChannelsItem = ({
 	const channelLabel = useMemo(() => {
 		const phone = getSourceLabel(details);
 		const externalId = details?.id ? visitorData?.externalIds?.find((e) => e.appId === details.id) : undefined;
-		const username = externalId?.metadata?.username;
+		const metadata: IVisitorExternalIdentifier['metadata'] = externalId?.metadata;
+		const username = metadata?.username;
 
 		if (typeof username === 'string' && phone) {
 			return `${username} - ${phone}`;

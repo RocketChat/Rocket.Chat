@@ -25,7 +25,13 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async verifyScope(token: Token, scope: string | string[]): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);
+			console.log(
+				'[OAuth2Server]',
+				'in grantTypeAllowed (clientId:',
+				token.client.id,
+				', grantType:',
+				`${Array.isArray(scope) ? scope.join(',') : scope})`,
+			);
 		}
 
 		if (!Array.isArray(scope)) {

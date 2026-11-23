@@ -1,4 +1,5 @@
 import type { IRole, IUser, AtLeast, ISubscription, Serialized } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -47,10 +48,10 @@ const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 		}
 
 		if (a.status !== b.status) {
-			if (!a.status || a.status === 'offline') {
+			if (!a.status || a.status === UserStatus.OFFLINE) {
 				return 1;
 			}
-			if (!b.status || b.status === 'offline') {
+			if (!b.status || b.status === UserStatus.OFFLINE) {
 				return -1;
 			}
 			return a.status.localeCompare(b.status) * -1;

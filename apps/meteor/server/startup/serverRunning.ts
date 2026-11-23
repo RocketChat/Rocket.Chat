@@ -89,7 +89,7 @@ export const reportServerRunning = async (): Promise<void> => {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!skipMongoDbDeprecationCheck && semver.satisfies(semver.coerce(mongoVersion)!, '<8.0.0')) {
+		if (!skipMongoDbDeprecationCheck && mongoSemver && semver.satisfies(mongoSemver, '<8.0.0')) {
 			msg = [
 				`DEPRECATED: MONGODB VERSION ${mongoVersion}.`,
 				'SUPPORT FOR MONGODB <8.0 WILL BE REMOVED IN ROCKET.CHAT 9.0.0',
