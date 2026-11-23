@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 
@@ -10,17 +9,12 @@ import type { Context } from 'hono';
 
 import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
 import { httpApp } from '../lib/http/httpServer';
+import { installedRequire } from '../lib/installedRequire';
 import { HttpLogger } from '../lib/logger/http';
 import { SystemLogger } from '../lib/logger/system';
 
-declare const __meteor_bootstrap__: { serverDir: string };
-
-// Resolves from the server's npm directory, not the working one: a bundle runs from its root.
-const nodeRequire = createRequire(path.join(__meteor_bootstrap__.serverDir, 'npm', 'index.js'));
-
 const BASE = `${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/video-conference/background-effects`;
 
-/** The only runtime files served. */
 const RUNTIME_FILES = new Map(
 	Object.entries({
 		'vision_wasm_internal.js': 'text/javascript',
@@ -53,14 +47,14 @@ const reportMissing = (what: string, err?: unknown) => {
 const buildCatalogue = async (): Promise<Catalogue> => {
 	const files = new Map<string, Served>();
 
-	const tasksVisionMain = nodeRequire.resolve('@mediapipe/tasks-vision');
+	const tasksVisionMain = installedRequire.resolve('@mediapipe/tasks-vision');
 	const runtimeDir = path.join(path.dirname(tasksVisionMain), 'wasm');
 	const { version: runtimeVersion } = JSON.parse(await readFile(path.join(path.dirname(tasksVisionMain), 'package.json'), 'utf8'));
 	for (const [name, contentType] of RUNTIME_FILES) {
 		files.set(`/runtime/${runtimeVersion}/${name}`, { file: path.join(runtimeDir, name), contentType });
 	}
 
-	const assets: typeof import('@rocket.chat/background-effects-assets') = nodeRequire('@rocket.chat/background-effects-assets');
+	const assets: typeof import('@rocket.chat/background-effects-assets') = installedRequire('@rocket.chat/background-effects-assets');
 	const modelPath = `/model/${assets.model.sha256.slice(0, 16)}/${assets.model.name}`;
 	files.set(modelPath, { file: assets.model.file, contentType: 'application/octet-stream' });
 
