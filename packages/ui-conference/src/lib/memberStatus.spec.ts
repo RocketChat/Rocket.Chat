@@ -1,4 +1,4 @@
-import { getConferenceMemberStatus } from './memberStatus';
+import { getConferenceMemberStatus } from './memberStatus.js';
 
 const at = new Date('2026-08-02T10:00:00.000Z');
 

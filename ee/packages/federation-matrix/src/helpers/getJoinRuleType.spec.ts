@@ -1,6 +1,6 @@
 import type { PduForType } from '@rocket.chat/federation-sdk';
 
-import { getJoinRuleType } from './getJoinRuleType';
+import { getJoinRuleType } from './getJoinRuleType.js';
 
 const joinRulesState = (content: Record<string, unknown>) => [{ type: 'm.room.join_rules', content }] as PduForType<'m.room.join_rules'>[];
 

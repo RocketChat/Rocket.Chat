@@ -2,10 +2,10 @@ import { css, keyframes } from '@rocket.chat/css-in-js';
 import type { AnimationEvent, AnimationEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { patchChildren } from '../../helpers/patchChildren';
-import { useStyle } from '../../hooks/useStyle';
-import type { BoxProps } from '../Box';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { patchChildren } from '../../helpers/patchChildren.js';
+import { useStyle } from '../../hooks/useStyle.js';
+import type { BoxProps } from '../Box/index.js';
 
 export type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
 

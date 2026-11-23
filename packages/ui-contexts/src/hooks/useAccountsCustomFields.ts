@@ -1,7 +1,7 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
-import { useSetting } from './useSetting';
+import { useSetting } from './useSetting.js';
 
 export const useAccountsCustomFields = () => {
 	const accountsCustomFieldsJSON = useSetting('Accounts_CustomFields');

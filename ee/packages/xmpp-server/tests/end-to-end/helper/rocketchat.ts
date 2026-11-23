@@ -4,17 +4,17 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import type { Cleanup } from './cleanup';
-import { DUPLICATE_SETTLE_MS, config, federationPolling, uniqueSuffix } from './config';
-import { api, apiUrl } from '../../../../../../apps/meteor/tests/data/api-data';
-import { sendMessage as sendMessageViaRest } from '../../../../../../apps/meteor/tests/data/messages.helper';
-import { retry } from '../../../../../../apps/meteor/tests/data/retry';
-import { createRoom, getRoomInfo, getRoomMembers } from '../../../../../../apps/meteor/tests/data/rooms.helper';
-import { adminPassword, adminUsername, password } from '../../../../../../apps/meteor/tests/data/user';
-import { createUser, deleteUser, findUserByUsername, getRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
-import type { IRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
-import { DDPListener } from '../../../../federation-matrix/tests/helper/ddp-listener';
-import { isDomainAllowed } from '../../../src/jid/normalize';
+import type { Cleanup } from './cleanup.js';
+import { DUPLICATE_SETTLE_MS, config, federationPolling, uniqueSuffix } from './config.js';
+import { api, apiUrl } from '../../../../../../apps/meteor/tests/data/api-data.js';
+import { sendMessage as sendMessageViaRest } from '../../../../../../apps/meteor/tests/data/messages.helper.js';
+import { retry } from '../../../../../../apps/meteor/tests/data/retry.js';
+import { createRoom, getRoomInfo, getRoomMembers } from '../../../../../../apps/meteor/tests/data/rooms.helper.js';
+import { adminPassword, adminUsername, password } from '../../../../../../apps/meteor/tests/data/user.js';
+import { createUser, deleteUser, findUserByUsername, getRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper.js';
+import type { IRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper.js';
+import { DDPListener } from '../../../../federation-matrix/tests/helper/ddp-listener.js';
+import { isDomainAllowed } from '../../../src/jid/normalize.js';
 
 type Endpoint = Parameters<typeof api>[0];
 

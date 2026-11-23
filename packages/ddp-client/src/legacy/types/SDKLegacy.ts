@@ -1,8 +1,8 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
-import type { Subscription } from '../../types/Subscription';
-import type { StreamerCallbackArgs } from '../../types/streams';
+import type { Subscription } from '../../types/Subscription.js';
+import type { StreamerCallbackArgs } from '../../types/streams.js';
 
 export interface APILegacy {
 	users: {

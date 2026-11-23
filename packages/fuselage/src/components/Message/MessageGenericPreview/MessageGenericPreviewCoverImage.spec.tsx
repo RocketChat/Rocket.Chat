@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import MessageGenericPreviewCoverImage from './MessageGenericPreviewCoverImage';
-import { render } from '../../../testing';
+import MessageGenericPreviewCoverImage from './MessageGenericPreviewCoverImage.js';
+import { render } from '../../../testing.js';
 
 describe('MessageGenericPreviewCoverImage', () => {
 	it('renders without crashing', () => {

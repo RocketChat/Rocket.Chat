@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render } from '@testing-library/react';
 
-import { UiKitMessage as renderMessage } from '.';
+import { UiKitMessage as renderMessage } from './index.js';
 
 const text = { type: 'plain_text', text: 'Hello' };
 

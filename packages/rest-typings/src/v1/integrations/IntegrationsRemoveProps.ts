@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type IntegrationsRemoveProps =
 	{ type: 'webhook-incoming'; integrationId: string } | { type: 'webhook-outgoing'; integrationId?: string; target_url?: string };

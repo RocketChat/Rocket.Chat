@@ -1,8 +1,8 @@
 import type { IMediaCallNegotiation, MediaCallNegotiationStream, RTCSessionDescriptionInit } from '@rocket.chat/core-typings';
 import type { Document, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IMediaCallNegotiationsModel extends IBaseModel<IMediaCallNegotiation> {
 	findLatestByCallId<T extends Document = IMediaCallNegotiation, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

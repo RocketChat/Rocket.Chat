@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import Skeleton from './Skeleton';
+import Skeleton from './Skeleton.js';
+import { Box } from '../Box/index.js';
 
 export default {
 	title: 'Layout/Skeleton',

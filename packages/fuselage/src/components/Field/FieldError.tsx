@@ -1,7 +1,7 @@
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { FieldContext } from './Field';
+import { FieldContext } from './Field.js';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type FieldErrorProps = ElementProps<HTMLSpanElement>;
 

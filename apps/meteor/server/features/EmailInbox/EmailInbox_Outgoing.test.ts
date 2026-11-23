@@ -3,10 +3,10 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeMessage, createFakeUser } from '../../../tests/mocks/data';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	Messages: { findOneById: sinon.stub(), updateOne: sinon.stub() },
@@ -22,7 +22,7 @@ const getBuffer = sinon.stub();
 const callbacksAdd = sinon.stub();
 const slashCommandsAdd = sinon.stub();
 
-const { sendTestEmailToInbox } = proxyquire.noCallThru().load('./EmailInbox_Outgoing', {
+const { sendTestEmailToInbox } = loadWithMocks('./EmailInbox_Outgoing', {
 	'./EmailInbox': { inboxes },
 	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
 	'../../lib/callbacks': { callbacks: { add: callbacksAdd, priority: { LOW: 1 } } },

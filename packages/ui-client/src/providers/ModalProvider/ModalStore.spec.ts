@@ -1,4 +1,4 @@
-import { modalStore } from './ModalStore';
+import { modalStore } from './ModalStore.js';
 
 afterEach(() => {
 	while (modalStore.current) {

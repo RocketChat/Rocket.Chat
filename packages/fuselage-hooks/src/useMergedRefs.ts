@@ -1,7 +1,7 @@
 import type { Ref, RefCallback, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect.js';
 
 const isRefCallback = <T>(x: unknown): x is RefCallback<T> => typeof x === 'function';
 const isRefObject = <T>(x: unknown): x is RefObject<T> => typeof x === 'object';

@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { readableTextColor } from './colors';
-import { buildClassificationBanner, buildRoomClassificationBanner, parseClassificationBannersConfig } from './engine';
-import type { ClassificationBannersConfig, ClassificationRoomMatch } from './types';
+import { readableTextColor } from './colors.js';
+import { buildClassificationBanner, buildRoomClassificationBanner, parseClassificationBannersConfig } from './engine.js';
+import type { ClassificationBannersConfig, ClassificationRoomMatch } from './types.js';
 
 const config: ClassificationBannersConfig = {
 	version: 1,

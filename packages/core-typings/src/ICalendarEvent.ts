@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
 
 /** The integration that owns the event. Absent on a local one and on anything the legacy desktop import wrote. */
 export type CalendarEventSource = 'outlook';

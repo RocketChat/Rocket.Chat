@@ -23,11 +23,21 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"main": "index.js",
-	"types": "dist/index.d.ts",
+	"type": "module",
+	"main": "./dist/fuselage.development.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"production": "./dist/fuselage.production.js",
+			"default": "./dist/fuselage.development.js"
+		},
+		"./dist/*.css": "./dist/*.css",
+		"./dist/fonts/*": "./dist/fonts/*",
+		"./package.json": "./package.json"
+	},
 	"files": [
-		"/dist",
-		"/index.js"
+		"/dist"
 	],
 	"scripts": {
 		"build": "rm -rf dist && vite build --mode development && vite build --mode production && node scripts/check-dist-env.mjs && tsc -p tsconfig.build.json --emitDeclarationOnly",

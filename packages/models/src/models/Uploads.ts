@@ -2,7 +2,7 @@ import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-
 import type { FindPaginated, IUploadsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import { BaseUploadModelRaw } from './BaseUploadModel';
+import { BaseUploadModelRaw } from './BaseUploadModel.js';
 
 export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUpload>>) {

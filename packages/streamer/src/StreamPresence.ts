@@ -5,10 +5,10 @@ import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typi
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { statusVisibilityGate } from './StatusVisibilityGate';
-import { NOTHING_HIDDEN, isHiddenFor } from './presenceScope';
-import { Streamer } from './streamer.module';
-import type { IPublication, IStreamerConstructor, Connection, IStreamer, StreamerOptions } from './types';
+import { statusVisibilityGate } from './StatusVisibilityGate.js';
+import { NOTHING_HIDDEN, isHiddenFor } from './presenceScope.js';
+import { Streamer } from './streamer.module.js';
+import type { IPublication, IStreamerConstructor, Connection, IStreamer, StreamerOptions } from './types.js';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];

@@ -1,5 +1,5 @@
-import Message from './Message';
-import type { ChatTranscriptData } from '../../../types/ChatTranscriptData';
+import Message from './Message.js';
+import type { ChatTranscriptData } from '../../../types/ChatTranscriptData.js';
 
 export type MessageListProps = { messages: ChatTranscriptData['messages']; invalidFileMessage: string };
 

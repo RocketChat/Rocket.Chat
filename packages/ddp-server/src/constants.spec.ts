@@ -1,4 +1,4 @@
-import { DDP_EVENTS, TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
+import { DDP_EVENTS, TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants.js';
 
 describe('protocol constants', () => {
 	it('preserves DDP message and field names', () => {

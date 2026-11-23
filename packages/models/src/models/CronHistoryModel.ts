@@ -2,7 +2,7 @@ import type { ICronHistoryItem } from '@rocket.chat/core-typings';
 import type { ICronHistoryModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class CronHistoryRaw extends BaseRaw<ICronHistoryItem> implements ICronHistoryModel {
 	constructor(db: Db) {

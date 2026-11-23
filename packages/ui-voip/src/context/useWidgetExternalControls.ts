@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 
-import { useMediaCallInstance } from './MediaCallInstanceContext';
-import type { PeerInfo } from './definitions';
-import { getEndCall } from '../utils/instanceControlsGetters';
+import { useMediaCallInstance } from './MediaCallInstanceContext.js';
+import type { PeerInfo } from './definitions.js';
+import { getEndCall } from '../utils/instanceControlsGetters.js';
 
 export const useWidgetExternalControls = () => {
 	const { instance, openWidget, closeWidget, targetWidgetVisibility } = useMediaCallInstance();

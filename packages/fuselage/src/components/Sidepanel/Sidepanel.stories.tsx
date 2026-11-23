@@ -8,7 +8,7 @@ import {
 	SidepanelList,
 	SidepanelListItem,
 	SidepanelSearch,
-} from '.';
+} from './index.js';
 import {
 	Avatar,
 	Box,
@@ -25,9 +25,9 @@ import {
 	SidebarItem,
 	SidebarItemTimestamp,
 	Tag,
-} from '../..';
-import { SidebarItemAvatarWrapper } from '../Sidebar/SidebarItem/SidebarItemAvatarWrapper';
-import { MenuTemplate, leterAvatarUrls, names } from '../Sidebar/helpers';
+} from '../../index.js';
+import { SidebarItemAvatarWrapper } from '../Sidebar/SidebarItem/SidebarItemAvatarWrapper.js';
+import { MenuTemplate, leterAvatarUrls, names } from '../Sidebar/helpers.js';
 
 export default {
 	title: 'Navigation/Sidepanel',

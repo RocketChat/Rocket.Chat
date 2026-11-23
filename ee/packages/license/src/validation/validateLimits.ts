@@ -1,12 +1,12 @@
 import type { ILicenseV3, LicenseLimitKind, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
-import { isLimitAllowed, isBehaviorAllowed } from '../isItemAllowed';
-import type { LicenseManager } from '../license';
-import { logger } from '../logger';
-import { getCurrentValueForLicenseLimit } from './getCurrentValueForLicenseLimit';
-import { getResultingBehavior } from './getResultingBehavior';
-import { logKind } from './logKind';
-import { validateLimit } from './validateLimit';
+import { isLimitAllowed, isBehaviorAllowed } from '../isItemAllowed.js';
+import type { LicenseManager } from '../license.js';
+import { logger } from '../logger.js';
+import { getCurrentValueForLicenseLimit } from './getCurrentValueForLicenseLimit.js';
+import { getResultingBehavior } from './getResultingBehavior.js';
+import { logKind } from './logKind.js';
+import { validateLimit } from './validateLimit.js';
 
 export async function validateLimits(
 	this: LicenseManager,

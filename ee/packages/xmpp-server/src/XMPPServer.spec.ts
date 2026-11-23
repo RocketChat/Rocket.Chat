@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { XMPPServer } from './XMPPServer';
-import type { Logger } from './logger';
+import { XMPPServer } from './XMPPServer.js';
+import type { Logger } from './logger.js';
 
 const silentLogger: Logger = {
 	debug: () => undefined,

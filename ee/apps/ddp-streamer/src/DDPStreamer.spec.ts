@@ -5,8 +5,8 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { mockModel } from '@rocket.chat/models/testing';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
-import { DDPStreamer } from './DDPStreamer';
-import { makeSession, sentPackets } from './__tests__/helpers';
+import { DDPStreamer } from './DDPStreamer.js';
+import { makeSession, sentPackets } from './__tests__/helpers.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

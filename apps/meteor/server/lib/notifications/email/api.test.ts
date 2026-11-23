@@ -2,10 +2,10 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { replaceVariables } from './replaceVariables';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const initialSettings: Record<string, unknown> = {
 	Site_Name: 'Rocket Team',
@@ -39,7 +39,7 @@ const sendMail = sinon.stub();
 const triggerEvent = sinon.stub();
 const incrementValueById = sinon.stub();
 
-const Mailer = proxyquire.noCallThru().load('./api', {
+const Mailer = loadWithMocks('./api', {
 	'../../../settings': { settings: settingsMock },
 	'../../i18n': { i18n: { t: (key: string) => `t:${key}` } },
 	'./transport': { sendMail },

@@ -2,8 +2,8 @@ import { ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IAccount, ILoginResult } from '@rocket.chat/core-services';
 import { getLoginExpirationInDays } from '@rocket.chat/tools';
 
-import { loginViaResume } from './lib/loginViaResume';
-import { removeSession } from './lib/removeSession';
+import { loginViaResume } from './lib/loginViaResume.js';
+import { removeSession } from './lib/removeSession.js';
 
 export class Account extends ServiceClass implements IAccount {
 	protected name = 'accounts';

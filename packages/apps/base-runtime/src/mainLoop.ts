@@ -1,16 +1,16 @@
 import process from 'node:process';
 
-import apiHandler from './handlers/api-handler';
-import handleApp from './handlers/app/handler';
-import outboundMessageHandler from './handlers/outboundcomms-handler';
-import handleScheduler from './handlers/scheduler-handler';
-import slashcommandHandler from './handlers/slashcommand-handler';
-import videoConferenceHandler from './handlers/videoconference-handler';
-import { JsonRpcError, isNotificationObject, type SuccessObject } from './lib/jsonrpc';
-import { Logger } from './lib/logger';
-import * as Messenger from './lib/messenger';
-import type { RequestContext } from './lib/requestContext';
-import { applySecureFieldsDeep } from './lib/secureFields';
+import apiHandler from './handlers/api-handler.js';
+import handleApp from './handlers/app/handler.js';
+import outboundMessageHandler from './handlers/outboundcomms-handler.js';
+import handleScheduler from './handlers/scheduler-handler.js';
+import slashcommandHandler from './handlers/slashcommand-handler.js';
+import videoConferenceHandler from './handlers/videoconference-handler.js';
+import { JsonRpcError, isNotificationObject, type SuccessObject } from './lib/jsonrpc.js';
+import { Logger } from './lib/logger.js';
+import * as Messenger from './lib/messenger.js';
+import type { RequestContext } from './lib/requestContext.js';
+import { applySecureFieldsDeep } from './lib/secureFields.js';
 
 type Handlers = {
 	app: typeof handleApp;

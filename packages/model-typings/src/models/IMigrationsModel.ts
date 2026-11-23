@@ -1,5 +1,5 @@
 import type { IControl } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export type IMigrationsModel = IBaseModel<IControl>;

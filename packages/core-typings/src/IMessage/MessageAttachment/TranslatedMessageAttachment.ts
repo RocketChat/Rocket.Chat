@@ -1,5 +1,5 @@
-import type { MessageAttachment } from './MessageAttachment';
-import type { MessageAttachmentDefault } from './MessageAttachmentDefault';
+import type { MessageAttachment } from './MessageAttachment.js';
+import type { MessageAttachmentDefault } from './MessageAttachmentDefault.js';
 
 interface ITranslatedMessageAttachment extends MessageAttachmentDefault {
 	translations: { [language: string]: string };

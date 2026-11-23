@@ -1,6 +1,6 @@
 import type { AllHTMLAttributes } from 'react';
 
-import { Box } from '../Box';
+import { Box } from '../Box/index.js';
 
 export type CardProps = {
 	horizontal?: boolean;

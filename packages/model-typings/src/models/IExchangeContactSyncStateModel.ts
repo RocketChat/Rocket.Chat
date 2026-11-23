@@ -1,7 +1,7 @@
 import type { IExchangeContactSyncState, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 /** The fields that, when any of them changes, make a stored cursor unusable. */
 export type ExchangeContactSyncIdentity = Pick<IExchangeContactSyncState, 'mailbox' | 'provider'>;

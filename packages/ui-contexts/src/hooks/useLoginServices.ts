@@ -1,6 +1,6 @@
 import { useContext, useSyncExternalStore } from 'react';
 
-import { AuthenticationContext } from '../AuthenticationContext';
+import { AuthenticationContext } from '../AuthenticationContext.js';
 
 export const useLoginServices = () => {
 	const { queryLoginServices } = useContext(AuthenticationContext);

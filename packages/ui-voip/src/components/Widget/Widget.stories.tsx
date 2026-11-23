@@ -1,7 +1,7 @@
 import { ButtonGroup, Button, IconButton } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Widget, WidgetHeader, WidgetFooter, WidgetHandle, WidgetInfo, WidgetContent } from '.';
+import { Widget, WidgetHeader, WidgetFooter, WidgetHandle, WidgetInfo, WidgetContent } from './index.js';
 
 export default {
 	component: Widget,

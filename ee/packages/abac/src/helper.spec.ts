@@ -9,7 +9,7 @@ import {
 	extractAttribute,
 	ensureAttributeDefinitionsExist,
 	buildNonCompliantConditions,
-} from './helper';
+} from './helper.js';
 
 const attributesFindMock = jest.fn();
 

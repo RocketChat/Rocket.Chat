@@ -3,8 +3,8 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CardView from './CardView';
-import type { BlockProps } from '../utils/BlockProps';
+import CardView from './CardView.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type CarouselBlockProps = BlockProps<UiKit.CarouselBlock>;
 

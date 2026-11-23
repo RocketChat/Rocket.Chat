@@ -1,6 +1,6 @@
 import type { CallContact } from '@rocket.chat/media-signaling';
 
-import type { ExternalPeerInfo, InternalPeerInfo, UnknownPeerInfo } from '../context/definitions';
+import type { ExternalPeerInfo, InternalPeerInfo, UnknownPeerInfo } from '../context/definitions.js';
 
 const deriveExternalPeerInfoFromInstanceContact = (contact: CallContact): ExternalPeerInfo => {
 	if (contact.type !== 'sip') {

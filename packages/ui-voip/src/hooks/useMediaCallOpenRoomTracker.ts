@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
+import { useMediaCallInstance } from '../context/MediaCallInstanceContext.js';
 
 export const useMediaCallOpenRoomTracker = (openRoomId?: string) => {
 	const { setOpenRoomId } = useMediaCallInstance();

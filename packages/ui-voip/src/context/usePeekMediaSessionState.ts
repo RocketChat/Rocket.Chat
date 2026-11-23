@@ -1,6 +1,6 @@
-import { useMediaCallInstance } from './MediaCallInstanceContext';
-import { useInstanceSnapshot } from './useInstanceSnapshot';
-import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
+import { useMediaCallInstance } from './MediaCallInstanceContext.js';
+import { useInstanceSnapshot } from './useInstanceSnapshot.js';
+import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState.js';
 
 export type PeekMediaSessionStateReturn = 'unavailable' | 'available' | 'ongoing' | 'ringing' | 'calling';
 

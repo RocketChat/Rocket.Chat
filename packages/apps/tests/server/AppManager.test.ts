@@ -1,9 +1,9 @@
 import * as assert from 'node:assert';
 import { describe, it, afterEach, mock } from 'node:test';
 
-import { AppManager } from '../../src/server/AppManager';
-import { AppBridges } from '../../src/server/bridges';
-import { AppCompiler, AppPackageParser } from '../../src/server/compiler';
+import { AppManager } from '../../src/server/AppManager.js';
+import { AppBridges } from '../../src/server/bridges/index.js';
+import { AppCompiler, AppPackageParser } from '../../src/server/compiler/index.js';
 import {
 	AppApiManager,
 	AppExternalComponentManager,
@@ -12,9 +12,9 @@ import {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 	AppOutboundCommunicationProviderManager,
-} from '../../src/server/managers';
-import type { AppLogStorage, AppMetadataStorage, AppSourceStorage } from '../../src/server/storage';
-import { SimpleClass, TestData, TestInfastructureSetup } from '../test-data/utilities';
+} from '../../src/server/managers/index.js';
+import type { AppLogStorage, AppMetadataStorage, AppSourceStorage } from '../../src/server/storage/index.js';
+import { SimpleClass, TestData, TestInfastructureSetup } from '../test-data/utilities.js';
 
 describe('AppManager', () => {
 	const testingInfastructure = new TestInfastructureSetup();

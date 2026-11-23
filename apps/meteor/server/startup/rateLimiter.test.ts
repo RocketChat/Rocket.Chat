@@ -1,9 +1,10 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 import _ from 'underscore';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -48,7 +49,7 @@ const call = (overrides: Partial<Input> = {}): Input => {
 describe('DDP rate limiter rules', () => {
 	before(() => {
 		addRule.callsFake(() => `rule-${addRule.callCount}`);
-		p.noCallThru().load('./rateLimiter.js', {
+		loadWithMocks('./rateLimiter.js', {
 			'underscore': { each: _.each, debounce: (fn: unknown) => fn },
 			'meteor/ddp-rate-limiter': { DDPRateLimiter },
 			'meteor/meteor': { Meteor: { bindEnvironment: (fn: unknown) => fn, server: { sessions } } },

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import TextAreaInput from './TextAreaInput';
-import { render } from '../../testing';
+import TextAreaInput from './TextAreaInput.js';
+import { render } from '../../testing.js';
 
 describe('[TextAreaInput]', () => {
 	it('renders a textarea', () => {

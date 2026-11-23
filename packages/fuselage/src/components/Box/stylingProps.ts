@@ -2,10 +2,10 @@ import type { cssFn } from '@rocket.chat/css-in-js';
 import { css } from '@rocket.chat/css-in-js';
 import type { CSSProperties } from 'react';
 
-import type { Var } from '../../Theme';
-import { Palette } from '../../Theme';
-import { fromCamelToKebab } from '../../helpers/fromCamelToKebab';
-import type { BorderRadius, BorderWidth } from '../../styleTokens';
+import type { Var } from '../../Theme.js';
+import { Palette } from '../../Theme.js';
+import { fromCamelToKebab } from '../../helpers/fromCamelToKebab.js';
+import type { BorderRadius, BorderWidth } from '../../styleTokens.js';
 import {
 	resolveBorderRadius as borderRadius,
 	resolveBorderWidth as borderWidth,
@@ -17,7 +17,7 @@ import {
 	spacing,
 	size,
 	resolveStrokeColor as strokeColor,
-} from '../../styleTokens';
+} from '../../styleTokens.js';
 
 export type FontScale = 'hero' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p1' | 'p1m' | 'p1b' | 'p2' | 'p2m' | 'p2b' | 'c1' | 'c2' | 'micro';
 

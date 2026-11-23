@@ -1,10 +1,10 @@
-import WS from 'jest-websocket-mock';
+import { WS } from 'jest-websocket-mock';
 
-import { handleConnection, handleMethod } from './helpers';
-import { ClientStreamImpl } from '../src/ClientStream';
-import { DDPDispatcher } from '../src/DDPDispatcher';
-import { DDPSDK } from '../src/DDPSDK';
-import { AccountImpl } from '../src/types/Account';
+import { handleConnection, handleMethod } from './helpers/index.js';
+import { ClientStreamImpl } from '../src/ClientStream.js';
+import { DDPDispatcher } from '../src/DDPDispatcher.js';
+import { DDPSDK } from '../src/DDPSDK.js';
+import { AccountImpl } from '../src/types/Account.js';
 
 let server: WS;
 

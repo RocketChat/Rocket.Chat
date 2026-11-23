@@ -1,2 +1,2 @@
-export * from './callHistoryContacts';
-export type * from './IceServer';
+export * from './callHistoryContacts.js';
+export type * from './IceServer.js';

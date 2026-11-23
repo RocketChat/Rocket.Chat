@@ -1,9 +1,9 @@
 import * as path from 'node:path';
 
-import type { AppManager } from '../AppManager';
-import { ProxiedApp } from '../ProxiedApp';
-import type { IAppStorageItem } from '../storage';
-import type { IParseAppPackageResult } from './IParseAppPackageResult';
+import type { AppManager } from '../AppManager.js';
+import { ProxiedApp } from '../ProxiedApp.js';
+import type { IParseAppPackageResult } from './IParseAppPackageResult.js';
+import type { IAppStorageItem } from '../storage/index.js';
 
 export class AppCompiler {
 	public normalizeStorageFiles(files: { [key: string]: string }): { [key: string]: string } {

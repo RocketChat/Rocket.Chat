@@ -4,8 +4,9 @@ import type { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const isUserIdFederated = sinon.stub();
@@ -17,7 +18,7 @@ const findOneById = sinon.stub();
 const resetTOTPById = sinon.stub();
 const unsetLoginTokens = sinon.stub();
 
-const { resetTOTP } = proxyquire.noCallThru().load('./resetTOTP', {
+const { resetTOTP } = loadWithMocks('./resetTOTP', {
 	'../../../settings': { settings: { get: settingsGet } },
 	'../../i18n': { i18n: { getFixedT } },
 	'../../isUserIdFederated': { isUserIdFederated },

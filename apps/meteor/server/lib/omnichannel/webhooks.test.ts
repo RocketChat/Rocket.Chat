@@ -1,8 +1,9 @@
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 type FetchResponse = {
 	status: number;
@@ -56,7 +57,7 @@ function buildSubject(options?: {
 		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
 	};
 
-	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {
+	const { sendRequest } = loadWithMocks(MODULE_PATH, {
 		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 		'./logger': { webhooksLogger: logger },
 		'../metrics': { metrics },

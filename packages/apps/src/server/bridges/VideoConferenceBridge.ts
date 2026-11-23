@@ -1,11 +1,11 @@
-import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/AppVideoConference';
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
+import type { AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/AppVideoConference.js';
+import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export abstract class VideoConferenceBridge extends BaseBridge {
 	public async doGetById(callId: string, appId: string): Promise<VideoConference> {

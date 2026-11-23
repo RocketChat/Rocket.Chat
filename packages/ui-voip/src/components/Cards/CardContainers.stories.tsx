@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CardList from './CardList';
-import CardListSection from './CardListSection';
-import { PeerCard } from './PeerCard';
-import { StreamCard } from './StreamCard';
+import CardList from './CardList.js';
+import CardListSection from './CardListSection.js';
+import { PeerCard } from './PeerCard/index.js';
+import { StreamCard } from './StreamCard/index.js';
 
 const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj

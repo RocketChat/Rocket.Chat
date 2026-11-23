@@ -1,7 +1,7 @@
 import type { ItemProps } from '@react-types/shared';
 import { Children } from 'react';
 
-import type { PartialNode } from './PartialNode';
+import type { PartialNode } from './PartialNode.js';
 
 export type MenuItemProps<T> = ItemProps<T>;
 

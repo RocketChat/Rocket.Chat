@@ -4,15 +4,15 @@ import { useLanguage } from '@rocket.chat/ui-contexts';
 import { intlFormatDistance } from 'date-fns/intlFormatDistance';
 import type { ReactNode } from 'react';
 
-import CallHistoryTableDirection from './CallHistoryTableDirection';
-import CallHistoryTableStatus from './CallHistoryTableStatus';
-import CallHistoryUser from '../../components/CallHistoryUser';
+import CallHistoryTableDirection from './CallHistoryTableDirection.js';
+import CallHistoryTableStatus from './CallHistoryTableStatus.js';
+import CallHistoryUser from '../../components/CallHistoryUser.js';
 import type {
 	CallHistoryContact,
 	CallHistoryExternalContact,
 	CallHistoryInternalContact,
 	CallHistoryUnknownContact,
-} from '../../definitions';
+} from '../../definitions/index.js';
 
 export type CallHistoryTableRowProps<T extends CallHistoryContact> = {
 	_id: string;

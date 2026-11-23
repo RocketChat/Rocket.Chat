@@ -1,5 +1,5 @@
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { AppSourceStorage } from '../../../src/server/storage';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { AppSourceStorage } from '../../../src/server/storage/index.js';
 
 export class TestSourceStorage extends AppSourceStorage {
 	public async store(item: IAppStorageItem, zip: Buffer): Promise<string> {

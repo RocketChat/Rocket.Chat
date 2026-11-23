@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react';
 
-import UserStatus from './UserStatus';
+import UserStatus from './UserStatus.js';
 
 export type AwayProps = Omit<ComponentPropsWithoutRef<typeof UserStatus>, 'status'>;
 

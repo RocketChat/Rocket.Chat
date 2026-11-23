@@ -1,13 +1,13 @@
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 import type {
 	ISlashCommand,
 	ISlashCommandPreview,
 	ISlashCommandPreviewItem,
 	SlashCommandContext,
-} from '@rocket.chat/apps-engine/definition/slashcommands';
+} from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import type { AppLogStorage } from '../storage';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import type { AppLogStorage } from '../storage/index.js';
 
 export class AppSlashCommand {
 	/**

@@ -5,7 +5,7 @@ import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceCla
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
-import { EnterpriseCheck } from './EnterpriseCheck';
+import { EnterpriseCheck } from './EnterpriseCheck.js';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',

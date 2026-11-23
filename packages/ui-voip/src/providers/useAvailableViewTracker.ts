@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import type { AvailableViews } from '../context/MediaCallInstanceContext';
+import type { AvailableViews } from '../context/MediaCallInstanceContext.js';
 
 const filter = (view: AvailableViews, _index: number, array: AvailableViews[]) => {
 	switch (view) {

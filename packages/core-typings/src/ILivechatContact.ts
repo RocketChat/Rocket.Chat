@@ -1,6 +1,6 @@
-import type { IVisitorEmail, IVisitorPhone } from './ILivechatVisitor';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IOmnichannelSource, OmnichannelSourceType } from './IRoom';
+import type { IVisitorEmail, IVisitorPhone } from './ILivechatVisitor.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IOmnichannelSource, OmnichannelSourceType } from './IRoom.js';
 
 export interface ILivechatContactVisitorAssociation {
 	visitorId: string;

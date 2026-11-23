@@ -4,7 +4,7 @@ import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { captureOptionsFor } from './useVideoQuality';
+import { captureOptionsFor } from './useVideoQuality.js';
 
 export type PreviewVideoOptions = { deviceId?: string; quality?: VideoQuality; onOpen?: () => void };
 

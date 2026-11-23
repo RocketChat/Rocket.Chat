@@ -2,10 +2,10 @@ import { BackgroundLayer } from '@rocket.chat/layout';
 import type { ReactNode } from 'react';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
 
-import type { FormPageLayoutStyleProps } from '../../Types';
-import FormPageLayout from '../../common/FormPageLayout';
-import AdminInfoForm from '../../forms/AdminInfoForm';
-import type { AdminInfoPayload } from '../../forms/AdminInfoForm/AdminInfoForm';
+import type { FormPageLayoutStyleProps } from '../../Types/index.js';
+import FormPageLayout from '../../common/FormPageLayout.js';
+import type { AdminInfoPayload } from '../../forms/AdminInfoForm/AdminInfoForm.js';
+import AdminInfoForm from '../../forms/AdminInfoForm/index.js';
 
 export type AdminInfoPageProps = {
 	title?: ReactNode;

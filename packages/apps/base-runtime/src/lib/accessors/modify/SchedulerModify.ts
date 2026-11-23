@@ -1,9 +1,9 @@
-import type { ISchedulerModify } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
+import type { ISchedulerModify } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler/index.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 // Namespaces a job id with the app id, matching the host SchedulerModify. The app id here is used to
 // build the id string (a non-identity, local use), so it reads the real id from the registry rather

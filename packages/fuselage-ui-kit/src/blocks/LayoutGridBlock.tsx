@@ -2,8 +2,8 @@ import { Box, Divider } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { Fragment, memo, useMemo } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
-import { renderNestedBlocks } from '../utils/renderNestedBlocks';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { renderNestedBlocks } from '../utils/renderNestedBlocks.js';
 
 export type LayoutGridBlockProps = BlockProps<UiKit.LayoutGridBlock>;
 

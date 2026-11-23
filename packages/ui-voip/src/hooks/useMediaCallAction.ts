@@ -2,11 +2,11 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getPeerDisplayName } from '../components/PeerInfo/usePeerDisplayName';
-import type { PeerInfo } from '../context';
-import { usePeekMediaSessionPeerInfo } from '../context/usePeekMediaSessionPeerInfo';
-import { usePeekMediaSessionState } from '../context/usePeekMediaSessionState';
-import { useWidgetExternalControls } from '../context/useWidgetExternalControls';
+import { getPeerDisplayName } from '../components/PeerInfo/usePeerDisplayName.js';
+import type { PeerInfo } from '../context/index.js';
+import { usePeekMediaSessionPeerInfo } from '../context/usePeekMediaSessionPeerInfo.js';
+import { usePeekMediaSessionState } from '../context/usePeekMediaSessionState.js';
+import { useWidgetExternalControls } from '../context/useWidgetExternalControls.js';
 
 export const useMediaCallAction = (
 	callee?: PeerInfo,

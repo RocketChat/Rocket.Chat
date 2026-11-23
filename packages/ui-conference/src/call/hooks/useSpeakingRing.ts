@@ -1,7 +1,7 @@
 import { useAudioLevel } from '@rocket.chat/ui-media';
 import { useEffect, useRef, useState } from 'react';
 
-import { speakingRingLevel } from '../lib/speakingRing';
+import { speakingRingLevel } from '../lib/speakingRing.js';
 
 /** How long the ring stays after speech stops, so it does not flicker between words. */
 const SPEAKING_HOLD_MS = 1000;

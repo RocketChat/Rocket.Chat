@@ -2,13 +2,20 @@
 	"name": "@rocket.chat/http-router",
 	"version": "7.9.25",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc",
+		"build": "rm -rf dist && tsc && cp src/hono.cjs src/hono.d.cts dist/",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",

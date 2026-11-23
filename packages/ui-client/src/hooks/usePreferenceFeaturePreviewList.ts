@@ -1,8 +1,8 @@
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { FeaturePreviewProps } from './useFeaturePreviewList';
-import { parseSetting, useFeaturePreviewList } from './useFeaturePreviewList';
+import type { FeaturePreviewProps } from './useFeaturePreviewList.js';
+import { parseSetting, useFeaturePreviewList } from './useFeaturePreviewList.js';
 
 export const usePreferenceFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting('Accounts_AllowFeaturePreview', false);

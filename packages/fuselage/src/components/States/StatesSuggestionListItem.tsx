@@ -1,6 +1,6 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { cx } from '../../helpers/composeClassNames.js';
 
 export type StatesSuggestionListItemProps = {
 	children?: ReactNode;

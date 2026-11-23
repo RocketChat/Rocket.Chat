@@ -1,6 +1,6 @@
-export type * from './ILDAPCallback';
-export type * from './ILDAPEntry';
-export type * from './ILDAPLoginRequest';
-export type * from './ILDAPLoginResult';
-export type * from './ILDAPOptions';
-export type * from './ILDAPUniqueIdentifierField';
+export type * from './ILDAPCallback.js';
+export type * from './ILDAPEntry.js';
+export type * from './ILDAPLoginRequest.js';
+export type * from './ILDAPLoginResult.js';
+export type * from './ILDAPOptions.js';
+export type * from './ILDAPUniqueIdentifierField.js';

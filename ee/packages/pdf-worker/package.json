@@ -2,13 +2,20 @@
 	"name": "@rocket.chat/pdf-worker",
 	"version": "0.3.37",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
+		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",

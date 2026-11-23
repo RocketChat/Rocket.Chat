@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajvQuery } from '../Ajv.js';
 
 export type UsersInfoParamsGet = (
 	{ userId: string } | { username: string } | { importId: string } | { email: string } | { sipExtension: string }

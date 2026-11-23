@@ -3,8 +3,8 @@ import * as i18next from 'i18next';
 import { Suspense } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import { useAppTranslation } from './useAppTranslation';
-import { AppIdProvider } from '../contexts/AppIdContext';
+import { useAppTranslation } from './useAppTranslation.js';
+import { AppIdProvider } from '../contexts/AppIdContext.js';
 
 let i18n: i18next.i18n;
 

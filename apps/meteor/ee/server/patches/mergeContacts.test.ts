@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -24,7 +25,7 @@ const contactMergerStub = {
 	mergeFieldsIntoContact: sinon.stub(),
 };
 
-const { runMergeContacts } = proxyquire.noCallThru().load('./mergeContacts', {
+const { runMergeContacts } = loadWithMocks('./mergeContacts', {
 	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: { patch: sinon.stub() } },
 	'../../../server/lib/omnichannel/contacts/ContactMerger': { ContactMerger: contactMergerStub },
 	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },

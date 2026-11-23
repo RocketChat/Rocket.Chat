@@ -1,6 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import { mapPresenceToStatus, mapStatusToPresence } from './presence';
+import { mapPresenceToStatus, mapStatusToPresence } from './presence.js';
 
 describe('mapStatusToPresence', () => {
 	it('maps RC statuses to XMPP presence', () => {

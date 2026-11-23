@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
 type ClientUserInfo = Pick<IUser, 'id' | 'username'>;
 

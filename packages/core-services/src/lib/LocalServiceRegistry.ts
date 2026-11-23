@@ -1,5 +1,5 @@
-import { getInstanceMethods } from './getInstanceMethods';
-import type { IServiceClass } from '../types/ServiceClass';
+import { getInstanceMethods } from './getInstanceMethods.js';
+import type { IServiceClass } from '../types/ServiceClass.js';
 
 const lifecycleMethods = new Set(['created', 'started', 'stopped']);
 

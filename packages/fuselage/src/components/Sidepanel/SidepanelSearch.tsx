@@ -1,7 +1,7 @@
-import { cx } from '../../helpers/composeClassNames';
-import { Box } from '../Box';
-import { Icon } from '../Icon';
-import { TextInput, type TextInputProps } from '../TextInput';
+import { cx } from '../../helpers/composeClassNames.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
+import { TextInput, type TextInputProps } from '../TextInput/index.js';
 
 export type SidepanelSearchProps = Omit<TextInputProps, 'startAddon' | 'endAddon'> & {
 	variant?: 'default' | 'rooms-list';

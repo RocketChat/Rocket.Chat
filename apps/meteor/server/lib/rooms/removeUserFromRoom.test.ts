@@ -2,12 +2,13 @@ import { before, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const messageMock = { saveSystemMessage: sinon.stub().resolves() };
 
-const { performUserRemoval } = p.noCallThru().load('./removeUserFromRoom.ts', {
+const { performUserRemoval } = loadWithMocks('./removeUserFromRoom.ts', {
 	'@rocket.chat/apps': { Apps: {}, AppEvents: {} },
 	'@rocket.chat/core-services': { Message: messageMock, Team: {}, Room: {}, ClientSafeError: Error },
 	'../../settings': { settings: { get: sinon.stub() } },

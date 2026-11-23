@@ -1,6 +1,6 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 
-import { decrypt } from './token';
+import { decrypt } from './token.js';
 
 /**
  * Returns the signature-verified `information.createdAt` of an encrypted license,

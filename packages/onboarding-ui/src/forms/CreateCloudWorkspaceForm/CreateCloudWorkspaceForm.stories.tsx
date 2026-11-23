@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import CreateCloudWorkspaceForm from './CreateCloudWorkspaceForm';
-import WorkspaceUrlInput from './WorkspaceUrlInput';
+import CreateCloudWorkspaceForm from './CreateCloudWorkspaceForm.js';
+import WorkspaceUrlInput from './WorkspaceUrlInput.js';
 
 const isValidLength = (domainName: string) => {
 	if (domainName.length < 3) {

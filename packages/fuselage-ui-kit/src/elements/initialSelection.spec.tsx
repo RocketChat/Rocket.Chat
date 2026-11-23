@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { modalParser } from '../surfaces';
+import { modalParser } from '../surfaces/index.js';
 
 // Searches never return the initial selection, so the chips can only come from fetching it.
 // A fresh app root per test keeps one test's cached answers from leaking into the next.

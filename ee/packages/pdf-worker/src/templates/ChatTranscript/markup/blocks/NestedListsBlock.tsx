@@ -1,7 +1,7 @@
 import { StyleSheet, View } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import { Markup } from '..';
+import { Markup } from '../index.js';
 
 const styles = StyleSheet.create({
 	wrapper: {

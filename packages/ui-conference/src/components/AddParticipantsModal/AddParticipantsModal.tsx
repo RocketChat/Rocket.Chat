@@ -7,8 +7,8 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceActions, useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
-import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState';
+import { useConferenceActions, useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext.js';
+import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState.js';
 
 type AddParticipantsModalProps = {
 	onClose: () => void;

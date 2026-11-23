@@ -13,7 +13,7 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import type { Collection, Db, DeleteResult, Document, Filter, FindCursor, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 const OUTLOOK: IContact['source'] = 'outlook';
 const LOCAL: IContact['source'] = 'local';

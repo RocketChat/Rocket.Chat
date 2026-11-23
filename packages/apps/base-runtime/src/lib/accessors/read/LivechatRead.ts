@@ -1,11 +1,11 @@
-import type { ILivechatRead } from '@rocket.chat/apps-engine/definition/accessors/ILivechatRead';
-import type { IDepartment } from '@rocket.chat/apps-engine/definition/livechat';
-import type { ILivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILivechatRoom';
-import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat/IVisitor';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { ILivechatRead } from '@rocket.chat/apps-engine/definition/accessors/ILivechatRead.js';
+import type { ILivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILivechatRoom.js';
+import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat/IVisitor.js';
+import type { IDepartment } from '@rocket.chat/apps-engine/definition/livechat/index.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class LivechatRead implements ILivechatRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

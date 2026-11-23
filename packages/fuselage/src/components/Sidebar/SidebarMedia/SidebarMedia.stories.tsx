@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Sidebar, SidebarMedia, SidebarMediaTitle, SidebarMediaController, Box, IconButton } from '../..';
-import { GenericCallItem } from '../helpers';
+import { Sidebar, SidebarMedia, SidebarMediaTitle, SidebarMediaController, Box, IconButton } from '../../index.js';
+import { GenericCallItem } from '../helpers.js';
 
 export default {
 	title: 'Navigation/Sidebar/Media',

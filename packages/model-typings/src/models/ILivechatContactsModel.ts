@@ -7,9 +7,9 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Document, FindCursor, FindOneAndUpdateOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
-import type { Updater } from '../updater';
-import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { Updater } from '../updater.js';
+import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	insertContact(

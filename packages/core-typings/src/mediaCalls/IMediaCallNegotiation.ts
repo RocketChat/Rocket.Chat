@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { RTCSessionDescriptionInit } from './RTCSessionDescription';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
+import type { RTCSessionDescriptionInit } from './RTCSessionDescription.js';
 
 export type MediaCallNegotiationStream = {
 	tag: string;

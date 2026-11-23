@@ -1,6 +1,6 @@
 import type { TextObject } from '@rocket.chat/ui-kit';
 
-import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useAppTranslation } from '../hooks/useAppTranslation.js';
 
 export type PlainTextElementProps = { textObject: TextObject };
 

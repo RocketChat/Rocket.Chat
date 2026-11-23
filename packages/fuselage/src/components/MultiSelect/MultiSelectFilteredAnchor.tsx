@@ -1,14 +1,14 @@
-import { use, type InputEvent } from 'react';
+import { useContext, type InputEvent } from 'react';
 
-import { FlexItem } from '../Flex';
-import { Input } from '../InputBox';
-import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
-import { MultiSelectFilteredContext } from './MultiSelectFilteredContext';
+import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams.js';
+import { MultiSelectFilteredContext } from './MultiSelectFilteredContext.js';
+import { FlexItem } from '../Flex/index.js';
+import { Input } from '../InputBox/index.js';
 
 type MultiSelectFilteredAnchorProps = MultiSelectAnchorParams;
 
 function MultiSelectFilteredAnchor({ children: _children, ...props }: MultiSelectFilteredAnchorProps) {
-	const { placeholder, filter, setFilter } = use(MultiSelectFilteredContext);
+	const { placeholder, filter, setFilter } = useContext(MultiSelectFilteredContext);
 
 	return (
 		<FlexItem grow={1} order={1}>

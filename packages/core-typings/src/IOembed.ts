@@ -1,4 +1,4 @@
-import type { MessageAttachment } from './IMessage';
+import type { MessageAttachment } from './IMessage/index.js';
 
 export type OEmbedMeta = {
 	[key: string]: string;

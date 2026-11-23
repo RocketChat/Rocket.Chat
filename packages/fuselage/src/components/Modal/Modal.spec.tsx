@@ -2,9 +2,9 @@ import { composeStories } from '@storybook/react';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import { Modal, ModalFooter } from '.';
-import * as stories from './Modal.stories';
-import { render } from '../../testing';
+import * as stories from './Modal.stories.js';
+import { Modal, ModalFooter } from './index.js';
+import { render } from '../../testing.js';
 
 const composedStories = composeStories(stories);
 

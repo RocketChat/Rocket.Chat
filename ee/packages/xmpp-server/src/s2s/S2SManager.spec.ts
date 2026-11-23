@@ -1,11 +1,11 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { S2SManager } from './S2SManager';
-import { resolveConfig } from '../config';
-import { QueueOverflowError } from '../errors';
-import type { XMPPServerEventMap } from '../events';
-import type { Logger } from '../logger';
-import { xml } from '../xml/build';
+import { S2SManager } from './S2SManager.js';
+import { resolveConfig } from '../config.js';
+import { QueueOverflowError } from '../errors.js';
+import type { XMPPServerEventMap } from '../events.js';
+import type { Logger } from '../logger.js';
+import { xml } from '../xml/build.js';
 
 const silentLogger: Logger = {
 	debug: () => undefined,

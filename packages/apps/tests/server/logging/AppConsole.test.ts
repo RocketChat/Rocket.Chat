@@ -2,11 +2,11 @@ import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 import type { TestContext } from 'node:test';
 
-import { LogMessageSeverity } from '@rocket.chat/apps-engine/definition/accessors';
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { LogMessageSeverity } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 import type * as stackTrace from 'stack-trace';
 
-import { AppConsole } from '../../../src/server/logging';
+import { AppConsole } from '../../../src/server/logging/index.js';
 
 describe('AppConsole', () => {
 	it('basicConsoleMethods', (t: TestContext) => {

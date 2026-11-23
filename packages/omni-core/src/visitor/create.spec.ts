@@ -2,7 +2,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { validateEmail } from '@rocket.chat/tools';
 
-import { registerGuest } from './create';
+import { registerGuest } from './create.js';
 
 // Mock the validateEmail function
 jest.mock('@rocket.chat/tools', () => ({

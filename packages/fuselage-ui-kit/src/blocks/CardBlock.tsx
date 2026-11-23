@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo } from 'react';
 
-import CardView from './CardView';
-import type { BlockProps } from '../utils/BlockProps';
+import CardView from './CardView.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type CardBlockProps = BlockProps<UiKit.CardBlock>;
 

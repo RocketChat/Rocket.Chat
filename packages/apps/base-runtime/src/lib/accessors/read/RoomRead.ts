@@ -1,16 +1,16 @@
-import type { IRoomRead } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoomRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages/index.js';
 import {
 	type GetMessagesOptions,
 	type GetRoomsFilters,
 	type GetRoomsOptions,
 	GetMessagesSortableFields,
-} from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+} from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions.js';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class RoomRead implements IRoomRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

@@ -1,6 +1,6 @@
 import { Children, type AllHTMLAttributes, type RefAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { cx } from '../../../helpers/composeClassNames.js';
 
 export type MessageStatusIndicatorProps = AllHTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>;
 

@@ -1,6 +1,6 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 
-import { useLicenseBase } from './useLicense';
+import { useLicenseBase } from './useLicense.js';
 
 export const useHasLicenseModule = (licenseName: LicenseModule | undefined) =>
 	useLicenseBase({

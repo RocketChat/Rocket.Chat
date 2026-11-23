@@ -6,8 +6,8 @@ import { forwardRef, memo, useRef } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
-import EmojiCategoryRow from './EmojiCategoryRow';
-import type { EmojiPickerItem } from '../lib/emoji';
+import EmojiCategoryRow from './EmojiCategoryRow.js';
+import type { EmojiPickerItem } from '../lib/emoji.js';
 
 export type CategoriesResultProps = {
 	items: EmojiPickerItem[];

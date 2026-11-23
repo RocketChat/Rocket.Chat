@@ -1,7 +1,7 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class TrashRaw extends BaseRaw<RocketChatRecordDeleted<any>> {
 	constructor(db: Db) {

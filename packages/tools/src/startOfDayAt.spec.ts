@@ -1,4 +1,4 @@
-import { startOfDayAt } from './startOfDayAt';
+import { startOfDayAt } from './startOfDayAt.js';
 
 describe('startOfDayAt', () => {
 	const at = new Date('2026-08-31T09:47:31.250Z');

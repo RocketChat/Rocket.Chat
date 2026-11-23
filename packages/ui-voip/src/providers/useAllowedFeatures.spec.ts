@@ -1,7 +1,7 @@
 import type { CallFeature } from '@rocket.chat/media-signaling';
 import { renderHook } from '@testing-library/react';
 
-import { useAllowedFeatures } from './useAllowedFeatures';
+import { useAllowedFeatures } from './useAllowedFeatures.js';
 
 const usePermissionMock = jest.fn();
 

@@ -4,13 +4,13 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import { xml } from '@xmpp/client';
 
-import { config, federationPolling, uniqueSuffix } from './helper/config';
-import { createLocalUser, findDirectMessageWith, getSetting, setSetting, teardown } from './helper/rocketchat';
-import type { LocalUser, RocketChat } from './helper/rocketchat';
-import { NS } from './helper/stanza';
-import { assertFederationReachable, registerXmppUser, serviceStats, setupSuite } from './helper/suite';
-import type { XmppUser } from './helper/xmpp-client';
-import { retry } from '../../../../../apps/meteor/tests/data/retry';
+import { config, federationPolling, uniqueSuffix } from './helper/config.js';
+import { createLocalUser, findDirectMessageWith, getSetting, setSetting, teardown } from './helper/rocketchat.js';
+import type { LocalUser, RocketChat } from './helper/rocketchat.js';
+import { NS } from './helper/stanza.js';
+import { assertFederationReachable, registerXmppUser, serviceStats, setupSuite } from './helper/suite.js';
+import type { XmppUser } from './helper/xmpp-client.js';
+import { retry } from '../../../../../apps/meteor/tests/data/retry.js';
 
 const SETTING_PROPAGATION_MS = 2000;
 const DELIVERY_WINDOW_MS = 4000;

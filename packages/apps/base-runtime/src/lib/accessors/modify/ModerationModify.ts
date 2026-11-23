@@ -1,9 +1,9 @@
-import type { IModerationModify } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IModerationModify } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 // Every method here takes `appId` as an app-supplied argument (not caller identity); the host
 // accessor likewise ignores its constructor appId and forwards the method-arg one. So the appId is

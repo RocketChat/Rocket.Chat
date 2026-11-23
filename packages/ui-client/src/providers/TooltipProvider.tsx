@@ -3,7 +3,7 @@ import { TooltipContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, memo, useState } from 'react';
 
-import { TooltipComponent } from '../components/TooltipComponent';
+import { TooltipComponent } from '../components/TooltipComponent.js';
 
 export type TooltipProviderProps = {
 	children?: ReactNode;

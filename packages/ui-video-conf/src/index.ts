@@ -1,8 +1,8 @@
-import VideoConfButton from './VideoConfButton';
-import VideoConfController from './VideoConfController';
+import VideoConfButton from './VideoConfButton/index.js';
+import VideoConfController from './VideoConfController/index.js';
 
-export * from './VideoConfContext';
-export * from './VideoConfMessage';
-export * from './VideoConfPopup';
-export * from './hooks';
+export * from './VideoConfContext.js';
+export * from './VideoConfMessage/index.js';
+export * from './VideoConfPopup/index.js';
+export * from './hooks/index.js';
 export { VideoConfButton, VideoConfController };

@@ -1,9 +1,9 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import type { IMarketplaceInfo } from '../marketplace';
+import type { IMarketplaceInfo } from '../marketplace/index.js';
 
 export interface IAppStorageItem {
 	_id?: string;

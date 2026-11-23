@@ -1,7 +1,7 @@
 import { Badge } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { usePreferenceFeaturePreviewList } from '../../hooks/usePreferenceFeaturePreviewList';
+import { usePreferenceFeaturePreviewList } from '../../hooks/usePreferenceFeaturePreviewList.js';
 
 const FeaturePreviewBadge = () => {
 	const { t } = useTranslation();

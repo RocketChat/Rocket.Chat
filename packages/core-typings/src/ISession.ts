@@ -1,6 +1,6 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRole } from './IRole';
-import type { IUser } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IRole } from './IRole.js';
+import type { IUser } from './IUser.js';
 
 export interface ISessionDevice {
 	type: string;

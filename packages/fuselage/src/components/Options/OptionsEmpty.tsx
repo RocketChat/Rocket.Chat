@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { Option } from '../Option';
+import { Option } from '../Option/index.js';
 
 export type OptionsEmptyProps = {
 	customEmpty?: string;

@@ -1,7 +1,7 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
 
-import CheckYourEmailPage from './CheckYourEmailPage';
+import CheckYourEmailPage from './CheckYourEmailPage.js';
 
 export default {
 	title: 'pages/CheckYourEmailPage',

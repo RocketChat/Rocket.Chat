@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { PasswordVerifier } from './PasswordVerifier';
+import { PasswordVerifier } from './PasswordVerifier.js';
 
 export default {
 	component: PasswordVerifier,

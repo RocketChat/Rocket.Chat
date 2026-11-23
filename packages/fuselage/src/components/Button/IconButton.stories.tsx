@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
-import { Avatar } from '../Avatar';
-import { Badge } from '../Badge';
-import { ButtonGroup } from '../ButtonGroup';
-import IconButton from './IconButton';
-import { avatarUrl } from '../Message/helpers';
+import IconButton from './IconButton.js';
+import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers.js';
+import { Avatar } from '../Avatar/index.js';
+import { Badge } from '../Badge/index.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
+import { avatarUrl } from '../Message/helpers.js';
 
 export default {
 	title: 'Inputs/IconButton',

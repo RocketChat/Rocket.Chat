@@ -4,9 +4,9 @@ import { LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAuthorization } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 import { canAccessRoomAsync } from '../authorization/canAccessRoom';
 
 const sandbox = sinon.createSandbox();
@@ -35,7 +35,7 @@ class AuthorizationDouble extends ServiceClass implements Pick<IAuthorization, '
 
 const authorization = new AuthorizationDouble();
 
-const { processDirectEmail } = proxyquire.noCallThru().load('./processDirectEmail', {
+const { processDirectEmail } = loadWithMocks('./processDirectEmail', {
 	'../../hooks/rooms/beforeSendMessageToRoom': { beforeSendMessageToRoom },
 	'../../settings': { settings: { get: (id: string) => settingValues[id] } },
 	'../authorization': { canAccessRoomAsync },

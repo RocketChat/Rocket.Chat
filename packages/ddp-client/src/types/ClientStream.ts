@@ -1,9 +1,9 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
-import type { DDPDispatchOptions } from '../MinimalDDPClient';
-import type { Subscription } from './Subscription';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods';
-import type { PublicationPayloads } from './publicationPayloads';
+import type { DDPDispatchOptions } from '../MinimalDDPClient.js';
+import type { Subscription } from './Subscription.js';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods.js';
+import type { PublicationPayloads } from './publicationPayloads.js';
 
 export interface ClientStream extends Emitter {
 	/**

@@ -2,7 +2,7 @@ import type { IExchangeCalendarSyncState, IUser } from '@rocket.chat/core-typing
 import type { ExchangeCalendarSyncIdentity, IExchangeCalendarSyncStateModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncState> implements IExchangeCalendarSyncStateModel {
 	constructor(db: Db) {

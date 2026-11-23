@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
-import { sanitizeUrl } from './sanitizeUrl';
+import { sanitizeUrl } from './sanitizeUrl.js';
 
 const flattenMarkup = (
 	markup:

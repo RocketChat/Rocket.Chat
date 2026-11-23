@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Field, FieldHint, FieldLabel, FieldRow } from '../Field';
-import { InputBoxSkeleton } from '../InputBox';
-import FieldGroup from './FieldGroup';
+import FieldGroup from './FieldGroup.js';
+import { Field, FieldHint, FieldLabel, FieldRow } from '../Field/index.js';
+import { InputBoxSkeleton } from '../InputBox/index.js';
 
 export default {
 	title: 'Inputs/FieldGroup',

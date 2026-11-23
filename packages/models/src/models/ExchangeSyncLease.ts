@@ -2,7 +2,7 @@ import type { IExchangeSyncLease, IUser } from '@rocket.chat/core-typings';
 import type { IExchangeSyncLeaseModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class ExchangeSyncLeaseRaw extends BaseRaw<IExchangeSyncLease> implements IExchangeSyncLeaseModel {
 	constructor(db: Db) {

@@ -1,7 +1,7 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 
-import type { OpenAPIDocumentation } from './openapi';
+import type { OpenAPIDocumentation } from './openapi.js';
 
 type Range<N extends number, Result extends number[] = []> = Result['length'] extends N
 	? Result[number]

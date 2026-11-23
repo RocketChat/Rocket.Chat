@@ -1,7 +1,7 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 
-import { Icon } from '../Icon';
-import { InputBox, type InputBoxProps } from '../InputBox';
+import { Icon } from '../Icon/index.js';
+import { InputBox, type InputBoxProps } from '../InputBox/index.js';
 
 // TODO: fix a11y issues
 

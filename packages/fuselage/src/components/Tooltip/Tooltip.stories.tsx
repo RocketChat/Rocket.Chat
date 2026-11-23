@@ -2,11 +2,11 @@ import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useLayoutEffect, useRef } from 'react';
 
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { IconButton } from '../Button';
-import { PositionAnimated } from '../PositionAnimated';
-import Tooltip from './Tooltip';
+import Tooltip from './Tooltip.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { IconButton } from '../Button/index.js';
+import { PositionAnimated } from '../PositionAnimated/index.js';
 
 export default {
 	title: 'Data Display/Tooltip',

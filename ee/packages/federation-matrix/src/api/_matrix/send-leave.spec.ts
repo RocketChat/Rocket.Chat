@@ -1,6 +1,6 @@
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 
-import { getMatrixSendLeaveRoutes } from './send-leave';
+import { getMatrixSendLeaveRoutes } from './send-leave.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {

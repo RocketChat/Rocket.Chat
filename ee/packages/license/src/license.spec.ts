@@ -1,5 +1,5 @@
-import { LicenseImp } from '.';
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
+import { LicenseImp } from './index.js';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder.js';
 
 it('should not prevent if there is no license', async () => {
 	const license = await getReadyLicenseManager();

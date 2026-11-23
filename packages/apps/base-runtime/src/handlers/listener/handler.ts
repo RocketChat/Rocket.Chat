@@ -1,20 +1,20 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { MessageBuilder } from '../../lib/accessors/builders/MessageBuilder';
-import { RoomBuilder } from '../../lib/accessors/builders/RoomBuilder';
-import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender';
-import { RoomExtender } from '../../lib/accessors/extenders/RoomExtender';
-import type { AppAccessors } from '../../lib/accessors/mod';
-import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
-import type { RequestContext } from '../../lib/requestContext';
-import { Room } from '../../lib/room';
-import createRoom from '../../lib/roomFactory';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { MessageBuilder } from '../../lib/accessors/builders/MessageBuilder.js';
+import { RoomBuilder } from '../../lib/accessors/builders/RoomBuilder.js';
+import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender.js';
+import { RoomExtender } from '../../lib/accessors/extenders/RoomExtender.js';
+import type { AppAccessors } from '../../lib/accessors/mod.js';
+import { AppAccessorsInstance } from '../../lib/accessors/mod.js';
+import { JsonRpcError, type Defined } from '../../lib/jsonrpc.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { Room } from '../../lib/room.js';
+import createRoom from '../../lib/roomFactory.js';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.js';
 
 export default async function handleListener(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method, params } = request;

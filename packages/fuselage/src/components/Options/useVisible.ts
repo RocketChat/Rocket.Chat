@@ -1,6 +1,6 @@
 import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 
-import { AnimatedVisibility } from '../AnimatedVisibility';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
 
 export type VisibilityHandler = [visible: typeof AnimatedVisibility.HIDDEN, hide: () => void, show: () => void];
 

@@ -2,7 +2,7 @@ import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import { usePosition } from '@rocket.chat/fuselage-hooks';
 import type { HTMLAttributes, ReactNode, RefAttributes, RefObject } from 'react';
 
-import { DropdownDesktop } from './DropdownDesktop';
+import { DropdownDesktop } from './DropdownDesktop.js';
 
 export type DropdownDesktopWrapperProps<T extends HTMLElement> = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color'> &
 	RefAttributes<HTMLElement> & {

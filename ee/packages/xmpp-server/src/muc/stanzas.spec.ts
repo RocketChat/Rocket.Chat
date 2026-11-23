@@ -1,5 +1,5 @@
 import { parse } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
 import {
 	buildGroupchatMessage,
@@ -9,7 +9,7 @@ import {
 	parseJoinPresence,
 	parseMucInvite,
 	splitOccupantJid,
-} from './stanzas';
+} from './stanzas.js';
 
 const NS_CORRECT = 'urn:xmpp:message-correct:0';
 

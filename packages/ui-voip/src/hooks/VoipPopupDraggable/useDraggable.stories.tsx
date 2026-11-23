@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useEffect, useLayoutEffect, useState, type Ref } from 'react';
 import { within, fireEvent, waitFor, expect, userEvent } from 'storybook/test';
 
-import { useDraggable, DEFAULT_BOUNDING_ELEMENT_OPTIONS } from './DraggableCore';
+import { useDraggable, DEFAULT_BOUNDING_ELEMENT_OPTIONS } from './DraggableCore.js';
 
 class BoundingBoxResizeEvent extends Event {
 	constructor(

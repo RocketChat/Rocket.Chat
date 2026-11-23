@@ -1,9 +1,9 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import type { RequestContext } from '../../lib/requestContext';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.js';
 
 export default async function handleSetStatus(request: RequestContext): Promise<null> {
 	const { params } = request;

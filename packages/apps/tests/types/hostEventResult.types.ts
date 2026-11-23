@@ -7,7 +7,7 @@
  * crosses the wire.
  */
 
-import type { PreMediaCallCreatedOutcome } from '../../src/server/mediaCalls/IMediaCallEvent';
+import type { PreMediaCallCreatedOutcome } from '../../src/server/mediaCalls/IMediaCallEvent.js';
 
 type Assert<T extends true> = T;
 type Equals<A, B> = (<G>() => G extends A ? 1 : 2) extends <G>() => G extends B ? 1 : 2 ? true : false;

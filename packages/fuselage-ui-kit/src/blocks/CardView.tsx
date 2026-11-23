@@ -1,8 +1,8 @@
 import { Box, Card, CardBody, CardControls, CardHeader, CardTitle } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import type { BlockProps } from '../utils/BlockProps';
-import { isTextObject } from '../utils/isTextObject';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { isTextObject } from '../utils/isTextObject.js';
 
 const safeImage = (image: UiKit.CardImage | undefined) =>
 	image && typeof image.image_url === 'string' && UiKit.isSafeUrl(image.image_url) ? image : undefined;

@@ -5,9 +5,9 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import type { ChangeEvent, ComponentPropsWithoutRef, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
-import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
-import MultiSelectCustomList from './MultiSelectCustomList';
-import MultiSelectCustomListWrapper from './MultiSelectCustomListWrapper';
+import MultiSelectCustomAnchor from './MultiSelectCustomAnchor.js';
+import MultiSelectCustomList from './MultiSelectCustomList.js';
+import MultiSelectCustomListWrapper from './MultiSelectCustomListWrapper.js';
 
 const isValidReference = (reference: RefObject<HTMLElement | null>, event: { target: Node | null }): boolean => {
 	const isValidTarget = Boolean(event.target);

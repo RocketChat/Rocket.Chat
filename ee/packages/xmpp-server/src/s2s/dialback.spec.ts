@@ -1,4 +1,4 @@
-import { generateDialbackKey, generateStreamId, verifyDialbackKey } from './dialback';
+import { generateDialbackKey, generateStreamId, verifyDialbackKey } from './dialback.js';
 
 describe('generateDialbackKey', () => {
 	it('matches the XEP-0185 example key', () => {

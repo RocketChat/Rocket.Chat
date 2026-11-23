@@ -1,8 +1,8 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useContext } from 'react';
 
-import PageContext from './PageContext';
-import PageHeaderNoShadow from './PageHeaderNoShadow';
+import PageContext from './PageContext.js';
+import PageHeaderNoShadow from './PageHeaderNoShadow.js';
 
 export type PageHeaderProps = {
 	title: ReactNode;

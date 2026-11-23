@@ -1,8 +1,8 @@
-export { default as Page } from './Page';
-export { default as PageContent } from './PageContent';
-export { default as PageFooter } from './PageFooter';
-export { default as PageHeader } from './PageHeader';
-export { default as PageScrollableContent } from './PageScrollableContent';
-export { default as PageScrollableContentWithShadow } from './PageScrollableContentWithShadow';
-export { default as PageHeaderNoShadow } from './PageHeaderNoShadow';
-export { default as PageBlockWithBorder } from './PageBlockWithBorder';
+export { default as Page } from './Page.js';
+export { default as PageContent } from './PageContent.js';
+export { default as PageFooter } from './PageFooter.js';
+export { default as PageHeader } from './PageHeader.js';
+export { default as PageScrollableContent } from './PageScrollableContent.js';
+export { default as PageScrollableContentWithShadow } from './PageScrollableContentWithShadow.js';
+export { default as PageHeaderNoShadow } from './PageHeaderNoShadow.js';
+export { default as PageBlockWithBorder } from './PageBlockWithBorder.js';

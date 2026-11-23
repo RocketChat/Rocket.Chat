@@ -1,4 +1,4 @@
-import type { ImEndpoints } from './im';
+import type { ImEndpoints } from './im.js';
 
 // Public mirror of the implementation-derived routes (apps/meteor/server/api/v1/im.ts,
 // `ExtractRoutesFromAPI<typeof dmEndpoints>`). Each dm.* route shares its endpoint props with

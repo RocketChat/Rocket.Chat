@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -24,7 +25,7 @@ const modelsMock = {
 	},
 };
 
-const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
+const { createDirectMessage } = loadWithMocks('./createDirectMessage', {
 	'meteor/meteor': {
 		Meteor: {
 			userId: sandbox.stub(),

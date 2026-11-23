@@ -1,6 +1,6 @@
 import type Stream from 'node:stream';
 
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
 import type { IMessage, IUpload, IUser, FilesAndAttachments, AtLeast } from '@rocket.chat/core-typings';
 
 export interface IUploadFileParams {

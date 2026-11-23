@@ -1,11 +1,11 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { cx } from '../../helpers/composeClassNames';
-import { patchChildren } from '../../helpers/patchChildren';
-import { Icon } from '../Icon';
-import { Item, ItemActions, ItemIcon, ItemTitle } from '../Item';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { cx } from '../../helpers/composeClassNames.js';
+import { patchChildren } from '../../helpers/patchChildren.js';
+import { Icon } from '../Icon/index.js';
+import { Item, ItemActions, ItemIcon, ItemTitle } from '../Item/index.js';
 
 export type SidebarLinkProps = {
 	selected?: boolean;

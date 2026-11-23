@@ -4,8 +4,9 @@ import { runInNewContext } from 'node:vm';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -15,7 +16,7 @@ const doesUserRequire2FA = sandbox.stub();
 const sendTwoFactorChallenge = sandbox.stub();
 const logError = sandbox.stub();
 
-const { passportOAuthCallback, passportOAuthErrorCallback } = p.noCallThru().load('./passportOAuthCallback.ts', {
+const { passportOAuthCallback, passportOAuthErrorCallback } = loadWithMocks('./passportOAuthCallback.ts', {
 	'../auth/issueLoginToken': { issueLoginToken },
 	'./twoFactorAuth': { doesUserRequire2FA },
 	'@rocket.chat/logger': {

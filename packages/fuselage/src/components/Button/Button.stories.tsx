@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
-import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
-import { Box } from '../Box';
-import { ButtonGroup } from '../ButtonGroup';
-import { Margins } from '../Margins';
-import Button from './Button';
+import Button from './Button.js';
+import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers.js';
+import { Box } from '../Box/index.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
+import { Margins } from '../Margins/index.js';
 
 export default {
 	title: 'Inputs/Button',

@@ -4,7 +4,7 @@ import type { INpsVoteModel, DocumentWithProjection, FindOptionsWithProjection }
 import type { Collection, FindCursor, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {

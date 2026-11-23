@@ -1,4 +1,4 @@
-import type { MarkedEventResult, PatchPhantomKey } from '@rocket.chat/apps-engine/definition/eventResult';
+import type { MarkedEventResult, PatchPhantomKey } from '@rocket.chat/apps-engine/definition/eventResult/index.js';
 import type { DistributiveOmit } from '@rocket.chat/core-typings';
 
 /**

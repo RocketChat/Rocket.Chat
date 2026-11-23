@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import type { ChartModel } from '../utils/dataVisualization';
+import type { ChartModel } from '../utils/dataVisualization.js';
 
 const DataVisualizationTable = ({ title, model }: { title: string; model: ChartModel }) => {
 	const { t } = useTranslation();

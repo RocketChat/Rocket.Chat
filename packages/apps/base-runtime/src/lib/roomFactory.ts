@@ -1,9 +1,9 @@
-import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
 
-import type { AppAccessors } from './accessors/mod';
-import { bridgeCall } from './bridges/bridgeCall';
-import { Room } from './room';
+import type { AppAccessors } from './accessors/mod.js';
+import { bridgeCall } from './bridges/bridgeCall.js';
+import { Room } from './room.js';
 
 const getMockAppManager = (senderFn: AppAccessors['senderFn']) => {
 	return {

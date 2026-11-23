@@ -4,11 +4,11 @@ import { act, render, screen } from '@testing-library/react';
 import type { ForwardedRef, ReactNode } from 'react';
 import { Suspense, createContext, createRef, forwardRef, useContext, useImperativeHandle } from 'react';
 
-import ModalProvider from './ModalProvider';
-import ModalProviderWithRegion from './ModalProviderWithRegion';
-import GenericModal from '../../components/Modal/GenericModal';
-import ModalRegion from '../../components/Modal/ModalRegion';
-import { imperativeModal } from '../../helpers/imperativeModal';
+import ModalProvider from './ModalProvider.js';
+import ModalProviderWithRegion from './ModalProviderWithRegion.js';
+import GenericModal from '../../components/Modal/GenericModal/index.js';
+import ModalRegion from '../../components/Modal/ModalRegion.js';
+import { imperativeModal } from '../../helpers/imperativeModal.js';
 
 const renderWithSuspense = (ui: ReactNode) =>
 	render(ui, {

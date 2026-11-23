@@ -1,13 +1,14 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const checkPassword = sinon.stub();
 
-const { PasswordCheckFallback } = proxyquire.noCallThru().load('./PasswordCheckFallback', {
+const { PasswordCheckFallback } = loadWithMocks('./PasswordCheckFallback', {
 	'meteor/accounts-base': { Accounts: { _checkPasswordAsync: checkPassword } },
 	'../../../settings': { settings: { get: settingsGet } },
 });

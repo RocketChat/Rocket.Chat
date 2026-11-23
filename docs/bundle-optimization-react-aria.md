@@ -141,8 +141,10 @@ When upgrading these packages, the yarn patches must be re-created for the new v
 When the fuselage package is updated, check if it uses any new react-aria exports. You can verify with:
 
 ```bash
-grep -oE 'react_aria_1\.[a-zA-Z]+' node_modules/@rocket.chat/fuselage/dist/fuselage.development.js | sort -u
-grep -oE 'react_stately_1\.[a-zA-Z]+' node_modules/@rocket.chat/fuselage/dist/fuselage.development.js | sort -u
+for pkg in react-aria react-stately; do
+  grep -E "^import \{.*\} from \"$pkg\";" node_modules/@rocket.chat/fuselage/dist/fuselage.development.js \
+    | sed -E 's/^import \{(.*)\} from.*/\1/' | tr ',' '\n' | sed -E 's/^ *//; s/ as .*//; /^$/d' | sort -u
+done
 ```
 
 If there are new exports, add them to the yarn patch.

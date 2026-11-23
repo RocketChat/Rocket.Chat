@@ -1,3 +1,7 @@
+import type { IContactRead } from '@rocket.chat/apps-engine/definition/accessors/IContactRead.js';
+import type { IOAuthAppsReader } from '@rocket.chat/apps-engine/definition/accessors/IOAuthAppsReader.js';
+import type { IRoleRead } from '@rocket.chat/apps-engine/definition/accessors/IRoleRead.js';
+import type { IThreadRead } from '@rocket.chat/apps-engine/definition/accessors/IThreadRead.js';
 import type {
 	ICallHistoryRead,
 	ICloudWorkspaceRead,
@@ -12,11 +16,7 @@ import type {
 	IUploadRead,
 	IUserRead,
 	IVideoConferenceRead,
-} from '@rocket.chat/apps-engine/definition/accessors';
-import type { IContactRead } from '@rocket.chat/apps-engine/definition/accessors/IContactRead';
-import type { IOAuthAppsReader } from '@rocket.chat/apps-engine/definition/accessors/IOAuthAppsReader';
-import type { IRoleRead } from '@rocket.chat/apps-engine/definition/accessors/IRoleRead';
-import type { IThreadRead } from '@rocket.chat/apps-engine/definition/accessors/IThreadRead';
+} from '@rocket.chat/apps-engine/definition/accessors/index.js';
 
 export class Reader implements IRead {
 	constructor(

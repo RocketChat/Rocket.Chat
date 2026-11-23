@@ -1,7 +1,7 @@
-import type { EventSignatures } from '../events/Events';
-import type { IApiService } from '../types/IApiService';
-import type { CallingOptions, IBroker, IBrokerNode } from '../types/IBroker';
-import type { IServiceClass } from '../types/ServiceClass';
+import type { EventSignatures } from '../events/Events.js';
+import type { IApiService } from '../types/IApiService.js';
+import type { CallingOptions, IBroker, IBrokerNode } from '../types/IBroker.js';
+import type { IServiceClass } from '../types/ServiceClass.js';
 
 export class Api implements IApiService {
 	private services: Set<IServiceClass> = new Set<IServiceClass>();

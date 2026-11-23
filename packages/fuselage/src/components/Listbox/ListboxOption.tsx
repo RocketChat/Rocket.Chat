@@ -1,7 +1,7 @@
 import type { PointerEvent, ReactNode } from 'react';
 import { memo } from 'react';
 
-import { Option } from '../Option';
+import { Option } from '../Option/index.js';
 
 export type ListboxOptionProps = {
 	/** Referenced by the combobox's `aria-activedescendant` while the option is active. */

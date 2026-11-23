@@ -1,7 +1,7 @@
-import type { StylingProps } from './stylingProps';
-import { extractStylingProps } from './stylingProps';
-import { appendClassName } from '../../helpers/appendClassName';
-import { useStyle } from '../../hooks/useStyle';
+import type { StylingProps } from './stylingProps.js';
+import { extractStylingProps } from './stylingProps.js';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { useStyle } from '../../hooks/useStyle.js';
 
 export const useStylingProps = <TProps extends { className?: string }>(originalProps: TProps): Omit<TProps, keyof StylingProps> => {
 	const [props, styles] = extractStylingProps(originalProps);

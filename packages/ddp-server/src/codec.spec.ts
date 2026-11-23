@@ -17,7 +17,7 @@ import {
 	encodeUpdated,
 	preframe,
 	wrapForSockJs,
-} from './codec';
+} from './codec.js';
 
 describe('decode', () => {
 	it('parses an EJSON packet including extended values', () => {

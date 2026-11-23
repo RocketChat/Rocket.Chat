@@ -1,8 +1,8 @@
-import type { IPersistenceRead } from '@rocket.chat/apps-engine/definition/accessors';
-import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IPersistenceRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class PersistenceRead implements IPersistenceRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

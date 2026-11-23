@@ -1,8 +1,8 @@
 import { Badge, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import type { ConferencePanel } from '../context/ConferenceContext';
-import type { ConferenceRoom } from '../context/definitions';
+import type { ConferencePanel } from '../context/ConferenceContext.js';
+import type { ConferenceRoom } from '../context/definitions.js';
 
 export type ConferencePanelTogglesProps = {
 	activePanel: ConferencePanel | undefined;

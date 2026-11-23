@@ -1,4 +1,4 @@
-import { deviceMenuRows, deviceMenuSelection, selectedDevice } from './deviceMenuRows';
+import { deviceMenuRows, deviceMenuSelection, selectedDevice } from './deviceMenuRows.js';
 
 const device = (deviceId: string, label: string, groupId = deviceId, kind: MediaDeviceKind = 'audioinput') =>
 	({ deviceId, label, groupId, kind }) as MediaDeviceInfo;

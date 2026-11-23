@@ -1,5 +1,5 @@
-import type { LicenseManager } from './license';
-import { logger } from './logger';
+import type { LicenseManager } from './license.js';
+import { logger } from './logger.js';
 
 export function setPendingLicense(this: LicenseManager, encryptedLicense: string) {
 	this.pendingLicense = encryptedLicense;

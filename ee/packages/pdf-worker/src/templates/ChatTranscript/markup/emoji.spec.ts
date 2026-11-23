@@ -1,4 +1,4 @@
-import { unicodeToShortname } from './emoji';
+import { unicodeToShortname } from './emoji.js';
 
 describe('unicodeToShortname', () => {
 	it('converts emoji without variation selector to shortname', () => {

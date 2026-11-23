@@ -1,10 +1,10 @@
 import type { AllHTMLAttributes, ElementType, MouseEvent, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { ItemContext } from './ItemContext';
-import type { ItemInset } from './types';
-import { useIdRegistry } from './useIdRegistry';
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { ItemContext } from './ItemContext.js';
+import type { ItemInset } from './types.js';
+import { useIdRegistry } from './useIdRegistry.js';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type ItemProps = {
 	/**

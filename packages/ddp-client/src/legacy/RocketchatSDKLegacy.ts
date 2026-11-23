@@ -4,15 +4,15 @@ import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
-import { DDPSDK } from '../DDPSDK';
-import type { Subscription } from '../types/Subscription';
+import { DDPSDK } from '../DDPSDK.js';
+import type { Subscription } from '../types/Subscription.js';
 import type {
 	APILegacy,
 	DPPLegacy,
 	RocketchatSdkLegacyEvents,
 	RocketchatSdkLegacyEventsKeys,
 	RocketchatSdkLegacyEventsValues,
-} from './types/SDKLegacy';
+} from './types/SDKLegacy.js';
 
 interface RocketchatSDKLegacy extends APILegacy, DPPLegacy {}
 

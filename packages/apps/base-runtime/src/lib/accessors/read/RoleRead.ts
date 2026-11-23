@@ -1,8 +1,8 @@
-import type { IRoleRead } from '@rocket.chat/apps-engine/definition/accessors/IRoleRead';
-import type { IRole } from '@rocket.chat/apps-engine/definition/roles';
+import type { IRoleRead } from '@rocket.chat/apps-engine/definition/accessors/IRoleRead.js';
+import type { IRole } from '@rocket.chat/apps-engine/definition/roles/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class RoleRead implements IRoleRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

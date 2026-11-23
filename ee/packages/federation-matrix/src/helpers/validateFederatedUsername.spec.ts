@@ -1,4 +1,4 @@
-import { validateFederatedUsername } from './validateFederatedUsername';
+import { validateFederatedUsername } from './validateFederatedUsername.js';
 
 describe('validateFederatedUsername', () => {
 	describe('invalid formats', () => {

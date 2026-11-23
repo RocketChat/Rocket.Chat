@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Stack } from '../Stack';
-import Text, { type TextColor, type TextFontScale } from './Text';
+import Text, { type TextColor, type TextFontScale } from './Text.js';
+import { Stack } from '../Stack/index.js';
 
 const fontScales: TextFontScale[] = ['hero', 'h1', 'h2', 'h3', 'h4', 'h5', 'p1', 'p1m', 'p1b', 'p2', 'p2m', 'p2b', 'c1', 'c2', 'micro'];
 

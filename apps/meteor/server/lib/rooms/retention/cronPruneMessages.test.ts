@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IRoomsModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingValues: Record<string, unknown> = {};
 let reloadPolicy: () => Promise<void>;
@@ -12,7 +13,7 @@ let job: () => Promise<void>;
 
 const cleanRoomHistoryMock = sinon.stub();
 
-p.noCallThru().load('./cronPruneMessages.ts', {
+loadWithMocks('./cronPruneMessages.ts', {
 	'../../../settings': {
 		settings: {
 			get: (id: string) => settingValues[id],

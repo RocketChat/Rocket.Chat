@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 
-import Text from './Text';
-import * as stories from './Text.stories';
-import { render } from '../../testing';
+import Text from './Text.js';
+import * as stories from './Text.stories.js';
+import { render } from '../../testing.js';
 
 const { Default, Semantic } = composeStories(stories);
 

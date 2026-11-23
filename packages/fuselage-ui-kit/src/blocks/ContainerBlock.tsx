@@ -3,10 +3,10 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { BlockProps } from '../utils/BlockProps';
-import { isTextObject } from '../utils/isTextObject';
-import { messageBlockWidth } from '../utils/messageBlockWidth';
-import { renderNestedBlocks } from '../utils/renderNestedBlocks';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { isTextObject } from '../utils/isTextObject.js';
+import { messageBlockWidth } from '../utils/messageBlockWidth.js';
+import { renderNestedBlocks } from '../utils/renderNestedBlocks.js';
 
 export type ContainerBlockProps = BlockProps<UiKit.ContainerBlock>;
 

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { messageParser } from '.';
+import { messageParser } from './index.js';
 
 const wrapper = mockAppRoot()
 	.withEndpoint('GET', '/v1/users.autocomplete', () => ({ items: [] }) as any)

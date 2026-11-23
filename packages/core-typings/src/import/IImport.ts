@@ -1,6 +1,6 @@
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
-import type { ProgressStep } from './IImportProgress';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
+import type { IUser } from '../IUser.js';
+import type { ProgressStep } from './IImportProgress.js';
 
 export interface IImport extends IRocketChatRecord {
 	type: string;

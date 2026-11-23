@@ -1,9 +1,10 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { isVerifiedChannelInSource } = proxyquire.noCallThru().load('./isVerifiedChannelInSource', {});
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+
+const { isVerifiedChannelInSource } = loadWithMocks('./isVerifiedChannelInSource', {});
 
 describe('isVerifiedChannelInSource', () => {
 	it('should return false if channel is not verified', () => {

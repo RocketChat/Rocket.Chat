@@ -1,6 +1,6 @@
-export type * from './sms';
-export type * from './routing';
-export type * from './queue';
-export type * from './reports';
-export type * from './mac';
-export * from './outbound';
+export type * from './sms.js';
+export type * from './routing.js';
+export type * from './queue.js';
+export type * from './reports.js';
+export type * from './mac.js';
+export * from './outbound.js';

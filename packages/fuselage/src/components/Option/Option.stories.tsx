@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import { exampleAvatar } from '../../../.storybook/helpers';
-import { Avatar } from '../Avatar';
-import { Box } from '../Box';
-import { MenuItem, Menu } from '../Menu';
-import { StatusBullet } from '../StatusBullet';
-import { Tile } from '../Tile';
-import Option from './Option';
-import OptionAvatar from './OptionAvatar';
-import OptionColumn from './OptionColumn';
-import OptionContent from './OptionContent';
-import OptionDescription from './OptionDescription';
-import OptionIcon from './OptionIcon';
-import OptionMenu from './OptionMenu';
-import OptionSkeleton from './OptionSkeleton';
+import Option from './Option.js';
+import OptionAvatar from './OptionAvatar.js';
+import OptionColumn from './OptionColumn.js';
+import OptionContent from './OptionContent.js';
+import OptionDescription from './OptionDescription.js';
+import OptionIcon from './OptionIcon.js';
+import OptionMenu from './OptionMenu.js';
+import OptionSkeleton from './OptionSkeleton.js';
+import { exampleAvatar } from '../../../.storybook/helpers.js';
+import { Avatar } from '../Avatar/index.js';
+import { Box } from '../Box/index.js';
+import { MenuItem, Menu } from '../Menu/index.js';
+import { StatusBullet } from '../StatusBullet/index.js';
+import { Tile } from '../Tile/index.js';
 
 export default {
 	title: 'Navigation/Option',

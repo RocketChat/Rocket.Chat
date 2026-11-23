@@ -1,9 +1,9 @@
 import type { TdHTMLAttributes, ThHTMLAttributes } from 'react';
 import { useContext } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { TableHeadContext } from './TableHead';
+import { TableHeadContext } from './TableHead.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type TableCellProps = Omit<
 	ElementProps<HTMLTableCellElement, TdHTMLAttributes<HTMLTableCellElement> & ThHTMLAttributes<HTMLTableCellElement>>,

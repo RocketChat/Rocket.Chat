@@ -5,15 +5,15 @@ import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
-import { SipError, SipErrorCodes } from './errorCodes';
-import { logger } from '../logger';
-import type { BaseSipCall } from './providers/BaseSipCall';
-import { IncomingSipCall } from './providers/IncomingSipCall';
-import { OutgoingSipCall } from './providers/OutgoingSipCall';
-import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
-import type { InternalCallParams } from '../definition/common';
-import { mediaCallDirector } from '../server/CallDirector';
-import { getDefaultSettings } from '../server/getDefaultSettings';
+import { SipError, SipErrorCodes } from './errorCodes.js';
+import { logger } from '../logger.js';
+import type { BaseSipCall } from './providers/BaseSipCall.js';
+import { IncomingSipCall } from './providers/IncomingSipCall.js';
+import { OutgoingSipCall } from './providers/OutgoingSipCall.js';
+import type { IMediaCallServerSettings } from '../definition/IMediaCallServer.js';
+import type { InternalCallParams } from '../definition/common.js';
+import { mediaCallDirector } from '../server/CallDirector.js';
+import { getDefaultSettings } from '../server/getDefaultSettings.js';
 
 export class SipServerSession {
 	private readonly _sessionId: string;

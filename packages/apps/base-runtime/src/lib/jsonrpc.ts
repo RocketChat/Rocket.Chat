@@ -5,6 +5,5 @@
  * and keeps the dependency on the host build in a single place.
  */
 
-// oxlint-disable-next-line import/export -- the host build is CommonJS, whose named exports oxlint cannot see
-export * from '@rocket.chat/apps/dist/lib/jsonrpc';
-export { default } from '@rocket.chat/apps/dist/lib/jsonrpc';
+export * from '@rocket.chat/apps/dist/lib/jsonrpc.js';
+export { default } from '@rocket.chat/apps/dist/lib/jsonrpc.js';

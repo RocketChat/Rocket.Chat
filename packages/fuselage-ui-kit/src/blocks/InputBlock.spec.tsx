@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { modalParser } from '../surfaces';
+import { modalParser } from '../surfaces/index.js';
 
 it('labels its element with the block label', () => {
 	render(

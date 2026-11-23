@@ -1,5 +1,5 @@
-import type { DividerProps } from '../Divider';
-import { Divider } from '../Divider';
+import type { DividerProps } from '../Divider/index.js';
+import { Divider } from '../Divider/index.js';
 
 export type NavBarDividerProps = DividerProps;
 

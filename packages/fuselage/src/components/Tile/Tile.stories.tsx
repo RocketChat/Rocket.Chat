@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Tile from './Tile';
+import Tile from './Tile.js';
 
 export default {
 	title: 'Containers/Tile',

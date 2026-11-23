@@ -1,4 +1,4 @@
-import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator.js';
 import type {
 	IDepartment,
 	IVisitorExternalIdentifier,
@@ -7,11 +7,11 @@ import type {
 	ILivechatTransferData,
 	IVisitor,
 	ResolveVisitorContactData,
-} from '@rocket.chat/apps-engine/definition/livechat';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+} from '@rocket.chat/apps-engine/definition/livechat/index.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { LivechatBridge } from '../../../src/server/bridges/LivechatBridge';
+import { LivechatBridge } from '../../../src/server/bridges/LivechatBridge.js';
 
 export class TestLivechatBridge extends LivechatBridge {
 	public findDepartmentsEnabledWithAgents(appId: string): Promise<Array<IDepartment>> {

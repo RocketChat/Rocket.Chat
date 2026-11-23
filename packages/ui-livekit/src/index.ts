@@ -1,5 +1,5 @@
-import { LiveKitCallProvider } from './LiveKitCallProvider';
+import { LiveKitCallProvider } from './LiveKitCallProvider.js';
 
-export { PreviewVideoProvider } from './PreviewVideoProvider';
+export { PreviewVideoProvider } from './PreviewVideoProvider.js';
 
 export default LiveKitCallProvider;

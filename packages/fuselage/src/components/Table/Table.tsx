@@ -1,7 +1,7 @@
 import type { TableHTMLAttributes } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 /** A column width: a Fuselage size (`x40`), a length in pixels or a share of the table's width. */
 export type TableColumnWidth = `x${number}` | `${number}px` | `${number}%` | number | 'auto';

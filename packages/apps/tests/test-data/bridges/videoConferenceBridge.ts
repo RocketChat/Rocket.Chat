@@ -1,7 +1,7 @@
-import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { VideoConference, AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
+import type { VideoConference, AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/index.js';
 
-import { VideoConferenceBridge } from '../../../src/server/bridges';
+import { VideoConferenceBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsVideoConferenceBridge extends VideoConferenceBridge {
 	public getById(callId: string, appId: string): Promise<VideoConference> {

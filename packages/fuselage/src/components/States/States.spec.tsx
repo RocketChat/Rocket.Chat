@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import States from './States';
-import { render } from '../../testing';
+import States from './States.js';
+import { render } from '../../testing.js';
 
 describe('[States Component]', () => {
 	it('renders its content in the states container', () => {

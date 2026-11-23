@@ -1,6 +1,6 @@
 import type { ILoginCode } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ILoginCodesModel extends IBaseModel<ILoginCode> {
 	createCode(userId: string): Promise<string>;

@@ -4,8 +4,8 @@ import { parse } from '@rocket.chat/message-parser';
 import type { TextObject } from '@rocket.chat/ui-kit';
 import { Suspense } from 'react';
 
-import { useAppTranslation } from '../hooks/useAppTranslation';
-import { inlineBigEmoji } from '../utils/inlineBigEmoji';
+import { useAppTranslation } from '../hooks/useAppTranslation.js';
+import { inlineBigEmoji } from '../utils/inlineBigEmoji.js';
 
 export type MarkdownTextElementProps = { textObject: TextObject; bigEmoji?: boolean };
 

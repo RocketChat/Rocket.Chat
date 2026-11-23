@@ -6,26 +6,26 @@ import type {
 	VideoConferenceChatAccess,
 } from '@rocket.chat/core-typings';
 
-import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps';
-import type { VideoConfCallIdProps } from './VideoConfCallIdProps';
-import type { VideoConfInfoProps } from './VideoConfInfoProps';
-import type { VideoConfJoinProps } from './VideoConfJoinProps';
-import type { VideoConfListProps } from './VideoConfListProps';
-import type { VideoConfRenameProps } from './VideoConfRenameProps';
-import type { VideoConfRingProps } from './VideoConfRingProps';
-import type { VideoConfShareChatProps } from './VideoConfShareChatProps';
-import type { VideoConfStartProps } from './VideoConfStartProps';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps.js';
+import type { VideoConfCallIdProps } from './VideoConfCallIdProps.js';
+import type { VideoConfInfoProps } from './VideoConfInfoProps.js';
+import type { VideoConfJoinProps } from './VideoConfJoinProps.js';
+import type { VideoConfListProps } from './VideoConfListProps.js';
+import type { VideoConfRenameProps } from './VideoConfRenameProps.js';
+import type { VideoConfRingProps } from './VideoConfRingProps.js';
+import type { VideoConfShareChatProps } from './VideoConfShareChatProps.js';
+import type { VideoConfStartProps } from './VideoConfStartProps.js';
+import type { PaginatedResult } from '../../helpers/PaginatedResult.js';
 
-export * from './VideoConfInfoProps';
-export * from './VideoConfListProps';
-export * from './VideoConfStartProps';
-export * from './VideoConfJoinProps';
-export * from './VideoConfRingProps';
-export * from './VideoConfCallIdProps';
-export * from './VideoConfAddParticipantsProps';
-export * from './VideoConfShareChatProps';
-export * from './VideoConfRenameProps';
+export * from './VideoConfInfoProps.js';
+export * from './VideoConfListProps.js';
+export * from './VideoConfStartProps.js';
+export * from './VideoConfJoinProps.js';
+export * from './VideoConfRingProps.js';
+export * from './VideoConfCallIdProps.js';
+export * from './VideoConfAddParticipantsProps.js';
+export * from './VideoConfShareChatProps.js';
+export * from './VideoConfRenameProps.js';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {

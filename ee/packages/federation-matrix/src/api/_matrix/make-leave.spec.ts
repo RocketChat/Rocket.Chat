@@ -1,6 +1,6 @@
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 
-import { getMatrixMakeLeaveRoutes } from './make-leave';
+import { getMatrixMakeLeaveRoutes } from './make-leave.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {

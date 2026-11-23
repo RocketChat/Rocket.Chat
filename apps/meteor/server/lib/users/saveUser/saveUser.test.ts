@@ -5,8 +5,9 @@ import { UpdaterImpl } from '@rocket.chat/models';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { set, unset } from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const session = { id: 'session' };
 const triggerEvent = sinon.stub();
@@ -32,7 +33,7 @@ const saveUserIdentity = sinon.stub();
 const setEmail = sinon.stub();
 
 const loadSaveUser = () =>
-	proxyquire.noCallThru().load('./saveUser', {
+	loadWithMocks('./saveUser', {
 		'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
 		'@rocket.chat/core-services': {
 			ClientSafeError,

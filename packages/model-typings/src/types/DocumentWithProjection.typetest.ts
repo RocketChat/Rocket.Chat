@@ -4,7 +4,7 @@
  */
 import type { Document } from 'mongodb';
 
-import type { DocumentWithDriverProjection, DocumentWithProjection, FindOptionsWithProjection } from './DocumentWithProjection';
+import type { DocumentWithDriverProjection, DocumentWithProjection, FindOptionsWithProjection } from './DocumentWithProjection.js';
 
 type Expect<T extends true> = T;
 

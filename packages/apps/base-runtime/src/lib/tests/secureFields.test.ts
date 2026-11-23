@@ -1,8 +1,8 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it } from 'node:test';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { applySecureFields, applySecureFieldsDeep } from '../secureFields';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { applySecureFields, applySecureFieldsDeep } from '../secureFields.js';
 
 const SECURE_FIELDS_KEY = '@@SecureFields';
 

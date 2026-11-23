@@ -1,17 +1,17 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IUIActionButtonDescriptor } from '@rocket.chat/apps-engine/definition/ui';
-import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IUIActionButtonDescriptor } from '@rocket.chat/apps-engine/definition/ui/index.js';
+import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import type { AppActivationBridge, AppBridges } from '../../../src/server/bridges';
-import { AppPermissionManager } from '../../../src/server/managers/AppPermissionManager';
-import { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import { AppPermissions } from '../../../src/server/permissions/AppPermissions';
-import { TestsAppBridges } from '../../test-data/bridges/appBridges';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import type { AppActivationBridge, AppBridges } from '../../../src/server/bridges/index.js';
+import { AppPermissionManager } from '../../../src/server/managers/AppPermissionManager.js';
+import { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager.js';
+import { AppPermissions } from '../../../src/server/permissions/AppPermissions.js';
+import { TestsAppBridges } from '../../test-data/bridges/appBridges.js';
 
 describe('UIActionButtonManager', () => {
 	let mockBridges: TestsAppBridges;

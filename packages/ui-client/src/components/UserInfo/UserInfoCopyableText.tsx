@@ -3,8 +3,8 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useClipboardWithToast } from '../../hooks/useClipboardWithToast';
-import { InfoPanelText } from '../InfoPanel';
+import { useClipboardWithToast } from '../../hooks/useClipboardWithToast.js';
+import { InfoPanelText } from '../InfoPanel/index.js';
 
 const revealOnHoverStyle = css`
 	/* InfoPanelText's own class is replaced by this one, so carry its word-break over */

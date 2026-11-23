@@ -1,7 +1,7 @@
-import { useMediaCallInstance } from './MediaCallInstanceContext';
-import type { PeerInfo } from './definitions';
-import { useInstanceSnapshot } from './useInstanceSnapshot';
-import { derivePeerInfoFromInstanceState } from '../utils/derivePeerInfoFromInstanceState';
+import { useMediaCallInstance } from './MediaCallInstanceContext.js';
+import type { PeerInfo } from './definitions.js';
+import { useInstanceSnapshot } from './useInstanceSnapshot.js';
+import { derivePeerInfoFromInstanceState } from '../utils/derivePeerInfoFromInstanceState.js';
 
 const areEqual = (a: PeerInfo | undefined, b: PeerInfo | undefined) => {
 	if (!a || !b) {

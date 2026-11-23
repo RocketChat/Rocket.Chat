@@ -2,8 +2,8 @@ import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import CallTimer from './CallTimer';
-import * as stories from './CallTimer.stories';
+import CallTimer from './CallTimer.js';
+import * as stories from './CallTimer.stories.js';
 
 /**
  * The timer reads the call's start from a conference that arrives a render after the window mounts, so what it

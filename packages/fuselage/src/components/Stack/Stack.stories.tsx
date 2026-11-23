@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { Button } from '../Button';
-import { Field, FieldLabel, FieldRow } from '../Field';
-import { Tag } from '../Tag';
-import { Text } from '../Text';
-import { TextInput } from '../TextInput';
-import Stack from './Stack';
+import Stack from './Stack.js';
+import { Box } from '../Box/index.js';
+import { Button } from '../Button/index.js';
+import { Field, FieldLabel, FieldRow } from '../Field/index.js';
+import { Tag } from '../Tag/index.js';
+import { Text } from '../Text/index.js';
+import { TextInput } from '../TextInput/index.js';
 
 const Item = ({ children }: { children: string }) => (
 	<Box padding={8} backgroundColor='tint' color='default' fontScale='p2'>

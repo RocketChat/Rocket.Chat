@@ -2,7 +2,7 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { ConnectionState } from '../../context';
+import type { ConnectionState } from '../../context/index.js';
 
 export type Slot = {
 	text: string;

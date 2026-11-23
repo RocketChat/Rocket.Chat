@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { Button } from '../Button';
-import { Skeleton } from '../Skeleton';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { Button } from '../Button/index.js';
+import { Skeleton } from '../Skeleton/index.js';
 
 export type CodeSnippetProps = ElementProps<HTMLPreElement> & {
 	children: string;

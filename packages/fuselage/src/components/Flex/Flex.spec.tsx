@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react';
 
-import { FlexContainer, FlexItem } from '.';
-import { render } from '../../testing';
-import { Box } from '../Box';
+import { FlexContainer, FlexItem } from './index.js';
+import { render } from '../../testing.js';
+import { Box } from '../Box/index.js';
 
 describe('[Flex Component]', () => {
 	it('renders FlexContainer without crashing', () => {

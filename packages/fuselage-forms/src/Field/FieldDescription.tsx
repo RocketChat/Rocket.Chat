@@ -1,7 +1,7 @@
 import { FieldDescription as FieldDescriptionComponent } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps } from 'react';
 
-import { useFieldDescriptorId } from './FieldContext';
+import { useFieldDescriptorId } from './FieldContext.js';
 
 export type FieldDescriptionProps = { children: ReactNode } & ComponentProps<typeof FieldDescriptionComponent>;
 

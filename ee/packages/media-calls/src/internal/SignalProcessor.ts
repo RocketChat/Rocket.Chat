@@ -10,15 +10,15 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
-import { DEFAULT_CALL_FEATURES } from '../constants';
-import type { InternalCallParams, SignalProcessingOptions } from '../definition/common';
-import { logger } from '../logger';
-import { mediaCallDirector } from '../server/CallDirector';
-import { UserActorAgent } from './agents/UserActorAgent';
-import { getCallRoleForUser } from '../server/getCallRoleForUser';
-import { getNewCallSignal } from '../server/signals/getNewCallSignal';
-import { getSignalsForExistingCall } from '../server/signals/getSignalsForExistingCall';
-import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
+import { DEFAULT_CALL_FEATURES } from '../constants.js';
+import type { InternalCallParams, SignalProcessingOptions } from '../definition/common.js';
+import { logger } from '../logger.js';
+import { mediaCallDirector } from '../server/CallDirector.js';
+import { UserActorAgent } from './agents/UserActorAgent.js';
+import { getCallRoleForUser } from '../server/getCallRoleForUser.js';
+import { getNewCallSignal } from '../server/signals/getNewCallSignal.js';
+import { getSignalsForExistingCall } from '../server/signals/getSignalsForExistingCall.js';
+import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData.js';
 
 export type SignalProcessorEvents = {
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };

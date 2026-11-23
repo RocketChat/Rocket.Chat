@@ -1,4 +1,4 @@
-import { ButtonGroup, type ButtonGroupProps } from '../ButtonGroup';
+import { ButtonGroup, type ButtonGroupProps } from '../ButtonGroup/index.js';
 
 export type ContextualbarActionsProps = ButtonGroupProps;
 

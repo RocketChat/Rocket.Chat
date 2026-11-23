@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
 
 export interface IWorkspaceCredentials extends IRocketChatRecord {
 	scope: string;

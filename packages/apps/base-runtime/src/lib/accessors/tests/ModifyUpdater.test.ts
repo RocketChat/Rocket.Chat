@@ -1,14 +1,14 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import jsonrpc from '../../jsonrpc';
-import type { RoomBuilder } from '../builders/RoomBuilder';
-import { ModifyUpdater } from '../modify/ModifyUpdater';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import jsonrpc from '../../jsonrpc.js';
+import type { RoomBuilder } from '../builders/RoomBuilder.js';
+import { ModifyUpdater } from '../modify/ModifyUpdater.js';
 
 describe('ModifyUpdater', () => {
 	let modifyUpdater: ModifyUpdater;

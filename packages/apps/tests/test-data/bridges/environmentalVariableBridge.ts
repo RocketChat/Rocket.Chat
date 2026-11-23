@@ -1,4 +1,4 @@
-import { EnvironmentalVariableBridge } from '../../../src/server/bridges/EnvironmentalVariableBridge';
+import { EnvironmentalVariableBridge } from '../../../src/server/bridges/EnvironmentalVariableBridge.js';
 
 export class TestsEnvironmentalVariableBridge extends EnvironmentalVariableBridge {
 	public getValueByName(envVarName: string, appId: string): Promise<string> {

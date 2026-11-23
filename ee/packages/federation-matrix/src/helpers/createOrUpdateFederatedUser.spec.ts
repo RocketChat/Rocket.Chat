@@ -1,7 +1,7 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser';
+import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser.js';
 
 const mockFindOneAndUpdate = jest.fn();
 

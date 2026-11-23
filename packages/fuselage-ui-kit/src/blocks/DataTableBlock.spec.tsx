@@ -1,9 +1,9 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { bannerParser, messageParser, modalParser } from '../surfaces';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { bannerParser, messageParser, modalParser } from '../surfaces/index.js';
 
 const text = (value: string) => ({ type: 'raw_text', text: value });
 const number = (value: number, shown?: string) => ({ type: 'raw_number', value, ...(shown && { text: shown }) });

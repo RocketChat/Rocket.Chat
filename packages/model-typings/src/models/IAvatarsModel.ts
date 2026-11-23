@@ -1,7 +1,7 @@
 import type { IAvatar, IContact, IUser } from '@rocket.chat/core-typings';
 import type { FindCursor, FindOptions } from 'mongodb';
 
-import type { IBaseUploadsModel } from './IBaseUploadsModel';
+import type { IBaseUploadsModel } from './IBaseUploadsModel.js';
 
 export interface IAvatarsModel extends IBaseUploadsModel<IAvatar> {
 	findOneByUserId(userId: IUser['_id'], options?: FindOptions<IAvatarsModel>): Promise<IAvatar | null>;

@@ -1,6 +1,6 @@
-import type { EncryptedContent } from './IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
+import type { EncryptedContent } from './IMessage/index.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
 
 export interface IUpload extends IRocketChatRecord {
 	typeGroup?: string;

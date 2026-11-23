@@ -1,14 +1,14 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it, mock } from 'node:test';
 
-import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { createMockRequest } from './helpers/mod';
-import type { AppAccessors } from '../../lib/accessors/mod';
-import { Room } from '../../lib/room';
-import { handleExecutor, handlePreviewItem } from '../slashcommand-handler';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { createMockRequest } from './helpers/mod.js';
+import type { AppAccessors } from '../../lib/accessors/mod.js';
+import { Room } from '../../lib/room.js';
+import { handleExecutor, handlePreviewItem } from '../slashcommand-handler.js';
 
 describe('handlers > slashcommand', () => {
 	const mockAppAccessors = {

@@ -3,14 +3,14 @@ import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SrfRequest } from 'drachtio-srf';
 
-import { BaseSipCall } from './BaseSipCall';
-import { SIP_CALL_FEATURES } from '../../constants';
-import type { InternalCallParams } from '../../definition/common';
-import { logger } from '../../logger';
-import { BroadcastActorAgent } from '../../server/BroadcastAgent';
-import { mediaCallDirector } from '../../server/CallDirector';
-import type { SipServerSession } from '../Session';
-import { SipError, SipErrorCodes } from '../errorCodes';
+import { BaseSipCall } from './BaseSipCall.js';
+import { SIP_CALL_FEATURES } from '../../constants.js';
+import type { InternalCallParams } from '../../definition/common.js';
+import { logger } from '../../logger.js';
+import { BroadcastActorAgent } from '../../server/BroadcastAgent.js';
+import { mediaCallDirector } from '../../server/CallDirector.js';
+import type { SipServerSession } from '../Session.js';
+import { SipError, SipErrorCodes } from '../errorCodes.js';
 
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialogReq: SrfRequest | null;

@@ -4,7 +4,7 @@ import { act, render } from '@testing-library/react';
 import { ConnectionState } from 'livekit-client';
 import type { ReactNode } from 'react';
 
-import { LiveKitCallProvider } from './LiveKitCallProvider';
+import { LiveKitCallProvider } from './LiveKitCallProvider.js';
 
 const room = { state: ConnectionState.Disconnected, on: jest.fn(), off: jest.fn() };
 const localParticipant = {

@@ -1,12 +1,12 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUploadDescriptor } from '@rocket.chat/apps-engine/definition/uploads/IUploadDescriptor';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUploadDescriptor } from '@rocket.chat/apps-engine/definition/uploads/IUploadDescriptor.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { ModifyCreator } from '../modify/ModifyCreator';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { ModifyCreator } from '../modify/ModifyCreator.js';
 
 describe('ModifyCreator', () => {
 	const senderFn = (r: any) =>

@@ -4,8 +4,9 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const messagesMock = {
 	findForUpdates: sinon.stub(),
@@ -25,7 +26,7 @@ const {
 	handleWithoutPagination,
 	handleCursorPagination,
 	getMessageHistory,
-} = proxyquire.noCallThru().load('./messages', {
+} = loadWithMocks('./messages', {
 	'../lib/authorization/canAccessRoom': {
 		canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
 	},

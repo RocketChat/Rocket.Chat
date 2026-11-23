@@ -1,8 +1,8 @@
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { Box } from '../Box';
-import { PopoverSurface } from '../PopoverSurface';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { Box } from '../Box/index.js';
+import { PopoverSurface } from '../PopoverSurface/index.js';
 
 export type DropdownMobileProps = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color'> &
 	RefAttributes<HTMLElement> & {

@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 
-import { DDPSDK } from '../src/DDPSDK';
+import { DDPSDK } from '../src/DDPSDK.js';
 
 (global as any).WebSocket = global.WebSocket || WebSocket;
 

@@ -4,8 +4,8 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import { shouldDisplayPreventedByBox } from './CallHistoryContextualbar';
-import * as contextualbarStories from './CallHistoryContextualbar.stories';
+import { shouldDisplayPreventedByBox } from './CallHistoryContextualbar.js';
+import * as contextualbarStories from './CallHistoryContextualbar.stories.js';
 
 const testCases = Object.values(composeStories(contextualbarStories)).map((Story) => [Story.storyName || 'Story', Story]);
 

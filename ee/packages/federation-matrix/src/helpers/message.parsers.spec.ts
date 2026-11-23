@@ -3,7 +3,7 @@ import {
 	toExternalQuoteMessageFormat,
 	toInternalMessageFormat,
 	toInternalQuoteMessageFormat,
-} from './message.parsers';
+} from './message.parsers.js';
 
 describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 	describe('#toInternalMessageFormat ()', () => {

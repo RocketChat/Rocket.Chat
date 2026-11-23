@@ -13,11 +13,11 @@ import {
 	DevicePicker,
 	Keypad,
 	useDraggableWidget,
-} from '../../components';
-import { usePeerAutocomplete } from '../../context';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { useWidgetExternalControls } from '../../context/useWidgetExternalControls';
-import { isUnknownPeer } from '../../utils/isUnknownPeer';
+} from '../../components/index.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import { usePeerAutocomplete } from '../../context/index.js';
+import { useWidgetExternalControls } from '../../context/useWidgetExternalControls.js';
+import { isUnknownPeer } from '../../utils/isUnknownPeer.js';
 
 const NewCall = () => {
 	const { t } = useTranslation();

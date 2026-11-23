@@ -1,6 +1,6 @@
 import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IOmnichannelServiceLevelAgreementsModel extends IBaseModel<IOmnichannelServiceLevelAgreements> {
 	findOneByIdOrName(_idOrName: string, options?: any): Promise<IOmnichannelServiceLevelAgreements | null>;

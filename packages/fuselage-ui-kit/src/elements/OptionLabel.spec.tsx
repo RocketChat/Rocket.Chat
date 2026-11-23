@@ -2,7 +2,7 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import { modalParser } from '../surfaces';
+import { modalParser } from '../surfaces/index.js';
 
 const options: UiKit.Option[] = [
 	{ text: { type: 'plain_text', text: 'Starter' }, value: 'starter', description: { type: 'plain_text', text: 'Up to 5 seats' } },

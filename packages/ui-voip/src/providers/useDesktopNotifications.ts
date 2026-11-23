@@ -2,10 +2,10 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { PeerInfo, SessionState } from '../context/definitions';
-import { convertAvatarUrlToPng } from '../utils/convertAvatarUrlToPng';
-import { isExternalPeer } from '../utils/isExternalPeer';
-import { isUnknownPeer } from '../utils/isUnknownPeer';
+import type { PeerInfo, SessionState } from '../context/definitions.js';
+import { convertAvatarUrlToPng } from '../utils/convertAvatarUrlToPng.js';
+import { isExternalPeer } from '../utils/isExternalPeer.js';
+import { isUnknownPeer } from '../utils/isUnknownPeer.js';
 
 const getDisplayInfo = (peerInfo?: PeerInfo) => {
 	if (!peerInfo) {

@@ -1,11 +1,11 @@
 import type { Logger } from '@rocket.chat/logger';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
-import type { AppBridges, AppEvents, AppMetadataStorage } from './AppsEngine';
-import type { IAppServerNotifier } from './IAppServerNotifier';
-import type { IAppConvertersMap } from './converters';
-import type { AppManager } from './server/AppManager';
-import type { AppSourceStorage } from './server/storage';
+import type { AppBridges, AppEvents, AppMetadataStorage } from './AppsEngine.js';
+import type { IAppServerNotifier } from './IAppServerNotifier.js';
+import type { IAppConvertersMap } from './converters/index.js';
+import type { AppManager } from './server/AppManager.js';
+import type { AppSourceStorage } from './server/storage/index.js';
 
 export interface IAppServerOrchestrator {
 	initialize(): void;

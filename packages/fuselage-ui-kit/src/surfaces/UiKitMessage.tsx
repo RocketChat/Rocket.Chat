@@ -1,9 +1,9 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { Fragment } from 'react';
 
-import { FuselageMessageSurfaceRenderer } from './FuselageMessageSurfaceRenderer';
-import MessageSurface from './MessageSurface';
-import { MessageBlockWidth, sizesItselfInMessage } from '../utils/messageBlockWidth';
+import { FuselageMessageSurfaceRenderer } from './FuselageMessageSurfaceRenderer.js';
+import MessageSurface from './MessageSurface.js';
+import { MessageBlockWidth, sizesItselfInMessage } from '../utils/messageBlockWidth.js';
 
 export const messageParser = new FuselageMessageSurfaceRenderer();
 

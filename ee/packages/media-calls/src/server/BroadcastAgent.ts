@@ -1,10 +1,10 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 
-import { BaseMediaCallAgent } from '../base/BaseAgent';
-import { logger } from '../logger';
-import { getMediaCallServer } from './injection';
-import type { BaseCallProvider } from '../base/BaseCallProvider';
+import { BaseMediaCallAgent } from '../base/BaseAgent.js';
+import { logger } from '../logger.js';
+import { getMediaCallServer } from './injection.js';
+import type { BaseCallProvider } from '../base/BaseCallProvider.js';
 
 /**
  * This agent doesn't implement any logic

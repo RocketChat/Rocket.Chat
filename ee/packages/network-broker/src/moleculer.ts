@@ -4,7 +4,7 @@ import type Moleculer from 'moleculer';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { MoleculerBroker } from './MoleculerBroker';
+import { MoleculerBroker } from './MoleculerBroker.js';
 
 const {
 	MS_NAMESPACE = '',

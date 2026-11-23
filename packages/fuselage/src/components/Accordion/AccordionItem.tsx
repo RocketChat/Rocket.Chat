@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
-import { cx, cxx } from '../../helpers/composeClassNames';
-import { useCollapse } from '../../hooks/useCollapse';
-import { Chevron } from '../Chevron';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
+import { useCollapse } from '../../hooks/useCollapse.js';
+import { Chevron } from '../Chevron/index.js';
 
 export type AccordionItemProps = {
 	children?: ReactNode;

@@ -1,8 +1,8 @@
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { FindCursor, FindOptions, CountDocumentsOptions, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IRolesModel extends IBaseModel<IRole> {
 	findByUpdatedDate<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

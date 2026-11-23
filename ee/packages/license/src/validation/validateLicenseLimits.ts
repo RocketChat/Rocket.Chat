@@ -1,7 +1,7 @@
 import type { ILicenseV3, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { validateLimits } from './validateLimits';
+import type { LicenseManager } from '../license.js';
+import { validateLimits } from './validateLimits.js';
 
 export async function validateLicenseLimits(
 	this: LicenseManager,

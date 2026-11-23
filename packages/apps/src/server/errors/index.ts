@@ -1,14 +1,14 @@
-import { CommandAlreadyExistsError } from './CommandAlreadyExistsError';
-import { CommandHasAlreadyBeenTouchedError } from './CommandHasAlreadyBeenTouchedError';
-import { CompilerError } from './CompilerError';
-import { InvalidLicenseError } from './InvalidLicenseError';
-import { MustContainFunctionError } from './MustContainFunctionError';
-import { MustExtendAppError } from './MustExtendAppError';
-import { NotEnoughMethodArgumentsError } from './NotEnoughMethodArgumentsError';
-import { PathAlreadyExistsError } from './PathAlreadyExistsError';
-import { RequiredApiVersionError } from './RequiredApiVersionError';
-import { VideoConfProviderAlreadyExistsError } from './VideoConfProviderAlreadyExistsError';
-import { VideoConfProviderNotRegisteredError } from './VideoConfProviderNotRegisteredError';
+import { CommandAlreadyExistsError } from './CommandAlreadyExistsError.js';
+import { CommandHasAlreadyBeenTouchedError } from './CommandHasAlreadyBeenTouchedError.js';
+import { CompilerError } from './CompilerError.js';
+import { InvalidLicenseError } from './InvalidLicenseError.js';
+import { MustContainFunctionError } from './MustContainFunctionError.js';
+import { MustExtendAppError } from './MustExtendAppError.js';
+import { NotEnoughMethodArgumentsError } from './NotEnoughMethodArgumentsError.js';
+import { PathAlreadyExistsError } from './PathAlreadyExistsError.js';
+import { RequiredApiVersionError } from './RequiredApiVersionError.js';
+import { VideoConfProviderAlreadyExistsError } from './VideoConfProviderAlreadyExistsError.js';
+import { VideoConfProviderNotRegisteredError } from './VideoConfProviderNotRegisteredError.js';
 
 export {
 	CommandAlreadyExistsError,
