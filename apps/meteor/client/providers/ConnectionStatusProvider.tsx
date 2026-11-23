@@ -19,24 +19,33 @@ const reconnect = () => {
 	void ensureConnectedAndAuthenticated();
 };
 
-const computeStatus = getConnectionStatus;
+type ConnectionSnapshot = ConnectionStatus & { sessionId: string | undefined };
 
-const isStatusEqual = (a: ConnectionStatus, b: ConnectionStatus): boolean =>
-	a.status === b.status && a.connected === b.connected && a.retryCount === b.retryCount && a.retryTime === b.retryTime;
+const computeStatus = (): ConnectionSnapshot => ({ ...getConnectionStatus(), sessionId: getConnectionSessionId() });
 
-let cachedStatus: ConnectionStatus = computeStatus();
+const isStatusEqual = (a: ConnectionSnapshot, b: ConnectionSnapshot): boolean =>
+	a.status === b.status &&
+	a.connected === b.connected &&
+	a.retryCount === b.retryCount &&
+	a.retryTime === b.retryTime &&
+	a.sessionId === b.sessionId;
+
+let cachedStatus: ConnectionSnapshot = computeStatus();
 const statusListeners = new Set<() => void>();
 let statusBridgeStarted = false;
 
 const ensureStatusBridge = (): void => {
 	if (statusBridgeStarted) return;
 	statusBridgeStarted = true;
-	getDdpSdk().connection.on('connection', () => {
+	const refreshStatus = () => {
 		const next = computeStatus();
 		if (isStatusEqual(cachedStatus, next)) return;
 		cachedStatus = next;
 		statusListeners.forEach((cb) => cb());
-	});
+	};
+	const { connection } = getDdpSdk();
+	connection.on('connection', refreshStatus);
+	connection.on('connected', refreshStatus);
 };
 
 const subscribeStatus = (cb: () => void): (() => void) => {
@@ -57,12 +66,12 @@ const subscribeStatus = (cb: () => void): (() => void) => {
 	};
 };
 
-const getStatusSnapshot = (): ConnectionStatus => cachedStatus;
+const getStatusSnapshot = (): ConnectionSnapshot => cachedStatus;
 
 export type ConnectionStatusProviderProps = { children?: ReactNode };
 
 const ConnectionStatusProvider = ({ children }: ConnectionStatusProviderProps) => {
-	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
+	const { connected, status, retryCount, retryTime, sessionId } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
 
 	const value = useMemo(
 		(): ConnectionStatusContextValue => ({
@@ -70,11 +79,11 @@ const ConnectionStatusProvider = ({ children }: ConnectionStatusProviderProps) =
 			status,
 			retryCount,
 			retryTime,
-			sessionId: getConnectionSessionId(),
+			sessionId,
 			disconnect,
 			reconnect,
 		}),
-		[connected, retryCount, retryTime, status],
+		[connected, retryCount, retryTime, sessionId, status],
 	);
 
 	return <ConnectionStatusContext.Provider value={value}>{children}</ConnectionStatusContext.Provider>;
