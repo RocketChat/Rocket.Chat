@@ -10139,7 +10139,7 @@ __metadata:
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
-    overlayscrollbars: "npm:~2.11.5"
+    overlayscrollbars: "npm:~2.17.1"
     overlayscrollbars-react: "npm:^0.5.6"
     passport: "npm:^0.7.0"
     passport-apple: "npm:^2.0.2"
@@ -10997,7 +10997,7 @@ __metadata:
     date-fns: "npm:~4.1.0"
     i18next: "npm:~26.4.2"
     jest: "npm:~30.5.2"
-    overlayscrollbars: "npm:~2.11.5"
+    overlayscrollbars: "npm:~2.17.1"
     overlayscrollbars-react: "npm:^0.5.6"
     re-resizable: "npm:^6.10.4"
     react: "npm:~19.2.8"
@@ -29153,17 +29153,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"overlayscrollbars@npm:2.11.5":
-  version: 2.11.5
-  resolution: "overlayscrollbars@npm:2.11.5"
-  checksum: 10/3fda4a2d3ad40c979afed7cb4fc3d9d2f3df37446e5c7985b0caf03d90cc5a4ba60d974940de9c6f94af794196b21b45e2c889b2926e7ab235459515fae74e0a
-  languageName: node
-  linkType: hard
-
-"overlayscrollbars@patch:overlayscrollbars@npm%3A2.11.5#~/.yarn/patches/overlayscrollbars-npm-2.11.5-182f9ae72b.patch":
-  version: 2.11.5
-  resolution: "overlayscrollbars@patch:overlayscrollbars@npm%3A2.11.5#~/.yarn/patches/overlayscrollbars-npm-2.11.5-182f9ae72b.patch::version=2.11.5&hash=67d00e"
-  checksum: 10/5640628e15c6e458db85eba1ce22930fe833f845d7316bc2a358c30ad7cf34667834a0cb4a48dd644300ca74a10a81a2221ca87bf23c4300faf25977e84092cb
+"overlayscrollbars@npm:~2.17.1":
+  version: 2.17.1
+  resolution: "overlayscrollbars@npm:2.17.1"
+  checksum: 10/74fc707c36c728a62d27bd2256e8ebaf58a6de11fbde9ecd45dfc840f6d30b913c854a9d8bd0184cd1886ce4f133dcaef4421dc9f628a929bd98e4fcad917382
   languageName: node
   linkType: hard
 
