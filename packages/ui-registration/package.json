@@ -14,6 +14,8 @@
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"storybook": "storybook dev -p 6006",
+		"test": "jest",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -28,6 +30,7 @@
 		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/icons": "workspace:~",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/layout": "workspace:~",
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
@@ -43,6 +46,7 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
 		"i18next": "~26.4.2",
+		"jest": "~30.5.2",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-hook-form": "~7.54.2",
