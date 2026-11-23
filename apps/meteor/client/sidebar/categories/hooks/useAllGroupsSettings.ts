@@ -47,7 +47,7 @@ export const useAllGroupsSettings = () => {
 	const entries = useMemo(() => groupKeys.map((id) => rawCategories.find((entry) => entry._id === id)), [groupKeys, rawCategories]);
 
 	// UI-PREVIEW ONLY: the activity filter lives in this browser's localStorage here (see useActivityFilter), so
-	// "All rooms" reads the window there and writes it there for every group; the unread toggles still go to the
+	// "All groups" reads the window there and writes it there for every group; the unread toggles still go to the
 	// preference, which the server already accepts.
 	const [filters, setFilters] = useStoredActivityFilters();
 	const activityFilterHours = useMemo(() => sharedValue(groupKeys.map((id) => filters[id])), [groupKeys, filters]);
