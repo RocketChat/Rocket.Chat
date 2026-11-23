@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ConferenceSelectNewHostModal from '../ConferenceSelectNewHostModal';
+import { setCloseRequestHandler } from '../lib/callWindow';
 
 /** How long the provider gets to show the promotion in its roster before the handover is given up on. */
 const HANDOVER_TIMEOUT_MS = 10_000;
@@ -91,11 +92,16 @@ export const useLastHostHandover = ({ self, participants, actions }: ProviderPlu
 	const pendingHostRef = useRef(pendingHost);
 	pendingHostRef.current = pendingHost;
 
-	// A closing window cannot be held open for a dialog of our own, only for the browser's generic "leave site?"
+	const mustHandOver = useCallback(
+		() => !pendingHostRef.current && isLastHost({ self: selfRef.current, participants: participantsRef.current }),
+		[],
+	);
+
+	// A closing browser window cannot be held open for a dialog of our own, only for the browser's generic "leave site?"
 	// one. The picker is opened behind it, so a user who chooses to stay finds it waiting.
 	useEffect(() => {
 		const onBeforeUnload = (event: BeforeUnloadEvent) => {
-			if (pendingHostRef.current || !isLastHost({ self: selfRef.current, participants: participantsRef.current })) {
+			if (!mustHandOver()) {
 				return;
 			}
 
@@ -107,7 +113,21 @@ export const useLastHostHandover = ({ self, participants, actions }: ProviderPlu
 
 		window.addEventListener('beforeunload', onBeforeUnload);
 		return () => window.removeEventListener('beforeunload', onBeforeUnload);
-	}, [selectNewHost]);
+	}, [mustHandOver, selectNewHost]);
+
+	// The desktop app asks instead, and keeps its window open with no dialog of its own in front of the picker.
+	useEffect(() => {
+		setCloseRequestHandler(() => {
+			if (!mustHandOver()) {
+				return false;
+			}
+
+			selectNewHost();
+			return true;
+		});
+
+		return () => setCloseRequestHandler(null);
+	}, [mustHandOver, selectNewHost]);
 
 	return selectNewHost;
 };

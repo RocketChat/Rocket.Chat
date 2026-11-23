@@ -27,6 +27,15 @@ export const usesConferenceWindow = (settingEnabled: boolean, providerName?: str
 const desktopCallWindow = (): IVideoCallWindow | undefined => window.RocketChatDesktop?.videoCall ?? window.videoCallWindow;
 
 /**
+ * Lets the page keep the desktop app's call window open when the user closes it: the handler returns true to keep it.
+ * Closing that window never reaches the page's `beforeunload`, so this is the only way it hears about it. A browser,
+ * or a desktop app that predates it, ignores it.
+ */
+export const setCloseRequestHandler = (handler: (() => boolean) | null): void => {
+	desktopCallWindow()?.setCloseRequestHandler?.(handler);
+};
+
+/**
  * Closes the call window.
  *
  * Three strategies, tried in order:

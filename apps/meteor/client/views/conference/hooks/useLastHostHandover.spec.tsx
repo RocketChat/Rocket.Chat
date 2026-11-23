@@ -1,3 +1,4 @@
+import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { PluginParticipant, ProviderPluginControls } from '@rocket.chat/ui-conference';
 import { act, renderHook, screen } from '@testing-library/react';
@@ -157,5 +158,59 @@ describe('closing the window', () => {
 		render([me, participant('carl', 'Carl', { isWaiting: true })]);
 
 		expect(closeWindow().defaultPrevented).toBe(false);
+	});
+});
+
+describe('closing the desktop app call window', () => {
+	let closeRequestHandler: (() => boolean) | null = null;
+	const setCloseRequestHandler = jest.fn((handler: (() => boolean) | null) => {
+		closeRequestHandler = handler;
+	});
+
+	beforeEach(() => {
+		closeRequestHandler = null;
+		window.RocketChatDesktop = { videoCall: { setCloseRequestHandler } } as unknown as IRocketChatDesktop;
+	});
+
+	afterEach(() => {
+		delete window.RocketChatDesktop;
+	});
+
+	const closeWindow = () => {
+		let keepOpen: boolean | undefined;
+		act(() => {
+			keepOpen = closeRequestHandler?.();
+		});
+		return keepOpen;
+	};
+
+	it('keeps the window open for a last host, and shows the picker', async () => {
+		render([me, ann]);
+
+		expect(closeWindow()).toBe(true);
+		expect(await screen.findByRole('button', { name: 'Make host and leave' })).toBeInTheDocument();
+	});
+
+	it('lets anyone else go', () => {
+		render([me, { ...ann, isHost: true }]);
+
+		expect(closeWindow()).toBe(false);
+	});
+
+	it('lets a host go while their handover is in flight', async () => {
+		render([me, ann]);
+
+		closeWindow();
+		await userEvent.click(await screen.findByRole('button', { name: 'Make host and leave' }));
+
+		expect(closeWindow()).toBe(false);
+	});
+
+	it('removes its handler when the call goes away', () => {
+		const { unmount } = render([me, ann]);
+
+		unmount();
+
+		expect(closeRequestHandler).toBeNull();
 	});
 });

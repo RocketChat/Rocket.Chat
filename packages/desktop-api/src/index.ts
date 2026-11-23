@@ -131,6 +131,11 @@ export interface IVideoCallWindow {
 	openInMainWindow: (path: string) => void;
 	close: () => void;
 	requestScreenSharing: () => Promise<string | null>;
+	/**
+	 * Decides what the user closing the window (its close button, a shortcut) means: the handler returns true to keep it
+	 * open. The window closes without asking when the page closes it through `close`. Desktop 4.20 and later.
+	 */
+	setCloseRequestHandler?: (handler: (() => boolean | Promise<boolean>) | null) => void;
 	/** @deprecated Removed in desktop 4.18, and never used: it handed the user's session token to the provider's page. */
 	getAuthCredentials?: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
 }
