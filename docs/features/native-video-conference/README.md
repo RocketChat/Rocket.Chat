@@ -143,6 +143,17 @@ A sender's latest reaction also sits in the top-left corner of their own tile, o
 long as it rises (`REACTION_VISIBLE_MS`) — not for the provider's longer `REACTION_TTL_MS`, which only bounds how long it
 is kept. A newer reaction from the same person replaces it and starts the time over.
 
+## Zoom and fullscreen on a shared screen
+
+- **Zoom is the reader's own, and only a magnifier.** It enlarges the picture already received, up to four times;
+  nothing is asked of whoever is sharing. The picture never leaves the viewer: it moves only as far as it overhangs,
+  and the bars beside a screen of another shape are not somewhere to move to. A share that takes the stage starts
+  unzoomed.
+- **Every gesture has a button or a key.** Ctrl+wheel and trackpad pinches zoom around the pointer and dragging moves
+  around; the zoom buttons and, with the screen focused, the arrow keys do the same. Each change of zoom is announced.
+- **Fullscreen shows the viewer, not the call**: the screen with its label and its controls. The keyboard stays inside
+  it until fullscreen ends. The button is absent where the browser cannot show an element fullscreen, as on an iPhone.
+
 ## Who gets rung
 
 | Room | Rings | Why |
@@ -160,3 +171,6 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
 - Background blur ships in a follow-up.
+- While a shared screen is fullscreen, what the app mounts on the page rather than in the viewer — toasts, tooltips,
+  modals — is not shown.
+- A shared screen has no pinch to zoom on touch screens, nor on Safari's trackpad; the buttons zoom there.

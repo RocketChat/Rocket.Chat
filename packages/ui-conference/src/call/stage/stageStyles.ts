@@ -66,6 +66,38 @@ export const mainStreamStyles = css`
 	background-color: ${Palette.surface['surface-neutral'].toString()};
 	border-radius: ${borderRadius('large')};
 	overflow: hidden;
+
+	&:fullscreen {
+		border-radius: 0;
+	}
+`;
+
+// Lets the pointer through to the screen under it, except on the controls.
+export const screenOverlayBarStyles = css`
+	position: absolute;
+	inset-block-end: 0.5rem;
+	inset-inline: 0.5rem;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 0.5rem;
+	pointer-events: none;
+`;
+
+export const screenLabelStyles = css`
+	min-width: 0;
+	padding: 0.25rem 0.5rem;
+	border-radius: ${borderRadius('medium')};
+	background-color: ${Palette.surface['surface-overlay'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+`;
+
+export const screenControlsStyles = css`
+	flex-shrink: 0;
+	pointer-events: auto;
 `;
 
 const thumbStripStyles = css`

@@ -6175,6 +6175,7 @@
   "Score": "Score",
   "Screen_Lock": "Screen lock",
   "Screen_Share": "Screen share",
+  "Screen_share_zoomed_hint": "Drag, or use the arrow keys, to move around the zoomed screen",
   "Script": "Script",
   "Script_Enabled": "Script enabled",
   "Script_Engine": "Script sandbox",
@@ -7993,5 +7994,6 @@
   "Zapier_integration_has_been_deprecated": "The Zapier integration has been deprecated, may not work as expected and will not receive updates",
   "Zapier_integration_is_not_available": "The Zapier integration has been deprecated and is no longer available for new Rocket.Chat workspaces",
   "Zoom_in": "Zoom in",
+  "Zoom_level_percent": "Zoom {{percent}}%",
   "Zoom_out": "Zoom out"
 }
