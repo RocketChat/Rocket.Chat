@@ -2,14 +2,14 @@ import fileType from 'file-type';
 
 import { mime as MIME } from '../../../lib/mimeTypes';
 
-export function determineFileType(buffer, name) {
+export async function determineFileType(buffer, name) {
 	const mime = MIME.lookup(name);
 
 	if (mime) {
 		return Array.isArray(mime) ? mime[0] : mime;
 	}
 
-	const detectedType = fileType(buffer);
+	const detectedType = await fileType.fromBuffer(buffer);
 
 	if (detectedType) {
 		return detectedType.mime;
