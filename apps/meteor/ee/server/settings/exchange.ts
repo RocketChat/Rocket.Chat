@@ -8,6 +8,8 @@ const serverOnly = [enabled, { _id: 'Exchange_Mode', value: 'server' }];
 const graphOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'graph' }];
 const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }];
 
+const contactsOnly = [...serverOnly, { _id: 'Exchange_Contacts_Sync_Enabled', value: true }];
+
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('Outlook_Calendar', async function () {
 		await this.with(
@@ -26,6 +28,7 @@ export function addSettings(): Promise<void> {
 					type: 'select',
 					public: true,
 					invalidValue: 'legacy',
+					alert: 'Exchange_Mode_Legacy_Deprecation_Alert',
 					values: [
 						{ key: 'legacy', i18nLabel: 'Exchange_Mode_Legacy' },
 						{ key: 'server', i18nLabel: 'Exchange_Mode_Server' },
@@ -40,20 +43,20 @@ export function addSettings(): Promise<void> {
 					enableQuery: enabled,
 				});
 
+				await this.add('Outlook_Calendar_Outlook_Url', '', {
+					type: 'string',
+					public: true,
+					invalidValue: '',
+					placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
+					enableQuery: enabled,
+				});
+
 				await this.section('Exchange_Desktop', async function () {
 					await this.add('Outlook_Calendar_Exchange_Url', '', {
 						type: 'string',
 						public: true,
 						invalidValue: '',
 						placeholder: 'https://exchange.example.com/',
-						enableQuery: legacyOnly,
-					});
-
-					await this.add('Outlook_Calendar_Outlook_Url', '', {
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
 						enableQuery: legacyOnly,
 					});
 
@@ -110,6 +113,33 @@ export function addSettings(): Promise<void> {
 						public: true,
 						enableQuery: serverOnly,
 						invalidValue: 2,
+					});
+
+					await this.add('Exchange_Contacts_Sync_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						alert: 'Exchange_Contacts_Favorites_Graph_Alert',
+						enableQuery: serverOnly,
+						invalidValue: false,
+					});
+
+					await this.add('Exchange_Contacts_Sync_Interval_Days', 1, {
+						type: 'int',
+						enableQuery: contactsOnly,
+						invalidValue: 1,
+					});
+
+					await this.add('Exchange_Contacts_Sync_Avatars', false, {
+						type: 'boolean',
+						enableQuery: contactsOnly,
+						invalidValue: false,
+					});
+
+					await this.add('Exchange_Contacts_Default_Region', '', {
+						type: 'string',
+						enableQuery: contactsOnly,
+						placeholder: 'DE',
+						invalidValue: '',
 					});
 				});
 

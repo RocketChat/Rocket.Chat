@@ -346,7 +346,7 @@ export class SlackImporter extends Importer {
 
 			const missedTypes: Record<string, SlackMessage> = {};
 			// If we have no slack message yet, then we can insert them instead of upserting
-			this._useUpsert = !(await Messages.findOne({ _id: /slack\-.*/ }));
+			this._useUpsert = !(await Messages.findOne({ _id: /slack-.*/ }));
 
 			for (const entry of zip.getEntries()) {
 				try {

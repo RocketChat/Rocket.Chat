@@ -68,7 +68,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, { $set });
 	}
 
-	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
+	async confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult | undefined> {
 		if (!fileId) {
 			return;
 		}

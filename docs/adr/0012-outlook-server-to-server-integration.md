@@ -35,7 +35,7 @@ The library was not rejected over authentication. Its transport is pluggable thr
 
 `@xmldom/xmldom` is already a production dependency of `apps/meteor`, used by the SAML response parsers, so parsing costs nothing new.
 
-Calendar uses `SyncFolderItems` as a change probe, `FindItem` with a `CalendarView` to expand recurring series over the window, and `GetItem` for the detail that `FindItem` returns by id only. Contacts use `FindFolder` to enumerate address books, `SyncFolderItems` per folder, `GetItem` for the detail, and `GetAttachment` for photos. `ResolveNames` verifies the service account during Test Connection.
+Calendar uses `SyncFolderItems` as a change probe, `FindItem` with a `CalendarView` to expand recurring series over the window, and `GetItem` for the detail that `FindItem` returns by id only. Contacts use `FindFolder` to enumerate address books, `SyncFolderItems` per folder, `GetItem` for the detail, and `GetAttachment` for photos. `ResolveNames` checks the service account during Test Connection. It is sent without the impersonation header, so it proves the endpoint, TLS and the credentials, not the impersonation role.
 
 Both calendar operations address `DistinguishedFolderId Id="calendar"` directly. An earlier draft resolved the folder id with `FindFolder` first, which returns the _subfolders_ of the parent it is given and therefore produced an unrelated, usually empty folder; the operation was removed rather than fixed.
 
@@ -48,7 +48,7 @@ That listing has to filter on `FolderClass`, and this part is EWS only. Exchange
 1. A SOAP fault, when the whole request was rejected. These arrive with HTTP 500, so the transport cannot tell them from a genuine server error and deliberately passes 5xx bodies through to the parser.
 2. A per-item `ResponseCode` inside an HTTP 200, when some items succeeded and others did not.
 
-One shared parser handles both for every operation, and maps recognised codes to typed errors so Test Connection can distinguish a wrong password from a missing impersonation role.
+One shared parser handles both for every operation, and maps recognised codes to typed errors, so a missing impersonation role reads as a refusal for that mailbox rather than as an unexpected response.
 
 Three guards were added after tests proved each necessary. Well formed HTML is also well formed XML, so a proxy error page returned with HTTP 200 parses cleanly, matches nothing, and reads as "the mailbox has no events"; the parser asserts the root element is a SOAP envelope. The fault element is matched by local name rather than by prefix, because Exchange sends `s:Fault` and a lookup for `soap:Fault` never saw it. And a fault carries its `ResponseCode` in the errors namespace rather than the messages one, so both are scanned; without that, an impersonation failure against an unknown mailbox parsed as a successful sync of zero events.
 
@@ -210,6 +210,7 @@ The integration stores users' calendar events and their personal contacts, with 
 | Recurrence          | Expanded, but occurrences arrive as stubs of their master | Expanded in full by `CalendarView`                         |
 | Contact scope       | `default` plus each `contactFolder`                       | Each `IPF.Contact` folder under the contacts root          |
 | Contact photos      | `photo/$value` per contact                                | `GetAttachment` on the `IsContactPhoto` file attachment    |
+| Contact favorite    | Set by the user in Rocket.Chat                            | `IsFavorite` named property in `PSETID_Address`            |
 | Per-mailbox scoping | `ApplicationAccessPolicy`, configured on Microsoft's side | `ExchangeImpersonation` SOAP header                        |
 | Credential          | Client secret, tenant-wide, reachable from the internet   | Service account, usually network restricted                |
 
@@ -234,6 +235,8 @@ We also own the recurrence reconciliation on the Graph side. Nothing about "a pa
 - **A deleted Graph occurrence is only noticed when its series is re-expanded.** Graph never reports an occurrence as removed, so the reconciliation depends on the master being resent. A page that stops early, on the page cap or a missing cursor, prunes nothing and leaves the stale occurrence until a later run completes.
 
 - **Contact categories and photos cannot be set from the on-premises Outlook Web App.** Both are ordinary EWS writes, `item:Categories` through `UpdateItem` and a `ContactPicture.jpg` file attachment through `CreateAttachment`, and both work against Exchange 2019. What the on-premises OWA does not have is the interface for either, so a lab without Outlook desktop or a mobile ActiveSync client has to set them over raw SOAP. Exchange Server SE does not change this: SE RTM is code equivalent to Exchange 2019 CU15, so it ships the same OWA.
+
+- **Graph cannot sync contact favorites.** The `contact` resource has no favorite property, in v1.0 or beta, and favoriting a contact in Outlook does not touch the item: its `changeKey` stays the same, so neither a read nor the contacts delta sees it. To make up for it, with Graph the favorite of a synced contact belongs to the user, who sets it in Rocket.Chat as on a local contact, and the sync never writes it. Each synced contact records the provider it came from, so the rule holds per contact rather than per workspace: during a switch between providers, a contact whose favorite Outlook owns is never offered a star. Those favorites never reach Outlook, and they are lost with the contact record: when a contact moves to another folder in Outlook, which gives it a new id, and when the workspace switches to EWS.
 
 - **MD4 is not available from Node.** `crypto.createHash('md4')` throws on Node 22 with OpenSSL 3.5, because MD4 moved to the legacy provider. NTLM cannot work without it, so the module ships a pure JavaScript implementation pinned to the RFC 1320 appendix A.5 vectors plus the canonical NTLM hash of `password`. The desktop app never hit this because Electron bundles its own OpenSSL. Anything server-side does.
 

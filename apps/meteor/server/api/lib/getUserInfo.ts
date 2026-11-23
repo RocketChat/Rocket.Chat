@@ -69,7 +69,7 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	const domain = email ? email.address.split('@').pop() : undefined;
 	const outlookCalendarUrlMapping = isLegacyMode ? settings.get<string>('Outlook_Calendar_Url_Mapping') : '';
 
-	if (domain && outlookCalendarUrlMapping && outlookCalendarUrlMapping.includes(domain)) {
+	if (domain && outlookCalendarUrlMapping?.includes(domain)) {
 		try {
 			const mappingObject = JSON.parse(outlookCalendarUrlMapping);
 			const mappedSettings = mappingObject[domain];
@@ -129,6 +129,5 @@ export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IM
 				},
 			},
 		}),
-		// Cast needed: spread of full IUser produces a superset; runtime response schema validates the actual shape
-	} as IMeApiUser;
+	};
 }

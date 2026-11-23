@@ -3,6 +3,7 @@ import { createContext } from 'react';
 
 export type ImageGalleryComponentProps = {
 	images: { _id: string; url: string; description?: string }[];
+	initialImageId?: string;
 	onClose: () => void;
 };
 

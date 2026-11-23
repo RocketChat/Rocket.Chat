@@ -1,7 +1,14 @@
 // Usage, from the repository root:
 //   node scripts/scan-view-isolation.mjs [--max <n>] [--max-hook <n>] [--max-exempt <n>] [out.json]
-// Reports where screens under apps/meteor/client/views reach the browser directly, so they can be reused outside the web client.
-// Groups, ceilings and what each flag gates: docs/frontend/view-isolation.md.
+// Lists every place a screen under apps/meteor/client/views reaches the browser directly: a use of `window`, `document`,
+// `navigator`, `localStorage`, `sessionStorage` or `matchMedia`. Screens that stay clear of these can be reused outside the web client.
+// Hits fall in three groups, each with its own ceiling: component hits (target 0), hook hits (a floor: the browser call sits
+// behind a named hook) and exempt hits (folders that are web-only by design). A hit is a hook hit when its file is named `use*`
+// or it sits inside a function named `use*`.
+// Web-only widgets (react-virtuoso, virtua `VList`, `GenericMenu`, `createPortal`) are only reported, never gated.
+// Imports from `meteor/*`, `apps/meteor/app/**` and `apps/meteor/client/meteor/**` are not counted here: oxlint forbids them
+// (no-restricted-imports override in .oxlintrc.json). See docs/frontend/view-isolation.md.
+// With a ceiling flag, fails when its group is above it, so CI keeps the counts from growing.
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { parseArgs } from 'node:util';

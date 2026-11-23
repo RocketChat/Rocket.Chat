@@ -12,6 +12,17 @@ it('renders without crashing', () => {
 	expect(screen.getByTestId('indicator')).toHaveClass('rcx-message-status-indicator');
 });
 
+it('renders nothing when there are no status items', () => {
+	const { container } = render(
+		<MessageStatusIndicator>
+			{false}
+			{null}
+		</MessageStatusIndicator>,
+	);
+
+	expect(container).toBeEmptyDOMElement();
+});
+
 it('names a titled status for assistive technology and hides an untitled one', () => {
 	render(
 		<MessageStatusIndicator>

@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect } from 'react';
@@ -55,7 +54,7 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFacto
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
+			onSubmit={onSubmit}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Please_enter_your_password')}

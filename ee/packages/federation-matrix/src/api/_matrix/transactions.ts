@@ -1,4 +1,4 @@
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { ROOM_ID_REGEX, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -199,7 +199,7 @@ const BackfillParamsSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
-			pattern: '^![A-Za-z0-9_=\\/.+-]+:(.+)$',
+			pattern: ROOM_ID_REGEX.source,
 			description: 'Matrix room ID',
 		},
 	},

@@ -36,7 +36,13 @@ type EditOutgoingWebhookFormData = {
 	runOnEdits: boolean;
 };
 
-const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string): EditOutgoingWebhookFormData => ({
+type TriggerFormFields =
+	'enabled' | 'impersonateUser' | 'event' | 'urls' | 'token' | 'triggerWords' | 'targetRoom' | 'channel' | 'username';
+
+const getInitialTriggerValue = (
+	webhookData: Serialized<IOutgoingIntegration> | undefined,
+	defaultToken: string,
+): Pick<EditOutgoingWebhookFormData, TriggerFormFields> => ({
 	enabled: webhookData?.enabled ?? true,
 	impersonateUser: webhookData?.impersonateUser ?? false,
 	event: webhookData?.event ?? 'sendMessage',
@@ -46,6 +52,10 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 	targetRoom: webhookData?.targetRoom ?? '',
 	channel: webhookData?.channel.join(', ') ?? '',
 	username: webhookData?.username ?? '',
+});
+
+const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string): EditOutgoingWebhookFormData => ({
+	...getInitialTriggerValue(webhookData, defaultToken),
 	name: webhookData?.name ?? '',
 	alias: webhookData?.alias ?? '',
 	avatar: webhookData?.avatar ?? '',

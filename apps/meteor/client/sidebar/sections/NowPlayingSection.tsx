@@ -59,7 +59,11 @@ const NowPlayingSection = () => {
 					title={t('Jump_to_message')}
 					style={{ gap: 8, cursor: track.rid ? 'pointer' : 'default' }}
 				>
-					{track.username && <UserAvatar username={track.username} size='x24' />}
+					{track.username && (
+						<Box display='flex' flexShrink={0}>
+							<UserAvatar username={track.username} size='x24' />
+						</Box>
+					)}
 					<Box minWidth={0}>
 						<Box fontScale='p2b' color='default' withTruncatedText>
 							{displayName || t('Audio')}
