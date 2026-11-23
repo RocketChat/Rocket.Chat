@@ -15,6 +15,7 @@ export const useVideoQualityChoices = (): DeviceMenuChoices => {
 	return {
 		title: t('Video_quality'),
 		choices: qualities.map((quality) => ({
+			type: 'choice' as const,
 			id: quality,
 			name: t(VIDEO_QUALITY_LABELS[quality]),
 			note: quality === current && height ? t('Video_quality_sending__height__p', { height }) : undefined,

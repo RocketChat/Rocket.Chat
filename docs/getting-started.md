@@ -59,6 +59,11 @@ The Meteor app loads the other workspace packages from their `dist` folders, so
 `yarn build` must finish before the first start. Run it again after a pull that
 changes packages.
 
+`yarn build` needs the network once: `@rocket.chat/background-effects-assets` downloads the segmentation model for
+background effects in native video calls (about 16 MB) and checks it against a pinned SHA-256. The download is kept in
+`~/.cache/rocketchat-background-effects`, or in `BACKGROUND_EFFECTS_CACHE_DIR` when set, so later builds and other
+worktrees work offline.
+
 ---
 
 ## 3. Run the app

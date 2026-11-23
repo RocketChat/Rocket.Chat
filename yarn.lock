@@ -4853,6 +4853,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@livekit/track-processors@npm:0.8.3":
+  version: 0.8.3
+  resolution: "@livekit/track-processors@npm:0.8.3"
+  dependencies:
+    "@mediapipe/tasks-vision": "npm:0.10.14"
+  peerDependencies:
+    "@types/dom-mediacapture-transform": ^0.1.9
+    livekit-client: ^1.12.0 || ^2.1.0
+  checksum: 10/1ae60760357c85a59664c937136766e13980f2ad94798f3f98b6d0917e8e7d65bf5407c253e11dda83ade0cfd9c15f74f90689bffbd139fbe53b378b03f85bb3
+  languageName: node
+  linkType: hard
+
 "@manypkg/find-root@npm:^1.1.0":
   version: 1.1.0
   resolution: "@manypkg/find-root@npm:1.1.0"
@@ -4914,6 +4926,13 @@ __metadata:
     "@types/react": ">=16"
     react: ">=16"
   checksum: 10/d566407af11e76f498f8133fbfa8a9d8a2ad80dc7a66ca109d29fcb92e953a2d2d7aaedc0c28571d126f1967faeb126dd2e4ab4ea474c994bf5c76fa204c5997
+  languageName: node
+  linkType: hard
+
+"@mediapipe/tasks-vision@npm:0.10.14":
+  version: 0.10.14
+  resolution: "@mediapipe/tasks-vision@npm:0.10.14"
+  checksum: 10/59bd0e5da5c14f2b449721c91e2d81c0602ba51222231455418bec7860281299021088db6e384d696093769fbad62b2a19818582714cd8a4e174d3561c322861
   languageName: node
   linkType: hard
 
@@ -8832,6 +8851,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/background-effects-assets@workspace:^, @rocket.chat/background-effects-assets@workspace:packages/background-effects-assets":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/background-effects-assets@workspace:packages/background-effects-assets"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/base64@workspace:^, @rocket.chat/base64@workspace:packages/base64":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/base64@workspace:packages/base64"
@@ -9828,6 +9853,7 @@ __metadata:
     "@hono/node-server": "npm:2.1.5"
     "@kaciras/deasync": "npm:^1.1.0"
     "@livekit/components-react": "npm:2.9.23"
+    "@mediapipe/tasks-vision": "npm:0.10.14"
     "@nivo/bar": "npm:0.88.0"
     "@nivo/core": "npm:0.88.0"
     "@nivo/heatmap": "npm:0.88.0"
@@ -9850,6 +9876,7 @@ __metadata:
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/authorization": "workspace:^"
+    "@rocket.chat/background-effects-assets": "workspace:^"
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -11063,9 +11090,15 @@ __metadata:
   resolution: "@rocket.chat/ui-conference@workspace:packages/ui-conference"
   dependencies:
     "@react-aria/focus": "npm:^3.21.1"
+    "@react-aria/gridlist": "npm:^3.10.1"
+    "@react-aria/i18n": "npm:^3.12.5"
+    "@react-aria/selection": "npm:^3.22.0"
     "@react-aria/visually-hidden": "npm:^3.8.27"
+    "@react-stately/collections": "npm:^3.12.1"
+    "@react-stately/list": "npm:^3.11.2"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "workspace:~"
     "@rocket.chat/fuselage-forms": "workspace:^"
     "@rocket.chat/fuselage-hooks": "workspace:^"
@@ -11100,9 +11133,15 @@ __metadata:
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@react-aria/focus": "*"
+    "@react-aria/gridlist": "*"
+    "@react-aria/i18n": "*"
+    "@react-aria/selection": "*"
     "@react-aria/visually-hidden": "*"
+    "@react-stately/collections": "*"
+    "@react-stately/list": "*"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": 1.0.0
     "@rocket.chat/fuselage-forms": 2.0.0
     "@rocket.chat/fuselage-hooks": 0.44.0
@@ -11271,6 +11310,8 @@ __metadata:
   resolution: "@rocket.chat/ui-livekit@workspace:packages/ui-livekit"
   dependencies:
     "@livekit/components-react": "npm:2.9.23"
+    "@livekit/track-processors": "npm:0.8.3"
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -11294,6 +11335,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     typescript: "npm:~7.0.2"
   peerDependencies:
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage-hooks": 0.44.0
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"

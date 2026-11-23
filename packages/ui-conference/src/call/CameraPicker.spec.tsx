@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 
 import CameraPicker from './CameraPicker';
 import { CallStateProvider } from './context';
+import { BACKGROUND_EFFECTS_UNAVAILABLE, BackgroundEffectProvider } from '../devices/BackgroundEffectContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import { buildCallState, buildDeviceSelection, buildVideoQuality, fakeDevices } from '../fixtures/callFixtures';
 
@@ -27,7 +28,9 @@ const renderPicker = (devices: MediaDeviceInfo[]) =>
 		<CallStateProvider value={buildCallState()}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices })}>
 				<VideoQualityProvider value={buildVideoQuality()}>
-					<CameraPicker />
+					<BackgroundEffectProvider value={BACKGROUND_EFFECTS_UNAVAILABLE}>
+						<CameraPicker onOpenBackgrounds={() => undefined} />
+					</BackgroundEffectProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</CallStateProvider>,

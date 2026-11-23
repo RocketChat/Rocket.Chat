@@ -1,3 +1,4 @@
+import type { BlurLevel } from '../../devices/BackgroundEffectContext';
 import type { NoiseMethod, VideoQuality } from '../../hooks/useCallDevicesInitialState';
 
 export const VIDEO_QUALITY_LABELS: Record<VideoQuality, string> = {
@@ -17,3 +18,9 @@ export const NOISE_METHOD_LABELS: Record<NoiseMethod, string> = {
 
 /** Every choice a label map names, in the order it names them. */
 export const choicesOf = <K extends string>(labels: Record<K, string>): K[] => Object.keys(labels) as K[];
+
+export const BLUR_LEVEL_LABELS: Record<BlurLevel, string> = {
+	light: 'Background_blur_light',
+	medium: 'Background_blur_medium',
+	strong: 'Background_blur_strong',
+};

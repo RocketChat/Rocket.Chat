@@ -7,6 +7,8 @@ export type CallSelf = {
 	avatarUrl?: string;
 	muted: boolean;
 	cameraOn: boolean;
+	/** On its way on, but not sending yet. */
+	cameraStarting?: boolean;
 	screenSharing: boolean;
 	handRaised: boolean;
 	/** Whether they are talking into a muted microphone. */

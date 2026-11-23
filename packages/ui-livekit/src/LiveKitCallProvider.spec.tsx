@@ -35,6 +35,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useToastMessageDispatch: () => dispatchToastMessage,
 	useUser: () => null,
 	useUserAvatarPath: () => () => '',
+	useSetModal: () => jest.fn(),
 }));
 
 jest.mock('@rocket.chat/ui-client', () => ({
@@ -49,6 +50,8 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 	},
 	VideoQualityProvider: ({ children }: { children: ReactNode }) => children,
 	NoiseSuppressionProvider: ({ children }: { children: ReactNode }) => children,
+	BackgroundEffectProvider: ({ children }: { children: ReactNode }) => children,
+	CameraWithoutEffectModal: () => null,
 	CallDiagnosticsProvider: ({ children }: { children: ReactNode }) => children,
 	playJoinChime: jest.fn(),
 	playMutedReminder: jest.fn(),
@@ -67,6 +70,17 @@ jest.mock('./useSendResolution', () => ({ useSendResolution: () => undefined }))
 jest.mock('./useSpeakingWhileMuted', () => ({ useSpeakingWhileMuted: () => false }));
 jest.mock('./useVideoQuality', () => ({ useVideoQuality: () => ({}) }));
 jest.mock('./useNoiseSuppression', () => ({ useNoiseSuppression: () => ({}) }));
+jest.mock('./backgroundEffects/useBackgroundEffect', () => ({
+	useBackgroundEffect: () => ({
+		selection: {},
+		wanted: { kind: 'none' },
+		reportStartFailure: jest.fn(),
+		sourceFor: jest.fn(),
+		bareCameraUnconfirmed: false,
+		confirmBareCamera: jest.fn(),
+	}),
+}));
+jest.mock('./backgroundEffects/effectProcessor', () => ({ processorOf: () => undefined }));
 
 jest.mock('./useLiveKitTransport', () => ({
 	useLiveKitTransport: () => ({ data: { serverUrl: 'wss://lk', token: 'token' }, error: null }),
@@ -81,7 +95,13 @@ const mockedUseLiveKitRoom = jest.mocked(useLiveKitRoom);
 const renderProvider = () => {
 	const onEnded = jest.fn();
 	render(
-		<LiveKitCallProvider callId='call1' connect onEnded={onEnded} rnnoiseBaseUrl='/video-conference/assets/rnnoise'>
+		<LiveKitCallProvider
+			callId='call1'
+			connect
+			onEnded={onEnded}
+			rnnoiseBaseUrl='/video-conference/assets/rnnoise'
+			backgroundEffectsBaseUrl='/video-conference/background-effects'
+		>
 			<div />
 		</LiveKitCallProvider>,
 	);

@@ -19,6 +19,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
 			sendHeight={tile.sendHeight}
+			cameraStarting={tile.cameraStarting}
 		/>
 	) : (
 		<ParticipantTile

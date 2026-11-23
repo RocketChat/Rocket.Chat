@@ -40,6 +40,7 @@ export {
 	useCallDevicesInitialState,
 	useCallRingPreference,
 	useVideoQualityPreference,
+	useBackgroundEffectPreference,
 	useNoiseSuppressionPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
@@ -92,6 +93,21 @@ export { VideoQualityProvider } from './devices/VideoQualityContext';
 export type { VideoQualitySelection } from './devices/VideoQualityContext';
 export { NoiseSuppressionProvider, supportsRnnoise } from './devices/NoiseSuppressionContext';
 export type { NoiseSuppressionSelection } from './devices/NoiseSuppressionContext';
+export {
+	BackgroundEffectProvider,
+	BACKGROUND_EFFECTS_UNAVAILABLE,
+	NO_BACKGROUND_EFFECT,
+	isSameEffect,
+} from './devices/BackgroundEffectContext';
+export { useBackgroundImages } from './hooks/useBackgroundImages';
+export { default as CameraWithoutEffectModal } from './backgrounds/CameraWithoutEffectModal';
+export type {
+	BackgroundEffect,
+	BackgroundEffectSelection,
+	BackgroundImage,
+	BackgroundPreset,
+	BlurLevel,
+} from './devices/BackgroundEffectContext';
 export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
 // Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
 export { PreviewVideoContext } from './call/previewVideo';

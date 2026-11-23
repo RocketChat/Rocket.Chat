@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import ConferencePanelToggles from './ConferencePanelToggles';
 import ConferenceWindowGate from './ConferenceWindowGate';
+import BackgroundEffectsPanel from '../backgrounds/BackgroundEffectsPanel';
 import CallControls from '../call/CallControls';
 import CallHeader from '../call/CallHeader';
 import type { StageLayout } from '../call/CallStage';
@@ -124,6 +125,7 @@ const ConferenceWindow = () => {
 						    handed down rather than handed in. */}
 						{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
 						{activePanel === 'diagnostics' && embeddedCall && <CallDiagnosticsPanel onClose={() => togglePanel('diagnostics')} />}
+						{activePanel === 'backgrounds' && embeddedCall && <BackgroundEffectsPanel onClose={() => togglePanel('backgrounds')} />}
 					</CallPanel>
 				</Box>
 
@@ -131,7 +133,13 @@ const ConferenceWindow = () => {
 				{embeddedCall && (
 					<CallBar
 						centre={
-							<CallControls layout={stageLayout} onLayoutChange={setStageLayout} onOpenDiagnostics={() => togglePanel('diagnostics')} />
+							<CallControls
+								layout={stageLayout}
+								onLayoutChange={setStageLayout}
+								onOpenDiagnostics={() => togglePanel('diagnostics')}
+								// Opens without toggling: the menu entry reads "settings", so a second press closing it would surprise.
+								onOpenBackgrounds={() => setActivePanel('backgrounds')}
+							/>
 						}
 					/>
 				)}
