@@ -5,6 +5,7 @@ import { getLoginExpirationInDays } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 
 import { sendEnrollmentEmail, sendResetPasswordEmail, sendVerificationEmail } from './accountEmails';
+import { insertUser } from './insertUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
 import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
@@ -35,6 +36,9 @@ settings.watch('Accounts_LoginExpiration', (value) => {
 Accounts.sendResetPasswordEmail = sendResetPasswordEmail;
 Accounts.sendVerificationEmail = sendVerificationEmail;
 Accounts.sendEnrollmentEmail = sendEnrollmentEmail;
+
+// oxlint-disable-next-line eslint-js/no-restricted-syntax -- Meteor's updateOrCreateUserFromExternalService still creates users through this
+Accounts.insertUserDoc = insertUser;
 
 const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('beforeValidateLogin', login);
