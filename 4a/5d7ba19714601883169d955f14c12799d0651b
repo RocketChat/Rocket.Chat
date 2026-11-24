@@ -1,0 +1,39 @@
+apps/meteor/tests/mocks/meteor-packages/meteor/mongo.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+apps/meteor/tests/mocks/meteor-packages/meteor/ddp-rate-limiter.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+apps/meteor/tests/mocks/meteor-packages/meteor/meteorhacks-inject-initial.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+apps/meteor/server/lib/ui-master/inject.test.ts
+  s_5f60e8c34d8641::t_837e382c921abf 11,17,19
+  s_5f60e8c34d8641::t_e587948a8518da 1,12-16,20-22
+  s_5f60e8c34d8641::t_aeba7de6855604 18
+apps/meteor/tests/mocks/meteor-packages/meteor/meteor.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+apps/meteor/tests/mocks/meteor-packages/meteor/webapp.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+apps/meteor/package.json
+  s_5f60e8c34d8641::t_e587948a8518da 28,60
+apps/meteor/tests/mocks/meteor-packages/meteor/accounts-base.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+apps/meteor/tests/mocks/meteor-packages/meteor/package.json
+  s_5f60e8c34d8641::t_42ce669550f1f1 1-8
+apps/meteor/tests/mocks/meteor-packages/meteor/rate-limit.js
+  s_5f60e8c34d8641::t_42ce669550f1f1 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4a5d7ba19714601883169d955f14c12799d0651b",
+  "prompts": {},
+  "sessions": {
+    "s_5f60e8c34d8641": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9a65cee5-5d45-472c-a8f3-675b2f6b8edb",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
