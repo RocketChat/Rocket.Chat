@@ -13,7 +13,11 @@ const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => 
 		return;
 	}
 
-	data.result ? confirm(data) : cancel();
+	if (data.result) {
+		confirm(data);
+	} else {
+		cancel();
+	}
 };
 
 export type IframeModalProps = {

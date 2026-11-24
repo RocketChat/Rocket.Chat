@@ -65,7 +65,9 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 
 			if (username) {
 				const index = reactions[emojiName].usernames.indexOf(username);
-				index >= 0 && reactions[emojiName].names?.splice(index, 1);
+				if (index >= 0) {
+					reactions[emojiName].names?.splice(index, 1);
+				}
 				return (reactions[emojiName].names || usernames).filter(Boolean);
 			}
 

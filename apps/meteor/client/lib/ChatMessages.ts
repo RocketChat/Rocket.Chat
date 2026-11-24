@@ -127,8 +127,11 @@ export class ChatMessages implements ChatAPI {
 			this.composer.setEditingMode(true);
 
 			this.composer.setText(text);
-			cursorAtStart && this.composer.setCursorToStart();
-			!cursorAtStart && this.composer.setCursorToEnd();
+			if (cursorAtStart) {
+				this.composer.setCursorToStart();
+			} else {
+				this.composer.setCursorToEnd();
+			}
 			this.composer.focus();
 		},
 	};

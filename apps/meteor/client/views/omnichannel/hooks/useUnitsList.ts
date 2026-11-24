@@ -46,12 +46,13 @@ export const useUnitsList = (options: UnitsListOptions) => {
 		select: (data) => {
 			const items = data.pages.flatMap<UnitOption>((page) => page.units);
 
-			haveNone &&
+			if (haveNone) {
 				items.unshift({
 					_id: '',
 					label: t('None'),
 					value: '',
 				});
+			}
 
 			return items;
 		},
