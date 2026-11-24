@@ -76,7 +76,7 @@ const UserMenuButton = forwardRef(function UserMenuButton(
 						overflow='hidden'
 						size='x12'
 						borderWidth='default'
-						backgroundColor='surface-tint'
+						backgroundColor='surface-sidebar'
 						borderColor='extra-light'
 						borderRadius='full'
 					>

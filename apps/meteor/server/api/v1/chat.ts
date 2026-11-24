@@ -636,6 +636,7 @@ const chatEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -659,7 +660,7 @@ const chatEndpoints = API.v1
 			}
 
 			if (this.bodyParams.asUser && msg.u._id !== this.userId && !(await hasPermissionAsync(this.user, 'force-delete-message', msg.rid))) {
-				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
+				return API.v1.forbidden('You must have the permission "force-delete-message" to delete other\'s message as them');
 			}
 
 			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
@@ -1160,7 +1161,7 @@ const chatEndpoints = API.v1
 				rid: room._id,
 				tcount: { $exists: true },
 			});
-			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
+			const { cursor, totalCount } = Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,
@@ -1572,6 +1573,6 @@ const chatEndpoints = API.v1
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends ChatEndpoints {}
 }

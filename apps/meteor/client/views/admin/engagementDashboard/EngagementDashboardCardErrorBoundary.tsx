@@ -1,9 +1,9 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { CopyErrorReportAction } from '@rocket.chat/ui-client';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CopyErrorReportAction from '../../../components/ErrorReport/CopyErrorReportAction';
 import ReportableErrorBoundary from '../../../components/ErrorReport/ReportableErrorBoundary';
 
 export type EngagementDashboardCardErrorBoundaryProps = {

@@ -1,11 +1,10 @@
 import fs from 'node:fs';
 
-import { Meteor } from 'meteor/meteor';
 import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
 
-Meteor.startup(() => {
+export const ensureUploadTempDirectory = (): void => {
 	const path = UploadFS.config.tmpDir;
 	const mode = UploadFS.config.tmpDirPermissions;
 
@@ -22,8 +21,10 @@ Meteor.startup(() => {
 		} else {
 			// Set directory permissions
 			fs.chmod(path, mode, (err) => {
-				err && console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
+				if (err) {
+					console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
+				}
 			});
 		}
 	});
-});
+};

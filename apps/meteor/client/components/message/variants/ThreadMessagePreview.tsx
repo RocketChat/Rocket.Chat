@@ -3,7 +3,7 @@ import {
 	Skeleton,
 	ThreadMessage,
 	ThreadMessageRow,
-	ThreadMessageLeftContainer,
+	MessageLeftContainer,
 	ThreadMessageIconThread,
 	ThreadMessageContainer,
 	ThreadMessageOrigin,
@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -59,19 +59,24 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const goToThread = useGoToThread();
 
 	const handleThreadClick = () => {
-		if (!isSelecting) {
-			if (parentMessage.isError) {
-				return;
-			}
-
-			if (!sequential) {
-				return parentMessage.isSuccess && goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id });
-			}
-
-			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
+		if (isSelecting) {
+			return toggleSelected();
 		}
 
-		return toggleSelected();
+		if (parentMessage.isError) {
+			return;
+		}
+
+		return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
+	};
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.target !== event.currentTarget || (event.code !== 'Enter' && event.code !== 'Space')) {
+			return;
+		}
+
+		event.preventDefault();
+		handleThreadClick();
 	};
 
 	const checkboxLabel = getCheckboxLabel(message, t);
@@ -82,15 +87,15 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			aria-roledescription={t('thread_message_preview')}
 			tabIndex={0}
 			onClick={handleThreadClick}
-			onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && handleThreadClick()}
+			onKeyDown={handleKeyDown}
 			isSelected={isSelected}
 			{...props}
 		>
 			{!sequential && (
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin system={!!messageType}>
 							{parentMessage.isSuccess && !messageType && (
@@ -117,7 +122,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 				</ThreadMessageRow>
 			)}
 			<ThreadMessageRow>
-				<ThreadMessageLeftContainer>
+				<MessageLeftContainer>
 					{!isSelecting && showUserAvatar && (
 						<MessageAvatar
 							emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
@@ -126,7 +131,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 						/>
 					)}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
-				</ThreadMessageLeftContainer>
+				</MessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
 						{(message as { ignored?: boolean }).ignored ? (

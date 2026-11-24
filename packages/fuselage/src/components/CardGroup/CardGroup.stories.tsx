@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Badge } from '../Badge';
 import { Button, IconButton } from '../Button';
@@ -46,16 +46,6 @@ export default {
 			description: 'Stacks the cards in a column instead of a row.',
 			table: { category: 'Layout' },
 		},
-		small: {
-			control: 'boolean',
-			description: 'Small size scale for the card group.',
-			table: { category: 'Size' },
-		},
-		large: {
-			control: 'boolean',
-			description: 'Large size scale for the card group.',
-			table: { category: 'Size' },
-		},
 		children: {
 			control: false,
 			description: 'Card items rendered inside the group.',
@@ -81,23 +71,6 @@ const CardItem = (props: CardProps) => (
 				Button
 			</Button>
 			<Button size='medium'>Button</Button>
-		</CardControls>
-	</Card>
-);
-
-const CardHorizontal = (props: CardProps) => (
-	<Card horizontal {...props}>
-		<CardRow>
-			<Icon name='document-eye' size='x24' />
-			<CardCol>
-				<CardTitle variant='h3'>Heading 3</CardTitle>
-				<CardBody>Lorem ipsum dolor sit amet.</CardBody>
-			</CardCol>
-		</CardRow>
-		<CardControls>
-			<Badge small variant='primary' />
-			<Tag>Card tag</Tag>
-			<IconButton icon='menu' size='small' aria-label='menu' />
 		</CardControls>
 	</Card>
 );
@@ -139,7 +112,20 @@ export const VerticalWithHorizontalCard: Story = {
 	render: (args) => (
 		<CardGroup vertical stretch {...args}>
 			{Array.from(new Array(9)).map((_, index) => (
-				<CardHorizontal clickable key={index} width='full' />
+				<Card horizontal clickable key={index} width='full'>
+					<CardRow>
+						<Icon name='document-eye' size='x24' />
+						<CardCol>
+							<CardTitle variant='h3'>Heading 3</CardTitle>
+							<CardBody>Lorem ipsum dolor sit amet.</CardBody>
+						</CardCol>
+					</CardRow>
+					<CardControls>
+						<Badge small variant='primary' />
+						<Tag>Card tag</Tag>
+						<IconButton icon='menu' size='small' aria-label='menu' />
+					</CardControls>
+				</Card>
 			))}
 		</CardGroup>
 	),

@@ -1,5 +1,6 @@
 import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -21,7 +22,6 @@ const modelsMock = {
 	LivechatInquiry: { findOneById: sinon.stub() },
 	Users: { findOneById: sinon.stub() },
 };
-const meteorMock = { Meteor: { startup: sinon.stub() } };
 const createIndexStub = sinon.stub();
 const databaseUtilsMock = {
 	db: { collection: sinon.stub().returns({ createIndex: createIndexStub }) },
@@ -34,8 +34,6 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire.noCallThru().load(
 	'@rocket.chat/agenda': {
 		Agenda: sinon.stub().returns(AgendaStub),
 	},
-	'@rocket.chat/models': modelsMock,
-	'meteor/meteor': meteorMock,
 	'../../../../server/database/utils': databaseUtilsMock,
 	'../../../../server/lib/omnichannel/closeRoom': livechatMock,
 	'../../../../server/settings': settingsMock,
@@ -43,6 +41,12 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire.noCallThru().load(
 });
 
 describe('OmnichannelQueueInactivityMonitorClass', () => {
+	before(() => {
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('LivechatInquiry', modelsMock.LivechatInquiry);
+		mockModel('Users', modelsMock.Users);
+	});
+
 	afterEach(() => {
 		modelsMock.Users.findOneById.reset();
 	});

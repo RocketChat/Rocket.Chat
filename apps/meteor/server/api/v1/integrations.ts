@@ -16,7 +16,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
@@ -224,7 +223,7 @@ API.v1.post(
 
 		let integration: IIntegration | null = null;
 		switch (bodyParams.type) {
-			case 'webhook-outgoing':
+			case 'webhook-outgoing': {
 				if (!bodyParams.target_url && !bodyParams.integrationId) {
 					return API.v1.failure('An integrationId or target_url needs to be provided.');
 				}
@@ -246,14 +245,8 @@ API.v1.post(
 				return API.v1.success({
 					integration,
 				});
-			case 'webhook-incoming':
-				check(
-					bodyParams,
-					Match.ObjectIncluding({
-						integrationId: String,
-					}),
-				);
-
+			}
+			case 'webhook-incoming': {
 				integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 				if (!integration) {
@@ -266,6 +259,7 @@ API.v1.post(
 				return API.v1.success({
 					integration,
 				});
+			}
 			default:
 				return API.v1.failure('Invalid integration type.');
 		}

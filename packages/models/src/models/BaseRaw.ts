@@ -40,7 +40,8 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { getCollectionName, UpdaterImpl } from '..';
+import { getCollectionName } from '../getCollectionName';
+import { UpdaterImpl } from '../updater';
 import type { Updater } from '../updater';
 import { setUpdatedAt } from './setUpdatedAt';
 
@@ -49,7 +50,7 @@ const warnFields =
 		? (...rest: any): void => {
 				console.warn(...rest, new Error().stack);
 			}
-		: new Function();
+		: (): void => undefined;
 
 type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
@@ -134,7 +135,7 @@ export abstract class BaseRaw<
 		const updateFilter = updater.getUpdateFilter();
 		return this.updateOne(query, updateFilter, options).catch((e) => {
 			console.warn(e, updateFilter);
-			return Promise.reject(e);
+			throw e;
 		});
 	}
 

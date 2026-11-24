@@ -1,6 +1,7 @@
 import { after, before, describe, it } from 'node:test';
 
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -8,6 +9,9 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Engagement Dashboard]', () => {
 	const isEnterprise = Boolean(process.env.IS_EE);
@@ -47,7 +51,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 
@@ -66,7 +70,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Match error: Failed Match.Where validation in field start');
+					expect(res.body.error).to.be.equal('must match format "date-time"');
 				});
 		});
 
@@ -84,7 +88,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Match error: Failed Match.Where validation in field end');
+					expect(res.body.error).to.be.equal('must match format "date-time"');
 				});
 		});
 
@@ -99,7 +103,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("Match error: Missing key 'start'");
+					expect(res.body.error).to.be.equal("must have required property 'start'");
 				});
 		});
 
@@ -114,7 +118,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("Match error: Missing key 'end'");
+					expect(res.body.error).to.be.equal("must have required property 'end'");
 				});
 		});
 
@@ -307,6 +311,40 @@ describe('[Engagement Dashboard]', () => {
 					expect(channelRecord.room).to.have.property('ts', testRoom.ts);
 					expect(channelRecord.room).to.have.property('t', testRoom.t);
 				});
+		});
+	});
+});
+
+(process.env.IS_EE ? describe : describe.skip)('[Engagement Dashboard] without view-engagement-dashboard', () => {
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+	});
+
+	after(() => deleteUser(user));
+
+	const routes = [
+		'engagement-dashboard/users/new-users',
+		'engagement-dashboard/users/active-users',
+		'engagement-dashboard/users/chat-busier/hourly-data',
+		'engagement-dashboard/users/chat-busier/weekly-data',
+		'engagement-dashboard/users/users-by-time-of-the-day-in-a-week',
+		'engagement-dashboard/messages/messages-sent',
+		'engagement-dashboard/messages/origin',
+		'engagement-dashboard/messages/top-five-popular-channels',
+	] as const;
+
+	routes.forEach((route) => {
+		it(`should refuse ${route}`, async () => {
+			const end = new Date();
+			const start = new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+			await request.get(api(route)).set(userCredentials).query({ start: start.toISOString(), end: end.toISOString() }).expect(403);
 		});
 	});
 });

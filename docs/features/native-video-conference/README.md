@@ -98,6 +98,31 @@ had before there was a choice.
 - **A browser that cannot run RNNoise** (no AudioWorklet) never tries: a remembered *Advanced* runs, and shows, as
   *Standard*.
 
+## Pinning
+
+A participant can pin one person, themselves included, to see them large. The pin belongs to that call window alone:
+nothing is sent to the server or to the other participants, and nobody else's stage changes.
+
+- In Sidebar and Spotlight the pinned person replaces the active speaker as the large view. In Grid, and in Spotlight
+  while a share is live, the stage takes the sidebar arrangement while the pin lasts, and the layout setting stays as
+  chosen.
+- A pin takes the stage over screen shares too: while someone is pinned, every share is a thumbnail at the head of
+  the strip, a share that starts joins them there, and choosing a share from its thumbnail ends the pin.
+- When the pinned person drops out of the call's video, the stage carries on unpinned. If they are back within 30
+  seconds, as after a reconnect or a reload of their window, the pin applies again; otherwise it is forgotten.
+- Changing layout or opening a panel keeps it; leaving the call, the call ending or reloading the window clears it.
+
+Screens follow the same rule: the reader's choice holds. With nothing chosen, the share that started last is on the
+stage. A share pinned from its thumbnail, or from the sharer's row in the People panel, stays there whatever starts
+after it. Unpinning the share on the stage, chosen or not, returns the reader's layout: shares then lead the grid's
+cells or the sidebar's thumbnails (Spotlight draws none; they are pinned from the People panel), and a share that
+starts joins them, until the reader pins one or nobody is sharing anymore. One pin holds at a time: pinning a person
+ends the choice of screen, and pinning a screen ends the person pin.
+
+Tiles offer the control on hover and focus, and always on a touch screen, except tiles narrower than a strip
+thumbnail, which only show the mark; the People panel offers it for everyone in the call's video, including people the
+layout does not draw.
+
 ## Data-channel messages
 
 | Type | Reliable | Payload | Meaning |

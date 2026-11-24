@@ -2,39 +2,26 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/typography.scss' as *;
 @use '../../../styles/mixins/size.scss';
-@use '../mixins.scss';
-
-.rcx-message.rcx-message-thread {
-	@include use-font-scale(c1);
-	@include use-with-truncated-text();
-	display: flex;
-	flex-direction: column;
-
-	padding-block: 0;
-
-	color: colors.font(info);
-}
 
 .rcx-message-thread {
+	@include use-font-scale(c1);
+	@include use-with-truncated-text();
+	color: colors.font(info);
+
+	&__content {
+		gap: lengths.margin(8);
+	}
+
 	&__container {
 		@include use-with-truncated-text();
 		display: flex;
-		flex-shrink: 1;
 
 		width: 100%;
-		margin: lengths.margin(4);
 	}
 
 	&__row {
-		@include use-with-truncated-text();
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		flex-shrink: 1;
-
-		width: 100%;
-
-		cursor: pointer;
+		// Same gap as the message row, so the preview text starts on the message text column.
+		--rcx-item-gap: #{lengths.margin(8)};
 	}
 
 	&__message {
@@ -43,36 +30,13 @@
 	}
 
 	&__origin {
-		@include use-font-scale(c1);
 		@include use-with-truncated-text();
-		flex-shrink: 1;
-
-		cursor: pointer;
-
-		color: colors.font(info);
 
 		&--system {
 			color: colors.font(default);
 
 			&::first-letter {
 				text-transform: uppercase;
-			}
-		}
-	}
-
-	&__icon {
-		color: colors.font(info);
-
-		&--unfollow,
-		&--follow {
-			cursor: pointer;
-
-			color: colors.font(secondary-info);
-		}
-
-		&--unfollow {
-			.rcx-message:not(:hover) & {
-				display: none;
 			}
 		}
 	}

@@ -16,6 +16,7 @@ const testSetting = getSettingDefaults({
 
 describe('Settings', () => {
 	beforeEach(() => {
+		Settings.data.clear();
 		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;
 		process.env = {};
@@ -83,6 +84,35 @@ describe('Settings', () => {
 
 		expect(Settings.findOne({ _id: 'my_setting' }).value).to.be.equal(true);
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
+	});
+
+	it('should keep the stored setting when another instance inserted it after the cache was loaded', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		Settings.data.set(
+			'my_concurrent_setting',
+			getSettingDefaults({ _id: 'my_concurrent_setting', type: 'string', value: 'from another instance' }),
+		);
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add('my_concurrent_setting', 'from this instance', { type: 'string' });
+
+		expect(Settings.findOne({ _id: 'my_concurrent_setting' }).value).to.be.equal('from another instance');
+		expect(settings.get('my_concurrent_setting')).to.be.equal('from another instance');
+	});
+
+	it('should keep the stored group when another instance inserted it after the cache was loaded', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		Settings.data.set('my_concurrent_group', { _id: 'my_concurrent_group', type: 'group', i18nLabel: 'from another instance' });
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('my_concurrent_group');
+
+		expect(Settings.findOne({ _id: 'my_concurrent_group' }).i18nLabel).to.be.equal('from another instance');
+		expect(settings.getSetting('my_concurrent_group')?.i18nLabel).to.be.equal('from another instance');
 	});
 
 	it('should keep the schema option in memory instead of persisting it', async () => {
@@ -634,75 +664,57 @@ describe('Settings', () => {
 	});
 
 	it('should call `settings.get` callback on setting added', async () => {
-		return new Promise(async (resolve) => {
-			const settings = new CachedSettings();
-			Settings.settings = settings;
-			settings.initialized();
-			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-			const spiedCallback1 = spy();
-			const spiedCallback2 = spy();
+		const spiedCallback1 = spy();
+		const spiedCallback2 = spy();
 
-			await settingsRegistry.addGroup('group', async function () {
-				await this.section('section', async function () {
-					await this.add('setting_callback', 'value1', {
-						type: 'string',
-					});
+		await settingsRegistry.addGroup('group', async function () {
+			await this.section('section', async function () {
+				await this.add('setting_callback', 'value1', {
+					type: 'string',
 				});
 			});
-
-			settings.watch('setting_callback', spiedCallback1, { debounce: 10 });
-			settings.watchByRegex(/setting_callback/, spiedCallback2, { debounce: 10 });
-
-			setTimeout(
-				() => {
-					expect(spiedCallback1).to.have.been.called.exactly(1);
-					expect(spiedCallback2).to.have.been.called.exactly(1);
-					expect(spiedCallback1).to.have.been.called.always.with('value1');
-					expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
-					resolve();
-				},
-				settings.getConfig({ debounce: 10 }).debounce,
-			);
 		});
+
+		settings.watch('setting_callback', spiedCallback1, { debounce: 10 });
+		settings.watchByRegex(/setting_callback/, spiedCallback2, { debounce: 10 });
+
+		await new Promise((resolve) => setTimeout(resolve, settings.getConfig({ debounce: 10 }).debounce));
+		expect(spiedCallback1).to.have.been.called.exactly(1);
+		expect(spiedCallback2).to.have.been.called.exactly(1);
+		expect(spiedCallback1).to.have.been.called.always.with('value1');
+		expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
 	});
 
 	it('should call `settings.watch` callback on setting changed registering before initialized', async () => {
-		return new Promise(async (resolve) => {
-			const spiedCallback1 = spy();
-			const spiedCallback2 = spy();
-			const settings = new CachedSettings();
-			Settings.settings = settings;
-			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		const spiedCallback1 = spy();
+		const spiedCallback2 = spy();
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-			settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
-			settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
+		settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
+		settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
 
-			settings.initialized();
-			await settingsRegistry.addGroup('group', async function () {
-				await this.section('section', async function () {
-					await this.add('setting_callback', 'value2', {
-						type: 'string',
-					});
+		settings.initialized();
+		await settingsRegistry.addGroup('group', async function () {
+			await this.section('section', async function () {
+				await this.add('setting_callback', 'value2', {
+					type: 'string',
 				});
 			});
-			setTimeout(
-				() => {
-					Settings.updateValueById('setting_callback', 'value3');
-					setTimeout(
-						() => {
-							expect(spiedCallback1).to.have.been.called.exactly(2);
-							expect(spiedCallback2).to.have.been.called.exactly(2);
-							expect(spiedCallback1).to.have.been.called.with('value2');
-							expect(spiedCallback1).to.have.been.called.with('value3');
-							resolve();
-						},
-						settings.getConfig({ debounce: 10 }).debounce,
-					);
-				},
-				settings.getConfig({ debounce: 10 }).debounce,
-			);
 		});
+		await new Promise((resolve) => setTimeout(resolve, settings.getConfig({ debounce: 10 }).debounce));
+		Settings.updateValueById('setting_callback', 'value3');
+		await new Promise((resolve) => setTimeout(resolve, settings.getConfig({ debounce: 10 }).debounce));
+		expect(spiedCallback1).to.have.been.called.exactly(2);
+		expect(spiedCallback2).to.have.been.called.exactly(2);
+		expect(spiedCallback1).to.have.been.called.with('value2');
+		expect(spiedCallback1).to.have.been.called.with('value3');
 	});
 
 	it('should update the stored value on setting change', async () => {

@@ -1,3 +1,6 @@
+// A frame rendered here runs on the Tamagui runtime, which needs its config registered first
+import './src/tamagui.config';
+
 const cssInJsClassRegex = /^rcx-css-[a-z0-9]+$/;
 
 declare global {

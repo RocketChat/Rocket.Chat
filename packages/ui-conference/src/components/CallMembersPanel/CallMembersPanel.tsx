@@ -4,6 +4,7 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallMemberPins from '../../call/CallMemberPins';
 import VoiceActivity from '../../call/VoiceActivity';
 import { ConferenceContext, useConference } from '../../context/ConferenceContext';
 import type { CallParticipantEntry } from '../../lib/callParticipants';
@@ -105,6 +106,7 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 					handRaised={inCall?.raisedHands.has(member._id)}
 					muted={inCall?.mutedMembers.has(member._id)}
 					onMute={inCall?.muteMember}
+					pinControls={inCall && <CallMemberPins memberId={member._id} />}
 					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>

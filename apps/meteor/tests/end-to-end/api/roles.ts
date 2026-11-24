@@ -241,7 +241,7 @@ describe('[Roles]', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -311,7 +311,7 @@ describe('[Roles]', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -411,7 +411,7 @@ describe('[Roles]', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -517,6 +517,51 @@ describe('[Roles]', () => {
 					// payload schema is checked in the endpoint
 					expect(res.body.users.length).to.be.greaterThan(0);
 				});
+		});
+	});
+
+	describe('[/roles.list]', () => {
+		let user: IUser;
+		let userCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => deleteUser(user));
+
+		it('should return the built-in roles to any logged-in user', async () => {
+			const res = await request.get(api('roles.list')).set(userCredentials).expect(200);
+
+			expect(res.body.roles.map(({ _id }: { _id: string }) => _id)).to.include.members(['admin', 'user', 'owner']);
+		});
+	});
+
+	describe('[/roles.sync]', () => {
+		it('should return every role when no date is given', async () => {
+			const res = await request.get(api('roles.sync')).set(credentials).expect(200);
+			const list = await request.get(api('roles.list')).set(credentials).expect(200);
+
+			expect(res.body.roles.update.map(({ _id }: { _id: string }) => _id)).to.have.members(
+				list.body.roles.map(({ _id }: { _id: string }) => _id),
+			);
+		});
+
+		it('should return only the roles changed after updatedSince', async () => {
+			const res = await request
+				.get(api('roles.sync'))
+				.set(credentials)
+				.query({ updatedSince: new Date(Date.now() + 60_000).toISOString() })
+				.expect(200);
+
+			expect(res.body.roles).to.deep.equal({ update: [], remove: [] });
+		});
+
+		it('should fail if updatedSince is not a date', async () => {
+			const res = await request.get(api('roles.sync')).set(credentials).query({ updatedSince: 'not-a-date' }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-invalid-param');
 		});
 	});
 });

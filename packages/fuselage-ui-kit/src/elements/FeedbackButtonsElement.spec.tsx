@@ -32,8 +32,6 @@ const renderFeedback = (action = jest.fn(), negativeValue = 'bad') => {
 			</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
-
-	return action;
 };
 
 it('names each button after its text, or its accessibility label when it has one', () => {
@@ -44,7 +42,8 @@ it('names each button after its text, or its accessibility label when it has one
 });
 
 it('sends the clicked button value and marks it as pressed', async () => {
-	const action = renderFeedback();
+	const action = jest.fn();
+	renderFeedback(action);
 
 	await userEvent.click(screen.getByRole('button', { name: 'Good answer' }));
 
@@ -54,7 +53,8 @@ it('sends the clicked button value and marks it as pressed', async () => {
 });
 
 it('sends the negative value and marks only the negative button as pressed', async () => {
-	const action = renderFeedback();
+	const action = jest.fn();
+	renderFeedback(action);
 
 	await userEvent.click(screen.getByRole('button', { name: 'Mark this answer as bad' }));
 

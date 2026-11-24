@@ -1,6 +1,7 @@
 import { after, before, describe, it } from 'node:test';
 
-import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -8,6 +9,9 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import { closeOmnichannelRoom, createLivechatRoom, createVisitor, deleteVisitor, getLivechatRoomInfo } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('LIVECHAT - custom fields', () => {
 	before((_t, done) => getCredentials(done));
@@ -743,5 +747,40 @@ describe('LIVECHAT - custom fields', () => {
 					});
 			});
 		});
+	});
+});
+
+describe('LIVECHAT - custom fields without view-livechat-manager', () => {
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+	});
+
+	after(() => deleteUser(user));
+
+	it('should refuse livechat/custom-fields.delete and keep the field', async (t) => {
+		const label = `refused-${Date.now()}`;
+		const customField = await createCustomField({
+			searchable: true,
+			field: label,
+			label,
+			scope: 'visitor',
+			visibility: 'public',
+			regexp: '',
+		});
+		t.after(() => deleteCustomField(customField._id));
+
+		await request.post(api('livechat/custom-fields.delete')).set(userCredentials).send({ customFieldId: customField._id }).expect(403);
+
+		const res = await request
+			.get(api(`livechat/custom-fields/${customField._id}`))
+			.set(credentials)
+			.expect(200);
+		expect(res.body.customField).to.have.property('_id', customField._id);
 	});
 });

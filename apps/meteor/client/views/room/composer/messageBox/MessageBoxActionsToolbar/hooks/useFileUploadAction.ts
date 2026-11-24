@@ -24,8 +24,9 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 		};
 
 		const handleUploadChange = async () => {
+			const selectedFiles = Array.from(fileInputRef?.current?.files ?? []);
 			const { getMimeType } = await import('../../../../../../../lib/mimeTypes');
-			const filesToUpload = Array.from(fileInputRef?.current?.files ?? []).map((file) => {
+			const filesToUpload = selectedFiles.map((file) => {
 				Object.defineProperty(file, 'type', {
 					value: getMimeType(file.type, file.name),
 				});
@@ -34,8 +35,9 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 			chat?.flows.uploadFiles({ files: filesToUpload, resetFileInput });
 		};
 
-		fileInputRef.current?.addEventListener('change', handleUploadChange);
-		return () => fileInputRef?.current?.removeEventListener('change', handleUploadChange);
+		const input = fileInputRef.current;
+		input?.addEventListener('change', handleUploadChange);
+		return () => input?.removeEventListener('change', handleUploadChange);
 	}, [chat, fileInputRef]);
 
 	const handleUpload = () => {

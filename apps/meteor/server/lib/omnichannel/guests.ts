@@ -47,7 +47,7 @@ export async function saveGuest(
 	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 		livechatLogger.debug({ msg: 'Saving custom fields for visitor', visitorId: _id, livechatData });
 		for await (const field of LivechatCustomField.findByScope('visitor')) {
-			if (!livechatData.hasOwnProperty(field._id)) {
+			if (!Object.hasOwn(livechatData, field._id)) {
 				continue;
 			}
 			const value = trim(livechatData[field._id]);
@@ -90,8 +90,8 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 
 	// And a contact shouldn't have many channels associated, so we can do this
 	livechatLogger.debug({ msg: 'Removing channels for contacts', visitorId: _id, contacts: contacts.map(({ _id }) => _id) });
-	for await (const contact of contacts) {
-		for await (const { visitor } of contact.channels) {
+	for (const contact of contacts) {
+		for (const { visitor } of contact.channels) {
 			await removeGuest({ _id: visitor.visitorId });
 		}
 

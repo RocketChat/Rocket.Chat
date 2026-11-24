@@ -392,6 +392,6 @@ type PushGetInfoEndpoints = ExtractRoutesFromAPI<typeof pushGetInfoEndpoints>;
 type PushEndpoints = PushTestEndpoints & PushTokenEndpoints & PushGetInfoEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends PushEndpoints {}
 }

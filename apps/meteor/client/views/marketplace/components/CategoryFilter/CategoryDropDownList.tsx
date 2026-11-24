@@ -1,4 +1,4 @@
-import { Box, CheckBox, Option, PopoverSurface } from '@rocket.chat/fuselage';
+import { CheckBox, Option, OptionTitle, PopoverSurface } from '@rocket.chat/fuselage';
 import { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
@@ -8,11 +8,7 @@ const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListPr
 		<PopoverSurface>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
-					{category.label && (
-						<Box paddingInline={16} paddingBlockStart={8} paddingBlockEnd={4} fontScale='micro' textTransform='uppercase' color='default'>
-							{category.label}
-						</Box>
-					)}
+					{category.label && <OptionTitle>{category.label}</OptionTitle>}
 					{category.items.map((item) => (
 						<Option key={item.id} {...({ label: item.label } as any)} onClick={(): void => onSelected(item)}>
 							<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />

@@ -54,8 +54,12 @@ const CategoryMenu = ({
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
 	const createItems = category ? rawCreateItems : [];
 
-	const handleToggleShowUnreads = async () => toggleShowUnreads(category?._id ?? groupKey);
-	const handleToggleKeepUnreadsOnTop = async () => toggleKeepUnreadsOnTop(category?._id ?? groupKey);
+	const handleToggleShowUnreads = () => {
+		void toggleShowUnreads(category?._id ?? groupKey);
+	};
+	const handleToggleKeepUnreadsOnTop = () => {
+		void toggleKeepUnreadsOnTop(category?._id ?? groupKey);
+	};
 
 	const orderItems: GenericMenuItemProps[] = [
 		{

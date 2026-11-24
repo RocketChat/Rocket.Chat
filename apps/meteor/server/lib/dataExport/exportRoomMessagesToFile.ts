@@ -12,7 +12,7 @@ import { restrictToVisibleHistory } from '../messages/historyVisibility';
 
 const hideUserName = (username: string, userData: Pick<IUser, 'username'> | undefined, usersMap: Record<string, string>) => {
 	if (!usersMap[username]) {
-		if (userData && username === userData.username) {
+		if (username === userData?.username) {
 			usersMap[username] = username;
 		} else {
 			usersMap[username] = `User_${Object.keys(usersMap).length + 1}`;
@@ -275,7 +275,7 @@ export const exportRoomMessagesToFile = async function (
 
 	const limit =
 		settings.get<number>('UserData_MessageLimitPerRequest') > 0 ? settings.get<number>('UserData_MessageLimitPerRequest') : 1000;
-	for await (const exportOpRoomData of roomList) {
+	for (const exportOpRoomData of roomList) {
 		if (!('targetFile' in exportOpRoomData)) {
 			continue;
 		}

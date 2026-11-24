@@ -46,24 +46,25 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 			keys: UrlParams<TPathPattern>;
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
+			type Result = Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 			const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys) as any;
 
 			switch (method) {
 				case 'GET':
 					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.get(compiledPath, params) as any;
+					return sdk.rest.get(compiledPath, params) as Result;
 
 				case 'POST':
 					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.post(compiledPath, params) as any;
+					return sdk.rest.post(compiledPath, params) as Result;
 
 				case 'PUT':
 					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.put(compiledPath, params as never) as any;
+					return sdk.rest.put(compiledPath, params as never) as Result;
 
 				case 'DELETE':
 					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.delete(compiledPath, params) as any;
+					return sdk.rest.delete(compiledPath, params) as Result;
 
 				default:
 					throw new Error('Invalid HTTP method');

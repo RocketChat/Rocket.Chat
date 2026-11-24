@@ -20,7 +20,8 @@ import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../server/api/definition';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { apps, APP_URL } from '../../data/apps/apps-data';
+import { apps } from '../../data/apps/apps-data';
+import { installTestApp } from '../../data/apps/helper';
 import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import type { OnlineAgent } from '../../data/livechat/department';
 import {
@@ -88,22 +89,10 @@ describe('LIVECHAT - rooms', () => {
 
 	before(async () => {
 		if (IS_EE) {
-			// install the app
-			await request
-				.post(apps())
-				.set(credentials)
-				.send({ url: APP_URL })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('app');
-					expect(res.body.app).to.have.a.property('id');
-					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('manually_enabled');
+			const app = await installTestApp();
+			expect(app).to.have.a.property('status').and.to.be.equal('manually_enabled');
 
-					appId = res.body.app.id;
-				});
+			appId = app.id;
 		}
 
 		await updateSetting('Livechat_enabled', true);
@@ -246,7 +235,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 
 			await restorePermissionToRoles('view-livechat-rooms');
@@ -1290,7 +1279,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 		});
@@ -1311,7 +1300,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.have.string('unauthorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 
@@ -1329,7 +1318,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.have.string('unauthorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 
 			await restorePermissionToRoles('transfer-livechat-guest');
@@ -2845,7 +2834,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.have.string('unauthorized');
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					});
 			});
 		});
@@ -2883,7 +2872,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.have.string('forbidden');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 
@@ -3355,17 +3344,23 @@ describe('LIVECHAT - rooms', () => {
 			let room: IOmnichannelRoom;
 			let visitor: ILivechatVisitor;
 			before(async () => {
+				await Promise.all([makeAgentUnavailable(), updateSetting('Livechat_accept_chats_with_no_agents', true)]);
 				visitor = await createVisitor();
 				room = await createLivechatRoom(visitor.token);
 				await updatePermission('close-others-livechat-room', []);
 			});
 			after(async () => {
+				await Promise.all([makeAgentAvailable(), updateSetting('Livechat_accept_chats_with_no_agents', false)]);
 				await restorePermissionToRoles('close-others-livechat-room');
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
 			});
 			it('should fail if user is not serving and doesnt have close-others-livechat-room permission', async () => {
-				await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(400);
+				const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(403);
+
+				expect(response.body).to.have.property('success', false);
+				expect(response.body).to.have.property('errorType', 'error-forbidden');
+				expect(response.body).to.have.property('error', 'error-not-authorized');
 			});
 		});
 

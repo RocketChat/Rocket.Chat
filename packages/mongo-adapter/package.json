@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/mongo-adapter",
 	"version": "0.0.3",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

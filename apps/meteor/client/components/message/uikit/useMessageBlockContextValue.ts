@@ -14,6 +14,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ContextType } from 'react';
 
+import { useForwardToMentionedUsers } from './useForwardToMentionedUsers';
 import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
@@ -54,6 +55,8 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 
 	const { openTab } = useRoomToolbox();
 
+	const forwardToMentionedUsers = useForwardToMentionedUsers(rid, mid);
+
 	return {
 		action: ({ appId, actionId, blockId, value }, event) => {
 			if (appId === 'videoconf-core') {
@@ -74,6 +77,10 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 				}
 			}
 
+			if (appId === 'mention-core' && actionId === 'share-message') {
+				return forwardToMentionedUsers(blockId, value);
+			}
+
 			actionManager.emitInteraction(appId, {
 				type: 'blockAction',
 				actionId,
@@ -89,6 +96,20 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 				mid,
 			});
 		},
+		suggest: ({ appId, actionId, blockId, value }) =>
+			actionManager.suggestOptions(appId, {
+				type: 'blockSuggestion',
+				actionId,
+				blockId,
+				appId,
+				value,
+				container: {
+					type: 'message',
+					id: mid,
+				},
+				rid,
+				mid,
+			}),
 		rid,
 		values: {}, // TODO: this is a hack to make the context work, but it should be removed
 	};

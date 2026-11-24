@@ -23,6 +23,7 @@ import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
@@ -32,6 +33,7 @@ import { useRoomSubscription } from '../../contexts/RoomContext';
 const MessageSearchTab = () => {
 	const { t } = useTranslation();
 	const searchListId = useId();
+	const searchListRef = useMessageRowListNavigation();
 	const formatDate = useFormatDate();
 	const { closeTab } = useRoomToolbox();
 	const pageSize = useSetting('PageSize', 10);
@@ -64,7 +66,7 @@ const MessageSearchTab = () => {
 					<>
 						{searchText && isPending && <Throbber />}
 						{isSuccess && (
-							<Box id={searchListId} display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
+							<Box id={searchListId} ref={searchListRef} display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 								{messageSearchData.length > 0 && (
 									<MessageListErrorBoundary>

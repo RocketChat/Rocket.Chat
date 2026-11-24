@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export default {
 	preset: server.preset,
 	transform: {
-		'\\.pegjs$': resolve(__dirname, './loaders/pegtransform.js'),
+		'\\.pegjs$': resolve(__dirname, './loaders/pegtransform.cjs'),
 	},
 	moduleFileExtensions: ['js', 'ts', 'pegjs'],
 	testPathIgnorePatterns: ['/node_modules/', '\\.bench\\.ts$'],

@@ -1,11 +1,12 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
-import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { splitQuoteAttachments } from '../../../../lib/utils/splitQuoteAttachments';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -15,9 +16,7 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
-import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
-import { useMessageListReadReceipts } from '../../list/MessageListContext';
+import { useMessageListIsBroadcast, useMessageListOembedEnabled, useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 export type ThreadMessageContentProps = {
@@ -26,9 +25,8 @@ export type ThreadMessageContentProps = {
 
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
-	const { enabled: oembedEnabled } = useOembedLayout();
-	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
-	const broadcast = subscription?.broadcast ?? false;
+	const oembedEnabled = useMessageListOembedEnabled();
+	const broadcast = useMessageListIsBroadcast();
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -39,9 +37,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
-	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
-
-	const attachments = normalizedMessage?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
+	const { quotes, attachments } = splitQuoteAttachments(normalizedMessage.attachments);
 
 	return (
 		<>

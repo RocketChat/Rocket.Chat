@@ -1,7 +1,8 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
+import { removeFromRecent } from '@rocket.chat/ui-emoji-picker';
 
-import { emoji, removeFromRecent, replaceEmojiInRecent } from './emoji';
+import { emoji, replaceEmojiInRecent } from './emoji';
 import { getURL } from './getURL';
 
 const isSetNotNull = (fn: () => unknown) => {
@@ -105,7 +106,7 @@ export const customRender = (html: string) => {
 	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
 		emoji.packages.emojiCustom._regexp = new RegExp(
-			`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
+			`<object[^>]*>.*?</object>|<span[^>]*>.*?</span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
 			'gi',
 		);
 		emoji.dispatchUpdate();

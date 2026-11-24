@@ -15,7 +15,7 @@ import type {
 	MinimalApp,
 } from '@rocket.chat/core-typings';
 
-export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
+export type AbacActor = Pick<IUser, '_id' | 'name'> & { username: NonNullable<IUser['username']> };
 
 export type AbacCreationAttributesDenialReason = 'invalid' | 'not-entitled' | 'creator-not-admitted' | 'unavailable' | 'inconclusive';
 

@@ -1,0 +1,17 @@
+{
+	"$schema": "../../node_modules/oxlint/configuration_schema.json",
+	"extends": ["../../.oxlintrc.json"],
+	"settings": {
+		"react": {
+			"version": "19.2"
+		}
+	},
+	"overrides": [
+		{
+			"files": ["**/*.{test,spec}.ts"],
+			"rules": {
+				"no-unused-expressions": "off"
+			}
+		}
+	]
+}

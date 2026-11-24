@@ -1,10 +1,11 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import CannedResponseForm from '../components/CannedResponseForm';
 
@@ -33,7 +34,7 @@ const getInitialData = (cannedResponseData: Serialized<IOmnichannelCannedRespons
 });
 
 const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEditProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();

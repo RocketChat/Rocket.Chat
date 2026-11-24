@@ -22,7 +22,6 @@ import {
 	ReadReceipts,
 	ReadReceiptsArchive,
 } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -166,7 +165,7 @@ export async function saveRoomInfo(
 	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 		const fields = LivechatCustomField.findByScope('room');
 		for await (const field of fields) {
-			if (!livechatData.hasOwnProperty(field._id)) {
+			if (!Object.hasOwn(livechatData, field._id)) {
 				continue;
 			}
 			const value = trim(livechatData[field._id]);
@@ -268,7 +267,6 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 export async function removeOmnichannelRoom(rid: string) {
 	livechatLogger.debug({ msg: 'Deleting room', roomId: rid });
-	check(rid, String);
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
 		throw new ClientSafeError('error-invalid-room', 'Invalid room');

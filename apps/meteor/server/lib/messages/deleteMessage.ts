@@ -67,7 +67,9 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 
 		for (const file of files) {
-			file?._id && (await Uploads.updateOne({ _id: file._id }, { $set: { _hidden: true } }));
+			if (file?._id) {
+				await Uploads.updateOne({ _id: file._id }, { $set: { _hidden: true } });
+			}
 		}
 	} else {
 		if (!showDeletedStatus) {
@@ -77,7 +79,9 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		await ReadReceiptsArchive.removeByMessageId(message._id);
 
 		for (const file of files) {
-			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
+			if (file?._id) {
+				await FileUpload.getStore('Uploads').deleteById(file._id);
+			}
 		}
 	}
 	if (showDeletedStatus) {

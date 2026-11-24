@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { paragraph, plain, codeLine, code } from './helpers';
+import { paragraph, plain, codeLine, code } from './helpers.js';
+import { parse } from '../src/index.js';
 
 const multiply = <T>(a: number, element: T): Array<T> => Array.from({ length: a }, () => element);
 

@@ -11,10 +11,10 @@ const PlanCardCommunity = () => {
 		<Card>
 			<PlanCardHeader name={t('Community')} />
 			<CardBody flexDirection='column'>
-				<Stack direction='row' align='center' gap={12}>
+				<Stack direction='row' align='center' gap='x12'>
 					<Icon name='card' size={24} /> {t('free_per_month_user')}
 				</Stack>
-				<Stack direction='row' align='center' gap={12}>
+				<Stack direction='row' align='center' gap='x12'>
 					<Icon name='cloud-plus' size={24} /> {t('Self_managed_hosting')}
 				</Stack>
 				<PlanCardLicenseDetails />

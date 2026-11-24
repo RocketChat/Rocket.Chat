@@ -140,7 +140,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				continue;
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\#${importId}`, 'gi'), `#${name}`);
+			message.msg = message.msg.replace(new RegExp(`#${importId}`, 'gi'), `#${name}`);
 
 			result.push({
 				_id,
@@ -181,11 +181,11 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\@${importId}`, 'gi'), `@${data.username}`);
+			message.msg = message.msg.replace(new RegExp(`@${importId}`, 'gi'), `@${data.username}`);
 
 			result.push({
 				_id: data._id,
-				username: data.username as 'string',
+				username: data.username,
 				name,
 			});
 		}
@@ -198,7 +198,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const reactions: IMessageReactions = {};
 
 		for (const name of Object.keys(importedReactions)) {
-			if (!importedReactions.hasOwnProperty(name)) {
+			if (!Object.hasOwn(importedReactions, name)) {
 				continue;
 			}
 			const { users } = importedReactions[name];

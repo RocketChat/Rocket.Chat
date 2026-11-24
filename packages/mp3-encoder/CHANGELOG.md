@@ -1,5 +1,23 @@
 # Change Log
 
+## 0.32.0-rc.0
+
+### Minor Changes
+
+- ([#43512](https://github.com/RocketChat/Rocket.Chat/pull/43512)) Ships a single Web Worker script. `dist/index.js` is now a self-contained script loaded with `new Worker()`, and the ES module build in `dist/index.mjs` is gone.
+
+## 0.31.27
+
+### Patch Changes
+
+- ([#42340](https://github.com/RocketChat/Rocket.Chat/pull/42340)) Fixes latent bugs in encoder code paths that are currently disabled (ReplayGain analysis hanging on sample windows that are not a multiple of 8, and small-spectrum truncation sorting the wrong range lexically), and reduces per-frame allocations and per-chunk copying in the worker. The encoded MP3 output is unchanged.
+
+## 0.31.27-rc.0
+
+### Patch Changes
+
+- ([#42340](https://github.com/RocketChat/Rocket.Chat/pull/42340)) Fixes latent bugs in encoder code paths that are currently disabled (ReplayGain analysis hanging on sample windows that are not a multiple of 8, and small-spectrum truncation sorting the wrong range lexically), and reduces per-frame allocations and per-chunk copying in the worker. The encoded MP3 output is unchanged.
+
 ## 0.31.26
 
 ### Patch Changes

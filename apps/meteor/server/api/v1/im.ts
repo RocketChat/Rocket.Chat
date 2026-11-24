@@ -20,7 +20,6 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -68,7 +67,7 @@ const findDirectMessageRoom = async (
 		type: 'd',
 	});
 
-	if (!room || room?.t !== 'd') {
+	if (room?.t !== 'd') {
 		throw new ClientSafeError('error-room-not-found', 'The required "roomId" param provided does not match any direct message');
 	}
 
@@ -393,7 +392,6 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		let msgs = null;
 		let latest = null;
 		let members = null;
-		let lm = null;
 
 		if (ruserId) {
 			if (!access) {
@@ -409,7 +407,7 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
 
-		lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
+		const lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
 
 		if (subscription) {
 			unreads = subscription.unread ?? null;
@@ -545,13 +543,6 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				status: Match.Maybe([String]),
-				filter: Match.Maybe(String),
-			}),
-		);
 		const { status, filter } = this.queryParams;
 
 		const hidden = await getUsersHiddenFrom(this.userId);
@@ -811,7 +802,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
-		if (!room || room?.t !== 'd') {
+		if (room?.t !== 'd') {
 			throw new ClientSafeError('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 		}
 
@@ -1051,6 +1042,6 @@ const dmEndpoints = API.v1
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends DmEndpoints {}
 }

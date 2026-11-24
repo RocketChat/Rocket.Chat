@@ -4,7 +4,6 @@ import path from 'node:path';
 
 import { License } from '@rocket.chat/license';
 // import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
 import { Info } from '../../rocketchat.info';
@@ -30,7 +29,7 @@ const skipMongoDbDeprecationCheck =
 	process.env.NODE_ENV === 'development';
 // const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
-Meteor.startup(async () => {
+export const reportServerRunning = async (): Promise<void> => {
 	const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
@@ -42,7 +41,7 @@ Meteor.startup(async () => {
 
 	const desiredNodeVersionMajor = String(parsedSemVer.major);
 
-	return setTimeout(async () => {
+	setTimeout(async () => {
 		let msg: string | string[] = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
@@ -128,4 +127,4 @@ Meteor.startup(async () => {
 			// }
 		}
 	}, 100);
-});
+};

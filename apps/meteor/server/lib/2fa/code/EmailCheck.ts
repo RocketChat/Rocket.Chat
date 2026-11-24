@@ -1,8 +1,8 @@
+import { BCRYPT_ROUNDS } from '@rocket.chat/account-utils';
 import { isOAuthUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import bcrypt from 'bcrypt';
-import { Accounts } from 'meteor/accounts-base';
 
 import type { ICodeCheck, IProcessInvalidCodeResult, TwoFactorUser } from './ICodeCheck';
 import { settings } from '../../../settings';
@@ -103,7 +103,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 	public async sendEmailCode(user: TwoFactorUser): Promise<boolean> {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
-		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
+		const encryptedRandom = await bcrypt.hash(random, BCRYPT_ROUNDS);
 		const expire = new Date();
 		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration'), 10);
 

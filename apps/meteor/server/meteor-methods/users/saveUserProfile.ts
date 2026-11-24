@@ -1,9 +1,8 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -22,6 +21,81 @@ import { settings as rcSettings } from '../../settings';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
+
+async function saveUserBio(user: IUser, bio: string | undefined) {
+	if (bio || bio === '') {
+		if (typeof bio !== 'string') {
+			throw new ClientSafeError('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (bio.length > MAX_BIO_LENGTH) {
+			throw new ClientSafeError('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
+				method: 'saveUserProfile',
+			});
+		}
+		await Users.setBio(user._id, bio.trim());
+	}
+}
+
+async function saveUserNickname(user: IUser, nickname: string | undefined) {
+	if (nickname || nickname === '') {
+		if (typeof nickname !== 'string') {
+			throw new ClientSafeError('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (nickname.length > MAX_NICKNAME_LENGTH) {
+			throw new ClientSafeError('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
+				method: 'saveUserProfile',
+			});
+		}
+		await Users.setNickname(user._id, nickname.trim());
+	}
+}
+
+async function saveUserPassword(user: IUser, newPassword: string | undefined, unset: UpdateFilter<IUser>, token: string) {
+	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
+	if (canChangePasswordForOAuth || user.services?.password) {
+		// Should be the last check to prevent error when trying to check password for users without password
+		if (newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user.services?.password?.bcrypt) {
+			// don't let user change to same password
+			if (await compareUserPassword(user, { plain: newPassword })) {
+				throw new ClientSafeError('error-password-same-as-current', 'Entered password same as current password', {
+					method: 'saveUserProfile',
+				});
+			}
+
+			if (user.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: newPassword }))) {
+				throw new ClientSafeError('error-password-in-history', 'Entered password has been previously used', {
+					method: 'saveUserProfile',
+				});
+			}
+
+			passwordPolicy.validate(newPassword);
+
+			await Users.setPasswordHash(user._id, await hashPassword(newPassword));
+
+			if (user.requirePasswordChange) {
+				await Users.unsetRequirePasswordChange(user._id);
+				unset.requirePasswordChange = true;
+				unset.requirePasswordChangeReason = true;
+			}
+
+			await Users.addPasswordToHistory(
+				user._id,
+				user.services?.password.bcrypt,
+				rcSettings.get<number>('Accounts_Password_History_Amount'),
+			);
+
+			try {
+				await Users.removeNonLoginTokensExcept(user._id, token);
+			} catch (e) {
+				await Users.unsetLoginTokens(user._id);
+			}
+		}
+	}
+}
 
 async function saveUserProfile(
 	this: AuthenticatedContext,
@@ -52,10 +126,12 @@ async function saveUserProfile(
 		});
 	}
 
+	const username = settings.username || undefined;
+
 	await validateUserEditing(this.userId, {
 		_id: this.userId,
 		email: settings.email,
-		username: settings.username,
+		username,
 		name: settings.realname,
 		password: settings.newPassword,
 		statusText: settings.statusText,
@@ -69,14 +145,9 @@ async function saveUserProfile(
 		});
 	}
 
-	if (settings.realname || settings.username) {
-		if (
-			!(await saveUserIdentity({
-				_id: this.userId,
-				name: settings.realname,
-				username: settings.username,
-			}))
-		) {
+	// An empty name removes the optional display name; a username can be changed but never removed, so an empty one is ignored.
+	if (settings.realname !== undefined || username !== undefined) {
+		if (!(await saveUserIdentity({ _id: this.userId, name: settings.realname, username }))) {
 			throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
 			});
@@ -87,33 +158,9 @@ async function saveUserProfile(
 		await setUserStatusMethod(user, settings.statusType as UserStatus, settings.statusText);
 	}
 
-	if (user && (settings.bio || settings.bio === '')) {
-		if (typeof settings.bio !== 'string') {
-			throw new ClientSafeError('error-invalid-field', 'bio', {
-				method: 'saveUserProfile',
-			});
-		}
-		if (settings.bio.length > MAX_BIO_LENGTH) {
-			throw new ClientSafeError('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
-				method: 'saveUserProfile',
-			});
-		}
-		await Users.setBio(user._id, settings.bio.trim());
-	}
+	await saveUserBio(user, settings.bio);
 
-	if (user && (settings.nickname || settings.nickname === '')) {
-		if (typeof settings.nickname !== 'string') {
-			throw new ClientSafeError('error-invalid-field', 'nickname', {
-				method: 'saveUserProfile',
-			});
-		}
-		if (settings.nickname.length > MAX_NICKNAME_LENGTH) {
-			throw new ClientSafeError('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
-				method: 'saveUserProfile',
-			});
-		}
-		await Users.setNickname(user._id, settings.nickname.trim());
-	}
+	await saveUserNickname(user, settings.nickname);
 
 	if (Array.isArray(settings.phones)) {
 		await Users.setPhones(user._id, settings.phones);
@@ -127,48 +174,7 @@ async function saveUserProfile(
 		await setEmailFunction(settings.email, user);
 	}
 
-	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
-	if (canChangePasswordForOAuth || user?.services?.password) {
-		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
-			// don't let user change to same password
-			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
-				throw new ClientSafeError('error-password-same-as-current', 'Entered password same as current password', {
-					method: 'saveUserProfile',
-				});
-			}
-
-			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
-				throw new ClientSafeError('error-password-in-history', 'Entered password has been previously used', {
-					method: 'saveUserProfile',
-				});
-			}
-
-			passwordPolicy.validate(settings.newPassword);
-
-			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
-				logout: false,
-			});
-
-			if (user.requirePasswordChange) {
-				await Users.unsetRequirePasswordChange(user._id);
-				unset.requirePasswordChange = true;
-				unset.requirePasswordChangeReason = true;
-			}
-
-			await Users.addPasswordToHistory(
-				this.userId,
-				user.services?.password.bcrypt,
-				rcSettings.get<number>('Accounts_Password_History_Amount'),
-			);
-
-			try {
-				await Users.removeNonLoginTokensExcept(this.userId, this.token);
-			} catch (e) {
-				Accounts._clearAllLoginTokens(this.userId);
-			}
-		}
-	}
+	await saveUserPassword(user, settings.newPassword, unset, this.token);
 
 	await Users.setProfile(this.userId, {});
 
@@ -242,9 +248,6 @@ export function executeSaveUserProfile(
 	customFields: Record<string, any> = {},
 	...args: unknown[]
 ) {
-	check(settings, Object);
-	check(customFields, Match.Maybe(Object));
-
 	if (
 		(settings.email && user.emails?.length) ||
 		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)

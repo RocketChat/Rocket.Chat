@@ -1,5 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserAvatarPath, useUserId, useUserSubscription, useUserCard, useUserRoom } from '@rocket.chat/ui-contexts';
 import { usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 	const state = usePeekMediaSessionState();
 	const { toggleWidget } = useWidgetExternalControls();
 	const getAvatarUrl = useUserAvatarPath();
+	const displayName = useUserDisplayName(user) || '';
 
 	const currentSubscription = useUserSubscription(rid);
 	const room = useUserRoom(rid);
@@ -41,13 +43,13 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 
 	return {
 		type: 'communication',
-		title: t('Voice_call__user_', { user: user.name || user.username || '' }),
+		title: t('Voice_call__user_', { user: displayName }),
 		icon: 'phone',
 		onClick: () => {
 			closeUserCard();
 			toggleWidget({
 				userId: user._id,
-				displayName: user.name || user.username || '',
+				displayName,
 				avatarUrl,
 			});
 		},

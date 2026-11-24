@@ -206,7 +206,7 @@ export const disableDepartment = async (department: Omit<ILivechatDepartment, '_
 	department.enabled = false;
 	delete department._updatedAt;
 	const updatedDepartment = await updateDepartment(department._id, department);
-	expect(updatedDepartment.enabled).to.be.false;
+	expect(updatedDepartment.enabled).to.equal(false);
 };
 
 export const deleteDepartment = async (departmentId: string): Promise<void> => {

@@ -266,7 +266,7 @@ export class SAMLUtils {
 			map = JSON.parse(userDataFieldMap);
 		} catch (err) {
 			SAMLUtils.log({ userDataFieldMap, err });
-			throw new Error('Failed to parse custom user field map');
+			throw new Error('Failed to parse custom user field map', { cause: err });
 		}
 
 		const parsedMap: IUserDataMap = {
@@ -288,7 +288,7 @@ export class SAMLUtils {
 		let identifier = immutableProperty.toLowerCase();
 
 		for (const spFieldName in map) {
-			if (!map.hasOwnProperty(spFieldName)) {
+			if (!Object.hasOwn(map, spFieldName)) {
 				continue;
 			}
 
@@ -311,7 +311,7 @@ export class SAMLUtils {
 			// If it's a complex type, let's check what's in it
 			if (typeof attribute === 'object') {
 				// A fieldName is mandatory for complex fields. If it's missing, let's skip this one.
-				if (!attribute.hasOwnProperty('fieldName') && !attribute.hasOwnProperty('fieldNames')) {
+				if (!Object.hasOwn(attribute, 'fieldName') && !Object.hasOwn(attribute, 'fieldNames')) {
 					continue;
 				}
 

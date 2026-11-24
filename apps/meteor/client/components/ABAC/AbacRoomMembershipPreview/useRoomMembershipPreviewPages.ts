@@ -39,6 +39,7 @@ export const useRoomMembershipPreviewPages = (
 		initialPageParam: undefined,
 		getNextPageParam: (lastPage) => lastPage.next,
 		staleTime: Infinity,
+		gcTime: 0,
 		refetchOnWindowFocus: false,
 		retry: false,
 	});

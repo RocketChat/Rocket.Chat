@@ -27,13 +27,13 @@ export const closeChat = async ({ transcriptRequested }: { transcriptRequested?:
 		department?: string;
 	};
 
-	await store.setState({ room: null, renderedTriggers: [] });
+	store.setState({ room: null, renderedTriggers: [] });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
 		const { iframe: currentIframe } = store.state;
 		const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
-		await store.setState({ ...initial, iframe: { ...currentIframe, guest: { department } } });
+		store.setState({ ...initial, iframe: { ...currentIframe, guest: { department } } });
 	}
 
 	await Triggers.processTrigger('after-guest-registration');
@@ -43,10 +43,14 @@ export const closeChat = async ({ transcriptRequested }: { transcriptRequested?:
 	route('/chat-finished');
 };
 
-const getVideoConfMessageData = (message: any) =>
+type VideoConfMessage = {
+	blocks?: { appId?: string; type?: string; elements?: { actionId?: string; blockId?: string; url?: string }[] }[];
+};
+
+const getVideoConfMessageData = (message: VideoConfMessage) =>
 	message.blocks
-		?.find(({ appId, type }: any) => appId === 'videoconf-core' && type === 'actions')
-		?.elements?.find(({ actionId }: any) => actionId === 'joinLivechat');
+		?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message: any) => {
 	if (getVideoConfMessageData(message)) {
@@ -75,7 +79,7 @@ export const processIncomingCallMessage = async (message: any) => {
 	try {
 		const { callId, url, callProvider } = findCallData(message);
 
-		await store.setState({
+		store.setState({
 			incomingCallAlert: {
 				show: true,
 				callProvider,
@@ -89,7 +93,7 @@ export const processIncomingCallMessage = async (message: any) => {
 	} catch (err) {
 		console.error(err);
 		const alert = { id: createToken(), children: i18next.t('error_getting_call_alert'), error: true, timeout: 5000 };
-		await store.setState({ alerts: (alerts.push(alert), alerts) });
+		store.setState({ alerts: (alerts.push(alert), alerts) });
 	}
 };
 
@@ -111,22 +115,24 @@ const doPlaySound = async (message: any) => {
 		return;
 	}
 
-	await store.setState({ sound: { ...sound, play: true } });
+	store.setState({ sound: { ...sound, play: true } });
 };
 
 export const onAgentChange = async (agent: any) => {
-	await store.setState({ agent, queueInfo: undefined });
+	store.setState({ agent, queueInfo: undefined });
 	parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
 };
 
 export const onAgentStatusChange = (status: any) => {
 	const { agent } = store.state;
-	agent && store.setState({ agent: { ...agent, status } });
+	if (agent) {
+		store.setState({ agent: { ...agent, status } });
+	}
 	parentCall('callback', ['agent-status-change', normalizeAgent(agent)]);
 };
 
 export const onQueuePositionChange = async (queueInfo: any) => {
-	await store.setState({ queueInfo });
+	store.setState({ queueInfo });
 	parentCall('callback', ['queue-position-change', queueInfo]);
 };
 
@@ -144,7 +150,7 @@ export const initRoom = async () => {
 	if (!roomAgent) {
 		if (servedBy) {
 			roomAgent = await Livechat.agent(rid);
-			await store.setState({ agent: roomAgent, queueInfo: undefined });
+			store.setState({ agent: roomAgent, queueInfo: undefined });
 			parentCall('callback', 'assign-agent', normalizeAgent(roomAgent));
 		}
 	}
@@ -162,7 +168,7 @@ const isAgentHidden = () => {
 	return !!agentHiddenInfo;
 };
 
-const transformAgentInformationOnMessage = (message: any) => {
+const transformAgentInformationOnMessage = <T extends { u?: { _id: string } }>(message: T): T => {
 	const { user } = store.state;
 	if (message && user && message.u && message.u._id !== user._id && isAgentHidden()) {
 		return { ...message, u: { _id: message.u._id } };
@@ -196,10 +202,11 @@ export const onUserActivity = (username: string, activities: string[]) => {
 export const onMessage = async (originalMessage: any) => {
 	let message = JSON.parse(JSON.stringify(originalMessage));
 
-	if (message.ts instanceof Date) {
-		message.ts = message.ts.toISOString();
+	const { ts } = message;
+	if (ts instanceof Date) {
+		message.ts = ts.toISOString();
 	} else {
-		message.ts = message.ts.$date ? new Date(message.ts.$date).toISOString() : new Date(message.ts).toISOString();
+		message.ts = ts.$date ? new Date(ts.$date).toISOString() : new Date(ts).toISOString();
 	}
 
 	message = await normalizeMessage(message);
@@ -209,12 +216,12 @@ export const onMessage = async (originalMessage: any) => {
 
 	message = transformAgentInformationOnMessage(message);
 
-	await store.setState({
+	store.setState({
 		messages: upsert(
 			store.state.messages,
 			message,
 			({ _id }) => _id === message._id,
-			({ ts }) => ts,
+			({ ts }) => ts as string,
 		),
 	});
 
@@ -233,7 +240,8 @@ export const onMessage = async (originalMessage: any) => {
 };
 
 export const getGreetingMessages = (messages?: any[]) => messages?.filter((msg) => msg.trigger);
-export const getLatestCallMessage = (messages?: any[]) => messages?.filter((msg) => isVideoCallMessage(msg)).pop();
+export const getLatestCallMessage = (messages?: (VideoConfMessage & { t?: string })[]) =>
+	messages?.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
 	const { messages: storedMessages, room, renderedTriggers } = store.state;
@@ -244,7 +252,7 @@ export const loadMessages = async () => {
 
 	const { _id: rid } = room;
 	const previousMessages = getGreetingMessages(storedMessages) ?? [];
-	await store.setState({ loading: true });
+	store.setState({ loading: true });
 
 	const rawMessages: any[] = (await Livechat.loadMessages(rid, {} as Parameters<typeof Livechat.loadMessages>[1])) ?? [];
 
@@ -256,7 +264,7 @@ export const loadMessages = async () => {
 	const messages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
 
 	await initRoom();
-	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
+	store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
 
 	const latestCallMessage = getLatestCallMessage(messages);
 	if (!latestCallMessage) {
@@ -264,7 +272,7 @@ export const loadMessages = async () => {
 	}
 	const videoConfJoinBlock = getVideoConfMessageData(latestCallMessage);
 	if (videoConfJoinBlock) {
-		await store.setState({
+		store.setState({
 			incomingCallAlert: {
 				show: false,
 				callProvider: latestCallMessage.t,
@@ -282,7 +290,7 @@ export const loadMoreMessages = async () => {
 		return;
 	}
 
-	await store.setState({ loading: true });
+	store.setState({ loading: true });
 
 	const rawMessages = await Livechat.loadMessages(rid, {
 		limit: messages.length + 10,
@@ -293,7 +301,7 @@ export const loadMoreMessages = async () => {
 	const triggers = newNoMoreMessages ? [...renderedTriggers] : [];
 	const newMessages = [...moreMessages, ...triggers].reverse();
 
-	await store.setState({
+	store.setState({
 		messages: newMessages,
 		noMoreMessages: newNoMoreMessages,
 		loading: false,

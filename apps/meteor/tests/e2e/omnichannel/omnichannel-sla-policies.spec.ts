@@ -88,13 +88,13 @@ test.describe('Omnichannel SLA Policies', () => {
 		});
 
 		await test.step('Search SLA', async () => {
-			await poOmnichannelSlaPolicies.inputSearch.fill('random_text_that_should_have_no_match');
+			await poOmnichannelSlaPolicies.search('random_text_that_should_have_no_match');
 			await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).not.toBeVisible();
 			await expect(poOmnichannelSlaPolicies.emptyState).toBeVisible();
-			await poOmnichannelSlaPolicies.inputSearch.fill(INITIAL_SLA.name);
+			await poOmnichannelSlaPolicies.search(INITIAL_SLA.name);
 			await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).toBeVisible();
 			await expect(poOmnichannelSlaPolicies.emptyState).not.toBeVisible();
-			await poOmnichannelSlaPolicies.inputSearch.fill('');
+			await poOmnichannelSlaPolicies.search('');
 		});
 
 		await test.step('Edit SLA', async () => {

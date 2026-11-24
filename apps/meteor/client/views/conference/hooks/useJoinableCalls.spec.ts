@@ -10,7 +10,7 @@ const getJoinable = jest.fn(() => ({ calls: [buildJoinableCall({ callId: 'one' }
 const renderCalls = (conferenceWindowEnabled: boolean) => {
 	const streamRef: StreamControllerRef<'notify-user'> = {};
 
-	const result = renderHook(() => useJoinableCalls(), {
+	const view = renderHook(() => useJoinableCalls(), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
@@ -19,7 +19,7 @@ const renderCalls = (conferenceWindowEnabled: boolean) => {
 			.build(),
 	});
 
-	return { ...result, streamRef };
+	return { ...view, streamRef };
 };
 
 beforeEach(() => {

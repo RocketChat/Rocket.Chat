@@ -1,5 +1,5 @@
-import { isIndexable, isNumericKey, isPlainObject } from './common';
-import type { ArrayIndices, LookupBranch } from './types';
+import { isIndexable, isNumericKey, isPlainObject } from './common.js';
+import type { ArrayIndices, LookupBranch } from './types.js';
 
 const buildResult = (arrayIndices: ArrayIndices | undefined, dontIterate: boolean, value: unknown): [LookupBranch] => {
 	if (arrayIndices?.length) {

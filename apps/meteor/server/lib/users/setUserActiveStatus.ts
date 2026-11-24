@@ -2,11 +2,10 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { settings } from '../../settings';
+import { getUserActivatedEmail } from '../auth/accountEmails';
 import { callbacks } from '../callbacks';
 import * as Mailer from '../notifications/email/api';
 import {
@@ -55,9 +54,6 @@ export async function setUserActiveStatus(
 	confirmRelinquish = false,
 	executedBy?: string,
 ): Promise<boolean | undefined> {
-	check(userId, String);
-	check(active, Boolean);
-
 	const user = await Users.findOneById(userId);
 
 	if (!user) {
@@ -149,20 +145,10 @@ export async function setUserActiveStatus(
 
 	const destinations = user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
 
-	type UserActivated = {
-		subject: (params: { active: boolean }) => string;
-		html: (params: { active: boolean; name: string; username: string }) => string;
-	};
-	const { subject, html } = (Accounts.emailTemplates as unknown as { userActivated: UserActivated }).userActivated;
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: subject({ active } as any),
-		html: html({
-			active,
-			name: user.name,
-			username: user.username,
-		} as any),
+		...getUserActivatedEmail({ active, name: user.name, username: user.username }),
 	};
 
 	void Mailer.sendNoWrap(email);

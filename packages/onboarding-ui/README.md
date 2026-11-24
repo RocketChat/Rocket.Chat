@@ -199,7 +199,7 @@ yarn workspace @rocket.chat/onboarding-ui typecheck
 yarn workspace @rocket.chat/onboarding-ui lint
 ```
 
-Pages are developed in Storybook, which loads the English strings from `.i18n/en.i18n.json`:
+Pages are developed in Storybook. Its Language toolbar control renders them in any language Rocket.Chat ships, with the `onboarding.*` strings from `@rocket.chat/i18n`; English comes from `.i18n/en.i18n.json`, and strings missing in another language fall back to it:
 
 ```sh
 yarn workspace @rocket.chat/onboarding-ui storybook

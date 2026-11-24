@@ -1,12 +1,13 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
 import { getFederationRoutes } from '@rocket.chat/federation-matrix';
+import { mountRouter, nodeHandler } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
-import type express from 'express';
-import { WebApp } from 'meteor/webapp';
 
 import { API } from '../../../server/api';
 import { getTrimmedServerVersion } from '../../../server/api/lib/getTrimmedServerVersion';
+import { nodeLoggerMiddleware } from '../../../server/api/v1/middlewares/logger';
+import { httpApp } from '../../../server/lib/http/httpServer';
 
 const logger = new Logger('FederationRoutes');
 
@@ -45,7 +46,11 @@ export async function registerFederationRoutes(): Promise<void> {
 	try {
 		const routes = getFederationRoutes(getTrimmedServerVersion());
 
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
+		const logRequest = nodeHandler(nodeLoggerMiddleware(logger));
+		httpApp.use(`${routes.matrix.base}/*`, logRequest);
+		httpApp.use(`${routes.wellKnown.base}/*`, logRequest);
+		mountRouter(httpApp, routes.matrix);
+		mountRouter(httpApp, routes.wellKnown);
 	} catch (error) {
 		logger.error({ msg: '[Federation] Failed to register routes:', err: error });
 		throw error;

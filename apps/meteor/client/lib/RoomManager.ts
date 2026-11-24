@@ -35,7 +35,9 @@ class RoomStore extends Emitter<{
 	constructor(readonly rid: string) {
 		super();
 
-		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
+		if (debug) {
+			this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
+		}
 	}
 
 	update({
@@ -102,20 +104,23 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 
 	constructor() {
 		super();
-		debugRoomManager &&
+		if (debugRoomManager) {
 			this.on('opened', (rid) => {
 				console.log('room opened ->', rid);
 			});
+		}
 
-		debugRoomManager &&
+		if (debugRoomManager) {
 			this.on('back', (rid) => {
 				console.log('room moved to back ->', rid);
 			});
+		}
 
-		debugRoomManager &&
+		if (debugRoomManager) {
 			this.on('closed', (rid) => {
 				console.log('room close ->', rid);
 			});
+		}
 	}
 
 	get lastOpened(): IRoom['_id'] | undefined {
@@ -175,6 +180,10 @@ const subscribeOpenedRoom = [
 ] as const;
 
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedRoom);
+
+/** Whether `rid` is the opened room; a component re-renders only when that answer flips, not on every switch. */
+export const useIsOpenedRoom = (rid: IRoom['_id']): boolean =>
+	useSyncExternalStore(subscribeOpenedRoom[0], () => RoomManager.opened === rid);
 
 export const useOpenedRoomUnreadSince = (): Date | undefined => {
 	const rid = useOpenedRoom();

@@ -93,7 +93,7 @@ export class IsolatedVMScriptEngine<IsIncoming extends boolean> extends Integrat
 				err,
 			});
 
-			throw new Error('error-evaluating-script');
+			throw new Error('error-evaluating-script', { cause: err });
 		}
 	}
 }

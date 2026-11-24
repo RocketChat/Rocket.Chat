@@ -78,7 +78,7 @@ export const getMatrixSendLeaveRoutes = () => {
 			const { roomId, eventId } = c.req.param();
 			const body = await c.req.json();
 			try {
-				await federationSDK.sendLeave(roomId, eventId, body);
+				await federationSDK.sendLeave(roomId, eventId, body, c.get('authenticatedServer'));
 				return {
 					body: {},
 					statusCode: 200,
@@ -89,6 +89,16 @@ export const getMatrixSendLeaveRoutes = () => {
 						body: {
 							errcode: 'M_FORBIDDEN',
 							error: 'This server does not allow leaving this room based on federation settings.',
+						},
+						statusCode: 403,
+					};
+				}
+
+				if (error instanceof Error && 'errcode' in error && error.errcode === 'M_FORBIDDEN') {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: error.message,
 						},
 						statusCode: 403,
 					};

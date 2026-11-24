@@ -55,7 +55,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				{name && (
 					<Box width='100%' paddingBlock={16} display='flex' alignItems='center' justifyContent='space-between'>
 						<Box withTruncatedText display='flex'>
-							<UserAvatar size='x40' title={name} username={name} />
+							<UserAvatar size='x40' username={name} />
 							<Box withTruncatedText marginInlineStart={16} display='flex' flexDirection='column'>
 								<Text truncate fontScale='h4'>
 									{name}

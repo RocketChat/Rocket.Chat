@@ -1,6 +1,7 @@
 import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
 import { Box, Modal, Icon, Callout, ModalHeader, ModalTitle, ModalClose } from '@rocket.chat/fuselage';
 import { TextInput, Field, ToggleSwitch, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -25,7 +26,6 @@ import {
 } from '../../../components/ABAC/AbacRoomCreation';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
@@ -343,12 +343,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	return (
 		<FormProvider {...methods}>
-			<Modal
-				aria-labelledby={`${createChannelFormId}-title`}
-				wrapperFunction={(props: ComponentProps<typeof Box>) => (
-					<Box is='form' id={createChannelFormId} onSubmit={handleStepSubmit} {...props} />
-				)}
-			>
+			<Modal aria-labelledby={`${createChannelFormId}-title`} onSubmit={handleStepSubmit} formId={createChannelFormId}>
 				<ModalHeader>
 					<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
 					<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />

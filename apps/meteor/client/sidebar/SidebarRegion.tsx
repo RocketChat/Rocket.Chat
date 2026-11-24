@@ -89,7 +89,6 @@ const SidebarRegion = () => {
 			<Box
 				id='sidebar-region'
 				className={[
-					'rcx-sidebar',
 					!sidebar.isCollapsed && sidebar.shouldToggle && 'opened',
 					sideBarStyle,
 					sidebar.shouldToggle && sidebarMobileClass,

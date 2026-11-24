@@ -2,9 +2,10 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
 import { useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserAction, USER_ACTIVITIES } from '../../../lib/UserAction';
 import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../lib/videoRecorder';
@@ -37,7 +38,7 @@ const getVideoRecordingExtension = () => {
 };
 
 const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
 

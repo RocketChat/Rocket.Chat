@@ -1,5 +1,76 @@
 # @rocket.chat/apps
 
+## 0.12.0-rc.0
+
+### Minor Changes
+
+- ([#43647](https://github.com/RocketChat/Rocket.Chat/pull/43647)) Lets apps upload a file into a thread with the new `threadId` field of `IUploadDescriptor`
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+### Patch Changes
+
+- ([#43636](https://github.com/RocketChat/Rocket.Chat/pull/43636)) Fixes the video conference info modal failing with `[object Object]` instead of the actual reason when the app that provides the call is no longer registered.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes UiKit elements that apps put in a section `accessory` or an `input` block's `element` without an `actionId`: they now get one generated, like the elements of an `actions` block, so their interactions reach the app with an id it can match.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes the blocks that apps nest in UiKit `container` and `layout` blocks, in a `conditional` block's `render` or in a `data_table` action cell: they and their elements now get an `appId`, `blockId` and `actionId` generated like those of top-level blocks.
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 38bba63905a0f2d56bdd4e2f8dae8e9eed8e5c96, 370295b5a1d4c81b56505c5c8136f6624eecb6f6, 1cb836204af9f9e59b64db1dba9df53836e927a0, 46cba6391140d334aecbe764a0fc3341feb27ce9, 25a232e58bd49fa2cbad86f13a8e935c0a703170, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/model-typings@3.1.0-rc.0
+  - @rocket.chat/apps-engine@1.69.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/tools@0.6.0-rc.0
+  - @rocket.chat/logger@1.0.3-rc.0
+
+  </details>
+
+## 0.11.0
+
+### Minor Changes
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 3dcddc61941c7896bc750220220cc7d5b72b9b46, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, 8b00fa367d7be9793c31bf578eb1b6c99bf240e9, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 4c152661022d34bfbe9bf78811eac286a31c47a5, eaf5cedcce9f8e800415b4c49bce242f661462ea, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, bff76c34b21caddbc316d69b62fac858a73d7164, 01204df7088b1362f14438d99c44bc4f6d6e840e, a39b03fe5c248079365162e31994e1dece63e7c2]:</summary>
+  - @rocket.chat/core-typings@9.0.0
+  - @rocket.chat/model-typings@3.0.0
+  - @rocket.chat/apps-engine@1.68.0
+  - @rocket.chat/tools@0.5.0
+  - @rocket.chat/logger@1.0.2
+
+  </details>
+
+## 0.11.0-rc.0
+
+### Minor Changes
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, eaf5cedcce9f8e800415b4c49bce242f661462ea, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, 01204df7088b1362f14438d99c44bc4f6d6e840e, a39b03fe5c248079365162e31994e1dece63e7c2]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/model-typings@3.0.0-rc.0
+  - @rocket.chat/apps-engine@1.68.0-rc.0
+  - @rocket.chat/tools@0.5.0-rc.0
+  - @rocket.chat/logger@1.0.2-rc.0
+
+  </details>
+
 ## 0.10.0
 
 ### Minor Changes

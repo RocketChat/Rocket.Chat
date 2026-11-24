@@ -4,7 +4,6 @@
  */
 
 import { TranslationProviderRegistry } from './autotranslate';
-import './permissions';
 import './googleTranslate';
 import './deeplTranslate';
 import './libreTranslate';

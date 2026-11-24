@@ -95,13 +95,13 @@ export const upsertPermissions = async (): Promise<void> => {
 		const previousSettingPermissions = await getPreviousPermissions();
 
 		const settings = await Settings.findNotHidden().toArray();
-		for await (const setting of settings) {
+		for (const setting of settings) {
 			await createSettingPermission(setting, previousSettingPermissions);
 		}
 
 		// remove permissions for non-existent settings
 		for (const obsoletePermission of Object.keys(previousSettingPermissions)) {
-			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+			if (Object.hasOwn(previousSettingPermissions, obsoletePermission)) {
 				await Permissions.deleteOne({ _id: obsoletePermission });
 			}
 		}

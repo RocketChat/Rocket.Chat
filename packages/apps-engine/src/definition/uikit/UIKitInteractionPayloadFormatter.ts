@@ -4,6 +4,8 @@ import type {
 	IUIKitContextualBarInteraction,
 	IUIKitErrorInteraction,
 	IUIKitInteraction,
+	IUIKitModalClearInteraction,
+	IUIKitModalCloseInteraction,
 	IUIKitModalInteraction,
 } from './IUIKitInteractionType';
 import { UIKitInteractionType } from './IUIKitInteractionType';
@@ -13,7 +15,7 @@ import type { IUIKitContextualBarViewParam, IUIKitModalViewParam } from './UIKit
 import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 
 function isModalInteraction(type: IUIKitInteraction['type']): type is IUIKitModalInteraction['type'] {
-	return [UIKitInteractionType.MODAL_OPEN, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_CLOSE].includes(type);
+	return [UIKitInteractionType.MODAL_OPEN, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_PUSH].includes(type);
 }
 
 export function formatModalInteraction(view: IUIKitModalViewParam, context: IUIKitInteraction): IUIKitModalInteraction {
@@ -28,11 +30,19 @@ export function formatModalInteraction(view: IUIKitModalViewParam, context: IUIK
 		view: {
 			appId: context.appId,
 			type: UIKitSurfaceType.MODAL,
-			id: view.id ? view.id : uuid(),
 			...view,
+			id: view.id || uuid(),
 			showIcon: true,
 		} as IUIKitSurface,
 	};
+}
+
+export function formatModalCloseInteraction(viewId: string | undefined, context: IUIKitInteraction): IUIKitModalCloseInteraction {
+	return { type: UIKitInteractionType.MODAL_CLOSE, triggerId: context.triggerId, appId: context.appId, ...(viewId ? { viewId } : {}) };
+}
+
+export function formatModalClearInteraction(context: IUIKitInteraction): IUIKitModalClearInteraction {
+	return { type: UIKitInteractionType.MODAL_CLEAR, triggerId: context.triggerId, appId: context.appId };
 }
 
 function isContextualBarInteraction(type: IUIKitInteraction['type']): type is IUIKitContextualBarInteraction['type'] {
@@ -58,8 +68,8 @@ export function formatContextualBarInteraction(
 		view: {
 			appId: context.appId,
 			type: UIKitSurfaceType.CONTEXTUAL_BAR,
-			id: view.id ? view.id : uuid(),
 			...view,
+			id: view.id || uuid(),
 			showIcon: true,
 		} as IUIKitSurface,
 	};

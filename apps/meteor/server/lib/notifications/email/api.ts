@@ -4,11 +4,11 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML, validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
-import { Email } from 'meteor/email';
 import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';
+import { sendMail } from './transport';
 import { strLeft, strRightBack } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
@@ -134,6 +134,9 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 	body = inlinecss(`${contentHeader} {{body}} ${contentFooter}`);
 });
 
+const htmlToText = (html: string): string =>
+	stripHtml(html, { dumpLinkHrefsNearby: { enabled: true, wrapHeads: '(', wrapTails: ')' } }).result;
+
 export const checkAddressFormat = (adresses: string | string[]): boolean =>
 	([] as string[]).concat(adresses).every((address) => validateEmail(address));
 
@@ -159,7 +162,7 @@ export const sendNoWrap = async ({
 	}
 
 	if (!text) {
-		text = html ? stripHtml(html).result : undefined;
+		text = html ? htmlToText(html) : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -175,7 +178,7 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
-	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
+	setImmediate(() => sendMail(eventResult || email).catch((e) => console.error(e)));
 };
 
 export const send = async ({
@@ -202,7 +205,7 @@ export const send = async ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		text: (text && replace(text, data)) || (html && htmlToText(replace(html, data))) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});

@@ -34,21 +34,27 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	override async started() {
 		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
-			this.queueWorker.shouldStart();
+			void this.queueWorker.shouldStart();
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
-			this.queueWorker.isRunning() && (await this.queueWorker.stop());
+			if (this.queueWorker.isRunning()) {
+				await this.queueWorker.stop();
+			}
 		});
 
 		License.onValidateLicense(async (): Promise<void> => {
-			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
+			if (RoutingManager.isMethodSet()) {
+				await this.queueWorker.shouldStart();
+			}
 		});
 
 		// NOTE: When there's no license or license is invalid, we fallback to CE behavior
 		// CE behavior means there's no MAC limit, so we start the queue
 		License.onInvalidateLicense(async (): Promise<void> => {
-			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
+			if (this.queueWorker.isRunning()) {
+				await this.queueWorker.shouldStart();
+			}
 		});
 	}
 
