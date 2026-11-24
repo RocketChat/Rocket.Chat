@@ -1,8 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useFormatDate } from '../../hooks/useFormatDate';
 
 export type HistoryRestrictedBadgeProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color' | 'role'> & {
 	historyVisibleFrom: string | Date;
@@ -10,7 +9,7 @@ export type HistoryRestrictedBadgeProps = Omit<ComponentProps<typeof Icon>, 'nam
 
 const HistoryRestrictedBadge = ({ historyVisibleFrom, ...props }: HistoryRestrictedBadgeProps) => {
 	const { t } = useTranslation();
-	const formatDate = useFormatDate();
+	const formatDateAndTime = useFormatDateAndTime();
 
 	return (
 		<Icon
@@ -20,7 +19,7 @@ const HistoryRestrictedBadge = ({ historyVisibleFrom, ...props }: HistoryRestric
 			color='hint'
 			name='eye-off'
 			aria-hidden='false'
-			title={t('Messages_hidden_before_date', { date: formatDate(historyVisibleFrom) })}
+			title={t('Messages_hidden_before_date', { date: formatDateAndTime(historyVisibleFrom) })}
 		/>
 	);
 };
