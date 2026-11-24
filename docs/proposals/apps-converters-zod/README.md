@@ -249,8 +249,8 @@ messages and threads memoization, which remained in the class layer (see the Pha
   during the migration.
 - **Async codec ergonomics** — de-risked in Phase 0, but the factory wiring for rooms/messages should
   still be spiked before committing to Phase 3.
-- **Test rewrite** — the existing tests load converters by module path, with `loadWithMocks` or
-  `mock.module`; codec-ing each converter means updating those loaders.
+- **Test rewrite** — the existing tests load converters by module path, with `mock.module`;
+  codec-ing each converter means updating those loaders.
 
 ## Type strategy for the mapping helpers
 
