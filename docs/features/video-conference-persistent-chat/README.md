@@ -940,7 +940,7 @@ deliberately.
 | `VideoConf_Conference_Window_Enabled` | EE, **off by default**. The switch for everything in this document: the call window, the preflight, the ongoing-calls list, the membership-based flow. Off means the pre-existing client behaviour, unchanged. |
 | `VideoConf_Enable_Persistent_Chat` | EE. Whether each call gets a discussion or thread of its own, server-side. Unchanged by this feature, and independent of the setting above. |
 | `VideoConf_Persistent_Chat_Mode` | `thread` (default) or `main_room`. Thread opens a thread from the call message; main room shows the channel itself in the chat panel. |
-| `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name, used only in `main_room` mode, which is the mode that creates a discussion; `[date]` is substituted, or the date is prefixed when absent. Requires `Discussion_enabled`. |
+| `VideoConf_Persistent_Chat_Discussion_Name` | Fallback discussion name, for when the discussion's room and people cannot be told (see [naming a discussion](../persistent-chat.md#naming-a-discussion)); `[date]` is substituted, or the date is prefixed when absent. The call list still uses it to name a call that never got a discussion. Requires `Discussion_enabled`. |
 
 ## REST Endpoints
 

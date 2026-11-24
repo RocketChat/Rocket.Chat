@@ -586,7 +586,6 @@ describe('Apps - Video Conferences', () => {
 					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 					await updateSetting('Discussion_enabled', true);
 					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
-					await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', 'Chat History');
 					const res = await request.post(api('video-conference.start')).set(credentials).send({
 						roomId,
 					});
@@ -614,7 +613,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room using the configured name', async () => {
+				it('should have named the discussion room after the room and who started the call', async () => {
 					await request
 						.get(api('rooms.info'))
 						.set(credentials)
@@ -626,11 +625,7 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('room').and.to.be.an('object');
 							expect(res.body.room).to.have.a.property('_id').equal(discussionRid);
-							expect(res.body.room)
-								.to.have.a.property('fname')
-								.that.is.a('string')
-								.that.satisfies((msg: string) => !msg.startsWith('Chat History'))
-								.that.satisfies((msg: string) => msg.includes('Chat History'));
+							expect(res.body.room).to.have.a.property('fname').equal(`${roomName}: ${adminUsername}`);
 						});
 				});
 
@@ -646,11 +641,7 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('subscription').and.to.be.an('object');
 							expect(res.body.subscription).to.have.a.property('rid').equal(discussionRid);
-							expect(res.body.subscription)
-								.to.have.a.property('fname')
-								.that.is.a('string')
-								.that.satisfies((msg: string) => !msg.startsWith('Chat History'))
-								.that.satisfies((msg: string) => msg.includes('Chat History'));
+							expect(res.body.subscription).to.have.a.property('fname').equal(`${roomName}: ${adminUsername}`);
 							expect(res.body.subscription).to.have.a.property('open', false);
 							expect(res.body.subscription).to.have.a.property('alert', false);
 						});
@@ -762,10 +753,9 @@ describe('Apps - Video Conferences', () => {
 				});
 			});
 
-			describe('[Persistent Chat provider with the persistent chat feature enabled and custom discussion names]', () => {
+			describe('[Persistent Chat provider with the persistent chat feature enabled and a configured discussion name]', () => {
 				let callId: string | undefined;
 				let discussionRid: string | undefined;
-				let chatDate: string;
 
 				before(async () => {
 					if (!process.env.IS_EE) {
@@ -776,7 +766,6 @@ describe('Apps - Video Conferences', () => {
 					await updateSetting('Discussion_enabled', true);
 					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 					await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', 'Date [date] between');
-					chatDate = new Date().toISOString().substring(0, 10);
 					const res = await request.post(api('video-conference.start')).set(credentials).send({
 						roomId,
 					});
@@ -804,7 +793,8 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room using the configured name', async () => {
+				// The configured name is only a fallback for when neither a room nor a person can be named.
+				it('should name the discussion room after the room and who started the call, not the configured name', async () => {
 					await request
 						.get(api('rooms.info'))
 						.set(credentials)
@@ -816,10 +806,7 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('room').and.to.be.an('object');
 							expect(res.body.room).to.have.a.property('_id').equal(discussionRid);
-							expect(res.body.room)
-								.to.have.a.property('fname')
-								.that.is.a('string')
-								.that.satisfies((msg: string) => msg.includes(`Date ${chatDate} between`));
+							expect(res.body.room).to.have.a.property('fname').equal(`${roomName}: ${adminUsername}`);
 						});
 				});
 			});

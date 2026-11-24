@@ -40,6 +40,18 @@ But the original room is read as well, because it has not stood still either: so
 first move is part of the conversation, and a discussion built only from the previous one would leave them
 behind. Both, then, and the people being added on top.
 
+### Naming a discussion
+
+A discussion is named after where the conversation came from and who it is between — the room it hangs off,
+then the people: whoever started the call, its members, and anyone being brought in. Past the first few, the
+rest are counted rather than listed, so the name stays readable in a sidebar. A discussion off a DM is named by
+its people alone, since that is all a DM's name ever is.
+
+A discussion that moves a second time is still named after the room the call started in, not the discussion it
+is leaving: that room is what it hangs off, and what a reader recognises.
+
+The workspace's configured name is only the answer when neither a room nor a person can be told.
+
 ## Reaching a call by telephone
 
 A conference can be given a number, so that a desk phone with no idea what Rocket.Chat is can dial into it.

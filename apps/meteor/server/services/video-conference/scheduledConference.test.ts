@@ -18,8 +18,8 @@ const user = { _id: 'user1', name: 'User One', username: 'user.one' };
 const VideoConfService = createService({
 	models: {
 		VideoConference: { findOneByProviderNameAndSipAlias, createGroup },
-		Users: { findOneById },
-		Rooms: { findOneById: sinon.stub().resolves({ _id: 'parent1', t: 'c' }) },
+		Users: { findOneById, findByUsernames: () => ({ toArray: async () => [user] }) },
+		Rooms: { findOneById: sinon.stub().resolves({ _id: 'parent1', t: 'c', fname: 'External calls' }) },
 	},
 	overrides: {
 		'../../settings': { settings: { get: (key: string) => settingValues[key] } },
@@ -54,6 +54,7 @@ describe('VideoConfService.initializeOrJoinScheduledConference', () => {
 		settingValues.Pexip_Integration_Enabled = true;
 		settingValues.Pexip_Integration_SIP_AddAlias = true;
 		settingValues.Pexip_Integration_PersistentChat_ExternalRoom = [{ _id: 'external1' }];
+		settingValues.UI_Use_Real_Name = false;
 	});
 
 	// The alias is only meaningful while the workspace hands them out; without that there is nothing it names.
@@ -96,6 +97,14 @@ describe('VideoConfService.initializeOrJoinScheduledConference', () => {
 
 			expect(createRoom.calledBefore(createGroup)).to.be.true;
 			expect(createGroup.firstCall.args[0].discussionRid).to.equal('discussion1');
+		});
+
+		it('should name the discussion after the room and whoever dialled', async () => {
+			settingValues.UI_Use_Real_Name = true;
+
+			await service.initializeOrJoinScheduledConference('12345678', 'user1');
+
+			expect(createRoom.firstCall.args[6]).to.have.property('fname', 'External calls: User One');
 		});
 
 		// Nobody is being asked to answer: whoever dials the alias arrives of their own accord.

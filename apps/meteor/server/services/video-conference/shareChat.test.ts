@@ -13,6 +13,7 @@ const createRoom = sinon.stub();
 const setDiscussionRidById = sinon.stub().resolves();
 const findByRoomId = sinon.stub();
 const addUsersToRoomMethod = sinon.stub().resolves();
+const findByUsernames = sinon.stub();
 
 /** Subscriptions keyed by room, so a test can give two rooms different members. */
 let membersByRoom: Record<string, string[]> = {};
@@ -24,7 +25,7 @@ const user = { _id: 'user1', name: 'User One', username: 'user.one' };
 const VideoConfService = createService({
 	models: {
 		VideoConference: { findOneById, setDiscussionRidById },
-		Users: { findOneById: usersFindOneById, find: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
+		Users: { findOneById: usersFindOneById, findByUsernames, find: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
 		Rooms: { findOneById: roomsFindOneById },
 		Subscriptions: {
 			findByRoomIdWhenUsernameExists,
@@ -61,6 +62,7 @@ describe('VideoConfService chat sharing', () => {
 			findByRoomId,
 			addUsersToRoomMethod,
 			resolveChatAccessMode,
+			findByUsernames,
 		];
 		resetAll(...stubs);
 		stubs.forEach((stub) => stub.resetBehavior());
@@ -77,13 +79,14 @@ describe('VideoConfService chat sharing', () => {
 		setDiscussionRidById.resolves();
 		addUsersToRoomMethod.resolves();
 		resolveChatAccessMode.callsFake(({ mode }: { mode: string }) => mode);
+		findByUsernames.returns({ toArray: sinon.stub().resolves([]) });
 	});
 
 	describe('createConferenceDiscussionWithParticipants', () => {
 		// A second fork builds off the discussion, which is right — but somebody who joined the room the call
 		// started in since the first fork is part of the conversation, and reading only the discussion drops them.
 		it('should carry the original room members across a second fork', async () => {
-			findOneById.resolves({ _id: 'call1', rid: 'room1', discussionRid: 'discussion1', users: [], messages: {} });
+			findOneById.resolves({ _id: 'call1', rid: 'room1', discussionRid: 'discussion1', createdBy: user, users: [], messages: {} });
 			roomsFindOneById.withArgs('discussion1').resolves({ _id: 'discussion1', t: 'p', prid: 'room1' });
 			roomsFindOneById.withArgs('room1').resolves({ _id: 'room1', t: 'c' });
 			membersByRoom = { discussion1: ['in.discussion'], room1: ['joined.room.later'] };
@@ -95,7 +98,7 @@ describe('VideoConfService chat sharing', () => {
 
 		// Nothing to carry across when the chat has not moved yet: the base room *is* the original room.
 		it('should read the room only once on a first fork', async () => {
-			findOneById.resolves({ _id: 'call1', rid: 'room1', users: [], messages: {} });
+			findOneById.resolves({ _id: 'call1', rid: 'room1', createdBy: user, users: [], messages: {} });
 			roomsFindOneById.withArgs('room1').resolves({ _id: 'room1', t: 'c' });
 			membersByRoom = { room1: ['already.here'] };
 
@@ -107,12 +110,65 @@ describe('VideoConfService chat sharing', () => {
 
 		// A DM lists its members on the room rather than in subscriptions.
 		it('should take a DM’s members from the room itself', async () => {
-			findOneById.resolves({ _id: 'call1', rid: 'dm1', users: [], messages: {} });
+			findOneById.resolves({ _id: 'call1', rid: 'dm1', createdBy: user, users: [], messages: {} });
 			roomsFindOneById.withArgs('dm1').resolves({ _id: 'dm1', t: 'd', usernames: ['one', 'two'] });
 
 			await service.createConferenceDiscussionWithParticipants('user1', 'call1', ['newcomer']);
 
 			expect(createRoom.firstCall.args[3]).to.have.members(['one', 'two', 'newcomer']);
+		});
+
+		it('should name the discussion after the room and the people in the call', async () => {
+			findOneById.resolves({
+				_id: 'call1',
+				rid: 'room1',
+				createdBy: { _id: 'user1', username: 'user.one' },
+				users: [{ _id: 'user2', username: 'in.call' }],
+				messages: {},
+			});
+			roomsFindOneById.withArgs('room1').resolves({ _id: 'room1', t: 'c', name: 'general', fname: 'General' });
+			findByUsernames.returns({ toArray: sinon.stub().resolves([user, { username: 'in.call', name: 'In Call' }]) });
+
+			await service.createConferenceDiscussionWithParticipants('user1', 'call1', ['newcomer']);
+
+			expect(createRoom.firstCall.args[6]).to.have.property('fname', 'General: User One, In Call, newcomer');
+		});
+
+		// The room a second fork hangs off is where the conversation started, not the discussion it moved to.
+		it('should name a second fork after the room the call started in', async () => {
+			findOneById.resolves({
+				_id: 'call1',
+				rid: 'room1',
+				discussionRid: 'discussion1',
+				createdBy: { _id: 'user1', username: 'user.one' },
+				users: [],
+				messages: {},
+			});
+			roomsFindOneById.withArgs('discussion1').resolves({ _id: 'discussion1', t: 'p', prid: 'room1', fname: 'General: user.one' });
+			roomsFindOneById.withArgs('room1').resolves({ _id: 'room1', t: 'c', name: 'general' });
+
+			await service.createConferenceDiscussionWithParticipants('user1', 'call1', ['newcomer']);
+
+			expect(createRoom.firstCall.args[6]).to.have.property('fname', 'general: user.one, newcomer');
+		});
+
+		it('should count the people past the first few rather than list them', async () => {
+			findOneById.resolves({ _id: 'call1', rid: 'room1', createdBy: { _id: 'user1', username: 'a' }, users: [], messages: {} });
+			roomsFindOneById.withArgs('room1').resolves({ _id: 'room1', t: 'c', name: 'general' });
+
+			await service.createConferenceDiscussionWithParticipants('user1', 'call1', ['b', 'c', 'd', 'e']);
+
+			expect(createRoom.firstCall.args[6]).to.have.property('fname', 'general: a, b, c +2');
+		});
+
+		// A DM's name is only ever its people, so there is no room to put in front of them.
+		it('should name a discussion off a DM after its people alone', async () => {
+			findOneById.resolves({ _id: 'call1', rid: 'dm1', createdBy: { _id: 'user1', username: 'one' }, users: [], messages: {} });
+			roomsFindOneById.withArgs('dm1').resolves({ _id: 'dm1', t: 'd', usernames: ['one', 'two'] });
+
+			await service.createConferenceDiscussionWithParticipants('user1', 'call1', ['newcomer']);
+
+			expect(createRoom.firstCall.args[6]).to.have.property('fname', 'one, two, newcomer');
 		});
 	});
 

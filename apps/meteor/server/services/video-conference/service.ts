@@ -33,6 +33,7 @@ import type {
 	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import {
+	getUserDisplayName,
 	UserStatus,
 	VideoConferenceStatus,
 	hasJoinedVideoConference,
@@ -81,6 +82,9 @@ import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom'
 import { settings } from '../../settings';
 
 const logger = new Logger('VideoConference');
+
+/** How many people a persistent chat discussion's name lists before the rest are only counted. */
+const DISCUSSION_NAME_PEOPLE_SHOWN = 3;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -2194,7 +2198,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		const call = await VideoConferenceModel.findOneById(callId, {
-			projection: { rid: 1, createdBy: 1, discussionRid: 1, providerName: 1 },
+			projection: { rid: 1, createdBy: 1, discussionRid: 1, providerName: 1, users: 1 },
 		});
 		if (!call) {
 			throw new Error('invalid-video-conference');
@@ -2210,10 +2214,52 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		await this.createDiscussionForConference(this.getDiscussionDisplayName(), call, createdBy);
+		await this.createDiscussionForConference(call, this.getConferenceParticipantUsernames(call), createdBy);
 	}
 
-	private getDiscussionDisplayName(): string {
+	/** Everyone the call is between so far: whoever started it, then its members in the order they came. */
+	private getConferenceParticipantUsernames(
+		call: Pick<VideoConference, 'createdBy'> & { users?: Pick<IVideoConferenceUser, 'username'>[] },
+	): NonNullable<IUser['username']>[] {
+		return [call.createdBy.username, ...(call.users || []).map(({ username }) => username)].filter((username): username is string =>
+			Boolean(username),
+		);
+	}
+
+	/**
+	 * What to call a discussion holding a call's chat: the room it hangs from and the people it is between.
+	 *
+	 * A DM is named by its people alone, since that is all a DM's name ever is. The workspace's configured name is
+	 * only the answer when neither a room nor a person can be told.
+	 */
+	private async getDiscussionDisplayName(
+		parent: Pick<IRoom, 't' | 'name' | 'fname' | 'usernames'>,
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<string> {
+		const isDM = parent.t === 'd';
+		const roomName = isDM ? '' : parent.fname || parent.name || '';
+
+		const people = [...new Set([...(isDM ? parent.usernames || [] : []), ...usernames])].filter(Boolean);
+		const users = people.length
+			? await Users.findByUsernames<Pick<IUser, 'name' | 'username'>>(people, { projection: { name: 1, username: 1 } }).toArray()
+			: [];
+		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+		const names = people.map((username) => {
+			const user = users.find((candidate) => candidate.username === username);
+			return (user && getUserDisplayName(user.name, user.username, useRealName)) || username;
+		});
+
+		const shown = names.slice(0, DISCUSSION_NAME_PEOPLE_SHOWN).join(', ');
+		const peopleLabel = names.length > DISCUSSION_NAME_PEOPLE_SHOWN ? `${shown} +${names.length - DISCUSSION_NAME_PEOPLE_SHOWN}` : shown;
+
+		if (roomName && peopleLabel) {
+			return `${roomName}: ${peopleLabel}`;
+		}
+
+		return roomName || peopleLabel || this.getConfiguredDiscussionName();
+	}
+
+	private getConfiguredDiscussionName(): string {
 		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('[date] Video Call Chat');
 		const date = new Date().toISOString().substring(0, 10);
 
@@ -2241,7 +2287,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		usernames: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']> {
 		const [call, user] = await Promise.all([
-			VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1 } }),
+			VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1, createdBy: 1, users: 1 } }),
 			Users.findOneById(uid),
 		]);
 		if (!call) {
@@ -2254,9 +2300,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Build from the room the chat is *currently* in, not the room the call started in — otherwise a second
 		// discussion would be derived from the original room and silently drop everyone added since the first
 		// one. One read also covers the walk up to the top-level room: `prid` is only set for a discussion.
-		const baseRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'usernames' | 'prid' | 'teamId'>>(call.discussionRid || call.rid, {
-			projection: { t: 1, usernames: 1, prid: 1, teamId: 1 },
-		});
+		const baseRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'usernames' | 'prid' | 'teamId'>>(
+			call.discussionRid || call.rid,
+			{ projection: { t: 1, name: 1, fname: 1, usernames: 1, prid: 1, teamId: 1 } },
+		);
 		if (!baseRoom) {
 			throw new Error('invalid-room');
 		}
@@ -2281,7 +2328,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const members = [...new Set([...originalMembers, ...existingMembers, ...usernames])].filter(Boolean);
 
-		const name = this.getDiscussionDisplayName();
+		const name = await this.getDiscussionDisplayName(parent, [...this.getConferenceParticipantUsernames(call), ...usernames]);
 
 		const discussion = await createRoom(
 			type,
@@ -2520,7 +2567,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// Before the conference, not after: `createGroup` takes the discussion, so the chat has to exist first.
-		const discussionRid = await this.createDiscussionForConferenceData(this.getDiscussionDisplayName(), rid, user);
+		const discussionRid = await this.createDiscussionForConferenceData(rid, user, user.username ? [user.username] : []);
 
 		return VideoConferenceModel.createGroup({
 			rid,
@@ -2541,9 +2588,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async getRoomForDiscussion(
 		baseRoom: IRoom['_id'],
 		childRoomIds: IRoom['_id'][] = [],
-	): Promise<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>> {
-		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(baseRoom, {
-			projection: { t: 1, teamId: 1, prid: 1 },
+	): Promise<Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'usernames' | 'teamId' | 'prid'>> {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'usernames' | 'teamId' | 'prid'>>(baseRoom, {
+			projection: { t: 1, name: 1, fname: 1, usernames: 1, teamId: 1, prid: 1 },
 		});
 		if (!room) {
 			throw new Error('invalid-room');
@@ -2561,8 +2608,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async createDiscussionForConference(
-		name: string,
 		call: AtLeast<VideoConference, '_id' | 'rid' | 'createdBy'>,
+		participants: NonNullable<IUser['username']>[],
 		createdBy?: IUser,
 	): Promise<void> {
 		const user = call.createdBy._id === createdBy?._id ? createdBy : await Users.findOneById(call.createdBy._id);
@@ -2570,7 +2617,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-user');
 		}
 
-		const discussionRid = await this.createDiscussionForConferenceData(name, call.rid, user);
+		const discussionRid = await this.createDiscussionForConferenceData(call.rid, user, participants);
 
 		return this.assignDiscussionToConference(call._id, discussionRid);
 	}
@@ -2581,8 +2628,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * Separate from `createDiscussionForConference` because a conference reached over SIP has its chat created
 	 * *before* the conference record exists — the alias is dialled first and the conference is built around it.
 	 */
-	private async createDiscussionForConferenceData(name: string, rid: IRoom['_id'], createdBy: IUser): Promise<IRoom['_id']> {
+	private async createDiscussionForConferenceData(
+		rid: IRoom['_id'],
+		createdBy: IUser,
+		participants: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']> {
 		const room = await this.getRoomForDiscussion(rid);
+		const name = await this.getDiscussionDisplayName(room, participants);
 
 		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
 
