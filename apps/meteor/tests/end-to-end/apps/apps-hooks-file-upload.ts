@@ -1,11 +1,12 @@
 import { after, before, describe, it } from 'node:test';
 
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { App, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
 import { appImplementsIPreFileUpload } from '../../data/apps/app-packages';
+import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -14,11 +15,12 @@ import { IS_EE } from '../../e2e/config/constants';
 	before((_t, done) => getCredentials(done));
 
 	describe('IPreFileUpload', () => {
+		let app: App;
 		let room: IRoom;
 
 		before(async () => {
 			await cleanupApps();
-			await installLocalTestPackage(appImplementsIPreFileUpload);
+			app = await installLocalTestPackage(appImplementsIPreFileUpload);
 			room = await createRoom({ type: 'c', name: `file-upload-hook-${Date.now()}` }).then((res) => res.body.channel);
 		});
 
@@ -51,6 +53,18 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should detect the type of an app upload from its contents when the name has no extension', async () => {
+			const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+			await request
+				.post(apps(`/public/${app.id}/upload-buffer`))
+				.send({ roomId: room._id, userId: credentials['X-User-Id'], filename: 'upload', base64: onePixelPng })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('type', 'image/png');
 				});
 		});
 	});
