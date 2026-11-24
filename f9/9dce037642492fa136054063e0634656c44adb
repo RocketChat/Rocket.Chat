@@ -1,0 +1,20 @@
+apps/meteor/server/lib/auth/createUser.test.ts
+  s_836b0f9d62329e::t_3f540e3fbb7636 71,81-89
+  s_836b0f9d62329e::t_7da6630828ea1e 90-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f99dce037642492fa136054063e0634656c44adb",
+  "prompts": {},
+  "sessions": {
+    "s_836b0f9d62329e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "02aa1a58-34e4-40d2-98ff-2b796d0e06e5",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
