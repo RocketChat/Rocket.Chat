@@ -2,7 +2,7 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { EmojiCategory } from '../lib/types';
+import type { EmojiCategory } from '../lib/types.js';
 
 export type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;

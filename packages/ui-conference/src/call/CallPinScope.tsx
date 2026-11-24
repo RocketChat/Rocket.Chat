@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import { CallPinsProvider } from './context';
-import { useCallPinsState } from './hooks/useCallPinsState';
+import { CallPinsProvider } from './context.js';
+import { useCallPinsState } from './hooks/useCallPinsState.js';
 
 export type CallPinScopeProps = {
 	children: ReactNode;

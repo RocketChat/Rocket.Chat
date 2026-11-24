@@ -2,7 +2,7 @@ import type { PreviewVideoProviderProps } from '@rocket.chat/ui-conference';
 import { PreviewVideoContext } from '@rocket.chat/ui-conference';
 import { useMediaDevices } from '@rocket.chat/ui-media';
 
-import { usePreviewVideoTrack } from './usePreviewVideoTrack';
+import { usePreviewVideoTrack } from './usePreviewVideoTrack.js';
 
 /**
  * The preflight's camera, opened with LiveKit and handed to `children` through `usePreviewVideo`. A component, so

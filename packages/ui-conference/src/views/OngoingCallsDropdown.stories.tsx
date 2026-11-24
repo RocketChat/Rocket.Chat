@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import OngoingCallsDropdown from './OngoingCallsDropdown';
-import type { OngoingCallsFixture } from '../fixtures/storyFixtures';
-import { conferenceAppRoot, withCallProviders, withLiveOngoingCalls } from '../fixtures/storyFixtures';
-import { buildJoinableCall } from '../fixtures/testFixtures';
+import OngoingCallsDropdown from './OngoingCallsDropdown.js';
+import type { OngoingCallsFixture } from '../fixtures/storyFixtures.js';
+import { conferenceAppRoot, withCallProviders, withLiveOngoingCalls } from '../fixtures/storyFixtures.js';
+import { buildJoinableCall } from '../fixtures/testFixtures.js';
 
 const withCalls = (value: OngoingCallsFixture) => [withLiveOngoingCalls(value), withCallProviders(conferenceAppRoot())];
 

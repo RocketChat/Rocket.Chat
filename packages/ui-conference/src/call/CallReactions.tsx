@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette, borderRadius } from '@rocket.chat/fuselage';
 
-import { REACTION_VISIBLE_MS } from './lib/reactions';
+import { REACTION_VISIBLE_MS } from './lib/reactions.js';
 
 export type CallReaction = {
 	id: string;

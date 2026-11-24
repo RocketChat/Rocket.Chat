@@ -1,7 +1,7 @@
-import { getPositionStyle } from '.';
-import { getTargetBoundaries } from './getTargetBoundaries';
-import { getVariantBoundaries } from './getVariantBoundaries';
-import { withResizeObserverMock } from '../../mocks/withResizeObserverMock';
+import { getTargetBoundaries } from './getTargetBoundaries.js';
+import { getVariantBoundaries } from './getVariantBoundaries.js';
+import { getPositionStyle } from './index.js';
+import { withResizeObserverMock } from '../../mocks/withResizeObserverMock.js';
 // TODO: add tests targeting the hook itself
 
 withResizeObserverMock();

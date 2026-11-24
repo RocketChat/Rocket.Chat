@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useSafely } from './useSafely';
+import { renderHook } from './testing.js';
+import { useSafely } from './useSafely.js';
 
 it('returns the initial state', () => {
 	const initialState = Symbol();

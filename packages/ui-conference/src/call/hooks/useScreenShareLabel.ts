@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import type { ScreenShare } from '../lib/screenShares';
+import type { ScreenShare } from '../lib/screenShares.js';
 
 export const useScreenShareLabel = (share: ScreenShare): string => {
 	const { t } = useTranslation();

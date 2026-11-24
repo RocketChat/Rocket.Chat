@@ -1,1 +1,1 @@
-export { default, type RedirectPageProps } from './RedirectPage';
+export { default, type RedirectPageProps } from './RedirectPage.js';

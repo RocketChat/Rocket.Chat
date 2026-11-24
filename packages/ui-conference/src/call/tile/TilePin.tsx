@@ -3,10 +3,10 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import TileBadge from './TileBadge';
-import ParticipantPin from '../ParticipantPin';
-import { useCallPins } from '../context';
-import { STRIP_THUMB_WIDTH } from '../lib/stageTiles';
+import TileBadge from './TileBadge.js';
+import ParticipantPin from '../ParticipantPin.js';
+import { useCallPins } from '../context.js';
+import { STRIP_THUMB_WIDTH } from '../lib/stageTiles.js';
 
 // Narrower than this a tile has no room for a control beside its badges, and only marks the pin.
 const NARROW_TILE = `(max-width: ${STRIP_THUMB_WIDTH - 1}px)`;

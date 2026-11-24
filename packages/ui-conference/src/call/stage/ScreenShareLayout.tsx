@@ -1,16 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
 
-import ScreenActions from './ScreenActions';
-import ScreenShareThumb from './ScreenShareThumb';
-import ScreenViewer from './ScreenViewer';
-import StopShareButton from './StopShareButton';
-import ThumbSlot from './ThumbSlot';
-import ThumbnailTile from './ThumbnailTile';
-import { spotlightClasses } from './stageStyles';
-import ScreenPin from '../ScreenPin';
-import { useScreenShareLabel } from '../hooks/useScreenShareLabel';
-import type { ScreenShare } from '../lib/screenShares';
-import type { SpotlightOrientation, StageTile } from '../lib/stageTiles';
+import ScreenActions from './ScreenActions.js';
+import ScreenShareThumb from './ScreenShareThumb.js';
+import ScreenViewer from './ScreenViewer.js';
+import StopShareButton from './StopShareButton.js';
+import ThumbSlot from './ThumbSlot.js';
+import ThumbnailTile from './ThumbnailTile.js';
+import { spotlightClasses } from './stageStyles.js';
+import ScreenPin from '../ScreenPin.js';
+import { useScreenShareLabel } from '../hooks/useScreenShareLabel.js';
+import type { ScreenShare } from '../lib/screenShares.js';
+import type { SpotlightOrientation, StageTile } from '../lib/stageTiles.js';
 
 export type ScreenShareLayoutProps = {
 	featured: ScreenShare;

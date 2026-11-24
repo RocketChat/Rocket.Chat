@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import ConferenceIframe from './ConferenceIframe';
+import ConferenceIframe from './ConferenceIframe.js';
 
 const renderFrame = (url = 'https://provider.example/meet/abc') =>
 	render(<ConferenceIframe url={url} />, {

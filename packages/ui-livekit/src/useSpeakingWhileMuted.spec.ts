@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
+import { useSpeakingWhileMuted } from './useSpeakingWhileMuted.js';
 
 /**
  * The detector listens to a muted microphone and answers "this person is talking". What it is asked about is a

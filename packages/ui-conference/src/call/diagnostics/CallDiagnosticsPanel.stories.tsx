@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallDiagnosticsPanel from './CallDiagnosticsPanel';
-import { diagnosticsSample, withCall } from '../../fixtures/callFixtures';
-import { conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures';
+import CallDiagnosticsPanel from './CallDiagnosticsPanel.js';
+import { diagnosticsSample, withCall } from '../../fixtures/callFixtures.js';
+import { conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures.js';
 
 /** How the connection of the call running in this window is doing, as its provider samples it. */
 const meta = {

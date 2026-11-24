@@ -1,19 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useCallback, useMemo } from 'react';
 
-import type { RemoteParticipantInfo } from './context';
-import { useActiveSpeakerId } from './hooks/useActiveSpeakerId';
-import { useElementSize } from './hooks/useElementSize';
-import { PinFocusProvider, usePinFocusScope } from './hooks/usePinFocus';
-import type { TileReaction } from './lib/reactions';
-import type { ScreenShare } from './lib/screenShares';
-import type { StageSelf } from './lib/stageTiles';
-import { buildStageTiles, pinnedOrFeaturedTile, spotlightOrientation } from './lib/stageTiles';
-import GridLayout from './stage/GridLayout';
-import ScreenShareLayout from './stage/ScreenShareLayout';
-import SidebarLayout from './stage/SidebarLayout';
-import SpotlightLayout from './stage/SpotlightLayout';
-import { stageStyles } from './stage/stageStyles';
+import type { RemoteParticipantInfo } from './context.js';
+import { useActiveSpeakerId } from './hooks/useActiveSpeakerId.js';
+import { useElementSize } from './hooks/useElementSize.js';
+import { PinFocusProvider, usePinFocusScope } from './hooks/usePinFocus.js';
+import type { TileReaction } from './lib/reactions.js';
+import type { ScreenShare } from './lib/screenShares.js';
+import type { StageSelf } from './lib/stageTiles.js';
+import { buildStageTiles, pinnedOrFeaturedTile, spotlightOrientation } from './lib/stageTiles.js';
+import GridLayout from './stage/GridLayout.js';
+import ScreenShareLayout from './stage/ScreenShareLayout.js';
+import SidebarLayout from './stage/SidebarLayout.js';
+import SpotlightLayout from './stage/SpotlightLayout.js';
+import { stageStyles } from './stage/stageStyles.js';
 
 export type StageLayout = 'grid' | 'spotlight' | 'sidebar';
 

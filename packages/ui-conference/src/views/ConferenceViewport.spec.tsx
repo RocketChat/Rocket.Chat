@@ -2,8 +2,8 @@ import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import ConferenceViewport from './ConferenceViewport';
-import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles';
+import ConferenceViewport from './ConferenceViewport.js';
+import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles.js';
 
 /** The palette custom properties an element resolves. jsdom does not inherit them, so this is what its own rules set. */
 const paletteOf = (element: Element) => {

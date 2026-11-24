@@ -4,13 +4,13 @@ import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import TileBadge from './TileBadge';
-import TilePin from './TilePin';
-import VoiceActivity from '../VoiceActivity';
-import { useSpeakingRing } from '../hooks/useSpeakingRing';
-import { REACTION_VISIBLE_MS } from '../lib/reactions';
-import { speakingRingThickness } from '../lib/speakingRing';
-import type { TileParticipant } from '../lib/stageTiles';
+import TileBadge from './TileBadge.js';
+import TilePin from './TilePin.js';
+import VoiceActivity from '../VoiceActivity.js';
+import { useSpeakingRing } from '../hooks/useSpeakingRing.js';
+import { REACTION_VISIBLE_MS } from '../lib/reactions.js';
+import { speakingRingThickness } from '../lib/speakingRing.js';
+import type { TileParticipant } from '../lib/stageTiles.js';
 
 const tileStyles = css`
 	position: relative;
