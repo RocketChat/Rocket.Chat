@@ -9,6 +9,9 @@ export type SidebarCardProps = { children: ReactNode };
  */
 const SidebarCard = ({ children }: SidebarCardProps) => (
 	<Box
+		display='flex'
+		flexDirection='column'
+		gap='x8'
 		margin={8}
 		padding='x8'
 		borderRadius='large'

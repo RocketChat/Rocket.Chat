@@ -1,4 +1,14 @@
-import { AudioPlayerControls, Box, IconButton } from '@rocket.chat/fuselage';
+import {
+	AudioPlayerControls,
+	IconButton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemLink,
+	ItemMedia,
+	ItemTitle,
+} from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +39,8 @@ const NowPlayingSection = () => {
 		return null;
 	}
 
+	const title = displayName || t('Audio');
+
 	const openConversation = async () => {
 		if (!track.rid) {
 			return;
@@ -41,40 +53,28 @@ const NowPlayingSection = () => {
 
 	return (
 		<SidebarCard>
-			<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd='x8' style={{ gap: 8 }}>
-				<Box
-					display='flex'
-					alignItems='center'
-					minWidth={0}
-					flexGrow={1}
-					role='button'
-					tabIndex={0}
-					onClick={() => void openConversation()}
-					onKeyDown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							e.preventDefault();
-							void openConversation();
-						}
-					}}
-					title={t('Jump_to_message')}
-					style={{ gap: 8, cursor: track.rid ? 'pointer' : 'default' }}
-				>
-					{track.username && (
-						<Box display='flex' flexShrink={0}>
-							<UserAvatar username={track.username} size='x24' />
-						</Box>
-					)}
-					<Box minWidth={0}>
-						<Box fontScale='p2b' color='default' withTruncatedText>
-							{displayName || t('Audio')}
-						</Box>
-						<Box fontScale='micro' color='hint' withTruncatedText>
-							{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}
-						</Box>
-					</Box>
-				</Box>
-				<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
-			</Box>
+			<Item multiline>
+				{track.username && (
+					<ItemMedia>
+						<UserAvatar username={track.username} size='x24' />
+					</ItemMedia>
+				)}
+				<ItemContent>
+					<ItemTitle>
+						{track.rid ? (
+							<ItemLink is='button' onClick={() => void openConversation()} title={t('Jump_to_message')}>
+								{title}
+							</ItemLink>
+						) : (
+							title
+						)}
+					</ItemTitle>
+					<ItemDescription>{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}</ItemDescription>
+				</ItemContent>
+				<ItemActions>
+					<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
+				</ItemActions>
+			</Item>
 
 			<AudioPlayerControls
 				isPlaying={playing}
