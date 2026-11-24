@@ -76,7 +76,7 @@ const loadStartup = () => {
 	}));
 	jest.doMock('../../stores', () => ({
 		Users: {
-			use: {
+			useStore: {
 				getState: () => mockUsers,
 				subscribe: (listener: () => void) => mockUsersListeners.push(listener),
 			},
