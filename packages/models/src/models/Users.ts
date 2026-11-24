@@ -2998,6 +2998,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	createServiceIdIndex(serviceName: string) {
+		return this.col.createIndex({ [`services.${serviceName}.id`]: 1 }, { unique: true, sparse: true });
+	}
+
 	setUsername(_id: IUser['_id'], username: string, options?: UpdateOptions) {
 		const update = { $set: { username } };
 
