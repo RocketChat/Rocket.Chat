@@ -11,11 +11,13 @@ const routes = { get: sandbox.stub() };
 const authenticate = sandbox.stub();
 const loginCallback = sandbox.stub();
 const loginErrorCallback = sandbox.stub();
+const ensureServiceIdIndex = sandbox.stub();
 
 const { configureOAuthServices } = p.noCallThru().load('./configureOAuthServices.ts', {
 	'meteor/accounts-base': { Accounts: { updateOrCreateUserFromExternalService } },
 	'passport': { use: sandbox.stub(), unuse: sandbox.stub(), authenticate },
 	'./allowPassportOAuthMiddleware': { allowPassportOAuthMiddleware: () => sandbox.stub() },
+	'./ensureServiceIdIndex': { ensureServiceIdIndex },
 	'./passportOAuthCallback': { passportOAuthCallback: () => loginCallback, passportOAuthErrorCallback: () => loginErrorCallback },
 	'./removeOAuthRoutes': { removeOAuthRoutes: sandbox.stub() },
 	'../../configuration/configurePassport': { oAuthRouter: routes },
@@ -55,5 +57,9 @@ describe('configureOAuthServices', () => {
 
 		expect(callbackRoute?.slice(-2)).to.deep.equal([loginCallback, loginErrorCallback]);
 		expect(authenticate.calledWithMatch('google', { failWithError: true, failureRedirect: 'https://chat.example.com/login' })).to.be.true;
+	});
+
+	it('should index the service id of every configured provider', () => {
+		expect(ensureServiceIdIndex.calledOnceWithExactly('google')).to.be.true;
 	});
 });

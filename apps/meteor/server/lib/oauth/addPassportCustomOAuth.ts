@@ -3,6 +3,7 @@ import passport from 'passport';
 import type { DoneCallback, Profile } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
+import { ensureServiceIdIndex } from './ensureServiceIdIndex';
 import { passportOAuthCallback, passportOAuthErrorCallback } from './passportOAuthCallback';
 import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { verifyFunction } from './verifyFunction';
@@ -21,6 +22,8 @@ export const addPassportCustomOAuth = (
 	if (!config.clientId || !config.clientSecret || !config.serverURL) {
 		return;
 	}
+
+	void ensureServiceIdIndex(serviceName);
 
 	passport.use(
 		serviceName,

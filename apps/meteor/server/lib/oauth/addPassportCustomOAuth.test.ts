@@ -8,10 +8,12 @@ const routes = { get: sinon.stub() };
 const loginErrorCallback = sinon.stub();
 const passportOAuthErrorCallback = sinon.stub().returns(loginErrorCallback);
 const authenticate = sinon.stub();
+const ensureServiceIdIndex = sinon.stub();
 
 const { addPassportCustomOAuth } = p.noCallThru().load('./addPassportCustomOAuth.ts', {
 	'passport': { use: sinon.stub(), unuse: sinon.stub(), authenticate },
 	'./allowPassportOAuthMiddleware': { allowPassportOAuthMiddleware: () => sinon.stub() },
+	'./ensureServiceIdIndex': { ensureServiceIdIndex },
 	'./passportOAuthCallback': { passportOAuthCallback: () => sinon.stub(), passportOAuthErrorCallback },
 	'./removeOAuthRoutes': { removeOAuthRoutes: sinon.stub() },
 	'./verifyFunction': { verifyFunction: sinon.stub() },
@@ -33,5 +35,15 @@ describe('addPassportCustomOAuth', () => {
 		expect(callbackRoute?.at(-1)).to.equal(loginErrorCallback);
 		expect(passportOAuthErrorCallback.calledOnceWith('https://chat.example.com', 'popup')).to.be.true;
 		expect(authenticate.calledWithMatch('fakeidp', { failWithError: true, failureRedirect: 'https://chat.example.com/login' })).to.be.true;
+	});
+
+	it('should index the service id of a configured service and skip one missing its credentials', () => {
+		ensureServiceIdIndex.resetHistory();
+
+		addPassportCustomOAuth('incomplete', { clientId: 'client-id' }, true);
+		expect(ensureServiceIdIndex.called).to.be.false;
+
+		addPassportCustomOAuth('fakeidp', { clientId: 'client-id', clientSecret: 'client-secret', serverURL: 'https://idp.example.com' }, true);
+		expect(ensureServiceIdIndex.calledOnceWithExactly('fakeidp')).to.be.true;
 	});
 });
