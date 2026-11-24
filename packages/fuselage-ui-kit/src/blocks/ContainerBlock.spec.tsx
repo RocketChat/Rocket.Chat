@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UiKitContext } from '../contexts/UiKitContext';
 import { bannerParser, messageParser, modalParser } from '../surfaces';
+import { createUiKitViewState } from '../utils/createUiKitViewState';
 
 const text = (value: string) => ({ type: 'plain_text', text: value });
 
@@ -25,9 +26,7 @@ it('renders the title, the subtitle and the children, and sends the actions of n
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
-				{messageParser.render([container()])}
-			</UiKitContext.Provider>
+			<UiKitContext.Provider value={{ action, appId: 'app' }}>{messageParser.render([container()])}</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
 
@@ -109,7 +108,7 @@ it('draws only the children the container and the surface accept', () => {
 });
 
 it('keeps the value of an input nested in a container and a layout in the view state of a modal', async () => {
-	const updateState = jest.fn();
+	const viewState = createUiKitViewState([]);
 	const layout = {
 		type: 'layout',
 		label: 'Form',
@@ -134,18 +133,13 @@ it('keeps the value of an input nested in a container and a layout in the view s
 	} as never;
 
 	render(
-		<UiKitContext.Provider value={{ action: jest.fn(), updateState, values: {}, viewId: 'view' }}>
-			{modalParser.render([layout])}
-		</UiKitContext.Provider>,
+		<UiKitContext.Provider value={{ action: jest.fn(), viewState, viewId: 'view' }}>{modalParser.render([layout])}</UiKitContext.Provider>,
 		{ wrapper: mockAppRoot().build() },
 	);
 
 	await userEvent.type(screen.getByRole('textbox'), 'Ada');
 
-	expect(updateState).toHaveBeenLastCalledWith(
-		expect.objectContaining({ actionId: 'name', blockId: 'name-block', value: 'Ada', viewId: 'view' }),
-		expect.anything(),
-	);
+	expect(viewState.getState()).toEqual({ 'name-block': { name: 'Ada' } });
 });
 
 it('sends the appId of the container for a nested button when the context has none', async () => {
@@ -153,9 +147,7 @@ it('sends the appId of the container for a nested button when the context has no
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {} }}>
-				{messageParser.render([container({ appId: 'sender-app' })])}
-			</UiKitContext.Provider>
+			<UiKitContext.Provider value={{ action }}>{messageParser.render([container({ appId: 'sender-app' })])}</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
 

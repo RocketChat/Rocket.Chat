@@ -9,7 +9,7 @@ const base = { appId: 'app', blockId: 'block', actionId: 'field' } as const;
 
 const renderElement = (element: any, action = jest.fn()) =>
 	render(
-		<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, viewId: 'view' }}>
+		<UiKitContext.Provider value={{ action, viewId: 'view' }}>
 			{modalParser.render([{ type: 'input', label: { type: 'plain_text', text: 'Field' }, element }])}
 		</UiKitContext.Provider>,
 		{ wrapper: mockAppRoot().build() },

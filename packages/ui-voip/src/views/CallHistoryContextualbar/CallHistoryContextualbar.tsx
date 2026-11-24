@@ -50,7 +50,6 @@ export type CallHistoryContextualBarProps = {
 const contextValue = {
 	action: () => undefined,
 	rid: '',
-	values: {},
 };
 
 const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHistoryContextualBarProps) => {

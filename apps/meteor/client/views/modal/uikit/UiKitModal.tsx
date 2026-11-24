@@ -1,5 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitContext, useUiKitViewState } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -20,16 +20,17 @@ export type UiKitModalProps = {
 
 const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
-	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
+	const { view, errors } = useUiKitView(initialView);
 	// The room on screen, for the elements that default to the current conversation.
 	const rid = useOpenedRoom();
-	const contextValue = useModalContextValue({ view, errors, values, updateValues, rid });
+	const viewState = useUiKitViewState(view.blocks, rid);
+	const contextValue = useModalContextValue({ view, viewState, errors, rid });
 	const useEmoji = useUserPreference<boolean>('useEmojis', true);
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		if (view.submit_disabled || contextValue.uploading) {
+		if (view.submit_disabled || viewState.isUploading()) {
 			return;
 		}
 		void actionManager.emitInteraction(view.appId, {
@@ -37,7 +38,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 			payload: {
 				view: {
 					...view,
-					state,
+					state: viewState.getState(),
 				},
 			},
 			viewId: view.id,
@@ -69,7 +70,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				viewId: view.id,
 				view: {
 					...view,
-					state,
+					state: viewState.getState(),
 				},
 				isCleared: false,
 			},
@@ -86,7 +87,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				viewId: view.id,
 				view: {
 					...view,
-					state,
+					state: viewState.getState(),
 				},
 				isCleared: true,
 			},

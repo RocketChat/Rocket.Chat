@@ -1,15 +1,18 @@
 import type { DropResult } from '@hello-pangea/dnd';
 import { Box } from '@rocket.chat/fuselage';
-import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitContext, useUiKitViewState } from '@rocket.chat/fuselage-ui-kit';
 import { useContext, useState, useEffect } from 'react';
 
 import { reorder } from './Reorder';
 import SurfaceRender from './SurfaceRender';
 import { SurfaceOptions } from './constant';
 import { context, updatePayloadAction, actionPreviewAction } from '../../../../Context';
+import type { ILayoutBlock } from '../../../../Context/initialState';
 import generateActionPreview from '../../../../Payload/actionPreview/generateActionPreview';
 import type { Block } from '../../../Draggable/DraggableList';
 import DraggableList from '../../../Draggable/DraggableList';
+
+const noBlocks: ILayoutBlock[] = [];
 
 const Surface = () => {
 	const {
@@ -33,6 +36,23 @@ const Surface = () => {
 		blocks: screens[activeScreen]?.payload.blocks,
 		user,
 	});
+	const viewState = useUiKitViewState(screens[activeScreen]?.payload?.blocks ?? noBlocks);
+
+	useEffect(
+		() =>
+			viewState.subscribe(() => {
+				const preview = generateActionPreview({
+					type: 'Action Block',
+					data: {},
+					surface: screens[activeScreen]?.payload.surface,
+					blocks: screens[activeScreen]?.payload.blocks,
+					user,
+				});
+				preview.state = viewState.getState();
+				dispatch(actionPreviewAction({ ...preview }));
+			}),
+		[viewState, dispatch, screens, activeScreen, user],
+	);
 	useEffect(() => {
 		setUniqueBlocks({
 			block: screens[activeScreen]?.payload?.blocks?.map((block, i) => ({
@@ -72,11 +92,7 @@ const Surface = () => {
 						preview.action = a;
 						dispatch(actionPreviewAction({ ...preview }));
 					},
-					updateState: (s) => {
-						preview.state = s;
-						dispatch(actionPreviewAction({ ...preview }));
-					},
-					values: {},
+					viewState,
 					appId: 'core',
 				}}
 			>

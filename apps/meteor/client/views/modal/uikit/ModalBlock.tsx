@@ -12,7 +12,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { UiKitComponent, UiKitContext, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitContext, UiKitModal, modalParser, useUiKitViewUploading } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler } from 'react';
 import { useContext, useId, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -67,7 +67,7 @@ const KeyboardCode = new Map<string, number>([
 const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams) => {
 	const id = `modal_id_${useId()}`;
 	const ref = useRef<HTMLElement>(null);
-	const { uploading } = useContext(UiKitContext);
+	const uploading = useUiKitViewUploading(useContext(UiKitContext).viewState);
 
 	useEffect(() => {
 		if (!ref.current) {

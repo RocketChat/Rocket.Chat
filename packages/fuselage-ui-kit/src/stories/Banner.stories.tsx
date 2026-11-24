@@ -31,8 +31,6 @@ export default {
 		<UiKitContext.Provider
 			value={{
 				action: action('action'),
-				updateState: action('updateState'),
-				values: {},
 				errors,
 			}}
 		>

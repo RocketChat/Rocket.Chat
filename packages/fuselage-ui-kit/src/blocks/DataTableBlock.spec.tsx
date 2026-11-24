@@ -33,9 +33,7 @@ const dataTable = (extra: object = {}) =>
 const renderTable = (block = dataTable(), action = jest.fn()) =>
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
-				{messageParser.render([block])}
-			</UiKitContext.Provider>
+			<UiKitContext.Provider value={{ action, appId: 'app' }}>{messageParser.render([block])}</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
 

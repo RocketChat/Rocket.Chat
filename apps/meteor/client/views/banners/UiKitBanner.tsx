@@ -1,6 +1,12 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
+import {
+	UiKitContext,
+	bannerParser,
+	UiKitBanner as UiKitBannerSurfaceRender,
+	UiKitComponent,
+	useUiKitViewState,
+} from '@rocket.chat/fuselage-ui-kit';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
@@ -19,9 +25,10 @@ export type UiKitBannerProps = {
 };
 
 const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
-	const { view, values, updateValues, state } = useUiKitView(initialView);
+	const { view } = useUiKitView(initialView);
+	const viewState = useUiKitViewState(view.blocks);
 	const actionManager = useUiKitActionManager();
-	const contextValue = useBannerContextValue({ view, values, updateValues });
+	const contextValue = useBannerContextValue({ view, viewState });
 
 	const icon = useMemo(() => {
 		if (view.icon) {
@@ -41,7 +48,7 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 					view: {
 						...view,
 						id: view.viewId,
-						state,
+						state: viewState.getState(),
 					},
 					isCleared: true,
 				},

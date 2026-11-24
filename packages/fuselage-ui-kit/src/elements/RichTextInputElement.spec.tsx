@@ -4,19 +4,23 @@ import userEvent from '@testing-library/user-event';
 
 import { UiKitContext } from '../contexts/UiKitContext';
 import { modalParser } from '../surfaces';
+import { createUiKitViewState } from '../utils/createUiKitViewState';
 
 const element = { appId: 'app', blockId: 'block', actionId: 'field', type: 'rich_text_input' } as const;
 
-const renderInput = (updateState = jest.fn(), initial_value?: any) =>
+const renderInput = (initial_value?: any) => {
+	const viewState = createUiKitViewState([]);
 	render(
-		<UiKitContext.Provider value={{ action: jest.fn(), updateState, values: {} }}>
+		<UiKitContext.Provider value={{ action: jest.fn(), viewState }}>
 			{modalParser.render([{ type: 'input', label: { type: 'plain_text', text: 'Field' }, element: { ...element, initial_value } }])}
 		</UiKitContext.Provider>,
 		{ wrapper: mockAppRoot().build() },
 	);
+	return viewState;
+};
 
 it('shows the initial rich text as Markdown', () => {
-	renderInput(jest.fn(), {
+	renderInput({
 		type: 'rich_text',
 		elements: [
 			{ type: 'rich_text_section', elements: [{ type: 'text', text: 'Hi', style: { bold: true } }] },
@@ -28,19 +32,12 @@ it('shows the initial rich text as Markdown', () => {
 });
 
 it('reports the typed Markdown as a rich_text value', async () => {
-	const updateState = jest.fn();
-	renderInput(updateState);
+	const viewState = renderInput();
 
 	await userEvent.type(screen.getByRole('textbox'), '**hey**');
 
-	expect(updateState).toHaveBeenLastCalledWith(
-		expect.objectContaining({
-			actionId: 'field',
-			value: {
-				type: 'rich_text',
-				elements: [{ type: 'rich_text_section', elements: [{ type: 'text', text: 'hey', style: { bold: true } }] }],
-			},
-		}),
-		expect.anything(),
-	);
+	expect(viewState.getValue('field')?.value).toEqual({
+		type: 'rich_text',
+		elements: [{ type: 'rich_text_section', elements: [{ type: 'text', text: 'hey', style: { bold: true } }] }],
+	});
 });

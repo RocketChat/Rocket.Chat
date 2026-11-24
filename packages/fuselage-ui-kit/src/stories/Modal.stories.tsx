@@ -66,8 +66,6 @@ export default {
 			<UiKitContext.Provider
 				value={{
 					action: action('action'),
-					updateState: action('updateState'),
-					values: {},
 					suggest: suggestProjects,
 					errors,
 				}}

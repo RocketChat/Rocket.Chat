@@ -1,7 +1,7 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext, bannerParser, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import type { View } from '@rocket.chat/ui-kit';
-import type { ContextType, Dispatch } from 'react';
+import type { ContextType } from 'react';
 import { useMemo } from 'react';
 
 import type { SubscriptionLicenseLayout } from './UiKitSubscriptionLicenseSurface';
@@ -26,26 +26,11 @@ type UseSubscriptionLicenseContextValueParams = {
 	view: View & {
 		viewId: string;
 	};
-	values: {
-		[actionId: string]: {
-			value: unknown;
-			blockId?: string | undefined;
-		};
-	};
-	updateValues: Dispatch<{
-		actionId: string;
-		payload: {
-			value: unknown;
-			blockId?: string | undefined;
-		};
-	}>;
 };
 type UseSubscriptionLicenseContextValueReturn = ContextType<typeof UiKitContext>;
 
 const useSubscriptionLicenseContextValue = ({
 	view,
-	values,
-	updateValues,
 }: UseSubscriptionLicenseContextValueParams): UseSubscriptionLicenseContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
@@ -73,24 +58,14 @@ const useSubscriptionLicenseContextValue = ({
 				},
 			});
 		},
-		updateState: ({ actionId, value, blockId = 'default' }) => {
-			updateValues({
-				actionId,
-				payload: {
-					blockId,
-					value,
-				},
-			});
-		},
 		...view,
-		values,
 		viewId: view.viewId,
 	};
 };
 
 const UiKitSubscriptionLicense = ({ initialView }: UiKitSubscriptionLicenseProps) => {
-	const { view, values, updateValues } = useUiKitView(initialView);
-	const contextValue = useSubscriptionLicenseContextValue({ view, values, updateValues });
+	const { view } = useUiKitView(initialView);
+	const contextValue = useSubscriptionLicenseContextValue({ view });
 
 	return (
 		<UiKitContext.Provider value={contextValue}>

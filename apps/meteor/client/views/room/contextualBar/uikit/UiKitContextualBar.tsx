@@ -5,6 +5,8 @@ import {
 	UiKitContextualBar as UiKitContextualBarSurfaceRender,
 	contextualBarParser,
 	UiKitContext,
+	useUiKitViewState,
+	useUiKitViewUploading,
 } from '@rocket.chat/fuselage-ui-kit';
 import {
 	ContextualbarHeader,
@@ -34,15 +36,17 @@ export type UiKitContextualBarProps = {
 
 const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const actionManager = useUiKitActionManager();
-	const { view, values, updateValues, state } = useUiKitView(initialView);
+	const { view } = useUiKitView(initialView);
 	const room = useRoom();
-	const contextValue = useContextualBarContextValue({ view, values, updateValues, rid: room._id });
+	const viewState = useUiKitViewState(view.blocks, room._id);
+	const uploading = useUiKitViewUploading(viewState);
+	const contextValue = useContextualBarContextValue({ view, viewState, rid: room._id });
 
 	const { closeTab } = useRoomToolbox();
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		if (view.submit_disabled || contextValue.uploading) {
+		if (view.submit_disabled || uploading) {
 			return;
 		}
 		closeTab();
@@ -51,7 +55,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 			payload: {
 				view: {
 					...view,
-					state,
+					state: viewState.getState(),
 				},
 			},
 			viewId: view.id,
@@ -75,7 +79,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 				viewId: view.id,
 				view: {
 					...view,
-					state,
+					state: viewState.getState(),
 				},
 				isCleared: false,
 			},
@@ -99,7 +103,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 				viewId: view.id,
 				view: {
 					...view,
-					state,
+					state: viewState.getState(),
 				},
 				isCleared: true,
 			},
@@ -129,7 +133,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 						)}
 
 						{view.submit && (
-							<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled || contextValue.uploading} onClick={handleSubmit}>
+							<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled || uploading} onClick={handleSubmit}>
 								{contextualBarParser.renderTextObject(view.submit.text, 1)}
 							</Button>
 						)}

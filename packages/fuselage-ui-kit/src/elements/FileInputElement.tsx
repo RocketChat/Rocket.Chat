@@ -18,7 +18,7 @@ const getExtension = (name: string) => name.split('.').pop()?.toLowerCase() ?? '
 const FileInputElement = ({ block, context }: FileInputElementProps) => {
 	const { actionId, filetypes, max_files: maxFiles = DEFAULT_MAX_FILES } = block;
 	const { t } = useTranslation();
-	const { uploadFile, setUploading } = useContext(UiKitContext);
+	const { uploadFile, viewState } = useContext(UiKitContext);
 	const [{ value, error }, action] = useUiKitState(block, context);
 
 	const [names, setNames] = useState<Record<string, string>>({});
@@ -41,10 +41,10 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 	useEffect(
 		() => () => {
 			if (pendingRef.current > 0) {
-				setUploading?.(actionId, false);
+				viewState?.setUploading(actionId, false);
 			}
 		},
-		[actionId, setUploading],
+		[actionId, viewState],
 	);
 
 	// One change at a time, so each confirmation starts from the accepted list and a denied pick never reaches the value.
@@ -67,7 +67,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 		pendingRef.current -= 1;
 		setUploads(pendingRef.current);
 		if (pendingRef.current === 0 && mountedRef.current) {
-			setUploading?.(actionId, false);
+			viewState?.setUploading(actionId, false);
 		}
 	};
 
@@ -77,7 +77,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 		}
 
 		if (pendingRef.current === 0) {
-			setUploading?.(actionId, true);
+			viewState?.setUploading(actionId, true);
 		}
 		pendingRef.current += 1;
 		setUploads(pendingRef.current);
