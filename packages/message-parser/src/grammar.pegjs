@@ -140,7 +140,7 @@ TimestampHoursMinutes = hours:$(Digit |2|) ":" minutes:$(Digit |2|) tz:Timezone?
 
 Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
 
-Timezone = offset:('+'/'-') tzHour:$(Digit |2|) ":" tzMinute:$(Digit |2|) { return offset + tzHour + ':' + tzMinute; }
+Timezone = "Z" / offset:('+'/'-') tzHour:$(Digit |2|) ":" tzMinute:$(Digit |2|) { return offset + tzHour + ':' + tzMinute; }
 
 ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) "." milliseconds:$(Digit |3|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone: tz }); }
 
