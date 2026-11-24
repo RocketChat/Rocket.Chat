@@ -10,6 +10,7 @@ export type RoomToolboxE2EESetupProps = {
 };
 
 const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
 
