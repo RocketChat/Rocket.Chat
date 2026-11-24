@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash, X509Certificate } from 'crypto';
 
 /**
  * Channel binding for Extended Protection, the `tls-server-end-point` variant of RFC 5929.
@@ -30,21 +30,29 @@ const SIGNATURE_OID_TO_HASH: Record<string, string> = {
 
 const DEFAULT_HASH = 'sha256';
 
-/*
- * TODO: replace everything down to `certificateHashAlgorithm` with `new X509Certificate(der).signatureAlgorithmOid`
- * once 9.0.0 drops Node 22, since that getter only exists from Node 24.9.
- */
 const readDerLength = (der: Buffer, offset: number): { length: number; contentStart: number } => {
 	const first = der[offset];
+
+	if (first === undefined) {
+		throw new Error('DER length is missing');
+	}
 
 	if (first < 0x80) {
 		return { length: first, contentStart: offset + 1 };
 	}
 
 	const byteCount = first & 0x7f;
+	if (byteCount === 0 || byteCount > 6) {
+		throw new Error('Invalid DER length');
+	}
+
 	let length = 0;
 	for (let i = 0; i < byteCount; i++) {
-		length = length * 256 + der[offset + 1 + i];
+		const byte = der[offset + 1 + i];
+		if (byte === undefined) {
+			throw new Error('DER length is truncated');
+		}
+		length = length * 256 + byte;
 	}
 
 	return { length, contentStart: offset + 1 + byteCount };
@@ -66,6 +74,15 @@ const decodeOid = (bytes: Buffer): string => {
 };
 
 const certificateHashAlgorithm = (der: Buffer): string => {
+	try {
+		const oid = (new X509Certificate(der) as X509Certificate & { signatureAlgorithmOid?: string }).signatureAlgorithmOid;
+		if (oid) {
+			return SIGNATURE_OID_TO_HASH[oid] ?? DEFAULT_HASH;
+		}
+	} catch {
+		// Older supported runtimes need the DER fallback below.
+	}
+
 	try {
 		if (der[0] !== 0x30) {
 			return DEFAULT_HASH;
