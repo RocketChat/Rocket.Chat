@@ -24,7 +24,7 @@ export function reactCompilerPlugin(): Plugin {
 					if (id.endsWith('.jsx')) return 'jsx' as const;
 					return 'js' as const;
 				})();
-				const result = oxc.transformSync(id, code, {
+				const result = await oxc.transform(id, code, {
 					lang,
 					sourceType: 'module',
 					sourcemap: true,
