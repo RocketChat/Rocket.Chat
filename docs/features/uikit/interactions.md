@@ -48,7 +48,7 @@ Once the user picks an option, the element behaves like any other select: its va
 
 ### View state
 
-`state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. When the app updates the view (`modal.update`, `contextual_bar.update`, `banner.update`), an element whose `actionId` stays keeps its value, even if the app changed its initial value; a new element starts from its initial value; a removed one leaves the state. Only elements with a `blockId` are included, so an input block without `blockId` never reaches the app.
+`state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. When the app updates the view (`modal.update`, `contextual_bar.update`, `banner.update`), an element whose `actionId` stays keeps its value, even if the app changed its initial value; a new element starts from its initial value; a removed one leaves the state. An element of an input block without `blockId` is left out until the user changes it; from then on it is sent under `default`, as `state.default[actionId]`.
 
 ### Files in views
 
