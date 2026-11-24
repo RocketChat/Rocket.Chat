@@ -327,10 +327,11 @@ export const MessageList = function MessageList({
 								</div>
 							) : (
 								<div role='listitem'>
-									<RoomForeword user={user} room={room} />
 									{isRestrictedHistoryEnabled && subscription?.historyVisibleFrom ? (
 										<RestrictedHistoryNotice historyVisibleFrom={subscription.historyVisibleFrom} />
-									) : null}
+									) : (
+										<RoomForeword user={user} room={room} />
+									)}
 									{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
 								</div>
 							)}
