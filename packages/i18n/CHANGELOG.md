@@ -1,5 +1,44 @@
 # @rocket.chat/i18n
 
+## 6.0.0-rc.1
+
+### Patch Changes
+
+- ([#43756](https://github.com/RocketChat/Rocket.Chat/pull/43756)) Shows why an OAuth login failed on the login page, instead of an "Internal Server Error" page or a popup that never closes. Popup OAuth login now also completes with providers that send `Cross-Origin-Opener-Policy`.
+
+## 6.0.0-rc.0
+
+### Minor Changes
+
+- ([#42661](https://github.com/RocketChat/Rocket.Chat/pull/42661)) Adds a "Copy error details" button to the screens shown when part of the interface crashes, so users can include the error and their environment when reporting the issue without opening the browser's developer tools
+
+- ([#41943](https://github.com/RocketChat/Rocket.Chat/pull/41943)) Adds a server-to-server Outlook integration: administrators configure one Exchange connection, through Microsoft Graph or on-premises EWS, instead of each user signing in from the desktop app. Calendars sync on the server and reach web, mobile and desktop alike, with contact sync following on the same connection.
+
+- ([#43633](https://github.com/RocketChat/Rocket.Chat/pull/43633)) Lets sidebar categories be reordered by dragging their headers or with Cmd+Shift+Up/Down (Ctrl+Shift+Up/Down on Windows and Linux), and a room be dragged into Favorites, a custom category, or back to its own group
+
+- ([#43689](https://github.com/RocketChat/Rocket.Chat/pull/43689)) Adds an Inbox header with a room search to the sidebar when the sidebar rail feature preview is on: the search lists only the rooms whose name matches
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `card` block, with an optional hero image, icon, title, subtitle, body, subtext and up to 3 buttons, and the `carousel` block, a row of 1 to 10 cards that scrolls sideways with previous and next buttons.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_table` block, a table with a caption that the reader can filter, sort by column and page through, whose cells hold text, numbers, rich text or a button (`action_cell`).
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `file_input` element, which lets apps collect files in modals and contextual bars, and the `file` block, which shows an uploaded file in a message. Files picked in a view are uploaded as temporary files of the room and kept when the view is submitted.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `UiKit_Reject_Invalid_Blocks` setting, which rejects messages with invalid blocks and drops invalid views from apps instead of only logging them, and checks block count, text length and option count limits when blocks are validated
+
+- ([#43378](https://github.com/RocketChat/Rocket.Chat/pull/43378)) Shows the web client's commit next to the server's in Workspace > Deployment when the client was built from a different commit, as when it is served from another host
+
+### Patch Changes
+
+- ([#43539](https://github.com/RocketChat/Rocket.Chat/pull/43539)) Fixes users who belong to a discussion but not to its parent channel or team being offered to create a discussion that the server always rejects
+
+- ([#43534](https://github.com/RocketChat/Rocket.Chat/pull/43534)) Adds the "Delete original discussion messages" retention policy setting. When it is off and "Do not prune discussion messages" is on, the prune keeps the message that starts each discussion, and its files. This applies to discussions that start after the update. When the prune deletes the file of a discussion's first message, quotes of that message in the discussion now show "File deleted".
+
+- <details><summary>Updated dependencies [25a232e58bd49fa2cbad86f13a8e935c0a703170]:</summary>
+  - @rocket.chat/tools@0.6.0-rc.0
+
+  </details>
+
 ## 5.0.0
 
 ### Major Changes

@@ -1,10 +1,13 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const warn = sinon.stub();
+const startBroker = sinon.stub();
+
+mock.module('@rocket.chat/network-broker', { namedExports: { startBroker } });
 
 const stub = (name: string) => ({ [name]: true });
 
@@ -22,7 +25,6 @@ const { registerEEBroker } = proxyquire
 		'./mcp': stub('mcp'),
 		'./presence': stub('presence'),
 		'@rocket.chat/core-services': { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } },
-		'@rocket.chat/network-broker': { startBroker: sinon.stub() },
 		'../../../server/lib/logger/system': { SystemLogger: { warn } },
 	}) as { registerEEBroker: () => Promise<void> };
 
@@ -31,6 +33,7 @@ describe('registerEEBroker encryption warning', () => {
 
 	afterEach(() => {
 		warn.reset();
+		startBroker.reset();
 		process.env.TRANSPORTER = env.TRANSPORTER;
 		process.env.MOLECULER_ENCRYPTION_SECRET = env.MOLECULER_ENCRYPTION_SECRET;
 		for (const key of ['TRANSPORTER', 'MOLECULER_ENCRYPTION_SECRET'] as const) {
@@ -44,17 +47,18 @@ describe('registerEEBroker encryption warning', () => {
 		process.env.TRANSPORTER = 'nats://localhost:4222';
 		process.env.MOLECULER_ENCRYPTION_SECRET = 'a-long-random-secret';
 
-		await registerEEBroker().catch(() => undefined);
+		await registerEEBroker();
 
 		expect(warn.calledOnce).to.equal(true);
 		expect(warn.firstCall.args[0]).to.include('ignored in microservices mode');
+		expect(startBroker.calledOnce).to.equal(true);
 	});
 
 	it('should not warn in microservices mode without a secret', async () => {
 		process.env.TRANSPORTER = 'nats://localhost:4222';
 		delete process.env.MOLECULER_ENCRYPTION_SECRET;
 
-		await registerEEBroker().catch(() => undefined);
+		await registerEEBroker();
 
 		expect(warn.called).to.equal(false);
 	});
@@ -63,7 +67,7 @@ describe('registerEEBroker encryption warning', () => {
 		delete process.env.TRANSPORTER;
 		process.env.MOLECULER_ENCRYPTION_SECRET = 'a-long-random-secret';
 
-		await registerEEBroker().catch(() => undefined);
+		await registerEEBroker();
 
 		expect(warn.called).to.equal(false);
 	});

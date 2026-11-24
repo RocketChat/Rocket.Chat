@@ -1,5 +1,23 @@
 # @rocket.chat/apps-engine
 
+## 1.69.0-rc.0
+
+### Minor Changes
+
+- ([#43624](https://github.com/RocketChat/Rocket.Chat/pull/43624)) Adds ES module entry points next to the CommonJS build. `import` now resolves `@rocket.chat/apps-engine/definition/…` to modules under `esm/` that re-export the CommonJS ones, so both formats share the same classes and `instanceof` checks keep working across them. `require` loads the same modules as before, including through extensionless and directory paths such as `definition/accessors`.
+
+  The package now declares an `exports` map, which only exposes `definition/…` and `package.json`; nothing else was ever published.
+
+- ([#43647](https://github.com/RocketChat/Rocket.Chat/pull/43647)) Lets apps upload a file into a thread with the new `threadId` field of `IUploadDescriptor`
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `on_enter_pressed` to `dispatchActionConfig`, so an input element sends a `blockAction` with its current value when the user presses Enter
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
 ## 1.68.0
 
 ### Minor Changes

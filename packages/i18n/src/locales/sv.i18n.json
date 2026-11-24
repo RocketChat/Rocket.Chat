@@ -6525,7 +6525,6 @@
   "Speakers": "Högtalare",
   "Spoiler_hidden_activate_to_reveal": "Spoiler gömd. Aktivera för att avslöja.",
   "Spotlight": "I fokus",
-  "Spotlight_screen": "Sätt fokus på den här skärmen",
   "SSL": "SSL",
   "SSRF_Allowlist": "SSRF-tillåtelselista",
   "SSRF_Allowlist_Description": "Domäner, IP:ar eller IP:port (en per rad eller kommaseparerade) som tillåts för utgående förfrågningar trots SSRF-skydd. Använd endast för betrodda interna värdnamn (t.ex. internal.corp, 192.168.1.1, 192.168.1.1:8080).",

@@ -58,7 +58,9 @@ export class LocalStore extends Store {
 			} else {
 				// Set directory permissions
 				fs.chmod(path, mode, (err) => {
-					err && console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
+					if (err) {
+						console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
+					}
 				});
 			}
 		});

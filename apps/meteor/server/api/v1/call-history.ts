@@ -85,7 +85,7 @@ const callHistoryListEndpoints = API.v1.get(
 		authRequired: true,
 	},
 	async function action() {
-		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 
 		const { direction, state, filter } = this.queryParams;
@@ -212,9 +212,9 @@ const callHistoryInfoEndpoints = API.v1.get(
 type CallHistoryInfoEndpoints = ExtractRoutesFromAPI<typeof callHistoryInfoEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends CallHistoryListEndpoints {}
 
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends CallHistoryInfoEndpoints {}
 }

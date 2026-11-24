@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage",
-	"version": "1.0.0",
+	"version": "2.0.0-rc.0",
 	"description": "Rocket.Chat's React Components Library",
 	"keywords": [
 		"react",
@@ -32,14 +32,16 @@
 	"scripts": {
 		"build": "rm -rf dist && vite build --mode development && vite build --mode production && node scripts/check-dist-env.mjs && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"build-storybook": "NODE_ENV=production storybook build",
-		"lint": "yarn run -T oxlint && yarn run stylelint && yarn verify:css-hacks:check && yarn verify:selectors:check",
+		"generate:frame-values": "yarn run -T tsx scripts/generate-frame-values.mts",
+		"generate:tamagui-tokens": "yarn run -T tsx scripts/generate-tamagui-tokens.mts",
+		"lint": "yarn run -T oxlint && yarn run stylelint && yarn generate:frame-values --check && yarn verify:css-hacks:check && yarn verify:selectors:check",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.{scss,css}'",
 		"stylelint": "stylelint --allow-empty-input '**/*.{scss,css}'",
 		"start": "vite build --watch --mode development",
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"test:stories": "node scripts/test-stories.mjs",
-		"test:verify": "node --test scripts/verify/frame-platform.test.mjs scripts/verify/component-class.test.mjs",
+		"test:verify": "node --test scripts/verify/frame-platform.test.mjs scripts/verify/component-class.test.mjs scripts/verify/zero-stylesheet.test.mjs && yarn generate:tamagui-tokens --check && yarn run -T tsx --test scripts/frame-values/lib/lib.test.mjs scripts/frame-values/lib/fixture/fixture.test.mjs",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit",
 		"verify:box-usage": "node scripts/verify/box-usage.mjs",
@@ -112,10 +114,10 @@
 		"vite": "~8.2.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-hooks": "0.44.0",
-		"@rocket.chat/icons": "0.52.0",
-		"react": "*",
-		"react-dom": "*",
+		"@rocket.chat/fuselage-hooks": "0.44.1-rc.0",
+		"@rocket.chat/icons": "0.53.0-rc.0",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
 		"react-virtuoso": "*"
 	},
 	"volta": {

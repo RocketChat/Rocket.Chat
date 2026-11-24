@@ -1,5 +1,18 @@
 # @rocket.chat/media-signaling
 
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- ([#43538](https://github.com/RocketChat/Rocket.Chat/pull/43538)) Declares itself an ES module. `dist` already held ES module syntax, but the package didn't say so, so Node.js could only load it by detecting the syntax. It now sets `"type": "module"` and declares an `exports` map, so deep imports into `dist` no longer resolve. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later).
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+
+  </details>
+
 ## 1.4.0
 
 ### Minor Changes

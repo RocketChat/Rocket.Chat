@@ -75,7 +75,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
 			getPath(file: IUpload) {
-				const avatarFile = file.rid ? `room-${file.rid}` : file.userId;
+				const avatarFile = (file.rid && `room-${file.rid}`) || (file.contactId && `contact-${file._id}`) || file.userId;
 				return `${settings.get('uniqueID')}/avatars/${avatarFile}`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
@@ -229,7 +229,7 @@ export const FileUpload = {
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = settings.get('Accounts_AvatarSize') as number;
-		const width = height as number;
+		const width = height;
 
 		const s = sharp(tempFilePath);
 		if (settings.get('FileUpload_RotateImages') === true) {
@@ -327,7 +327,7 @@ export const FileUpload = {
 			height: pageHeight ?? height,
 			thumbFileType: (mime.lookup(format) as string) || '',
 			thumbFileName: file?.name as string,
-			originalFileId: file?._id as string,
+			originalFileId: file?._id,
 		}));
 		image.pipe(transformer);
 
@@ -422,7 +422,7 @@ export const FileUpload = {
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (file.rid) {
+		if (file.rid || file.contactId) {
 			return;
 		}
 
@@ -717,7 +717,9 @@ export const FileUpload = {
 			];
 
 			headersToProxy.forEach((header) => {
-				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+				if (fileRes.headers[header]) {
+					res.setHeader(header, String(fileRes.headers[header]));
+				}
 			});
 
 			res.statusCode = statusCode;

@@ -201,7 +201,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const subset = (source: Record<string, any>, currentPath: string): void => {
 			for (const key in source) {
-				if (!source.hasOwnProperty(key) || source[key] === undefined) {
+				if (!Object.hasOwn(source, key) || source[key] === undefined) {
 					continue;
 				}
 
@@ -314,7 +314,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const localUsername = userData.federated ? undefined : userData.username;
 		if (userData.name || localUsername) {
-			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername });
 		}
 
 		if (userData.importIds.length) {

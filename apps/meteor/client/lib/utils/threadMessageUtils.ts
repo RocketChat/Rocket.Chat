@@ -161,7 +161,7 @@ export const markThreadMessagesAsRead = (messages: IThreadMessage[], until?: Dat
 			return msg;
 		}
 		const { unread: _, ...rest } = msg;
-		return rest as IThreadMessage;
+		return rest;
 	});
 };
 

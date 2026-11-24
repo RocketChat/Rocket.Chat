@@ -70,6 +70,24 @@ const componentSources = new Map();
 for (const file of walk(join(fuselageSrc, 'components'))) {
 	componentSources.set(basename(file).replace(/\.[jt]sx$/, ''), readFileSync(file, 'utf8').replace(/\/\/.*$/gm, ''));
 }
+// A component built on a contract declares its props in `<Name>.contract.ts` and its tag in the web types it takes
+const contractFiles = (dir, files = []) => {
+	for (const name of readdirSync(dir)) {
+		const path = join(dir, name);
+		if (statSync(path).isDirectory()) contractFiles(path, files);
+		else if (name.endsWith('.contract.ts')) files.push(path);
+	}
+	return files;
+};
+for (const file of contractFiles(join(fuselageSrc, 'components'))) {
+	const name = basename(file).replace(/\.contract\.ts$/, '');
+	const contract = readFileSync(file, 'utf8').replace(/\/\/.*$/gm, '');
+	if (componentSources.has(name)) componentSources.set(name, `${componentSources.get(name)}\n${contract}`);
+}
+const webTypes = readFileSync(join(fuselageSrc, 'types/WebAttributes.ts'), 'utf8');
+for (const [name, source] of componentSources) {
+	if (/\bWeb\w*Props\b/.test(source)) componentSources.set(name, `${source}\n${webTypes}`);
+}
 // Components exported under another name (`OptionIcon as MenuItemIcon`) declare what the original does
 for (const dir of readdirSync(join(fuselageSrc, 'components'))) {
 	let index;

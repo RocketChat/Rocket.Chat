@@ -527,7 +527,7 @@ class RocketChatIntegrationHandler {
 			}
 		}
 
-		if (message && message.editedAt && !trigger.runOnEdits) {
+		if (message?.editedAt && !trigger.runOnEdits) {
 			outgoingLogger.debug({ msg: 'Trigger run on edits disabled and message was edited', triggerName: trigger.name });
 			return;
 		}
@@ -738,7 +738,7 @@ class RocketChatIntegrationHandler {
 									// 2 second, 4 seconds, 6 seconds, etc
 									waitTime = (tries + 1) * 2 * 1000;
 									break;
-								default:
+								default: {
 									const er = new Error("The integration's retryDelay setting is invalid.");
 									await updateHistory({
 										historyId,
@@ -747,6 +747,7 @@ class RocketChatIntegrationHandler {
 										errorStack: er.stack,
 									});
 									return;
+								}
 							}
 
 							outgoingLogger.info({ msg: 'Retrying integration', integrationName: trigger.name, url, waitTime });

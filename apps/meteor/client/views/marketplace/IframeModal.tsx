@@ -13,14 +13,18 @@ const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => 
 		return;
 	}
 
-	data.result ? confirm(data) : cancel();
+	if (data.result) {
+		confirm(data);
+	} else {
+		cancel();
+	}
 };
 
 export type IframeModalProps = {
 	url: string;
 	confirm: (data: any) => void;
 	cancel: () => void;
-	wrapperHeight?: string;
+	wrapperHeight?: ComponentProps<typeof Modal>['height'];
 } & ComponentProps<typeof Modal>;
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {

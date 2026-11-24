@@ -1,12 +1,10 @@
 import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
-	LocationHash,
 	LocationPathname,
 	LocationSearch,
 	RouteName,
 	RouteObject,
-	RouteParameters,
 	RouterContextValue,
 	SearchParameters,
 	To,
@@ -18,9 +16,9 @@ import { getRootUrlPathPrefix } from '../lib/meteorRuntimeConfig';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export class Router implements RouterContextValue {
-	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
+	private readonly pathRegExp = /(:[\w()\\+*.?[\]-]+)+/g;
 
-	private readonly queryRegExp = /\?([^\/\r\n].*)/;
+	private readonly queryRegExp = /\?([^/\r\n].*)/;
 
 	private current:
 		| Readonly<{
@@ -109,7 +107,7 @@ export class Router implements RouterContextValue {
 		path += idOrPathDef.replace(this.pathRegExp, (_key) => {
 			const firstRegexpChar = _key.indexOf('(');
 			let key = _key.substring(1, firstRegexpChar > 0 ? firstRegexpChar : undefined);
-			key = key.replace(/[\+\*\?]+/g, '');
+			key = key.replace(/[+*?]+/g, '');
 
 			if (params[key]) {
 				return this.encodeParam(`${params[key]}`);
@@ -222,14 +220,13 @@ export class Router implements RouterContextValue {
 
 	readonly getLocationPathname = () => this.current?.path.replace(/\?.*/, '') as LocationPathname;
 
-	readonly getLocationSearch = () => location.search as LocationSearch;
+	readonly getLocationSearch = () => location.search;
 
-	readonly getLocationHash = () => location.hash as LocationHash;
+	readonly getLocationHash = () => location.hash;
 
-	readonly getRouteParameters = () => (this.current?.params ? (Object.fromEntries(this.current.params.entries()) as RouteParameters) : {});
+	readonly getRouteParameters = () => (this.current?.params ? Object.fromEntries(this.current.params.entries()) : {});
 
-	readonly getSearchParameters = () =>
-		this.current?.queryParams ? (Object.fromEntries(this.current.queryParams.entries()) as SearchParameters) : {};
+	readonly getSearchParameters = () => (this.current?.queryParams ? Object.fromEntries(this.current.queryParams.entries()) : {});
 
 	readonly getRouteName = () => this.current?.route?.id as RouteName | undefined;
 

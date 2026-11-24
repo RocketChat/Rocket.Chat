@@ -35,6 +35,8 @@ export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEm
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
+export { useContactAvatarPath } from './hooks/useContactAvatarPath';
+export { useConnectionSessionId } from './hooks/useGetConnectionSessionId';
 export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';

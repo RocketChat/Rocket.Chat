@@ -32,12 +32,12 @@ integrations:
   ringing as a bare phone number. Contacts are a feature of Rocket.Chat in their own right: a user can
   create, edit and delete their own, and that works with or without Exchange. What this integration adds
   on top is the Outlook address book, **read only**. Synced contacts can be searched and called like any
-  other, but they are changed in Outlook, not here.
+  other, but they are changed in Outlook, not here, except for the favorite on Exchange Online.
 
 ## What an administrator sees
 
-Everything lives under **Admin → Outlook Calendar**, in a settings card named **Microsoft Exchange**. It
-requires a premium license that includes the `outlook-calendar` module.
+Everything lives under **Administration → Settings → Microsoft Exchange**. It requires a premium license
+that includes the `outlook-calendar` module.
 
 1. **Pick the mode.** `Legacy` keeps today's behaviour, where each user signs in from the desktop app.
    `Server-to-server` switches to the admin-configured connection.
@@ -85,6 +85,10 @@ Nothing to set up, which is the point.
 - **An unknown number resolves to a name.** When a call comes in from a number saved in their Outlook
   contacts, the caller shows as that person, and the call history shows names instead of digits.
 - **Their Outlook contacts are searchable in Rocket.Chat**, alongside contacts they create by hand here.
+- **Their favorite contacts show with a star and in the Favorites tab.** On Exchange on-premises these are
+  the contacts they marked as favorites in Outlook on the web, and they are changed in Outlook, not here.
+  On Exchange Online, which cannot read Outlook's favorites, they mark synced contacts as favorites in
+  Rocket.Chat, the same way as the contacts they created here.
 
 Contacts are **private to each user**. A person's Outlook contacts are visible only to them: nothing is
 shared across the workspace, and no administrator view of them exists.
@@ -129,6 +133,22 @@ left as an intention.
 - **Only the user's default calendar is read.** A secondary calendar they created, or a subscribed one, is
   out of scope. Contacts, by contrast, are read from every address book the user has.
 - **Past events are kept on purpose** and are not removed when they fall out of the sync window.
+- **Contact favorites are not synced from Exchange Online.** Microsoft Graph does not expose whether a
+  contact is a favorite in Outlook, so with that provider users mark favorites in Rocket.Chat instead.
+  Those stay in Rocket.Chat and never reach Outlook. They are lost when the contact is moved to another
+  address book in Outlook, and when the workspace switches to EWS.
+
+## Where the code lives
+
+- **`@rocket.chat/exchange`** (`packages/exchange`): both providers behind `IExchangeProvider`, the EWS
+  transport and its connection pool, retries, the active provider and the calendar window, calendar and
+  contact sync, the per-mailbox sync lease, mailbox resolution and the `Exchange` logger.
+- **`@rocket.chat/ntlm`** (`packages/ntlm`): the NTLMv2 messages, channel binding and MD4.
+- **`@rocket.chat/ui-contacts`** (`packages/ui-contacts`): the contacts table, contact details, editing,
+  favorites and their hooks.
+- **`apps/meteor`**: the settings (`ee/server/settings/exchange.ts`), building the provider from them
+  (`ee/server/lib/exchange/ExchangeProviderRegistry.ts`), both cron jobs, the REST endpoints and the
+  Contacts tab (`client/views/contacts/`).
 
 ## Where the decisions are written down
 

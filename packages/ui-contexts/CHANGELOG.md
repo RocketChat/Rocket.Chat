@@ -1,5 +1,27 @@
 # @rocket.chat/ui-contexts
 
+## 37.0.0-rc.0
+
+### Minor Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+### Patch Changes
+
+- ([#43769](https://github.com/RocketChat/Rocket.Chat/pull/43769)) Adds `useLoginWithSamlToken` to `@rocket.chat/ui-contexts` so views can finish a SAML login without importing the Meteor login module
+
+- <details><summary>Updated dependencies [0c2d151aef9a37c30c0c0b71903290580484bebe, 10a9c7a35ba00cef6c31b28a0b9cc1aa8ad6659f, 9971f492da4960edce747fa9feb07c7fc332dbac, 46cba6391140d334aecbe764a0fc3341feb27ce9, 07a59105db13500e0270a6cf317a7d99acd20f65, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 66a6efc626f470f3677af8bcd32f9bb8a5c504b8, 2764e60c1343f9ed870bd40deef2d2019acaf477, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 84264107a7355044bfc97d00dcf277d4a9016dbc]:</summary>
+  - @rocket.chat/i18n@6.0.0-rc.0
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/ddp-client@3.0.0-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.1-rc.0
+
+  </details>
+
 ## 36.0.0
 
 ### Major Changes
