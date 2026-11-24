@@ -1,7 +1,7 @@
 import { Box, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { NAVIGATION_REGION_ID } from '../../lib/constants';
@@ -9,16 +9,17 @@ import { NAVIGATION_REGION_ID } from '../../lib/constants';
 export type SidebarPortalProps = { children: ReactNode };
 
 const SidebarPortal = ({ children }: SidebarPortalProps) => {
-	const sidebarRoot = document.getElementById(NAVIGATION_REGION_ID);
-	const { sidebar } = useLayout();
+	const { overlayed, setOverlayed } = useLayout().sidebar;
+	const [sidebarRoot, setSidebarRoot] = useState(() => document.getElementById(NAVIGATION_REGION_ID));
 
 	useEffect(() => {
-		if (sidebarRoot) {
-			sidebar.setOverlayed(true);
-		}
+		setOverlayed(true);
+		return () => setOverlayed(false);
+	}, [setOverlayed]);
 
-		return () => sidebar.setOverlayed(false);
-	}, [sidebar, sidebarRoot]);
+	useEffect(() => {
+		setSidebarRoot(document.getElementById(NAVIGATION_REGION_ID));
+	}, [overlayed]);
 
 	if (!sidebarRoot) {
 		return null;

@@ -23,7 +23,7 @@ export type LayoutWithSidebarProps = { children: ReactNode };
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	const {
 		isEmbedded: embeddedLayout,
-		sidebar: { shouldToggle },
+		sidebar: { shouldToggle, overlayed },
 	} = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
@@ -38,7 +38,16 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 		}
 	}, [sidebarRailActive, isSidebarClosingRoute]);
 
-	const removeSidenav = (embeddedLayout && !currentRoutePath?.startsWith('/admin')) || (sidebarRailActive && sidebarClosed);
+	const removeSidenav = (embeddedLayout && !currentRoutePath?.startsWith('/admin')) || (sidebarRailActive && sidebarClosed && !overlayed);
+
+	const handleToggleInbox = () => {
+		if (overlayed) {
+			setSidebarClosed(false);
+			router.navigate('/home');
+			return;
+		}
+		setSidebarClosed((closed) => !closed);
+	};
 
 	const firstChannelAfterLogin = useSetting<string>('First_Channel_After_Login', '');
 	const roomName = (firstChannelAfterLogin.startsWith('#') ? firstChannelAfterLogin.slice(1) : firstChannelAfterLogin).trim();
@@ -90,7 +99,7 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 				<MainLayoutStyleTags />
 				<FeaturePreview feature='sidebarRail' disabled={shouldToggle || embeddedLayout}>
 					<FeaturePreviewOn>
-						<SidebarRail inboxOpen={!sidebarClosed} onToggleInbox={() => setSidebarClosed((closed) => !closed)} />
+						<SidebarRail inboxOpen={!sidebarClosed && !overlayed} onToggleInbox={handleToggleInbox} />
 					</FeaturePreviewOn>
 					<FeaturePreviewOff>{null}</FeaturePreviewOff>
 				</FeaturePreview>
