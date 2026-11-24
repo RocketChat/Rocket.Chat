@@ -48,7 +48,9 @@ Once the user picks an option, the element behaves like any other select: its va
 
 ### View state
 
-`state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. When the app updates the view (`modal.update`, `contextual_bar.update`, `banner.update`), an element whose `actionId` stays keeps its value, even if the app changed its initial value; a new element starts from its initial value; a removed one leaves the state. Only elements with a `blockId` are included, so an input block without `blockId` never reaches the app.
+`state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. When the app updates the view (`modal.update`, `contextual_bar.update`, `banner.update`), an element whose `actionId` stays keeps its value, even if the app changed its initial value; a new element starts from its initial value; a removed one leaves the state. The initial values include only elements with a `blockId`; once the user edits an element of an input block without `blockId`, its value is sent under the `default` block.
+
+[`useUiKitViewState`](../../../packages/fuselage-ui-kit/src/hooks/useUiKitViewState.ts) holds the state. A modal, contextual bar or banner creates it from the view's blocks, passes it to the elements as `viewState` on `UiKitContext`, and reads `viewState.getState()` when it sends `viewSubmit` or `viewClosed`. Modals and contextual bars also give it the room on screen, which is the initial value of the elements that default to the current conversation. Messages have no view state: their elements keep their value to themselves.
 
 ### Files in views
 
