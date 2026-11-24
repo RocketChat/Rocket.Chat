@@ -117,7 +117,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							{parentMessage.isLoading && <Skeleton />}
 							{parentMessage.isError && t('Thread_not_available')}
 						</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						{!parentMessage.isError && <ThreadMessageUnfollow />}
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
