@@ -14,6 +14,7 @@ import { settings } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
 import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../notifyListener';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';
+import { ensureServiceIdIndex } from '../../oauth/ensureServiceIdIndex';
 import { passportOAuthCallback } from '../../oauth/passportOAuthCallback';
 import { removeOAuthRoutes } from '../../oauth/removeOAuthRoutes';
 
@@ -79,6 +80,8 @@ settings.watchMultiple(
 			}
 			return;
 		}
+
+		void ensureServiceIdIndex('apple');
 
 		const [normalizedClientId, normalizedServerSecret, normalizedIss, normalizedKid] = [clientId, serverSecret, iss, kid].map((value) =>
 			typeof value === 'string' ? value.trim() : '',

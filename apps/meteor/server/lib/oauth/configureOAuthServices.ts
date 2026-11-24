@@ -5,6 +5,7 @@ import type { Profile, DoneCallback } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
+import { ensureServiceIdIndex } from './ensureServiceIdIndex';
 import { passportOAuthCallback, passportOAuthErrorCallback } from './passportOAuthCallback';
 import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { oAuthRouter } from '../../configuration/configurePassport';
@@ -17,6 +18,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 		passport.unuse(config.provider);
 		removeOAuthRoutes(config.provider);
+
+		void ensureServiceIdIndex(config.provider);
 
 		passport.use(
 			config.provider,
