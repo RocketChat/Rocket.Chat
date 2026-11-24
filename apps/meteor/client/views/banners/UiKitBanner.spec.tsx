@@ -65,12 +65,12 @@ it('sends the initial values when the banner is closed', async () => {
 	expect(sentState()).toEqual({ 'name-block': { name: 'Ada' } });
 });
 
-it('sends only the initial values when the banner is closed, not what the user typed', async () => {
+it('sends what the user typed when the banner is closed', async () => {
 	renderBanner();
 
 	await userEvent.clear(screen.getByLabelText('Name'));
 	await userEvent.type(screen.getByLabelText('Name'), 'Grace');
 	await closeBanner();
 
-	expect(sentState()).toEqual({ 'name-block': { name: 'Ada' } });
+	expect(sentState()).toEqual({ 'name-block': { name: 'Grace' } });
 });

@@ -19,9 +19,9 @@ export type UiKitBannerProps = {
 };
 
 const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
-	const { view, values, state } = useUiKitView(initialView);
+	const { view, values, updateValues, state } = useUiKitView(initialView);
 	const actionManager = useUiKitActionManager();
-	const contextValue = useBannerContextValue({ view, values });
+	const contextValue = useBannerContextValue({ view, values, updateValues });
 
 	const icon = useMemo(() => {
 		if (view.icon) {
