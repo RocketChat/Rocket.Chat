@@ -16,7 +16,6 @@ The agent reuses the `users` collection. The existing fields `_id`, `username`, 
 | `agent.description` | `string` | 1 to 500 characters. |
 | `agent.replyMode` | `'mention' \| 'ambient' \| 'autonomous'` | Required (FR-024). |
 | `agent.capabilities` | `string[]` | MCP tool names from the agent tool table. Fixed at registration (FR-008, FR-014). |
-| `agent.allowedRoomIds` | `string[]` | Empty at registration (FR-010). Only the `agents.update` endpoint changes it. |
 | `agent.status` | `'active' \| 'suspended'` | Default `active` (FR-046). |
 | `agent.credentialIssuedAt` | `Date` | Set at registration and at each rotation. |
 | `agent.postWindow` | `{ start: Date; count: number }` | The FR-050 counter (RQ-3). Internal. No endpoint returns it. |
@@ -46,8 +45,6 @@ issued ──revoke──▶ none ──rotate──▶ issued
 | `findOneAgentById(id, options)` | Reads an agent by id. It matches `type: 'agent'` only. |
 | `findAgentsByOwnerId(ownerId, options)` | Lists the agents of an owner. |
 | `updateAgentSettings(id, { description?, ownerId?, replyMode? })` | Applies an admin edit. |
-| `setAgentAllowedRoomIds(id, rids)` | Replaces the room allow list. |
-| `removeRoomFromAgentAllowLists(rid)` | Runs on room deletion (FR-021 edge case). |
 | `setAgentStatus(id, status)` | Suspends or reactivates. |
 | `unsetAgentOwnerByOwnerId(ownerId)` | Runs on owner deletion (D-11). |
 | `replaceAgentCredential(id, hashedToken, issuedAt)` | Removes every login token and adds one PAT (rotation). |
@@ -56,6 +53,22 @@ issued ──revoke──▶ none ──rotate──▶ issued
 | `findAgentIds(options)` | Lists every agent id, for the forced logout when the MCP server turns off (D-18). |
 
 Revocation reuses `Users.unsetLoginTokens(userId)`.
+
+## Room allow list (FR-061)
+
+The agent has no allow list field. The allow list is the set of its subscriptions whose `status` is not `INVITED` (D-5). It is empty at registration (FR-010), because `Users.insertAgent` joins no default channel (PQ-1).
+
+| Read | Method |
+|------|--------|
+| The room check per call | `Subscriptions.findOneByRoomIdAndUserId(rid, agentId, { projection: { status: 1 } })` (existing) |
+| The rooms for `agents.messages` and `agents.me` | `Subscriptions.findByUserId(agentId, { projection: { rid: 1, status: 1 } })` (existing) |
+| The agent members of a room at deletion | `Subscriptions.findByRoomId(rid, { projection: { 'u._id': 1 } })` (existing), then `Users.findAgentIdsByIds(ids)` |
+
+| Users method (new) | Purpose |
+|--------------------|---------|
+| `findAgentIdsByIds(ids)` | Keeps the ids that belong to agents, for the deletion audit (FR-064). |
+
+Only an actor with `manage-agents` adds an agent to a room (FR-062, D-19). Any member remover may remove one (FR-063).
 
 ## Agent role and permissions
 
@@ -81,7 +94,7 @@ effectiveScope(agent) =
   ∪ { 'get_agents_me' }
 ```
 
-Room check per call: `room ∈ agent.allowedRoomIds`, or the room is a direct message and the agent is a member.
+Room check per call: the agent holds a subscription to the room whose `status` is not `INVITED` (FR-061). A direct message passes the same check.
 
 The computation and `AGENT_TOOLS` live in `packages/authorization/src/agents/`, so the REST guard and the DDP stream checks in both deployments use one rule (D-16).
 
@@ -155,6 +168,9 @@ Every transition leaves `pending` through one atomic update that matches `state:
 | Field | Type | Rules |
 |-------|------|-------|
 | `IMessage.agent` | `true \| undefined` | Only the agent endpoints set it (D-7). The badge reads it. |
+| `IMessage.blocks` | `MessageSurfaceLayout \| undefined` | Existing field. On an agent message it holds only the allowed block and element types (FR-057, D-20). |
+
+Allowed in an agent message (`AGENT_BLOCK_TYPES`, a code constant next to `validateAgentBlocks`): the blocks `section`, `context`, `divider`, `header`, `image`, and `markdown`, and the elements `plain_text`, `mrkdwn`, and `image`. A `section` accessory must be an `image`.
 
 ### Messages model methods (new)
 
@@ -179,6 +195,9 @@ The reply-mode filter (D-10) runs in the endpoint, not in the model.
 | `agent.approval.created` | approval id, agent id, room id | the agent |
 | `agent.approval.decided` | approval id, decision | the approver |
 | `agent.approval.expired` | approval id | system |
+| `agent.room.added` | agent id, room id, path | the user who added the agent (FR-064) |
+| `agent.room.removed` | agent id, room id, path (`kick`, `leave`, `agents.update`, `room-deleted`) | the user who removed the agent, or the user who deleted the room |
+| `agent.room.add.refused` | agent id, room id, path, missing permission (`manage-agents`) | the user who tried, or system for a path with no actor |
 
 ## Amendment A-3: webhook
 
@@ -192,8 +211,8 @@ The reply-mode filter (D-10) runs in the endpoint, not in the model.
 |--------|---------|
 | `setAgentWebhook(id, webhook)` | Sets or clears `agent.webhook`. |
 | `setAgentWebhookSecret(id, secret)` | Replaces the secret at rotation. |
-| `findAgentsWithWebhookByRoom(rid, memberIds, options)` | Lists the active agents with a webhook whose allow list holds `rid`, or whose id is in `memberIds` for a direct message. |
+| `findActiveAgentIdsWithWebhook(options)` | Lists the active agents with a webhook. The sender caches the result on each instance and refreshes it on each agent change. |
 
-Index: `{ 'agent.allowedRoomIds': 1 }` with a partial filter on `agent.webhook` existing. Most saved messages match no agent, so the read costs one empty index lookup.
+The sender then reads `Subscriptions.findByRoomIdAndUserIds(rid, agentIds)` (existing) to keep the agents that are members of the room (FR-061). Index: `{ type: 1 }` with a partial filter on `agent.webhook` existing. Most saved messages have no agent with a webhook, so the sender skips the read.
 
 Audit: `agent.updated` records a webhook change with the old and new URL, never the secret.

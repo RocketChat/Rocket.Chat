@@ -55,13 +55,17 @@ curl -s "$MCP" -H "Content-Type: application/json" -H "X-User-Id: $AGENT_ID" -H 
 
 Expected: exactly `get_agents_me`, `get_agents_messages`, and `post_agents_reply`.
 
-`call "$AGENT_ID" "$AGENT_TOKEN" get_rooms_info '{"roomId":"GENERAL"}'` returns `error-agent-capability-not-allowed`. `call "$AGENT_ID" "$AGENT_TOKEN" get_agents_me '{}'` shows an empty `allowedRooms`.
+`call "$AGENT_ID" "$AGENT_TOKEN" get_rooms_info '{"roomId":"GENERAL"}'` returns `error-agent-capability-not-allowed`. `call "$AGENT_ID" "$AGENT_TOKEN" get_agents_me '{}'` shows an empty `allowedRooms`. The agent is a member of no default channel (PQ-1).
 
 ## Scenario 3: Authorize a room (US3)
 
 1. Open Administration → Users → `qs-agent`. Expected: the row shows the agent badge and the `active` status.
 2. Add `#general` to the room allow list and save. Expected: `qs-agent` appears in the `#general` member list with the agent badge, with no other step.
 3. As the agent, post a reply to a message in a room that is not on the list. Expected: `error-agent-room-not-allowed` names the room, and the audit trail holds `agent.call.denied`.
+4. As `alice`, who lacks `manage-agents`, run `/invite @qs-agent` in a room she owns. Expected: the command fails with an error that names `manage-agents`, the agent is not a member, and the audit trail holds `agent.room.add.refused` (FR-062, FR-064).
+5. As `alice`, create a private group with `qs-agent` in the members. Expected: the creation fails with the same error.
+6. As the admin, invite `qs-agent` to `alice`'s room from the member list. Expected: the agent joins, `get_agents_me` lists the room, and the audit trail holds `agent.room.added`.
+7. As `alice`, the room owner, remove `qs-agent` from the member list. Expected: the agent leaves, the next agent call in that room fails with `error-agent-room-not-allowed`, and the audit trail holds `agent.room.removed` with `alice` as the actor (FR-063).
 
 ## Scenario 4: Mention and reply in a thread (US4, US1)
 
@@ -71,6 +75,8 @@ Expected: exactly `get_agents_me`, `get_agents_messages`, and `post_agents_reply
 4. `call "$AGENT_ID" "$AGENT_TOKEN" post_agents_reply '{"msgId":"<id>","text":"hi"}'`. Expected: the reply appears in the thread of the mention. The header shows the agent badge, which differs from the Bot tag. A screen reader announces "Agent".
 5. Open the agent profile. Expected: the panel shows the agent type, the description, the owner, the capabilities, and the status.
 6. As `alice`, open a direct message with `qs-agent` and write to it. The agent replies to that message. Expected: the reply is in the conversation, not in a thread.
+7. Reply with blocks: `post_agents_reply` with `"blocks":[{"type":"section","text":{"type":"mrkdwn","text":"*done*"}},{"type":"divider"}]`. Expected: the message shows the text and both blocks (FR-057).
+8. Reply with `"blocks":[{"type":"actions","elements":[{"type":"button","text":{"type":"plain_text","text":"Go"},"actionId":"go"}]}]`. Expected: `error-agent-invalid-blocks`, with `index` 0 and `type-not-allowed`. Nothing is posted.
 
 ## Scenario 5: Rate limit (FR-050)
 

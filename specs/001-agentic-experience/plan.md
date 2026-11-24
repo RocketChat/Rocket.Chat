@@ -1,17 +1,18 @@
 # Implementation Plan: Agent Identity and Access
 
-**Branch**: `001-agentic-experience` | **Date**: 2026-11-18, revised 2026-11-19 for FR-053 to FR-055 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-agentic-experience` | **Date**: 2026-11-18, revised 2026-11-19 for FR-053 to FR-055, and 2026-11-24 for FR-057 and FR-061 to FR-064 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `specs/001-agentic-experience/spec.md`
 
 ## Summary
 
-An agent is a user with `type: 'agent'`, the protected role `agent`, and an `agent` subdocument for the owner, reply mode, capabilities, room allow list, and status.
+An agent is a user with `type: 'agent'`, the protected role `agent`, and an `agent` subdocument for the owner, reply mode, capabilities, and status. The room allow list is the agent room membership, with no separate list (FR-061).
 
 - **Registration**: a human with `register-agents` calls `agents.register` over REST or as an MCP tool, with a PAT or with an OAuth token from the MCP authorization flow (RP-2). The server returns a PAT on the agent user once, and revokes the OAuth token (FR-056).
 - **Entry points**: an agent calls the workspace through the MCP server only. The MCP dispatch marks its loopback REST calls with a per-process secret, and the guard refuses every other agent REST call (FR-053). DDP accepts the agent PAT for room event subscriptions only (FR-054). Each refusal is audited, at most once per agent per entry point per minute (FR-055).
 - **Scope**: one agent guard in the REST auth middleware enforces the entry point, the effective scope, the room allow list, the suspension, and the post limit on every agent call. MCP tool calls are loopback REST calls, so the same guard covers them. The MCP tool list applies the same table. The DDP stream checks use the same scope rule from `packages/authorization`.
-- **Delivery**: the agent polls `get_agents_messages` every 2 s, or subscribes to its room streams over DDP. It posts through `agents.reply`, which picks the thread or the conversation, and through `agents.post` in autonomous mode.
+- **Room membership**: only an actor with `manage-agents` adds an agent to a room, on every path. A check in the shared add path, a backstop in `Room.createUserSubscription`, and an explicit check on each path that bypasses both enforce it (FR-062, D-19). Any member remover may remove an agent (FR-063). Each add, removal, and refused add is audited (FR-064).
+- **Delivery**: the agent polls `get_agents_messages` every 2 s, or subscribes to its room streams over DDP. It posts through `agents.reply`, which picks the thread or the conversation, and through `agents.post` in autonomous mode. Both endpoints take non-interactive UiKit blocks from an allow list of block and element types, and refuse any other block by its index (FR-057, D-20).
 - **Badge**: a message field `agent: true` and the user type drive the badge in the web client.
 - **Approval card**: a core UiKit app runs the approval card with an atomic first-decision lock.
 
@@ -23,7 +24,7 @@ Decisions and alternatives: [research.md](research.md). Shortcuts: [shortcuts.md
 
 **Primary Dependencies**: Hono API router (`API.v1`), the workspace MCP server (`apps/meteor/ee/server/api/mcp/`), `@rocket.chat/ddp-server`, `@rocket.chat/streamer`, the account service (`ee/apps/account-service`), `@rocket.chat/models`, `@rocket.chat/authorization`, UiKit core apps, React and Fuselage, `@rocket.chat/ui-contexts`, `@rocket.chat/cron`. No new runtime dependency.
 
-**Storage**: MongoDB. The `users` collection gains the `agent` subdocument. A new collection `rocketchat_agent_approvals` holds approval cards. Messages gain the `agent` field.
+**Storage**: MongoDB. The `users` collection gains the `agent` subdocument. The `rocketchat_subscription` collection holds the room allow list, as it holds every membership. A new collection `rocketchat_agent_approvals` holds approval cards. Messages gain the `agent` field.
 
 **Testing**: Jest and Mocha unit tests next to the files they test, with `mockModel`. API tests in `apps/meteor/tests/end-to-end/api/`. Playwright E2E tests in `apps/meteor/tests/e2e/`.
 
@@ -44,7 +45,9 @@ Decisions and alternatives: [research.md](research.md). Shortcuts: [shortcuts.md
 
 **Scale/Scope**: 10 concurrent agents per workspace for the SC-010 test. One credential per agent. 12 tools in the agent tool table.
 
-All research questions are resolved in [research.md](research.md). No NEEDS CLARIFICATION remains. Three assumptions get a check in the first tasks (V-5 to V-7).
+All research questions are resolved in [research.md](research.md), RQ-5 included. No NEEDS CLARIFICATION remains. Five assumptions get a check in the first tasks (V-5 to V-7, V-10, V-11).
+
+Open product input: PQ-1 (does a new agent join the default channels?). The plan ships "no": `AgentService.register` inserts the agent through `Users.insertAgent`, which never runs `addUserToDefaultChannels`, so the allow list starts empty (FR-010). A "yes" changes F-3 only: the registration calls the default channel join with the registrant as the actor, and FR-062 applies to it.
 
 ## Constitution Check
 
@@ -52,8 +55,8 @@ All research questions are resolved in [research.md](research.md). No NEEDS CLAR
 
 | Principle | Pre-research | Post-design | Evidence |
 |-----------|--------------|-------------|----------|
-| I. One concern per change | Pass | Pass | The delivery order below gives one pull request per concern. The enabling refactors R-1 and R-4 sit below the features. |
-| II. Named model methods | Pass | Pass | Every new query is a named method on `Users`, `Messages`, or `AgentApprovals`, declared in `packages/model-typings` ([data-model.md](data-model.md)). The refusal audit slot is `Users.claimAgentRefusalAuditSlot`. The guard and the endpoints pass only `projection`, `sort`, and `limit`. |
+| I. One concern per change | Pass | Pass | The delivery order below gives one pull request per concern. The enabling refactors R-1 and R-4 sit below the features. The room add guard (F-13) ships before any agent can exist. |
+| II. Named model methods | Pass | Pass | Every new query is a named method on `Users`, `Messages`, or `AgentApprovals`, declared in `packages/model-typings` ([data-model.md](data-model.md)). The refusal audit slot is `Users.claimAgentRefusalAuditSlot`. The room check reuses `Subscriptions.findOneByRoomIdAndUserId` with a projection. The guard and the endpoints pass only `projection`, `sort`, and `limit`. |
 | III. Tests prove the change | Pass | Pass | See [Testing](#testing). R-1 keeps the MCP tests green with no edits. R-4 keeps the `ddp-server` and ddp-streamer tests green with no edits. |
 | IV. Views isolated | Pass | Pass | The admin agent section and the info panel reach the server through `useEndpoint` from `@rocket.chat/ui-contexts`. The badge is a presentational component with props only. The new screens compose layout containers. |
 | V. Comments state intent | Pass with exception | Pass with exception | `shortcut:` comments state a limit (DC-3). See Complexity Tracking. The subsystem doc goes in `docs/features/agents.md`, and the identity decision goes in an ADR. The DDP rules for agents go in `docs/features/ddp-sessions.md`. |
@@ -128,12 +131,17 @@ apps/meteor/server/
 │   ├── endAgentSessions.ts               # user.forceLogout on scope changes and MCP loss
 │   ├── registerAgent.ts, updateAgent.ts, agentCredential.ts, agentLifetime.ts
 │   ├── listAgentMessages.ts              # reply-mode filter
+│   ├── agentRoomMembership.ts            # FR-062 check, membership audit, forced logout on removal
+│   ├── validateAgentBlocks.ts            # FR-057 block allow list
 │   ├── postAgentReply.ts                 # thread or conversation placement
 │   └── approvals/                        # create, decide, expire
 ├── api/v1/agents.ts                      # new: agents.* endpoints
 ├── api/v1/middlewares/authentication.ts  # calls agentGuard for agent users
 ├── lib/authorization/constant/permissions.ts, upsertPermissions.ts   # role and permissions
 ├── lib/auth/startup.js                   # canAgentLogIn in validateLoginAttempt
+├── lib/rooms/                            # FR-062 on createRoom, createDirectRoom, addUserToDefaultChannels; audit in deleteRoom
+├── meteor-methods/rooms/addAllUserToRoom.ts   # skips agents
+├── services/room/service.ts              # createUserSubscription backstop for agents
 ├── lib/realtime/ddpServer.ts             # chains checkAgentDdpCall with the DDP rate limit
 ├── lib/roles/                            # agent role guard
 ├── modules/core-apps/agentApproval.module.ts   # new UiKit core app
@@ -179,16 +187,20 @@ Each step is one pull request with one concern (constitution I). The order puts 
 | R-4 | refactor | Carry the user type on DDP sessions | none | `Session.userType` from the login result. The account service returns the user type. ddp-streamer passes a call check that allows every call. The existing `ddp-server` and ddp-streamer tests stay green with no edits. |
 | F-1 | feat | Add the agent user type | US1, US2 | The `IUser.agent` type, the `agent` role, the `register-agents` and `manage-agents` permissions, the role order, the role guard (FR-004), the audit keys, and the ADR. `canAgentLogIn` refuses every agent login in this step, in the monolith and in the account service (FR-019). |
 | F-2 | feat | Restrict agents to the MCP server and their effective scope | US2, US3 | The dispatch secret and the MCP-only check (FR-053), `AGENT_TOOLS` and `effectiveScope` in `packages/authorization`, `agentGuard` in the auth middleware, the `canAccessRoom` pre-check, the post counter, the call cap, the denial audit, the throttled refusal audit (FR-055), and the agent filter in the MCP tool list. The guard has no effect until an agent exists. |
+| F-13 | feat | Restrict who adds agents to rooms | US3 | The `beforeAddUserToRoom` check, the `Room.createUserSubscription` backstop, the checks on `createRoom`, `createDirectRoom`, `addAllUserToRoom`, and `addUserToDefaultChannels`, the error `error-agent-add-not-allowed`, the membership audit keys, and the forced logout on removal (FR-062 to FR-064, D-19). It has no effect until an agent exists. |
 | F-3 | feat | Register agents over REST and MCP | US2 | `agents.register`, `agents.info`, `agents.me`, and the catalog tools (RP-1, RP-2, RP-7). A registration with an OAuth token revokes the tokens of that client for the caller (FR-056). `agents.register` refuses while the MCP server is off or unlicensed (D-18). `AgentService.register` calls `License.shouldPreventAction('activeUsers')` and refuses with `error-license-user-limit-reached` on every path (FR-059). |
-| F-4 | feat | Authorize agents in rooms | US3 | `agents.update`, membership sync, cleanup on room deletion, and the agent settings section in the user administration. The agent UI gate hook (AI license module and `MCP_Enabled`) hides the section, and `agents.update` refuses while the MCP server is off or unlicensed (FR-060, D-18). |
+| F-4 | feat | Authorize agents in rooms | US3 | `agents.update`, which adds and removes memberships with the admin as the actor, and the agent settings section in the user administration. The agent UI gate hook (AI license module and `MCP_Enabled`) hides the section, and `agents.update` refuses while the MCP server is off or unlicensed (FR-060, D-18). |
 | F-12 | feat | Register agents in the user administration | US2 | The "Register agent" header button behind the seat gate and the agent UI gate, the `new-agent` contextual bar, the form, the fixed capability set (SH-009), and the credential view shown once (FR-012, FR-058, RP-5). The form calls `agents.register`, not `users.create`. |
 | F-5 | feat | Deliver messages to agents and place their replies | US4 | `agents.messages`, `agents.reply`, `agents.post`, the Messages model method, and the catalog tools. |
+| F-14 | feat | Let agents add UiKit blocks to messages | US4 | The `blocks` field on `agents.reply` and `agents.post`, `validateAgentBlocks`, the error `error-agent-invalid-blocks`, and the tool descriptions that list the allowed types (FR-057, D-20, RQ-5). |
 | F-10 | feat | Let agents subscribe to room events over DDP | US2, US4 | `canAgentLogIn` accepts a DDP `resume` login. `checkAgentDdpCall` in both deployments, `canAgentReadRoomEvents` in the room streams, the forced logouts on scope changes and on MCP loss, the refusal audit relay from ddp-streamer, and the DDP doc (FR-054, FR-055, D-18). |
 | F-6 | feat | Show the agent badge | US1 | The badge on messages, member lists, the mention popup, the info panel, the admin table, and notifications. |
 | F-7 | feat | Add approval cards | US5 | The `AgentApprovals` model, `agents.approvals.*`, the core UiKit app, the expiry cron, and the decision events in `agents.messages`. |
 | F-8 | feat | Manage the agent lifetime | US6 | Suspend, reactivate, rotate, revoke, delete, the owner tools in the catalog, and the admin actions. Each action that ends access also ends the agent DDP sessions through `endAgentSessions`. Suspend, reactivate, and rotate refuse while the MCP server is off or unlicensed, and the agent UI gate hides them. Revoke and delete stay open (FR-060). |
 
-F-1 to F-6 and F-10 deliver the P1 stories. F-7 and F-8 deliver the P2 stories in this iteration. If time runs short, F-7 and F-8 move to the next iteration with ledger entries. The suspension check ships in F-2 regardless. F-10 cannot move: DC-2 lists FR-054 and FR-055.
+F-1 to F-6, F-10, and F-13 deliver the P1 stories. F-7 and F-8 deliver the P2 stories in this iteration. If time runs short, F-7, F-8, and F-14 move to the next iteration with ledger entries. The suspension check ships in F-2 regardless. F-10 and F-13 cannot move: DC-2 lists FR-054, FR-055, FR-061, and FR-062.
+
+F-13 ships before F-3. Membership is the allow list, so an agent added by a user without `manage-agents` would widen its scope at once.
 
 F-1 refuses every agent login, and only F-10 opens the DDP login. Between the two, an agent has no DDP session, so no DDP call can skip the checks.
 
@@ -205,7 +217,10 @@ F-1 refuses every agent login, and only F-10 opens the DDP login. Between the tw
 | MCP off | An API test that turns off `MCP_Enabled`, then checks the MCP call, the registration, the DDP login, and the closed socket. It turns the setting on and checks that the same token works. | D-18, spec edge case |
 | Tool list | An API test that compares `tools/list` for an agent with its effective scope, and for a human with the catalog before the change. | FR-038, DC-2 |
 | Registration | API tests for the refused capabilities, the owner, the credential shown once, an agent caller, an empty allow list, and an OAuth caller whose token gets `401` after a registration and still works after a refused one. | FR-007 to FR-014, FR-056 |
-| Room allow list | An API test that adds and removes a room and checks the membership and the history access. | FR-020 to FR-022 |
+| Room allow list | An API test that adds and removes a room through `agents.update` and checks the membership and the history access. | FR-020 to FR-022, FR-061 |
+| Agent room adds | Unit tests for the FR-062 check and the backstop. An API test per add path with a user without `manage-agents`: `channels.invite`, `groups.invite`, `/invite`, `/invite-all-to`, `addUsersToRoom`, a team member add with autojoin rooms, `channels.create` and `groups.create` with members, a discussion with users, a group direct message, and `addAllUserToRoom`. Each expects `error-agent-add-not-allowed` naming `manage-agents`, no membership, and one `agent.room.add.refused` entry. The same paths succeed for an admin. A unit test per automated path (LDAP, SAML, and OAuth sync, Slack bridge, Apps Engine bridge, video conference) expects a refusal. | FR-062, FR-064, DC-2 |
+| Agent room removals | An API test where a room owner without `manage-agents` kicks an agent. It expects the removal, the closed agent socket, the next call refused with `error-agent-room-not-allowed`, and one `agent.room.removed` entry. A room deletion writes one entry per agent. | FR-063, FR-064 |
+| UiKit blocks | Unit tests for `validateAgentBlocks`: each allowed type, an `actions` block, a `section` with a button accessory, a nested interactive element, an unknown type, and a malformed block. An API test over MCP posts blocks and reads them back, and posts a button and expects `error-agent-invalid-blocks` with the block index. | FR-057 |
 | Reply placement | Unit tests for `postAgentReply`: a room, a thread message, a direct message, threads disabled. An API test for each reply mode. | FR-025 to FR-028, SC-007 |
 | Post limit | A unit test for the window counter, and an API test with 61 posts. | FR-050 |
 | Role guard | Unit tests. | FR-004 |
@@ -219,6 +234,8 @@ F-1 refuses every agent login, and only F-10 opens the DDP login. Between the tw
 ## Post-design Constitution Check
 
 The design passes every gate. The only exception is the `shortcut:` comment, which DC-3 requires. Complexity Tracking justifies it.
+
+The 2026-11-24 revision adds no exception. The membership audit uses typed `ServerEvents` keys. The block allow list is a code constant next to its validator, and its rules go in `docs/features/agents.md`. The room check reads a named Subscriptions method.
 
 The 2026-11-19 revision adds no exception. The refusal audit slot is a named model method. The DDP contract is not a REST endpoint, so principle VI does not apply to it. Its errors reuse the `ClientSafeError` codes, and its rules go in `docs/features/ddp-sessions.md`.
 

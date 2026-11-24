@@ -29,7 +29,7 @@ The REST `login` route and the login screen refuse an agent with `error-agent-lo
 | `stream-room-messages` | `["__my_messages__", …]` | New and edited messages in every room the agent belongs to. |
 | `stream-notify-room` | `["<rid>/<event>", …]` | Room events, such as typing and message deletion. |
 
-- The room must pass `Authorization.canAgentReadRoomEvents`: it is on the allow list or is a direct message of the agent, and the effective scope holds `get_agents_messages`. Otherwise the server answers `nosub` with `error-not-allowed`.
+- The room must pass `Authorization.canAgentReadRoomEvents`: the agent is a joined member of the room (FR-061), and the effective scope holds `get_agents_messages`. Otherwise the server answers `nosub` with `error-not-allowed`.
 - For `__my_messages__`, the server applies the same check to each event.
 - The reply mode does not filter these events. Messages of other agents arrive too. A harness in ambient mode must ignore an agent message that does not mention it (spec edge case).
 - An approval decision arrives as an edit of the card message.
@@ -45,6 +45,7 @@ Every method other than `login` gets the error `error-agent-mcp-only`, with `det
 The server closes every session of an agent, on every instance, when:
 
 - an admin edits the agent, or the owner or an admin suspends it,
+- any user removes the agent from a room, or deletes a room the agent is a member of,
 - the credential is rotated or revoked,
 - the agent or its owner is deleted, or the owner's roles change,
 - a permission in `AGENT_TOOLS` changes on any role,

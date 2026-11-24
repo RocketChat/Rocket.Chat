@@ -7,7 +7,7 @@ Every endpoint uses the validated `API.v1.get()` / `.post()` pattern, with reque
 | Error | HTTP | When |
 |-------|------|------|
 | `error-agent-capability-not-allowed` | 403 | The tool is outside the effective scope. `details.tool` names it. |
-| `error-agent-room-not-allowed` | 403 | The room is outside the allow list. `details.roomId` names it. |
+| `error-agent-room-not-allowed` | 403 | The agent is not a member of the room (FR-061). `details.roomId` names it. |
 | `error-agent-suspended` | 403 | The agent is suspended. |
 | `error-agent-rate-limited` | 429 | Post 61 inside the window. `details.retryAfter` gives the seconds to wait. The `Retry-After` header carries the same value. |
 | `error-not-an-agent` | 403 | A human calls an agent-only endpoint. |
@@ -15,6 +15,7 @@ Every endpoint uses the validated `API.v1.get()` / `.post()` pattern, with reque
 | `error-agent-mcp-only` | 403 | An agent calls a REST route directly, not through the MCP server (FR-053). `details.entryPoint` holds `/api/v1/mcp`. |
 | `error-agent-mcp-unavailable` | 403 | `agents.register`, `agents.update`, `agents.suspend`, `agents.reactivate`, or `agents.credential.rotate` runs while the MCP server is off or unlicensed (D-18, FR-060). |
 | `error-license-user-limit-reached` | 400 | `agents.register` runs while the workspace has no free license seat (FR-059). |
+| `error-agent-invalid-blocks` | 400 | `agents.reply` or `agents.post` carries a block outside the allow list, an interactive element, or a malformed block (FR-057). `details.rejected` lists each one. |
 
 The guard writes an `agent.call.denied` audit event for each of the first four errors. It writes `agent.entry.refused` for `error-agent-mcp-only`, at most once per agent per minute (FR-055).
 
@@ -42,7 +43,7 @@ Response `200`:
 
 ```json
 {
-  "agent": { "_id": "…", "username": "release-bot", "ownerId": "<caller>", "replyMode": "mention", "capabilities": ["…"], "allowedRoomIds": [], "status": "active" },
+  "agent": { "_id": "…", "username": "release-bot", "ownerId": "<caller>", "replyMode": "mention", "capabilities": ["…"], "status": "active" },
   "credential": { "userId": "…", "token": "<shown once>" }
 }
 ```
@@ -65,15 +66,27 @@ Permission: none beyond `authRequired`. The response holds the info panel data. 
 
 `owner` is `null` when the owner was deleted.
 
-### `POST agents.update` (FR-020, FR-021, FR-024, FR-045)
+### `POST agents.update` (FR-020, FR-021, FR-024, FR-045, FR-061)
 
 Permission: `manage-agents`.
 
 ```json
-{ "agentId": "…", "description": "…", "ownerId": "…", "replyMode": "ambient", "allowedRoomIds": ["GENERAL", "…"] }
+{ "agentId": "…", "description": "…", "ownerId": "…", "replyMode": "ambient", "roomIds": ["GENERAL", "…"] }
 ```
 
-Every field except `agentId` is optional. A change to `allowedRoomIds` adds the agent to each new room and removes it from each dropped room before the response returns. A direct message id is refused.
+Every field except `agentId` is optional. `roomIds` is the wanted room set. The endpoint adds the agent to each room it is not a member of and removes it from each room outside the set, with the caller as the actor, before the response returns. The membership is the allow list, so no other field stores it. A direct message id is refused.
+
+## Agent room membership (FR-062 to FR-064)
+
+No new endpoint. Every existing path that adds a member (`channels.invite`, `groups.invite`, `/invite`, team adds, room creation with members, a group direct message, and the rest in [research.md, D-19](../research.md#d-19-who-adds-an-agent-to-a-room-fr-062-to-fr-064)) refuses an agent target unless the caller holds `manage-agents`:
+
+```json
+{ "success": false, "errorType": "error-agent-add-not-allowed", "details": { "permission": "manage-agents", "agentId": "…", "roomId": "…" } }
+```
+
+Status `403` on REST. A DDP method returns the same error. Room creation fails as a whole. An automated path with no actor skips the agent and writes the audit entry.
+
+Every existing path that removes a member works for an agent, under its existing permission (FR-063).
 
 ### `POST agents.suspend`, `POST agents.reactivate` (FR-046, FR-047)
 
@@ -99,6 +112,8 @@ Always in scope.
 { "agent": { "_id": "…", "owner": { "_id": "…", "username": "…" }, "capabilities": ["…"], "effectiveScope": ["…"], "replyMode": "mention", "allowedRooms": [{ "_id": "…", "name": "…", "t": "c" }] } }
 ```
 
+`allowedRooms` lists the rooms where the agent is a member, direct messages excluded (FR-061).
+
 ### `GET agents.messages?since=&count=` (FR-025, FR-034, FR-042, FR-049)
 
 - `since`: an ISO date. Default: now minus 60 s.
@@ -117,8 +132,16 @@ The response may repeat an item near the cursor. The harness removes repeats by 
 ### `POST agents.reply` (FR-026, FR-027)
 
 ```json
-{ "msgId": "…", "text": "…" }
+{ "msgId": "…", "text": "…", "blocks": [{ "type": "section", "text": { "type": "mrkdwn", "text": "*Build 7.4.1* passed" } }] }
 ```
+
+`blocks` is optional (FR-057). Allowed: the blocks `section`, `context`, `divider`, `header`, `image`, and `markdown`, and the elements `plain_text`, `mrkdwn`, and `image`. A `section` accessory must be an `image`. `text` is required with blocks too. A refusal:
+
+```json
+{ "success": false, "errorType": "error-agent-invalid-blocks", "details": { "rejected": [{ "index": 1, "type": "actions", "reason": "type-not-allowed" }, { "index": 2, "type": "section", "reason": "interactive", "path": "$input[2].accessory", "expected": "image" }] } }
+```
+
+`reason` is `interactive`, `type-not-allowed`, or `invalid`. `path` and `expected` come from the UiKit validator.
 
 The server picks the place:
 
@@ -131,8 +154,10 @@ The response returns the posted message. The FR-050 counter applies.
 ### `POST agents.post` (FR-028)
 
 ```json
-{ "roomId": "…", "text": "…" }
+{ "roomId": "…", "text": "…", "blocks": [] }
 ```
+
+`blocks` follows the rules of `agents.reply`.
 
 Only an agent in autonomous mode may call it. Others get `error-agent-capability-not-allowed`. The FR-050 counter applies.
 

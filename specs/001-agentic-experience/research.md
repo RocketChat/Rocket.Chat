@@ -23,7 +23,7 @@ Phase 0 output for [plan.md](plan.md). Each entry gives the decision, the ration
 
 ## D-1: Agent identity
 
-- **Decision**: An agent is an `IUser` with `type: 'agent'`, the protected role `agent`, and an `agent` subdocument for the owner, description, reply mode, capabilities, room allow list, and status. See [data-model.md](data-model.md).
+- **Decision**: An agent is an `IUser` with `type: 'agent'`, the protected role `agent`, and an `agent` subdocument for the owner, description, reply mode, capabilities, and status. The room allow list is the agent membership (D-5). See [data-model.md](data-model.md).
 - **Rationale**: DC-1 asks to reuse the user model. The user type is already system-only, so FR-004 needs only a guard on the role assignment. Messages, mentions, avatars, and the user administration work with no change.
 - **Alternatives**: A separate `Agents` collection that points at a bot user. Rejected: two records per agent and a join on every call.
 
@@ -40,11 +40,11 @@ Phase 0 output for [plan.md](plan.md). Each entry gives the decision, the ration
   - the route has no entry in the table,
   - the tool is not in the declared capabilities,
   - the agent role or the owner lacks a permission that the entry lists,
-  - the room that the call targets is not on the room allow list and is not a direct message of the agent,
+  - the agent is not a joined member of the room that the call targets (D-5),
   - the agent is suspended.
 - The guard returns an error that names the tool or the room, and it writes an `agent.call.denied` audit event.
 - MCP tool calls pass through the guard, because every tool is a loopback REST call. `tools/list` applies the same table, so an agent sees only its effective scope.
-- A pre-check in `canAccessRoom` backs the guard up: an agent reaches a room only when the room is on its allow list or is a direct message that the agent is a member of.
+- A pre-check in `canAccessRoom` backs the guard up: an agent reaches a room only when it is a joined member of the room.
 - **Rationale**: One rule serves REST and MCP the same way (FR-039). The guard reads the scope on each call, so a change applies on the next call (FR-016). A route outside the table is denied by default, so FR-043 holds by construction.
 - **Alternatives**: A filter only in the MCP server. Rejected: the tool runs as a REST call, and the REST side needs the agent lookup for D-15 anyway. One guard there covers both.
 
@@ -54,10 +54,17 @@ Phase 0 output for [plan.md](plan.md). Each entry gives the decision, the ration
 - The table leaves out the tools that manage users, ban or mute, change room settings, archive rooms, invite members, edit teams, and resolve a room by name.
 - **Rationale**: A declared capability is an MCP tool (FR-008). The table gives the guard the permission and room data that the catalog lacks. The table and the scope computation live in `packages/authorization`, because the DDP stream checks in ddp-streamer need them too (D-16).
 
-## D-5: Room allow list and membership (FR-020 to FR-022)
+## D-5: Room allow list and membership (FR-020 to FR-022, FR-061)
 
-- **Decision**: `agents.update` writes `agent.allowedRoomIds`. It calls `addUserToRoom` for each added room and `removeUserFromRoom` for each removed room. Room deletion removes the room from every allow list.
-- **Rationale**: The agent subscriptions then match the allow list, so `chat.search` and the subscription tools stay inside the list without a filter.
+*Revised 2026-11-24. The first decision kept `agent.allowedRoomIds` next to the membership. FR-061 forbids a separate list.*
+
+- **Decision**: The room allow list is the set of rooms where the agent holds a subscription whose `status` is not `INVITED`. No field on the user stores it.
+  - The room check reads `Subscriptions.findOneByRoomIdAndUserId(rid, agentId, { projection: { status: 1 } })`. A missing subscription or an `INVITED` one fails the check. A direct message passes the same check, so the direct message rule needs no special case.
+  - `agents.update` takes the wanted room set. It calls `addUserToRoom` with the admin as the inviter for each added room, and `removeUserFromRoom` with the admin as `byUser` for each removed room.
+  - `agents.messages`, `agents.me`, and the DDP checks read the rooms from the agent subscriptions.
+  - Room deletion needs no cleanup: it removes the subscriptions.
+- **Rationale**: One source of truth. `chat.search` and the subscription tools already stay inside the membership. An admin can also add an agent through the existing member list, under D-19.
+- **Alternatives**: Keep a list next to the membership and sync the two. Rejected by FR-061: every add path outside `agents.update` would make the two disagree.
 
 ## D-6: Reply placement (FR-026 to FR-028)
 
@@ -250,6 +257,84 @@ These checks confirm an assumption of D-13 to D-16. Each one is a task with a te
   - The REST `login` route accepts a PAT as `resume` today. D-13 must refuse it for an agent.
   - Proof: an API test logs in with a PAT as `resume` over REST and over DDP, subscribes to a stream, and logs in again with `Accounts_LoginExpiration` set to 1 day. A unit test covers `loginViaResume` with a token that has no `when`.
 - **V-7**: A forced logout ends the stream subscriptions of the session at once, in the monolith and in ddp-streamer.
+- **V-10**: The web client shows the text and the blocks of a message that carries both, in the room and in a thread. If it hides the text, the agent endpoints add the text as a first `markdown` block (D-20).
+- **V-11**: `createRoom` runs the member callbacks before it inserts the room, so a rethrown refusal leaves no empty room behind (D-19). If not, the agent check moves before the insert.
+
+## D-19: Who adds an agent to a room (FR-062 to FR-064)
+
+### Findings
+
+- `addUserToRoom` (`apps/meteor/server/lib/rooms/addUserToRoom.ts:21`) is the shared add path, and it checks no permission. It runs the callback `beforeAddUserToRoom({ user, inviter }, room)` and rethrows its error as a `ClientSafeError`. Invites, slash commands, team adds, joins, invite links, LDAP, SAML, and OAuth group sync, the Slack and IRC bridges, the Apps Engine bridge, and video conferences reach it. Most automated paths pass no inviter.
+- `addUserToRoom` ends in `Room.createUserSubscription` (`apps/meteor/server/services/room/service.ts:~297`). Matrix and XMPP federation call that method directly (`ee/packages/xmpp-server/src/service/XMPPServerService.ts:639,719`).
+- Paths that skip both:
+  - `createRoom` runs the callback per member, but it swallows a refusal and skips the member (`apps/meteor/server/lib/rooms/createRoom.ts:74-77`). Channel, group, discussion, and team creation use it.
+  - `addAllUserToRoom` inserts subscriptions directly (`apps/meteor/server/meteor-methods/rooms/addAllUserToRoom.ts:54`).
+  - `addUserToDefaultChannels` inserts directly (`apps/meteor/server/lib/rooms/addUserToDefaultChannels.ts:21`). It runs from `Accounts.insertUserDoc`, not from a direct `Users` insert.
+  - `createDirectRoom` upserts the subscriptions of a direct message or a group direct message (`apps/meteor/server/lib/rooms/createDirectRoom.ts:137,183`). The creator is `options.creator`.
+  - Omnichannel inserts subscriptions for livechat agents only (`apps/meteor/server/lib/omnichannel/Helper.ts:281`).
+- Removals: the kick method checks `remove-user` and runs `afterRemoveFromRoom` with `userWhoRemoved` (`apps/meteor/server/meteor-methods/rooms/removeUserFromRoom.ts:18,110`). `removeUserFromRoom` runs `afterLeaveRoom` with `kicker`. Room deletion removes every subscription with no per-user callback (`apps/meteor/server/lib/rooms/deleteRoom.ts:14`).
+- `IServerEvents` has no membership key.
+
+### Decision
+
+- **Rule**: `canAddAgentToRoom(actor)` returns `true` only when the actor is a user who holds `manage-agents`. No actor, a system actor, and an app actor fail. A refusal throws `error-agent-add-not-allowed` (403) with `details.permission: 'manage-agents'`, `details.agentId`, and `details.roomId`, and writes `agent.room.add.refused`.
+- **Shared path**: a `beforeAddUserToRoom` callback applies the rule when the user type is `agent`. Every `addUserToRoom` caller gets the refusal and its error.
+- **Backstop**: `Room.createUserSubscription` refuses an agent unless the caller passes `agentAddAuthorized: true`. Only `addUserToRoom` passes it, after the callback. The federation paths therefore refuse an agent with no change of their own.
+- **Bypassing paths**:
+  - `createRoom` rethrows `error-agent-add-not-allowed` instead of skipping the member, before it inserts the room. The creation fails with the error, so the user sees the permission name. Other member refusals keep today's skip.
+  - `createDirectRoom` applies the rule to a group direct message that holds an agent, with `options.creator` as the actor. A one-to-one direct message with an agent stays under FR-023. This is the group direct message behavior that the spec asks the plan to record.
+  - `addAllUserToRoom` and `addUserToDefaultChannels` skip agents. Neither has an actor, so neither can add one. This also answers PQ-1 for every later default channel join.
+  - Omnichannel needs no check: the agent role holds no livechat permission, and the role guard (D-14) blocks one.
+- **Audit**: `agentRoomMembership.ts` writes `agent.room.added` from `afterAddedToRoom` and `afterCreateRoom`, and from `afterCreateDirectRoom` for a group direct message. It writes `agent.room.removed` from `afterLeaveRoom`, `afterRemoveFromRoom`, and `deleteRoom`, which reads the agent members before it removes the subscriptions. Each entry holds the actor, the agent, the room, and the path.
+- **Removal**: a removal needs only the existing member removal rules (FR-063). Each removal of an agent broadcasts `user.forceLogout` for the agent (D-16), so its DDP subscriptions end at once.
+
+### Rationale
+
+- No single choke point exists. The callback covers the many callers with one check. The backstop covers the callers that skip `addUserToRoom`. An explicit check covers each remaining insert.
+- The rule denies by default: a path with no actor cannot add an agent, which meets the edge case for automated joins.
+
+### Alternatives
+
+- A check in the `Subscriptions` model insert. Rejected: a model holds no business logic, it has no actor, and the direct message upsert does not use the insert methods.
+- A granular permission to add agents. Out of scope in the spec.
+
+## D-20: UiKit blocks in agent messages (FR-057, RQ-5)
+
+### Findings
+
+- `chat.sendMessage` accepts `blocks` from any user. `assertValidMessageBlocks` checks only depth and ids (`apps/meteor/server/api/lib/assertValidMessageBlocks.ts:25-47`). `reportInvalidBlocks` runs `validateLayoutBlocks` from `@rocket.chat/ui-kit`, but it throws only when `UiKit_Reject_Invalid_Blocks` is on, and the default is off (`apps/meteor/server/lib/uikit/reportInvalidBlocks.ts`, `apps/meteor/ee/server/startup/apps.ts:33`).
+- `validateLayoutBlocks` returns `{ path, expected }` per error (`packages/ui-kit/src/blocks/validateLayoutBlocks.ts:13-29`). No predicate for "non-interactive" exists. The message surface accepts `actions` and `input`, and several other block types can carry elements that send block actions.
+- The web client renders `message.blocks` for any sender (`apps/meteor/client/components/message/variants/room/RoomMessageContent.tsx:87-88`). With blocks and no `md`, it hides the text (line 64).
+- The MCP server derives each tool input schema from the rest-typings schema, and it keeps only the first branch of a `oneOf` or `anyOf` (`apps/meteor/ee/server/api/mcp/catalog.ts:173-208`). It supports tools only: no resources and no prompts (`server.ts:104,155`).
+- A REST error body reaches the agent as JSON text, `details` included (`server.ts:136-143`). An ajv error becomes `error-invalid-params` with no `details` (`apps/meteor/server/api/ApiClass.ts:817`).
+
+### Decision
+
+- `agents.reply` and `agents.post` take an optional `blocks` array. `agents.approvals.create` keeps its platform blocks.
+- `validateAgentBlocks(blocks)` runs before the send, whatever the setting:
+  - An allow list of block types: `section`, `context`, `divider`, `header`, `image`, and `markdown`.
+  - An allow list of element types inside them: `plain_text`, `mrkdwn`, and `image`. A `section` accessory must be an `image`.
+  - `validateLayoutBlocks` then checks the shape of each block.
+  - Any other type at any depth fails. A new block type is refused until someone adds it to the list.
+- A failure throws `error-agent-invalid-blocks` (400). `details.rejected` lists each rejected block with `index`, `type`, `reason` (`interactive`, `type-not-allowed`, or `invalid`), and the `path` and `expected` values from the validator.
+- The rest-typings schema types `blocks` as an array of objects with a string `type`, and no more. A stricter schema would fail in ajv with no `details`, and the MCP flattening would drop its union branches.
+- **RQ-5 answer**: the agent learns through what MCP already carries.
+  - The tool description of `post_agents_reply` and `post_agents_post` lists the allowed types and gives one example of a `section` and a `context` block.
+  - The `blocks` property description repeats the allowed types.
+  - `error-agent-invalid-blocks` names each rejected block and the expected shape, so the agent can fix the call.
+- The endpoints refuse a message with blocks and no text, so a client that does not render blocks still shows the text. V-10 checks that the web client shows the text and the blocks together.
+
+### Rationale
+
+- An allow list denies by default, so a block type added to UiKit later cannot add an interactive element to an agent message.
+- The validator already exists. Only the type list is new.
+
+### Alternatives
+
+- An MCP resource or prompt with the UiKit reference. Rejected for this iteration: the MCP server supports neither, and the description and the errors reach every harness. Revisit with SH-010.
+- A published skill for agent frameworks. Rejected: it lives outside the platform, and it would drift from the allow list.
+- A deny list of interactive elements. Rejected: a new interactive element would pass.
+- The full UiKit JSON schema in the tool input. Rejected: the MCP flattening keeps one union branch, so the schema would be wrong.
 
 ## D-14: Role assignment guard (FR-004)
 
@@ -382,7 +467,7 @@ Engineer-days for one engineer who knows the code.
 - **URL rules**: `https` only, unless the host is on `SSRF_Allowlist`. The server runs the SSRF check at registration, at each update, and at each send. A refused URL gets `error-agent-webhook-url-refused`.
 - **Scope**: A webhook needs `get_agents_messages` in the effective scope. A registration with a URL and without that capability gets `error-agent-webhook-needs-messages`.
 - **Trigger**: A new `afterSaveMessage` callback at low priority, the same hook the integrations use. It skips edits. The F-7 decision path sends each approval decision.
-- **Selection**: One indexed query per saved message finds the agents with a webhook that allow the room or share the direct message. The partial index holds only agents with a webhook, so a room with no such agent costs one empty index read.
+- **Selection**: Each instance caches the ids of the active agents with a webhook, and refreshes the cache on each agent change. Per saved message, one indexed subscription read keeps the cached agents that are members of the room (FR-061, revised 2026-11-24). With no agent in the cache, the sender reads nothing.
 - **Checks per send**: `canAgentReadRoomEvents` (F-10), the suspension, the MCP license and setting (D-18), and the D-10 reply-mode predicate (R-3 from A-1). A webhook follows the reply mode, the same as `get_agents_messages`.
 - **Body**: The `agents.messages` body with one item and a `cursor`. A harness parses both paths with one parser.
 - **Signature**: `X-RC-Agent-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "t.body">`. The harness refuses a timestamp older than 5 minutes. The request carries no agent credential.

@@ -11,6 +11,7 @@ The workspace MCP server (`apps/meteor/ee/server/api/mcp/`) keeps its transport,
 | Learn of messages and decisions | FR-042, FR-034 | `get_chat_syncMessages` (one room) | Add `get_agents_messages` |
 | Reply in the right place | FR-026, FR-027 | `post_chat_postMessage` (no placement rule) | Add `post_agents_reply` |
 | Post with no trigger | FR-028 | same | Add `post_agents_post` |
+| Add non-interactive blocks | FR-057 | `post_chat_postMessage` takes no blocks | Add `blocks` to `post_agents_reply` and `post_agents_post` |
 | Ask for approval | FR-029 | none | Add `post_agents_approvals_create` |
 | Read a decision | FR-034 | none | Add `get_agents_approvals_info` |
 | Read a message, a thread, room info, members | FR-022 | `get_chat_getMessage`, `get_chat_getThreadMessages`, `get_rooms_info`, `get_rooms_membersOrderedByRole` | Reuse |
@@ -29,7 +30,7 @@ An agent may declare only these tools. `get_agents_me` is always in scope and ne
 | Tool | Route | Permissions | Room argument | Posts |
 |------|-------|-------------|---------------|-------|
 | `get_agents_me` | `GET agents.me` | none | none | no |
-| `get_agents_messages` | `GET agents.messages` | `view-joined-room` | none (the endpoint reads only allowed rooms) | no |
+| `get_agents_messages` | `GET agents.messages` | `view-joined-room` | none (the endpoint reads only the rooms the agent is a member of) | no |
 | `post_agents_reply` | `POST agents.reply` | `view-joined-room` | `msgId` | yes |
 | `post_agents_post` | `POST agents.post` | `view-joined-room` | `roomId` | yes |
 | `post_agents_approvals_create` | `POST agents.approvals.create` | `view-joined-room` | `roomId` | yes |
@@ -53,6 +54,7 @@ The table leaves out by design every tool that manages users, bans, mutes, chang
 - The filter reads the user from the Hono context, which the POST handler already resolves (`index.ts:~270`). `McpAuth` gains the user type.
 - The filter runs on each request. A scope change applies to the next `tools/list` and the next `tools/call` (FR-016).
 - A REST error from the guard reaches the agent as a tool error with the same error code and `details`.
+- The descriptions of `post_agents_reply` and `post_agents_post`, and of their `blocks` property, list the allowed block and element types and show one `section` and one `context` example (RQ-5, D-20). The server offers no MCP resource or prompt.
 - The dispatch adds the `X-RC-MCP-Dispatch` header with the process secret to every loopback call, for humans and agents alike (D-15). A human call ignores it.
 
 ## Human MCP use
