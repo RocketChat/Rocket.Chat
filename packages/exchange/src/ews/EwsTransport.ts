@@ -318,6 +318,12 @@ export class EwsTransport implements IEwsTransport {
 			);
 
 			req.on('socket', (assigned: TLSSocket) => {
+				if (this.closed) {
+					reject(connectionClosed());
+					req.destroy();
+					return;
+				}
+
 				socket = assigned;
 				captureCertificate(assigned, (raw) => {
 					this.lastPeerCertificate = raw;
