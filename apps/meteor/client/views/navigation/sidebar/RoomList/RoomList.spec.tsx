@@ -31,7 +31,7 @@ jest.mock('../hooks/useShortcutOpenMenu', () => ({
 	useShortcutOpenMenu: () => jest.fn(),
 }));
 
-const mockRoomListGroups = [
+let mockRoomListGroups = [
 	{
 		group: 'unread' as const,
 		rooms: [
@@ -67,6 +67,21 @@ describe('RoomList', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockCollapsedGroups = [];
+		mockRoomListGroups = [
+			{
+				group: 'unread' as const,
+				rooms: [
+					{ _id: 'room-1', rid: 'rid-1' },
+					{ rid: 'rid-2' },
+				] as any[],
+				unreadInfo: { userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [] },
+			},
+			{
+				group: 'channels' as const,
+				rooms: [{ _id: 'room-3', rid: 'rid-3' }] as any[],
+				unreadInfo: { userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [] },
+			},
+		];
 	});
 
 	it('passes computeItemKey to GroupedVirtuoso keying headers and items by group and id', () => {
@@ -93,5 +108,36 @@ describe('RoomList', () => {
 		expect(computeItemKey(0)).toBe('header-unread');
 		expect(computeItemKey(1)).toBe('header-channels');
 		expect(computeItemKey(2)).toBe('channels-room-3');
+	});
+
+	it('confirms room keys remain stable before and after a room is removed from the unread group', () => {
+		const { unmount } = render(<RoomList />);
+		const firstComputeItemKey = mockGroupedVirtuoso.mock.calls[0][0].computeItemKey;
+
+		expect(firstComputeItemKey(1)).toBe('unread-room-1');
+		expect(firstComputeItemKey(2)).toBe('unread-rid-2');
+		expect(firstComputeItemKey(4)).toBe('channels-room-3');
+
+		unmount();
+		jest.clearAllMocks();
+
+		mockRoomListGroups = [
+			{
+				group: 'unread' as const,
+				rooms: [{ rid: 'rid-2' }] as any[],
+				unreadInfo: { userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [] },
+			},
+			{
+				group: 'channels' as const,
+				rooms: [{ _id: 'room-3', rid: 'rid-3' }] as any[],
+				unreadInfo: { userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [] },
+			},
+		];
+
+		render(<RoomList />);
+		const secondComputeItemKey = mockGroupedVirtuoso.mock.calls[0][0].computeItemKey;
+
+		expect(secondComputeItemKey(1)).toBe('unread-rid-2');
+		expect(secondComputeItemKey(3)).toBe('channels-room-3');
 	});
 });
