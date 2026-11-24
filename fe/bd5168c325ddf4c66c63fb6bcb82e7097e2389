@@ -1,0 +1,21 @@
+.changeset/oauth-login-over-http.md
+  s_5049b5fc09b80f::t_ca391c0da3abd3 1-5
+apps/meteor/server/configuration/configurePassport.ts
+  s_5049b5fc09b80f::t_f3e6fe527de567 47,49-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "febd5168c325ddf4c66c63fb6bcb82e7097e2389",
+  "prompts": {},
+  "sessions": {
+    "s_5049b5fc09b80f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01526df1-4d4b-4bbf-84a2-f233028c823d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
