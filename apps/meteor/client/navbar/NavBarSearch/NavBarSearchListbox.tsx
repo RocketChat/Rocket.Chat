@@ -20,6 +20,7 @@ export type NavBarSearchListBoxProps = {
 };
 
 const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 

@@ -15,6 +15,7 @@ import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 
 const NavBarSearch = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
