@@ -1,6 +1,7 @@
 {
 	"name": "@rocket.chat/ui-setup-wizard",
 	"version": "1.0.0-rc.0",
+	"description": "Setup wizard that creates the first admin, collects the organization info and registers a new Rocket.Chat workspace",
 	"private": true,
 	"type": "module",
 	"exports": {
