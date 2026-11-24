@@ -13,11 +13,6 @@ import { usePictureExtent } from './usePictureExtent.js';
 import { useScreenZoomGestures } from './useScreenZoomGestures.js';
 
 const viewportStyles = css`
-	position: relative;
-	display: flex;
-	width: 100%;
-	height: 100%;
-
 	&[data-zoomed] {
 		cursor: grab;
 		touch-action: none;
@@ -67,6 +62,10 @@ const ZoomableScreen = ({ stream, zoom, onZoomChange, 'aria-labelledby': labelle
 		<Box
 			ref={ref}
 			className={viewportStyles}
+			position='relative'
+			display='flex'
+			width='full'
+			height='full'
 			role='group'
 			aria-labelledby={labelledBy}
 			aria-describedby={zoomed ? hintId : undefined}
