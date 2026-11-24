@@ -16,6 +16,7 @@ import postcssNested from 'postcss-nested';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
+import { reactCompilerPlugin } from './reactCompiler';
 import { staticBox } from './staticBox/plugin';
 import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
@@ -422,6 +423,7 @@ export default defineConfig({
 	plugins: [
 		staticBox(),
 		react(),
+		reactCompilerPlugin(),
 		appFallbackResolve(),
 		singlePackageFormat(),
 		rocketchatInfo(),
