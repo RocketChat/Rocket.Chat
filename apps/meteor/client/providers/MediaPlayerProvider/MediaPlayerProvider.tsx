@@ -120,6 +120,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			return;
 		}
 		setError(false);
+		pendingStartTimeRef.current = audio.currentTime;
 		audio.load();
 		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
 	});

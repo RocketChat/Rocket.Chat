@@ -31,7 +31,7 @@ const VideoAttachment = ({
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageBlock fixedWidth>
-					<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
+					<MessageGenericPreview>
 						{customPlayer ? (
 							<VideoPlayer ref={mediaRef} src={src} type={userAgentMIMETypeFallback(type)} />
 						) : (

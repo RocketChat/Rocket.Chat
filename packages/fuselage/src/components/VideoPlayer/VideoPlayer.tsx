@@ -132,7 +132,7 @@ const VideoPlayer = ({
 		const video = videoRef.current;
 		if (!video) return;
 		if (video.paused) {
-			void video.play();
+			video.play().catch(() => undefined);
 		} else {
 			video.pause();
 		}
