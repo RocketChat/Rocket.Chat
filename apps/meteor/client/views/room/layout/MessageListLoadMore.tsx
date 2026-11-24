@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 export type MessageListLoadMoreProps = {
@@ -8,9 +9,9 @@ export type MessageListLoadMoreProps = {
  * The row at either end of a message list that holds its loading indicator or the anchor that loads more messages.
  */
 const MessageListLoadMore = ({ children }: MessageListLoadMoreProps) => (
-	<div className='load-more' role='presentation'>
+	<Box role='presentation' position='relative' height='x32'>
 		{children}
-	</div>
+	</Box>
 );
 
 export default MessageListLoadMore;
