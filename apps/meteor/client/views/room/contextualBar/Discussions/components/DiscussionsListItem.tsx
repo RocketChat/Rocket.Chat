@@ -47,7 +47,7 @@ const DiscussionListItem = ({
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<Message clickable insetBlock='md' tabIndex={0} onKeyDown={activateWithKeyboard} {...props}>
+		<Message clickable insetBlock='md' divided tabIndex={0} onKeyDown={activateWithKeyboard} {...props}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>

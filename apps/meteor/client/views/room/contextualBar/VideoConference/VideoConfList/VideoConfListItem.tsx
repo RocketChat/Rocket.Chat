@@ -53,7 +53,7 @@ const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConf
 	const goToRoom = useGoToRoom();
 
 	return (
-		<Message hoverable={false} insetBlock='md'>
+		<Message hoverable={false} insetBlock='md' divided>
 			<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
 			<MessageContainer>
 				<MessageHeader>
