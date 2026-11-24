@@ -390,25 +390,12 @@ An amendment adds a decision after the plan. It does not change the entries abov
 
 #### Alternatives
 
-- **A doorbell over `subscriptions/listen`** (the first A-1 proposal): Rejected. The harness still calls the read, so the doorbell saves no call. It needs revision 2026-07-28 support (R-2), harness SDKs on that revision, an SSE stream with keep-alive and closure, and 11 to 16 engineer-days.
+- **A doorbell over `subscriptions/listen`** (the first A-1 proposal): Rejected. The harness still calls the read, so the doorbell saves no call. It needs revision 2026-07-28 support (R-2), harness SDKs on that revision, and an SSE stream with keep-alive and closure.
 - **The Events extension (SEP-3415)**: Rejected for now. It carries content with replay, but client support is not stable. Revisit when the harness SDKs support it.
 - **The older revisions, with sessions**: Rejected. They need a session store across instances, and revision 2026-07-28 removes them.
 - **A REST SSE endpoint, `GET agents.events`**: Rejected. FR-053 refuses an agent credential on REST.
 - **DDP subscriptions**: They ship in this iteration (D-16). A-1 serves a harness that speaks only MCP.
 - **Webhooks**: Unchanged from RQ-1.
-
-#### Effort
-
-Engineer-days for one engineer who knows the code.
-
-| Step | Work | Days |
-|------|------|------|
-| R-3 | Extract the D-10 filter into a pure predicate. | 0.5 |
-| F-9 | The `AgentEvents` hub, the merge window, and the `agent.approval.decided` event. | 1.5 to 2 |
-| F-9 | The `wait` parameter on `agents.messages`: the register-then-read order, the reload before the final read, the per-instance cap, and shutdown. | 1 to 1.5 |
-| F-9 | Unit tests for the hub, API tests for the wait, and a manual multi-instance run. | 1.5 to 2 |
-| F-9 | The subsystem doc and the MCP doc. | 0.5 |
-| | **Total** | **5 to 6.5** |
 
 #### To verify before the build
 
@@ -494,19 +481,6 @@ Engineer-days for one engineer who knows the code.
 - **Reuse outgoing integrations**, with one integration per agent: Rejected. It skips the SSRF check, posts the response body as a message, runs scripts, and ignores the reply mode. Each fix would change behavior for existing integrations (DC-2).
 - **A durable queue with retries across restarts**: Rejected for now. It needs a new collection and a worker. The poll gives the same recovery.
 - **A long poll (A-1)**: Not exclusive. A-1 serves a harness with no public URL. A-3 serves a hosted harness. Both share R-3.
-
-#### Effort
-
-Engineer-days for one engineer who knows the code. R-3 counts once if A-1 also ships.
-
-| Step | Work | Days |
-|------|------|------|
-| R-3 | Extract the D-10 filter into a pure predicate. | 0.5 |
-| F-11 | The `webhookUrl` field, the URL rules, the secret, and the rotation, in `agents.register`, `agents.update`, and the admin section. | 1 to 1.5 |
-| F-11 | The callback, the selection query and its index, the checks per send, the signature, the retry, and the per-agent cap. | 1.5 to 2 |
-| F-11 | Unit tests for the sender and the signature, API tests with a local receiver, and a manual multi-instance run. | 1.5 |
-| F-11 | The subsystem doc and the harness guide for the signature. | 0.5 |
-| | **Total** | **5 to 6** |
 
 #### To verify before the build
 

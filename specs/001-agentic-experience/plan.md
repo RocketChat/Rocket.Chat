@@ -249,7 +249,7 @@ The 2026-11-19 revision adds no exception. The refusal audit slot is a named mod
 
 ### A-1 (2026-11-19): Long-poll delivery over MCP
 
-**Status**: Proposed, not scheduled. The steps above do not change, and F-5 still ships the poll. Research, decision, and effort: [research.md, A-1](research.md#a-1-2026-11-19-long-poll-delivery-over-mcp). Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-long-poll-on-get_agents_messages).
+**Status**: Proposed, not scheduled. The steps above do not change, and F-5 still ships the poll. Research and decision: [research.md, A-1](research.md#a-1-2026-11-19-long-poll-delivery-over-mcp). Contract: [contracts/mcp-tools.md, A-1](contracts/mcp-tools.md#amendment-a-1-long-poll-on-get_agents_messages).
 
 If the team schedules it, two pull requests follow F-8:
 
@@ -258,14 +258,14 @@ If the team schedules it, two pull requests follow F-8:
 | R-3 | refactor | Share the agent reply-mode filter | none | Move the D-10 filter into a pure predicate. `agents.messages` returns the same results. |
 | F-9 | feat | Let agents wait for new messages | US4, US5 | The `AgentEvents` hub and the `wait` parameter on `agents.messages` and `get_agents_messages`. It resolves SH-006 on every MCP revision the server supports. |
 
-- **Effort**: 5 to 6.5 engineer-days. DDP subscriptions (F-10) already give push to a harness that speaks DDP, so A-1 serves MCP-only harnesses.
+- **Audience**: DDP subscriptions (F-10) already give push to a harness that speaks DDP, so A-1 serves MCP-only harnesses.
 - **New files**: `apps/meteor/server/lib/agents/agentEvents/` (the hub). The MCP endpoint does not change.
 - **Constitution**: The hub reads no model. The route passes the allowed rooms it already reads. No new exception.
 - **Testing**: Unit tests for the hub, with `mockModel`. An API test calls `get_agents_messages` with `wait=10`, posts a mention, and expects the result within 1 s. A second test expects an empty result after the wait with no event. A third suspends the agent during a wait and expects no message. A manual run checks two instances.
 
 ### A-3 (2026-11-19): Outgoing webhook delivery
 
-**Status**: Proposed, not scheduled. The steps above do not change, and F-5 still ships the poll. Research, decision, and effort: [research.md, A-3](research.md#a-3-2026-11-19-outgoing-webhook-delivery). Contracts: [contracts/agent-webhook.md](contracts/agent-webhook.md) and [contracts/rest-agents.md, A-3](contracts/rest-agents.md#amendment-a-3-webhook-url).
+**Status**: Proposed, not scheduled. The steps above do not change, and F-5 still ships the poll. Research and decision: [research.md, A-3](research.md#a-3-2026-11-19-outgoing-webhook-delivery). Contracts: [contracts/agent-webhook.md](contracts/agent-webhook.md) and [contracts/rest-agents.md, A-3](contracts/rest-agents.md#amendment-a-3-webhook-url).
 
 The registrant gives a webhook URL at registration. The server posts each message that the reply mode delivers, and each approval decision, to that URL with an HMAC signature. The agent still replies over MCP only (FR-053).
 
@@ -277,7 +277,6 @@ If the team schedules it, two pull requests follow F-8. R-3 ships once if A-1 al
 | F-11 | feat | Post agent messages to a webhook | US2, US4, US5 | The `webhookUrl` field and its URL rules, the webhook secret and its rotation, the `afterSaveMessage` sender, the selection query and its partial index, and the send from the F-7 decision path. |
 
 - **A-1 or A-3**: The two do not exclude each other. A-1 serves a harness with no public URL, for example a desktop client. A-3 serves a hosted harness. A-3 needs no held request and no new transport, but it delivers at best effort, so the harness still polls every 60 s.
-- **Effort**: 5 to 6 engineer-days, or 4.5 to 5.5 if A-1 ships R-3 first.
 - **New files**: `apps/meteor/server/lib/agents/webhook/` (the URL rules, the signature, the sender, and the callback). `packages/rest-typings/src/v1/agents.ts` gains the new fields.
 - **Constitution**:
   - II: The selection query is `Users.findAgentsWithWebhookByRoom`, and the URL write is `Users.setAgentWebhook` ([data-model.md, A-3](data-model.md#amendment-a-3-webhook)).
