@@ -219,6 +219,70 @@ it('keeps what the user typed, seeds new elements and drops removed ones when th
 	});
 });
 
+const options = [
+	{ text: plainText('Red'), value: 'red' },
+	{ text: plainText('Green'), value: 'green' },
+	{ text: plainText('Blue'), value: 'blue' },
+];
+
+it('checks and unchecks the options of checkboxes in an input block, and submits the checked ones', async () => {
+	renderModal(
+		view({
+			blocks: [
+				{
+					type: 'input',
+					appId: 'app',
+					blockId: 'colors-block',
+					label: plainText('Colors'),
+					element: {
+						type: 'checkbox',
+						appId: 'app',
+						blockId: 'colors-block',
+						actionId: 'colors',
+						options,
+						initialOptions: [options[0]],
+					},
+				},
+			],
+		}),
+	);
+
+	await userEvent.click(screen.getByLabelText('Green'));
+	await userEvent.click(screen.getByLabelText('Red'));
+
+	expect(screen.getByLabelText('Red')).not.toBeChecked();
+	expect(screen.getByLabelText('Green')).toBeChecked();
+	expect(screen.getByLabelText('Blue')).not.toBeChecked();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+	expect(sentState('viewSubmit')).toEqual({ 'colors-block': { colors: ['green'] } });
+});
+
+it('submits the checked options of toggle switches in an input block that start with none', async () => {
+	renderModal(
+		view({
+			blocks: [
+				{
+					type: 'input',
+					appId: 'app',
+					blockId: 'colors-block',
+					label: plainText('Colors'),
+					element: { type: 'toggle_switch', appId: 'app', blockId: 'colors-block', actionId: 'colors', options },
+				},
+			],
+		}),
+	);
+
+	const [red, green] = screen.getAllByRole('checkbox');
+	await userEvent.click(red);
+	await userEvent.click(green);
+	await userEvent.click(red);
+	await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+	expect(sentState('viewSubmit')).toEqual({ 'colors-block': { colors: ['green'] } });
+});
+
 it('keeps the submit disabled while a file is uploading, then submits its id', async () => {
 	let finishUpload: (file: { _id: string; name: string }) => void = () => undefined;
 	jest.mocked(uploadUiKitFile).mockImplementation(

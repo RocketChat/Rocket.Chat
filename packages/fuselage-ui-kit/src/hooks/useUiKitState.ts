@@ -54,6 +54,17 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	const [value, setValue] = useSafely(useState(_value));
 	const [loading, setLoading] = useSafely(useState(false));
 
+	// Checkboxes and toggle switches report the option the user clicked; the value is the list of checked options.
+	const holdsOptionList = element.type === 'checkbox' || element.type === 'checkboxes' || element.type === 'toggle_switch';
+	const getNextValue = (changed: unknown) => {
+		if (Array.isArray(changed) || !(holdsOptionList || Array.isArray(value))) {
+			return changed as typeof value;
+		}
+
+		const options = Array.isArray(value) ? value : [];
+		return options.includes(changed as string) ? options.filter((option) => option !== changed) : [...options, changed as string];
+	};
+
 	const actionFunction = useStableCallback(async (e: any) => {
 		// FIXME: fix typings
 		const {
@@ -61,22 +72,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 
 		setLoading(true);
-
-		if (Array.isArray(value)) {
-			if (Array.isArray(elValue)) {
-				setValue(elValue);
-			} else {
-				const idx = value.findIndex((value) => value === elValue);
-
-				if (idx > -1) {
-					setValue(value.filter((_, i) => i !== idx));
-				} else {
-					setValue([...value, elValue]);
-				}
-			}
-		} else {
-			setValue(elValue);
-		}
+		setValue(getNextValue(elValue));
 
 		await updateState?.({ blockId, appId, actionId, value: elValue, viewId }, e);
 		await action(
@@ -124,16 +120,18 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 			target: { value },
 		} = e;
 
+		const nextValue = getNextValue(value);
+
 		// This path never asks, so the value counts as accepted.
 		(e as { onConfirmed?: () => void } | undefined)?.onConfirmed?.();
-		setValue(value);
+		setValue(nextValue);
 
 		await updateState?.(
 			{
 				blockId,
 				appId: appId || appIdFromContext || 'core',
 				actionId,
-				value,
+				value: nextValue,
 				viewId,
 			},
 			e,
