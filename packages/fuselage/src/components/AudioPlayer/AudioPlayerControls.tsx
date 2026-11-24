@@ -118,7 +118,7 @@ const AudioPlayerControls = ({
 			</Box>
 			{/* Fixed slot so the slider keeps its width when the label grows from 1x to 1.25x. */}
 			<Box className='rcx-audio-player__speed'>
-				<Button variant='secondary' size='small' onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
+				<Button variant='secondary' size='medium' onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
 					{playbackSpeed}x
 				</Button>
 			</Box>
