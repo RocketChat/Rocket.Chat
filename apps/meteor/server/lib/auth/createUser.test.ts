@@ -68,7 +68,7 @@ describe('createUser', () => {
 		sinon.assert.notCalled(insertUser);
 	});
 
-	it('should remove the new user when another one took the username or email meanwhile', async () => {
+	it('should remove the new user when another one took the email meanwhile', async () => {
 		Users.findOneByEmailAddressExceptId.withArgs('alice@example.com', 'new-user-id').resolves({ _id: 'other' });
 
 		await expect(createUser({ username: 'alice', email: 'alice@example.com' })).to.be.rejectedWith(
@@ -76,6 +76,17 @@ describe('createUser', () => {
 		);
 
 		sinon.assert.calledOnceWithExactly(Users.findOneByUsernameIgnoringCaseExceptId, 'alice', 'new-user-id', { projection: { _id: 1 } });
+		sinon.assert.calledOnceWithExactly(Users.removeById, 'new-user-id');
+	});
+
+	it('should remove the new user when another one took the username meanwhile', async () => {
+		Users.findOneByUsernameIgnoringCaseExceptId.withArgs('alice', 'new-user-id').resolves({ _id: 'other' });
+
+		await expect(createUser({ username: 'alice', email: 'alice@example.com' })).to.be.rejectedWith(
+			'Something went wrong. Please check your credentials.',
+		);
+
+		sinon.assert.notCalled(Users.findOneByEmailAddressExceptId);
 		sinon.assert.calledOnceWithExactly(Users.removeById, 'new-user-id');
 	});
 });
