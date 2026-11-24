@@ -147,7 +147,7 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 export const processMessageUploads = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
 	const store = chat.composer?.uploads;
 
-	if (!store) {
+	if (!store || chat.currentEditingMessage.getMID()) {
 		return false;
 	}
 

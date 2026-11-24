@@ -49,6 +49,7 @@ type FakeXhr = {
 	abort: jest.Mock;
 	onload?: () => void;
 	load: (event: unknown) => void;
+	progress: (loaded: number, total: number) => void;
 };
 
 const STORAGE_KEY = 'composer_uploads_room';
@@ -93,6 +94,8 @@ beforeEach(() => {
 			responseText: '',
 			abort: jest.fn(),
 			load: (event) => events?.load?.(event as ProgressEvent<XMLHttpRequestEventTarget>),
+			progress: (loaded, total) =>
+				events?.progress?.({ lengthComputable: true, loaded, total } as ProgressEvent<XMLHttpRequestEventTarget>),
 		};
 		xhrs.push(xhr);
 		return xhr as unknown as XMLHttpRequest;
@@ -101,6 +104,8 @@ beforeEach(() => {
 
 afterEach(() => {
 	attachedStores.forEach((store) => store.detach());
+	// Uploads a test left running would keep their room's store for the next test.
+	logOut();
 	jest.useRealTimers();
 	jest.restoreAllMocks();
 });
@@ -137,7 +142,6 @@ describe('UploadsStore persistence', () => {
 		void store.send(createFile());
 
 		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
-		store.clear();
 	});
 
 	it('shows the uploads again when the same store is attached after being detached', async () => {
@@ -146,8 +150,6 @@ describe('UploadsStore persistence', () => {
 		await uploadFile(store, 'file-1');
 
 		store.detach();
-		expect(store.get()).toHaveLength(0);
-
 		attach(store);
 		expect(store.get().map(({ id }) => id)).toEqual(['file-1']);
 	});
@@ -160,30 +162,6 @@ describe('UploadsStore persistence', () => {
 
 		store.detach();
 		expect(store.get()).toHaveLength(1);
-	});
-
-	it('discards kept uploads on clear, so they do not come back on the next visit', async () => {
-		const first = createUploadsAPI({ rid: 'room' });
-		attach(first);
-		await uploadFile(first, 'file-1');
-
-		first.clear();
-		first.detach();
-
-		const second = createUploadsAPI({ rid: 'room' });
-		attach(second);
-		expect(second.get()).toHaveLength(0);
-		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
-	});
-
-	it('cancels the uploads still in flight on clear', () => {
-		const store = createUploadsAPI({ rid: 'room' });
-		attach(store);
-		void store.send(createFile());
-
-		store.clear();
-
-		expect(xhrs[0].abort).toHaveBeenCalled();
 	});
 
 	it('forgets an upload once it is removed', async () => {
@@ -205,15 +183,47 @@ describe('UploadsStore persistence', () => {
 		const inFlight = first.send(createFile('second.png'));
 		first.detach();
 
-		const second = createUploadsAPI({ rid: 'room' });
-		attach(second);
-		expect(second.get().map(({ id }) => id)).toEqual(['file-1']);
-
 		completeUpload(xhrs[xhrs.length - 1], 'file-2');
 		await inFlight;
 
 		expect(readStorage().map(({ id }: { id: string }) => id)).toEqual(['file-1', 'file-2']);
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
 		expect(second.get().map(({ id }) => id)).toEqual(['file-1', 'file-2']);
+	});
+
+	it('shows an upload still in flight, with its progress, when the room is visited again', async () => {
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		await uploadFile(first, 'file-1');
+
+		const inFlight = first.send(createFile('second.png'));
+		xhrs[xhrs.length - 1].progress(3, 6);
+		first.detach();
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+		expect(second.get()).toMatchObject([{ id: 'file-1' }, { file: { name: 'second.png' }, percentage: 50 }]);
+
+		completeUpload(xhrs[xhrs.length - 1], 'file-2');
+		await inFlight;
+
+		expect(second.get()).toMatchObject([{ id: 'file-1' }, { id: 'file-2', percentage: 100 }]);
+	});
+
+	it('shows an upload in flight on the next visit even when its composer was reattached before it started', () => {
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		first.detach();
+		attach(first);
+		void first.send(createFile());
+		first.detach();
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+
+		expect(second.get()).toMatchObject([{ file: { name: 'photo.png' }, percentage: 0 }]);
 	});
 
 	it('drops uploads the server has already deleted', async () => {
@@ -257,10 +267,6 @@ describe('UploadsStore persistence', () => {
 		second.removeUpload('file-1');
 
 		expect(first.get().map(({ id }) => id)).toEqual(['file-2']);
-
-		second.clear();
-
-		expect(first.get()).toHaveLength(0);
 	});
 
 	it('keeps an upload in the composer when it cannot be stored', async () => {
@@ -451,7 +457,6 @@ describe('UploadsStore across tabs', () => {
 		writeFromAnotherTab([]);
 
 		expect(store.get()).toHaveLength(1);
-		store.clear();
 	});
 
 	it('picks up a rename and a description another tab made', async () => {
@@ -590,7 +595,7 @@ describe('UploadsStore unload warning', () => {
 		attach(store);
 		const sending = store.send(createFile());
 
-		store.clear();
+		store.cancel(store.get()[0].id);
 		await sending;
 
 		expect(unloadIsBlocked()).toBe(false);
@@ -604,7 +609,6 @@ describe('UploadsStore unload warning', () => {
 			void store.send(createFile());
 
 			expect(unloadIsBlocked()).toBe(false);
-			store.clear();
 		} finally {
 			delete window.RocketChatDesktop;
 		}

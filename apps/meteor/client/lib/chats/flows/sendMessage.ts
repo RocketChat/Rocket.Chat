@@ -130,7 +130,8 @@ export const sendMessage = async (
 	text = closeUnclosedCodeBlock(text);
 	const mid = chat.currentEditingMessage.getMID();
 
-	const hasFiles = uploadsStore && uploadsStore.get().length > 0;
+	// Uploads wait in the composer while a message is edited, and go with the next new message instead.
+	const hasFiles = !mid && !!uploadsStore && uploadsStore.get().length > 0;
 	if (!text && !mid && !hasFiles) {
 		// Nothing to do
 		return false;

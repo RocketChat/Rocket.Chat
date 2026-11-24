@@ -16,6 +16,8 @@ import { fileUploadIsValidContentType } from '../utils/restrictions';
 
 const STORAGE_KEY_PREFIX = 'composer_uploads_';
 
+const getStorageKey = (rid: IRoom['_id'], tmid?: IMessage['_id']): string => `${STORAGE_KEY_PREFIX}${rid}${tmid ? `-${tmid}` : ''}`;
+
 // The server deletes unconfirmed uploads 24 hours after receiving them; forgetting ours an hour earlier keeps the
 // composer from offering a file that no longer exists.
 const PERSISTED_UPLOAD_TTL = 23 * 60 * 60 * 1000;
@@ -239,6 +241,12 @@ const trackUploadInFlight = (): (() => void) => {
 	};
 };
 
+const isUploadInFlight = (upload: Upload): boolean => !upload.url && !upload.error;
+
+// A room or thread keeps its store while a composer shows it or one of its uploads is still running, so coming back
+// to it finds those uploads still going and still in reach of whatever the composer does to its uploads.
+const stores = new Map<string, UploadsStore>();
+
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
 
@@ -250,7 +258,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		super();
 		this.rid = rid;
 		this.tmid = tmid;
-		this.storageKey = `${STORAGE_KEY_PREFIX}${rid}${tmid ? `-${tmid}` : ''}`;
+		this.storageKey = getStorageKey(rid, tmid);
 	}
 
 	private uploads: readonly Upload[] = [];
@@ -269,6 +277,13 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			return;
 		}
 
+		if (!stores.has(this.storageKey)) {
+			stores.set(this.storageKey, this);
+		}
+
+		// Whatever was discarded while no composer showed this store, here or in another tab, stays discarded.
+		const entries = readPersistedUploads(this.storageKey);
+		this.set(this.uploads.filter((upload) => isUploadInFlight(upload) || entries.some(({ id }) => id === upload.id)));
 		this.stopListeningToStorage = persistedUploadsEvents.on(this.storageKey, this.syncWithStorage);
 		this.syncWithStorage();
 	};
@@ -283,9 +298,15 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		this.stopListeningToStorage = undefined;
 		clearTimeout(this.expiryTimer);
 		this.expiryTimer = undefined;
-		this.set([]);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
+		this.releaseIfIdle();
 	};
+
+	private releaseIfIdle(): void {
+		if (this.attachments === 0 && !this.uploads.some(isUploadInFlight) && stores.get(this.storageKey) === this) {
+			stores.delete(this.storageKey);
+		}
+	}
 
 	// An open composer shows what is kept for its room or thread: uploads kept elsewhere appear, and uploads discarded
 	// elsewhere or expired disappear.
@@ -456,17 +477,6 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		}
 	};
 
-	clear = () => {
-		this.uploads.filter((upload) => !upload.url && !upload.error).forEach((upload) => this.cancel(upload.id));
-		this.set([]);
-		writePersistedUploads(
-			this.storageKey,
-			[],
-			readPersistedUploads(this.storageKey).map((entry) => entry.id),
-		);
-		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
-	};
-
 	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
@@ -568,9 +578,14 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		} finally {
 			stopCancellingOnLogout();
 			untrackUploadInFlight();
+			this.releaseIfIdle();
 		}
 	}
 }
 
-export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI =>
-	new UploadsStore({ rid, tmid });
+export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => {
+	const storageKey = getStorageKey(rid, tmid);
+	const store = stores.get(storageKey) ?? new UploadsStore({ rid, tmid });
+	stores.set(storageKey, store);
+	return store;
+};

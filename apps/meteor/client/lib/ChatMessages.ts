@@ -119,7 +119,6 @@ export class ChatMessages implements ChatAPI {
 			await this.currentEditingMessage.stop();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
-			this.composer?.uploads.clear();
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
 
 			await this.currentEditingMessage.stop();

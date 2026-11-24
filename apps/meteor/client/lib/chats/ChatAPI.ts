@@ -117,7 +117,6 @@ export type UploadsAPI = {
 	wipeFailedOnes(): void;
 	attach(): void;
 	detach(): void;
-	clear(): void;
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
