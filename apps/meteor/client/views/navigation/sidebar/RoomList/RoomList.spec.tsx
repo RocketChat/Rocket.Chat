@@ -36,7 +36,7 @@ const mockRoomListGroups = [
 		group: 'unread' as const,
 		rooms: [
 			{ _id: 'room-1', rid: 'rid-1' },
-			{ _id: 'room-2', rid: 'rid-2' },
+			{ rid: 'rid-2' },
 		] as any[],
 		unreadInfo: { userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [] },
 	},
@@ -76,7 +76,7 @@ describe('RoomList', () => {
 		const { computeItemKey } = mockGroupedVirtuoso.mock.calls[0][0];
 
 		expect(computeItemKey(0)).toBe('unread-room-1');
-		expect(computeItemKey(1)).toBe('unread-room-2');
+		expect(computeItemKey(1)).toBe('unread-rid-2');
 		expect(computeItemKey(2)).toBe('channels-room-3');
 		expect(computeItemKey(99)).toBe(99);
 	});
