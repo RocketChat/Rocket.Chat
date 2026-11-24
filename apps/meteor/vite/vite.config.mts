@@ -174,6 +174,11 @@ const zeroStylesheetLastInDev = (): Plugin => ({
 	},
 });
 
+// Why a zero stylesheet cannot ship: a token the Tamagui config lacks, or a theme key no theme class declares. The check
+// lives with Fuselage's verify scripts, reached by path as the Tamagui config is.
+const zeroStylesheetErrors = async (css: string): Promise<string[]> =>
+	(await import(pathToFileURL(join(fuselageRoot, 'scripts/verify/zero-stylesheet.mjs')).href)).zeroStylesheetErrors(css);
+
 // Moves Tamagui's zero-runtime stylesheet into the bundle under a content hash, linked from `index.html` and listed
 // with the entry's stylesheets in the manifest, so `index.html` and the bundle load without anything else.
 const zeroStylesheetInBundle = (): Plugin => {
@@ -189,7 +194,7 @@ const zeroStylesheetInBundle = (): Plugin => {
 		closeBundle: {
 			order: 'post',
 			sequential: true,
-			handler() {
+			async handler() {
 				const { assetsDir } = config.build;
 				const outDir = resolve(config.root, config.build.outDir);
 				const written = join(outDir, 'tamagui-zero.css');
@@ -198,6 +203,10 @@ const zeroStylesheetInBundle = (): Plugin => {
 				}
 
 				const css = dedupeTopLevelRules(readFileSync(written, 'utf8'));
+				const errors = await zeroStylesheetErrors(css);
+				if (errors.length) {
+					throw new Error(`Tamagui's zero-runtime stylesheet cannot ship. ${errors.join('. ')}`);
+				}
 				const file = `${assetsDir}/tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
 				writeFileSync(join(outDir, file), css);
 				rmSync(written);

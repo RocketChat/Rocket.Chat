@@ -333,9 +333,9 @@
 		"displayContents": 0
 	},
 	"Message/MessageToolbar/MessageToolbar.styles.scss": {
-		"rules": 6,
-		"nested": 5,
-		"combinators": 2,
+		"rules": 3,
+		"nested": 2,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
