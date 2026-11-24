@@ -4735,16 +4735,6 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatRoomPriorityParams) => void;
 		DELETE: () => void;
 	};
-	'/v1/livechat/queue': {
-		GET: (params: GETLivechatQueueParams) => PaginatedResult<{
-			queue: {
-				_id: string;
-				user: { _id: string; userId: string; username: string; status: UserStatus };
-				department: { _id: string; name: string };
-				chats: number;
-			}[];
-		}>;
-	};
 	'/v1/livechat/integrations.settings': {
 		GET: () => { settings: ISetting[]; success: boolean };
 	};
