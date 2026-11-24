@@ -64,12 +64,8 @@ The agent has no allow list field. The allow list is the set of its subscription
 | Read | Method |
 |------|--------|
 | The room check per call | `Subscriptions.findOneByRoomIdAndUserId(rid, agentId, { projection: { status: 1 } })` (existing) |
-| The rooms for `agents.messages` and `agents.me` | `Subscriptions.findByUserId(agentId, { projection: { rid: 1, status: 1 } })` (existing) |
-| The agent members of a room at deletion | `Subscriptions.findByRoomId(rid, { projection: { 'u._id': 1 } })` (existing), then `Agents.findAgentIdsByIds(ids)` |
-
-| Agents method (new) | Purpose |
-|--------------------|---------|
-| `findAgentIdsByIds(ids)` | Keeps the ids that belong to agents, for the deletion audit (FR-064). |
+| The rooms for `agents.messages` and `agents.me` | `Subscriptions.findByUserId(agentId, { projection: { rid: 1, status: 1 } })` (existing). The endpoint drops the `INVITED` rows. |
+| The agent members of a room at deletion (FR-064) | `Agents.findAgentIds()`, then `Subscriptions.findByRoomIdAndUserIds(rid, agentIds, { projection: { 'u._id': 1 } })` (existing). The read scales with the agent count, not the room size. |
 
 Only an actor with `manage-agents` adds an agent to a room (FR-062, D-19). Any member remover may remove one (FR-063).
 
