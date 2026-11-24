@@ -1,8 +1,8 @@
-import breakpointsTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
+import breakpointsTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json' with { type: 'json' };
 
-import { renderHook, act } from './testing';
-import { useBreakpoints } from './useBreakpoints';
-import { withMatchMediaMock } from '../mocks/withMatchMediaMock';
+import { renderHook, act } from './testing.js';
+import { useBreakpoints } from './useBreakpoints.js';
+import { withMatchMediaMock } from '../mocks/withMatchMediaMock.js';
 
 const setViewport = withMatchMediaMock();
 

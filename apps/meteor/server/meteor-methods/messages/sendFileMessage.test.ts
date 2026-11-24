@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const findOneByIdAndUserIdAndRoomId = sinon.stub();
@@ -13,22 +12,15 @@ const getFileExtension = sinon.stub().returns('txt');
 
 const executeSendMessage = sinon.stub().resolves({});
 
-const { parseFileIntoMessageAttachments, sendFileMessage } = proxyquire.noCallThru().load('./sendFileMessage', {
-	'meteor/meteor': {
-		Meteor: {
-			methods: sinon.stub(),
-		},
-	},
-	'../../lib/media/file-upload/lib/FileUpload': {
-		FileUpload: { getPath },
-	},
-	'../../lib/media/file-upload/isImagePreviewSupported': { isImagePreviewSupported },
-	'../../../lib/utils/getFileExtension': { getFileExtension },
-	'../../lib/callbacks': { callbacks: { runAsync: sinon.stub() } },
-	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
-	'../../lib/authorization/canAccessRoom': { canAccessRoomAsync: sinon.stub().resolves(true) },
-	'./sendMessage': { executeSendMessage },
-});
+mock.module('../../lib/media/file-upload/lib/FileUpload', { exports: { FileUpload: { getPath } } });
+mock.module('../../lib/media/file-upload/isImagePreviewSupported', { exports: { isImagePreviewSupported } });
+mock.module('../../../lib/utils/getFileExtension', { exports: { getFileExtension } });
+mock.module('../../lib/callbacks', { exports: { callbacks: { runAsync: sinon.stub() } } });
+mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+mock.module('../../lib/authorization/canAccessRoom', { exports: { canAccessRoomAsync: sinon.stub().resolves(true) } });
+mock.module('./sendMessage', { exports: { executeSendMessage } });
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
+const { parseFileIntoMessageAttachments, sendFileMessage } = require('./sendFileMessage');
 
 describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => {
 	const mockUser = { _id: 'user123' };

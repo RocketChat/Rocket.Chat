@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('validateUsername', () => {
@@ -13,8 +12,11 @@ describe('validateUsername', () => {
 		},
 	};
 
-	const { validateUsername } = proxyquire.noCallThru().load('./validateUsername', {
-		'../../settings': proxySettings,
+	let validateUsername: any;
+
+	before(async () => {
+		mock.module('../../settings', { exports: proxySettings });
+		({ validateUsername } = await import('./validateUsername'));
 	});
 
 	beforeEach(() => {

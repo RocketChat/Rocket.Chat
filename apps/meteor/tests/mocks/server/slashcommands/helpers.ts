@@ -1,6 +1,8 @@
+import { createRequire } from 'node:module';
+import { mock } from 'node:test';
+
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams, SlashCommandOptions } from '@rocket.chat/core-typings';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 type Registration = {
@@ -25,19 +27,24 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 	const logger = { error: sinon.stub(), warn: sinon.stub(), info: sinon.stub(), debug: sinon.stub() };
 	let lastInvocation: SlashCommandCallbackParams<string> | undefined;
 
-	proxyquire
-		.noCallThru()
-		.noPreserveCache()
-		.load(`../../../../server/slashcommands/${path}`, {
-			'@rocket.chat/logger': { Logger: sinon.stub().returns(logger) },
-			'../../lib/i18n': { i18n: { t: translate, exists: translationExists } },
-			'../../settings': { settings },
-			...dependencies,
-			'@rocket.chat/core-services': { ClientSafeError, isClientSafeError, ...coreServices, api: { ...coreServices?.api, broadcast } },
-			'../../lib/utils/slashCommand': {
-				slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
-			},
-		});
+	const subject = require.resolve(`../../../../server/slashcommands/${path}`);
+	const requireFromSubject = createRequire(subject);
+	const stubs: Record<string, unknown> = {
+		'@rocket.chat/logger': { Logger: sinon.stub().returns(logger) },
+		'../../lib/i18n': { i18n: { t: translate, exists: translationExists } },
+		'../../settings': { settings },
+		...dependencies,
+		'@rocket.chat/core-services': { ClientSafeError, isClientSafeError, ...coreServices, api: { ...coreServices?.api, broadcast } },
+		'../../lib/utils/slashCommand': {
+			slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
+		},
+	};
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(requireFromSubject.resolve(specifier), { exports: exports as Record<string, unknown> });
+	}
+	delete requireFromSubject.cache[subject];
+	requireFromSubject(subject);
+	mock.restoreAll();
 
 	return {
 		broadcast,

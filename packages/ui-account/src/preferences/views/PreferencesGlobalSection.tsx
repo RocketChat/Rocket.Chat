@@ -4,7 +4,7 @@ import { Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.ch
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { DontAskAgainItem } from '../logic/preferencesPayload';
+import type { DontAskAgainItem } from '../logic/preferencesPayload.js';
 
 export type PreferencesGlobalSectionProps = {
 	dontAskAgainItems: DontAskAgainItem[];

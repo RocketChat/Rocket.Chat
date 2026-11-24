@@ -127,6 +127,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
 	findOneWithoutLDAPByUsernameIgnoringCase<
 		T extends Document = IUser,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -479,6 +485,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		emailAddress: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -500,8 +511,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		userId: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;

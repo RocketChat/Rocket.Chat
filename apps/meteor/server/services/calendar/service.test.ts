@@ -1,10 +1,9 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { api } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { DeleteResult, UpdateResult } from 'mongodb';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { MockedCronJobs } from '../../../tests/mocks/server/services/calendar/cronJobs';
@@ -46,20 +45,23 @@ const getUserPreferenceMock = sinon.stub();
 
 const LicenseMock = { hasModule: sinon.stub() };
 
-const serviceMocks = {
-	'../../settings': { settings: settingsMock },
-	'@rocket.chat/core-services': {
-		api,
-		ServiceClassInternal: class {},
-		Presence: PresenceMock,
-	},
-	'@rocket.chat/cron': { cronJobs: cronJobsMock },
-	'@rocket.chat/license': { License: LicenseMock },
-	'../../lib/utils/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
-	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
+const i18nMock = { t: sinon.stub().returns('Outlook: In a meeting') };
+
+const loadService = () => {
+	mock.module('../../settings', { exports: { settings: settingsMock } });
+	mock.module('@rocket.chat/core-services', { exports: { api, ServiceClassInternal: class {}, Presence: PresenceMock } });
+	mock.module('@rocket.chat/cron', { exports: { cronJobs: cronJobsMock } });
+	mock.module('@rocket.chat/license', { exports: { License: LicenseMock } });
+	mock.module('../../lib/utils/lib/getUserPreference', { exports: { getUserPreference: getUserPreferenceMock } });
+	mock.module('../../lib/i18n', { exports: { i18n: i18nMock } });
+	delete require.cache[require.resolve('./service')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const serviceExports = require('./service');
+	mock.restoreAll();
+	return serviceExports;
 };
 
-const { CalendarService } = proxyquire.noCallThru().load('./service', serviceMocks);
+const { CalendarService } = loadService();
 
 describe('CalendarService', () => {
 	let sandbox: sinon.SinonSandbox;
@@ -350,7 +352,7 @@ describe('CalendarService', () => {
 
 	describe('#setupNextNotification', () => {
 		it('should call doSetupNextNotification internally', async () => {
-			const serviceExports = proxyquire.noCallThru().load('./service', serviceMocks);
+			const serviceExports = loadService();
 
 			const testService = createFreshServiceInstance<InstanceType<typeof CalendarService>>(serviceExports);
 

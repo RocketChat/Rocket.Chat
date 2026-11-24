@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { createRef } from 'react';
 
-import { Field, FieldLabel } from '../Field';
-import { EmailInput, NumberInput, PasswordInput, SearchInput, TextAreaInput, TextInput, UrlInput } from './WrappedInputComponents';
+import { EmailInput, NumberInput, PasswordInput, SearchInput, TextAreaInput, TextInput, UrlInput } from './WrappedInputComponents.js';
+import { Field, FieldLabel } from '../Field/index.js';
 
 // What a consumer passes a wrapped input, next to the id the field hands it, has to reach the DOM element
 describe('[withLabelId] spread completeness', () => {

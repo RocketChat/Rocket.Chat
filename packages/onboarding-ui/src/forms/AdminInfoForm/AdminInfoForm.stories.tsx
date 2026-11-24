@@ -1,6 +1,6 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 
-import AdminInfoForm from './AdminInfoForm';
+import AdminInfoForm from './AdminInfoForm.js';
 
 export default {
 	title: 'forms/AdminInfoForm',

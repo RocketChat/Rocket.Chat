@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import VideoConfButton from './VideoConfButton';
+import VideoConfButton from './VideoConfButton.js';
 
 export default {
 	component: VideoConfButton,

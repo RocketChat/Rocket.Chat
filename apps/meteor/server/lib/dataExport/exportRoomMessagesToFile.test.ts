@@ -1,9 +1,8 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { faker } from '@faker-js/faker';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import type { MessageData } from './exportRoomMessagesToFile';
@@ -21,22 +20,35 @@ const stubs = {
 	restrictToVisibleHistory: sinon.stub().callsFake(async (_uid: string, _rid: string, query: object) => query),
 };
 
-const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
-	'fs/promises': {
-		mkdir: stubs.mkdir,
-		writeFile: stubs.writeFile,
-	},
-	'../i18n': {
-		i18n: {
-			t: stubs.translateKey,
+let getMessageData: any;
+let exportRoomMessages: any;
+let exportMessageObject: any;
+
+before(async () => {
+	mock.module('fs/promises', {
+		exports: {
+			mkdir: stubs.mkdir,
+			writeFile: stubs.writeFile,
 		},
-	},
-	'../../settings': {
-		settings: stubs.settings,
-	},
-	'../messages/historyVisibility': {
-		restrictToVisibleHistory: stubs.restrictToVisibleHistory,
-	},
+	});
+	mock.module('../i18n', {
+		exports: {
+			i18n: {
+				t: stubs.translateKey,
+			},
+		},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: stubs.settings,
+		},
+	});
+	mock.module('../messages/historyVisibility', {
+		exports: {
+			restrictToVisibleHistory: stubs.restrictToVisibleHistory,
+		},
+	});
+	({ getMessageData, exportRoomMessages, exportMessageObject } = await import('./exportRoomMessagesToFile'));
 });
 
 describe('Export - exportMessageObject', () => {

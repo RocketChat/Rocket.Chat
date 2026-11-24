@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useCallState } from '../context';
-import type { CallPins } from '../lib/callPins';
-import { NO_PINS, dismissScreens, pinScreen, pinnedIdOf, pinsForShares, togglePersonPin, unpinPerson } from '../lib/callPins';
-import type { ScreenShare, ShareStarts } from '../lib/screenShares';
-import { collectScreenShares, pickFeaturedScreen, recordShareStarts } from '../lib/screenShares';
+import { useCallState } from '../context.js';
+import type { CallPins } from '../lib/callPins.js';
+import { NO_PINS, dismissScreens, pinScreen, pinnedIdOf, pinsForShares, togglePersonPin, unpinPerson } from '../lib/callPins.js';
+import type { ScreenShare, ShareStarts } from '../lib/screenShares.js';
+import { collectScreenShares, pickFeaturedScreen, recordShareStarts } from '../lib/screenShares.js';
 
 /** How long a pinned person may be gone, as on a reconnect or a reload of their window, before the pin is forgotten. */
 export const PIN_GRACE_MS = 30_000;

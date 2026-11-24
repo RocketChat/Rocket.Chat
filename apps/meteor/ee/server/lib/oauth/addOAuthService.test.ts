@@ -1,13 +1,15 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const add = sinon.stub();
 
-const { addOAuthService } = proxyquire.noCallThru().load('./addOAuthService', {
-	'../../../../server/settings': { settingsRegistry: { add } },
+let addOAuthService: any;
+
+before(async () => {
+	mock.module('../../../../server/settings', { exports: { settingsRegistry: { add } } });
+	({ addOAuthService } = await import('./addOAuthService'));
 });
 
 const defaultValues = [

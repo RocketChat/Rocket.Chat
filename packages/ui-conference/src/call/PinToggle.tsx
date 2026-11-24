@@ -1,7 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-import { usePinFocus } from './hooks/usePinFocus';
+import { usePinFocus } from './hooks/usePinFocus.js';
 
 export type PinToggleProps = {
 	pinned: boolean;

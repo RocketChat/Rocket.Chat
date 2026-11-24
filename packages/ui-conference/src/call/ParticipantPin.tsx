@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
-import PinToggle from './PinToggle';
-import { useCallPins } from './context';
+import PinToggle from './PinToggle.js';
+import { useCallPins } from './context.js';
 
 export type ParticipantPinProps = {
 	participantId: string;

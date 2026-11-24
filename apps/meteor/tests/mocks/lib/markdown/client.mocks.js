@@ -1,16 +1,15 @@
-import proxyquire from 'proxyquire';
+import { mock } from 'node:test';
 
-const mocks = {
-	'@rocket.chat/random': {
-		'Random': {
+mock.module('@rocket.chat/random', {
+	exports: {
+		Random: {
 			id() {
 				return Math.random().toString().replace('0.', 'A');
 			},
 		},
-		'@global': true,
 	},
-};
+});
 
-export const { Markdown } = proxyquire.noCallThru().load('../../../../lib/markdown/markdown', mocks);
-export const { original } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/original/original', mocks);
-export const { filtered } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/filtered/filtered', mocks);
+export const { Markdown } = require('../../../../lib/markdown/markdown');
+export const { original } = require('../../../../lib/markdown/parser/original/original');
+export const { filtered } = require('../../../../lib/markdown/parser/filtered/filtered');

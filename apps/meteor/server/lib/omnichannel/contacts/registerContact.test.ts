@@ -2,7 +2,6 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -27,9 +26,10 @@ const modelsMock = {
 	},
 };
 
-const { registerContact } = proxyquire.noCallThru().load('./registerContact', {
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
+let registerContact: any;
+
+before(async () => {
+	({ registerContact } = await import('./registerContact'));
 });
 
 describe('registerContact', () => {

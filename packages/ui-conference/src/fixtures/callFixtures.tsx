@@ -5,14 +5,14 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
-import { JOHN_DOE_ID } from './storyFixtures';
-import CallPinScope from '../call/CallPinScope';
-import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
-import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
-import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
-import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
-import type { VideoQualitySelection } from '../devices/VideoQualityContext';
-import { VideoQualityProvider } from '../devices/VideoQualityContext';
+import { JOHN_DOE_ID } from './storyFixtures.js';
+import CallPinScope from '../call/CallPinScope.js';
+import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context.js';
+import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context.js';
+import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext.js';
+import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext.js';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext.js';
+import { VideoQualityProvider } from '../devices/VideoQualityContext.js';
 
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,

@@ -1675,6 +1675,7 @@
   "Example_payload": "ペイロードの例",
   "Example_s": "例：<code>{{value}}</code>",
   "except_pinned": "（固定されているものを除く）",
+  "Exchange_Graph_Client_Secret": "クライアントシークレット",
   "Exclude_Botnames": "ボットの除外",
   "Exclude_Botnames_Description": "上記の正規表現と一致する名前のボットからメッセージを伝播させないでください。空のままにすると、ボットからのすべてのメッセージが伝播されます。",
   "Exclude_pinned": "固定されたメッセージを除外",

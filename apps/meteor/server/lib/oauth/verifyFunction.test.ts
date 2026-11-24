@@ -1,13 +1,15 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const updateOrCreateUserFromExternalService = sinon.stub();
 
-const { verifyFunction } = p.noCallThru().load('./verifyFunction.ts', {
-	'meteor/accounts-base': { Accounts: { updateOrCreateUserFromExternalService } },
+let verifyFunction: any;
+
+before(async () => {
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } });
+	({ verifyFunction } = await import('./verifyFunction'));
 });
 
 describe('verifyFunction', () => {

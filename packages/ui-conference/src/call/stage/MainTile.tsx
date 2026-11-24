@@ -1,6 +1,6 @@
-import type { StageTile } from '../lib/stageTiles';
-import ParticipantTile from '../tile/ParticipantTile';
-import SelfTile from '../tile/SelfTile';
+import type { StageTile } from '../lib/stageTiles.js';
+import ParticipantTile from '../tile/ParticipantTile.js';
+import SelfTile from '../tile/SelfTile.js';
 
 export type MainTileProps = {
 	tile: StageTile;

@@ -1818,6 +1818,7 @@
   "Example_payload": "Пример полезной нагрузки",
   "Example_s": "Пример: <code>{{value}}</code>",
   "except_pinned": "(за исключением тех, которые закреплены)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Исключить ботов",
   "Exclude_Botnames_Description": "Не обрабатывать сообщения от ботов, имена которых совпадают с регулярным выражением выше. Если не заполнено, все сообщения будут обработаны.",
   "Exclude_pinned": "Не удалять прикрепленные сообщения",

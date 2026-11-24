@@ -1,7 +1,7 @@
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { overflowTileStyles } from './stageStyles';
+import { overflowTileStyles } from './stageStyles.js';
 
 export type OverflowTileProps = {
 	hidden: { avatarUrl?: string; displayName: string }[];
