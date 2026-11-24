@@ -4,4 +4,7 @@
  */
 export interface IEwsTransport {
 	post(soapEnvelope: string): Promise<string>;
+
+	/** Closes the connection and fails every request still waiting on it. */
+	close(): void;
 }

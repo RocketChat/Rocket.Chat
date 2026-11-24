@@ -31,6 +31,8 @@ class FakeTransport implements IEwsTransport {
 		}
 		return next;
 	}
+
+	close = jest.fn();
 }
 
 const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('2026-08-22T00:00:00Z') };
@@ -41,6 +43,14 @@ const cursorFor = (syncState: string, window: DateRange = timeWindow) =>
 const MAILBOX = 'user@corp.example';
 
 describe('ExchangeEwsProvider', () => {
+	it('closes its transport when cleaned up', () => {
+		const transport = new FakeTransport([]);
+
+		new ExchangeEwsProvider(transport).cleanup();
+
+		expect(transport.close).toHaveBeenCalledTimes(1);
+	});
+
 	describe('testConnection', () => {
 		const SERVICE_ACCOUNT = 'svc@corp.example';
 

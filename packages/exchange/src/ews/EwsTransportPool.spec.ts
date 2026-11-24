@@ -11,6 +11,7 @@ const createConnections = (count: number) => {
 					queue.push({ resolve, reject });
 				}),
 		),
+		close: jest.fn(),
 	}));
 
 	let next = 0;
@@ -21,7 +22,7 @@ const createConnections = (count: number) => {
 
 describe('EwsTransportPool', () => {
 	it('builds as many connections as it is asked for', () => {
-		const createConnection = jest.fn(() => ({ post: jest.fn() }));
+		const createConnection = jest.fn(() => ({ post: jest.fn(), close: jest.fn() }));
 
 		new EwsTransportPool(3, createConnection);
 
@@ -77,5 +78,16 @@ describe('EwsTransportPool', () => {
 
 		expect(connections[0].post).toHaveBeenLastCalledWith('b');
 		expect(connections[1].post).not.toHaveBeenCalled();
+	});
+
+	it('closes every connection, used or not', () => {
+		const { pool, connections } = createConnections(3);
+
+		void pool.post('a');
+		pool.close();
+
+		for (const { close } of connections) {
+			expect(close).toHaveBeenCalledTimes(1);
+		}
 	});
 });

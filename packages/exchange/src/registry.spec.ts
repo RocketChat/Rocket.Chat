@@ -52,13 +52,15 @@ describe('getCalendarSyncWindow', () => {
 describe('provider holder', () => {
 	beforeEach(() => detachExchangeProvider());
 
+	const providerFor = (id: IExchangeProvider['id']) => ({ id, cleanup: jest.fn() }) as unknown as IExchangeProvider;
+
 	it('refuses to hand out a provider before one is set', () => {
 		expect(isServerSyncEnabled()).toBe(false);
 		expect(() => getExchangeProvider()).toThrow(expect.objectContaining({ code: 'not-configured' }));
 	});
 
 	it('hands out the provider that was set, until it is detached', () => {
-		const provider = { id: 'ews' } as IExchangeProvider;
+		const provider = providerFor('ews');
 
 		setExchangeProvider(provider);
 
@@ -68,5 +70,25 @@ describe('provider holder', () => {
 		detachExchangeProvider();
 
 		expect(isServerSyncEnabled()).toBe(false);
+	});
+
+	it('closes the provider it replaces', () => {
+		const previous = providerFor('ews');
+		const next = providerFor('ews');
+
+		setExchangeProvider(previous);
+		setExchangeProvider(next);
+
+		expect(previous.cleanup).toHaveBeenCalledTimes(1);
+		expect(next.cleanup).not.toHaveBeenCalled();
+	});
+
+	it('keeps a provider that is set again', () => {
+		const provider = providerFor('ews');
+
+		setExchangeProvider(provider);
+		setExchangeProvider(provider);
+
+		expect(provider.cleanup).not.toHaveBeenCalled();
 	});
 });

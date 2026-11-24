@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { EventEmitter } from 'events';
-import { Agent } from 'https';
+import type { ClientRequest, IncomingMessage } from 'http';
+import { Agent, request } from 'https';
 import type { TLSSocket } from 'tls';
 
 import type { EwsTransportConfig } from './EwsTransport';
@@ -12,6 +13,11 @@ jest.mock('@rocket.chat/ntlm', () => ({
 	createType3Message: () => 'authenticate',
 	computeChannelBindingHash: () => Buffer.from('binding'),
 }));
+
+jest.mock('https', () => {
+	const actual = jest.requireActual<typeof import('https')>('https');
+	return { ...actual, request: jest.fn(actual.request) };
+});
 
 const SOCKET_REACHED = new Error('socket reached');
 
@@ -163,5 +169,55 @@ describe('throttling', () => {
 
 		await expect(transport.post('<soap/>')).rejects.toMatchObject({ code: 'rate-limited' });
 		expect(send).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('close', () => {
+	/** A request that stays open until the test ends it, answered with `response` when there is one. */
+	const openRequest = (response?: EventEmitter) => {
+		const req = Object.assign(new EventEmitter(), { end: jest.fn(), destroy: jest.fn() }) as unknown as ClientRequest;
+		jest.mocked(request).mockImplementationOnce((_url, _options, onResponse) => {
+			if (response) {
+				onResponse?.(response as IncomingMessage);
+			}
+			return req;
+		});
+		return req;
+	};
+
+	beforeEach(() => jest.mocked(request).mockClear());
+
+	afterEach(() => jest.restoreAllMocks());
+
+	it('destroys its agent, which holds the connection', () => {
+		const destroy = jest.spyOn(Agent.prototype, 'destroy');
+
+		transportFor().close();
+
+		expect(destroy).toHaveBeenCalledTimes(1);
+	});
+
+	it('fails the request in flight and the ones waiting their turn, sending none of those', async () => {
+		const inFlight = openRequest();
+		const transport = transportFor();
+
+		const posts = ['a', 'b', 'c'].map((body) => transport.post(body));
+		await new Promise((resolve) => setImmediate(resolve));
+		transport.close();
+		inFlight.emit('error', new Error('socket hang up'));
+
+		for (const post of posts) {
+			await expect(post).rejects.toMatchObject({ code: 'not-configured' });
+		}
+		expect(request).toHaveBeenCalledTimes(1);
+	});
+
+	it.each(['basic', 'ntlm'] as const)('refuses a %s request once closed, without sending it', async (authMethod) => {
+		const transport = transportFor({ authMethod });
+
+		transport.close();
+
+		await expect(transport.post('<soap/>')).rejects.toMatchObject({ code: 'not-configured' });
+		expect(request).not.toHaveBeenCalled();
 	});
 });

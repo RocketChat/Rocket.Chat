@@ -24,6 +24,12 @@ export class EwsTransportPool implements IEwsTransport {
 		}
 	}
 
+	public close(): void {
+		for (const connection of this.connections) {
+			connection.close();
+		}
+	}
+
 	/** Ties go to the lowest index, so a quiet workspace keeps reusing one connection instead of opening all of them. */
 	private leastBusy(): number {
 		let best = 0;
