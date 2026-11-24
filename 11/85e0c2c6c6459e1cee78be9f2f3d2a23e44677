@@ -1,0 +1,57 @@
+apps/meteor/server/lib/cas/createNewUser.ts
+  s_cbe68936cb4058::t_ddae28af330abe 6,39
+  s_cbe68936cb4058::t_d48c3a639b75e0 22
+apps/meteor/server/lib/auth/startup.js
+  s_cbe68936cb4058::t_af5cfc4408b020 3-4,7
+apps/meteor/server/lib/auth/insertUser.ts
+  s_cbe68936cb4058::t_3960e7fb78cac4 226,229,252
+  s_cbe68936cb4058::t_d26687a2cb6756 43,46-47
+  s_cbe68936cb4058::t_c6c7cd645d224b 44-45
+  s_cbe68936cb4058::t_d48c3a639b75e0 181,193-194
+  s_cbe68936cb4058::t_c9dec7dee11aa8 1-42,48-68,73-153,157-165,168-169,171-172,174-180,182-192,195-225,227-228,230-251,253-264
+  s_cbe68936cb4058::t_649c319852fde4 69-72,154-156,166-167,170,173
+apps/meteor/server/lib/auth-providers/custom-oauth/customOAuth.ts
+  s_cbe68936cb4058::t_b5ba48d981e6d6 360,382
+apps/meteor/server/lib/auth/insertUser.test.ts
+  s_cbe68936cb4058::t_9d0ae532adaaf5 1-10,12-33,40-84,86-128,133-138,140-150,152-154,156-182,188-235,239-247,251-288
+  s_cbe68936cb4058::t_d48c3a639b75e0 11,85,139,151,155
+  s_cbe68936cb4058::t_3960e7fb78cac4 34-39,129-132,183-187,236-238,248-250
+apps/meteor/ee/server/lib/saml/lib/SAML.ts
+  s_cbe68936cb4058::t_ddae28af330abe 14
+apps/meteor/server/lib/import/classes/converters/UserConverter.ts
+  s_cbe68936cb4058::t_ddae28af330abe 8,403
+apps/meteor/server/lib/auth-providers/custom-oauth/customOAuth.spec.ts
+  s_cbe68936cb4058::t_3bf3417bbeff2d 89,106,113,673,680,690,705,715
+  s_cbe68936cb4058::t_3960e7fb78cac4 698
+apps/meteor/server/lib/cas/createNewUser.test.ts
+  s_cbe68936cb4058::t_3bf3417bbeff2d 10,16,30,44,63-65
+apps/meteor/server/lib/import/classes/converters/UserConverter.test.ts
+  s_cbe68936cb4058::t_3bf3417bbeff2d 18,51-52,66,405,409,421-422,424
+apps/meteor/server/lib/auth/createUser.test.ts
+  s_cbe68936cb4058::t_7f8bfb90845f71 1-81
+apps/meteor/server/lib/users/saveUser/saveNewUser.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 10,21,32,35
+apps/meteor/server/lib/auth/createUser.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 16
+  s_cbe68936cb4058::t_52df29d9d59a35 1-15,17-65
+apps/meteor/server/meteor-methods/users/registerUser.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 7,67
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_cbe68936cb4058::t_f8ac346ebc4498 13,387
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1185e0c2c6c6459e1cee78be9f2f3d2a23e44677",
+  "prompts": {},
+  "sessions": {
+    "s_cbe68936cb4058": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "897ac47e-99d8-4522-96d5-674729b4ae7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
