@@ -1,0 +1,8 @@
+{
+	"name": "meteor",
+	"private": true,
+	"exports": {
+		"./meteorhacks:inject-initial": "./meteorhacks-inject-initial.js",
+		"./*": "./*.js"
+	}
+}
