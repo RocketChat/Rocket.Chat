@@ -13,20 +13,24 @@ describe('im / dm endpoint typings', () => {
 		type ListEveryoneIm = ImEndpoints['/v1/im.list.everyone']['GET'];
 		type ListEveryoneDm = DmEndpoints['/v1/dm.list.everyone']['GET'];
 
-		declare const others: OthersIm;
-		declare const othersDm: OthersDm;
-		declare const list: ListIm;
-		declare const listDm: ListDm;
-		declare const everyone: ListEveryoneIm;
-		declare const everyoneDm: ListEveryoneDm;
+		let others!: OthersIm;
+		let othersDm!: OthersDm;
+		let list!: ListIm;
+		let listDm!: ListDm;
+		let everyone!: ListEveryoneIm;
+		let everyoneDm!: ListEveryoneDm;
 
 		// These must compile cleanly
 		if (false as boolean) {
 			others({ roomId: 'room-id' });
 			othersDm({ roomId: 'room-id' });
+			list();
 			list({ count: 20, offset: 0 });
+			listDm();
 			listDm({ count: 20, offset: 0 });
+			everyone();
 			everyone({ count: 20, offset: 0 });
+			everyoneDm();
 			everyoneDm({ count: 20, offset: 0 });
 
 			// @ts-expect-error roomId is required

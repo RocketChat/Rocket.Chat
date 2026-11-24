@@ -80,9 +80,9 @@ export type ImEndpoints = {
 		GET: (params: DmMessagesOthersProps) => { messages: IMessage[]; offset: number; count: number; total: number };
 	};
 	'/v1/im.list': {
-		GET: (params: DmListProps) => { ims: IRoom[]; offset: number; count: number; total: number };
+		GET: (params?: DmListProps) => { ims: IRoom[]; offset: number; count: number; total: number };
 	};
 	'/v1/im.list.everyone': {
-		GET: (params: DmListEveryoneProps) => { ims: IRoom[]; offset: number; count: number; total: number };
+		GET: (params?: DmListEveryoneProps) => { ims: IRoom[]; offset: number; count: number; total: number };
 	};
 };
