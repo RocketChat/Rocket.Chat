@@ -2,7 +2,7 @@ import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,8 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const updateCategory = useUpdateCategory();
 	const validateName = useValidateCategoryName();
 
-	const initialRoomsRef = useRef(useCategoryRoomIds(category._id));
+	const categoryRoomIds = useCategoryRoomIds(category._id);
+	const [initialRooms] = useState(() => categoryRoomIds);
 
 	const {
 		handleSubmit,
@@ -32,7 +33,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	} = useForm({
 		defaultValues: {
 			name: category.name,
-			rooms: initialRoomsRef.current,
+			rooms: initialRooms,
 		},
 	});
 
@@ -44,10 +45,10 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 		const trimmed = name.trim();
 		const nameUnchanged = trimmed === category.name.trim();
 
-		const initialSet = new Set(initialRoomsRef.current);
+		const initialSet = new Set(initialRooms);
 		const newSet = new Set(rooms);
 		const addedRoomIds = rooms.filter((rid) => !initialSet.has(rid));
-		const removedRoomIds = initialRoomsRef.current.filter((rid) => !newSet.has(rid));
+		const removedRoomIds = initialRooms.filter((rid) => !newSet.has(rid));
 		const roomsUnchanged = addedRoomIds.length === 0 && removedRoomIds.length === 0;
 
 		if (nameUnchanged && roomsUnchanged) {
