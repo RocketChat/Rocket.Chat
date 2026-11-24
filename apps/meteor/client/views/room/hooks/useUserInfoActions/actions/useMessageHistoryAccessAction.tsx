@@ -1,10 +1,11 @@
 import type { IRoom, ISubscription, IUser, Serialized } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetModal, useToastMessageDispatch, useUserId, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useExperimentalEndpoint } from '../../../../../hooks/useExperimentalEndpoint';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useCanManageMessageHistory } from '../../useCanManageMessageHistory';
 import type { UserInfoAction } from '../useUserInfoActions';
@@ -25,7 +26,7 @@ export const useMessageHistoryAccessAction = (
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
-	const setMemberHistoryAccess = useEndpoint('POST', '/v1/rooms.setMemberHistoryAccess');
+	const setMemberHistoryAccess = useExperimentalEndpoint('POST', '/experimental/rooms.setMemberHistoryAccess');
 
 	const { mutate } = useMutation({
 		mutationFn: (restricted: boolean) => setMemberHistoryAccess({ roomId: rid, userId: user._id, restricted }),

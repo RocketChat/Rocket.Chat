@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { PathPattern } from '@rocket.chat/rest-typings';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useMessageHistoryAccessAction } from './useMessageHistoryAccessAction';
@@ -55,7 +56,9 @@ describe('useMessageHistoryAccessAction', () => {
 		const setMemberHistoryAccess = jest.fn().mockResolvedValue({ success: true });
 
 		const { result } = renderHook(() => useMessageHistoryAccessAction(member, room._id, '2026-10-01T00:00:00.000Z'), {
-			wrapper: appRoot().withEndpoint('POST', '/v1/rooms.setMemberHistoryAccess', setMemberHistoryAccess).build(),
+			wrapper: appRoot()
+				.withEndpoint('POST', '/experimental/rooms.setMemberHistoryAccess' as PathPattern, setMemberHistoryAccess)
+				.build(),
 		});
 
 		expect(result.current).toMatchObject({ content: 'Show_earlier_messages', icon: 'eye' });

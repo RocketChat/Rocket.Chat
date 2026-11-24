@@ -26,4 +26,7 @@ export type ExperimentalEndpoints = {
 	'/experimental/rooms.setCategory': {
 		POST: (params: { roomIds: string[]; category: string | null }) => { success: true };
 	};
+	'/experimental/rooms.setMemberHistoryAccess': {
+		POST: (params: { roomId: string; userId: string; restricted: boolean }) => { success: true };
+	};
 };

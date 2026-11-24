@@ -13,6 +13,7 @@ export function addSettings(): Promise<void> {
 					public: true,
 					invalidValue: false,
 					section: 'Restricted_Message_History',
+					alert: 'Restricted_Message_History_Experimental_Alert',
 					i18nDescription: 'Restricted_Message_History_Enabled_Description',
 				});
 			},

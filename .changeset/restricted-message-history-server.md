@@ -9,4 +9,4 @@
 '@rocket.chat/i18n': minor
 ---
 
-Adds restricted message history (Enterprise): with `Restricted_Message_History_Enabled` on, rooms can hide earlier messages from members who join later (`hideHistoryForNewMembers` in `rooms.saveRoomSettings`), and `rooms.setMemberHistoryAccess` hides or restores one member's history. Every API that returns room messages, live updates included, leaves out what the member can't see.
+Adds experimental restricted message history (Enterprise): with `Restricted_Message_History_Enabled` on, rooms can hide earlier messages from members who join later (`hideHistoryForNewMembers` in `rooms.saveRoomSettings`), and `/api/experimental/rooms.setMemberHistoryAccess` hides or restores one member's history. Every API that returns room messages, live updates included, leaves out what the member can't see. The endpoint, the room's `hideHistoryForNewMembers` and the subscription's `historyVisibleFrom` may change in any release.

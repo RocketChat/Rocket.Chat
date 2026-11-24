@@ -5799,6 +5799,7 @@
   "Restricted_Message_History": "Restricted message history",
   "Restricted_Message_History_Enabled": "Allow hiding message history from members",
   "Restricted_Message_History_Enabled_Description": "Rooms can hide messages sent before someone joined, and people who manage a room's members can hide or restore each member's earlier messages.",
+  "Restricted_Message_History_Experimental_Alert": "Restricted message history is experimental. Its behavior and API may change in any release.",
   "Results": "Results",
   "Resume": "Resume",
   "Retail": "Retail",

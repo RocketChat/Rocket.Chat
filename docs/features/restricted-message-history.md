@@ -6,8 +6,10 @@ Rooms can hide their earlier messages from people who join later. A member's sub
 date from which they can read the room (`historyVisibleFrom`); everything sent before it is hidden from
 them. Members without that date see the full history, as before.
 
-This is an Enterprise feature, licensed under `experimental-enterprise-features` until Cloud can grant it a
-module of its own. It's off unless both hold:
+This is an experimental Enterprise feature, licensed under `experimental-enterprise-features` until Cloud
+can grant it a module of its own. Its endpoint, `rooms.setMemberHistoryAccess`, lives under
+`/api/experimental`, and it, the room's `hideHistoryForNewMembers` and the subscription's
+`historyVisibleFrom` may change in any release. It's off unless both hold:
 
 - the workspace setting **Restricted_Message_History_Enabled** (Message section) is on — it defaults
   to off and reads as off without the license;
@@ -72,7 +74,7 @@ can't reply to a hidden thread either.
 ## UI
 
 - **Administration → Settings → Message → Restricted message history** turns the feature on; it carries
-  the Enterprise badge and stays off without the license.
+  the Enterprise badge and an alert saying the feature is experimental, and stays off without the license.
 - **Edit Room → Advanced settings** shows "Hide earlier messages from new members" while the feature is
   on, for the room types above.
 - **Members list.** People who can manage it get "Hide earlier messages" / "Show earlier messages" in a

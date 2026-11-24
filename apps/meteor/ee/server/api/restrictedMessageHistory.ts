@@ -1,6 +1,5 @@
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
-import type { ExtractRoutesFromAPI } from '../../../server/api/ApiClass';
 import { API } from '../../../server/api/api';
 import { setMemberHistoryAccess } from '../lib/restrictedMessageHistory/setMemberHistoryAccess';
 
@@ -22,7 +21,7 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-const restrictedMessageHistoryEndpoints = API.v1.post(
+API.experimental.post(
 	'rooms.setMemberHistoryAccess',
 	{
 		authRequired: true,
@@ -39,13 +38,6 @@ const restrictedMessageHistoryEndpoints = API.v1.post(
 
 		await setMemberHistoryAccess(this.user, { rid: roomId, userId, restricted });
 
-		return API.v1.success();
+		return API.experimental.success();
 	},
 );
-
-export type RestrictedMessageHistoryEndpoints = ExtractRoutesFromAPI<typeof restrictedMessageHistoryEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
-	interface Endpoints extends RestrictedMessageHistoryEndpoints {}
-}
