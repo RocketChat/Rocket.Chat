@@ -2,7 +2,7 @@ import fileType from 'file-type';
 
 import { mime as MIME } from '../../../lib/mimeTypes';
 
-export async function determineFileType(buffer, name) {
+export async function determineFileType(buffer: Buffer, name: string): Promise<string> {
 	const mime = MIME.lookup(name);
 
 	if (mime) {
