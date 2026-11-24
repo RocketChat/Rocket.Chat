@@ -1,0 +1,19 @@
+apps/meteor/server/lib/oauth/configureOAuthServices.test.ts
+  s_5049b5fc09b80f::t_e563d3c6657a91 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "727466850afcb7bbbfc90eedcc6e0041efa5bae9",
+  "prompts": {},
+  "sessions": {
+    "s_5049b5fc09b80f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01526df1-4d4b-4bbf-84a2-f233028c823d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
