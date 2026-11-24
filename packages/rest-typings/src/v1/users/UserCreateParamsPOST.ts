@@ -30,7 +30,7 @@ const userCreateParamsPostSchema = {
 	properties: {
 		email: { type: 'string' },
 		name: { type: 'string' },
-		password: { type: 'string' },
+		password: { type: 'string', maxLength: 256 },
 		username: { type: 'string' },
 		active: { type: 'boolean', nullable: true },
 		presenceDisabledByAdmin: { type: 'boolean', nullable: true },
