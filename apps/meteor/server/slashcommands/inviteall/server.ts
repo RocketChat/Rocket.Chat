@@ -64,7 +64,7 @@ function reportAddedAndSkipped(
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
-		if (!/invite\-all-(to|from)/.test(command)) {
+		if (!/invite-all-(to|from)/.test(command)) {
 			return;
 		}
 

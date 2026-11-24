@@ -361,3 +361,14 @@ describe('VideoConfManager with the call window', () => {
 		});
 	});
 });
+
+describe('VideoConfManager updating the user', () => {
+	it('should keep the call subscription when the user is updated with no change to the login or the connection', () => {
+		jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
+		VideoConfManager.updateUser('user-1', false, true);
+		VideoConfManager.updateUser('user-1', false, true);
+
+		expect(sdk.stream).toHaveBeenCalledTimes(1);
+	});
+});

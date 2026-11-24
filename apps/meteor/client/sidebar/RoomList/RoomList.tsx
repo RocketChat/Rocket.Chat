@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
+import { GenericNoResults, useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,13 +37,17 @@ const sidebarRowHeight: Record<SidebarViewMode, number> = {
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
-const RoomList = () => {
+type RoomListProps = {
+	filterText?: string;
+};
+
+const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	const { groups, groupKeys, filtering } = useRoomList({ collapsedGroups, filterText });
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
@@ -65,8 +69,6 @@ const RoomList = () => {
 		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
-	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
-
 	const virtualGroups = useMemo(
 		() =>
 			groups.map((group) => ({
@@ -83,10 +85,14 @@ const RoomList = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups);
+	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups, { groupKeys, canReorder: !filtering });
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, dragRef);
 
 	const isGroupDragged = (groupKey: string) => dragSource?.kind === 'group' && dragSource.key === groupKey;
+
+	if (filtering && groups.length === 0) {
+		return <GenericNoResults />;
+	}
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
@@ -104,11 +110,11 @@ const RoomList = () => {
 						data-drag-group={group.key}
 						dragging={isGroupDragged(group.key)}
 						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
-						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
+						canMoveUp={!filtering && canMoveGroup(groups, index, 'up')}
+						canMoveDown={!filtering && canMoveGroup(groups, index, 'down')}
+						onMoveUp={() => moveCategory(groupKeys, group.key, 'up')}
+						onMoveDown={() => moveCategory(groupKeys, group.key, 'down')}
+						onClick={() => !filtering && handleClick(group.key)}
 					/>
 				)}
 				renderItem={(item, _itemIndex, group, _groupIndex, rowIndex) => (

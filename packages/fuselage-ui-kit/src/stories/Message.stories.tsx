@@ -70,7 +70,7 @@ export default {
 					</UiKitContext.Provider>
 				</MessageBody>
 			</MessageContainer>
-			<MessageToolbarWrapper>
+			<MessageToolbarWrapper visible>
 				<MessageToolbar>
 					<MessageToolbarItem icon='quote' />
 					<MessageToolbarItem icon='clock' />

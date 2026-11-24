@@ -1,6 +1,8 @@
 import { Message, Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import {
 	type IUser,
+	type IMessage,
+	type MessageAttachment,
 	type MessageTypesValues,
 	type IOmnichannelSystemMessage,
 	type ILivechatVisitor,
@@ -27,6 +29,49 @@ import { getTimezone } from '../utils/lib/getTimezone';
 const logger = new Logger('Livechat-SendTranscript');
 
 const DOMPurify = createDOMPurify(new JSDOM('').window);
+
+async function buildAttachmentsHTML(
+	attachments: MessageAttachment[],
+	files: IMessage['files'],
+	roomId: IOmnichannelRoom['_id'],
+	InvalidFileMessage: string,
+	escapeHtml: (str: string) => string,
+): Promise<string> {
+	let filesHTML = '';
+
+	for (const attachment of attachments) {
+		if (!isFileAttachment(attachment)) {
+			continue;
+		}
+
+		if (!isFileImageAttachment(attachment)) {
+			filesHTML += `<div>${escapeHtml(attachment.title || '')}${InvalidFileMessage}</div>`;
+			continue;
+		}
+
+		const file = files?.find((file) => file.name === attachment.title);
+
+		if (!file) {
+			filesHTML += `<div>${escapeHtml(attachment.title || '')}${InvalidFileMessage}</div>`;
+			continue;
+		}
+
+		const uploadedFile = typeof file._id === 'string' ? await Uploads.findOneByIdAndRoomId(file._id, roomId) : null;
+
+		if (!uploadedFile) {
+			filesHTML += `<div>${escapeHtml(file.name)}${InvalidFileMessage}</div>`;
+			continue;
+		}
+
+		const uploadedFileBuffer = await FileUpload.getBuffer(uploadedFile);
+		filesHTML += `<div style="color: ${colors.n700}; margin-top: 4px; flex-direction: column;">
+					<p>${escapeHtml(file.name)}</p>
+					<img src="data:${attachment.image_type};base64,${uploadedFileBuffer.toString('base64')}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;" />
+				</div>`;
+	}
+
+	return filesHTML;
+}
 
 export async function sendTranscript({
 	token,
@@ -118,36 +163,7 @@ export async function sendTranscript({
 			messageContent = message.attachments[0].description || '';
 			escapeHtml(messageContent);
 
-			for (const attachment of message.attachments) {
-				if (!isFileAttachment(attachment)) {
-					continue;
-				}
-
-				if (!isFileImageAttachment(attachment)) {
-					filesHTML += `<div>${escapeHtml(attachment.title || '')}${InvalidFileMessage}</div>`;
-					continue;
-				}
-
-				const file = message.files?.find((file) => file.name === attachment.title);
-
-				if (!file) {
-					filesHTML += `<div>${escapeHtml(attachment.title || '')}${InvalidFileMessage}</div>`;
-					continue;
-				}
-
-				const uploadedFile = typeof file._id === 'string' ? await Uploads.findOneByIdAndRoomId(file._id, room._id) : null;
-
-				if (!uploadedFile) {
-					filesHTML += `<div>${escapeHtml(file.name)}${InvalidFileMessage}</div>`;
-					continue;
-				}
-
-				const uploadedFileBuffer = await FileUpload.getBuffer(uploadedFile);
-				filesHTML += `<div style="color: ${colors.n700}; margin-top: 4px; flex-direction: column;">
-					<p>${escapeHtml(file.name)}</p>
-					<img src="data:${attachment.image_type};base64,${uploadedFileBuffer.toString('base64')}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;" />
-				</div>`;
-			}
+			filesHTML = await buildAttachmentsHTML(message.attachments, message.files, room._id, InvalidFileMessage, escapeHtml);
 		}
 
 		const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');

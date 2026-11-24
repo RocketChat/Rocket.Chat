@@ -2,6 +2,8 @@ export type ExchangeProviderId = 'graph' | 'ews';
 
 export type ExchangeProviderCapabilities = {
 	supportsWebhooks: boolean;
+	/** Whether it reads a contact's Outlook favorite. Where it can't, the user sets the favorite in Rocket.Chat */
+	syncsFavorites: boolean;
 };
 
 export type DateRange = {
@@ -31,6 +33,7 @@ export type ExchangeEventDeletion = {
 export type ExchangeEventUpsert = {
 	kind: 'upsert';
 	externalId: string;
+	seriesMasterId?: string;
 	subject: string;
 	description: string;
 	startTime: Date;
@@ -43,6 +46,12 @@ export type ExchangeEventUpsert = {
 
 export type ExchangeEvent = ExchangeEventUpsert | ExchangeEventDeletion;
 
+/**
+ * `resyncedSeries` names the series whose expansion this page carries in full, so whatever is
+ * stored for them and missing from it is gone.
+ */
+export type EventPage = Page<ExchangeEvent> & { resyncedSeries?: string[] };
+
 export type ExchangeContactPhone = {
 	/** As it came from Exchange, kept for display and audit. */
 	raw: string;
@@ -53,7 +62,6 @@ export type ExchangeContactPhone = {
 
 export type ExchangeContactEmail = {
 	address: string;
-	label?: string;
 };
 
 export type ExchangeContactUpsert = {
@@ -64,8 +72,11 @@ export type ExchangeContactUpsert = {
 	givenName?: string;
 	surname?: string;
 	companyName?: string;
+	officeLocation?: string;
 	emails: ExchangeContactEmail[];
 	phones: ExchangeContactPhone[];
+	categories: string[];
+	favorite?: boolean;
 };
 
 export type ExchangeContactDeletion = {
@@ -76,7 +87,19 @@ export type ExchangeContactDeletion = {
 
 export type ExchangeContact = ExchangeContactUpsert | ExchangeContactDeletion;
 
+export type ExchangeContactPhoto = {
+	data: Uint8Array;
+	contentType: string;
+	externalId: string;
+};
+
 export type ContactFolder = {
 	id: string;
 	displayName: string;
+};
+
+export type ContactFolderListing = {
+	folders: ContactFolder[];
+	/** False when a cap cut the listing short, so a folder missing from it is not known to be gone. */
+	complete: boolean;
 };

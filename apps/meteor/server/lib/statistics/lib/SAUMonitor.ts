@@ -288,7 +288,7 @@ export class SAUMonitorClass {
 		if (result.device && (result.device.type || result.device.model)) {
 			info.type = result.device.type || '';
 
-			if (result.hasOwnProperty('app') && result.app?.name) {
+			if (Object.hasOwn(result, 'app') && result.app?.name) {
 				info.name = result.app.name;
 				info.longVersion = result.app.version;
 				if (result.app.bundle) {

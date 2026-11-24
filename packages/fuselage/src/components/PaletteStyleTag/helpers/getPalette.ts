@@ -1,5 +1,6 @@
 import badge from '@rocket.chat/fuselage-tokens/dist/badge.json';
 import button from '@rocket.chat/fuselage-tokens/dist/button.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import font from '@rocket.chat/fuselage-tokens/dist/font.json';
 import shadow from '@rocket.chat/fuselage-tokens/dist/shadow.json';
 import status from '@rocket.chat/fuselage-tokens/dist/status.json';
@@ -316,6 +317,41 @@ export const getThemePalette = (theme: Themes) => {
 				},
 			],
 		},
+		// `fuselage-tokens` has no warning, secondary-warning or secondary-success button: the stylesheets give them these
+		// primitives in every theme.
+		{
+			description: 'Warning Background',
+			list: [
+				{ name: 'button-background-warning-default', color: colors.y400 },
+				{ name: 'button-background-warning-hover', color: colors.y500 },
+				{ name: 'button-background-warning-press', color: colors.y600 },
+				{ name: 'button-background-warning-focus', color: colors.y400 },
+				{ name: 'button-background-warning-keyfocus', color: colors.y400 },
+				{ name: 'button-background-warning-disabled', color: colors.y200 },
+			],
+		},
+		{
+			description: 'Secondary Warning Background',
+			list: [
+				{ name: 'button-background-secondary-warning-default', color: colors.n400 },
+				{ name: 'button-background-secondary-warning-hover', color: colors.n500 },
+				{ name: 'button-background-secondary-warning-press', color: colors.n600 },
+				{ name: 'button-background-secondary-warning-focus', color: colors.n400 },
+				{ name: 'button-background-secondary-warning-keyfocus', color: colors.n400 },
+				{ name: 'button-background-secondary-warning-disabled', color: colors.n300 },
+			],
+		},
+		{
+			description: 'Secondary Success Background',
+			list: [
+				{ name: 'button-background-secondary-success-default', color: colors.n400 },
+				{ name: 'button-background-secondary-success-hover', color: colors.n500 },
+				{ name: 'button-background-secondary-success-press', color: colors.n600 },
+				{ name: 'button-background-secondary-success-focus', color: colors.n400 },
+				{ name: 'button-background-secondary-success-keyfocus', color: colors.n400 },
+				{ name: 'button-background-secondary-success-disabled', color: colors.n300 },
+			],
+		},
 		{
 			description: 'Font',
 			list: [
@@ -350,6 +386,12 @@ export const getThemePalette = (theme: Themes) => {
 					name: 'button-font-on-success-disabled',
 					color: button.fontOnSuccessDisabled,
 				},
+				{ name: 'button-font-on-warning', color: colors.n900 },
+				{ name: 'button-font-on-warning-disabled', color: colors.n600 },
+				{ name: 'button-font-on-secondary-warning', color: colors.y900 },
+				{ name: 'button-font-on-secondary-warning-disabled', color: colors.y600 },
+				{ name: 'button-font-on-secondary-success', color: colors.g800 },
+				{ name: 'button-font-on-secondary-success-disabled', color: colors.g400 },
 			],
 		},
 	];

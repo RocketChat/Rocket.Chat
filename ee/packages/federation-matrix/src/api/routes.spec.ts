@@ -11,6 +11,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 }));
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
+	ROOM_ID_REGEX: /^!(?:[A-Za-z0-9_=/.+-]+:(.+)|[A-Za-z0-9_-]{43})$/,
 	federationSDK: {},
 	errCodes: {},
 	NotAllowedError: class NotAllowedError extends Error {},

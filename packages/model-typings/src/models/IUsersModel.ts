@@ -10,6 +10,8 @@ import type {
 	ILivechatAgentStatus,
 	IMeteorLoginToken,
 	IRoom,
+	PasswordTokenRecord,
+	EmailVerificationTokenRecord,
 } from '@rocket.chat/core-typings';
 import type {
 	Document,
@@ -591,6 +593,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
 	setPasswordHash(_id: IUser['_id'], passwordHash: string): Promise<UpdateResult>;
 
+	setPasswordResetToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
+
+	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
+
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
 		requirePasswordChange: boolean,
@@ -652,6 +658,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<DocumentWithProjection<T, O> | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
+	addEmailVerificationToken(_id: IUser['_id'], tokenRecord: EmailVerificationTokenRecord): Promise<UpdateResult>;
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string): Promise<UpdateResult>;
 	findOneByEmailVerificationToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		token: string,

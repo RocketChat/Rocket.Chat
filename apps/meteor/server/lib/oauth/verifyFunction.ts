@@ -9,7 +9,7 @@ export const verifyFunction = async (
 	done: DoneCallback,
 	serviceName: string,
 ) => {
-	const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
+	const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string; email?: string };
 	const { _json, _raw, ...restProfile } = profileWithRaw;
 
 	let user;
@@ -19,11 +19,11 @@ export const verifyFunction = async (
 			{
 				accessToken,
 				refreshToken,
-				name: profile.displayName,
 				...profile,
 				...restProfile,
 				..._json,
-				email: profile?.emails?.[0]?.value,
+				email: profile?.emails?.[0]?.value ?? restProfile.email,
+				name: profile.displayName || profile.name,
 			},
 			{},
 		);

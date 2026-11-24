@@ -369,7 +369,7 @@ export class HomeContent {
 	}
 
 	get btnNewCannedResponse(): Locator {
-		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
+		return this.page.getByRole('dialog', { name: 'Canned responses', exact: true }).getByRole('button', { name: 'Create', exact: true });
 	}
 
 	get imageGallery(): Locator {
@@ -401,6 +401,16 @@ export class HomeContent {
 		if (responsePromise) {
 			await responsePromise;
 		}
+	}
+
+	async pasteImage(): Promise<void> {
+		const image = await fs.readFile(getFilePath('number1.png'));
+		await this.composer.inputMessage.evaluate((element, base64) => {
+			const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+			const data = new DataTransfer();
+			data.items.add(new File([bytes], 'number1.png', { type: 'image/png' }));
+			element.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
+		}, image.toString('base64'));
 	}
 
 	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {

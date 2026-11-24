@@ -3,10 +3,6 @@
 .rcx-message-status-indicator {
 	user-select: none;
 
-	&:empty {
-		display: none;
-	}
-
 	&__item {
 		color: colors.font(secondary-info);
 	}

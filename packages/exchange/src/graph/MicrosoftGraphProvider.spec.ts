@@ -1,5 +1,6 @@
 import { MicrosoftGraphProvider, parseGraphDateTime } from './MicrosoftGraphProvider';
 import type { ExchangeEventUpsert } from '../definition/types';
+import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
 const serverFetch = jest.fn();
 
@@ -13,11 +14,14 @@ const config = {
 	clientSecret: 'client-secret',
 };
 
+const MAILBOX = 'user@contoso.com';
+const ACCESS_TOKEN = 'the-token';
+
 const tokenResponse = {
 	ok: true,
 	status: 200,
 	headers: { get: () => null },
-	json: async () => ({ access_token: 'the-token', expires_in: 3600 }),
+	json: async () => ({ access_token: ACCESS_TOKEN, expires_in: 3600 }),
 	text: async () => '',
 };
 
@@ -77,60 +81,92 @@ describe('MicrosoftGraphProvider', () => {
 	});
 
 	describe('listEvents', () => {
-		it('requests calendarView/delta scoped to the window, in UTC', async () => {
+		const EVENT_ID = 'AAMkAD';
+		const NEXT_LINK = 'https://graph.microsoft.com/page2';
+		const DELTA_LINK = 'https://graph.microsoft.com/delta';
+
+		it('requests calendarView/delta scoped to the window, in UTC and in pages of 100', async () => {
 			mockTokenThen(graphResponse({ value: [] }));
 
-			await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
 			const [url, options] = graphCall();
-			expect(url).toContain('/v1.0/users/user%40contoso.com/calendarView/delta');
-			expect(url).toContain('startDateTime=2026-08-21T00%3A00%3A00.000Z');
-			expect(url).toContain('endDateTime=2026-08-22T00%3A00%3A00.000Z');
-			expect(options.headers.Prefer).toBe('outlook.timezone="UTC"');
-			expect(options.headers.Authorization).toBe('Bearer the-token');
+			expect(url).toContain(`/v1.0/users/${encodeURIComponent(MAILBOX)}/calendarView/delta`);
+			expect(url).toContain(`startDateTime=${encodeURIComponent(timeWindow.start.toISOString())}`);
+			expect(url).toContain(`endDateTime=${encodeURIComponent(timeWindow.end.toISOString())}`);
+			expect(options.headers.Prefer).toBe('outlook.timezone="UTC", odata.maxpagesize=100');
+			expect(options.headers.Authorization).toBe(`Bearer ${ACCESS_TOKEN}`);
 		});
 
 		it('follows a cursor verbatim instead of rebuilding the query', async () => {
+			const cursor = 'https://graph.microsoft.com/v1.0/users/u/calendarView/delta?$deltatoken=abc';
+
 			mockTokenThen(graphResponse({ value: [] }));
 
-			const cursor = 'https://graph.microsoft.com/v1.0/users/u/calendarView/delta?$deltatoken=abc';
-			await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow, cursor);
+			await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow, cursor);
 
 			expect(graphCall()[0]).toBe(cursor);
 		});
 
+		// TODO: migrate to a proper benchmark test
+		it('handles hosts with 100k slashes followed by another character quickly', async () => {
+			const slashes = '/'.repeat(100_000);
+			mockTokenThen(graphResponse({ value: [] }));
+
+			const startedAt = performance.now();
+			await new MicrosoftGraphProvider({
+				...config,
+				authorityHost: `https://login.microsoftonline.com${slashes}x`,
+				graphHost: `https://graph.microsoft.com${slashes}x`,
+			}).listEvents('user@contoso.com', timeWindow);
+			const elapsedMs = performance.now() - startedAt;
+
+			expect(serverFetch.mock.calls[0][0]).toBe('https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/token');
+			expect(serverFetch.mock.calls[0][1].body.get('scope')).toBe('https://graph.microsoft.com/.default');
+			expect(graphCall()[0]).toMatch(/^https:\/\/graph\.microsoft\.com\/v1\.0\/users\//);
+			expect(elapsedMs).toBeLessThan(500);
+		});
+
 		it('maps a Graph event onto the normalized shape', async () => {
+			const SUBJECT = 'Sprint review';
+			const DESCRIPTION = 'Agenda here';
+			const MEETING_URL = 'https://teams.example/meet';
+			const REMINDER_MINUTES = 15;
+			// Graph sends the local time with seven decimals and no zone; UTC is what we asked for through `Prefer`.
+			const STARTS_AT = '2026-08-21T10:00:00';
+			const ENDS_AT = '2026-08-21T11:00:00';
+
 			mockTokenThen(
 				graphResponse({
 					value: [
 						{
-							id: 'AAMkAD',
-							subject: 'Sprint review',
-							body: { content: 'Agenda here' },
-							start: { dateTime: '2026-08-21T10:00:00.0000000', timeZone: 'UTC' },
-							end: { dateTime: '2026-08-21T11:00:00.0000000', timeZone: 'UTC' },
+							id: EVENT_ID,
+							subject: SUBJECT,
+							body: { content: DESCRIPTION },
+							start: { dateTime: `${STARTS_AT}.0000000`, timeZone: 'UTC' },
+							end: { dateTime: `${ENDS_AT}.0000000`, timeZone: 'UTC' },
 							isCancelled: false,
 							showAs: 'busy',
-							onlineMeeting: { joinUrl: 'https://teams.example/meet' },
-							reminderMinutesBeforeStart: 15,
+							onlineMeeting: { joinUrl: MEETING_URL },
+							reminderMinutesBeforeStart: REMINDER_MINUTES,
 						},
 					],
 				}),
 			);
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
 			expect(page.items).toHaveLength(1);
 			expect(page.items[0]).toEqual({
 				kind: 'upsert',
-				externalId: 'AAMkAD',
-				subject: 'Sprint review',
-				description: 'Agenda here',
-				startTime: new Date('2026-08-21T10:00:00Z'),
-				endTime: new Date('2026-08-21T11:00:00Z'),
+				externalId: EVENT_ID,
+				subject: SUBJECT,
+				description: DESCRIPTION,
+				startTime: new Date(`${STARTS_AT}Z`),
+				endTime: new Date(`${ENDS_AT}Z`),
 				isCancelled: false,
 				busy: true,
-				reminderMinutesBeforeStart: 15,
+				reminderMinutesBeforeStart: REMINDER_MINUTES,
 			});
 		});
 
@@ -154,11 +190,11 @@ describe('MicrosoftGraphProvider', () => {
 		});
 
 		it('maps a removed event to a deletion', async () => {
-			mockTokenThen(graphResponse({ value: [{ 'id': 'AAMkAD', '@removed': { reason: 'deleted' } }] }));
+			mockTokenThen(graphResponse({ value: [{ 'id': EVENT_ID, '@removed': { reason: 'deleted' } }] }));
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
-			expect(page.items[0]).toEqual({ kind: 'deleted', externalId: 'AAMkAD' });
+			expect(page.items[0]).toEqual({ kind: 'deleted', externalId: EVENT_ID });
 		});
 
 		it.each([
@@ -173,7 +209,7 @@ describe('MicrosoftGraphProvider', () => {
 				}),
 			);
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
 			expect((page.items[0] as ExchangeEventUpsert).busy).toBe(expected);
 		});
@@ -189,7 +225,7 @@ describe('MicrosoftGraphProvider', () => {
 				}),
 			);
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
 			expect(page.items).toHaveLength(1);
 			expect(page.items[0].externalId).toBe('z');
@@ -199,30 +235,30 @@ describe('MicrosoftGraphProvider', () => {
 			mockTokenThen(
 				graphResponse({
 					'value': [{ id: 'a', start: { dateTime: '2026-08-21T10:00:00' } }],
-					'@odata.nextLink': 'https://graph.microsoft.com/page2',
+					'@odata.nextLink': NEXT_LINK,
 				}),
 			);
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
 			expect(page.items.map(({ externalId }) => externalId)).toEqual(['a']);
-			expect(page).toMatchObject({ cursor: 'https://graph.microsoft.com/page2', hasMore: true });
+			expect(page).toMatchObject({ cursor: NEXT_LINK, hasMore: true });
 		});
 
 		it('resumes from the nextLink it was given instead of opening a new delta', async () => {
-			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': DELTA_LINK }));
 
-			await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow, 'https://graph.microsoft.com/page2');
+			await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow, NEXT_LINK);
 
-			expect(serverFetch.mock.calls[1][0]).toBe('https://graph.microsoft.com/page2');
+			expect(serverFetch.mock.calls[1][0]).toBe(NEXT_LINK);
 		});
 
 		it('never claims a page is full window: Graph only ever answers with what changed', async () => {
-			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': DELTA_LINK }));
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
-			expect(page).toMatchObject({ coverage: 'delta', hasMore: false, cursor: 'https://graph.microsoft.com/delta' });
+			expect(page).toMatchObject({ coverage: 'delta', hasMore: false, cursor: DELTA_LINK });
 		});
 	});
 
@@ -230,17 +266,32 @@ describe('MicrosoftGraphProvider', () => {
 		it.each([
 			[403, 'authorization-failed'],
 			[404, 'mailbox-not-found'],
+			[410, 'sync-state-invalid'],
 			[400, 'unexpected-response'],
 		])('maps %i to %s', async (status, code) => {
 			mockTokenThen(graphResponse({ error: {} }, status));
 
-			await expect(new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow)).rejects.toMatchObject({ code });
+			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({ code });
+		});
+
+		it('maps 410 to unexpected-response outside a delta query, which has no sync state to reset', async () => {
+			mockTokenThen(graphResponse({ error: {} }, 410));
+
+			await expect(new MicrosoftGraphProvider(config).listContactFolders(MAILBOX)).rejects.toMatchObject({ code: 'unexpected-response' });
+		});
+
+		it('maps 410 on the contacts delta to sync-state-invalid, so the folder cursor is reset', async () => {
+			mockTokenThen(graphResponse({ error: {} }, 410));
+
+			await expect(new MicrosoftGraphProvider(config).listContacts(MAILBOX, 'default')).rejects.toMatchObject({
+				code: 'sync-state-invalid',
+			});
 		});
 
 		it('drops a stale token and retries once on 401, then succeeds', async () => {
 			mockTokenThen(graphResponse({ error: {} }, 401), tokenResponse, graphResponse({ value: [] }));
 
-			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
 
 			expect(page.items).toEqual([]);
 			// token, rejected call, fresh token, retried call
@@ -250,9 +301,212 @@ describe('MicrosoftGraphProvider', () => {
 		it('gives up with authentication-failed when the retry is also rejected', async () => {
 			mockTokenThen(graphResponse({ error: {} }, 401), tokenResponse, graphResponse({ error: {} }, 401));
 
-			await expect(new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow)).rejects.toMatchObject({
+			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({
 				code: 'authentication-failed',
 			});
+		});
+	});
+
+	describe('listContacts', () => {
+		const DEFAULT_CONTACTS_FOLDER_ID = 'default';
+		const GIVEN_NAME = 'John';
+		const SURNAME = 'Doe';
+		const CONTACT_NAME = `${GIVEN_NAME} ${SURNAME}`;
+		const CONTACT_ID = 'c1';
+
+		const provider = () => new MicrosoftGraphProvider(config);
+
+		const contact = (over: Record<string, unknown> = {}) => ({ id: CONTACT_ID, displayName: CONTACT_NAME, ...over });
+
+		it('addresses the default folder directly, which Graph does not list among the contact folders', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(graphCall()[0]).toContain('/users/user%40contoso.com/contacts/delta');
+		});
+
+		it('reads the delta in pages of 100', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(graphCall()[1].headers.Prefer).toBe('odata.maxpagesize=100');
+		});
+
+		it('scopes any other folder to its own id', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await provider().listContacts(MAILBOX, 'AAMk=Suppliers');
+
+			expect(graphCall()[0]).toContain('/contactFolders/AAMk%3DSuppliers/contacts/delta');
+		});
+
+		it('reports a removed contact as a deletion of the folder it was read from', async () => {
+			mockTokenThen(graphResponse({ value: [{ 'id': CONTACT_ID, '@removed': { reason: 'deleted' } }] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items).toEqual([{ kind: 'deleted', externalId: CONTACT_ID, folderId: DEFAULT_CONTACTS_FOLDER_ID }]);
+		});
+
+		it('gathers the numbers Graph keeps apart, labelled by the field they came from', async () => {
+			const MOBILE_PHONE = '+5491123456789';
+			const BUSINESS_PHONE = '+541143211000';
+			const HOME_PHONE = '+541144440000';
+
+			mockTokenThen(
+				graphResponse({
+					value: [contact({ mobilePhone: MOBILE_PHONE, businessPhones: [BUSINESS_PHONE], homePhones: [HOME_PHONE] })],
+				}),
+			);
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items[0]).toMatchObject({
+				phones: [
+					{ raw: MOBILE_PHONE, label: 'mobile' },
+					{ raw: BUSINESS_PHONE, label: 'business' },
+					{ raw: HOME_PHONE, label: 'home' },
+				],
+			});
+		});
+
+		it('names a contact by its parts when Graph sends no display name', async () => {
+			mockTokenThen(graphResponse({ value: [contact({ displayName: undefined, givenName: GIVEN_NAME, surname: SURNAME })] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items[0]).toMatchObject({ displayName: CONTACT_NAME, givenName: GIVEN_NAME, surname: SURNAME });
+		});
+
+		it('falls back to an address when a contact carries no name at all', async () => {
+			const ONLY_EMAIL = 'john@corp.example';
+
+			mockTokenThen(graphResponse({ value: [contact({ displayName: undefined, emailAddresses: [{ address: ONLY_EMAIL }] })] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items[0]).toMatchObject({ displayName: ONLY_EMAIL });
+		});
+
+		it('skips a contact with nothing to resolve it by rather than storing it nameless', async () => {
+			const OTHER_CONTACT_ID = 'c2';
+
+			mockTokenThen(graphResponse({ value: [{ id: CONTACT_ID }, contact({ id: OTHER_CONTACT_ID })] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items.map((item) => item.externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('keeps the delta link for the next run once the folder has been read to the end', async () => {
+			const DELTA_LINK = 'https://graph.microsoft.com/delta';
+
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': DELTA_LINK }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page).toMatchObject({ hasMore: false, cursor: DELTA_LINK });
+		});
+
+		it('carries the next link while there is more of the folder to read', async () => {
+			const NEXT_LINK = 'https://graph.microsoft.com/next';
+
+			mockTokenThen(graphResponse({ 'value': [], '@odata.nextLink': NEXT_LINK }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page).toMatchObject({ hasMore: true, cursor: NEXT_LINK });
+		});
+
+		it('never claims to have read the folder whole', async () => {
+			mockTokenThen(graphResponse({ value: [contact()] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.coverage).toBe('delta');
+		});
+	});
+
+	describe('getContactPhotos', () => {
+		const CONTACT_ID = 'c1';
+		const OTHER_CONTACT_ID = 'c2';
+		const BATCH_SIZE = 20;
+
+		const entry = (id: string, over: Record<string, unknown> = {}) => ({
+			id,
+			status: 200,
+			body: Buffer.from([0xff, 0xd8, 0xff]).toString('base64'),
+			...over,
+		});
+
+		const getContactPhotosAnswering = async (ids: string[], folderId = 'default') => {
+			const photos = [];
+			for await (const photo of new MicrosoftGraphProvider(config).getContactPhotos(MAILBOX, folderId, ids)) {
+				photos.push(photo);
+			}
+
+			return photos;
+		};
+
+		const requestedIds = (call: number): string[] =>
+			JSON.parse(serverFetch.mock.calls[call][1].body).requests.map(({ id }: { id: string }) => id);
+
+		it('asks for a chunk of photos in one batch instead of a request per contact', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID), entry(OTHER_CONTACT_ID)] }));
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(graphCall()[0]).toContain('/$batch');
+			expect(requestedIds(1)).toEqual([CONTACT_ID, OTHER_CONTACT_ID]);
+			expect(photos.map(({ externalId }) => externalId)).toEqual([CONTACT_ID, OTHER_CONTACT_ID]);
+		});
+
+		it('splits a folder larger than one batch into consecutive requests', async () => {
+			mockTokenThen(graphResponse({ responses: [] }), graphResponse({ responses: [] }));
+
+			await getContactPhotosAnswering(Array.from({ length: BATCH_SIZE + 1 }, (_, i) => `c${i}`));
+
+			expect(requestedIds(1)).toHaveLength(BATCH_SIZE);
+			expect(requestedIds(2)).toEqual([`c${BATCH_SIZE}`]);
+		});
+
+		it('skips the contacts Graph answered for with anything but a photo', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { status: 404, body: undefined }), entry(OTHER_CONTACT_ID)] }));
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('skips a photo above the size cap rather than storing it', async () => {
+			const huge = Buffer.alloc(MAX_CONTACT_PHOTO_BYTES + 1).toString('base64');
+
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { body: huge }), entry(OTHER_CONTACT_ID)] }));
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('skips an empty body, which is a photo endpoint answering with nothing', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { body: '' })] }));
+
+			await expect(getContactPhotosAnswering([CONTACT_ID])).resolves.toEqual([]);
+		});
+
+		it('takes the content type from the batch entry, falling back to jpeg', async () => {
+			const PNG_CONTENT_TYPE = 'image/png';
+			const DEFAULT_CONTENT_TYPE = 'image/jpeg';
+
+			mockTokenThen(
+				graphResponse({ responses: [entry(CONTACT_ID, { headers: { 'Content-Type': PNG_CONTENT_TYPE } }), entry(OTHER_CONTACT_ID)] }),
+			);
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos.map(({ contentType }) => contentType)).toEqual([PNG_CONTENT_TYPE, DEFAULT_CONTENT_TYPE]);
 		});
 	});
 });

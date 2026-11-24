@@ -72,7 +72,7 @@ export const getMatrixMakeLeaveRoutes = () => {
 			const { roomId, userId } = c.req.param();
 			try {
 				// TODO: Remove out of spec attributes being returned
-				const makeLeaveResponse = await federationSDK.makeLeave(roomId, userId);
+				const makeLeaveResponse = await federationSDK.makeLeave(roomId, userId, c.get('authenticatedServer'));
 				return {
 					body: makeLeaveResponse,
 					statusCode: 200,
@@ -83,6 +83,16 @@ export const getMatrixMakeLeaveRoutes = () => {
 						body: {
 							errcode: 'M_FORBIDDEN',
 							error: 'This server does not allow leaving this room based on federation settings.',
+						},
+						statusCode: 403,
+					};
+				}
+
+				if (error instanceof Error && 'errcode' in error && error.errcode === 'M_FORBIDDEN') {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: error.message,
 						},
 						statusCode: 403,
 					};

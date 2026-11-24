@@ -1,10 +1,9 @@
 import { createPrivateKey } from 'node:crypto';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
-import { Users } from '@rocket.chat/models';
+import { LoginServiceConfiguration, Users } from '@rocket.chat/models';
 import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import passport from 'passport';
 import { Strategy as AppleStrategy } from 'passport-apple';
 import type { Profile } from 'passport-apple';
@@ -13,6 +12,7 @@ import { handleIdentityToken } from './handleIdentityToken';
 import { oAuthRouter } from '../../../configuration/configurePassport';
 import { settings } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
+import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../notifyListener';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from '../../oauth/passportOAuthCallback';
 import { removeOAuthRoutes } from '../../oauth/removeOAuthRoutes';
@@ -52,18 +52,13 @@ const isValidPrivateKey = (key: string): boolean => {
 
 // Keeps the Apple login service listed whenever Apple login is enabled, so the mobile apps can still sign in natively
 // with an identity token; the web button is only shown once the web flow is fully configured.
-const hideAppleWebButton = () =>
-	ServiceConfiguration.configurations.upsertAsync(
-		{
-			service: 'apple',
-		},
-		{
-			$set: {
-				showButton: false,
-				enabled: settings.get('Accounts_OAuth_Apple'),
-			},
-		},
-	);
+const hideAppleWebButton = async () => {
+	await LoginServiceConfiguration.createOrUpdateService('apple', {
+		showButton: false,
+		enabled: settings.get('Accounts_OAuth_Apple'),
+	});
+	void notifyOnLoginServiceConfigurationChangedByService('apple');
+};
 
 settings.watchMultiple(
 	[
@@ -78,9 +73,11 @@ settings.watchMultiple(
 		removeOAuthRoutes('apple');
 
 		if (!enabled) {
-			return ServiceConfiguration.configurations.removeAsync({
-				service: 'apple',
-			});
+			const service = await LoginServiceConfiguration.removeByService('apple');
+			if (service) {
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+			}
+			return;
 		}
 
 		const [normalizedClientId, normalizedServerSecret, normalizedIss, normalizedKid] = [clientId, serverSecret, iss, kid].map((value) =>
@@ -188,20 +185,14 @@ settings.watchMultiple(
 			.post(...callbackHandler)
 			.get(...callbackHandler);
 
-		await ServiceConfiguration.configurations.upsertAsync(
-			{
-				service: 'apple',
-			},
-			{
-				$set: {
-					showButton: true,
-					enabled: settings.get('Accounts_OAuth_Apple'),
-					loginStyle: 'popup',
-					clientId: normalizedClientId,
-					buttonColor: '#000',
-					buttonLabelColor: '#FFF',
-				},
-			},
-		);
+		await LoginServiceConfiguration.createOrUpdateService('apple', {
+			showButton: true,
+			enabled: settings.get('Accounts_OAuth_Apple'),
+			loginStyle: 'popup',
+			clientId: normalizedClientId,
+			buttonColor: '#000',
+			buttonLabelColor: '#FFF',
+		});
+		void notifyOnLoginServiceConfigurationChangedByService('apple');
 	},
 );

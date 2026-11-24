@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/css-supports",
-	"version": "0.31.27",
+	"version": "0.32.0-rc.0",
 	"description": "Memoized and SSR-compatible facade of CSS.supports API",
 	"type": "module",
 	"exports": {

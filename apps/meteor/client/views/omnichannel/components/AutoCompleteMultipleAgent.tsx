@@ -48,7 +48,7 @@ const AutoCompleteMultipleAgent = ({
 			placeholder={placeholder}
 			onChange={onChange}
 			filter={agentsFilter}
-			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
+			setFilter={setAgentsFilter}
 			options={agentsItems}
 			endReached={() => fetchNextPage()}
 		/>

@@ -1,5 +1,17 @@
 # @rocket.chat/pdf-worker
 
+## 0.3.38-rc.0
+
+### Patch Changes
+
+- ([#43267](https://github.com/RocketChat/Rocket.Chat/pull/43267)) Fixes livechat transcript PDFs leaving out the text of messages that contain formatting the PDF cannot draw, such as quotes, tables, task lists, nested lists or timestamps; those messages now show their original text
+
+- <details><summary>Updated dependencies [fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, 46cba6391140d334aecbe764a0fc3341feb27ce9, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+
+  </details>
+
 ## 0.3.37
 
 ### Patch Changes
