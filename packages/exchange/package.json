@@ -7,6 +7,7 @@
 	"types": "./dist/index.d.ts",
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"bench": "node --import tsx benchmarks/graph.bench.ts",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
@@ -31,6 +32,8 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"jest": "~30.5.2",
+		"tinybench": "^3.0.7",
+		"tsx": "~4.22.5",
 		"typescript": "~7.0.2"
 	},
 	"volta": {
