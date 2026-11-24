@@ -1,0 +1,38 @@
+apps/meteor/server/lib/oauth/configureOAuthServices.test.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 14,20,61-63
+  s_0a304bdf8a7b6c::t_0c6b693255a2fa 64
+apps/meteor/server/lib/oauth/ensureServiceIdIndex.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 1-20
+apps/meteor/server/lib/oauth/addPassportCustomOAuth.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 6,26
+  s_0a304bdf8a7b6c::t_de60cd875e4838 27
+.changeset/oauth-service-id-index.md
+  s_0a304bdf8a7b6c::t_64b2727da0f002 1-7
+apps/meteor/server/lib/oauth/ensureServiceIdIndex.test.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 1-41
+apps/meteor/server/lib/oauth/addPassportCustomOAuth.test.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 11,16,39-47
+  s_0a304bdf8a7b6c::t_80abab703d3b30 48
+apps/meteor/server/lib/oauth/configureOAuthServices.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 8,22
+  s_0a304bdf8a7b6c::t_ae749d218480c5 23
+apps/meteor/server/lib/auth-providers/apple/applePassportOAuth.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 17,84
+  s_0a304bdf8a7b6c::t_9cb3dd8a36c856 85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fe9e395ce14b72ecbb6063f14b8c0900e341efa6",
+  "prompts": {},
+  "sessions": {
+    "s_0a304bdf8a7b6c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "69423af9-a854-412a-a9fd-51adaed2a934",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
