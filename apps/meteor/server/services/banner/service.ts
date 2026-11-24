@@ -4,8 +4,12 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IBannerService } from '@rocket.chat/core-services';
 import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
+import { isEqual } from 'underscore';
 
 import { notifyOnUserChange } from '../../lib/notifyListener';
+
+const bannerContent = (banner: IBanner): Record<string, unknown> =>
+	Object.fromEntries(Object.entries(banner).filter(([key]) => key !== '_updatedAt'));
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
@@ -34,6 +38,20 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		doc.view.appId = doc.view.appId ?? 'banner-core';
 		doc.view.viewId = bannerId;
+
+		const previous = await Banners.findOneById(bannerId);
+
+		// A workspace sync sends the same cloud announcements on every run (every 12 hours). Writing
+		// and announcing a banner that did not change makes every connected client refetch the whole
+		// banner list, so keep the stored banner as it is and stay quiet instead. An expired banner
+		// still goes through the write, which is where an expired banner is rejected.
+		if (
+			previous &&
+			previous.expireAt >= new Date() &&
+			isEqual(bannerContent(previous), bannerContent({ ...previous, active: true, ...doc, _id: bannerId }))
+		) {
+			return previous;
+		}
 
 		await Banners.createOrUpdate({
 			...doc,
