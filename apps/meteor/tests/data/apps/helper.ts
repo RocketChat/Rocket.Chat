@@ -2,7 +2,8 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { App } from '@rocket.chat/core-typings';
 
 import { request, credentials } from '../api-data';
-import { apps, APP_URL, installedApps } from './apps-data';
+import { appRocketChatTester } from './app-packages';
+import { apps, installedApps } from './apps-data';
 
 const getApps = () =>
 	new Promise<App[]>((resolve) => {
@@ -27,27 +28,15 @@ export const cleanupApps = async () => {
 	await Promise.all(apps.map((testApp) => removeAppById(testApp.id)));
 };
 
-export const installTestApp = () =>
-	new Promise<App>((resolve) => {
-		void request
-			.post(apps())
-			.set(credentials)
-			.send({
-				url: APP_URL,
-			})
-			.end((_err, res) => {
-				resolve(res.body.app);
-			});
-	});
+export const installLocalTestPackage = async (path: string, permissions?: IPermission[]): Promise<App> => {
+	const req = request.post(apps()).set(credentials).attach('app', path);
+	const res = await (permissions ? req.field('permissions', JSON.stringify(permissions)) : req);
 
-export const installLocalTestPackage = (path: string, permissions?: IPermission[]) =>
-	new Promise<App>((resolve, reject) => {
-		const req = request.post(apps()).set(credentials).attach('app', path);
+	if (!res.body?.success) {
+		throw new Error(`Failed to install ${path}: ${res.status} ${res.text}`);
+	}
 
-		void (permissions ? req.field('permissions', JSON.stringify(permissions)) : req).end((err, res) => {
-			if (err) {
-				return reject(err);
-			}
-			return resolve(res.body.app);
-		});
-	});
+	return res.body.app;
+};
+
+export const installTestApp = () => installLocalTestPackage(appRocketChatTester);

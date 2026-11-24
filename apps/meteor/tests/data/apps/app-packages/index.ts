@@ -30,3 +30,5 @@ export const appPresenceStateTest = path.resolve(__dirname, './presence-state-te
 export const appMediaCallEventsTest = path.resolve(__dirname, './media-call-events-test_0.0.1.zip');
 
 export const appAbacRoomCreationTest = path.resolve(__dirname, './abac-room-creation-test_0.0.1.zip');
+
+export const appRocketChatTester = path.resolve(__dirname, './appsrocketchattester.zip');

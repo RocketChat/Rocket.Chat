@@ -4,11 +4,13 @@ import { request } from '@playwright/test';
 import type { Endpoints } from '@rocket.chat/rest-typings';
 
 import { expect, type BaseTest } from './test';
-import { APP_URL } from '../../data/apps/apps-data';
+import { appRocketChatTester } from '../../data/apps/app-packages';
 import { BASE_API_URL, BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 
 export async function insertDefaultTestApp(): Promise<void> {
+	await installLocalTestPackage(appRocketChatTester);
+
 	const api = await request.newContext();
 
 	const headers = {
@@ -16,7 +18,6 @@ export async function insertDefaultTestApp(): Promise<void> {
 		'X-User-Id': Users.admin.data._id,
 	};
 
-	await api.post(`${BASE_URL}/api/apps`, { data: { url: APP_URL }, headers });
 	await api.post(`${BASE_API_URL}/settings/VideoConf_Default_Provider`, { data: { value: 'test' }, headers });
 }
 
