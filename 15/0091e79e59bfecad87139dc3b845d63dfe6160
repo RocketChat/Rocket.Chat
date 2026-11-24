@@ -1,0 +1,19 @@
+apps/meteor/ee/server/startup/index.ts
+  s_5f60e8c34d8641::t_677365023e99b4 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "150091e79e59bfecad87139dc3b845d63dfe6160",
+  "prompts": {},
+  "sessions": {
+    "s_5f60e8c34d8641": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9a65cee5-5d45-472c-a8f3-675b2f6b8edb",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
