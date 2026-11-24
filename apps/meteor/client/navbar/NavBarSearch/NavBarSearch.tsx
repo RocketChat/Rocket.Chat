@@ -4,7 +4,7 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useRef } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
@@ -15,7 +15,6 @@ import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 
 const NavBarSearch = () => {
-	'use no memo';
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
@@ -23,12 +22,9 @@ const NavBarSearch = () => {
 	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
 
 	const methods = useForm({ defaultValues: { filterText: '' } });
-	const {
-		formState: { isDirty },
-		register,
-		resetField,
-		setFocus,
-	} = methods;
+	const { register, resetField, setFocus, control } = methods;
+	const filterText: string = useWatch({ control, name: 'filterText' });
+	const isDirty = filterText !== '';
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
