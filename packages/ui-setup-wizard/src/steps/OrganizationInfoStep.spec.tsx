@@ -86,12 +86,14 @@ it('shows an error and stays on the step when the organization info cannot be sa
 		throw error;
 	});
 	const completeSetupWizard = jest.fn(async () => undefined);
+	const goToNextStep = jest.fn();
 	const dispatchToastMessage = jest.fn();
 
-	renderStep({ saveOrganizationData, completeSetupWizard, skipCloudRegistration: true, maxSteps: 2 }, dispatchToastMessage);
+	renderStep({ saveOrganizationData, completeSetupWizard, goToNextStep, skipCloudRegistration: true, maxSteps: 2 }, dispatchToastMessage);
 
 	fireEvent.submit(screen.getByRole('form'));
 
 	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: error }));
 	expect(completeSetupWizard).not.toHaveBeenCalled();
+	expect(goToNextStep).not.toHaveBeenCalled();
 });
