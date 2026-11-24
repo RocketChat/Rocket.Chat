@@ -172,16 +172,21 @@ describe('updateOrCreateUserFromExternalService', () => {
 	});
 
 	describe('custom OAuth', () => {
-		it('should stop after the email claim when the custom OAuth service is not licensed', async () => {
-			Users.findOneByEmailAddress.resolves({ _id: 'local-user' });
+		it('should not read or change any user when the custom OAuth service is not licensed', async () => {
+			Users.findOneByEmailAddress.resolves({
+				_id: 'local-user',
+				services: { password: { bcrypt: 'hash' } },
+				emails: [{ address: 'a@example.com', verified: false }],
+			});
 			isCustomOAuthServiceAllowed.withArgs('my-idp').returns(false);
 
 			expect(await updateOrCreateUserFromExternalService('my-idp', { id: '1', email: 'a@example.com', _OAuthCustom: true })).to.be
 				.undefined;
 
-			sinon.assert.calledOnce(Users.setServiceId);
+			for (const stub of Object.values(Users)) {
+				sinon.assert.notCalled(stub);
+			}
 			sinon.assert.notCalled(processCustomOAuthUser);
-			sinon.assert.notCalled(Users.findOneByServiceId);
 			sinon.assert.notCalled(insertUser);
 		});
 

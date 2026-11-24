@@ -67,11 +67,11 @@ export async function updateOrCreateUserFromExternalService(
 		throw new Error(`Service data for service ${serviceName} must include id`);
 	}
 
-	await claimUserWithSameEmail(serviceName, serviceData);
-
 	if (!isCustomOAuthServiceAllowed(serviceName)) {
 		return undefined;
 	}
+
+	await claimUserWithSameEmail(serviceName, serviceData);
 
 	await processCustomOAuthUser(serviceName, serviceData);
 
