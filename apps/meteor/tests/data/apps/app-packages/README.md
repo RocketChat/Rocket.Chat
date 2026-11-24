@@ -9,12 +9,12 @@ DISCLAIMER: App related source code shown here are for testing purposes only, an
 In your tests, add a `before` step and call the `installLocalTestPackage` function, passing the path of your desired package. For instance:
 
 ```javascript
-import { appImplementsIPreFileUpload } from '../../data/apps/app-packages';
+import { appFileUploadTest } from '../../data/apps/app-packages';
 import { installLocalTestPackage } from '../../data/apps/helper';
 
 describe('My tests', () => {
 	before(async () => {
-		await installLocalTestPackage(appImplementsIPreFileUpload);
+		await installLocalTestPackage(appFileUploadTest);
 	});
 });
 ```
@@ -56,7 +56,7 @@ Three things to know:
 
 ### Available apps
 
-#### IPreFileUpload handler
+#### File upload test
 
 File name: `file-upload-test_0.0.1.zip`
 

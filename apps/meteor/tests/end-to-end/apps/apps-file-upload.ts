@@ -5,27 +5,27 @@ import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
-import { appImplementsIPreFileUpload } from '../../data/apps/app-packages';
+import { appFileUploadTest } from '../../data/apps/app-packages';
 import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[Apps Hooks - File Upload]', () => {
+(IS_EE ? describe : describe.skip)('[Apps - File Upload]', () => {
+	let app: App;
+	let room: IRoom;
+
 	before((_t, done) => getCredentials(done));
 
+	before(async () => {
+		await cleanupApps();
+		app = await installLocalTestPackage(appFileUploadTest);
+		room = await createRoom({ type: 'c', name: `file-upload-${Date.now()}` }).then((res) => res.body.channel);
+	});
+
+	after(() => Promise.all([deleteRoom({ type: 'c' as const, roomId: room._id }), cleanupApps()]));
+
 	describe('IPreFileUpload', () => {
-		let app: App;
-		let room: IRoom;
-
-		before(async () => {
-			await cleanupApps();
-			app = await installLocalTestPackage(appImplementsIPreFileUpload);
-			room = await createRoom({ type: 'c', name: `file-upload-hook-${Date.now()}` }).then((res) => res.body.channel);
-		});
-
-		after(() => Promise.all([deleteRoom({ type: 'c' as const, roomId: room._id }), cleanupApps()]));
-
 		it('should be capable of rejecting an upload based on app logic', async () => {
 			const fileContents = 'I want to be rejected by the app';
 
@@ -55,7 +55,9 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', true);
 				});
 		});
+	});
 
+	describe('UploadCreator.uploadBuffer', () => {
 		it('should detect the type of an app upload from its contents when the name has no extension', async () => {
 			const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
