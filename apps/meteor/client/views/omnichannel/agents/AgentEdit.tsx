@@ -13,7 +13,7 @@ import {
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useForm, Controller, FormProvider, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
@@ -36,8 +36,6 @@ export type AgentEditProps = {
 };
 
 const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
@@ -72,12 +70,8 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 		},
 	});
 
-	const {
-		control,
-		handleSubmit,
-		reset,
-		formState: { isDirty },
-	} = methods;
+	const { control, handleSubmit, reset } = methods;
+	const { isDirty } = useFormState({ control });
 
 	const saveAgentInfo = useEndpoint('POST', '/v1/livechat/agents.saveInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');

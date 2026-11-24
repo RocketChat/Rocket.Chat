@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout, Stack } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
-import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
+import { useFormContext, Controller, useFieldArray, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useTimezoneNameList } from '../../../hooks/useTimezoneNameList';
@@ -38,14 +38,14 @@ export type BusinessHoursFormData = {
 export type BusinessHoursFormProps = { type?: 'default' | 'custom' };
 
 const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
-	'use no memo';
 	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
 	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name)]), [t, timeZones]);
 	const daysOptions: SelectOption[] = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day)]), [t]);
 
-	const { watch, control } = useFormContext<BusinessHoursFormData>();
-	const { daysTime } = watch();
+	const { control } = useFormContext<BusinessHoursFormData>();
+	const watched = useWatch({ control });
+	const daysTime = watched.daysTime ?? [];
 	const { fields: daysTimeFields, replace } = useFieldArray({ control, name: 'daysTime' });
 
 	const timezoneField = useId();

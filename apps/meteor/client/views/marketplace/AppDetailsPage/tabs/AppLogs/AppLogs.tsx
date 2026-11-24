@@ -44,7 +44,6 @@ function expandedReducer(
 export type AppLogsProps = { id: string };
 
 const AppLogs = ({ id }: AppLogsProps) => {
-	'use no memo';
 	const { t } = useTranslation();
 
 	const router = useRouter();

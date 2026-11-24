@@ -2,19 +2,18 @@ import { Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput
 import { PageScrollableContent, Page, PageHeader, useSingleFileInput } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useInstallApp } from './hooks/useInstallApp';
 import ContentColumn from '../../components/ContentColumn';
 
 const AppInstallPage = () => {
-	'use no memo';
 	const { t } = useTranslation();
 	const router = useRouter();
 
-	const { control, setValue, watch } = useForm<{ file: File }>();
-	const { file } = watch();
+	const { control, setValue } = useForm<{ file: File }>();
+	const file = useWatch({ control, name: 'file' });
 	const { install, isInstalling } = useInstallApp(file);
 
 	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');

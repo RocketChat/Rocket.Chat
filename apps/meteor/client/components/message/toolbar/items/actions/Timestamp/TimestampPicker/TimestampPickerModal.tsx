@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DatePicker from './DatePicker';
@@ -24,15 +24,8 @@ type TimestampPickerProps = {
 };
 
 export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
-	const {
-		control,
-		handleSubmit,
-		watch,
-		formState: { isValid },
-	} = useForm<TimestampForm>({
+	const { control, handleSubmit } = useForm<TimestampForm>({
 		defaultValues: {
 			date: new Date(),
 			format: 'f',
@@ -40,10 +33,11 @@ export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps
 		},
 		mode: 'onChange',
 	});
+	const { isValid } = useFormState({ control });
 
-	const currentDate = watch('date');
-	const currentFormat = watch('format');
-	const currentTimezone = watch('timezone');
+	const currentDate = useWatch({ control, name: 'date' });
+	const currentFormat = useWatch({ control, name: 'format' });
+	const currentTimezone = useWatch({ control, name: 'timezone' });
 
 	const onSubmit = (data: TimestampForm) => {
 		const timestamp = dateToISOString(data.date, data.timezone);

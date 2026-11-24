@@ -5,7 +5,7 @@ import { usePaginatedQuery, usePagination, Page, PageHeader, PageContent } from 
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTable from './UsersInRoleTable';
@@ -21,23 +21,18 @@ type UsersInRolePayload = {
 export type UsersInRolePageProps = { role: IRole };
 
 const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
-	'use no memo';
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors, isDirty },
-		watch,
-	} = useForm<UsersInRolePayload>({ defaultValues: { users: [] } });
+	const { control, handleSubmit } = useForm<UsersInRolePayload>({ defaultValues: { users: [] } });
+	const { errors, isDirty } = useFormState({ control });
 
 	const { _id, name, description } = role;
 	const router = useRouter();
 	const addUserToRoleEndpoint = useEndpoint('POST', '/v1/roles.addUserToRole');
 
-	const { rid } = watch();
+	const rid = useWatch({ control, name: 'rid' });
 	const roomFieldId = useId();
 	const usersFieldId = useId();
 

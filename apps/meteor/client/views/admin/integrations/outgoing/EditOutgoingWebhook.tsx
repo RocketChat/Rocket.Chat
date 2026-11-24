@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { GenericModal, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import OutgoingWebhookForm from './OutgoingWebhookForm';
@@ -77,7 +77,6 @@ export type EditOutgoingWebhookProps = {
 };
 
 const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
-	'use no memo';
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();
@@ -87,12 +86,8 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 	const defaultToken = useId();
 
 	const methods = useForm<EditOutgoingWebhookFormData>({ mode: 'onBlur', values: getInitialValue(webhookData, defaultToken) });
-	const {
-		reset,
-		handleSubmit,
-		formState: { isDirty },
-		watch,
-	} = methods;
+	const { reset, handleSubmit, control } = methods;
+	const { isDirty } = useFormState({ control });
 
 	const deleteIntegration = useDeleteIntegration(OUTGOING_TYPE);
 	const createIntegration = useCreateIntegration(OUTGOING_TYPE);
@@ -110,7 +105,9 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 		);
 	}, [webhookData?._id, deleteIntegration, setModal, t]);
 
-	const { urls, triggerWords } = watch();
+	const watched = useWatch({ control });
+	const urls = watched.urls ?? '';
+	const triggerWords = watched.triggerWords ?? '';
 
 	const handleSave = useCallback(
 		async (formValues: EditOutgoingWebhookFormData) => {

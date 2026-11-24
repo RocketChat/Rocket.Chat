@@ -1,7 +1,7 @@
 import { PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -18,20 +18,12 @@ type TwoFactorPasswordFormData = {
 };
 
 const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorPasswordModalProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-		setValue,
-		clearErrors,
-		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorPasswordFormData>({
+	const { control, handleSubmit, setError, setValue, clearErrors } = useForm<TwoFactorPasswordFormData>({
 		defaultValues: { password: '' },
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		if (invalidAttempt) {

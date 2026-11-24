@@ -18,7 +18,7 @@ import {
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Fragment, useId } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AdvancedContactModal from './AdvancedContactModal';
@@ -70,7 +70,6 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
 const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps) => {
-	'use no memo';
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -90,15 +89,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const initialValue = getInitialValues(contactData);
 
-	const {
-		formState: { errors, isSubmitting, isDirty },
-		control,
-		watch,
-		handleSubmit,
-	} = useForm<ContactFormData>({
+	const { control, handleSubmit } = useForm<ContactFormData>({
 		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
+	const { errors, isSubmitting, isDirty } = useFormState({ control });
 
 	const {
 		fields: emailFields,
@@ -118,7 +113,9 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		name: 'phones',
 	});
 
-	const { emails, phones } = watch();
+	const watched = useWatch({ control });
+	const emails = watched.emails ?? [];
+	const phones = watched.phones ?? [];
 
 	const validateEmailFormat = async (emailValue: string) => {
 		if (!emails) {

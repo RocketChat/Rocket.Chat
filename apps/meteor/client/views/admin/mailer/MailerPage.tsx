@@ -17,7 +17,7 @@ import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { isJSON } from '../../../../lib/utils/isJSON';
@@ -33,18 +33,11 @@ type SendEmailFormValue = {
 const initialData = { fromEmail: '', query: '', dryRun: false, subject: '', emailBody: '' };
 
 const MailerPage = () => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const {
-		register,
-		formState: { errors, isDirty },
-		handleSubmit,
-		reset,
-		control,
-	} = useForm({ defaultValues: initialData, mode: 'onBlur' });
+	const { register, handleSubmit, reset, control } = useForm({ defaultValues: initialData, mode: 'onBlur' });
+	const { errors, isDirty } = useFormState({ control });
 
 	const mailerEndpoint = useEndpoint('POST', '/v1/mailer');
 	const sendMailAction = useMutation({

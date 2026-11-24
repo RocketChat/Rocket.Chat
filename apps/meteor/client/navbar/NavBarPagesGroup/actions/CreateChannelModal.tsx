@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useId, useEffect, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useForm, Controller, FormProvider, useWatch, useFormState } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
@@ -79,7 +79,6 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess, abac }: CreateChannelModalProps) => {
-	'use no memo';
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -126,15 +125,19 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 		},
 	});
 
-	const {
-		formState: { errors, isSubmitting },
-		handleSubmit,
-		control,
-		setValue,
-		watch,
-	} = methods;
+	const { handleSubmit, control, setValue } = methods;
+	const { errors, isSubmitting } = useFormState({ control });
 
-	const { isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes } = watch();
+	const watched = useWatch({ control });
+	const isPrivate = watched.isPrivate ?? false;
+	const broadcast = watched.broadcast ?? false;
+	const readOnly = watched.readOnly ?? false;
+	const federated = watched.federated ?? false;
+	const xmppFederated = watched.xmppFederated ?? false;
+	const encrypted = watched.encrypted ?? false;
+	const isAbacManaged = watched.isAbacManaged ?? false;
+	const members = useWatch({ control, name: 'members' });
+	const attributes = useWatch({ control, name: 'attributes' });
 
 	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated || xmppFederated);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });

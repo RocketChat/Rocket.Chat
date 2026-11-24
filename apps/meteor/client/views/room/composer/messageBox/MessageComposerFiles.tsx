@@ -7,8 +7,6 @@ import type { Upload } from '../../../../lib/chats/Upload';
 import { useFileUpload } from '../../body/hooks/useFileUpload';
 
 const MessageComposerFiles = () => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const { uploads, uploadsStore, isProcessingUploads, hasUploads } = useFileUpload();
 

@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 export type EditInviteLinkProps = {
@@ -10,14 +10,9 @@ export type EditInviteLinkProps = {
 };
 
 const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
-	const {
-		handleSubmit,
-		formState: { isDirty, isSubmitting },
-		control,
-	} = useForm({ defaultValues: { days: daysAndMaxUses.days, maxUses: daysAndMaxUses.maxUses } });
+	const { handleSubmit, control } = useForm({ defaultValues: { days: daysAndMaxUses.days, maxUses: daysAndMaxUses.maxUses } });
+	const { isDirty, isSubmitting } = useFormState({ control });
 	const expirationId = useId();
 	const maxUsesId = useId();
 

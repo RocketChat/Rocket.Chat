@@ -9,7 +9,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NotificationPreferencesForm from './NotificationPreferencesForm';
@@ -24,13 +24,9 @@ export type NotificationPreferencesProps = {
 };
 
 const NotificationPreferences = ({ handleClose, handleSave, notificationOptions, handlePlaySound }: NotificationPreferencesProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
-	const {
-		formState: { isDirty, isSubmitting },
-		reset,
-	} = useFormContext();
+	const { reset, control } = useFormContext();
+	const { isDirty, isSubmitting } = useFormState({ control });
 
 	return (
 		<ContextualbarDialog>

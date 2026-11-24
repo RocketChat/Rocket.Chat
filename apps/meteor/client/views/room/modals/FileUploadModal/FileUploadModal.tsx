@@ -20,7 +20,7 @@ import {
 	FieldDescription,
 } from '@rocket.chat/fuselage-forms';
 import { memo, useCallback, useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
@@ -36,17 +36,12 @@ export type FileUploadModalProps = {
 };
 
 const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors, isDirty, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
+	const { control, handleSubmit } = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
+	const { errors, isDirty, isSubmitting } = useFormState({ control });
 
 	const validateFileName = useCallback(
 		(fieldValue: string) => {

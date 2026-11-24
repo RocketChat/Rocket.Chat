@@ -41,7 +41,7 @@ import { useSetting, useToastMessageDispatch, useEndpoint, useSetModal } from '@
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
@@ -76,7 +76,6 @@ const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string =>
 };
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
-	'use no memo';
 	const query = useQueryClient();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -101,29 +100,22 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
-	const {
-		watch,
-		reset,
-		control,
-		handleSubmit,
-		getFieldState,
-		formState: { isDirty, dirtyFields, errors, isSubmitting },
-	} = useForm<EditRoomInfoFormData>({ defaultValues });
+	const { reset, control, handleSubmit, getFieldState } = useForm<EditRoomInfoFormData>({ defaultValues });
+	const { isDirty, dirtyFields, errors, isSubmitting } = useFormState({ control });
 
 	const sysMesOptions: SelectOption[] = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
 
 	const { isDirty: isRoomNameDirty } = getFieldState('roomName');
 
-	const {
-		readOnly,
-		archived,
-		joinCodeRequired,
-		hideSysMes,
-		retentionEnabled,
-		retentionOverrideGlobal,
-		roomType: roomTypeP,
-		reactWhenReadOnly,
-	} = watch();
+	const watched = useWatch({ control });
+	const readOnly = watched.readOnly ?? false;
+	const archived = watched.archived ?? false;
+	const joinCodeRequired = watched.joinCodeRequired ?? false;
+	const hideSysMes = watched.hideSysMes ?? false;
+	const retentionEnabled = watched.retentionEnabled ?? false;
+	const retentionOverrideGlobal = watched.retentionOverrideGlobal ?? false;
+	const reactWhenReadOnly = watched.reactWhenReadOnly ?? false;
+	const roomTypeP = useWatch({ control, name: 'roomType' });
 
 	const {
 		canChangeType,

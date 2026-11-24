@@ -3,7 +3,7 @@ import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -29,21 +29,13 @@ type TwoFactorEmailFormData = {
 };
 
 const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUsername, challengeId }: TwoFactorEmailModalProps) => {
-	'use no memo';
-
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-		setValue,
-		clearErrors,
-		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorEmailFormData>({
+	const { control, handleSubmit, setError, setValue, clearErrors } = useForm<TwoFactorEmailFormData>({
 		defaultValues: { code: '' },
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		if (invalidAttempt) {

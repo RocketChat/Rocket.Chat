@@ -116,7 +116,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const retry = useStableCallback(() => {
 		const audio = audioRef.current;
-		if (!audio || !trackRef.current) {
+		if (!audio || !track) {
 			return;
 		}
 		setError(false);
@@ -143,7 +143,22 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			close,
 			activeTrackId,
 		}),
-		[track, playing, currentTime, duration, playbackRate, loading, error, retry, play, toggle, seek, cyclePlaybackRate, close, activeTrackId],
+		[
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			activeTrackId,
+		],
 	);
 
 	return (
@@ -161,7 +176,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onPlaying={() => setLoading(false)}
 				onError={() => {
 					// An error arriving after close() belongs to no track.
-					if (trackRef.current) {
+					if (track) {
 						setLoading(false);
 						setError(true);
 					}

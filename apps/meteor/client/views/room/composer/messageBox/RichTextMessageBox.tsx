@@ -79,6 +79,7 @@ const RichTextMessageBox = ({
 	threadExists,
 }: MessageBoxProps): ReactElement => {
 	'use no memo';
+
 	const chat = useChat();
 	const room = useRoom();
 	const { t } = useTranslation();

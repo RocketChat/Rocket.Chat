@@ -3,7 +3,7 @@ import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryRoomIds } from './hooks/useCategoryRoomIds';
@@ -17,8 +17,6 @@ type ManageCategoryModalProps = {
 };
 
 const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const updateCategory = useUpdateCategory();
@@ -27,17 +25,13 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const categoryRoomIds = useCategoryRoomIds(category._id);
 	const [initialRooms] = useState(() => categoryRoomIds);
 
-	const {
-		handleSubmit,
-		control,
-		setFocus,
-		formState: { errors, isSubmitting },
-	} = useForm({
+	const { handleSubmit, control, setFocus } = useForm({
 		defaultValues: {
 			name: category.name,
 			rooms: initialRooms,
 		},
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		setFocus('name');

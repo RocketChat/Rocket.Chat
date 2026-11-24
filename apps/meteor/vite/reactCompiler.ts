@@ -17,6 +17,9 @@ export function reactCompilerPlugin(): Plugin {
 			async handler(code, id) {
 				if (!oxc) return;
 				if (!clientRE.test(id)) return;
+				// react-hook-form relies on Proxy-based subscriptions that the compiler's
+				// auto-memoization breaks (cached property reads bypass Proxy traps).
+				if (code.includes("'react-hook-form'") || code.includes('"react-hook-form"')) return;
 
 				const lang = (() => {
 					if (id.endsWith('.tsx')) return 'tsx' as const;

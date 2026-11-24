@@ -11,7 +11,7 @@ import {
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
@@ -74,8 +74,6 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 });
 
 const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivechatTrigger>; onClose: () => void }) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -89,12 +87,8 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 	const nameField = useId();
 	const descriptionField = useId();
 
-	const {
-		control,
-		handleSubmit,
-		trigger,
-		formState: { isSubmitting, errors, isDirty },
-	} = useForm<TriggersPayload>({ values: initValues });
+	const { control, handleSubmit, trigger } = useForm<TriggersPayload>({ values: initValues });
+	const { isSubmitting, errors, isDirty } = useFormState({ control });
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,

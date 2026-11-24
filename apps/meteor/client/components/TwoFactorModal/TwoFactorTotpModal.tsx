@@ -1,7 +1,7 @@
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -19,20 +19,12 @@ type TwoFactorTotpFormData = {
 };
 
 const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-		setValue,
-		clearErrors,
-		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorTotpFormData>({
+	const { control, handleSubmit, setError, setValue, clearErrors } = useForm<TwoFactorTotpFormData>({
 		defaultValues: { code: '' },
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		if (invalidAttempt) {

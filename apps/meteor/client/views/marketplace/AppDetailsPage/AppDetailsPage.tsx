@@ -4,7 +4,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsPageHeader from './AppDetailsPageHeader';
@@ -32,8 +32,6 @@ export type AppDetailsPageProps = {
 };
 
 const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -81,11 +79,8 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 	}, [settings]);
 
 	const settingsFormMethods = useForm<AppDetailsPageFormData>({ values: reducedSettings });
-	const {
-		handleSubmit,
-		reset,
-		formState: { isDirty, isSubmitting },
-	} = settingsFormMethods;
+	const { handleSubmit, reset, control } = settingsFormMethods;
+	const { isDirty, isSubmitting } = useFormState({ control });
 
 	const logsFilterFormMethods = useAppLogsFilterForm();
 

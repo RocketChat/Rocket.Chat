@@ -16,8 +16,6 @@ export type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'>
 };
 
 function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabelledBy }: DepartmentAgentsTableProps) {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const { fields, append, remove } = useFieldArray({ control, name: 'agentList' });
 	const agentList = useWatch({ control, name: 'agentList' });

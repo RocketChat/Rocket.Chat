@@ -18,7 +18,7 @@ import {
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
@@ -47,7 +47,6 @@ export type UnitEditProps = {
 };
 
 const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete, onClose }: UnitEditProps) => {
-	'use no memo';
 	const { t } = useTranslation();
 	const saveUnit = useEndpoint('POST', '/v1/livechat/units');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -78,12 +77,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 		[unitMonitors],
 	);
 
-	const {
-		control,
-		formState: { errors, isDirty },
-		handleSubmit,
-		watch,
-	} = useForm<UnitEditFormData>({
+	const { control, handleSubmit } = useForm<UnitEditFormData>({
 		values: {
 			name: unitData?.name || '',
 			visibility: unitData?.visibility || '',
@@ -91,8 +85,10 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 			monitors: currUnitMonitors,
 		},
 	});
+	const { errors, isDirty } = useFormState({ control });
 
-	const { departments, monitors } = watch();
+	const departments = useWatch({ control, name: 'departments' });
+	const monitors = useWatch({ control, name: 'monitors' });
 
 	const handleSave = useFormSubmitWithDirtyCheck(
 		async ({ name, visibility }: UnitEditFormData) => {

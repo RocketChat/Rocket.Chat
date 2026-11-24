@@ -19,8 +19,6 @@ type PhoneNumberFieldListProps<T extends { phones?: IUserPhoneNumber[] }> = {
 
 // Edits the form's `phones` array, always keeping at least one (possibly blank) row on screen.
 const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ control, className }: PhoneNumberFieldListProps<T>) => {
-	'use no memo';
-
 	const { t } = useTranslation();
 	const { visuallyHiddenProps } = useVisuallyHidden();
 	const listId = useId();

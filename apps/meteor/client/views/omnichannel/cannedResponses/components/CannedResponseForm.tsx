@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint, Option } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useId, useState } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import CannedResponsesComposer from './CannedResponsesComposer/CannedResponsesComposer';
@@ -13,22 +13,20 @@ import type { CannedResponseEditFormData } from '../modals/CannedResponseEdit';
 
 // TODO: refactor Tags field to get proper validation
 const CannedResponseForm = () => {
-	'use no memo';
 	const { t } = useTranslation();
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
-	const {
-		control,
-		formState: { errors },
-		watch,
-	} = useFormContext<CannedResponseEditFormData>();
+	const { control } = useFormContext<CannedResponseEditFormData>();
+	const { errors } = useFormState({ control });
 
 	const clickable = css`
 		cursor: pointer;
 	`;
 
-	const { text, scope } = watch();
+	const watched = useWatch({ control });
+	const text = watched.text ?? '';
+	const { scope } = watched;
 	const [preview, setPreview] = useState(false);
 
 	const shortcutField = useId();
