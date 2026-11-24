@@ -79,6 +79,7 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess, abac }: CreateChannelModalProps) => {
+	'use no memo';
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');

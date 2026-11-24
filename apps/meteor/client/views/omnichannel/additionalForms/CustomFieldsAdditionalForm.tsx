@@ -19,6 +19,7 @@ const checkIsOptionsValid = (value: string) => {
 export type CustomFieldsAdditionalFormProps = { className?: ComponentProps<typeof Field>['className'] };
 
 const CustomFieldsAdditionalForm = ({ className }: CustomFieldsAdditionalFormProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const {
 		control,

@@ -42,6 +42,7 @@ const getPreviousAccountValues = (user: IUser | null) => ({
 });
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
+	'use no memo';
 	const t = useTranslation();
 	const user = useUser();
 	const queryClient = useQueryClient();

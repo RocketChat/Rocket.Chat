@@ -67,6 +67,7 @@ const MessageBox = ({
 	previewUrls,
 	threadExists,
 }: MessageBoxProps) => {
+	'use no memo';
 	const chat = useChat();
 	const room = useRoom();
 	const { t } = useTranslation();

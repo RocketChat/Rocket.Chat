@@ -15,6 +15,8 @@ export type NotificationPreferencesFormProps = {
 };
 
 const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: NotificationPreferencesFormProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const { watch, control } = useFormContext();
 

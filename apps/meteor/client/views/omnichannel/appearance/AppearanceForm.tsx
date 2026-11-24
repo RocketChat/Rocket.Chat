@@ -22,6 +22,7 @@ import AppearanceFieldLabel from './AppearanceFieldLabel';
 import MarkdownText from '../../../components/MarkdownText';
 
 const AppearanceForm = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 

@@ -13,6 +13,7 @@ import type { CannedResponseEditFormData } from '../modals/CannedResponseEdit';
 
 // TODO: refactor Tags field to get proper validation
 const CannedResponseForm = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');

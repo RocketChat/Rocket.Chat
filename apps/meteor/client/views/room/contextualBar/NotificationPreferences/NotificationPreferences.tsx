@@ -24,6 +24,8 @@ export type NotificationPreferencesProps = {
 };
 
 const NotificationPreferences = ({ handleClose, handleSave, notificationOptions, handlePlaySound }: NotificationPreferencesProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const {
 		formState: { isDirty, isSubmitting },

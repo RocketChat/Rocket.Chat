@@ -9,6 +9,7 @@ const getEmptyUploads = () => emptyUploads;
 const getEmptyBool = () => false;
 
 export const useFileUpload = () => {
+	'use no memo';
 	const chat = useChat();
 
 	if (!chat) {

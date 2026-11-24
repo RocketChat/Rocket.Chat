@@ -77,6 +77,7 @@ export type EditOutgoingWebhookProps = {
 };
 
 const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();

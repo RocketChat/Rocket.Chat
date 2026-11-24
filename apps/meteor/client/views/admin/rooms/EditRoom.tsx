@@ -67,6 +67,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormD
 });
 
 const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();

@@ -50,6 +50,7 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 };
 
 const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => {
+	'use no memo';
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;

@@ -57,6 +57,7 @@ const defaultValues = {
 };
 
 export const ChangePassphrase = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

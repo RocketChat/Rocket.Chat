@@ -38,6 +38,7 @@ export type BusinessHoursFormData = {
 export type BusinessHoursFormProps = { type?: 'default' | 'custom' };
 
 const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
 	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name)]), [t, timeZones]);

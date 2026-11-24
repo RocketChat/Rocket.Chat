@@ -76,6 +76,7 @@ const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string =>
 };
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
+	'use no memo';
 	const query = useQueryClient();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();

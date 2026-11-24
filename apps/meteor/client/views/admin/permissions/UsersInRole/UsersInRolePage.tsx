@@ -21,6 +21,7 @@ type UsersInRolePayload = {
 export type UsersInRolePageProps = { role: IRole };
 
 const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();

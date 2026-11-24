@@ -53,6 +53,7 @@ type EditOutgoingWebhookPayload = Pick<
 >;
 
 const OutgoingWebhookForm = () => {
+	'use no memo';
 	const { t } = useTranslation();
 
 	const {

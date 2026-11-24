@@ -37,6 +37,7 @@ export type ExportMessagesFormValues = {
 };
 
 const ExportMessages = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const { closeTab } = useRoomToolbox();
 	const pfdExportPermission = usePermission('export-messages-as-pdf');

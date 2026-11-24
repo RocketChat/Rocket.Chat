@@ -47,6 +47,7 @@ export type UnitEditProps = {
 };
 
 const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete, onClose }: UnitEditProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const saveUnit = useEndpoint('POST', '/v1/livechat/units');
 	const dispatchToastMessage = useToastMessageDispatch();

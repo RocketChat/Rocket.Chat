@@ -28,6 +28,7 @@ type StatusFormValues = {
 };
 
 const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const user = useUser();
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');

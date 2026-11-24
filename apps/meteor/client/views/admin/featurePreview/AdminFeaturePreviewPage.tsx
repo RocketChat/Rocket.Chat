@@ -33,6 +33,7 @@ import Setting from '../settings/Setting';
 import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
 
 const AdminFeaturePreviewPage = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');

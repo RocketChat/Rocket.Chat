@@ -32,6 +32,7 @@ import { useExampleData } from '../hooks/useExampleIncomingData';
 export type IncomingWebhookFormProps = { webhookData?: Serialized<IIncomingIntegration> };
 
 const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 

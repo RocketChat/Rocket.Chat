@@ -51,6 +51,7 @@ const CreateDiscussion = ({
 	nameSuggestion,
 	encryptedParentRoom = false,
 }: CreateDiscussionProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 
 	const [encryptedDisabled, setEncryptedDisabled] = useState(encryptedParentRoom);

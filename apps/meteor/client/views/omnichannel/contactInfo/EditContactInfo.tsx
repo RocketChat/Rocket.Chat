@@ -70,6 +70,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
 const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps) => {
+	'use no memo';
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

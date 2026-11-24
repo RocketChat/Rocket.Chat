@@ -9,6 +9,7 @@ import { useInstallApp } from './hooks/useInstallApp';
 import ContentColumn from '../../components/ContentColumn';
 
 const AppInstallPage = () => {
+	'use no memo';
 	const { t } = useTranslation();
 	const router = useRouter();
 
