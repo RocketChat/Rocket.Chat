@@ -1,6 +1,6 @@
-import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
-import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, SearchAnswerMessage, SearchAnswerResult } from './types';
-import { getErrorType } from './utils';
+import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants.js';
+import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, SearchAnswerMessage, SearchAnswerResult } from './types.js';
+import { getErrorType } from './utils.js';
 
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();

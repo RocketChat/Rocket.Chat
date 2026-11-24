@@ -28,7 +28,7 @@ class SettingsClass {
 	private checkQueryMatch(key: string, data: Dictionary, queryValue: any): boolean {
 		if (typeof queryValue === 'object') {
 			if (queryValue.$exists !== undefined) {
-				return (data.hasOwnProperty(key) && data[key] !== undefined) === queryValue.$exists;
+				return (Object.hasOwn(data, key) && data[key] !== undefined) === queryValue.$exists;
 			}
 		}
 
@@ -39,11 +39,13 @@ class SettingsClass {
 		return [...this.data.values()].find((data) => Object.entries(query).every(([key, value]) => this.checkQueryMatch(key, data, value)));
 	}
 
-	insertOne(doc: any): void {
-		this.data.set(doc._id, doc);
+	insertIfNotExists(doc: any): any {
+		if (!this.data.has(doc._id)) {
+			this.data.set(doc._id, doc);
+		}
 
-		this.settings.set(doc);
 		this.insertCalls++;
+		return this.data.get(doc._id);
 	}
 
 	updateOne(query: any, update: any, options?: any): void {

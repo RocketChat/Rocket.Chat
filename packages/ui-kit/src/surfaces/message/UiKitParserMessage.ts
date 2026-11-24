@@ -1,21 +1,32 @@
-import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock';
-import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock.js';
+import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 
 /** Layout blocks a message accepts; every message renderer must allow exactly these. */
 export const messageSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
+	'card',
+	'carousel',
+	'container',
 	'context',
 	'context_actions',
+	'data_table',
+	'data_visualization',
 	'divider',
+	'file',
 	'header',
 	'image',
 	'info_card',
 	'input',
+	'layout',
 	'markdown',
+	'plan',
 	'preview',
+	'rich_text',
 	'section',
 	'table',
+	'task_card',
 	'video',
 	'video_conf',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];

@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
@@ -14,26 +12,7 @@ export type ContextualbarProps = ElementProps<HTMLElement> & {
  * The `Contextualbar` has the purpose to persist and input information about the scope of the related page.
  */
 function Contextualbar({ stretch, position, ...props }: ContextualbarProps) {
-	return (
-		<Box
-			rcx-vertical-bar
-			backgroundColor='room'
-			color='default'
-			display='flex'
-			flexDirection='column'
-			flexShrink={0}
-			width={stretch ? '100%' : undefined}
-			borderInlineStartWidth='default'
-			borderInlineStartColor='extra-light'
-			borderInlineStartStyle='solid'
-			height='full'
-			position={position}
-			insetInlineEnd='none'
-			insetBlockStart='none'
-			zIndex={10}
-			{...props}
-		/>
-	);
+	return <Box rcx-vertical-bar rcx-vertical-bar--stretch={stretch} rcx-vertical-bar--position={position} {...props} />;
 }
 
-export default memo(Contextualbar);
+export default Contextualbar;

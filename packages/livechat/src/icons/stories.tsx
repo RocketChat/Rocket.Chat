@@ -1,6 +1,6 @@
-import path from 'path';
-
+/// <reference types="vite/client" />
 import type { Meta, StoryFn } from '@storybook/preact';
+import type { ComponentType, JSX } from 'preact';
 
 export default {
 	title: 'Components/Icons',
@@ -16,13 +16,13 @@ export default {
 	},
 } satisfies Meta<{ color: string }>;
 
-const req = require.context('./', true, /\.svg$/);
-const iconset = req.keys().map((filename) => ({
-	component: req(filename),
-	name: path.basename(filename, '.svg'),
+const icons = import.meta.glob<ComponentType<JSX.SVGAttributes<SVGSVGElement>>>('./**/*.svg', { eager: true, import: 'default' });
+const iconset = Object.entries(icons).map(([filename, component]) => ({
+	component,
+	name: filename.replace(/^.*\//, '').replace(/\.svg$/, ''),
 }));
 
-export const All: StoryFn<{ color: string }> = ({ color }) => (
+export const All: StoryFn<{ color: string }> = ({ color }: { color: string }) => (
 	<>
 		{iconset.map(({ component: Icon, name }, i) => (
 			<div

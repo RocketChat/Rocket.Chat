@@ -1,10 +1,11 @@
+import { PageSkeleton } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import AdministrationLayout from './AdministrationLayout';
 import { getAdminSidebarItems } from './sidebarItems';
-import PageSkeleton from '../../components/PageSkeleton';
+import { useExternalLink } from '../../hooks/useExternalLink';
 import type { Item, SidebarDivider, SidebarItem } from '../../lib/createSidebarItems';
 import { isGoRocketChatLink } from '../../lib/createSidebarItems';
 import SettingsProvider from '../../providers/SettingsProvider';
@@ -27,6 +28,7 @@ export type AdministrationRouterProps = {
 
 const AdministrationRouter = ({ children }: AdministrationRouterProps) => {
 	const router = useRouter();
+	const openExternalLink = useExternalLink();
 
 	useEffect(
 		() =>
@@ -38,13 +40,13 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps) => {
 				const defaultRoutePath = getAdminSidebarItems().find(firstSidebarPage)?.href ?? '/admin/workspace';
 
 				if (isGoRocketChatLink(defaultRoutePath)) {
-					window.open(defaultRoutePath, '_blank');
+					openExternalLink(defaultRoutePath);
 					return;
 				}
 
 				router.navigate(defaultRoutePath, { replace: true });
 			}),
-		[router],
+		[router, openExternalLink],
 	);
 
 	return (

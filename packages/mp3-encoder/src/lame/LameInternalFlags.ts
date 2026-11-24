@@ -1,13 +1,13 @@
-import { ATH } from './ATH';
-import type { CBRNewIterationLoop } from './CBRNewIterationLoop';
-import { Header } from './Header';
-import { IIISideInfo } from './IIISideInfo';
-import { III_psy_xmin } from './III_psy_xmin';
-import { NsPsy } from './NsPsy';
-import { PSY } from './PSY';
-import { ReplayGain } from './ReplayGain';
-import { ScaleFac } from './ScaleFac';
-import { BPC, CBANDS, ENCDELAY, MAX_HEADER_BUF, MDCTDELAY, MFSIZE, POSTDELAY, SBLIMIT, SBMAX_l, SBMAX_s, SFBMAX } from './constants';
+import { ATH } from './ATH.js';
+import type { CBRNewIterationLoop } from './CBRNewIterationLoop.js';
+import { Header } from './Header.js';
+import { IIISideInfo } from './IIISideInfo.js';
+import { III_psy_xmin } from './III_psy_xmin.js';
+import { NsPsy } from './NsPsy.js';
+import { PSY } from './PSY.js';
+import { ReplayGain } from './ReplayGain.js';
+import { ScaleFac } from './ScaleFac.js';
+import { BPC, CBANDS, ENCDELAY, MAX_HEADER_BUF, MDCTDELAY, MFSIZE, POSTDELAY, SBLIMIT, SBMAX_l, SBMAX_s, SFBMAX } from './constants.js';
 
 export class LameInternalFlags {
 	Class_ID = 0;

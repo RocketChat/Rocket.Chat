@@ -1,7 +1,7 @@
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';

@@ -88,6 +88,39 @@ const findTargetUser = (type: string, value: string, opts: any) => {
 	return Users.findOneByIdOrUsername(value, opts);
 };
 
+const isSearchingForCaller = (
+	caller: Pick<IUser, '_id' | 'username' | 'importIds' | 'emails' | 'sipExtension'>,
+	userId: string,
+	searchValue: string,
+	searchType: 'id' | 'username' | 'importId' | 'email' | 'sipExtension',
+) =>
+	(searchType === 'id' && searchValue === userId) ||
+	(searchType === 'username' && searchValue === caller.username) ||
+	(searchType === 'importId' && caller.importIds?.includes(searchValue)) ||
+	(searchType === 'sipExtension' && caller.sipExtension === searchValue) ||
+	(searchType === 'email' &&
+		caller.emails?.some((email: IUserEmail) => email.address.trim().toLowerCase() === searchValue.trim().toLowerCase()));
+
+const resolveStatusVisibilityBlockListsToUsernames = async (user: IUser, myself: boolean | undefined) => {
+	const ownBlockList =
+		myself && isUserHidingAllowed() && user.settings?.preferences ? user.settings.preferences.statusVisibilityDenied : undefined;
+	const adminBlockList = user.statusVisibilityDeniedByAdmin;
+
+	if (ownBlockList?.length || adminBlockList?.length) {
+		const { ids, usernames } = await resolveUsersByIds([...new Set([...(ownBlockList ?? []), ...(adminBlockList ?? [])])]);
+		const usernameById = new Map(ids.map((id, index) => [id, usernames[index]]));
+		const toUsernames = (list: string[]) => list.map((id) => usernameById.get(id)).filter((name): name is string => Boolean(name));
+
+		if (ownBlockList?.length && user.settings?.preferences) {
+			user.settings.preferences.statusVisibilityDenied = toUsernames(ownBlockList);
+		}
+
+		if (adminBlockList?.length) {
+			user.statusVisibilityDeniedByAdmin = toUsernames(adminBlockList);
+		}
+	}
+};
+
 export async function getFullUserDataByUniqueSearchTerm(
 	userId: string,
 	searchValue: string,
@@ -99,13 +132,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 		return null;
 	}
 
-	const myself =
-		(searchType === 'id' && searchValue === userId) ||
-		(searchType === 'username' && searchValue === caller.username) ||
-		(searchType === 'importId' && caller.importIds?.includes(searchValue)) ||
-		(searchType === 'sipExtension' && caller.sipExtension === searchValue) ||
-		(searchType === 'email' &&
-			caller.emails?.some((email: IUserEmail) => email.address.trim().toLowerCase() === searchValue.trim().toLowerCase()));
+	const myself = isSearchingForCaller(caller, userId, searchValue, searchType);
 
 	const canViewFullOtherUserInfo = await hasPermissionAsync(userId, 'view-full-other-user-info');
 	const canViewAllInfo = !!myself || canViewFullOtherUserInfo;
@@ -149,23 +176,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	delete user?.services?.resume;
 	delete user?.services?.email;
 
-	const ownBlockList =
-		myself && isUserHidingAllowed() && user.settings?.preferences ? user.settings.preferences.statusVisibilityDenied : undefined;
-	const adminBlockList = user.statusVisibilityDeniedByAdmin;
-
-	if (ownBlockList?.length || adminBlockList?.length) {
-		const { ids, usernames } = await resolveUsersByIds([...new Set([...(ownBlockList ?? []), ...(adminBlockList ?? [])])]);
-		const usernameById = new Map(ids.map((id, index) => [id, usernames[index]]));
-		const toUsernames = (list: string[]) => list.map((id) => usernameById.get(id)).filter((name): name is string => Boolean(name));
-
-		if (ownBlockList?.length && user.settings?.preferences) {
-			user.settings.preferences.statusVisibilityDenied = toUsernames(ownBlockList);
-		}
-
-		if (adminBlockList?.length) {
-			user.statusVisibilityDeniedByAdmin = toUsernames(adminBlockList);
-		}
-	}
+	await resolveStatusVisibilityBlockListsToUsernames(user, myself);
 
 	if (myself) {
 		return user;

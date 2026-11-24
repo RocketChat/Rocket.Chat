@@ -131,8 +131,9 @@ API.v1.post(
 			useragent: this.request.headers.get('user-agent') || '',
 		});
 
-		(await auditSettingOperation(Settings.updateValueById, 'Enterprise_License', license)).modifiedCount &&
+		if ((await auditSettingOperation(Settings.updateValueById, 'Enterprise_License', license)).modifiedCount) {
 			void notifyOnSettingChangedById('Enterprise_License');
+		}
 
 		return API.v1.success();
 	},

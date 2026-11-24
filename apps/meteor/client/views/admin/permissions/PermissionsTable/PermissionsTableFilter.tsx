@@ -1,15 +1,10 @@
-import { Icon, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
-/**
- *
- * TODO: Replaced this by FilterByText, it has the same render
- */
+import FilterByText from '../../../../components/FilterByText';
+
 const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }) => {
-	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 500);
 
@@ -21,11 +16,7 @@ const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: stri
 		setFilter(value);
 	});
 
-	return (
-		<div>
-			<TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} endAddon={<Icon name='magnifier' size='x20' />} />
-		</div>
-	);
+	return <FilterByText value={filter} onChange={handleFilter} />;
 };
 
 export default PermissionsTableFilter;

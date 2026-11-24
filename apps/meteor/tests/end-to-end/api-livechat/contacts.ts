@@ -27,7 +27,9 @@ import {
 } from '../../data/livechat/rooms';
 import { createAnOnlineAgent, removeAgent } from '../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, deleteUser } from '../../data/users.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { expectInvalidParams } from '../../data/validation.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -86,7 +88,7 @@ describe('LIVECHAT - contacts', () => {
 				});
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('create-livechat-contact');
 		});
@@ -565,7 +567,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 
@@ -1029,7 +1031,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1200,7 +1202,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(response.status).to.be.equal(403);
 				expect(response.body).to.have.property('success', false);
-				expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(response.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 
@@ -1324,7 +1326,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1465,7 +1467,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});
@@ -1629,7 +1631,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1778,7 +1780,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});
@@ -1896,8 +1898,40 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitor: association });
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
+	});
+});
+
+describe('LIVECHAT - contacts without contact permissions', () => {
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+	});
+
+	after(() => deleteUser(user));
+
+	it('should refuse omnichannel/contacts.conflicts and keep the contact', async () => {
+		const name = faker.person.fullName();
+		const { body } = await request.post(api('omnichannel/contacts')).set(credentials).send({ name, emails: [], phones: [] }).expect(200);
+
+		await request
+			.post(api('omnichannel/contacts.conflicts'))
+			.set(userCredentials)
+			.send({ contactId: body.contactId, name: faker.person.fullName() })
+			.expect(403);
+
+		const res = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: body.contactId }).expect(200);
+		expect(res.body.contact).to.have.property('name', name);
+	});
+
+	it('should refuse omnichannel/contacts.history', async () => {
+		await request.get(api('omnichannel/contacts.history')).set(userCredentials).query({ contactId: 'any' }).expect(403);
 	});
 });

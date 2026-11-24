@@ -1,12 +1,12 @@
-import { INTELLIGENT_SEARCH_RRF_CONSTANT } from './constants';
+import { INTELLIGENT_SEARCH_RRF_CONSTANT } from './constants.js';
 import {
 	applyTemporalRerank,
 	filterSemanticCandidatesByMinimumSimilarity,
 	fuseCandidatesWithWeightedRRF,
 	getRecencyDecay,
 	toRankedCandidates,
-} from './fusion';
-import type { FusedIntelligentSearchCandidate, IntelligentSearchCandidate } from './types';
+} from './fusion.js';
+import type { FusedIntelligentSearchCandidate, IntelligentSearchCandidate } from './types.js';
 
 const candidate = (msgId: string, overrides: Partial<IntelligentSearchCandidate> = {}): IntelligentSearchCandidate => ({
 	_id: msgId,

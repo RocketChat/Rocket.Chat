@@ -2,9 +2,10 @@ import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -15,6 +16,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
+import { messageToolbarScope } from '../toolbar/MessageToolbarReveal';
 
 export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -25,7 +27,7 @@ export type ThreadMessageProps = {
 };
 
 const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
@@ -37,6 +39,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 
 	return (
 		<Message
+			className={messageToolbarScope}
 			role='listitem'
 			aria-roledescription={t('thread_message')}
 			tabIndex={0}

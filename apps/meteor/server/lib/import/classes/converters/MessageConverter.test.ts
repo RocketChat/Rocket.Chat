@@ -5,25 +5,17 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
-const modelsMock = {
-	Rooms: {
-		findOneByImportId: sinon.stub(),
-	},
-};
 const insertMessage = sinon.stub();
 
 const { MessageConverter } = proxyquire.noCallThru().load('./MessageConverter', {
 	'../../../messages/insertMessage': {
 		insertMessage,
 	},
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });
 
 describe('Message Converter', () => {
 	beforeEach(() => {
-		modelsMock.Rooms.findOneByImportId.reset();
 		insertMessage.reset();
 		settingsStub.reset();
 	});

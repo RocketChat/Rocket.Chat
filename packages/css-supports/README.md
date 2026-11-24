@@ -14,7 +14,7 @@ Rocket.Chat's styling packages use it to decide when CSS logical properties need
 npm install @rocket.chat/css-supports
 ```
 
-There are no peer dependencies. The package ships CommonJS (`dist/cjs`), ES modules (`dist/esm`) and TypeScript types.
+There are no peer dependencies. The package ships an ES module (`dist/index.js`) and TypeScript types.
 
 ## Usage
 

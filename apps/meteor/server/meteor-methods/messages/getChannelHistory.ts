@@ -1,7 +1,6 @@
 import { Authorization, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { getHistoryVisibility } from '../../lib/messages/historyVisibility';
 import { getHiddenSystemMessages } from '../../lib/messaging/getHiddenSystemMessages';
@@ -29,8 +28,6 @@ export const getChannelHistory = async ({
 	unreads?: boolean;
 	showThreadMessages?: boolean;
 }): Promise<false | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }> => {
-	check(rid, String);
-
 	if (!fromUserId) {
 		return false;
 	}

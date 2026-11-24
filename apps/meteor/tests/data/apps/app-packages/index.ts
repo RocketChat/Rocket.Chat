@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-export const appImplementsIPreFileUpload = path.resolve(__dirname, './file-upload-test_0.0.1.zip');
+export const appFileUploadTest = path.resolve(__dirname, './file-upload-test_0.0.1.zip');
 
 export const appAPIParameterTest = path.resolve(__dirname, './api-parameter-test_0.0.1.zip');
 
@@ -9,6 +9,7 @@ export const appCausingNestedRequests = path.resolve(__dirname, './nested-reques
 export const appUiKitRoomTest = path.resolve(__dirname, './uikit-room-test_0.0.1.zip');
 
 export const appUiKitComponentsTest = path.resolve(__dirname, './uikit-components-test_0.0.1.zip');
+export const appUiKitCapabilitiesTest = path.resolve(__dirname, './uikit-capabilities-test_0.0.1.zip');
 
 export const appUpdateStatusTest = path.resolve(__dirname, './update-status-test_0.0.1.zip');
 
@@ -29,3 +30,5 @@ export const appPresenceStateTest = path.resolve(__dirname, './presence-state-te
 export const appMediaCallEventsTest = path.resolve(__dirname, './media-call-events-test_0.0.1.zip');
 
 export const appAbacRoomCreationTest = path.resolve(__dirname, './abac-room-creation-test_0.0.1.zip');
+
+export const appRocketChatTester = path.resolve(__dirname, './appsrocketchattester.zip');

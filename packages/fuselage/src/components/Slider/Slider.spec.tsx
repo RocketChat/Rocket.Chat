@@ -1,7 +1,8 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import Slider from './Slider';
 import * as stories from './Slider.stories';
 import { render } from '../../testing';
 
@@ -10,6 +11,8 @@ const { Default, WithLabel, MultiThumb, WithDefaultValue } = composeStories(stor
 describe('[Slider Component]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+
+		expect(screen.getByRole('slider')).toHaveAttribute('max', '500');
 	});
 
 	it('should display the label when passed', () => {
@@ -43,5 +46,15 @@ describe('[Slider Component]', () => {
 		await userEvent.keyboard('{ArrowRight}');
 
 		expect(slider.value).toBe('4');
+	});
+});
+
+describe('[Slider root props]', () => {
+	it('merges className and style on the root', () => {
+		render(<Slider aria-label='Volume' className='custom' style={{ opacity: 0.5 }} />);
+
+		const root = screen.getByRole('group');
+		expect(root).toHaveClass('rcx-slider', 'custom');
+		expect(root).toHaveStyle({ opacity: '0.5' });
 	});
 });

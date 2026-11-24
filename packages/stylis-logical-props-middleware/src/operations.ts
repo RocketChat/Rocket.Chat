@@ -1,6 +1,6 @@
-import type { RuleSet, Declaration } from './elements';
-import { attachDeclaration } from './elements';
-import { splitValueList } from './values';
+import type { RuleSet, Declaration } from './elements.js';
+import { attachDeclaration } from './elements.js';
+import { splitValueList } from './values.js';
 
 export type Operation = (
 	value: Declaration['children'],

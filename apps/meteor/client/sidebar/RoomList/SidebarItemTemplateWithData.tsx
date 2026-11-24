@@ -24,6 +24,7 @@ type RoomListRowProps = {
 	t: TFunction;
 	viewMode: RoomListItemViewMode;
 	showAvatar: boolean;
+	formatTime: (time: Date | string) => string;
 	openedRoom?: string;
 	isAnonymous?: boolean;
 	userId?: string;
@@ -34,6 +35,7 @@ type RoomListRowProps = {
 	style?: AllHTMLAttributes<HTMLElement>['style'];
 
 	selected?: boolean;
+	dragging?: boolean;
 
 	videoConfActions?: {
 		[action: string]: () => void;
@@ -44,9 +46,11 @@ const SidebarItemTemplateWithData = ({
 	room,
 	id,
 	selected,
+	dragging,
 	style,
 	viewMode,
 	showAvatar,
+	formatTime,
 	t,
 	isAnonymous,
 	videoConfActions,
@@ -109,6 +113,7 @@ const SidebarItemTemplateWithData = ({
 			data-unread={highlighted}
 			highlighted={highlighted}
 			selected={selected}
+			dragging={dragging}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
 			onClick={() => {
@@ -116,7 +121,7 @@ const SidebarItemTemplateWithData = ({
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
-			time={lastMessage?.ts}
+			timeLabel={viewMode === 'extended' && lastMessage?.ts ? formatTime(lastMessage.ts) : undefined}
 			subtitle={subtitle}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
 			iconLabel={iconLabel}
@@ -151,7 +156,17 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'selected', 't', 'videoConfActions'];
+const keys: (keyof RoomListRowProps)[] = [
+	'id',
+	'style',
+	'viewMode',
+	'showAvatar',
+	'formatTime',
+	'selected',
+	'dragging',
+	't',
+	'videoConfActions',
+];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {

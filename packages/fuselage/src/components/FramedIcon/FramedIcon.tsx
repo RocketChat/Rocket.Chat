@@ -1,7 +1,7 @@
 import type { Keys } from '@rocket.chat/icons';
 import type { AllHTMLAttributes } from 'react';
 
-import { Icon } from '../Icon';
+import { Icon, type IconProps } from '../Icon';
 
 export type FramedIconProps = {
 	info?: boolean;
@@ -10,9 +10,10 @@ export type FramedIconProps = {
 	danger?: boolean;
 	neutral?: boolean;
 	icon: Keys;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
+	size?: IconProps['size'];
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color' | 'size'>;
 
-const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, ...props }: FramedIconProps) => (
+const FramedIcon = ({ info, success, warning, danger, neutral, icon, size = 20, className, ...props }: FramedIconProps) => (
 	<Icon
 		{...props}
 		className={[
@@ -27,7 +28,7 @@ const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, 
 			.filter(Boolean)
 			.join(' ')}
 		name={icon}
-		size={20}
+		size={size}
 	/>
 );
 

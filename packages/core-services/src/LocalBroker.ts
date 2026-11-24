@@ -4,9 +4,9 @@ import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus } from '@rocket.chat/models';
 import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
-import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './events/Events';
 import { LocalServiceRegistry } from './lib/LocalServiceRegistry';
+import { asyncLocalStorage } from './lib/asyncLocalStorage';
 import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
@@ -52,7 +52,7 @@ export class LocalBroker implements IBroker {
 						requestID: 'ctx.requestID',
 						broker: this,
 					},
-					(): any => this.registry.resolve(method)?.(data),
+					() => this.registry.resolve(method)?.(data),
 				);
 			},
 			injectCurrentContext(),

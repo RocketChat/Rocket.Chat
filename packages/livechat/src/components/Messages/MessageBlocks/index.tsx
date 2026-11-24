@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import { triggerAction, UIKitIncomingInteractionType, UIKitIncomingInteractionContainerType } from '../../../lib/uiKit';
 import { renderMessageBlocks } from '../../uiKit';
@@ -14,7 +14,7 @@ export type MessageBlocksProps = {
 
 const MessageBlocks = ({ blocks = [], mid = undefined, rid = undefined }: MessageBlocksProps) => {
 	const dispatchAction = useCallback(
-		({ appId, actionId, payload }: { appId: string; actionId: string; payload: unknown }) =>
+		({ appId, blockId, actionId, payload }: { appId: string; blockId?: string; actionId: string; payload: Record<string, unknown> }) =>
 			triggerAction({
 				appId,
 				type: UIKitIncomingInteractionType.BLOCK,
@@ -26,7 +26,7 @@ const MessageBlocks = ({ blocks = [], mid = undefined, rid = undefined }: Messag
 					type: UIKitIncomingInteractionContainerType.MESSAGE,
 					id: mid,
 				},
-				payload,
+				payload: { ...payload, blockId },
 			}),
 		[mid, rid],
 	);

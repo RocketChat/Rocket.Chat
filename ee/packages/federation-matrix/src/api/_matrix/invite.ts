@@ -2,7 +2,7 @@ import { FederationMatrix } from '@rocket.chat/core-services';
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { getUsernameServername } from '../../helpers/getUsernameServername';
 import { logger } from '../logger';
@@ -161,7 +161,15 @@ export const getMatrixInviteRoutes = () => {
 		isAuthenticatedMiddleware(),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
+			const {
+				event,
+				room_version: roomVersion,
+				invite_room_state: strippedStateEvents,
+			} = await c.req.json<{
+				event: any;
+				room_version: string;
+				invite_room_state?: { type: string }[] | null;
+			}>();
 
 			const userToCheck = event.state_key;
 
@@ -178,7 +186,7 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			// spec: servers SHOULD return M_INVALID_PARAM if m.room.create is missing from invite_room_state
-			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
+			if (!strippedStateEvents?.some((e) => e.type === 'm.room.create')) {
 				return {
 					body: {
 						errcode: 'M_INVALID_PARAM',

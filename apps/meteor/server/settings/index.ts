@@ -14,11 +14,11 @@ export { settings };
 export const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings });
 
 settingsRegistry.add = use(settingsRegistry.add, async (context, next) => {
-	return next(...context) as any;
+	return next(...context);
 });
 
 settingsRegistry.addGroup = use(settingsRegistry.addGroup, async (context, next) => {
-	return next(...context) as any;
+	return next(...context);
 });
 
 await initializeSettings({ model: Settings, settings });

@@ -2,6 +2,7 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { ClientSafeError, Presence, StatusVisibility } from '@rocket.chat/core-services';
 import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
@@ -104,6 +105,87 @@ const getOwnStatus = ({ statusDefault, statusSource, previousState }: IUser): Us
 	return UserStatus.ONLINE;
 };
 
+const applyRandomPasswordRequest = (userData: SaveUserData): boolean => {
+	let sendPassword = false;
+
+	if (Object.hasOwn(userData, 'setRandomPassword')) {
+		if (userData.setRandomPassword) {
+			userData.password = generatePassword();
+			userData.requirePasswordChange = true;
+			sendPassword = true;
+		}
+
+		delete userData.setRandomPassword;
+	}
+
+	return sendPassword;
+};
+
+const setProfileFields = (updater: Updater<IUser>, userData: SaveUserData): void => {
+	if (typeof userData.bio !== 'undefined') {
+		handleBio(updater, userData.bio);
+	}
+
+	if (typeof userData.nickname !== 'undefined') {
+		handleNickname(updater, userData.nickname);
+	}
+
+	if (userData.roles) {
+		updater.set('roles', userData.roles);
+	}
+	if (userData.settings) {
+		updater.set('settings', { preferences: userData.settings.preferences });
+	}
+
+	if (userData.language) {
+		updater.set('language', userData.language);
+	}
+
+	if (typeof userData.requirePasswordChange !== 'undefined') {
+		updater.set('requirePasswordChange', userData.requirePasswordChange);
+		if (!userData.requirePasswordChange) {
+			updater.unset('requirePasswordChangeReason');
+		}
+	}
+};
+
+const setSipExtension = (updater: Updater<IUser>, userData: SaveUserData, oldUserData: IUser): void => {
+	if (typeof userData.sipExtension === 'string' && userData.sipExtension !== (oldUserData?.sipExtension ?? '')) {
+		if (userData.sipExtension.trim() === '') {
+			updater.unset('sipExtension');
+		} else {
+			updater.set('sipExtension', userData.sipExtension);
+		}
+	}
+};
+
+const setEmailVerification = (updater: Updater<IUser>, userData: SaveUserData, oldUserData: IUser): void => {
+	if (typeof userData.verified === 'boolean') {
+		if (oldUserData && 'emails' in oldUserData && oldUserData.emails?.some(({ address }) => address === userData.email)) {
+			const index = oldUserData.emails.findIndex(({ address }) => address === userData.email);
+			updater.set(`emails.${index}.verified`, userData.verified);
+		}
+		if (!userData.email) {
+			updater.set(`emails.0.verified`, userData.verified);
+		}
+	}
+};
+
+const setPresenceDisabledByAdmin = (updater: Updater<IUser>, userData: SaveUserData, oldUserData: IUser): boolean => {
+	const presenceChanged =
+		userData.presenceDisabledByAdmin !== undefined && userData.presenceDisabledByAdmin !== (oldUserData?.presenceDisabledByAdmin === true);
+
+	if (presenceChanged) {
+		if (userData.presenceDisabledByAdmin) {
+			updater.set('presenceDisabledByAdmin', true);
+		} else {
+			updater.unset('presenceDisabledByAdmin');
+		}
+	}
+
+	return presenceChanged;
+};
+
 const _saveUser = (session?: ClientSession) =>
 	async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
 		const performedBy = await findUserById(userId);
@@ -120,17 +202,7 @@ const _saveUser = (session?: ClientSession) =>
 			oldUser: oldUserData,
 		});
 
-		let sendPassword = false;
-
-		if (userData.hasOwnProperty('setRandomPassword')) {
-			if (userData.setRandomPassword) {
-				userData.password = generatePassword();
-				userData.requirePasswordChange = true;
-				sendPassword = true;
-			}
-
-			delete userData.setRandomPassword;
-		}
+		let sendPassword = applyRandomPasswordRequest(userData);
 
 		if (!isUpdateUserData(userData)) {
 			// TODO audit new users
@@ -150,7 +222,7 @@ const _saveUser = (session?: ClientSession) =>
 		// update user
 		const updater = Users.getUpdater();
 
-		if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
+		if (Object.hasOwn(userData, 'username') || Object.hasOwn(userData, 'name')) {
 			if (
 				!(await saveUserIdentity({
 					_id: userData._id,
@@ -188,34 +260,9 @@ const _saveUser = (session?: ClientSession) =>
 			sendPassword = false;
 		}
 
-		handleBio(updater, userData.bio);
-		handleNickname(updater, userData.nickname);
+		setProfileFields(updater, userData);
 
-		if (userData.roles) {
-			updater.set('roles', userData.roles);
-		}
-		if (userData.settings) {
-			updater.set('settings', { preferences: userData.settings.preferences });
-		}
-
-		if (userData.language) {
-			updater.set('language', userData.language);
-		}
-
-		if (typeof userData.requirePasswordChange !== 'undefined') {
-			updater.set('requirePasswordChange', userData.requirePasswordChange);
-			if (!userData.requirePasswordChange) {
-				updater.unset('requirePasswordChangeReason');
-			}
-		}
-
-		if (typeof userData.sipExtension === 'string' && userData.sipExtension !== (oldUserData?.sipExtension ?? '')) {
-			if (userData.sipExtension.trim() === '') {
-				updater.unset('sipExtension');
-			} else {
-				updater.set('sipExtension', userData.sipExtension);
-			}
-		}
+		setSipExtension(updater, userData, oldUserData);
 
 		const unset: Record<string, number> = {};
 
@@ -229,27 +276,9 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.verified === 'boolean') {
-			if (oldUserData && 'emails' in oldUserData && oldUserData.emails?.some(({ address }) => address === userData.email)) {
-				const index = oldUserData.emails.findIndex(({ address }) => address === userData.email);
-				updater.set(`emails.${index}.verified`, userData.verified);
-			}
-			if (!userData.email) {
-				updater.set(`emails.0.verified`, userData.verified);
-			}
-		}
+		setEmailVerification(updater, userData, oldUserData);
 
-		const presenceChanged =
-			userData.presenceDisabledByAdmin !== undefined &&
-			userData.presenceDisabledByAdmin !== (oldUserData?.presenceDisabledByAdmin === true);
-
-		if (presenceChanged) {
-			if (userData.presenceDisabledByAdmin) {
-				updater.set('presenceDisabledByAdmin', true);
-			} else {
-				updater.unset('presenceDisabledByAdmin');
-			}
-		}
+		const presenceChanged = setPresenceDisabledByAdmin(updater, userData, oldUserData);
 
 		const deniedByAdmin =
 			userData.statusVisibilityDeniedByAdmin !== undefined
@@ -275,7 +304,9 @@ const _saveUser = (session?: ClientSession) =>
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
 
-		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		if (updater.hasChanges()) {
+			await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		}
 
 		await onceTransactionCommitedSuccessfully(async () => {
 			if (presenceChanged || deniedByAdminChanged) {
@@ -298,8 +329,13 @@ const _saveUser = (session?: ClientSession) =>
 				if (userData.active !== undefined) {
 					updater.set('active', userData.active);
 				}
-				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
-				void options.auditStore.commitAuditEvent();
+				if (userData.username && userData.username !== oldUserData.username) {
+					updater.set('username', userData.username);
+				}
+				if (updater.hasChanges()) {
+					options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
+					void options.auditStore.commitAuditEvent();
+				}
 			}
 
 			// App IPostUserUpdated event hook

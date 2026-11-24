@@ -84,9 +84,7 @@ test.describe('E2EE Legacy Format', () => {
 
 		await page.evaluate(
 			async ({ rid, kid, encryptedKey }) => {
-				// oxlint-disable-next-line import-x/no-absolute-path
-				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
-				const room = await e2e.getInstanceByRoomId(rid);
+				const room = await window.__rocketChatE2E?.getInstanceByRoomId(rid);
 				await room?.importGroupKey(kid + encryptedKey);
 			},
 			{ rid, kid, encryptedKey },

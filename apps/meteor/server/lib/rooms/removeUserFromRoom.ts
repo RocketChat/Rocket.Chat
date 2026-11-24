@@ -38,15 +38,7 @@ export const performUserRemoval = async function (
 		if (options?.customSystemMessage) {
 			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
 		} else if (options?.byUser) {
-			const extraData = {
-				u: options.byUser,
-			};
-
-			if (room.teamMain) {
-				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username, user, extraData);
-			} else {
-				await Message.saveSystemMessage('ru', room._id, user.username, user, extraData);
-			}
+			await Message.saveSystemMessage(room.teamMain ? 'removed-user-from-team' : 'ru', room._id, user.username, options.byUser);
 		} else if (subscription.status === 'INVITED') {
 			await Message.saveSystemMessage('uir', room._id, user.username, user);
 		} else if (room.teamMain) {

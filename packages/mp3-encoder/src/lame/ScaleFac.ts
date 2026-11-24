@@ -1,5 +1,5 @@
-import { copyArray } from './arrays';
-import { PSFB12, PSFB21, SBMAX_l, SBMAX_s } from './constants';
+import { copyArray } from './arrays.js';
+import { PSFB12, PSFB21, SBMAX_l, SBMAX_s } from './constants.js';
 
 export class ScaleFac {
 	private readonly arrL: number[] | undefined;

@@ -332,6 +332,13 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		rid: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findDiscussionsWithOriginMessageByParentRoomId<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		prid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		type: IRoom['t'],
 		options?: O,
@@ -449,7 +456,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	saveRetentionOverrideGlobalById(rid: string, retentionOverrideGlobal: boolean): Promise<UpdateResult>;
 	saveEncryptedById(rid: string, encrypted: boolean): Promise<UpdateResult>;
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<UpdateResult | Document>;
-	createWithIdTypeAndName(id: string, type: IRoom['t'], name: string, extraData?: Record<string, unknown>): Promise<IRoom>;
+	createWithIdTypeAndNameIfNotExists(id: string, type: IRoom['t'], name: string, extraData?: Partial<IRoom>): Promise<UpdateResult>;
 	createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom>;
 	removeById(rid: string): Promise<DeleteResult>;
 	removeByIds(rids: string[]): Promise<DeleteResult>;

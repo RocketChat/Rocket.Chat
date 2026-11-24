@@ -6,7 +6,6 @@ import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 import { validateEmail, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
@@ -56,7 +55,7 @@ registerGuest.patch(async (originalFn, newData, options) => {
 
 	// If a visitor was updated who already had contacts, load up the contacts and update that information as well
 	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-	for await (const contact of contacts) {
+	for (const contact of contacts) {
 		await ContactMerger.mergeFieldsIntoContact({
 			fields,
 			contact,
@@ -67,7 +66,7 @@ registerGuest.patch(async (originalFn, newData, options) => {
 	return visitor;
 });
 
-Meteor.startup(async () => {
+export const startOmnichannel = async (): Promise<void> => {
 	roomCoordinator.setRoomFind('l', async (id) => maybeMigrateLivechatRoom(await LivechatRooms.findOneById(id)));
 
 	beforeLeaveRoomCallback.add(
@@ -146,4 +145,4 @@ Meteor.startup(async () => {
 			},
 		});
 	});
-});
+};

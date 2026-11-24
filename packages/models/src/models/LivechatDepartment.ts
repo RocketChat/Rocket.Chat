@@ -3,7 +3,7 @@ import type { ILivechatDepartmentModel, DocumentWithProjection, FindOptionsWithP
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription, AggregationCursor } from 'mongodb';
 
-import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../index';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {

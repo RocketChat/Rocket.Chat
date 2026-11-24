@@ -50,6 +50,8 @@ const SPOTLIGHT_SIDE_BY_SIDE_ASPECT = 1.5;
 /** The thumb sizes the sidebar draws, in pixels: a column of 16:9 thumbs, or a strip of fixed-width ones. */
 export const COLUMN_THUMB_WIDTH = 200;
 export const STRIP_THUMB_WIDTH = 140;
+/** A shared screen gets a wider slot in a strip, so it stays legible. */
+export const STRIP_SCREEN_WIDTH = 200;
 const COLUMN_THUMB_HEIGHT = COLUMN_THUMB_WIDTH * (9 / 16);
 /** The stage's padding across its width; it has none along its height. */
 const STAGE_PADDING = 16;
@@ -92,6 +94,14 @@ export const buildStageTiles = (
 export const pickFeaturedTile = (tiles: StageTile[], activeSpeakerId: string | null, selfId: string): StageTile =>
 	tiles.find((t) => t.id === activeSpeakerId) ?? tiles.find((t) => t.id !== selfId) ?? tiles[0];
 
+/** Whoever the reader pinned, else whoever {@link pickFeaturedTile} picks. */
+export const pinnedOrFeaturedTile = (
+	tiles: StageTile[],
+	pinnedId: string | null,
+	activeSpeakerId: string | null,
+	selfId: string,
+): StageTile => tiles.find((t) => t.id === pinnedId) ?? pickFeaturedTile(tiles, activeSpeakerId, selfId);
+
 /** How much a tile deserves one of the few visible slots: the speaker, then a camera, then the reader. */
 export const tilePriority = (tile: StageTile, activeSpeakerId: string | null, selfId: string): number =>
 	(tile.id === activeSpeakerId ? 1000 : 0) + (tile.cameraStream ? 100 : 0) + (tile.id === selfId ? 50 : 0);
@@ -122,7 +132,8 @@ export const splitByPriority = (
 
 /**
  * Keeps a single tile from sitting alone on the last row: when there is already an overflow tile, the visible tile
- * that least deserves its slot — the last of them, among equals — joins it so the row fills up.
+ * that least deserves its slot — the last of them, among equals — joins it so the row fills up. `leadingCells` are
+ * the cells drawn ahead of the tiles, which fill the rows too.
  */
 export const absorbLonelyTile = (
 	visible: StageTile[],
@@ -130,8 +141,9 @@ export const absorbLonelyTile = (
 	cols: number,
 	activeSpeakerId: string | null,
 	selfId: string,
+	leadingCells = 0,
 ): { visible: StageTile[]; hidden: StageTile[] } => {
-	const count = visible.length + (hidden.length > 0 ? 1 : 0);
+	const count = leadingCells + visible.length + (hidden.length > 0 ? 1 : 0);
 	if (cols > 1 && visible.length > 0 && hidden.length > 0 && count % cols === 1) {
 		const priority = (tile: StageTile) => tilePriority(tile, activeSpeakerId, selfId);
 		const absorbed = visible.reduce((lowest, tile) => (priority(tile) <= priority(lowest) ? tile : lowest));
@@ -162,11 +174,15 @@ export const gridColumnStartFor = (index: number, count: number, cols: number): 
 export const spotlightOrientation = ({ width, height }: StageSize): SpotlightOrientation =>
 	height > 0 && width / height >= SPOTLIGHT_SIDE_BY_SIDE_ASPECT ? 'side-by-side' : 'stacked';
 
-/** How many thumbs fit beside or under the large view without scrolling; unbounded until the stage is measured. */
-export const sidebarCapacity = (size: StageSize, orientation: SpotlightOrientation): number => {
+/**
+ * How many thumbs fit beside or under the large view without scrolling, after the `screens` drawn ahead of them;
+ * unbounded until the stage is measured.
+ */
+export const sidebarCapacity = (size: StageSize, orientation: SpotlightOrientation, screens = 0): number => {
 	if (size.width === 0 || size.height === 0) return Infinity;
 	if (orientation === 'side-by-side') {
-		return Math.max(1, Math.floor((size.height + TILE_GAP_PX) / (COLUMN_THUMB_HEIGHT + TILE_GAP_PX)));
+		return Math.max(1, Math.floor((size.height + TILE_GAP_PX) / (COLUMN_THUMB_HEIGHT + TILE_GAP_PX)) - screens);
 	}
-	return Math.max(1, Math.floor((size.width - STAGE_PADDING + TILE_GAP_PX) / (STRIP_THUMB_WIDTH + TILE_GAP_PX)));
+	const left = size.width - STAGE_PADDING + TILE_GAP_PX - screens * (STRIP_SCREEN_WIDTH + TILE_GAP_PX);
+	return Math.max(1, Math.floor(left / (STRIP_THUMB_WIDTH + TILE_GAP_PX)));
 };

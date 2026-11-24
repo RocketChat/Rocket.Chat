@@ -9,7 +9,7 @@ import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigura
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
-	for await (const [key, value] of filteredServices) {
+	for (const [key, value] of filteredServices) {
 		logger.debug({ oauth_updated: key });
 		let serviceName = key.replace('Accounts_OAuth_', '');
 		if (/Accounts_OAuth_Custom-/.test(key)) {

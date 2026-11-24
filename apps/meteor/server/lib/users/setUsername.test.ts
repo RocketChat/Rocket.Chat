@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -17,8 +18,8 @@ describe('setUsername', () => {
 		Subscriptions: {
 			findUserFederatedRoomIds: sinon.stub(),
 		},
-		Accounts: {
-			sendEnrollmentEmail: sinon.stub(),
+		accountEmails: {
+			sendEnrollmentEmail: sinon.stub().resolves(),
 		},
 		settings: {
 			get: sinon.stub(),
@@ -50,8 +51,7 @@ describe('setUsername', () => {
 	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('./setUsername', {
 		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 		'@rocket.chat/core-services': { api: stubs.api, ClientSafeError },
-		'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
-		'meteor/accounts-base': { Accounts: stubs.Accounts },
+		'../auth/accountEmails': stubs.accountEmails,
 		'underscore': stubs.underscore,
 		'../../settings': { settings: stubs.settings },
 		'../notifyListener': { notifyOnUserChange: stubs.notifyOnUserChange },
@@ -66,6 +66,12 @@ describe('setUsername', () => {
 		'../logger/system': { SystemLogger: stubs.SystemLogger },
 	});
 
+	before(() => {
+		mockModel('Users', stubs.Users);
+		mockModel('Invites', stubs.Invites);
+		mockModel('Subscriptions', stubs.Subscriptions);
+	});
+
 	beforeEach(() => {
 		stubs.Subscriptions.findUserFederatedRoomIds.returns({
 			hasNext: sinon.stub().resolves(false),
@@ -77,7 +83,7 @@ describe('setUsername', () => {
 		stubs.Users.findOneById.reset();
 		stubs.Users.setUsername.reset();
 		stubs.Subscriptions.findUserFederatedRoomIds.reset();
-		stubs.Accounts.sendEnrollmentEmail.reset();
+		stubs.accountEmails.sendEnrollmentEmail.resetHistory();
 		stubs.settings.get.reset();
 		stubs.api.broadcast.reset();
 		stubs.Invites.findOneById.reset();

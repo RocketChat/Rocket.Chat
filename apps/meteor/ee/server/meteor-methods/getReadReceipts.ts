@@ -2,7 +2,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IReadReceiptWithUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Messages } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { canAccessRoomIdAsync } from '../../../server/lib/authorization/canAccessRoom';
 import { canSeeMessage, historyCheckedMessageProjection } from '../../../server/lib/messages/historyVisibility';
@@ -12,7 +11,6 @@ export const getReadReceiptsFunction = async function (messageId: IMessage['_id'
 	if (!License.hasModule('message-read-receipt')) {
 		throw new ClientSafeError('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
 	}
-	check(messageId, String);
 
 	const message = await Messages.findOneById(messageId, { projection: { ...historyCheckedMessageProjection, receiptsArchived: 1 } });
 	if (!message || !(await canSeeMessage(userId, message))) {

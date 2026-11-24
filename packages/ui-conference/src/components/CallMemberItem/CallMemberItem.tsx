@@ -41,6 +41,8 @@ type CallMemberItemProps = {
 	muted?: boolean;
 	/** Asks them to mute. Absent where the call cannot carry the request. */
 	onMute?: (memberId: string) => void;
+	/** Their pins, for a call whose stage this window draws. */
+	pinControls?: ReactNode;
 	/** Their microphone level, for a call whose audio this window holds. */
 	activity?: ReactNode;
 	onRing: (memberId: string) => void;
@@ -63,6 +65,7 @@ const CallMemberItem = ({
 	activity,
 	onRing,
 	onMute,
+	pinControls,
 }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
@@ -77,6 +80,7 @@ const CallMemberItem = ({
 	const isLive = status === 'joined' && !muted;
 	const canMute = isLive && member._id !== ownUserId && !!onMute;
 	const showActivity = isLive && !!activity;
+	const showPins = status === 'joined' && !!pinControls;
 
 	return (
 		<Item role='listitem' inset='lg'>
@@ -92,7 +96,7 @@ const CallMemberItem = ({
 				</ItemRow>
 				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
 			</ItemContent>
-			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
+			{(canMute || showPins || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
 				<ItemActions>
 					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
@@ -118,6 +122,7 @@ const CallMemberItem = ({
 							onClick={() => onMute?.(member._id)}
 						/>
 					)}
+					{showPins && pinControls}
 					{showActivity && activity}
 					{canRingUsers && canRing && (
 						// The button stays until the server says the phone is ringing, which is a round trip away — so

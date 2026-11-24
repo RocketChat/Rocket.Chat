@@ -1,4 +1,4 @@
-import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_ROOM_SEARCH_PATTERN_LENGTH, MAX_SEARCH_FILTER_VALUES } from './constants';
+import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_ROOM_SEARCH_PATTERN_LENGTH, MAX_SEARCH_FILTER_VALUES } from './constants.js';
 
 export const SEARCH_FILTER_KEYS = ['in', 'from', 'before', 'after'] as const;
 
@@ -6,7 +6,7 @@ export type SearchFilterKey = (typeof SEARCH_FILTER_KEYS)[number];
 
 export type SearchFilterIcon = 'hash' | 'user' | 'calendar';
 
-export type SearchFilterMeta = { rid?: string };
+export type SearchFilterMeta = { rid?: string; label?: string };
 
 export type AppliedFilter = {
 	id: string;
@@ -35,6 +35,7 @@ export type SearchFilterSuggestion = {
 export type SearchRoomSuggestionSource = {
 	_id: string;
 	rid?: string;
+	prid?: string;
 	name?: string;
 	fname?: string;
 };
@@ -216,6 +217,8 @@ const formatFilterValue = (value: string): string => (/[\s,"]/.test(value) ? `"$
 export const serializeSearchQuery = ({ text, filters }: SearchQuery): string =>
 	[...filters.map(({ key, value }) => `${key}:${formatFilterValue(value)}`), text].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 
+export const formatAppliedFilter = ({ key, value, meta }: AppliedFilter): string => `${key}:${formatFilterValue(meta?.label ?? value)}`;
+
 const filterValues = (filters: AppliedFilter[], key: SearchFilterKey): AppliedFilter[] => filters.filter((filter) => filter.key === key);
 
 export const toAISearchParams = ({ text, filters }: SearchQuery) => {
@@ -281,7 +284,7 @@ export const buildFilterSuggestions = (
 			title: room.fname || room.name || '',
 			value: room.name || room.fname || '',
 			icon: 'hash',
-			meta: { rid: room.rid || room._id },
+			meta: { rid: room.rid || room._id, ...(room.prid && room.fname && { label: room.fname }) },
 		}));
 	}
 

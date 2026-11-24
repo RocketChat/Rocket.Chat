@@ -129,7 +129,7 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 		}
 	}
 
-	for await (const roomAccessValidator of roomAccessValidators) {
+	for (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user as IUser, extraData)) {
 			return true;
 		}

@@ -25,7 +25,7 @@ export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder
 	}
 
 	public getParentRoom(): IRoom {
-		return this.room.parentRoom!;
+		return this.room.parentRoom;
 	}
 
 	public setReply(reply: string): IDiscussionBuilder {
@@ -34,7 +34,7 @@ export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder
 	}
 
 	public getReply(): string {
-		return this.reply!;
+		return this.reply;
 	}
 
 	public setParentMessage(parentMessage: IMessage): IDiscussionBuilder {
@@ -43,6 +43,6 @@ export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder
 	}
 
 	public getParentMessage(): IMessage {
-		return this.parentMessage!;
+		return this.parentMessage;
 	}
 }

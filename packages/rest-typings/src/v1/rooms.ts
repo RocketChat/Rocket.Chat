@@ -681,6 +681,7 @@ export type RoomsCleanHistoryProps = {
 	users?: IUser['username'][];
 	limit?: number;
 	ignoreDiscussion?: boolean;
+	ignoreDiscussionOrigin?: boolean;
 	ignoreThreads?: boolean;
 };
 
@@ -715,6 +716,9 @@ const roomsCleanHistorySchema = {
 			type: 'number',
 		},
 		ignoreDiscussion: {
+			type: 'boolean',
+		},
+		ignoreDiscussionOrigin: {
 			type: 'boolean',
 		},
 		ignoreThreads: {

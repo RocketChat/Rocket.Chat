@@ -50,6 +50,193 @@ describe('Event License behaviors', () => {
 		await expect(invalidFn).toHaveBeenCalledTimes(1);
 	});
 
+	describe('onToggledFeature', () => {
+		const getTokens = async () => {
+			const withoutModule = await new MockedLicenseBuilder().sign();
+			const withModule = await new MockedLicenseBuilder().withGrantedModules(['livechat-enterprise']).sign();
+			return { withoutModule, withModule };
+		};
+
+		it('should run `up` when the feature is enabled and `down` when it is disabled', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const calls: string[] = [];
+
+			license.onToggledFeature('livechat-enterprise', {
+				up: () => {
+					calls.push('up');
+				},
+				down: () => {
+					calls.push('down');
+				},
+			});
+
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule);
+
+			expect(calls).toEqual(['up', 'down']);
+		});
+
+		it('should run the cleanup returned by `up` after `down` when the feature is disabled', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const calls: string[] = [];
+
+			license.onToggledFeature('livechat-enterprise', {
+				up: () => {
+					calls.push('up');
+					return () => {
+						calls.push('cleanup');
+					};
+				},
+				down: () => {
+					calls.push('down');
+				},
+			});
+
+			await license.setLicense(withModule);
+			expect(calls).toEqual(['up']);
+
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+
+			expect(calls).toEqual(['up', 'down', 'cleanup']);
+		});
+
+		it('should run the cleanup resolved by an async `up`, once per enable cycle', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const cleanup = jest.fn();
+			let cycle = 0;
+
+			license.onToggledFeature('livechat-enterprise', {
+				up: async () => {
+					const current = ++cycle;
+					return () => cleanup(current);
+				},
+			});
+
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule);
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+
+			expect(cleanup.mock.calls).toEqual([[1], [2]]);
+		});
+
+		it('should run `up` right away when the feature is already enabled', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const cleanup = jest.fn();
+
+			await license.setLicense(withModule);
+
+			const up = jest.fn(() => cleanup);
+			license.onToggledFeature('livechat-enterprise', { up });
+			expect(up).toHaveBeenCalledTimes(1);
+
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		});
+
+		it('should run the cleanup only after an async `down` settles', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const calls: string[] = [];
+			let finishDown: () => void = () => undefined;
+
+			license.onToggledFeature('livechat-enterprise', {
+				up: () => () => {
+					calls.push('cleanup');
+				},
+				down: () =>
+					new Promise<void>((resolve) => {
+						calls.push('down started');
+						finishDown = () => {
+							calls.push('down finished');
+							resolve();
+						};
+					}),
+			});
+
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+			expect(calls).toEqual(['down started']);
+
+			finishDown();
+			await new Promise(setImmediate);
+
+			expect(calls).toEqual(['down started', 'down finished', 'cleanup']);
+		});
+
+		it('should still run the cleanup when `down` throws', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const cleanup = jest.fn();
+			const down = jest.fn(() => {
+				throw new Error('down failed');
+			});
+
+			license.onToggledFeature('livechat-enterprise', { up: () => cleanup, down });
+
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule).catch(() => undefined);
+			await new Promise(setImmediate);
+
+			expect(down).toHaveBeenCalledTimes(1);
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		});
+
+		it('should not run a cleanup after an `up` that rejected', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const down = jest.fn();
+			const cleanup = jest.fn();
+			const up = jest
+				.fn<Promise<() => void>, []>()
+				.mockImplementationOnce(() => Promise.reject(new Error('up failed')))
+				.mockImplementationOnce(async () => cleanup);
+
+			license.onToggledFeature('livechat-enterprise', { up, down });
+
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+
+			expect(down).toHaveBeenCalledTimes(1);
+			expect(cleanup).not.toHaveBeenCalled();
+
+			// The next cycle still gets its own cleanup.
+			await license.setLicense(withModule);
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+
+			expect(down).toHaveBeenCalledTimes(2);
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		});
+
+		it('should run neither `down` nor the cleanup when the toggle is removed while enabled', async () => {
+			const license = await getReadyLicenseManager();
+			const { withoutModule, withModule } = await getTokens();
+			const cleanup = jest.fn();
+			const down = jest.fn();
+
+			const off = license.onToggledFeature('livechat-enterprise', { up: () => cleanup, down });
+
+			await license.setLicense(withModule);
+			off();
+			await license.setLicense(withoutModule);
+			await new Promise(setImmediate);
+
+			expect(down).not.toHaveBeenCalled();
+			expect(cleanup).not.toHaveBeenCalled();
+		});
+	});
+
 	it('should call `onValidateLicense` when a valid license is applied', async () => {
 		const license = await getReadyLicenseManager();
 		const fn = jest.fn();

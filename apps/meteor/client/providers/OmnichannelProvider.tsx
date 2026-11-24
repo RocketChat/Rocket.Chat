@@ -6,7 +6,8 @@ import {
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
-import { useUser, useSetting, usePermission, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
+import { useUser, useSetting, usePermission, useEndpoint, useStream, useNotificationSounds } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
@@ -15,7 +16,6 @@ import { useShallow } from 'zustand/shallow';
 import { getOmniChatSortQuery } from '../../lib/livechat/inquiries';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
@@ -73,7 +73,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
 
-	const { notificationSounds } = useCustomSound();
+	const notificationSounds = useNotificationSounds();
 
 	const {
 		data: { priorities = [] } = {},

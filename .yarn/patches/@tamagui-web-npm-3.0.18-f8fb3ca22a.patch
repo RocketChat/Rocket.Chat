@@ -1,0 +1,318 @@
+diff --git a/dist/cjs/createComponent.cjs b/dist/cjs/createComponent.cjs
+index 83989943c050330991749f27d17eb6a05a76ba7e..85982b5bbaa2e7c4d5514205271313498dfa3ad4 100644
+--- a/dist/cjs/createComponent.cjs
++++ b/dist/cjs/createComponent.cjs
+@@ -593,8 +593,8 @@ ${banner}
+ 		const propsWithAnimation = props;
+ 		const { asChild, children, themeShallow, onPress, onLongPress, onPressIn, onPressOut, onHoverIn, onHoverOut, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onFocus, onBlur, onTransition, separator, passThrough, forceStyle: _forceStyle, onClick, theme: _themeProp, ...nonTamaguiProps } = viewPropsIn || {};
+ 		let viewProps = nonTamaguiProps;
+-		if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 		if (isHOC) {
++			if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 			if (typeof _themeProp !== "undefined" && true) viewProps.theme = _themeProp;
+ 			if (typeof passThrough !== "undefined") viewProps.passThrough = passThrough;
+ 			if (typeof asChild !== "undefined") viewProps.asChild = asChild;
+@@ -637,7 +637,7 @@ ${banner}
+ 		if (import_constants.isWeb && isExiting) viewProps.className = `t_exiting ${viewProps.className || ""}`;
+ 		if (process.env.NODE_ENV === "development" && props.untilMeasured && !isContainer) console.warn(`You set untilMeasured without establishing a container. Set it on the parent with container or container="name", not on the child using a container clause.`);
+ 		if (process.env.NODE_ENV === "development" && time) time`destructure`;
+-		if (!isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = (0, import_helpers.composeEventHandlers)(nonTamaguiProps.onLayout, (e) => {
++		if (!import_constants.isWeb && !isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = (0, import_helpers.composeEventHandlers)(nonTamaguiProps.onLayout, (e) => { // On the web onLayout reached the DOM as an unknown prop; size-based $group-* media no longer apply under the runtime there
+ 			const layout = e.nativeEvent.layout;
+ 			groupContext.state.layout = layout;
+ 			stateRef.current.group?.emit({ layout });
+@@ -646,19 +646,39 @@ ${banner}
+ 		});
+ 		viewProps = import_setupHooks.hooks.usePropsTransform?.(elementType, nonTamaguiProps, stateRef, stateRef.current.willHydrate) || nonTamaguiProps;
+ 		stateRef.current.composedForwardedRef = forwardedRef;
++		// A React 19 ref callback may return a cleanup, which then runs instead of a call with null
++		const attachForwardedRef = (ref, node) => {
++			stateRef.current.attachedForwardedRef = ref;
++			const cleanup = (0, import_compose_refs.setRef)(ref, node);
++			stateRef.current.forwardedRefCleanup = typeof cleanup === "function" ? cleanup : void 0;
++		};
++		const detachForwardedRef = () => {
++			const attached = stateRef.current.attachedForwardedRef;
++			const cleanup = stateRef.current.forwardedRefCleanup;
++			stateRef.current.attachedForwardedRef = void 0;
++			stateRef.current.forwardedRefCleanup = void 0;
++			if (cleanup) cleanup();
++			else if (attached) (0, import_compose_refs.setRef)(attached, null);
++		};
+ 		if (!stateRef.current.composedRef) stateRef.current.composedRef = (0, import_compose_refs.composeRefs)((x) => {
+ 			stateRef.current.host = x;
+-			const current = stateRef.current.composedForwardedRef;
+-			stateRef.current.attachedForwardedRef = x ? current : void 0;
+-			(0, import_compose_refs.setRef)(current, x);
++			if (!x) {
++				detachForwardedRef();
++				return;
++			}
++			attachForwardedRef(stateRef.current.composedForwardedRef, x);
++			return () => {
++				stateRef.current.host = null;
++				detachForwardedRef();
++			};
+ 		}, import_setElementProps.setElementProps, animatedRef);
+ 		viewProps.ref = stateRef.current.composedRef;
+ 		(0, import_constants.useIsomorphicLayoutEffect)(() => {
+ 			const attached = stateRef.current.attachedForwardedRef;
+ 			if (attached === forwardedRef) return;
+-			if (attached) (0, import_compose_refs.setRef)(attached, null);
+-			stateRef.current.attachedForwardedRef = forwardedRef;
+-			if (stateRef.current.host) (0, import_compose_refs.setRef)(forwardedRef, stateRef.current.host);
++			if (attached) detachForwardedRef();
++			if (stateRef.current.host) attachForwardedRef(forwardedRef, stateRef.current.host);
++			else stateRef.current.attachedForwardedRef = forwardedRef;
+ 		}, [forwardedRef]);
+ 		(0, import_pointerEvents.usePointerEvents)(props, viewProps);
+ 		if (process.env.NODE_ENV === "development") {
+@@ -819,7 +839,7 @@ ${banner}
+ 			onPress: attachPress ? (e) => {
+ 				unPress();
+ 				onClick?.(e);
+-				if (onPress || onClick) e.stopPropagation();
++				// Parents such as a selectable row or a menu handle the same click, as they did on Fuselage's DOM elements
+ 				onPress?.(e);
+ 				onLongPress?.(e);
+ 			} : void 0,
+diff --git a/dist/cjs/hooks/useThemeState.cjs b/dist/cjs/hooks/useThemeState.cjs
+index 2059de4ec121fbf77cb468c3b4dbffab342ff7b9..d47d1c9536e539878c54807397222f9bc517eecf 100644
+--- a/dist/cjs/hooks/useThemeState.cjs
++++ b/dist/cjs/hooks/useThemeState.cjs
+@@ -86,9 +86,8 @@ const useThemeState = (props, isRoot = false, keys, schemeKeys, cascadeOnChange
+ 	"use no memo";
+ 	const { disable } = props;
+ 	const parentId = (0, import_react.useContext)(ThemeStateContext);
+-	if (!parentId && !isRoot) throw new Error(process.env.NODE_ENV === "development" ? `${import_constants2.MISSING_THEME_MESSAGE}
+-
+-Looked for theme${props.name ? ` "${props.name}"` : ""}, but no parent theme context was found (parentId: ${parentId}).` : import_constants2.MISSING_THEME_MESSAGE);
++	// Rocket.Chat: a frame with no ThemeProvider above acts as its own root instead of throwing
++	if (!parentId && !isRoot) isRoot = true;
+ 	if (disable) return states.get(parentId) || {
+ 		id: "",
+ 		name: "light",
+diff --git a/dist/esm/createComponent.mjs b/dist/esm/createComponent.mjs
+index db5dce2ed326125abc738ed7be58ea983e36e35d..fbfd70c4c2c978d509a443e4b5aa1356bbf06e28 100644
+--- a/dist/esm/createComponent.mjs
++++ b/dist/esm/createComponent.mjs
+@@ -555,8 +555,8 @@ ${banner}
+ 		const propsWithAnimation = props;
+ 		const { asChild, children, themeShallow, onPress, onLongPress, onPressIn, onPressOut, onHoverIn, onHoverOut, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onFocus, onBlur, onTransition, separator, passThrough, forceStyle: _forceStyle, onClick, theme: _themeProp, ...nonTamaguiProps } = viewPropsIn || {};
+ 		let viewProps = nonTamaguiProps;
+-		if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 		if (isHOC) {
++			if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 			if (typeof _themeProp !== "undefined" && true) viewProps.theme = _themeProp;
+ 			if (typeof passThrough !== "undefined") viewProps.passThrough = passThrough;
+ 			if (typeof asChild !== "undefined") viewProps.asChild = asChild;
+@@ -599,7 +599,7 @@ ${banner}
+ 		if (isWeb && isExiting) viewProps.className = `t_exiting ${viewProps.className || ""}`;
+ 		if (process.env.NODE_ENV === "development" && props.untilMeasured && !isContainer) console.warn(`You set untilMeasured without establishing a container. Set it on the parent with container or container="name", not on the child using a container clause.`);
+ 		if (process.env.NODE_ENV === "development" && time) time`destructure`;
+-		if (!isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = composeEventHandlers(nonTamaguiProps.onLayout, (e) => {
++		if (!isWeb && !isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = composeEventHandlers(nonTamaguiProps.onLayout, (e) => { // On the web onLayout reached the DOM as an unknown prop; size-based $group-* media no longer apply under the runtime there
+ 			const layout = e.nativeEvent.layout;
+ 			groupContext.state.layout = layout;
+ 			stateRef.current.group?.emit({ layout });
+@@ -608,19 +608,39 @@ ${banner}
+ 		});
+ 		viewProps = hooks.usePropsTransform?.(elementType, nonTamaguiProps, stateRef, stateRef.current.willHydrate) || nonTamaguiProps;
+ 		stateRef.current.composedForwardedRef = forwardedRef;
++		// A React 19 ref callback may return a cleanup, which then runs instead of a call with null
++		const attachForwardedRef = (ref, node) => {
++			stateRef.current.attachedForwardedRef = ref;
++			const cleanup = setRef(ref, node);
++			stateRef.current.forwardedRefCleanup = typeof cleanup === "function" ? cleanup : void 0;
++		};
++		const detachForwardedRef = () => {
++			const attached = stateRef.current.attachedForwardedRef;
++			const cleanup = stateRef.current.forwardedRefCleanup;
++			stateRef.current.attachedForwardedRef = void 0;
++			stateRef.current.forwardedRefCleanup = void 0;
++			if (cleanup) cleanup();
++			else if (attached) setRef(attached, null);
++		};
+ 		if (!stateRef.current.composedRef) stateRef.current.composedRef = composeRefs((x) => {
+ 			stateRef.current.host = x;
+-			const current = stateRef.current.composedForwardedRef;
+-			stateRef.current.attachedForwardedRef = x ? current : void 0;
+-			setRef(current, x);
++			if (!x) {
++				detachForwardedRef();
++				return;
++			}
++			attachForwardedRef(stateRef.current.composedForwardedRef, x);
++			return () => {
++				stateRef.current.host = null;
++				detachForwardedRef();
++			};
+ 		}, setElementProps, animatedRef);
+ 		viewProps.ref = stateRef.current.composedRef;
+ 		useIsomorphicLayoutEffect(() => {
+ 			const attached = stateRef.current.attachedForwardedRef;
+ 			if (attached === forwardedRef) return;
+-			if (attached) setRef(attached, null);
+-			stateRef.current.attachedForwardedRef = forwardedRef;
+-			if (stateRef.current.host) setRef(forwardedRef, stateRef.current.host);
++			if (attached) detachForwardedRef();
++			if (stateRef.current.host) attachForwardedRef(forwardedRef, stateRef.current.host);
++			else stateRef.current.attachedForwardedRef = forwardedRef;
+ 		}, [forwardedRef]);
+ 		usePointerEvents(props, viewProps);
+ 		if (process.env.NODE_ENV === "development") {
+@@ -781,7 +801,7 @@ ${banner}
+ 			onPress: attachPress ? (e) => {
+ 				unPress();
+ 				onClick?.(e);
+-				if (onPress || onClick) e.stopPropagation();
++				// Parents such as a selectable row or a menu handle the same click, as they did on Fuselage's DOM elements
+ 				onPress?.(e);
+ 				onLongPress?.(e);
+ 			} : void 0,
+diff --git a/dist/esm/hooks/useThemeState.mjs b/dist/esm/hooks/useThemeState.mjs
+index a9f1ee343940f8677a9967d514e8db8e7abbe937..93d9dfefa8aef2bb2e95bf8d2e607b43305be24e 100644
+--- a/dist/esm/hooks/useThemeState.mjs
++++ b/dist/esm/hooks/useThemeState.mjs
+@@ -50,9 +50,8 @@ const useThemeState = (props, isRoot = false, keys, schemeKeys, cascadeOnChange
+ 	"use no memo";
+ 	const { disable } = props;
+ 	const parentId = useContext(ThemeStateContext);
+-	if (!parentId && !isRoot) throw new Error(process.env.NODE_ENV === "development" ? `${MISSING_THEME_MESSAGE}
+-
+-Looked for theme${props.name ? ` "${props.name}"` : ""}, but no parent theme context was found (parentId: ${parentId}).` : MISSING_THEME_MESSAGE);
++	// Rocket.Chat: a frame with no ThemeProvider above acts as its own root instead of throwing
++	if (!parentId && !isRoot) isRoot = true;
+ 	if (disable) return states.get(parentId) || {
+ 		id: "",
+ 		name: "light",
+diff --git a/dist/cjs/createVariable.cjs b/dist/cjs/createVariable.cjs
+index f3e0359fe6308985082e8035b45e6958b2fd9375..a0d4d513c66e8bee6d22a9030f4270b8b46c5e76 100644
+--- a/dist/cjs/createVariable.cjs
++++ b/dist/cjs/createVariable.cjs
+@@ -50,7 +50,7 @@ const createVariable = (props, skipHash = false) => {
+ 	const variable = {
+ 		isVar: true,
+ 		key,
+-		name: skipHash ? name : (0, import_helpers.simpleHash)(name, 40),
++		name: skipHash ? name : (0, import_helpers.simpleHash)(name, 1e3),
+ 		val: finalVal,
+ 		variable: import_constants.isWeb ? skipHash ? constructCSSVariableName(name) : createCSSVariable(name) : ""
+ 	};
+@@ -100,13 +100,14 @@ function getVariableValue(v, group) {
+ 	}
+ 	return v;
+ }
++// Rocket.Chat: a variable keeps its full name. The limits here shortened a declared name at 41 characters and a read one at 61, so a rule could declare a name no class reads
+ const createCSSVariable = (nameProp, includeVar = true) => {
+ 	if (process.env.NODE_ENV === "development") {
+ 		if (!nameProp || typeof nameProp !== "string") {
+ 			throw new Error(`createCSSVariable expected string, got: ${nameProp}`);
+ 		}
+ 	}
+-	const name = (0, import_helpers.simpleHash)(nameProp, 60);
++	const name = (0, import_helpers.simpleHash)(nameProp, 1e3);
+ 	return includeVar ? constructCSSVariableName(name) : name;
+ };
+ function px(value) {
+diff --git a/dist/cjs/helpers/getThemeCSSRules.cjs b/dist/cjs/helpers/getThemeCSSRules.cjs
+index 1728c508913b586225a5798e6c2d7967d9edafd0..8595eced5e86ff0392383ae1b378b7a390f67062 100644
+--- a/dist/cjs/helpers/getThemeCSSRules.cjs
++++ b/dist/cjs/helpers/getThemeCSSRules.cjs
+@@ -44,7 +44,7 @@ function getThemeCSSRules(props) {
+ 		for (const themeKey in theme) {
+ 			const variable = theme[themeKey];
+ 			const value = variableCreator(variable.needsPx ? `${variable.val}px` : variable.val).variable;
+-			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${(0, import_helpers.simpleHash)(themeKey, 40)}:${value};`;
++			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${(0, import_helpers.simpleHash)(themeKey, 1e3)}:${value};`; // Rocket.Chat: full names, see createCSSVariable
+ 		}
+ 		const isDarkBase = themeName === "dark";
+ 		const isLightBase = themeName === "light";
+diff --git a/dist/cjs/helpers/variables.cjs b/dist/cjs/helpers/variables.cjs
+index dcb1d6c7ed4902e6c98d08afb12481901756bd5c..96c74efe3df55d2590098f2b2db9750014ce44e6 100644
+--- a/dist/cjs/helpers/variables.cjs
++++ b/dist/cjs/helpers/variables.cjs
+@@ -59,7 +59,8 @@ const getThemeKeySet = (conf) => {
+ 	return set;
+ };
+ const cssVariablePrefix = process.env.TAMAGUI_CSS_VARIABLE_PREFIX || "";
+-const themeKeyVar = (key) => `var(--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 40)})`;
++// Rocket.Chat: full names, see createCSSVariable
++const themeKeyVar = (key) => `var(--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 1e3)})`;
+ function resolveVariableValueToCSS(key, value, conf) {
+ 	if (typeof value === "number") {
+ 		return (0, import_variableValue.isUnitlessVariableKey)(key) ? `${value}` : `${value}px`;
+@@ -100,7 +101,7 @@ const resolveDeclarations = (valuesIn, conf, skip) => {
+ 	}
+ 	return out;
+ };
+-const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 40)}:${value};`).join("");
++const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 1e3)}:${value};`).join("");
+ const schemePrefix = /^(light|dark)_/;
+ const getThemedBucketNames = (themes) => {
+ 	if (!themes) return [];
+diff --git a/dist/esm/createVariable.mjs b/dist/esm/createVariable.mjs
+index 88690f3a879da60ed00f0a05a951008f9edc9147..98338c5c20b214f302f9cfc9ebc6c9996e162d3a 100644
+--- a/dist/esm/createVariable.mjs
++++ b/dist/esm/createVariable.mjs
+@@ -18,7 +18,7 @@ const createVariable = (props, skipHash = false) => {
+ 	const variable = {
+ 		isVar: true,
+ 		key,
+-		name: skipHash ? name : simpleHash(name, 40),
++		name: skipHash ? name : simpleHash(name, 1e3),
+ 		val: finalVal,
+ 		variable: isWeb ? skipHash ? constructCSSVariableName(name) : createCSSVariable(name) : ""
+ 	};
+@@ -68,13 +68,14 @@ function getVariableValue(v, group) {
+ 	}
+ 	return v;
+ }
++// Rocket.Chat: a variable keeps its full name. The limits here shortened a declared name at 41 characters and a read one at 61, so a rule could declare a name no class reads
+ const createCSSVariable = (nameProp, includeVar = true) => {
+ 	if (process.env.NODE_ENV === "development") {
+ 		if (!nameProp || typeof nameProp !== "string") {
+ 			throw new Error(`createCSSVariable expected string, got: ${nameProp}`);
+ 		}
+ 	}
+-	const name = simpleHash(nameProp, 60);
++	const name = simpleHash(nameProp, 1e3);
+ 	return includeVar ? constructCSSVariableName(name) : name;
+ };
+ function px(value) {
+diff --git a/dist/esm/helpers/getThemeCSSRules.mjs b/dist/esm/helpers/getThemeCSSRules.mjs
+index 29ca006d5a0890fa6fc8b49ed23bf1044f777f88..292d81acc8b9857e4dce91054d831496d3fb74a7 100644
+--- a/dist/esm/helpers/getThemeCSSRules.mjs
++++ b/dist/esm/helpers/getThemeCSSRules.mjs
+@@ -22,7 +22,7 @@ function getThemeCSSRules(props) {
+ 		for (const themeKey in theme) {
+ 			const variable = theme[themeKey];
+ 			const value = variableCreator(variable.needsPx ? `${variable.val}px` : variable.val).variable;
+-			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${simpleHash(themeKey, 40)}:${value};`;
++			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${simpleHash(themeKey, 1e3)}:${value};`; // Rocket.Chat: full names, see createCSSVariable
+ 		}
+ 		const isDarkBase = themeName === "dark";
+ 		const isLightBase = themeName === "light";
+diff --git a/dist/esm/helpers/variables.mjs b/dist/esm/helpers/variables.mjs
+index 0751ea89c9a8857e553e31a1a32501ebef97cc75..52b4d3b0645b061bd1e880b5ebbdee3cf0d61a0d 100644
+--- a/dist/esm/helpers/variables.mjs
++++ b/dist/esm/helpers/variables.mjs
+@@ -30,7 +30,8 @@ const getThemeKeySet = (conf) => {
+ 	return set;
+ };
+ const cssVariablePrefix = process.env.TAMAGUI_CSS_VARIABLE_PREFIX || "";
+-const themeKeyVar = (key) => `var(--${cssVariablePrefix}${simpleHash(key, 40)})`;
++// Rocket.Chat: full names, see createCSSVariable
++const themeKeyVar = (key) => `var(--${cssVariablePrefix}${simpleHash(key, 1e3)})`;
+ function resolveVariableValueToCSS(key, value, conf) {
+ 	if (typeof value === "number") {
+ 		return isUnitlessVariableKey(key) ? `${value}` : `${value}px`;
+@@ -71,7 +72,7 @@ const resolveDeclarations = (valuesIn, conf, skip) => {
+ 	}
+ 	return out;
+ };
+-const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${simpleHash(key, 40)}:${value};`).join("");
++const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${simpleHash(key, 1e3)}:${value};`).join("");
+ const schemePrefix = /^(light|dark)_/;
+ const getThemedBucketNames = (themes) => {
+ 	if (!themes) return [];

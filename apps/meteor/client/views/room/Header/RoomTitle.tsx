@@ -25,7 +25,11 @@ const RoomTitle = ({ room }: RoomTitleProps) => {
 				break;
 
 			case 'd':
-				(room.uids?.length ?? 0) > 2 ? openTab('user-info-group') : openTab('user-info');
+				if ((room.uids?.length ?? 0) > 2) {
+					openTab('user-info-group');
+				} else {
+					openTab('user-info');
+				}
 				break;
 
 			default:

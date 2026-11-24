@@ -8,7 +8,7 @@ import { AssertionError, expect } from 'chai';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
@@ -649,7 +649,7 @@ describe('miscellaneous', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should fail if not logged in', async () => {
@@ -776,7 +776,7 @@ describe('miscellaneous', () => {
 
 			expect(res.status).to.equal(403);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return 403 when a user without the manage-cloud permission tries to deregister the workspace as a new workspace', async () => {
@@ -784,7 +784,7 @@ describe('miscellaneous', () => {
 
 			expect(res.status).to.equal(403);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return 200 when a user with the manage-cloud permission acknowledges a deployment configuration change', async () => {
@@ -792,6 +792,32 @@ describe('miscellaneous', () => {
 
 			expect(res.status).to.equal(200);
 			expect(res.body).to.have.property('success', true);
+		});
+	});
+
+	describe('/smtp.check', () => {
+		let previousHost: unknown;
+
+		before(async () => {
+			previousHost = await getSettingValueById('SMTP_Host');
+		});
+
+		after(() => updateSetting('SMTP_Host', previousHost as string));
+
+		it('should report SMTP as configured once a host is set', async () => {
+			await updateSetting('SMTP_Host', 'smtp.example.com');
+
+			const res = await request.get(api('smtp.check')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('isSMTPConfigured', true);
+		});
+
+		it('should report SMTP as not configured without a host', async () => {
+			await updateSetting('SMTP_Host', '');
+
+			const res = await request.get(api('smtp.check')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('isSMTPConfigured', false);
 		});
 	});
 });

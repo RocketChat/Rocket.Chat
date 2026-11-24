@@ -1,14 +1,15 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useRouter, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import TagEdit from './TagEdit';
 import TagEditWithData from './TagEditWithData';
 import TagsTable from './TagsTable';
 
 const TagsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');

@@ -1,9 +1,9 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react';
 
 import { useOutboundMessageAccess } from './useOutboundMessageAccess';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useOmnichannelEnabled } from '../../../hooks/useOmnichannelEnabled';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
@@ -14,7 +14,8 @@ jest.mock('../../../hooks/useOmnichannelEnabled', () => ({
 	useOmnichannelEnabled: jest.fn(),
 }));
 
-jest.mock('../../../../../hooks/useHasLicenseModule', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useHasLicenseModule: jest.fn(),
 }));
 

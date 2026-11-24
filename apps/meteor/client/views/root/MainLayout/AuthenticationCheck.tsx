@@ -1,5 +1,5 @@
-import { useConnectionStatus, useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
-import RegistrationRoute from '@rocket.chat/web-ui-registration';
+import { useConnectionStatus, useSearchParameter, useSession, useSessionDispatch, useUser, useSetting } from '@rocket.chat/ui-contexts';
+import RegistrationRoute from '@rocket.chat/ui-registration';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -37,7 +37,15 @@ const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): b
 const AuthenticationCheck = ({ children, guest, loadingElement }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
-	const forceLogin = useSession('forceLogin');
+	const oauthError = useSearchParameter('oauthError');
+	const setForceLogin = useSessionDispatch('forceLogin');
+	const forceLogin = useSession('forceLogin') || !!oauthError;
+
+	useEffect(() => {
+		if (oauthError) {
+			setForceLogin(true);
+		}
+	}, [oauthError, setForceLogin]);
 
 	const { status } = useConnectionStatus();
 

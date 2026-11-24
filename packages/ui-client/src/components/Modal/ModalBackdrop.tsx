@@ -82,7 +82,7 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
 	const ref = useOutsideClick(onDismiss);
 
 	return (
-		<Box ref={ref} className='rcx-modal__backdrop' position='fixed' zIndex={9999} inset={0} display='flex' flexDirection='column'>
+		<Box ref={ref} position='fixed' zIndex={9999} inset={0} display='flex' flexDirection='column' backgroundColor='surface-overlay'>
 			{children}
 		</Box>
 	);

@@ -2,6 +2,6 @@
 // When using crypto.getRandomValues(), our primitive is hexString(),
 // from which we construct fraction().
 
-import { NodeRandomGenerator } from './NodeRandomGenerator';
+import { NodeRandomGenerator } from './NodeRandomGenerator.js';
 
 export const Random = new NodeRandomGenerator();

@@ -1,7 +1,6 @@
 import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { beforeAddUserToRoom } from '../../hooks/rooms/beforeAddUserToRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -13,9 +12,6 @@ import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscr
 import { settings } from '../../settings';
 
 export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], activeUsersOnly = false): Promise<true> => {
-	check(rid, String);
-	check(activeUsersOnly, Boolean);
-
 	if (!(await hasPermissionAsync(userId, 'add-all-to-room'))) {
 		throw new ClientSafeError(403, 'Access to Method Forbidden', {
 			method: 'addAllToRoom',
@@ -49,7 +45,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	);
 
 	const now = new Date();
-	for await (const user of users) {
+	for (const user of users) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 		if (subscription != null) {
 			continue;

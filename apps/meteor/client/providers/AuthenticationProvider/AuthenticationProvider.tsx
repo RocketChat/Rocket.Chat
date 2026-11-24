@@ -16,6 +16,7 @@ import {
 	setConnectionUserId,
 	subscribeLoggingIn,
 } from '../../meteor/accounts';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -47,6 +48,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					}
 					method(user, password, (error?: unknown) => {
 						if (error) {
+							// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 							reject(error);
 							return;
 						}
@@ -68,11 +70,12 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 
 				return () =>
 					new Promise((resolve, reject) => {
-						method(clientConfig, (error: any): void => {
+						method(clientConfig, (error?: unknown): void => {
 							if (!error) {
 								resolve(true);
 								return;
 							}
+							// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 							reject(error);
 						});
 					});
@@ -89,6 +92,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					callback?.(error);
 					throw error;
 				}),
+			loginWithSamlToken,
 			getLoginToken: () => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN),
 			wipeLocalAuth: () => {
 				removeStoredItem(STORAGE_KEYS.USER_ID);

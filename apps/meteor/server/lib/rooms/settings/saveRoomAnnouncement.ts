@@ -1,7 +1,6 @@
-import { Message, ClientSafeError } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
 import type { UpdateResult } from 'mongodb';
 
 export const saveRoomAnnouncement = async function (
@@ -10,12 +9,6 @@ export const saveRoomAnnouncement = async function (
 	user: IUser,
 	sendMessage = true,
 ): Promise<UpdateResult> {
-	if (!Match.test(rid, String)) {
-		throw new ClientSafeError('invalid-room', 'Invalid room', {
-			function: 'RocketChat.saveRoomAnnouncement',
-		});
-	}
-
 	let message;
 	let announcementDetails;
 	if (typeof roomAnnouncement === 'string') {

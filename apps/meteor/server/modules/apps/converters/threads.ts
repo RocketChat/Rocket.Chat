@@ -117,7 +117,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
-					user = await convertToApp(message.u as unknown as IUser);
+					user = convertToApp(message.u as unknown as IUser);
 				}
 
 				return user;
@@ -201,8 +201,6 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			},
 		} as const;
 
-		return Promise.all(
-			attachments.map(async (attachment) => mappedDecodeAsync(attachment, map as unknown as AsyncFieldMap)),
-		) as unknown as Promise<NonNullable<IAppsMessage['attachments']>>;
+		return Promise.all(attachments.map(async (attachment) => mappedDecodeAsync(attachment, map as unknown as AsyncFieldMap)));
 	}
 }

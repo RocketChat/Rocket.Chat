@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -20,7 +21,6 @@ const getFixedT = sandbox.stub();
 
 const { resetUserE2EEncriptionKey } = proxyquire.noCallThru().load('./resetUserE2EKey', {
 	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
-	'@rocket.chat/models': { Users, Subscriptions, Rooms },
 	'./i18n': { i18n: { getFixedT } },
 	'./isUserIdFederated': { isUserIdFederated },
 	'./notifications/email/api': { send: sendEmail },
@@ -46,6 +46,12 @@ const expectNoKeyOrSessionCleanup = () => {
 };
 
 describe('resetUserE2EEncriptionKey', () => {
+	before(() => {
+		mockModel('Users', Users);
+		mockModel('Subscriptions', Subscriptions);
+		mockModel('Rooms', Rooms);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 

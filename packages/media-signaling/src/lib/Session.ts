@@ -1,7 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { ClientMediaCall } from './Call';
-import { MediaSignalTransportWrapper } from './TransportWrapper';
+import { ClientMediaCall } from './Call.js';
+import { MediaSignalTransportWrapper } from './TransportWrapper.js';
+import type { IClientMediaCall, CallActorType, CallContact, CallFeature, AnyMediaCallData } from '../definition/call/index.js';
 import type {
 	ClientMediaSignal,
 	IServiceProcessorFactoryList,
@@ -12,11 +13,10 @@ import type {
 	ServerMediaSessionSignal,
 	ServerMediaSignal,
 	ServerMediaSignalRegistered,
-} from '../definition';
-import type { IClientMediaCall, CallActorType, CallContact, CallFeature, AnyMediaCallData } from '../definition/call';
-import type { IMediaSignalLogger } from '../definition/logger';
-import { SessionRegistration } from './components/SessionRegistration';
-import { isSameDeviceId } from './utils/isSameDeviceId';
+} from '../definition/index.js';
+import type { IMediaSignalLogger } from '../definition/logger.js';
+import { SessionRegistration } from './components/SessionRegistration.js';
+import { isSameDeviceId } from './utils/isSameDeviceId.js';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;

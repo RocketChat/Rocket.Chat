@@ -801,7 +801,7 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
-		const subscriptions = await Subscriptions.findByRoomId(room._id, {
+		const subscriptions = Subscriptions.findByRoomId(room._id, {
 			projection: { 'u._id': 1 },
 		});
 
@@ -1080,37 +1080,27 @@ API.v1.post(
 	async function action() {
 		const { userId, bodyParams } = this;
 
-		try {
-			// create.validate throws a plain Error('unauthorized') on permission failure; the global
-			// wrapper would surface its message verbatim, so map it to forbidden() here to keep the
-			// stable `error: 'unauthorized'` (403) contract the clients/tests rely on.
-			await API.channels?.create.validate({
-				user: {
-					value: userId,
-				},
-				name: {
-					value: bodyParams.name,
-					key: 'name',
-				},
-				members: {
-					value: bodyParams.members,
-					key: 'members',
-				},
-				teams: {
-					value: bodyParams.teams,
-					key: 'teams',
-				},
-				teamId: {
-					value: bodyParams.extraData?.teamId,
-					key: 'teamId',
-				},
-			});
-		} catch (e: any) {
-			if (e.message === 'unauthorized') {
-				return API.v1.forbidden();
-			}
-			return API.v1.failure(e.message);
-		}
+		await API.channels?.create.validate({
+			user: {
+				value: userId,
+			},
+			name: {
+				value: bodyParams.name,
+				key: 'name',
+			},
+			members: {
+				value: bodyParams.members,
+				key: 'members',
+			},
+			teams: {
+				value: bodyParams.teams,
+				key: 'teams',
+			},
+			teamId: {
+				value: bodyParams.extraData?.teamId,
+				key: 'teamId',
+			},
+		});
 
 		if (bodyParams.teams) {
 			const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');
@@ -1198,7 +1188,7 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(
+		const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(
 			filter,
 			{
 				sort: sort || { name: 1 },
@@ -1315,7 +1305,7 @@ API.v1.get(
 
 		ourQuery = Object.assign({}, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
 
-		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
@@ -2125,7 +2115,7 @@ API.v1.get(
 			}
 		}
 
-		const { cursor, totalCount } = await Messages.findPaginated(await restrictToVisibleHistory(this.userId, findResult._id, ourQuery), {
+		const { cursor, totalCount } = Messages.findPaginated(await restrictToVisibleHistory(this.userId, findResult._id, ourQuery), {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,

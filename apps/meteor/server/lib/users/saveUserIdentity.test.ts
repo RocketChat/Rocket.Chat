@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -20,29 +21,6 @@ const stubs = {
 };
 
 const { saveUserIdentity } = proxyquire.noCallThru().load('./saveUserIdentity', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: stubs.findOneUserById,
-		},
-		Messages: {
-			updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
-			updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
-			updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
-		},
-		Subscriptions: {
-			updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
-		},
-		VideoConference: {
-			updateUserReferences: stubs.updateUserReferences,
-		},
-		CallHistory: {
-			updateUserReferences: stubs.updateHistoryReferences,
-		},
-	},
-	'meteor/meteor': {
-		'Meteor': sinon.stub(),
-		'@global': true,
-	},
 	'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 	'../media/file-upload': {
 		FileUpload: stubs.FileUpload,
@@ -63,6 +41,20 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('./saveUserIdentity', 
 });
 
 describe('Users - saveUserIdentity', () => {
+	before(() => {
+		mockModel('Users', { findOneById: stubs.findOneUserById });
+		mockModel('Messages', {
+			updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
+			updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
+			updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
+		});
+		mockModel('Subscriptions', {
+			updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
+		});
+		mockModel('VideoConference', { updateUserReferences: stubs.updateUserReferences });
+		mockModel('CallHistory', { updateUserReferences: stubs.updateHistoryReferences });
+	});
+
 	beforeEach(() => {
 		// Reset stubs before each test
 		Object.values(stubs).forEach((stub) => stub.reset());

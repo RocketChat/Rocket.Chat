@@ -16,6 +16,7 @@ Sidebar room lists, the side panel, contextual bar lists (members, files, thread
 - Up and Down move between rows. In a virtualized list, the row outside the render window is scrolled in first.
 - Tab and Shift+Tab walk the controls of the focused row only: its focus target first, then every other tabbable control in reading order, such as the buttons of `ItemActions`, a menu trigger or the links and toolbar of a message. Tab past the last control, or Shift+Tab from the focus target, leaves the list; Tab never enters the next row.
 - A `role=toolbar` in a row, such as a message toolbar or its reactions, is a single stop, as the [toolbar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) asks: Tab enters it on the button used last there, or its first one, and the next Tab leaves it. Inside it, Left and Right are the toolbar's own keys and move between its buttons.
+- On a video or audio player, Tab and Shift+Tab are left to the browser, so they walk the player's native controls, which live in a shadow tree the row's stops cannot reach. Once the browser moves the focus out of the player's row, the list brings it back to the row's next or previous stop, or leaves the list, as it would from the player itself.
 - Outside a toolbar, Left and Right are left to the focused control, such as a video seeking or a code block scrolling. They never move the focus between the controls of a row: Tab already walks them, a `role=list` does not tell anyone the arrows do it, and screen readers in browse mode keep these keys for reading.
 - Escape on a control returns to its row. Escape on the row itself is left to the surroundings, such as closing a contextual bar.
 - Coming back to the list by keyboard returns to the row focused last.
@@ -66,6 +67,6 @@ A list without a story gets one first: the story is the fixture the test renders
 
 ## Combobox
 
-The composer popup (`useComposerBoxPopup`) and the navbar search (`useSearchActiveOption`) keep the focus in the text field, both on top of `useActiveDescendant` from `@rocket.chat/fuselage-hooks`. The arrows move a highlighted option, written to the field's `aria-activedescendant`, and Enter picks it. Options carry an `id` and never receive focus.
+The composer popup (`useComposerBoxPopup`) and the navbar search (`useSearchActiveOption`) keep the focus in the text field, both on top of `useActiveDescendant` from `@rocket.chat/fuselage-hooks`. The arrows move a highlighted option, written to the field's `aria-activedescendant`, and Enter picks it. Options carry an `id` and never receive focus. When an option is a link, Enter clicks it with the Cmd and Ctrl keys that the user holds. Cmd+Enter or Ctrl+Enter then opens the link in a new tab, as a Cmd+click or Ctrl+click does. The click does not carry Shift or Alt.
 
 Fuselage's `Select` is the same model without a text field, the [select-only combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/): the focus stays on its button, and typing jumps to the option whose label starts with what was typed. Its button is a labelable element, so a `label` pointing at its `id` names it, as it names any other input.

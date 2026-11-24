@@ -34,10 +34,11 @@ export const usePerformActionMutation = (
 					await chat.composer?.replyWith(msg);
 					return;
 
-				case 'respondWithQuotedMessage':
+				case 'respondWithQuotedMessage': {
 					if (!mid) return;
 					const message = await chat.data.getMessageByID(mid);
 					await chat.composer?.quoteMessage(message);
+				}
 			}
 		},
 
