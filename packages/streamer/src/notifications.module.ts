@@ -11,7 +11,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
+import { LivechatRooms, Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import { emit, StreamPresence } from './StreamPresence';
 import { getCachedUserForPublication } from './publication-user-cache';
@@ -209,11 +209,7 @@ export class NotificationsModule {
 
 			// typing from livechat widget
 			if (extraData?.token) {
-				// TODO improve this to make a query 'v.token'
-				const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(rid, {
-					projection: { 't': 1, 'v.token': 1 },
-				});
-				return !!room && room.t === 'l' && room.v.token === extraData.token;
+				return room.t === 'l' && room.v.token === extraData.token;
 			}
 
 			const user = await getCachedUserForPublication(this);
@@ -239,11 +235,11 @@ export class NotificationsModule {
 			try {
 				// typing from livechat widget
 				if (extraData?.token) {
-					// TODO improve this to make a query 'v.token'
-					const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(rid, {
-						projection: { 't': 1, 'v.token': 1 },
-					});
-					return !!room && room.t === 'l' && room.v.token === extraData.token;
+					if (typeof extraData.token !== 'string') {
+						return false;
+					}
+					const room = await LivechatRooms.findOneByIdAndVisitorToken(rid, extraData.token, { _id: 1 });
+					return !!room;
 				}
 
 				if (!userId) {

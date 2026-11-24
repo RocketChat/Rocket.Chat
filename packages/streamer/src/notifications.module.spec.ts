@@ -43,12 +43,21 @@ const usersModel = {
 	findOneById: jest.fn(),
 };
 
+const roomsModel = {
+	findOneById: jest.fn(),
+};
+const livechatRoomsModel = {
+	findOneByIdAndVisitorToken: jest.fn(),
+};
+
 const { countByRoomIdAndUserId, findByRoomIdAndNotUserId } = subscriptionsModel;
 
 describe('NotificationsModule', () => {
 	beforeAll(() => {
 		mockModel('Subscriptions', subscriptionsModel);
 		mockModel('Users', usersModel);
+		mockModel('Rooms', roomsModel);
+		mockModel('LivechatRooms', livechatRoomsModel);
 	});
 
 	let notifications: NotificationsModule;
@@ -243,6 +252,70 @@ describe('NotificationsModule', () => {
 			});
 
 			expect(emitToOne).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('Livechat visitor access to notify-room', () => {
+		const visitorScope = { userId: null, connection: {} } as any;
+		const streamRoom = () => notifications.streamRoom as unknown as Streamer<'notify-room'>;
+
+		beforeEach(() => {
+			roomsModel.findOneById.mockReset();
+			livechatRoomsModel.findOneByIdAndVisitorToken.mockReset();
+		});
+
+		describe('allowRead', () => {
+			const canRead = (extraData: unknown) => streamRoom().isReadAllowed(visitorScope, 'room1/user-activity', [extraData]);
+
+			it('lets the visitor holding the room token read it with a single room lookup', async () => {
+				roomsModel.findOneById.mockResolvedValue({ _id: 'room1', t: 'l', v: { token: 'visitor-token' } });
+
+				await expect(canRead({ token: 'visitor-token' })).resolves.toBe(true);
+				expect(roomsModel.findOneById).toHaveBeenCalledTimes(1);
+				expect(livechatRoomsModel.findOneByIdAndVisitorToken).not.toHaveBeenCalled();
+			});
+
+			it('denies a token that belongs to another visitor', async () => {
+				roomsModel.findOneById.mockResolvedValue({ _id: 'room1', t: 'l', v: { token: 'visitor-token' } });
+
+				await expect(canRead({ token: 'other-token' })).resolves.toBe(false);
+			});
+
+			it('denies a visitor token on a room that is not a Livechat room', async () => {
+				roomsModel.findOneById.mockResolvedValue({ _id: 'room1', t: 'c', v: { token: 'visitor-token' } });
+
+				await expect(canRead({ token: 'visitor-token' })).resolves.toBe(false);
+			});
+
+			it('denies a room that does not exist', async () => {
+				roomsModel.findOneById.mockResolvedValue(null);
+
+				await expect(canRead({ token: 'visitor-token' })).resolves.toBe(false);
+			});
+		});
+
+		describe('user-activity allowWrite', () => {
+			const canWrite = (extraData: unknown) =>
+				streamRoom().isWriteAllowed(visitorScope, 'room1/user-activity', ['Visitor', ['user-typing'], extraData]);
+
+			it('accepts activity from the visitor whose token owns the Livechat room', async () => {
+				livechatRoomsModel.findOneByIdAndVisitorToken.mockResolvedValue({ _id: 'room1' });
+
+				await expect(canWrite({ token: 'visitor-token' })).resolves.toBe(true);
+				expect(livechatRoomsModel.findOneByIdAndVisitorToken).toHaveBeenCalledWith('room1', 'visitor-token', { _id: 1 });
+				expect(roomsModel.findOneById).not.toHaveBeenCalled();
+			});
+
+			it('rejects activity when no Livechat room matches the room and token', async () => {
+				livechatRoomsModel.findOneByIdAndVisitorToken.mockResolvedValue(null);
+
+				await expect(canWrite({ token: 'other-token' })).resolves.toBe(false);
+			});
+
+			it('rejects a token that is not a string without querying', async () => {
+				await expect(canWrite({ token: { $ne: null } })).resolves.toBe(false);
+				expect(livechatRoomsModel.findOneByIdAndVisitorToken).not.toHaveBeenCalled();
+			});
 		});
 	});
 });
