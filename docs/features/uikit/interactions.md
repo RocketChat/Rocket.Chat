@@ -121,6 +121,7 @@ Differences from the web client:
 
 - The server does not record the views apps open for a visitor, so `viewSubmit` and `viewClosed` carry the view as the widget holds it.
 - `viewSubmit` and `viewClosed` do not carry `rid`; `room` is empty in the app handlers.
+- When the app updates the modal, an input the visitor hasn't changed takes its new initial value, and a changed value is kept only while both its `blockId` and its `actionId` stay.
 - Apps cannot push views to a visitor outside an interaction response. `UIController` needs a user, and no `uiInteraction` stream exists for visitors.
 
 ## Validation
