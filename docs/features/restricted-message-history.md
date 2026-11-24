@@ -71,7 +71,7 @@ them.
 ## UI
 
 - **Administration → Settings → Message → Restricted message history** turns the feature on; it carries
-  the Enterprise badge and stays off without the license.
+  the Enterprise badge and an alert saying the feature is experimental, and stays off without the license.
 - **Edit Room → Advanced settings** shows "Hide earlier messages from new members" while the feature is
   on, for the room types above.
 - **Members list.** People who can manage it get "Hide earlier messages" / "Show earlier messages" in a
