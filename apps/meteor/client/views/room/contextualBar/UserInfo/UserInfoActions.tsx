@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMemberExists } from '../../../hooks/useMemberExists';
+import { useMemberHistoryVisibleFrom } from '../../hooks/useMemberHistoryVisibleFrom';
 import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
@@ -26,6 +27,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 	const isMember = membershipCheckSuccess && isMemberData?.isMember;
 	const { _id: userId, username, name, sipExtension, federated } = user;
+	const historyVisibleFrom = useMemberHistoryVisibleFrom(rid, username);
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
@@ -33,6 +35,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 		size: 2,
 		isMember,
 		isInvited,
+		historyVisibleFrom,
 		reload: () => {
 			backToList?.();
 			refetch();
