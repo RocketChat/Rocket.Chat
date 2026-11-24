@@ -120,7 +120,8 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			return;
 		}
 		setError(false);
-		pendingStartTimeRef.current = audio.currentTime;
+		// A retry before metadata loads sees 0, so it keeps the position an earlier retry or seek saved.
+		pendingStartTimeRef.current = audio.currentTime || pendingStartTimeRef.current;
 		audio.load();
 		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
 	});
