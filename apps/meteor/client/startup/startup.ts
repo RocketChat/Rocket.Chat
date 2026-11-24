@@ -2,7 +2,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../lib/SDKClient';
-import { forgetSavedUploads } from '../lib/chats/uploads';
+import { forgetOtherUsersSavedUploads } from '../lib/chats/uploads';
 import { onLoggedIn } from '../lib/loggedIn';
 import { clearStoredCredentials, ensureConnectedAndAuthenticated, getDdpSdk, isAuthError } from '../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem } from '../lib/sdk/storage';
@@ -116,9 +116,11 @@ Users.use.subscribe(() => {
 
 getDdpSdk().account.onLogout(() => {
 	removeLocalUserData();
-	forgetSavedUploads();
 	status = undefined;
 });
+
+// Follows the app's user rather than the account's logout, which a session refused while resuming never reaches.
+userIdStore.subscribe((uid) => forgetOtherUsersSavedUploads(uid));
 
 // Session-resume failure (expired stored token on page load): Meteor has already
 // cleared Meteor.loginToken before this module runs, userId stays null, and no

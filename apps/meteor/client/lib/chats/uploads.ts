@@ -12,11 +12,17 @@ import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { getDdpSdk } from '../sdk/ddpSdk';
 import { getActiveStorage } from '../sdk/storage';
 import { settings } from '../settings';
+import { getUserId } from '../user';
 import { fileUploadIsValidContentType } from '../utils/restrictions';
 
 const STORAGE_KEY_PREFIX = 'composer_uploads_';
 
-const getStorageKey = (rid: IRoom['_id'], tmid?: IMessage['_id']): string => `${STORAGE_KEY_PREFIX}${rid}${tmid ? `-${tmid}` : ''}`;
+// Saved uploads are kept apart per user, so whoever logs in next never reads the previous user's, however that user's
+// session ended.
+const getUserKeyPrefix = (uid: string): string => `${STORAGE_KEY_PREFIX}${uid}_`;
+
+const getStorageKey = (uid: string, rid: IRoom['_id'], tmid?: IMessage['_id']): string =>
+	`${getUserKeyPrefix(uid)}${rid}${tmid ? `-${tmid}` : ''}`;
 
 // The server deletes unconfirmed uploads 24 hours after receiving them; forgetting ours an hour earlier keeps the
 // composer from offering a file that no longer exists.
@@ -129,10 +135,10 @@ const handleStorageEvent = (event: StorageEvent): void => {
 window.addEventListener('storage', handleStorageEvent);
 
 /**
- * Saved uploads belong to the session that kept them, so none of them outlive it for whoever logs in next. Called
- * along with the rest of the account cleanup, because the storage they are in is not always the one it empties.
+ * Saved uploads belong to the user who saved them: whenever the user changes, those of everyone else are forgotten,
+ * and with no user, all of them.
  */
-export const forgetSavedUploads = (): void => {
+export const forgetOtherUsersSavedUploads = (uid: string | undefined): void => {
 	const storage = getActiveStorage();
 	if (!storage) {
 		return;
@@ -141,7 +147,7 @@ export const forgetSavedUploads = (): void => {
 	const storageKeys: string[] = [];
 	for (let index = 0; index < storage.length; index++) {
 		const storageKey = storage.key(index);
-		if (storageKey?.startsWith(STORAGE_KEY_PREFIX)) {
+		if (storageKey?.startsWith(STORAGE_KEY_PREFIX) && !(uid && storageKey.startsWith(getUserKeyPrefix(uid)))) {
 			storageKeys.push(storageKey);
 		}
 	}
@@ -254,11 +260,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private storageKey: string;
 
-	constructor({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+	constructor({ uid, rid, tmid }: { uid: string; rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		super();
 		this.rid = rid;
 		this.tmid = tmid;
-		this.storageKey = getStorageKey(rid, tmid);
+		this.storageKey = getStorageKey(uid, rid, tmid);
 	}
 
 	private uploads: readonly Upload[] = [];
@@ -584,8 +590,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 }
 
 export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => {
-	const storageKey = getStorageKey(rid, tmid);
-	const store = stores.get(storageKey) ?? new UploadsStore({ rid, tmid });
+	const uid = getUserId() ?? '';
+	const storageKey = getStorageKey(uid, rid, tmid);
+	const store = stores.get(storageKey) ?? new UploadsStore({ uid, rid, tmid });
 	stores.set(storageKey, store);
 	return store;
 };

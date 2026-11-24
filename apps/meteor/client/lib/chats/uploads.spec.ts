@@ -1,6 +1,6 @@
 import type { EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload } from './Upload';
-import { createUploadsAPI, forgetSavedUploads } from './uploads';
+import { createUploadsAPI, forgetOtherUsersSavedUploads } from './uploads';
 import { sdk } from '../SDKClient';
 import { setStorageBackend } from '../sdk/storage';
 
@@ -28,6 +28,12 @@ jest.mock('../sdk/ddpSdk', () => ({
 	}),
 }));
 
+let mockUserId: string | undefined;
+
+jest.mock('../user', () => ({
+	getUserId: () => mockUserId,
+}));
+
 jest.mock('../settings', () => ({
 	settings: { peek: jest.fn(() => -1) },
 }));
@@ -52,7 +58,7 @@ type FakeXhr = {
 	progress: (loaded: number, total: number) => void;
 };
 
-const STORAGE_KEY = 'composer_uploads_room';
+const STORAGE_KEY = 'composer_uploads_alice_room';
 const DAY = 24 * 60 * 60 * 1000;
 
 let xhrs: FakeXhr[];
@@ -83,6 +89,7 @@ const attach = (store: ReturnType<typeof createUploadsAPI>) => {
 };
 
 beforeEach(() => {
+	mockUserId = 'alice';
 	localStorage.clear();
 	xhrs = [];
 	attachedStores = [];
@@ -517,7 +524,7 @@ describe('UploadsStore across tabs', () => {
 		attach(store);
 		await uploadFile(store, 'file-1');
 
-		writeFromAnotherTab([persistedUpload('file-2')], 'composer_uploads_other-room');
+		writeFromAnotherTab([persistedUpload('file-2')], 'composer_uploads_alice_other-room');
 
 		expect(store.get().map(({ id }) => id)).toEqual(['file-1']);
 	});
@@ -563,10 +570,43 @@ describe('UploadsStore on a workspace that forgets the user session', () => {
 		attach(store);
 		await uploadFile(store, 'file-1');
 
-		forgetSavedUploads();
+		forgetOtherUsersSavedUploads(undefined);
 
 		expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
 		expect(store.get()).toHaveLength(0);
+	});
+});
+
+describe('UploadsStore across users', () => {
+	it('never shows the next user what the previous one left in the same room', async () => {
+		const alice = createUploadsAPI({ rid: 'room' });
+		attach(alice);
+		await uploadFile(alice, 'file-1');
+		alice.detach();
+
+		mockUserId = 'bruno';
+		const bruno = createUploadsAPI({ rid: 'room' });
+		attach(bruno);
+
+		expect(bruno.get()).toHaveLength(0);
+	});
+
+	it('forgets the uploads of everyone but the user who logs in', async () => {
+		const alice = createUploadsAPI({ rid: 'room' });
+		attach(alice);
+		await uploadFile(alice, 'file-1');
+		alice.detach();
+
+		mockUserId = 'bruno';
+		const bruno = createUploadsAPI({ rid: 'room' });
+		attach(bruno);
+		await uploadFile(bruno, 'file-2');
+
+		forgetOtherUsersSavedUploads('bruno');
+
+		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+		expect(JSON.parse(localStorage.getItem('composer_uploads_bruno_room') ?? '[]')).toMatchObject([{ id: 'file-2' }]);
+		expect(bruno.get().map(({ id }) => id)).toEqual(['file-2']);
 	});
 });
 
