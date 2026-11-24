@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { ActionManagerContext, RoomToolboxContext } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ContextType } from 'react';
 
@@ -14,9 +14,11 @@ jest.mock('../../../../lib/uikit/uploadUiKitFile', () => ({ uploadUiKitFile: jes
 
 const emitInteraction = jest.fn(async () => undefined);
 
+const on = jest.fn();
+
 const actionManager = {
 	emitInteraction,
-	on: jest.fn(),
+	on,
 	off: jest.fn(),
 	disposeView: jest.fn(),
 	clearModals: jest.fn(),
@@ -116,6 +118,34 @@ it('sends the state when the contextual bar is closed', async () => {
 	expect(sentState('viewClosed')).toEqual({
 		'name-block': { name: 'Ada' },
 		'notes-block': { notes: 'hello' },
+	});
+});
+
+it('keeps what the user typed, seeds new elements and drops removed ones when the app updates the contextual bar', async () => {
+	renderContextualBar(
+		view({ blocks: [textInput('Name', 'name', 'name-block', 'Ada'), textInput('Notes', 'notes', 'notes-block', 'draft')] }),
+	);
+
+	await userEvent.clear(screen.getByLabelText('Name'));
+	await userEvent.type(screen.getByLabelText('Name'), 'Grace');
+
+	const [[, handleUpdate]] = on.mock.calls as unknown as [[string, (interaction: UiKit.ServerInteraction) => void]];
+	act(() =>
+		handleUpdate({
+			type: 'contextual_bar.update',
+			triggerId: 'trigger-id',
+			appId: 'app',
+			view: view({
+				blocks: [textInput('Name', 'name', 'name-block', 'Ada'), textInput('Email', 'email', 'email-block', 'ada@example.com')],
+			}),
+		} as UiKit.ServerInteraction),
+	);
+
+	await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+	expect(sentState('viewSubmit')).toEqual({
+		'name-block': { name: 'Grace' },
+		'email-block': { email: 'ada@example.com' },
 	});
 });
 
