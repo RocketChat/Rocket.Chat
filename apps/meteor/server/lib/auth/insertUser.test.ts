@@ -228,6 +228,48 @@ describe('insertUser', () => {
 		expect(insertedUser().username).to.equal('mapped');
 	});
 
+	describe('default avatar', () => {
+		beforeEach(() => {
+			settingValues.set('Accounts_SetDefaultAvatar', true);
+		});
+
+		it('should set the avatar from the first suggested service', async () => {
+			getAvatarSuggestionForUser.resolves({
+				github: { blob: 'data:image/png;base64,Z2g=' },
+				gitlab: { blob: 'data:image/png;base64,Z2w=' },
+			});
+
+			const userId = await insertUser({}, { username: 'alice' });
+
+			const createdUser = { _id: userId, username: 'alice', type: 'user', roles: ['user'] };
+			sinon.assert.calledOnceWithExactly(getAvatarSuggestionForUser, createdUser);
+			sinon.assert.calledOnceWithExactly(setAvatarFromServiceWithValidation, userId, 'data:image/png;base64,Z2g=', '', 'github');
+		});
+
+		it('should leave the avatar unset when no service suggests one', async () => {
+			getAvatarSuggestionForUser.resolves({});
+
+			await insertUser({}, { username: 'alice' });
+
+			sinon.assert.calledOnce(getAvatarSuggestionForUser);
+			sinon.assert.notCalled(setAvatarFromServiceWithValidation);
+		});
+
+		it('should not look for an avatar when the setting is off, skipDefaultAvatar is set or the user has no username', async () => {
+			await insertUser({ skipDefaultAvatar: true }, { username: 'alice' });
+
+			Users.findOneById.callsFake(async (_id: string) => ({ _id, type: 'user', roles: ['user'] }));
+			await insertUser({}, { emails: [{ address: 'bob@example.com', verified: false }] });
+
+			Users.findOneById.callsFake(async (_id: string) => ({ _id, username: 'carol', type: 'user', roles: ['user'] }));
+			settingValues.set('Accounts_SetDefaultAvatar', false);
+			await insertUser({}, { username: 'carol' });
+
+			sinon.assert.notCalled(getAvatarSuggestionForUser);
+			sinon.assert.notCalled(setAvatarFromServiceWithValidation);
+		});
+	});
+
 	describe('validation', () => {
 		it('should reject external users when registration through authentication services is disabled', async () => {
 			settingValues.set('Accounts_Registration_AuthenticationServices_Enabled', false);
