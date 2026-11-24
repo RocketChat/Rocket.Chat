@@ -161,7 +161,7 @@ class E2E extends Emitter {
 		const span = log.span('observeSubscriptions');
 		this.unsubscribeFromSubscriptions?.();
 
-		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe((state) => {
+		this.unsubscribeFromSubscriptions = Subscriptions.useStore.subscribe((state) => {
 			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
 
 			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
@@ -230,7 +230,7 @@ class E2E extends Emitter {
 
 			if (room) resolve(room);
 
-			const unsubscribe = Rooms.use.subscribe((state) => {
+			const unsubscribe = Rooms.useStore.subscribe((state) => {
 				const room = state.get(rid);
 				if (room) {
 					unsubscribe();

@@ -277,7 +277,7 @@ const MessageBox = ({
 
 	// canSendMessage directives read from the Subscriptions store, so subscribe to it to re-run on changes
 	// (e.g. user joins/leaves the room). room and federationMatrixEnabled are already React-reactive.
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.useStore.subscribe(onStoreChange), []);
 	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
 		if (!room.t) {
 			return false;

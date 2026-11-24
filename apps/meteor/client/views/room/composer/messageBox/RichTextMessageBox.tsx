@@ -282,7 +282,7 @@ const RichTextMessageBox = ({
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
 	const federationMatrixEnabled = useIsFederationEnabled();
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.useStore.subscribe(onStoreChange), []);
 	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
 		if (!room.t) {
 			return false;

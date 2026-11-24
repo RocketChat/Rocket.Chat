@@ -8,8 +8,8 @@ export const useDeleteUser = () => {
 
 	const uid = useUserId();
 
-	const updateMessages = Messages.use((state) => state.update);
-	const removeMessages = Messages.use((state) => state.remove);
+	const updateMessages = Messages.useStore((state) => state.update);
+	const removeMessages = Messages.useStore((state) => state.remove);
 
 	useEffect(() => {
 		if (!uid) {

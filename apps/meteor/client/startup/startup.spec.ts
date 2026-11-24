@@ -25,9 +25,9 @@ const startWithStoredSession = (failSync: () => Promise<never>) => {
 	let modules: { clearLocalSession: jest.Mock } | undefined;
 	jest.isolateModules(() => {
 		jest.requireMock('../lib/userData').synchronizeUserData.mockImplementation(failSync);
-		const { userIdStore } = jest.requireActual('../lib/user');
+		const { useUserIdStore } = jest.requireActual('../lib/user');
 		jest.requireActual('./startup');
-		userIdStore.setState('user-id');
+		useUserIdStore.setState('user-id');
 		modules = { clearLocalSession: jest.requireMock('../meteor/accounts').clearLocalSession };
 	});
 	return modules as { clearLocalSession: jest.Mock };

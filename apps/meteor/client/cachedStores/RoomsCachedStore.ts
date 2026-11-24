@@ -10,7 +10,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 		super({
 			name: 'rooms',
 			eventType: 'notify-user',
-			store: Rooms.use,
+			store: Rooms.useStore,
 		});
 	}
 
@@ -71,7 +71,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	}
 
 	protected override handleLoadedFromServer(rooms: IRoom[]): void {
-		const indexedSubscriptions = Subscriptions.use.getState().indexBy('rid');
+		const indexedSubscriptions = Subscriptions.useStore.getState().indexBy('rid');
 
 		const subscriptionsWithRoom = rooms.flatMap((room) => {
 			const sub = indexedSubscriptions.get(room._id);
@@ -81,7 +81,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			return this.merge(room, sub);
 		});
 
-		Subscriptions.use.getState().storeMany(subscriptionsWithRoom);
+		Subscriptions.useStore.getState().storeMany(subscriptionsWithRoom);
 	}
 
 	protected override async handleRecordEvent(action: 'removed' | 'changed', room: IRoom) {
@@ -89,7 +89,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 
 		if (action === 'removed') return;
 
-		Subscriptions.use.getState().update(
+		Subscriptions.useStore.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);
@@ -98,7 +98,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	protected override handleSyncEvent(action: 'removed' | 'changed', room: IRoom): void {
 		if (action === 'removed') return;
 
-		Subscriptions.use.getState().update(
+		Subscriptions.useStore.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);

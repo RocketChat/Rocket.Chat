@@ -172,7 +172,7 @@ const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProv
 	const [groups, unreadGroupData] = useRoomsGroups();
 
 	const handleRoomOpened = useStableCallback((rid: string) => {
-		const room = Rooms.use.getState().find((r) => r._id === rid);
+		const room = Rooms.useStore.getState().find((r) => r._id === rid);
 
 		if (!room) {
 			return;
@@ -193,7 +193,7 @@ const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProv
 		}
 
 		if (room.teamId && currentFilter === 'teams') {
-			const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
+			const teamRid = Rooms.useStore.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
 
 			/**
 			 * if the room is the parent rid is still the same, don't change the filter
@@ -207,7 +207,7 @@ const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProv
 		}
 
 		if (room.prid) {
-			const parentRoom = Rooms.use.getState().find((r) => Boolean(r._id === room.prid));
+			const parentRoom = Rooms.useStore.getState().find((r) => Boolean(r._id === room.prid));
 			setFilter(parentRoom?.teamMain ? 'teams' : 'channels', unread, parentRoom?._id);
 			return;
 		}
