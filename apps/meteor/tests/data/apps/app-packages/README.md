@@ -102,7 +102,7 @@ class UploadBufferEndpoint extends ApiEndpoint {
 	}
 }
 
-export class TestIPreFileUpload extends App implements IPreFileUpload {
+export class TestFileUpload extends App implements IPreFileUpload {
 	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
 		await configuration.api.provideApi({
 			visibility: ApiVisibility.PUBLIC,
