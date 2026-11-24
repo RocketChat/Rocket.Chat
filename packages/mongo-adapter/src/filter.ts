@@ -41,6 +41,10 @@ const equalityElementMatcher = (elementSelector: unknown) => {
 		return (value: unknown): boolean => value === null || value === undefined;
 	}
 
+	if (isPlainObject(elementSelector)) {
+		return (value: unknown): boolean => isPlainObject(value) && equals(elementSelector, value);
+	}
+
 	return (value: unknown): boolean => equals(elementSelector, value);
 };
 
