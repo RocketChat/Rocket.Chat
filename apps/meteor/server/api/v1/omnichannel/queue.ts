@@ -37,6 +37,14 @@ const livechatQueueResponseSchema = ajv.compile<
 				type: 'object',
 				properties: {
 					chats: { type: 'number' },
+					department: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							name: { type: 'string' },
+						},
+						additionalProperties: false,
+					},
 					user: {
 						type: 'object',
 						properties: {
