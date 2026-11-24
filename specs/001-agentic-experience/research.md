@@ -229,7 +229,7 @@ The RP-1 open question: a headless agent has no human session. The developer run
 
 ## D-17: Audit of refused entry calls (FR-055)
 
-- **Decision**: A refusal under D-15 or D-16 writes `agent.entry.refused` with the agent id, the entry point (`rest`, `ddp-method`, `ddp-subscription`), and the route, method, or stream name. Before it writes, the server claims a slot with one atomic update on the agent user, `Users.claimAgentRefusalAuditSlot(id, entryPoint, now)`. The update matches only when the last slot for that entry point is older than 60 s.
+- **Decision**: A refusal under D-15 or D-16 writes `agent.entry.refused` with the agent id, the entry point (`rest`, `ddp-method`, `ddp-subscription`), and the route, method, or stream name. Before it writes, the server claims a slot with one atomic update on the agent user, `Agents.claimAgentRefusalAuditSlot(id, entryPoint, now)`. The update matches only when the last slot for that entry point is older than 60 s.
 - ddp-streamer cannot write the audit trail itself. It broadcasts `agent.entry.refused`, and the monolith claims the slot and writes the entry.
 - **Rationale**: The slot lives in MongoDB, so the cap holds across instances. A harness that retries in a loop costs one update per call and one entry per minute.
 - **Alternatives**: An in-memory window per instance. Rejected: with N instances the trail would hold N entries per minute.

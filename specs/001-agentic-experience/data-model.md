@@ -4,7 +4,9 @@ Phase 1 output for [plan.md](plan.md). Decisions: [research.md](research.md).
 
 Every read and write goes through a named model method (constitution II). The method names below are the ones the tasks add to `I<Name>Model` in `packages/model-typings`.
 
-## Agent (an `IUser` with `type: 'agent'`)
+## Agent (`IAgent`, an `IUser` with `type: 'agent'`)
+
+`IAgent` in `packages/core-typings` extends `IUser`. It narrows `type` to `'agent'` and adds the required `agent` field. `IUser` gets no agent field.
 
 The agent reuses the `users` collection. The existing fields `_id`, `username`, `name`, `avatarETag`, `roles`, `active`, `createdAt`, and `services.resume.loginTokens` keep their meaning.
 
@@ -17,7 +19,6 @@ The agent reuses the `users` collection. The existing fields `_id`, `username`, 
 | `agent.replyMode` | `'mention' \| 'ambient' \| 'autonomous'` | Required (FR-024). |
 | `agent.capabilities` | `string[]` | MCP tool names from the agent tool table. Fixed at registration (FR-008, FR-014). |
 | `agent.status` | `'active' \| 'suspended'` | Default `active` (FR-046). |
-| `agent.credentialIssuedAt` | `Date` | Set at registration and at each rotation. |
 | `agent.postWindow` | `{ start: Date; count: number }` | The FR-050 counter (RQ-3). Internal. No endpoint returns it. |
 | `agent.refusalAuditAt` | `{ rest?: Date; 'ddp-method'?: Date; 'ddp-subscription'?: Date }` | The last audited refusal per entry point (FR-055, D-17). Internal. No endpoint returns it. |
 
@@ -37,34 +38,36 @@ issued ──rotate──▶ issued (new secret; old secret fails)
 issued ──revoke──▶ none ──rotate──▶ issued
 ```
 
-### Users model methods (new)
+### Agents model methods (new)
+
+The `Agents` model (`AgentsRaw extends UsersRaw`, interface `IAgentsModel extends IUsersModel`) reads and writes the `users` collection. Every agent method lives on `Agents`, not on `Users`, so the generic user surface gains no agent method. Each `Agents` method matches `type: 'agent'`.
 
 | Method | Purpose |
 |--------|---------|
-| `insertAgent(doc)` | Creates the agent user. |
+| `insertAgent(doc)` | Creates the agent user. It writes `type` and `roles` itself, and never calls `Accounts.insertUserDoc` or `saveUser`. Those paths force `type: 'user'`, add the default roles, and join the default channels. |
 | `findOneAgentById(id, options)` | Reads an agent by id. It matches `type: 'agent'` only. |
 | `findAgentsByOwnerId(ownerId, options)` | Lists the agents of an owner. |
 | `updateAgentSettings(id, { description?, ownerId?, replyMode? })` | Applies an admin edit. |
 | `setAgentStatus(id, status)` | Suspends or reactivates. |
 | `unsetAgentOwnerByOwnerId(ownerId)` | Runs on owner deletion (D-11). |
-| `replaceAgentCredential(id, hashedToken, issuedAt)` | Removes every login token and adds one PAT (rotation). |
+| `replaceAgentCredential(id, hashedToken)` | Removes every login token and adds one PAT (rotation). The PAT `createdAt` is the credential issue date. |
 | `incrementAgentPostCount(id, windowStart)` | Counts a post inside the window atomically, and returns the new count. It resets the count when the window changes. |
 | `claimAgentRefusalAuditSlot(id, entryPoint, now)` | Sets `agent.refusalAuditAt.<entryPoint>` to `now` only when it is unset or older than 60 s. It returns `true` when it wrote (D-17). |
 | `findAgentIds(options)` | Lists every agent id, for the forced logout when the MCP server turns off (D-18). |
 
-Revocation reuses `Users.unsetLoginTokens(userId)`.
+Revocation reuses `unsetLoginTokens(userId)`, inherited from `UsersRaw`.
 
 ## Room allow list (FR-061)
 
-The agent has no allow list field. The allow list is the set of its subscriptions whose `status` is not `INVITED` (D-5). It is empty at registration (FR-010), because `Users.insertAgent` joins no default channel (PQ-1).
+The agent has no allow list field. The allow list is the set of its subscriptions whose `status` is not `INVITED` (D-5). It is empty at registration (FR-010), because `Agents.insertAgent` joins no default channel (PQ-1).
 
 | Read | Method |
 |------|--------|
 | The room check per call | `Subscriptions.findOneByRoomIdAndUserId(rid, agentId, { projection: { status: 1 } })` (existing) |
 | The rooms for `agents.messages` and `agents.me` | `Subscriptions.findByUserId(agentId, { projection: { rid: 1, status: 1 } })` (existing) |
-| The agent members of a room at deletion | `Subscriptions.findByRoomId(rid, { projection: { 'u._id': 1 } })` (existing), then `Users.findAgentIdsByIds(ids)` |
+| The agent members of a room at deletion | `Subscriptions.findByRoomId(rid, { projection: { 'u._id': 1 } })` (existing), then `Agents.findAgentIdsByIds(ids)` |
 
-| Users method (new) | Purpose |
+| Agents method (new) | Purpose |
 |--------------------|---------|
 | `findAgentIdsByIds(ids)` | Keeps the ids that belong to agents, for the deletion audit (FR-064). |
 
@@ -199,6 +202,23 @@ The reply-mode filter (D-10) runs in the endpoint, not in the model.
 | `agent.room.removed` | agent id, room id, path (`kick`, `leave`, `agents.update`, `room-deleted`) | the user who removed the agent, or the user who deleted the room |
 | `agent.room.add.refused` | agent id, room id, path, missing permission (`manage-agents`) | the user who tried, or system for a path with no actor |
 
+## Candidate C-1: derived counters
+
+**Status**: To evaluate. The current design (RQ-3, D-17) stays in force until a decision.
+
+`agent.postWindow` and `agent.refusalAuditAt` write to the user document. Each write bumps `_updatedAt`, so every agent post reaches the clients' user sync. The candidate drops both fields, and their methods `incrementAgentPostCount` and `claimAgentRefusalAuditSlot`, and derives each value from data the server already writes.
+
+| Value | Derived from | Index |
+|-------|--------------|-------|
+| Posts in the FR-050 window | Count the agent's messages with `ts` in the last 60 s. `retryAfter` comes from the oldest one. | New partial index `{ 'u._id': 1, ts: 1 }` where `agent: true`. It reads at most 60 keys per check. |
+| The last refusal audit per entry point (FR-055) | The last `agent.entry.refused` event for the agent in `ServerEvents`. | Existing `{ t: 1, 'u.username': 1, ts: -1 }`. It requires the agent as the event actor instead of "system". |
+
+Trade-offs:
+
+- Neither check is atomic. Concurrent posts can exceed 60 by a few, and two instances can each write a refusal entry in the same minute.
+- The post window slides instead of resetting each minute.
+- The existing single-field indexes `{ ts: 1 }` and `{ 'u._id': 1 }` do not suffice. The first scans every workspace message from the last minute. The second scans the agent's whole history. A `hint` to `{ ts: 1 }` is the fallback if the new index is refused.
+
 ## Amendment A-3: webhook
 
 **Status**: Proposed ([plan.md, A-3](plan.md#a-3-2026-11-19-outgoing-webhook-delivery)).
@@ -211,7 +231,7 @@ The reply-mode filter (D-10) runs in the endpoint, not in the model.
 |--------|---------|
 | `setAgentWebhook(id, webhook)` | Sets or clears `agent.webhook`. |
 | `setAgentWebhookSecret(id, secret)` | Replaces the secret at rotation. |
-| `findActiveAgentIdsWithWebhook(options)` | Lists the active agents with a webhook. The sender caches the result on each instance and refreshes it on each agent change. |
+| `findActiveAgentIdsWithWebhook(options)` | Lists the agents with a webhook that are both `active: true` and `agent.status: 'active'`. The sender caches the result on each instance and refreshes it on each agent change. |
 
 The sender then reads `Subscriptions.findByRoomIdAndUserIds(rid, agentIds)` (existing) to keep the agents that are members of the room (FR-061). Index: `{ type: 1 }` with a partial filter on `agent.webhook` existing. Most saved messages have no agent with a webhook, so the sender skips the read.
 

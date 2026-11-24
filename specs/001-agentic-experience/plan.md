@@ -47,7 +47,7 @@ Decisions and alternatives: [research.md](research.md). Shortcuts: [shortcuts.md
 
 All research questions are resolved in [research.md](research.md), RQ-5 included. No NEEDS CLARIFICATION remains. Five assumptions get a check in the first tasks (V-5 to V-7, V-10, V-11).
 
-Open product input: PQ-1 (does a new agent join the default channels?). The plan ships "no": `AgentService.register` inserts the agent through `Users.insertAgent`, which never runs `addUserToDefaultChannels`, so the allow list starts empty (FR-010). A "yes" changes F-3 only: the registration calls the default channel join with the registrant as the actor, and FR-062 applies to it.
+Open product input: PQ-1 (does a new agent join the default channels?). The plan ships "no": `AgentService.register` inserts the agent through `Agents.insertAgent`, which never runs `addUserToDefaultChannels`, so the allow list starts empty (FR-010). A "yes" changes F-3 only: the registration calls the default channel join with the registrant as the actor, and FR-062 applies to it.
 
 ## Constitution Check
 
@@ -56,7 +56,7 @@ Open product input: PQ-1 (does a new agent join the default channels?). The plan
 | Principle | Pre-research | Post-design | Evidence |
 |-----------|--------------|-------------|----------|
 | I. One concern per change | Pass | Pass | The delivery order below gives one pull request per concern. The enabling refactors R-1 and R-4 sit below the features. The room add guard (F-13) ships before any agent can exist. |
-| II. Named model methods | Pass | Pass | Every new query is a named method on `Users`, `Messages`, or `AgentApprovals`, declared in `packages/model-typings` ([data-model.md](data-model.md)). The refusal audit slot is `Users.claimAgentRefusalAuditSlot`. The room check reuses `Subscriptions.findOneByRoomIdAndUserId` with a projection. The guard and the endpoints pass only `projection`, `sort`, and `limit`. |
+| II. Named model methods | Pass | Pass | Every new query is a named method on `Agents`, `Messages`, or `AgentApprovals`, declared in `packages/model-typings` ([data-model.md](data-model.md)). The refusal audit slot is `Agents.claimAgentRefusalAuditSlot`. The room check reuses `Subscriptions.findOneByRoomIdAndUserId` with a projection. The guard and the endpoints pass only `projection`, `sort`, and `limit`. |
 | III. Tests prove the change | Pass | Pass | See [Testing](#testing). R-1 keeps the MCP tests green with no edits. R-4 keeps the `ddp-server` and ddp-streamer tests green with no edits. |
 | IV. Views isolated | Pass | Pass | The admin agent section and the info panel reach the server through `useEndpoint` from `@rocket.chat/ui-contexts`. The badge is a presentational component with props only. The new screens compose layout containers. |
 | V. Comments state intent | Pass with exception | Pass with exception | `shortcut:` comments state a limit (DC-3). See Complexity Tracking. The subsystem doc goes in `docs/features/agents.md`, and the identity decision goes in an ADR. The DDP rules for agents go in `docs/features/ddp-sessions.md`. |
@@ -89,18 +89,19 @@ specs/001-agentic-experience/
 
 ```text
 packages/core-typings/src/
-├── IUser.ts                              # IAgentSettings on IUser.agent
+├── IAgent.ts                             # new; IAgent extends IUser
 ├── IMessage/IMessage.ts                  # IMessage.agent
 ├── IAgentApproval.ts                     # new
 └── ServerAudit/IAuditAgentEvent.ts       # new; keys added to IServerEvents
 
 packages/model-typings/src/models/
-├── IUsersModel.ts                        # agent methods
+├── IAgentsModel.ts                       # new; extends IUsersModel
 ├── IMessagesModel.ts                     # findVisibleByRoomIdsAfterTimestamp
 └── IAgentApprovalsModel.ts               # new
 
 packages/models/src/models/
-├── Users.ts, Messages.ts                 # new methods
+├── Agents.ts                             # new; AgentsRaw extends UsersRaw
+├── Messages.ts                           # new method
 └── AgentApprovals.ts                     # new
 
 packages/rest-typings/src/v1/agents.ts    # new: request and response schemas
@@ -279,7 +280,7 @@ If the team schedules it, two pull requests follow F-8. R-3 ships once if A-1 al
 - **A-1 or A-3**: The two do not exclude each other. A-1 serves a harness with no public URL, for example a desktop client. A-3 serves a hosted harness. A-3 needs no held request and no new transport, but it delivers at best effort, so the harness still polls every 60 s.
 - **New files**: `apps/meteor/server/lib/agents/webhook/` (the URL rules, the signature, the sender, and the callback). `packages/rest-typings/src/v1/agents.ts` gains the new fields.
 - **Constitution**:
-  - II: The selection query is `Users.findAgentsWithWebhookByRoom`, and the URL write is `Users.setAgentWebhook` ([data-model.md, A-3](data-model.md#amendment-a-3-webhook)).
+  - II: The selection query is `Agents.findAgentsWithWebhookByRoom`, and the URL write is `Agents.setAgentWebhook` ([data-model.md, A-3](data-model.md#amendment-a-3-webhook)).
   - VI: `agents.register` and `agents.update` keep their validated schemas, with the new fields.
   - V: The subsystem doc describes the sender, not a comment.
   - No new exception.
