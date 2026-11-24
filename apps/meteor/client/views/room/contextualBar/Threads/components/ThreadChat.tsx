@@ -2,9 +2,10 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadMessageList from './ThreadMessageList';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
@@ -87,7 +88,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 
 	const subscription = useRoomSubscription();
 	const sendToChannelID = useId();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 

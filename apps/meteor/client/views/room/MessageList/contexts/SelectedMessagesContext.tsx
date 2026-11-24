@@ -1,15 +1,11 @@
 import type { SyntheticEvent } from 'react';
 import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
-import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
-
-type SelectMessageContextValue = {
-	selectedMessageStore: typeof selectedMessageStore;
-};
+import { selectedMessageStore } from '../../providers/SelectedMessageStore';
 
 export const SelectedMessageContext = createContext({
 	selectedMessageStore,
-} as SelectMessageContextValue);
+});
 
 export const useIsSelectedMessage = (mid: string, omit?: boolean): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);

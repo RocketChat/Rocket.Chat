@@ -340,14 +340,14 @@ export class LDAPConnection {
 		let realEntries = 0;
 
 		return new Promise((resolve, reject) => {
-			this.clientSearch(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
+			this.clientSearch(baseDN, searchOptions, (err: Error | null, res: ldapjs.SearchCallbackResponse) => {
 				if (err) {
 					searchLogger.error({ err });
 					reject(err);
 					return;
 				}
 
-				res.on('error', (err) => {
+				res.on('error', (err: Error) => {
 					searchLogger.error({ err });
 					reject(err);
 				});
@@ -358,7 +358,7 @@ export class LDAPConnection {
 					try {
 						const result = entryCallback(entry);
 						if (result) {
-							entries.push(result as T);
+							entries.push(result);
 						}
 						realEntries++;
 					} catch (err) {
@@ -501,17 +501,13 @@ export class LDAPConnection {
 
 	public async bindDN(dn: string, password: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			try {
-				this.client.bind(dn, password, (error) => {
-					if (error) {
-						return reject(error);
-					}
+			this.client.bind(dn, password, (error: Error | null) => {
+				if (error) {
+					return reject(error);
+				}
 
-					resolve();
-				});
-			} catch (error) {
-				reject(error);
-			}
+				resolve();
+			});
 		});
 	}
 

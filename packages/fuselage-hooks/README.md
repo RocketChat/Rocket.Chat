@@ -14,7 +14,7 @@ The hooks do not depend on Fuselage components, so you can use them in any React
 npm install @rocket.chat/fuselage-hooks react
 ```
 
-`react` is a peer dependency; the hooks need React 18 or later. The package ships CommonJS and ES module builds with TypeScript declarations.
+`react` is a peer dependency. The package takes React 19, like the rest of Fuselage, and is only tested against it. The package ships CommonJS and ES module builds with TypeScript declarations.
 
 ## Usage
 

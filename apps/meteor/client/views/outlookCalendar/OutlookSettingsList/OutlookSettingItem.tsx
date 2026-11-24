@@ -14,12 +14,8 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 	const { t } = useTranslation();
 
 	const hovered = css`
-		&:hover,
-		&:focus {
+		&:hover {
 			background: ${Palette.surface['surface-hover']};
-			.rcx-message {
-				background: ${Palette.surface['surface-hover']};
-			}
 		}
 	`;
 

@@ -2,8 +2,7 @@ import { EventEmitter } from 'node:events';
 import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IEmailInbox } from '@rocket.chat/core-typings';
-import type { IEmailInboxModel, IEmailMessageHistoryModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -42,7 +41,6 @@ const models = {
 const onEmailReceived = sinon.stub();
 
 const { configureEmailInboxes, inboxes } = proxyquire.noCallThru().load('./EmailInbox', {
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'./EmailInbox_Incoming': { onEmailReceived },
 	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
 	'../../email/IMAPInterceptor': { IMAPInterceptor: FakeIMAPInterceptor },
@@ -66,8 +64,8 @@ const createInbox = (email: string, overrides: Partial<IEmailInbox> = {}): IEmai
 
 describe('configureEmailInboxes', () => {
 	before(() => {
-		registerModel('IEmailInboxModel', models.EmailInbox as unknown as IEmailInboxModel);
-		registerModel('IEmailMessageHistoryModel', models.EmailMessageHistory as unknown as IEmailMessageHistoryModel);
+		mockModel('EmailInbox', models.EmailInbox);
+		mockModel('EmailMessageHistory', models.EmailMessageHistory);
 	});
 
 	beforeEach(() => {

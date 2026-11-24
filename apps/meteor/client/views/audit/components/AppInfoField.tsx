@@ -1,6 +1,7 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import AuditModalField from './AuditModalField';
 import AuditModalLabel from './AuditModalLabel';
@@ -12,7 +13,7 @@ export type AppInfoFieldProps = {
 
 // This is a separate component to encapsulate its logic and in the future expand it to a field that shows more info on the App
 export const AppInfoField = ({ appId }: AppInfoFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getAppInfo = useEndpoint('GET', `/apps/:id`, { id: appId });
 

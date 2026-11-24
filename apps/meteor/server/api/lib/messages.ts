@@ -115,7 +115,7 @@ export async function findDiscussionsFromRoom({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(
+	const { cursor, totalCount } = Messages.findDiscussionsByRoomAndText(
 		roomId,
 		text,
 		{

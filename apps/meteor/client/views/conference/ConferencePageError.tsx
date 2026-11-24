@@ -1,9 +1,10 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useTranslation, useUser, useRoute } from '@rocket.chat/ui-contexts';
+import { useUser, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 const ConferencePageError = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	const route = useRoute('login');
 

@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import nameToCharacterMapping from '@rocket.chat/icons';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentType } from 'react';
 
@@ -35,6 +36,14 @@ describe.each<[string, ComponentType<any>, string]>([
 		expect(control).toHaveAttribute('aria-invalid', 'true');
 	});
 
+	it('should focus its control on mount only when asked to', () => {
+		const { rerender } = render(<Component placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		expect(screen.getByRole(role)).not.toHaveFocus();
+
+		rerender(<Component key='focused' autoFocus placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		expect(screen.getByRole(role)).toHaveFocus();
+	});
+
 	it('should focus its control when the label pointing to its id is clicked', async () => {
 		render(
 			<>
@@ -49,5 +58,40 @@ describe.each<[string, ComponentType<any>, string]>([
 
 		await userEvent.click(screen.getByText('Fruit'));
 		expect(control).toHaveFocus();
+	});
+});
+
+describe('[SelectLegacy Component] controlled value', () => {
+	it('should show the new option when the value changes after mount', () => {
+		const twoOptions: SelectOption[] = [
+			['1', 'Apple'],
+			['2', 'Banana'],
+		];
+		const { rerender } = render(<SelectLegacy value='1' options={twoOptions} onChange={jest.fn()} />);
+		expect(screen.getByText('Apple')).toBeInTheDocument();
+
+		rerender(<SelectLegacy value='2' options={twoOptions} onChange={jest.fn()} />);
+		expect(screen.getByText('Banana')).toBeInTheDocument();
+		expect(screen.queryByText('Apple')).not.toBeInTheDocument();
+	});
+});
+
+describe('[SelectLegacy Component] keyboard', () => {
+	beforeEach(() => jest.useFakeTimers());
+	afterEach(() => jest.useRealTimers());
+
+	it('should stay open after Space opens it', async () => {
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		const isOpen = () => screen.queryByText(nameToCharacterMapping['chevron-up']) !== null;
+
+		screen.getByRole('button').focus();
+		await user.keyboard('[Space>]');
+		act(() => jest.advanceTimersByTime(20));
+		expect(isOpen()).toBe(true);
+
+		await user.keyboard('[/Space]');
+		act(() => jest.advanceTimersByTime(20));
+		expect(isOpen()).toBe(true);
 	});
 });

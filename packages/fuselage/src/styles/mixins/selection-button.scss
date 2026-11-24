@@ -28,14 +28,6 @@
 		disabled: ':disabled',
 	);
 
-	$state-helper-classes: (
-		default: null,
-		hovered: '.is-hovered',
-		focused: '.is-focused',
-		active: '.is-active',
-		disabled: '.is-disabled',
-	);
-
 	@each $value in unchecked, indeterminate, checked {
 		$style: map.get($styles, $value);
 
@@ -49,10 +41,8 @@
 
 			@each $state in default, hovered, focused, active, disabled {
 				$state-pseudo-class: map.get($state-pseudo-classes, $state);
-				$state-helper-class: map.get($state-helper-classes, $state);
 
-				@at-root &__input#{$value-pseudo-class}#{$state-pseudo-class} + &__fake,
-					&#{$state-helper-class} &__input#{$value-pseudo-class} + &__fake {
+				@at-root &__input#{$value-pseudo-class}#{$state-pseudo-class} + &__fake {
 					@extend %selection-button__fake--#{$style}--#{$state} !optional;
 
 					@if $state == disabled {

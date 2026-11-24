@@ -1,3 +1,4 @@
+import { useRedirectToSetupWizard } from '@rocket.chat/ui-setup-wizard';
 import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
@@ -6,7 +7,6 @@ import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from './hooks/useAutoupdate';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
-import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopBridgeContract } from './hooks/useDesktopBridgeContract';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopOutlookCredentials } from './hooks/useDesktopOutlookCredentials';
@@ -29,7 +29,6 @@ import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useOAuthPopupCommands } from './hooks/useOAuthPopupCommands';
-import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
 import { useStartupEvent } from './hooks/useStartupEvent';
@@ -57,7 +56,6 @@ const AppLayout = () => {
 	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
-	useCorsSSLConfig();
 	useAutoupdate();
 	useCodeHighlight();
 	useLoginViaQuery();

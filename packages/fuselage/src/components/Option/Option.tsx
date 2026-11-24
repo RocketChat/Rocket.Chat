@@ -7,7 +7,7 @@ import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp
 import { Icon, type IconProps } from '../Icon';
 import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
 
-export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
+export type OptionProps<TLabel = ReactNode> = RefAttributes<HTMLElement> & {
 	is?: ElementType;
 	id?: string;
 	children?: ReactNode;
@@ -55,6 +55,7 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
  * It renders an `Item` row, so its content can also be composed from `Item` parts.
  */
 function Option<TLabel = ReactNode>({
+	ref,
 	is = 'li',
 	children,
 	label,
@@ -78,8 +79,8 @@ function Option<TLabel = ReactNode>({
 
 	return (
 		<Item
-			{...(props as Omit<typeof props, 'ref'>)}
-			ref={props.ref as RefAttributes<HTMLElement>['ref']}
+			{...props}
+			ref={ref}
 			is={is}
 			inset='md'
 			focused={focus}

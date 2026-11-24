@@ -14,7 +14,7 @@ export const isTotpInvalidError = (error: unknown): error is { error: 'totp-inva
 export const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 
 export const hasRequiredTwoFactorMethod = (error: unknown): error is { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
-	const details = error && typeof error === 'object' && 'details' in error && (error.details as unknown);
+	const details = error && typeof error === 'object' && 'details' in error && error.details;
 	return (
 		typeof details === 'object' &&
 		details !== null &&

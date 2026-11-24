@@ -25,6 +25,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
+import ContentColumn from '../../../../components/ContentColumn';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
@@ -81,7 +82,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const curlField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' width='full'>
+		<ContentColumn>
 			<Accordion>
 				<AccordionItem defaultExpanded={Boolean(webhookData?._id)} title={t('Instructions')}>
 					<FieldGroup>
@@ -336,7 +337,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 					</FieldGroup>
 				</AccordionItem>
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

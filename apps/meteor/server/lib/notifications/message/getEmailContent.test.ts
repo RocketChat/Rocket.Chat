@@ -8,11 +8,6 @@ const mocks = {
 	'@rocket.chat/tools': {
 		escapeHTML: (str: string) => str,
 	},
-	'meteor/meteor': {
-		Meteor: {
-			startup: () => {},
-		},
-	},
 	'../../callbacks': {
 		callbacks: {
 			run: () => {},

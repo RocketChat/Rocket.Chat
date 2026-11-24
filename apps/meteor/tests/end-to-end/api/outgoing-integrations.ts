@@ -1,12 +1,13 @@
 import { after, afterEach, before, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IIntegration, IUser } from '@rocket.chat/core-typings';
+import type { IIntegration, IOutgoingIntegration, IRoom, IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -83,10 +84,10 @@ describe('[Outgoing Integrations]', () => {
 						event: 'sendMessage',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -112,10 +113,10 @@ describe('[Outgoing Integrations]', () => {
 						event: 'sendMessage',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -305,7 +306,7 @@ describe('[Outgoing Integrations]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -324,7 +325,7 @@ describe('[Outgoing Integrations]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -371,10 +372,10 @@ describe('[Outgoing Integrations]', () => {
 					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -387,10 +388,10 @@ describe('[Outgoing Integrations]', () => {
 					.query({ integrationId: integrationCreatedByAnUser._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -449,6 +450,155 @@ describe('[Outgoing Integrations]', () => {
 		});
 	});
 
+	describe('[/integrations.update]', () => {
+		let userIntegration: IIntegration;
+		let adminIntegration: IIntegration;
+		let privateGroup: IRoom;
+
+		const webhook = {
+			type: 'webhook-outgoing' as const,
+			enabled: true,
+			event: 'sendMessage' as const,
+			username: 'rocket.cat',
+			urls: ['http://example.com/hook'],
+			scriptEnabled: true,
+			script: 'class Script { prepare_outgoing_request({ request }) { return request; } }',
+			channel: '#general',
+			triggerWords: ['!hook'],
+			token: 'outgoing-webhook-token',
+		};
+
+		const update = (userCredentials: Credentials, target: IIntegration, body: Record<string, unknown> = {}) =>
+			request
+				.put(api('integrations.update'))
+				.set(userCredentials)
+				.send({ ...webhook, integrationId: target._id, name: target.name, ...body });
+
+		const stored = async (integration: IIntegration) =>
+			(await request.get(api('integrations.get')).set(credentials).query({ integrationId: integration._id })).body
+				.integration as IOutgoingIntegration;
+
+		const grant = (own: string[], all: string[]) =>
+			Promise.all([
+				updatePermission('manage-own-outgoing-integrations', [...own, 'admin']),
+				updatePermission('manage-outgoing-integrations', [...all, 'admin']),
+			]);
+
+		before(async () => {
+			await grant(['user'], []);
+			userIntegration = await createIntegration(
+				{ ...webhook, name: 'User webhook', urls: ['http://example.com/user-hook'] },
+				userCredentials,
+			);
+			adminIntegration = await createIntegration({ ...webhook, name: 'Admin webhook' }, credentials);
+			privateGroup = (await createRoom({ type: 'p', name: `outgoing-update-${Date.now()}` })).body.group;
+		});
+
+		after(async () => {
+			await removeIntegration(userIntegration._id, 'outgoing');
+			await removeIntegration(adminIntegration._id, 'outgoing');
+			await deleteRoom({ type: 'p', roomId: privateGroup._id });
+			await Promise.all([updatePermission('manage-own-outgoing-integrations', []), updatePermission('manage-outgoing-integrations', [])]);
+		});
+
+		it('should let a user who manages only their own webhooks update their webhook', async () => {
+			await grant(['user'], []);
+
+			const res = await update(userCredentials, userIntegration, {
+				name: 'Renamed by its creator',
+				urls: ['http://example.com/renamed'],
+			}).expect(200);
+
+			expect(res.body.integration).to.include({ name: 'Renamed by its creator' });
+			expect(res.body.integration.urls).to.deep.equal(['http://example.com/renamed']);
+			expect(res.body.integration._updatedBy).to.have.property('username', user.username);
+		});
+
+		it('should refuse that user on a webhook created by someone else, and keep the webhook', async () => {
+			await grant(['user'], []);
+			const previous = await stored(adminIntegration);
+
+			const res = await update(userCredentials, adminIntegration, { name: 'Taken over' }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'invalid_integration');
+			expect((await stored(adminIntegration)).name).to.equal(previous.name);
+		});
+
+		it('should refuse a user with no outgoing webhook permission, and keep the webhook', async () => {
+			await grant([], []);
+			const previous = await stored(userIntegration);
+
+			const res = await update(userCredentials, userIntegration, { name: 'No permission' }).expect(403);
+
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+			expect((await stored(userIntegration)).name).to.equal(previous.name);
+		});
+
+		it('should let a user who manages all webhooks update a webhook created by someone else', async () => {
+			await grant([], ['user']);
+
+			const res = await update(userCredentials, adminIntegration, { name: 'Renamed by a manager' }).expect(200);
+
+			expect(res.body.integration).to.include({ name: 'Renamed by a manager' });
+		});
+
+		it('should find the webhook by its target URL', async () => {
+			await grant(['user'], []);
+			const { urls } = await stored(userIntegration);
+
+			const res = await update(userCredentials, userIntegration, {
+				integrationId: undefined,
+				target_url: urls?.[0],
+				name: 'Found by its URL',
+				urls,
+			}).expect(200);
+
+			expect(res.body.integration).to.include({ _id: userIntegration._id, name: 'Found by its URL' });
+		});
+
+		it('should refuse a room the user is not a member of, and keep the channel', async () => {
+			await grant(['user'], []);
+
+			const res = await update(userCredentials, userIntegration, { channel: `#${privateGroup.name}` }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-invalid-channel');
+			expect((await stored(userIntegration)).channel).to.deep.equal(['#general']);
+		});
+
+		it('should refuse a channel that does not start with # or @, and keep the channel', async () => {
+			await grant(['user'], []);
+
+			const res = await update(userCredentials, userIntegration, { channel: 'general' }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-invalid-channel-start-with-chars');
+			expect((await stored(userIntegration)).channel).to.deep.equal(['#general']);
+		});
+
+		it('should refuse a webhook without any URL, and keep its URLs', async () => {
+			await grant(['user'], []);
+			const previous = await stored(userIntegration);
+
+			const res = await update(userCredentials, userIntegration, { urls: [' '] }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-invalid-urls');
+			expect((await stored(userIntegration)).urls).to.deep.equal(previous.urls);
+		});
+
+		it('should keep the error of a script that does not compile, and replace it once the script compiles', async () => {
+			await grant(['user'], []);
+
+			await update(userCredentials, userIntegration, { script: 'class Script {' }).expect(200);
+			const broken = await stored(userIntegration);
+			expect(broken).to.have.property('scriptError');
+			expect(broken).to.not.have.property('scriptCompiled');
+
+			await update(userCredentials, userIntegration).expect(200);
+			const fixed = await stored(userIntegration);
+			expect(fixed).to.have.property('scriptCompiled');
+			expect(fixed).to.not.have.property('scriptError');
+		});
+	});
+
 	describe('[/integrations.remove]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to remove an outgoing integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
@@ -463,7 +613,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -482,7 +632,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -572,8 +722,6 @@ describe('[Outgoing Integrations]', () => {
 			await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
 		});
 
-		// the shared method enforces the permission (no route-level permissionsRequired), so a permission
-		// failure surfaces as 400 + errorType 'not_authorized', matching integrations.create above.
 		afterEach(() => updatePermission('manage-outgoing-integrations', ['admin']));
 
 		describe('[/integrations.clearHistory]', () => {
@@ -594,16 +742,17 @@ describe('[Outgoing Integrations]', () => {
 					.expect((res) => expect(res.body).to.have.property('success', false));
 			});
 
-			it('should fail with 400 when the user lacks the manage-outgoing-integrations permission', async () => {
+			it('should fail with 403 when the user lacks the manage-outgoing-integrations permission', async () => {
 				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
 				await request
 					.post(api('integrations.clearHistory'))
 					.set(credentials)
 					.send({ integrationId })
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
+						expect(res.body).to.have.property('error', 'Unauthorized');
 					});
 			});
 

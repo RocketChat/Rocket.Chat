@@ -1,21 +1,22 @@
-import { DARK_MODE_EVENT_NAME } from '@rocket.chat/storybook-dark-mode';
+// Keep in step with ../../storybook-config/src/DocsContainer.tsx, which Fuselage can't import: storybook-config depends on Fuselage.
 import { DocsContainer as BaseContainer } from '@storybook/addon-docs/blocks';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useEffect, useState } from 'react';
-import { addons } from 'storybook/preview-api';
-import { themes } from 'storybook/theming';
 
-const channel = addons.getChannel();
+import ComponentStatusNote from './ComponentStatusNote';
+import { readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes } from './theme';
 
-const DocsContainer = (props: ComponentPropsWithoutRef<typeof BaseContainer>) => {
-	const [isDark, setDark] = useState(false);
+const DocsContainer = ({ children, ...props }: ComponentPropsWithoutRef<typeof BaseContainer>) => {
+	const [mode, setMode] = useState(() => resolveThemeMode(readThemeGlobalFromUrl()));
 
-	useEffect(() => {
-		channel.on(DARK_MODE_EVENT_NAME, setDark);
-		return () => channel.removeListener(DARK_MODE_EVENT_NAME, setDark);
-	}, [setDark]);
+	useEffect(() => subscribeToThemeMode(props.context.channel, readThemeGlobalFromUrl(), setMode), [props.context.channel]);
 
-	return <BaseContainer {...props} theme={isDark ? themes.dark : themes.light} />;
+	return (
+		<BaseContainer {...props} theme={themes[mode]}>
+			<ComponentStatusNote context={props.context} mode={mode} />
+			{children}
+		</BaseContainer>
+	);
 };
 
 export default DocsContainer;

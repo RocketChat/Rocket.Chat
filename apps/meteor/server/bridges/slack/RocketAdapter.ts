@@ -7,7 +7,6 @@ import util from 'node:util';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
@@ -16,6 +15,7 @@ import { callbacks } from '../../lib/callbacks';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { settings } from '../../settings';
 
 export default class RocketAdapter {
@@ -187,7 +187,7 @@ export default class RocketAdapter {
 			return;
 		}
 
-		if (!rocketMessage.attachments || !rocketMessage.attachments.length) {
+		if (!rocketMessage.attachments?.length) {
 			return;
 		}
 
@@ -206,7 +206,7 @@ export default class RocketAdapter {
 
 			const attachment = this.getMessageAttachment(rocketMessage);
 			if (attachment) {
-				fileName = Meteor.absoluteUrl(attachment.title_link);
+				fileName = getWorkspaceURL(attachment.title_link);
 				if (!text) {
 					text = attachment.description;
 				}
@@ -251,7 +251,7 @@ export default class RocketAdapter {
 		for await (const member of members) {
 			if (member !== slackChannel.creator) {
 				const rocketUser = (await this.findUser(member)) || (await this.addUser(member));
-				if (rocketUser && rocketUser.username) {
+				if (rocketUser?.username) {
 					rocketUsers.push(rocketUser.username);
 				}
 			}
@@ -313,12 +313,12 @@ export default class RocketAdapter {
 					};
 
 					let lastSetTopic = 0;
-					if (slackChannel.topic && slackChannel.topic.value) {
+					if (slackChannel.topic?.value) {
 						roomUpdate.topic = slackChannel.topic.value;
 						lastSetTopic = slackChannel.topic.last_set;
 					}
 
-					if (slackChannel.purpose && slackChannel.purpose.value && slackChannel.purpose.last_set > lastSetTopic) {
+					if (slackChannel.purpose?.value && slackChannel.purpose.last_set > lastSetTopic) {
 						roomUpdate.topic = slackChannel.purpose.value;
 					}
 					await Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
@@ -358,7 +358,7 @@ export default class RocketAdapter {
 			if (user) {
 				const rocketUserData = user;
 				const isBot = rocketUserData.is_bot === true;
-				const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
+				const email = rocketUserData.profile?.email || '';
 				let existingRocketUser;
 				if (!isBot) {
 					existingRocketUser =
@@ -390,7 +390,7 @@ export default class RocketAdapter {
 						roles: isBot ? ['bot'] : ['user'],
 					};
 
-					if (rocketUserData.profile && rocketUserData.profile.real_name) {
+					if (rocketUserData.profile?.real_name) {
 						userUpdate.name = rocketUserData.profile.real_name;
 					}
 
@@ -421,7 +421,7 @@ export default class RocketAdapter {
 				}
 
 				const importIds = [rocketUserData.id];
-				if (isBot && rocketUserData.profile && rocketUserData.profile.bot_id) {
+				if (isBot && rocketUserData.profile?.bot_id) {
 					importIds.push(rocketUserData.profile.bot_id);
 				}
 				await Users.addImportIds(rocketUserData.rocketId, importIds);
@@ -532,7 +532,9 @@ export default class RocketAdapter {
 
 			slackMsgTxt.replace(regex, async (match, userId) => {
 				if (!this.userTags[userId]) {
-					(await this.findUser(userId)) || (await this.addUser(userId)); // This adds userTags for the userId
+					if (!(await this.findUser(userId))) {
+						await this.addUser(userId); // This adds userTags for the userId
+					}
 				}
 				const userTags = this.userTags[userId];
 				if (userTags) {

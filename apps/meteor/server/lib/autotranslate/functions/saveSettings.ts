@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../notifyListener';
@@ -18,10 +17,6 @@ export const saveAutoTranslateSettings = async (
 		});
 	}
 
-	check(rid, String);
-	check(field, String);
-	check(value, String);
-
 	if (['autoTranslate', 'autoTranslateLanguage'].indexOf(field) === -1) {
 		throw new ClientSafeError('error-invalid-settings', 'Invalid settings field', {
 			method: 'saveAutoTranslateSettings',
@@ -38,7 +33,7 @@ export const saveAutoTranslateSettings = async (
 	let shouldNotifySubscriptionChanged = false;
 
 	switch (field) {
-		case 'autoTranslate':
+		case 'autoTranslate': {
 			const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
 			if (room && value === '1') {
 				throw new ClientSafeError('error-e2e-enabled', 'Enabling auto-translation in E2E encrypted rooms is not allowed', {
@@ -62,12 +57,14 @@ export const saveAutoTranslateSettings = async (
 			}
 
 			break;
-		case 'autoTranslateLanguage':
+		}
+		case 'autoTranslateLanguage': {
 			const updateAutoTranslateLanguage = await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
 			if (updateAutoTranslateLanguage.modifiedCount) {
 				shouldNotifySubscriptionChanged = true;
 			}
 			break;
+		}
 	}
 
 	if (shouldNotifySubscriptionChanged) {

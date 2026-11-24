@@ -13,6 +13,7 @@ export default {
 	},
 	args: {
 		room: mockedRoom,
+		showIdleAgents: true,
 	},
 } satisfies Meta<typeof ForwardChatModal>;
 

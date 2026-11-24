@@ -39,6 +39,24 @@ export const useBannerContextValue = ({ view, values }: UseBannerContextValuePar
 
 			actionManager.disposeView(view.viewId);
 		},
+		suggest: async ({ appId, actionId, blockId, value, viewId }) => {
+			if (!viewId) {
+				return {};
+			}
+
+			return actionManager.suggestOptions(appId, {
+				type: 'blockSuggestion',
+				actionId,
+				blockId,
+				appId,
+				value,
+				container: {
+					type: 'view',
+					id: viewId,
+				},
+				viewId,
+			});
+		},
 		updateState: (): void => undefined,
 		appId: view.appId,
 		viewId: view.viewId,

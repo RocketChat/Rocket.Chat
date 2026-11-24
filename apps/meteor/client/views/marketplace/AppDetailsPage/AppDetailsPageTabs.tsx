@@ -1,7 +1,7 @@
-import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { PageTabs } from '../../../components/PageTabs';
 import type { ISettings } from '../definitions/ISettings';
 
 export type AppDetailsPageTabsProps = {
@@ -26,52 +26,24 @@ const AppDetailsPageTabs = ({
 
 	const router = useRouter();
 
-	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs' | 'requests' | 'instances') => {
-		router.navigate(
-			{
-				name: 'marketplace',
-				params: { ...router.getRouteParameters(), tab },
-			},
-			{ replace: true },
-		);
-	};
-
 	return (
-		<Tabs>
-			<TabsItem onClick={() => handleTabClick('details')} selected={!tab || tab === 'details'}>
-				{t('Details')}
-			</TabsItem>
-			{isAdminUser && context !== 'private' && (
-				<TabsItem onClick={() => handleTabClick('requests')} selected={tab === 'requests'}>
-					{t('Requests')}
-				</TabsItem>
-			)}
-			{isSecurityVisible && (
-				<TabsItem onClick={() => handleTabClick('security')} selected={tab === 'security'}>
-					{t('Security')}
-				</TabsItem>
-			)}
-			{context !== 'private' && (
-				<TabsItem onClick={() => handleTabClick('releases')} selected={tab === 'releases'}>
-					{t('Releases')}
-				</TabsItem>
-			)}
-			{installed && Boolean(settings && Object.values(settings).length) && isAdminUser && (
-				<TabsItem onClick={() => handleTabClick('settings')} selected={tab === 'settings'}>
-					{t('Settings')}
-				</TabsItem>
-			)}
-			{installed && isAdminUser && (
-				<TabsItem onClick={() => handleTabClick('logs')} selected={tab === 'logs'}>
-					{t('Logs')}
-				</TabsItem>
-			)}
-			{hasCluster && installed && isAdminUser && (
-				<TabsItem onClick={() => handleTabClick('instances')} selected={tab === 'instances'}>
-					{t('Instances')}
-				</TabsItem>
-			)}
-		</Tabs>
+		<PageTabs<string>
+			items={[
+				{ id: 'details', label: t('Details') },
+				{ id: 'requests', label: t('Requests'), hidden: !isAdminUser || context === 'private' },
+				{ id: 'security', label: t('Security'), hidden: !isSecurityVisible },
+				{ id: 'releases', label: t('Releases'), hidden: context === 'private' },
+				{
+					id: 'settings',
+					label: t('Settings'),
+					hidden: !(installed && Boolean(settings && Object.values(settings).length) && isAdminUser),
+				},
+				{ id: 'logs', label: t('Logs'), hidden: !(installed && isAdminUser) },
+				{ id: 'instances', label: t('Instances'), hidden: !(hasCluster && installed && isAdminUser) },
+			]}
+			selected={tab || 'details'}
+			onSelect={(tab) => router.navigate({ name: 'marketplace', params: { ...router.getRouteParameters(), tab } }, { replace: true })}
+		/>
 	);
 };
 

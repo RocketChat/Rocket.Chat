@@ -31,12 +31,26 @@ describe('installDesktopRequire', () => {
 		expect(() => target.require?.('/client/lib/settings/index.ts')).toThrow("Cannot find module '/client/lib/settings/index.ts'");
 	});
 
-	it('keeps an existing require function', () => {
-		const existing = jest.fn() as DesktopWindow['require'];
+	it('answers the server info over an existing require that does not know it', () => {
+		const existing = jest.fn(() => {
+			throw Object.assign(new Error("Cannot find module '/rocketchat.info'"), { code: 'MODULE_NOT_FOUND' });
+		});
 		const target = createWindow({ RocketChatDesktop: {} as Window['RocketChatDesktop'], require: existing });
 
 		installDesktopRequire(target, info);
 
-		expect(target.require).toBe(existing);
+		expect(target.require?.('/rocketchat.info')).toEqual({ Info: info });
+		expect(existing).not.toHaveBeenCalled();
+	});
+
+	it('leaves every other module to the existing require', () => {
+		const meteorModule = { Meteor: {} };
+		const existing = jest.fn(() => meteorModule);
+		const target = createWindow({ RocketChatDesktop: {} as Window['RocketChatDesktop'], require: existing });
+
+		installDesktopRequire(target, info);
+
+		expect(target.require?.('meteor/meteor')).toBe(meteorModule);
+		expect(existing).toHaveBeenCalledWith('meteor/meteor');
 	});
 });

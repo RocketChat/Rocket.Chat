@@ -25,7 +25,11 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) 
 	const variant = getVariant(style, secondary);
 
 	const handleClick: MouseEventHandler = (e) => {
-		void action({ target: e.currentTarget });
+		const opensUrl = Boolean(block.confirm && url && UiKit.isSafeUrl(url));
+		if (opensUrl) {
+			e.preventDefault();
+		}
+		void action({ target: e.currentTarget, onConfirmed: opensUrl ? () => window.open(url, '_blank', 'noopener') : undefined });
 	};
 
 	if (url && UiKit.isSafeUrl(url)) {

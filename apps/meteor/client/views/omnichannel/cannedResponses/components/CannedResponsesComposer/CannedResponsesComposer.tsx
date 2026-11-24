@@ -8,13 +8,13 @@ import {
 	MessageComposerActionsDivider,
 } from '@rocket.chat/ui-composer';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import type { ComponentProps, ChangeEvent } from 'react';
 import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
-import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
 import { emoji } from '../../../../../lib/emoji';
 
 export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
@@ -91,7 +91,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 	};
 
 	const openPlaceholderSelect = (): void => {
-		textAreaRef?.current && textAreaRef.current.focus();
+		textAreaRef?.current?.focus();
 		setVisible(!visible);
 	};
 
@@ -118,7 +118,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					{visible && (
 						<Backdrop
 							onClick={(): void => {
-								textAreaRef?.current && textAreaRef.current.focus();
+								textAreaRef?.current?.focus();
 								setVisible(false);
 							}}
 						/>

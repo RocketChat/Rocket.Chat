@@ -19,11 +19,11 @@ describe('useStatusItems', () => {
 					.build(),
 			});
 
-		const withoutOffline = renderStatusItems(false);
-		await waitFor(() => expect(withoutOffline.result.current).toContain('online'));
-		expect(withoutOffline.result.current).not.toContain('offline');
+		const { result: withoutOffline } = renderStatusItems(false);
+		await waitFor(() => expect(withoutOffline.current).toContain('online'));
+		expect(withoutOffline.current).not.toContain('offline');
 
-		const withOffline = renderStatusItems(true);
-		expect(withOffline.result.current).toContain('offline');
+		const { result: withOffline } = renderStatusItems(true);
+		expect(withOffline.current).toContain('offline');
 	});
 });

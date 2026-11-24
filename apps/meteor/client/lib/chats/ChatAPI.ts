@@ -102,8 +102,6 @@ export type DataAPI = {
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
 	findSubscription(): Promise<ISubscription | undefined>;
 	getSubscription(): Promise<ISubscription>;
-	findSubscriptionFromMessage(message: IMessage): Promise<ISubscription | undefined>;
-	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
 export type EncryptedFileUploadContent = {

@@ -135,10 +135,8 @@ export const validateUnauthorizedErrorResponse = ajv.compile<UnauthorizedErrorRe
 
 type ForbiddenErrorResponse = {
 	success: false;
-	status?: string;
-	message?: string;
-	error?: string;
-	errorType?: string;
+	error: string;
+	errorType: 'error-forbidden';
 };
 
 const ForbiddenErrorResponseSchema = {
@@ -146,12 +144,10 @@ const ForbiddenErrorResponseSchema = {
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
-		status: { type: 'string' },
-		message: { type: 'string' },
 		error: { type: 'string' },
-		errorType: { type: 'string' },
+		errorType: { type: 'string', enum: ['error-forbidden'] },
 	},
-	required: ['success'],
+	required: ['success', 'error', 'errorType'],
 	additionalProperties: false,
 };
 

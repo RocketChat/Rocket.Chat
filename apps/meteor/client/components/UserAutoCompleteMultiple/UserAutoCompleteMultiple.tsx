@@ -94,8 +94,12 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 				const newAddedUsername = usernames.filter((username) => !value?.includes(username))[0];
 				const removedUsername = value?.filter((username) => !usernames.includes(username))[0];
 				setFilter('');
-				newAddedUsername && onAddUser(newAddedUsername);
-				removedUsername && onRemoveUser(removedUsername);
+				if (newAddedUsername) {
+					onAddUser(newAddedUsername);
+				}
+				if (removedUsername) {
+					onRemoveUser(removedUsername);
+				}
 			},
 			[onChange, setFilter, onAddUser, onRemoveUser, value],
 		);
@@ -110,7 +114,7 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 					onChange={handleOnChange}
 					filter={filter}
 					setFilter={setFilter}
-					renderSelected={({ value: username, onMouseDown }) => {
+					renderSelected={({ value: username, onMouseDown, onClick }) => {
 						const currentCachedOption = selectedCache[username] || {};
 
 						return (
@@ -120,6 +124,7 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 								name={currentCachedOption.name}
 								username={currentCachedOption.username || username}
 								onMouseDown={onMouseDown}
+								onClick={onClick}
 							/>
 						);
 					}}

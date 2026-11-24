@@ -28,4 +28,5 @@ it('should look good', async () => {
 	});
 
 	await userEvent.click(screen.getByRole('button', { name: 'Request' }));
+	expect(screen.getByRole('button', { name: 'Request' })).toBeDisabled();
 });

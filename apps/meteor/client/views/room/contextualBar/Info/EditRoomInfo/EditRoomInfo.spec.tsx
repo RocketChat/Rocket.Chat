@@ -74,13 +74,13 @@ const selectSystemMessageOption = async (translationKey: string) => {
 		throw new Error('Could not find a listbox containing options');
 	}
 
-	const optionEl = within(listbox).getByText(translationKey).closest('li[role="option"]');
-
-	if (!optionEl) {
+	const option = within(listbox)
+		.getAllByRole('option', { hidden: true })
+		.find((element) => within(element).queryByText(translationKey));
+	if (!option) {
 		throw new Error(`Could not find option with text "${translationKey}"`);
 	}
-
-	await userEvent.click(optionEl);
+	await userEvent.click(option);
 };
 
 it('should send systemMessages: [] when hideSysMes is toggled OFF', async () => {

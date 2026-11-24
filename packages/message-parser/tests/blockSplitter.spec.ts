@@ -1,4 +1,4 @@
-import { BlockSplitter, BlockType } from '../src/BlockSplitter';
+import { BlockSplitter, BlockType } from '../src/BlockSplitter.js';
 
 describe('BlockSplitter', () => {
 	it('should split simple paragraphs', () => {

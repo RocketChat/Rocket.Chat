@@ -2,11 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp, UiKitCoreAppBlockActionPayload } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Messages } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../lib/i18n';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 
 const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMessage['mentions'], undefined> => {
@@ -17,7 +17,7 @@ const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMess
 		}
 		return mentions;
 	} catch (error) {
-		throw new Error('Invalid payload');
+		throw new Error('Invalid payload', { cause: error });
 	}
 };
 
@@ -89,7 +89,7 @@ export class MentionModule implements IUiKitCoreApp {
 				lng: user.language,
 			});
 
-			const link = new URL(Meteor.absoluteUrl(roomPath));
+			const link = new URL(getWorkspaceURL(roomPath));
 			link.searchParams.set('msg', message._id);
 			const text = `[ ](${link.toString()})\n${messageText}`;
 

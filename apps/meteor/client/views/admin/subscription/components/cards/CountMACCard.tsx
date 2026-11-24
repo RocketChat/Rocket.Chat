@@ -1,8 +1,8 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Icon, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
 import FeatureUsageCard from '../FeatureUsageCard';
-import FeatureUsageCardBody from '../FeatureUsageCardBody';
 
 export type CountMACCardProps = { macsCount: number };
 
@@ -17,10 +17,10 @@ const CountMACCard = ({ macsCount }: CountMACCardProps) => {
 			}}
 		>
 			<FeatureUsageCardBody>
-				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center' gap={4}>
+				<Stack direction='row' align='center' justify='center' gap='x4'>
 					<Icon color='hint' name='headset' size={40} />
-					{macsCount}
-				</Box>
+					<Text fontScale='h1'>{macsCount}</Text>
+				</Stack>
 			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);

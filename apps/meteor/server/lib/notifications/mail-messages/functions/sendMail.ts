@@ -3,11 +3,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { generatePath } from '../../../../../lib/utils/generatePath';
 import { SystemLogger } from '../../../logger/system';
+import { getWorkspaceURL } from '../../../utils/getURL';
 import { placeholders } from '../../../utils/placeholders';
 import * as Mailer from '../../email/api';
 
@@ -48,7 +48,7 @@ export const sendMail = async function ({
 
 		const email = `${user.name} <${user.emails?.[0].address}>`;
 		const html = placeholders.replace(body, {
-			unsubscribe: Meteor.absoluteUrl(
+			unsubscribe: getWorkspaceURL(
 				generatePath('mailer/unsubscribe/:_id/:createdAt', {
 					_id: user._id,
 					createdAt: user.createdAt?.getTime().toString() || '',
@@ -72,13 +72,13 @@ export const sendMail = async function ({
 
 	const users = await Users.find(userQuery).toArray();
 
-	for await (const u of users) {
+	for (const u of users) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;
 
 			const html = placeholders.replace(body, {
-				unsubscribe: Meteor.absoluteUrl(
+				unsubscribe: getWorkspaceURL(
 					generatePath('mailer/unsubscribe/:_id/:createdAt', {
 						_id: user._id,
 						createdAt: user.createdAt?.getTime().toString() || '',

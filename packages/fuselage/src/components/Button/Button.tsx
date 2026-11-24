@@ -28,7 +28,7 @@ function Button({
 	external,
 	icon,
 	is = 'button',
-	rel: _rel,
+	rel,
 	size,
 	square,
 	compact,
@@ -39,7 +39,7 @@ function Button({
 }: ButtonProps) {
 	const extraProps =
 		(is === 'a' && {
-			rel: external ? 'noopener noreferrer' : undefined,
+			rel: rel ?? (external ? 'noopener noreferrer' : undefined),
 			target: external ? '_blank' : undefined,
 		}) ||
 		(is === 'button' && {

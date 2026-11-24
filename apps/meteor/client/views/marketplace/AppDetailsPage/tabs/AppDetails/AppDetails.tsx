@@ -1,16 +1,19 @@
-import { Box, Button, Callout, Chip, Margins, Text } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { Button, Callout, Chip, Stack, Text } from '@rocket.chat/fuselage';
+import { ExternalLink, useHasLicenseModule } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
+import ContentColumn from '../../../../../components/ContentColumn';
+import RichContent from '../../../../../components/RichContent';
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
+import AppInfoSection from '../../layout/AppInfoSection';
 
 export type AppDetailsProps = {
 	app: AppInfo;
@@ -49,108 +52,100 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const licenseErrors = Object.keys(app.licenseValidation?.errors ?? {});
 
 	return (
-		<Box marginBlockStart='x32' maxWidth='x640' width='full' marginInline='auto' color='default'>
-			{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
-				<Box display='flex' flexDirection='column' gap={16} marginBlock={16}>
-					{showAddonCallout && (
-						<Callout
-							title={t('Subscription_add-on_required')}
-							type='info'
-							actions={
-								<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
-									{t('Contact_sales')}
-								</Button>
-							}
-						>
-							{t('App_cannot_be_enabled_without_add-on')}
-						</Callout>
+		<AppDetailsTabContent>
+			<ContentColumn size='wide'>
+				<Stack gap='x32'>
+					{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
+						<Stack gap='x16'>
+							{showAddonCallout && (
+								<Callout
+									title={t('Subscription_add-on_required')}
+									type='info'
+									actions={
+										<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+											{t('Contact_sales')}
+										</Button>
+									}
+								>
+									{t('App_cannot_be_enabled_without_add-on')}
+								</Callout>
+							)}
+							{licenseWarnings.map((key) => (
+								<Callout key={key} type='warning'>
+									{t(`Apps_License_Message_${key}`)}
+								</Callout>
+							))}
+							{licenseErrors.map((key) => (
+								<Callout key={key} type='danger'>
+									{t(`Apps_License_Message_${key}`)}
+								</Callout>
+							))}
+						</Stack>
 					)}
-					{licenseWarnings.map((key) => (
-						<Callout key={key} type='warning'>
-							{t(`Apps_License_Message_${key}`)}
-						</Callout>
-					))}
-					{licenseErrors.map((key) => (
-						<Callout key={key} type='danger'>
-							{t(`Apps_License_Message_${key}`)}
-						</Callout>
-					))}
-				</Box>
-			)}
 
-			<Box display='flex' flexDirection='column'>
-				<Margins block={16}>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
-					<Box is='section'>
-						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
-							{t('Description')}
-						</Box>
-						<Box
-							dangerouslySetInnerHTML={{
-								__html: isMarkdown
-									? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
-									: DOMPurify.sanitize(description, purifyOptions),
-							}}
-							withRichContent
-						/>
-					</Box>
-
-					<Box is='section'>
-						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
-							{t('Categories')}
-						</Box>
-						<Box
-							display='flex'
-							flexDirection='row'
-							flexWrap='wrap'
-							justifyContent='start'
-							alignItems='center'
-							gap={8}
-							padding={categories.length > 0 ? 4 : undefined}
-						>
-							{categories.map((current) => (
-								<Chip key={current} label>
-									{current}
-								</Chip>
-							))}
-						</Box>
-					</Box>
-
-					<Box is='section'>
-						<Box fontScale='h4' marginBlockEnd={8}>
-							{t('Contact')}
-						</Box>
-						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' marginBlockEnd={24}>
-							<Box display='flex' flexDirection='column' marginInlineEnd={12} flexGrow={1}>
-								<Text fontScale='h4' color='hint'>
-									{t('Author_Site')}
-								</Text>
-								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
-							</Box>
-							<Box display='flex' flexDirection='column' flexGrow={1}>
-								<Text fontScale='h4' color='hint'>
-									{t('Support')}
-								</Text>
-								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
-							</Box>
-						</Box>
-						<>
-							<Text fontScale='h4' color='hint'>
-								{t('Documentation')}
+					<AppInfoSection
+						title={
+							<Text fontScale='h4' color='titles-labels'>
+								{t('Description')}
 							</Text>
-							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
-						</>
-					</Box>
+						}
+					>
+						<RichContent
+							dangerouslySetInnerHTML={{
+								__html: DOMPurify.sanitize(isMarkdown ? detailedDescription.rendered : description, purifyOptions),
+							}}
+						/>
+					</AppInfoSection>
 
-					{apis?.length ? (
-						<Box is='section'>
-							<AppDetailsAPIs apis={apis || []} />
-						</Box>
-					) : null}
-				</Margins>
-			</Box>
-		</Box>
+					<AppInfoSection
+						title={
+							<Text fontScale='h4' color='titles-labels'>
+								{t('Categories')}
+							</Text>
+						}
+					>
+						{categories.length > 0 && (
+							<Stack direction='row' wrap gap='x8'>
+								{categories.map((current) => (
+									<Chip key={current} label>
+										{current}
+									</Chip>
+								))}
+							</Stack>
+						)}
+					</AppInfoSection>
+
+					<AppInfoSection title={<Text fontScale='h4'>{t('Contact')}</Text>}>
+						<Stack gap='x24'>
+							<Stack direction='row' wrap gap='x12'>
+								<Stack grow align='start'>
+									<Text fontScale='h4' color='hint'>
+										{t('Author_Site')}
+									</Text>
+									{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
+								</Stack>
+								<Stack grow align='start'>
+									<Text fontScale='h4' color='hint'>
+										{t('Support')}
+									</Text>
+									{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
+								</Stack>
+							</Stack>
+							<Stack align='start'>
+								<Text fontScale='h4' color='hint'>
+									{t('Documentation')}
+								</Text>
+								{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+							</Stack>
+						</Stack>
+					</AppInfoSection>
+
+					{apis?.length ? <AppDetailsAPIs apis={apis} /> : null}
+				</Stack>
+			</ContentColumn>
+		</AppDetailsTabContent>
 	);
 };
 

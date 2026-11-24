@@ -73,7 +73,7 @@ Receives a callback as the first parameter (your submit handler), and an object 
 **Usage:**
 
 ```tsx
-import { useFormSubmitWithDirtyCheck } from '/hooks/useFormSubmitWithDirtyCheck';
+import { useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 
 const handleSave = useFormSubmitWithDirtyCheck(
   async (data: FormData) => {
@@ -105,7 +105,7 @@ This hook is recommended when the same form component is used for both creation 
 
 ```tsx
 import { useForm, Controller } from 'react-hook-form';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
+import { useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 
 type FormData = {
   name: string;

@@ -1,13 +1,9 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { updateAuditedByUser, updateAuditedBySystem, updateAuditedByApp, resetAuditedSettingByUser } from './auditedSettingUpdates';
 
 const mockCreateAuditServerEvent = jest.fn();
-jest.mock('@rocket.chat/models', () => ({
-	ServerEvents: {
-		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
-	},
-}));
 
 const mockSettings = new Map<string, ISetting>();
 
@@ -21,6 +17,12 @@ jest.mock('../cached', () => {
 });
 
 describe('auditedSettingUpdates', () => {
+	beforeAll(() => {
+		mockModel('ServerEvents', {
+			createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
+		});
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockSettings.clear();

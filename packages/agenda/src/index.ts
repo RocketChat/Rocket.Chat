@@ -1,4 +1,4 @@
-import { Agenda } from './Agenda';
-import { Job } from './Job';
+import { Agenda } from './Agenda.js';
+import { Job } from './Job.js';
 
 export { Agenda, Job };

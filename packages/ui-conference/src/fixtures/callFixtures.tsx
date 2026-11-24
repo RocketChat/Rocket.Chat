@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { JOHN_DOE_ID } from './storyFixtures';
+import CallPinScope from '../call/CallPinScope';
 import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
 import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
 import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
@@ -152,7 +153,9 @@ const CallContexts = ({
 				<DeviceSelectionProvider value={devices}>
 					<VideoQualityProvider value={quality}>
 						<NoiseSuppressionProvider value={noise}>
-							<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+							<CallDiagnosticsProvider value={diagnostics}>
+								<CallPinScope>{children}</CallPinScope>
+							</CallDiagnosticsProvider>
 						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>

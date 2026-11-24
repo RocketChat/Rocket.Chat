@@ -3,7 +3,7 @@ import passport from 'passport';
 import type { DoneCallback, Profile } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
-import { passportOAuthCallback } from './passportOAuthCallback';
+import { passportOAuthCallback, passportOAuthErrorCallback } from './passportOAuthCallback';
 import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { verifyFunction } from './verifyFunction';
 import { oAuthRouter } from '../../configuration/configurePassport';
@@ -56,7 +56,8 @@ export const addPassportCustomOAuth = (
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
 		allowPassportOAuthMiddleware(serviceName, isCustomOAuth),
-		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
+		passport.authenticate(serviceName, { failureRedirect: `${siteUrl}/login`, failWithError: true, keepSessionInfo: true }),
 		passportOAuthCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
+		passportOAuthErrorCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
 	);
 };

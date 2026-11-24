@@ -2,10 +2,11 @@ import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 
 import { trim } from '../../../lib/utils/stringUtils';
+import { sendVerificationEmail } from '../../lib/auth/accountEmails';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
+import { SystemLogger } from '../../lib/logger/system';
 import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
 import { validateEmailDomain } from '../../lib/validateEmailDomain';
 import { settings } from '../../settings';
@@ -19,16 +20,11 @@ export const registerUser = async (formData: {
 	reason?: string;
 }): Promise<string> => {
 	const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
-	check(
-		formData,
-		Match.ObjectIncluding({
-			email: String,
-			pass: String,
-			name: String,
-			secretURL: Match.Optional(String),
-			reason: Match.Optional(String),
-		}),
-	);
+	if (typeof formData.name !== 'string' || (formData.reason !== undefined && typeof formData.reason !== 'string')) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'registerUser',
+		});
+	}
 
 	if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
 		throw new ClientSafeError('error-user-registration-disabled', 'User registration is disabled', {
@@ -87,7 +83,7 @@ export const registerUser = async (formData: {
 	}
 
 	try {
-		Accounts.sendVerificationEmail(userId, userData.email);
+		void sendVerificationEmail(userId, userData.email).catch((err) => SystemLogger.error({ err }));
 	} catch (error) {
 		// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
 	}

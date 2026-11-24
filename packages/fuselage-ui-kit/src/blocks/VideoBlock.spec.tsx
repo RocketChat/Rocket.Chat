@@ -63,7 +63,7 @@ it.each([
 	renderVideo(video({ video_url: url }));
 
 	expect(screen.getByRole('button', { name: 'Release walkthrough' })).toBeDisabled();
-	expect(document.querySelector('iframe')).toBeNull();
+	expect(screen.queryByTitle('Release walkthrough')).not.toBeInTheDocument();
 });
 
 it('leaves out a title or description that is not text', () => {

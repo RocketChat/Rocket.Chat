@@ -13,16 +13,16 @@ const serialize = ejson.stringify;
 
 /** Decodes an incoming DDP message, unwrapping the SockJS array envelope when present. */
 export function decode(data: WebSocket.Data, isBinary: boolean): IPacket {
-	if (isBinary) {
+	if (isBinary || !(typeof data === 'string' || Buffer.isBuffer(data))) {
 		throw new ClientSafeError(500, 'Binary data not supported');
 	}
 	const packet = data.toString();
 
 	const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
-	return ejson.parse(payload);
+	return ejson.parse(payload) as IPacket;
 }
 
-const serializeError = (error: Error | ClientSafeError): object => (isClientSafeError(error) ? error.toJSON() : error);
+const serializeError = (error: Error | ClientSafeError): object => (isClientSafeError(error) ? (error.toJSON() as object) : error);
 
 export const encodeConnected = (session: string): string => serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session });
 

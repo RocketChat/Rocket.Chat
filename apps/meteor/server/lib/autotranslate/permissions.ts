@@ -1,8 +1,7 @@
 import { Permissions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-Meteor.startup(async () => {
+export const createAutoTranslatePermissions = async (): Promise<void> => {
 	if (!(await Permissions.findOne({ _id: 'auto-translate' }))) {
 		await Permissions.create('auto-translate', ['admin']);
 	}
-});
+};

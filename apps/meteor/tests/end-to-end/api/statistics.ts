@@ -1,9 +1,16 @@
 import { after, before, describe, it } from 'node:test';
 
+import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { withDatabase } from '../../data/database.helper';
 import { updatePermission } from '../../data/permissions.helper';
+import { withTimeout } from '../../data/utils';
+
+const counterValue = async (settingId: string) =>
+	(await withDatabase((db) => db.collection<ISetting>('rocketchat_settings').findOne({ _id: settingId })))?.value as number;
 
 describe('[Statistics]', () => {
 	before((_t, done) => getCredentials(done));
@@ -15,10 +22,10 @@ describe('[Statistics]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-statistics', []);
 
-			const res = await request.get(api('statistics')).set(credentials).expect(400);
+			const res = await request.get(api('statistics')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return an object with the statistics', async () => {
@@ -47,10 +54,10 @@ describe('[Statistics]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-statistics', []);
 
-			const res = await request.get(api('statistics.list')).set(credentials).expect(400);
+			const res = await request.get(api('statistics.list')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return an array with the statistics', async () => {
@@ -82,6 +89,47 @@ describe('[Statistics]', () => {
 			expect(res.body).to.have.property('offset');
 			expect(res.body).to.have.property('total');
 			expect(res.body).to.have.property('count');
+		});
+	});
+
+	describe('[/statistics.telemetry]', () => {
+		const waitForSettingChange = (settingId: string, previous: unknown) =>
+			withTimeout(async (signal) => {
+				let value = await counterValue(settingId);
+				while (value === previous && !signal.aborted) {
+					await sleep(50);
+					value = await counterValue(settingId);
+				}
+				return value;
+			}, 5_000);
+
+		it('should count a feature use the client reports', async () => {
+			const previous = await counterValue('Manual_Entry_User_Count');
+
+			await request
+				.post(api('statistics.telemetry'))
+				.set(credentials)
+				.send({ params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }] })
+				.expect(200);
+
+			expect(await waitForSettingChange('Manual_Entry_User_Count', previous)).to.equal(previous + 1);
+		});
+
+		it('should count the jitsi slash command and no other command', async () => {
+			const previous = await counterValue('Jitsi_Start_SlashCommands_Count');
+
+			await request
+				.post(api('statistics.telemetry'))
+				.set(credentials)
+				.send({
+					params: [
+						{ eventName: 'slashCommandsStats', command: 'shrug' },
+						{ eventName: 'slashCommandsStats', command: 'jitsi' },
+					],
+				})
+				.expect(200);
+
+			expect(await waitForSettingChange('Jitsi_Start_SlashCommands_Count', previous)).to.equal(previous + 1);
 		});
 	});
 });

@@ -1,10 +1,7 @@
 import './contact-verification';
-import './ldap';
 import './ldapCore';
 import './oauth';
-import './outlookCalendar';
 import './saml';
-import './videoConference';
 import './voip';
 import './abac';
 import './restricted-message-history';

@@ -25,6 +25,7 @@ import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ContentColumn from '../../../components/ContentColumn';
 import AutoCompleteDepartment from '../../omnichannel/components/AutoCompleteDepartment';
 
 type EmailInboxFormData = {
@@ -51,6 +52,55 @@ export type EmailInboxFormProps = {
 	inboxData?: IEmailInboxPayload;
 };
 
+const emptyFormValues: EmailInboxFormData = {
+	active: true,
+	name: '',
+	email: '',
+	description: '',
+	senderInfo: '',
+	department: '',
+	smtpServer: '',
+	smtpPort: '587',
+	smtpUsername: '',
+	smtpPassword: '',
+	smtpSecure: false,
+	imapServer: '',
+	imapPort: '993',
+	imapUsername: '',
+	imapPassword: '',
+	imapSecure: false,
+	imapRetries: '10',
+};
+
+const getEmailInboxFormValues = ({
+	active,
+	name,
+	email,
+	description = '',
+	senderInfo = '',
+	department = '',
+	smtp,
+	imap,
+}: IEmailInboxPayload): EmailInboxFormData => ({
+	active,
+	name,
+	email,
+	description,
+	senderInfo,
+	department,
+	smtpServer: smtp.server ?? '',
+	smtpPort: String(smtp.port ?? 587),
+	smtpUsername: smtp.username ?? '',
+	smtpPassword: smtp.password ?? '',
+	smtpSecure: smtp.secure ?? false,
+	imapServer: imap.server ?? '',
+	imapPort: String(imap.port ?? 993),
+	imapUsername: imap.username ?? '',
+	imapPassword: imap.password ?? '',
+	imapSecure: imap.secure ?? false,
+	imapRetries: String(imap.maxRetries ?? 10),
+});
+
 const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -68,27 +118,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 		handleSubmit,
 		formState: { errors, isDirty },
 	} = useForm<EmailInboxFormData>({
-		values: {
-			active: inboxData?.active ?? true,
-			name: inboxData?.name ?? '',
-			email: inboxData?.email ?? '',
-			description: inboxData?.description ?? '',
-			senderInfo: inboxData?.senderInfo ?? '',
-			department: inboxData?.department ?? '',
-			// SMTP
-			smtpServer: inboxData?.smtp.server ?? '',
-			smtpPort: String(inboxData?.smtp.port ?? 587),
-			smtpUsername: inboxData?.smtp.username ?? '',
-			smtpPassword: inboxData?.smtp.password ?? '',
-			smtpSecure: inboxData?.smtp.secure ?? false,
-			// IMAP
-			imapServer: inboxData?.imap.server ?? '',
-			imapPort: String(inboxData?.imap.port ?? 993),
-			imapUsername: inboxData?.imap.username ?? '',
-			imapPassword: inboxData?.imap.password ?? '',
-			imapSecure: inboxData?.imap.secure ?? false,
-			imapRetries: String(inboxData?.imap.maxRetries ?? 10),
-		},
+		values: inboxData ? getEmailInboxFormValues(inboxData) : emptyFormValues,
 		mode: 'all',
 	});
 
@@ -211,7 +241,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 
 	return (
 		<PageScrollableContentWithShadow>
-			<Box maxWidth='x600' width='full' alignSelf='center'>
+			<ContentColumn>
 				<Accordion>
 					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
@@ -618,7 +648,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 						</FieldRow>
 					</Field>
 				</Accordion>
-			</Box>
+			</ContentColumn>
 		</PageScrollableContentWithShadow>
 	);
 };

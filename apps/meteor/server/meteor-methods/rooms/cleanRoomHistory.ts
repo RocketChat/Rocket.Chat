@@ -16,6 +16,7 @@ type CleanRoomHistoryParams = {
 	filesOnly?: boolean;
 	fromUsers?: string[];
 	ignoreThreads?: boolean;
+	ignoreDiscussionOrigin?: boolean;
 };
 
 export const cleanRoomHistoryMethod = async (
@@ -31,6 +32,7 @@ export const cleanRoomHistoryMethod = async (
 		filesOnly = false,
 		fromUsers = [],
 		ignoreThreads,
+		ignoreDiscussionOrigin,
 	}: CleanRoomHistoryParams,
 ): Promise<number> => {
 	if (!(await hasPermissionAsync(userId, 'clean-channel-history', roomId))) {
@@ -54,5 +56,6 @@ export const cleanRoomHistoryMethod = async (
 		filesOnly,
 		fromUsers,
 		ignoreThreads,
+		ignoreDiscussionOrigin,
 	});
 };

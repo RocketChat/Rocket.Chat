@@ -1,5 +1,5 @@
 import { AirGappedRestriction } from '@rocket.chat/license';
-import { Statistics } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { sendUsageReportAndComputeRestriction } from './usageReport';
 
@@ -9,17 +9,19 @@ jest.mock('@rocket.chat/license', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	Statistics: {
-		findLastStatsToken: jest.fn(),
-	},
-}));
+const statisticsModel = {
+	findLastStatsToken: jest.fn(),
+};
 
 jest.mock('../lib/statistics/functions/sendUsageReport', () => ({
 	sendUsageReport: () => undefined,
 }));
 
 describe('sendUsageReportAndComputeRestriction', () => {
+	beforeAll(() => {
+		mockModel('Statistics', statisticsModel);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -29,25 +31,25 @@ describe('sendUsageReportAndComputeRestriction', () => {
 		await sendUsageReportAndComputeRestriction(mockStatsToken);
 
 		expect(AirGappedRestriction.computeRestriction).toHaveBeenCalledWith(mockStatsToken);
-		expect(Statistics.findLastStatsToken).not.toHaveBeenCalled();
+		expect(statisticsModel.findLastStatsToken).not.toHaveBeenCalled();
 	});
 
 	it('should use findLastStatsToken result when statsToken is omitted', async () => {
 		const mockLastToken = 'last-token';
-		(Statistics.findLastStatsToken as jest.Mock).mockResolvedValue(mockLastToken);
+		statisticsModel.findLastStatsToken.mockResolvedValue(mockLastToken);
 
 		await sendUsageReportAndComputeRestriction();
 
-		expect(Statistics.findLastStatsToken).toHaveBeenCalled();
+		expect(statisticsModel.findLastStatsToken).toHaveBeenCalled();
 		expect(AirGappedRestriction.computeRestriction).toHaveBeenCalledWith(mockLastToken);
 	});
 
 	it('should pass undefined to computeRestriction when both statsToken is omitted and findLastStatsToken returns undefined', async () => {
-		(Statistics.findLastStatsToken as jest.Mock).mockResolvedValue(undefined);
+		statisticsModel.findLastStatsToken.mockResolvedValue(undefined);
 
 		await sendUsageReportAndComputeRestriction();
 
-		expect(Statistics.findLastStatsToken).toHaveBeenCalled();
+		expect(statisticsModel.findLastStatsToken).toHaveBeenCalled();
 		expect(AirGappedRestriction.computeRestriction).toHaveBeenCalledWith(undefined);
 	});
 });

@@ -1,8 +1,8 @@
 import { isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useSearchParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useSearchParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WindowVirtualizerHandle } from 'virtua';
 
@@ -10,8 +10,8 @@ import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
-import { useRoomMessages } from '../../contexts/RoomContext';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
+import { useRoomMessages } from '../../hooks/useRoomMessages';
 import { clearHighlightMessage, setHighlightMessage } from '../providers/messageHighlightSubscription';
 
 type UseTryToJumpToMessageProps = {
@@ -19,10 +19,20 @@ type UseTryToJumpToMessageProps = {
 	virtualizerRef: MutableRefObject<WindowVirtualizerHandle | null>;
 	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	messages: { _id: string }[];
+	/** Rows the list renders above the first message, such as the start-of-room header. */
+	leadingRows: number;
 };
 
-const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
+const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages, leadingRows }: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
+	const tab = useRouteParameter('tab');
+	const context = useRouteParameter('context');
+
+	// A thread already open when the jump starts handles its own replies; the main feed only follows permalinks into a thread.
+	const [jumpOrigin, setJumpOrigin] = useState({ msg: messageJumpParam, openThread: tab === 'thread' ? context : undefined });
+	if (jumpOrigin.msg !== messageJumpParam) {
+		setJumpOrigin({ msg: messageJumpParam, openThread: tab === 'thread' ? context : undefined });
+	}
 
 	const { isLoadingMoreMessages } = useRoomMessages();
 
@@ -43,7 +53,14 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 	});
 
 	const isThreadReply = !!message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true;
-	const targetId = isThreadReply ? message.tmid : messageJumpParam;
+	const isOwnedByOpenThread =
+		isThreadReply &&
+		jumpOrigin.msg === messageJumpParam &&
+		jumpOrigin.openThread === message.tmid &&
+		tab === 'thread' &&
+		context === message.tmid;
+	const threadTargetId = isOwnedByOpenThread ? undefined : message?.tmid;
+	const targetId = isThreadReply ? threadTargetId : messageJumpParam;
 
 	useEffect(() => {
 		if (!targetId || !message) {
@@ -95,7 +112,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		}
 
 		// TODO: Calculate the offset of the page, for the message to be in the center of the page
-		virtualizerRef.current?.scrollToIndex(targetIndex, {
+		virtualizerRef.current?.scrollToIndex(leadingRows + targetIndex, {
 			align: 'center',
 		});
 
@@ -122,6 +139,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		isLoadingMoreMessages,
 		targetId,
 		goToRoom,
+		leadingRows,
 		dispatchToastMessage,
 		t,
 	]);

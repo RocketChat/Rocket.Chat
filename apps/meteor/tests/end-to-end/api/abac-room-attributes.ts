@@ -155,7 +155,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await writeAttributes(otherRoomId, { [dept]: ['eng'] }, ownerCredentials)
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 

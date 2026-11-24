@@ -17,7 +17,7 @@ export const useShareLocationAction = (disabled: boolean, room?: IRoom, tmid?: I
 	const isMapViewEnabled = useSetting('MapView_Enabled') === true;
 	const isGeolocationCurrentPositionSupported = Boolean(navigator.geolocation?.getCurrentPosition);
 	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
-	const canGetGeolocation = isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey && googleMapsApiKey.length;
+	const canGetGeolocation = isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey?.length;
 
 	const handleShareLocation = () => setModal(<ShareLocationModal rid={room._id} tmid={tmid} onClose={() => setModal(null)} />);
 

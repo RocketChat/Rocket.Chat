@@ -4,11 +4,11 @@ import url from 'node:url';
 import { validate } from '@rocket.chat/cas-validate';
 import type { ICredentialToken, RequiredField } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { logger } from './logger';
 import { settings } from '../../settings';
+import { getWorkspaceURL } from '../utils/getURL';
 
 const closePopup = function (res: ServerResponse): void {
 	res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -23,6 +23,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
 		callback();
+		return;
 	}
 
 	// get ticket and validate.
@@ -30,14 +31,13 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	const ticketId = parsedUrl.query.ticket as string;
 	const baseUrl = settings.get<string>('CAS_base_url');
 	const version = parseFloat(settings.get('CAS_version') ?? '1.0') as 1.0 | 2.0;
-	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug({ msg: 'Using CAS_base_url', baseUrl });
 
 	validate(
 		{
 			base_url: baseUrl,
 			version,
-			service: `${appUrl}/_cas/${token}`,
+			service: getWorkspaceURL(`_cas/${token}`),
 		},
 		ticketId,
 		async (err, status, username, details) => {
@@ -45,7 +45,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 				logger.error({ msg: 'error when trying to validate', err });
 			} else if (status) {
 				logger.info({ msg: 'Validated user', username });
-				const userInfo: Partial<ICredentialToken['userInfo']> = { username: username as string };
+				const userInfo: Partial<ICredentialToken['userInfo']> = { username };
 
 				// CAS 2.0 attributes handling
 				if (details?.attributes) {

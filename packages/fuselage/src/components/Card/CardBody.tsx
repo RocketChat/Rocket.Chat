@@ -1,16 +1,16 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 
 export type CardBodyProps = {
-	flexDirection?: CSSProperties['flexDirection'];
-	height?: BoxProps['height'];
+	flexDirection?: 'row' | 'column';
+	height?: 'full';
 	children: ReactNode;
 } & ElementProps<HTMLDivElement>;
 
-const CardBody = ({ children, flexDirection = 'row', height, ...props }: CardBodyProps) => (
-	<Box fontScale='p2m' display='flex' flexDirection={flexDirection} flexGrow={1} height={height} rcx-card__body {...props}>
+const CardBody = ({ children, flexDirection, height, ...props }: CardBodyProps) => (
+	<Box rcx-card__body flexDirection={flexDirection} height={height} {...props}>
 		{children}
 	</Box>
 );

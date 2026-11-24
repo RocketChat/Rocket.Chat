@@ -33,7 +33,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
-import { check, Match } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
@@ -74,7 +73,7 @@ import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } f
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
-		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
+		('roomId' in params && !params.roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
 		throw new ClientSafeError('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -609,7 +608,7 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(
+		const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(
 			filter,
 			{
 				sort: sort || { name: 1 },
@@ -721,7 +720,7 @@ API.v1.get(
 			{ channel: { $in: channelsToSearch } },
 			await mountIntegrationQueryBasedOnPermissions(this.userId),
 		) as Filter<IIntegration>;
-		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
@@ -990,7 +989,7 @@ API.v1.get(
 			});
 		}
 
-		const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
+		const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('p', rids, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
@@ -1026,7 +1025,7 @@ API.v1.get(
 		const { sort, fields } = await this.parseJsonQuery();
 		const ourQuery = { t: 'p' as RoomType };
 
-		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
@@ -1121,14 +1120,6 @@ API.v1.get(
 
 		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 		const { sort = {} } = await this.parseJsonQuery();
-
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				status: Match.Maybe([String]),
-				filter: Match.Maybe(String),
-			}),
-		);
 
 		const { status, filter } = this.queryParams;
 

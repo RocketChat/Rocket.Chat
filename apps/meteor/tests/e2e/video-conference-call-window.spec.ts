@@ -690,8 +690,17 @@ test.describe('video conference call window', () => {
 		await expect(poHomeChannel.ongoingCalls.btnOngoingCalls).toBeVisible({ timeout: 45_000 });
 
 		const callWindow = await joinFromList({ page, poHomeChannel }, firstCall);
+		// The switch prompt can only ask about this call once the main page lists it as joined.
+		const listedAsJoined = page.waitForResponse(async (response) => {
+			if (!response.url().includes('/v1/video-conference.joinable')) {
+				return false;
+			}
+			const { calls }: { calls: JoinableCall[] } = await response.json();
+			return calls.some((call) => call.name === firstCall && call.joined);
+		});
 		await callWindow.btnJoinCall.click();
 		await expect(callWindow.getBtnMembers(2)).toBeVisible();
+		await listedAsJoined;
 
 		await test.step('the window is the shared one, and it keeps its opener', async () => {
 			expect(await callWindow.page.evaluate(() => window.name)).toBe('rocketchat-conference');

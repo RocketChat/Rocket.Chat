@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Avatar } from '../../Avatar';
 import { Box } from '../../Box';
@@ -10,26 +10,25 @@ import MessageHeader from '../MessageHeader';
 import MessageLeftContainer from '../MessageLeftContainer';
 import MessageName from '../MessageName';
 import MessageNameContainer from '../MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction } from '../MessageReactions';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from '../MessageReactions';
 import MessageRole from '../MessageRole';
 import MessageTimestamp from '../MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../MessageToolbar';
+import { MessageToolbar, MessageToolbarItem } from '../MessageToolbar';
 import MessageUsername from '../MessageUsername';
 import MessageStatusIndicator from './MessageStatusIndicator';
 import MessageStatusIndicatorItem from './MessageStatusIndicatorItem';
-import MessageStatusIndicatorText from './MessageStatusIndicatorText';
+import RevealedMessageToolbarWrapper from '../MessageToolbar/RevealedMessageToolbarWrapper';
 
 export default {
 	title: 'Message/MessageStatusIndicator',
 	component: MessageStatusIndicator,
 	subcomponents: {
 		MessageStatusIndicatorItem,
-		MessageStatusIndicatorText,
 	},
 	argTypes: {
 		children: {
 			control: false,
-			description: 'Status items content, composed from MessageStatusIndicatorItem/MessageStatusIndicatorText subcomponents.',
+			description: 'Status items content, composed from MessageStatusIndicatorItem subcomponents.',
 			table: { category: 'Content' },
 		},
 	},
@@ -68,10 +67,10 @@ export const Default: Story = {
 						<MessageRole>Owner</MessageRole>
 						<MessageTimestamp>12:00 PM</MessageTimestamp>
 						<MessageStatusIndicator>
-							<MessageStatusIndicatorItem name='star' variant='success' />
-							<MessageStatusIndicatorItem name='star' variant='danger' />
-							<MessageStatusIndicatorItem name='star' variant='warning' />
-							<MessageStatusIndicatorItem name='star' variant='primary' />
+							<MessageStatusIndicatorItem name='star' color='status-font-on-success' />
+							<MessageStatusIndicatorItem name='star' color='status-font-on-danger' />
+							<MessageStatusIndicatorItem name='star' color='status-font-on-warning' />
+							<MessageStatusIndicatorItem name='star' color='status-font-on-info' />
 							<MessageStatusIndicatorItem name='star-filled' data-title='starred' />
 						</MessageStatusIndicator>
 					</MessageHeader>
@@ -81,19 +80,25 @@ export const Default: Story = {
 						eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer>
@@ -108,32 +113,30 @@ export const Default: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer>
 					<MessageStatusIndicator>
-						<MessageStatusIndicatorText>
-							<MessageStatusIndicatorItem name='star-filled' /> Status
-						</MessageStatusIndicatorText>
+						<MessageStatusIndicatorItem name='star-filled' />
 					</MessageStatusIndicator>
 				</MessageLeftContainer>
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),

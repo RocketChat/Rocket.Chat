@@ -1,7 +1,8 @@
-import { composeStories } from '@storybook/react-webpack5';
-import { screen } from '@testing-library/react';
+import { composeStories } from '@storybook/react';
+import { createEvent, fireEvent, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
+import { Modal, ModalFooter } from '.';
 import * as stories from './Modal.stories';
 import { render } from '../../testing';
 
@@ -22,5 +23,42 @@ describe('[Modal Component]', () => {
 	test('Default should render the dialog a11y compliant', () => {
 		render(<Default />);
 		expect(screen.getByRole('dialog')).toBeInTheDocument();
+	});
+
+	test('renders a plain surface without onSubmit', () => {
+		const { container } = render(
+			<Modal>
+				<ModalFooter>content</ModalFooter>
+			</Modal>,
+		);
+		expect(container.querySelector('form')).toBeNull();
+		expect(container.querySelector('.rcx-modal__inner')).toHaveTextContent('content');
+	});
+
+	test('renders the surface as a form that calls onSubmit, with formId', () => {
+		const onSubmit = jest.fn();
+		const { container } = render(
+			<Modal onSubmit={onSubmit} formId='the-form'>
+				<button type='submit'>go</button>
+			</Modal>,
+		);
+		const form = container.querySelector('form.rcx-modal__inner');
+		expect(form).toHaveAttribute('id', 'the-form');
+		fireEvent.click(screen.getByText('go'));
+		expect(onSubmit).toHaveBeenCalledTimes(1);
+	});
+
+	test('calls onSubmit without the event and prevents the native submission', () => {
+		const onSubmit = jest.fn();
+		const { container } = render(
+			<Modal onSubmit={onSubmit}>
+				<button type='submit'>go</button>
+			</Modal>,
+		);
+		const form = container.querySelector('form') as HTMLFormElement;
+		const submit = createEvent.submit(form);
+		fireEvent(form, submit);
+		expect(submit.defaultPrevented).toBe(true);
+		expect(onSubmit).toHaveBeenCalledWith();
 	});
 });

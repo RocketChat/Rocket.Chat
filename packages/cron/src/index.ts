@@ -39,6 +39,11 @@ const runCronJobFunctionAndPersistResult = async (fn: () => Promise<unknown>, jo
 	}
 };
 
+type CronJobOptions = {
+	/** Keeps the job locked for as long as it runs, so another instance never starts it again before it ends */
+	renewLock?: boolean;
+};
+
 type ReservedJob = {
 	name: string;
 	callback: () => any | Promise<any>;
@@ -46,6 +51,7 @@ type ReservedJob = {
 	| {
 			schedule: string;
 			timestamped: false;
+			options: CronJobOptions;
 	  }
 	| {
 			when: Date;
@@ -134,19 +140,19 @@ export class AgendaCronJobs {
 			if (job.timestamped) {
 				await this.addAtTimestamp(job.name, job.when, job.callback);
 			} else {
-				await this.add(job.name, job.schedule, job.callback);
+				await this.add(job.name, job.schedule, job.callback, job.options);
 			}
 		}
 
 		this.reservedJobs = [];
 	}
 
-	public async add(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
+	public async add(name: string, schedule: string, callback: () => any | Promise<any>, options: CronJobOptions = {}): Promise<void> {
 		if (!this.scheduler) {
-			return this.reserve({ name, schedule, callback, timestamped: false });
+			return this.reserve({ name, schedule, callback, timestamped: false, options });
 		}
 
-		await this.define(name, callback);
+		await this.define(name, callback, options);
 		await this.scheduler.every(schedule, name, {}, {});
 		logger.debug({ msg: `Cron job "${name}" scheduled`, jobName: name, schedule });
 	}
@@ -186,13 +192,33 @@ export class AgendaCronJobs {
 		this.reservedJobs = this.reservedJobs.filter(({ name }) => name !== jobName);
 	}
 
-	private async define(jobName: string, callback: () => unknown): Promise<void> {
+	private async define(jobName: string, callback: () => unknown, { renewLock = false }: CronJobOptions = {}): Promise<void> {
 		if (!this.scheduler) {
 			throw new Error('Scheduler is not running.');
 		}
 
-		this.scheduler.define(jobName, async () => {
-			await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+		if (!renewLock) {
+			this.scheduler.define(jobName, async () => {
+				await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+			});
+			return;
+		}
+
+		this.scheduler.define(jobName, async (job: Job) => {
+			const { lockLifetime } = job.agenda.getDefinition(jobName);
+			const renewalInterval = lockLifetime / 5;
+
+			let renewal: Promise<void> = Promise.resolve();
+			const timer = setInterval(() => {
+				renewal = job.touch().catch((err) => logger.error({ msg: 'Could not renew the lock of a running cron job', jobName, err }));
+			}, renewalInterval);
+
+			try {
+				await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+			} finally {
+				clearInterval(timer);
+				await renewal;
+			}
 		});
 	}
 }

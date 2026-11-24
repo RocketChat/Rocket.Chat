@@ -92,6 +92,7 @@ import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
+import { normalizeLegacyUfsLocation } from '../lib/normalizeLegacyUfsLocation';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -117,7 +118,7 @@ export async function findRoomByIdOrName({
 }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
-		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
+		('roomId' in params && !params.roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
 		throw new ClientSafeError('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -493,6 +494,7 @@ API.v1.post(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -500,10 +502,21 @@ API.v1.post(
 		const { _id } = room;
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
-		const { latest, oldest, inclusive = false, limit, excludePinned, filesOnly, ignoreThreads, ignoreDiscussion, users } = this.bodyParams;
+		const {
+			latest,
+			oldest,
+			inclusive = false,
+			limit,
+			excludePinned,
+			filesOnly,
+			ignoreThreads,
+			ignoreDiscussion,
+			ignoreDiscussionOrigin,
+			users,
+		} = this.bodyParams;
 
 		const count = await cleanRoomHistoryMethod(this.userId, {
 			roomId: _id,
@@ -515,6 +528,7 @@ API.v1.post(
 			filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
 			ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
 			ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
+			ignoreDiscussionOrigin: [true, 'true', 1, '1'].includes(ignoreDiscussionOrigin ?? false),
 			fromUsers: users?.filter(isTruthy) || [],
 		});
 
@@ -542,6 +556,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -555,7 +570,7 @@ API.v1.get(
 				(await hasPermissionAsync(this.userId, 'view-room-administration')));
 
 		if (!canAccess) {
-			return API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
 		const discussionParent =
@@ -635,6 +650,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -643,7 +659,7 @@ API.v1.get(
 		const { sort, fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-			return API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
 		const { cursor, totalCount } = Rooms.findPaginatedDiscussionsByParentId(room._id, await getHistoryVisibleFrom(this.userId, room._id), {
@@ -700,17 +716,14 @@ API.v1.get(
 			!visibility.followedFileIds.includes(_id) &&
 			(!uploadedAt || uploadedAt < visibility.since || visibility.hiddenFileIds.includes(_id));
 
-		let initialImage: IUpload | null = null;
-		if (this.queryParams.startingFromId) {
-			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			if (initialImage && (initialImage.rid !== room._id || isHiddenUpload(initialImage))) {
-				initialImage = null;
-			}
-		}
+		const startingImage = this.queryParams.startingFromId
+			? await Uploads.findOneConfirmedImageByIdAndRoomId(this.queryParams.startingFromId, room._id)
+			: null;
+		const initialImage = startingImage && !isHiddenUpload(startingImage) ? startingImage : null;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		const { cursor, totalCount } = Uploads.findImagesByRoomId(
+		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(
 			room._id,
 			initialImage?.uploadedAt,
 			{
@@ -728,7 +741,7 @@ API.v1.get(
 		}
 
 		return API.v1.success({
-			files,
+			files: files.map(normalizeLegacyUfsLocation),
 			count,
 			offset,
 			total,
@@ -846,7 +859,7 @@ API.v1.get(
 		});
 
 		if (!room) {
-			return API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 		return API.v1.success(room);
 	},
@@ -1850,6 +1863,6 @@ type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends RoomEndpoints {}
 }
