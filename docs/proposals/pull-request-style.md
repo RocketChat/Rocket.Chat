@@ -12,7 +12,7 @@ How to write a pull request's title and description. This page is about style on
 
 `<type>(<optional scope>): <what changes>`
 
-The title becomes the squash commit message and the changelog line. People read it without the code in front of them.
+The title becomes the squash commit message. People read it in `git log` and in the pull request list, without the code in front of them. The changelog line is not the title: it comes from the [changeset](changesets.md).
 
 | Type | Use for |
 |---|---|

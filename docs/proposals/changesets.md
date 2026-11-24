@@ -14,12 +14,16 @@ For the pull request's title and description, see [pull-request-style.md](pull-r
 
 ## When to add one
 
-Add one when the change is visible to someone outside the team: a user or admin of the workspace, an API or app developer, or a consumer of a package published to npm. That covers every `fix` and `feat`, and a `refactor` or `chore` that changes a published package's API.
+Every `fix` and `feat` needs one: the change is visible to a user or admin of the workspace, an API or app developer, or a consumer of a package published to npm.
+
+For a `refactor` or `chore` it is optional, and the author decides. Most need none, since nothing changes for anyone outside the code that moved. Add one when the change reaches further than the diff, even with nothing to see in the interface:
+
+- it changes an interface or signature other packages or apps depend on, such as a component's props or an exported type;
+- it changes a rule others rely on, such as the status code an endpoint responds with.
 
 Don't add one for:
 
 - a `regression`, since the bug never reached a release;
-- changes to private packages only;
 - tests, CI, docs and dev tooling.
 
 When a pull request has no changeset, say why in one line of its description.
@@ -28,7 +32,18 @@ Check `.changeset/` after every rebase: a rebase can bring back a changeset that
 
 ## Packages
 
-List the packages whose behavior changes for their consumers. A change in the app is `@rocket.chat/meteor`. Each published package you changed gets its own entry.
+List the packages whose behavior changes for their consumers. A change in the app is `@rocket.chat/meteor`: the package is private, but it is the one the Rocket.Chat release is versioned by.
+
+A visible change made in a workspace package the app consumes, such as `@rocket.chat/ui-client` or `@rocket.chat/fuselage-ui-kit`, names **both** that package and `@rocket.chat/meteor`, whether the package is private or published, and even when no file under `apps/meteor/` changed:
+
+```md
+---
+'@rocket.chat/ui-client': patch
+'@rocket.chat/meteor': patch
+---
+```
+
+The GitHub release notes are copied only from the `@rocket.chat/meteor` entry in `apps/meteor/CHANGELOG.md`. A changeset that names only the consumed package lands in that package's own changelog, and reaches the release notes as nothing more than a commit hash under "Updated dependencies".
 
 ## Bump
 
