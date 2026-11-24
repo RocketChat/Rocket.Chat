@@ -25,7 +25,7 @@ export async function giveThreadAccess(actorId: IUser['_id'], tmid: IMessage['_i
 	}
 
 	await Promise.all(grantedIds.map((uid) => follow({ tmid, uid })));
-	await Subscriptions.addUnreadThreadByRoomIdAndUserIds(threadRoot.rid, grantedIds, tmid, { userMention: true });
+	await Subscriptions.addUnreadThreadByRoomIdAndUserIds(threadRoot.rid, grantedIds, tmid, actorId, { userMention: true });
 
 	void notifyOnSubscriptionChangedByRoomIdAndUserIds(threadRoot.rid, grantedIds);
 	void notifyOnMessageChange({ id: tmid });

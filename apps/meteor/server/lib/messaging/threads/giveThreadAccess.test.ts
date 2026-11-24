@@ -50,9 +50,16 @@ describe('giveThreadAccess', () => {
 
 		expect(granted).to.deep.equal(['restricted']);
 		sinon.assert.calledOnceWithExactly(followMock, { tmid: 'thread', uid: 'restricted' });
-		sinon.assert.calledOnceWithExactly(modelsMock.Subscriptions.addUnreadThreadByRoomIdAndUserIds, 'room', ['restricted'], 'thread', {
-			userMention: true,
-		});
+		sinon.assert.calledOnceWithExactly(
+			modelsMock.Subscriptions.addUnreadThreadByRoomIdAndUserIds,
+			'room',
+			['restricted'],
+			'thread',
+			'actor',
+			{
+				userMention: true,
+			},
+		);
 		sinon.assert.calledOnceWithExactly(notifyOnMessageChangeMock, { id: 'thread' });
 	});
 
