@@ -1,5 +1,34 @@
 # @rocket.chat/apps
 
+## 0.12.0-rc.0
+
+### Minor Changes
+
+- ([#43647](https://github.com/RocketChat/Rocket.Chat/pull/43647)) Lets apps upload a file into a thread with the new `threadId` field of `IUploadDescriptor`
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+### Patch Changes
+
+- ([#43636](https://github.com/RocketChat/Rocket.Chat/pull/43636)) Fixes the video conference info modal failing with `[object Object]` instead of the actual reason when the app that provides the call is no longer registered.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes UiKit elements that apps put in a section `accessory` or an `input` block's `element` without an `actionId`: they now get one generated, like the elements of an `actions` block, so their interactions reach the app with an id it can match.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes the blocks that apps nest in UiKit `container` and `layout` blocks, in a `conditional` block's `render` or in a `data_table` action cell: they and their elements now get an `appId`, `blockId` and `actionId` generated like those of top-level blocks.
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 38bba63905a0f2d56bdd4e2f8dae8e9eed8e5c96, 370295b5a1d4c81b56505c5c8136f6624eecb6f6, 1cb836204af9f9e59b64db1dba9df53836e927a0, 46cba6391140d334aecbe764a0fc3341feb27ce9, 25a232e58bd49fa2cbad86f13a8e935c0a703170, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/model-typings@3.1.0-rc.0
+  - @rocket.chat/apps-engine@1.69.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/tools@0.6.0-rc.0
+  - @rocket.chat/logger@1.0.3-rc.0
+
+  </details>
+
 ## 0.11.0
 
 ### Minor Changes

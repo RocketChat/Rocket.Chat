@@ -1,5 +1,4 @@
 import {
-	Box,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -8,6 +7,7 @@ import {
 	StatesSuggestionListItem,
 	StatesSuggestionText,
 	StatesTitle,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +20,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 	const { t } = useTranslation();
 
 	return (
-		<Box marginBlockStart={20}>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
@@ -39,7 +39,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 					</StatesSuggestionList>
 				</StatesSuggestion>
 			</States>
-		</Box>
+		</Stack>
 	);
 };
 

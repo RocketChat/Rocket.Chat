@@ -113,7 +113,7 @@ const singlePackageFormat = (): Plugin => ({
 			return null;
 		}
 
-		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true } as typeof options);
+		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true });
 	},
 });
 
@@ -255,6 +255,7 @@ const devPage = (): Plugin => ({
 });
 const serverRoutes = [
 	'/api',
+	'^/oauth/(?!authorize|error/)',
 	'/_oauth',
 	'/_saml',
 	'/_cas',
@@ -396,6 +397,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-client',
 	'@rocket.chat/ui-composer',
 	'@rocket.chat/ui-conference',
+	'@rocket.chat/ui-contacts',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
 	'@rocket.chat/ui-registration',

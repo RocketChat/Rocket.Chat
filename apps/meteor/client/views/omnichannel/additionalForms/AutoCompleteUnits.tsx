@@ -24,7 +24,7 @@ const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompl
 			value={value}
 			placeholder={placeholder || t('Select_an_option')}
 			filter={unitsFilter}
-			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
+			setFilter={setUnitsFilter}
 			options={unitItems}
 			onChange={onChange}
 			endReached={() => fetchNextPage()}

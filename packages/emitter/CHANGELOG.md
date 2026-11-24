@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.34.0-rc.0
+
+### Minor Changes
+
+- ([#43374](https://github.com/RocketChat/Rocket.Chat/pull/43374)) Ships only an ES module build. The CommonJS build and `dist/index.module.js` are gone, and the package now declares an `exports` map, so deep imports into `dist` no longer resolve. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later).
+
 ## 0.33.1
 
 ### Patch Changes

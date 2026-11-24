@@ -13,6 +13,7 @@ export type AuthenticationContextValue = {
 	loginWithService<T extends LoginServiceConfiguration>(service: T): () => Promise<true>;
 	loginWithIframe: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
 	loginWithTokenRoute: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
+	loginWithSamlToken: (token: string, callback?: (error?: unknown) => void) => Promise<unknown>;
 	getLoginToken: () => string | null;
 	unstoreLoginToken: (callback: () => void) => () => void;
 	wipeLocalAuth: () => void;
@@ -29,6 +30,7 @@ export const AuthenticationContext = createContext<AuthenticationContextValue>({
 	loginWithToken: async () => Promise.reject(new Error('loginWithToken not implemented')),
 	loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
 	loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
+	loginWithSamlToken: async () => Promise.reject(new Error('loginWithSamlToken not implemented')),
 	getLoginToken: () => {
 		throw new Error('getLoginToken not implemented');
 	},

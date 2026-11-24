@@ -1,13 +1,5 @@
 import { Omnichannel, isClientSafeError } from '@rocket.chat/core-services';
-import type {
-	ILivechatAgent,
-	IOmnichannelInquiryExtraData,
-	IOmnichannelRoom,
-	IUser,
-	SelectedAgent,
-	TransferByData,
-	TransferData,
-} from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent, TransferByData, TransferData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import {
@@ -97,7 +89,7 @@ API.v1.addRoute(
 					visitor: guest,
 					roomInfo,
 					agent,
-					extraData: extraParams as IOmnichannelInquiryExtraData,
+					extraData: extraParams,
 				});
 
 				return API.v1.success({
@@ -386,7 +378,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 
 type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends LivechatAnalyticsEndpoints {}
 }
 
@@ -527,6 +519,6 @@ const livechatRoomsEndpoints = API.v1
 type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends LivechatRoomsEndpoints {}
 }

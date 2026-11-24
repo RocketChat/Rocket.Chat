@@ -89,7 +89,7 @@ export const emojiParser = (html: string) => {
 	html = checkEmojiOnly.innerHTML;
 
 	// apostrophe (') back to &#39;
-	html = html.replace(/\'/g, '&#39;');
+	html = html.replace(/'/g, '&#39;');
 
 	// line breaks ' <br> ' back to '<br>'
 	html = html.replace(/ <br> /g, '<br>');

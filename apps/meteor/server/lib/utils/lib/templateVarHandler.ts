@@ -3,7 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 const logger = new Logger('TemplateVarHandler');
 
 export const templateVarHandler = function (variable: string, object: Record<string, any>): string | undefined {
-	const templateRegex = /#{([\w\-]+)}/gi;
+	const templateRegex = /#{([\w-]+)}/gi;
 	let match = templateRegex.exec(variable);
 	let tmpVariable = variable;
 

@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.32.0-rc.0
+
+### Minor Changes
+
+- ([#43512](https://github.com/RocketChat/Rocket.Chat/pull/43512)) Ships a single Web Worker script. `dist/index.js` is now a self-contained script loaded with `new Worker()`, and the ES module build in `dist/index.mjs` is gone.
+
 ## 0.31.27
 
 ### Patch Changes

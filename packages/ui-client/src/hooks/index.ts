@@ -33,6 +33,7 @@ export * from './useRoomRoute';
 export * from './useShowingResultsLabel';
 export * from './useSingleFileInput';
 export * from './useThemeMode';
+export * from './useThemePreview';
 export * from './useTimeAgo';
 export * from './useTimezoneTime';
 export * from './useUTCClock';
