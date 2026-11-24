@@ -79,6 +79,36 @@ it.each([
 	expect(screen.getByLabelText(label)).toHaveAccessibleDescription('In your local time zone');
 });
 
+it.each([
+	['datepicker', 'Starts on'],
+	['time_picker', 'Starts at'],
+] as const)('stops marking a %s element invalid once its error is cleared', (type, label) => {
+	const renderWithErrors = (errors?: Record<string, string>) => (
+		<MockedServerContext>
+			<UiKitContext.Provider value={{ action: () => undefined, values: {}, errors }}>
+				{modalParser.render([
+					{
+						type: 'input',
+						label: { type: 'plain_text', text: label },
+						hint: { type: 'plain_text', text: 'In your local time zone' },
+						element: { type, appId: 'app', blockId: 'block', actionId: 'start' },
+					},
+				])}
+			</UiKitContext.Provider>
+		</MockedServerContext>
+	);
+
+	const { rerender } = render(renderWithErrors({ start: 'Pick a later time' }));
+
+	expect(screen.getByLabelText(label)).toHaveAccessibleDescription('Pick a later time In your local time zone');
+	expect(screen.getByLabelText(label)).toBeInvalid();
+
+	rerender(renderWithErrors());
+
+	expect(screen.getByLabelText(label)).toHaveAccessibleDescription('In your local time zone');
+	expect(screen.getByLabelText(label)).toBeValid();
+});
+
 it('labels and describes a multi_static_select element', () => {
 	render(
 		<MockedServerContext>
