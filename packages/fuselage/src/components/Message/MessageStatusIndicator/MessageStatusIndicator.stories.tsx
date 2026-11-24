@@ -13,10 +13,11 @@ import MessageNameContainer from '../MessageNameContainer';
 import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from '../MessageReactions';
 import MessageRole from '../MessageRole';
 import MessageTimestamp from '../MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../MessageToolbar';
+import { MessageToolbar, MessageToolbarItem } from '../MessageToolbar';
 import MessageUsername from '../MessageUsername';
 import MessageStatusIndicator from './MessageStatusIndicator';
 import MessageStatusIndicatorItem from './MessageStatusIndicatorItem';
+import RevealedMessageToolbarWrapper from '../MessageToolbar/RevealedMessageToolbarWrapper';
 
 export default {
 	title: 'Message/MessageStatusIndicator',
@@ -91,13 +92,13 @@ export const Default: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer>
@@ -112,13 +113,13 @@ export const Default: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer>
@@ -129,13 +130,13 @@ export const Default: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
