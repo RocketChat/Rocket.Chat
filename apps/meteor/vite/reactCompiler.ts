@@ -18,7 +18,12 @@ export function reactCompilerPlugin(): Plugin {
 				if (!oxc) return;
 				if (!clientRE.test(id)) return;
 
-				const lang = id.endsWith('.tsx') ? 'tsx' : id.endsWith('.ts') ? 'ts' : id.endsWith('.jsx') ? 'jsx' : 'js';
+				const lang = (() => {
+					if (id.endsWith('.tsx')) return 'tsx' as const;
+					if (id.endsWith('.ts')) return 'ts' as const;
+					if (id.endsWith('.jsx')) return 'jsx' as const;
+					return 'js' as const;
+				})();
 				const result = oxc.transformSync(id, code, {
 					lang,
 					sourceType: 'module',
