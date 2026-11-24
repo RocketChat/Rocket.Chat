@@ -15,7 +15,7 @@ const modelsMock = {
 };
 const addUserToDefaultChannels = sinon.stub();
 const generateUsernameSuggestion = sinon.stub();
-const insertUserDoc = sinon.stub();
+const insertUser = sinon.stub();
 const callbacks = {
 	run: sinon.stub(),
 };
@@ -48,10 +48,8 @@ const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
 		hashPassword: hashPasswordMock,
 	},
 	'meteor/meteor': sinon.stub(),
-	'meteor/accounts-base': {
-		Accounts: {
-			insertUserDoc,
-		},
+	'../../../auth/insertUser': {
+		insertUser,
 	},
 });
 
@@ -65,7 +63,7 @@ describe('User Converter', () => {
 		modelsMock.Users.findOneByUsernameIgnoringCase.reset();
 		modelsMock.Users.findOneById.reset();
 		callbacks.run.reset();
-		insertUserDoc.reset();
+		insertUser.reset();
 		addUserToDefaultChannels.reset();
 		generateUsernameSuggestion.reset();
 		settingsStub.reset();
@@ -404,11 +402,11 @@ describe('User Converter', () => {
 			expect(addUserToDefaultChannels.getCall(0).args).to.be.an('array').that.deep.contains({ newUser: true });
 		});
 
-		it('should call insertUserDoc with the mapped data and roles', async () => {
+		it('should call insertUser with the mapped data and roles', async () => {
 			const converter = new UserConverter({ workInMemory: true });
 			let insertedUser = null;
 
-			insertUserDoc.callsFake((_options, data) => {
+			insertUser.callsFake((_options, data) => {
 				insertedUser = {
 					...data,
 					_id: 'Id1',
@@ -420,10 +418,10 @@ describe('User Converter', () => {
 
 			await (converter as any).insertUser({ ...userToImport, roles: ['role1', 'role2'] });
 
-			expect(insertUserDoc.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(insertUserDoc.getCall(0).args).to.be.an('array').with.lengthOf(2);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCall(0).args).to.be.an('array').with.lengthOf(2);
 
-			const usedParams = insertUserDoc.getCall(0).args[1];
+			const usedParams = insertUser.getCall(0).args[1];
 			expect(usedParams).to.deep.include({
 				type: 'user',
 				username: 'username1',

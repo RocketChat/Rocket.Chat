@@ -635,6 +635,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { username, _id: { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
 	findOneWithoutLDAPByUsernameIgnoringCase<
 		T extends Document = IUser,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -2534,6 +2549,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { 'emails.address': String(emailAddress).trim(), '_id': { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -2600,12 +2630,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
-		const query = { roles, type };
+		const query = { roles: role, type };
 
 		return this.findOne<T, O>(query, options);
 	}

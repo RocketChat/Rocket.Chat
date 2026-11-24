@@ -12,7 +12,7 @@ import type { ISAMLUser } from '../definition/ISAMLUser';
 const NEW_USER_ID = 'new-user-id';
 
 const settingsGet = sinon.stub();
-const insertUserDoc = sinon.stub();
+const insertUser = sinon.stub();
 const addUserToRoom = sinon.stub();
 const createRoom = sinon.stub();
 const saveUserIdentity = sinon.stub();
@@ -37,9 +37,7 @@ const matchesQuery = (user: StoredUser, query: Record<string, any>) =>
 	});
 
 const { SAML } = proxyquire.noCallThru().load('./SAML', {
-	'meteor/accounts-base': {
-		Accounts: { insertUserDoc },
-	},
+	'../../../../../server/lib/auth/insertUser': { insertUser },
 	'meteor/meteor': { Meteor: {} },
 	'./ServiceProvider': {},
 	'../../../../../lib/i18n': { i18n: { languages: ['en', 'pt-BR'] } },
@@ -67,8 +65,8 @@ const customIdentifier = (value: string) => ({
 	attributeList: new Map([['employeeId', value]]),
 });
 
-const createdUser = () => insertUserDoc.firstCall.args[1];
-const createOptions = () => insertUserDoc.firstCall.args[0];
+const createdUser = () => insertUser.firstCall.args[1];
+const createOptions = () => insertUser.firstCall.args[0];
 const updatedFields = () => updateOne.firstCall.args[1].$set;
 
 describe('SAML.insertOrUpdateSAMLUser', () => {
@@ -95,7 +93,7 @@ describe('SAML.insertOrUpdateSAMLUser', () => {
 	beforeEach(() => {
 		for (const stub of [
 			settingsGet,
-			insertUserDoc,
+			insertUser,
 			addUserToRoom,
 			createRoom,
 			saveUserIdentity,
@@ -111,7 +109,7 @@ describe('SAML.insertOrUpdateSAMLUser', () => {
 			{ _id: 'user', name: 'user' },
 			{ _id: 'auditor-id', name: 'auditor' },
 		];
-		insertUserDoc.callsFake(async (_options, user) => {
+		insertUser.callsFake(async (_options, user) => {
 			users.push({ ...user, _id: NEW_USER_ID });
 			return NEW_USER_ID;
 		});
@@ -276,13 +274,13 @@ describe('SAML.insertOrUpdateSAMLUser', () => {
 				'We should have at least one existing role',
 			);
 
-			expect(insertUserDoc.called).to.be.false;
+			expect(insertUser.called).to.be.false;
 		});
 
 		it('should refuse the login and create no user when the mapped roles are blank', async () => {
 			await expect(SAML.insertOrUpdateSAMLUser(buildUserObject({ roles: [' '] }))).to.be.rejectedWith('No valid role names');
 
-			expect(insertUserDoc.called).to.be.false;
+			expect(insertUser.called).to.be.false;
 		});
 	});
 

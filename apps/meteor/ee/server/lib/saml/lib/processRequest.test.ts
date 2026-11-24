@@ -47,7 +47,7 @@ class SAMLServiceProvider {
 }
 
 const { SAML } = proxyquire.noCallThru().load('./SAML', {
-	'meteor/accounts-base': { Accounts: {} },
+	'../../../../../server/lib/auth/insertUser': {},
 	'meteor/meteor': { Meteor: {} },
 	'./ServiceProvider': { SAMLServiceProvider },
 	'./getSAMLEnvelope': { getSAMLEnvelope },
