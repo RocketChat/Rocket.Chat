@@ -1,5 +1,4 @@
 import { hashPassword } from '@rocket.chat/account-utils';
-import type { Password } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -10,7 +9,7 @@ import type { InsertUserOptions, NewUser } from './insertUser';
 export type CreateUserOptions = InsertUserOptions & {
 	username?: string;
 	email?: string;
-	password?: Password;
+	password?: string;
 };
 
 // Doesn't reveal whether the username or the email is the one taken
