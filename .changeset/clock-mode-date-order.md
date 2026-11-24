@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes dates shown with the time in English month-first order ("Oktober 31, 2026 14:05") for every language once a 12- or 24-hour clock is chosen in Accessibility & Appearance. The date now follows the user's language, as it does with the default clock.
+Fixes choosing a 12- or 24-hour clock in Accessibility & Appearance switching every date shown with the time to English month-first order ("Oktober 31, 2026 14:05"). The clock now changes only the time; the date keeps the format it has with the default clock.
