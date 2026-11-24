@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+import { isDeepStrictEqual } from 'node:util';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
@@ -3737,11 +3738,11 @@ describe('[Users]', () => {
 				return fields;
 			};
 
-			const waitForStatusFields = (predicate: (fields: Partial<IUser>) => boolean) =>
+			const waitForStatusFields = (expected: Partial<IUser>) =>
 				withTimeout(async (signal) => {
 					for (;;) {
 						const fields = await findStatusFields();
-						if ((fields && predicate(fields)) || signal.aborted) {
+						if (isDeepStrictEqual(fields, expected) || signal.aborted) {
 							return fields;
 						}
 						await sleep(200);
@@ -3770,8 +3771,8 @@ describe('[Users]', () => {
 				const { body } = await updateStatusText('set by an admin');
 				expect(body.user).to.have.property('statusText', 'set by an admin');
 
-				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
-				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
+				const expected: Partial<IUser> = { statusText: 'set by an admin', statusDefault: UserStatus.BUSY, statusSource: 'manual' };
+				expect(await waitForStatusFields(expected)).to.deep.equal(expected);
 			});
 
 			it('should not leave the user busy when the message is replaced during a meeting', async () => {
@@ -3784,8 +3785,8 @@ describe('[Users]', () => {
 
 				await updateStatusText('set by an admin');
 
-				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
-				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
+				const expected: Partial<IUser> = { statusText: 'set by an admin', statusDefault: UserStatus.ONLINE, statusSource: 'manual' };
+				expect(await waitForStatusFields(expected)).to.deep.equal(expected);
 			});
 		});
 

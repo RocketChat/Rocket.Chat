@@ -3,6 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { getMatrixTransactionsRoutes } from './transactions';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
+	ROOM_ID_REGEX: /^!(?:[A-Za-z0-9_=/.+-]+:(.+)|[A-Za-z0-9_-]{43})$/,
 	federationSDK: {
 		verifyRequestSignature: jest.fn(),
 		canAccessResource: jest.fn(),

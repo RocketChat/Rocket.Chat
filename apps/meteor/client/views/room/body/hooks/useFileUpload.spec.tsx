@@ -87,3 +87,23 @@ it('puts the uploads aside while a message is edited, and brings them back once 
 	act(() => editing.set(false));
 	expect(result.current.uploads).toEqual([upload]);
 });
+
+describe('isUploading', () => {
+	const renderIsUploading = (upload: Pick<Upload, 'percentage' | 'url'>) => {
+		const chat = createChat();
+		chat.setComposerAPI({
+			uploads: createStore([{ id: 'upload-id', file: new File([], 'file.txt'), ...upload }]),
+			editing: createEditing(),
+		} as unknown as ComposerAPI);
+
+		return renderUseFileUpload(chat).result;
+	};
+
+	it('counts an upload at 100% as in progress until the server returns its url', () => {
+		expect(renderIsUploading({ percentage: 100 }).current.isUploading).toBe(true);
+	});
+
+	it('counts an upload with its url as done', () => {
+		expect(renderIsUploading({ percentage: 100, url: '/file-upload/file-id' }).current.isUploading).toBe(false);
+	});
+});

@@ -203,7 +203,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 			result = result.sort((a, b) => {
 				let r = 0;
 				for (const field in options.sort) {
-					if (options.sort.hasOwnProperty(field)) {
+					if (Object.hasOwn(options.sort, field)) {
 						const direction = options.sort[field];
 						let valueA;
 						let valueB;
@@ -243,7 +243,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	if (options.fields) {
 		// oxlint-disable-next-line typescript/no-for-in-array -- iterating field names would turn on a projection no caller uses; removal tracked in CORE-3042
 		for (const field in Object.keys(options.fields)) {
-			if (options.fields.hasOwnProperty(field as F)) {
+			if (Object.hasOwn(options.fields, field)) {
 				if (options.fields[field as F] === 0) {
 					fieldsToRemove.push(field as F);
 				} else if (options.fields[field as F] === 1) {
@@ -512,6 +512,6 @@ API.v1.post(
 export type CommandsEndpoints = ExtractRoutesFromAPI<typeof commandsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends CommandsEndpoints {}
 }

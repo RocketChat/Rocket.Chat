@@ -186,3 +186,133 @@ index a9f1ee343940f8677a9967d514e8db8e7abbe937..93d9dfefa8aef2bb2e95bf8d2e607b43
  	if (disable) return states.get(parentId) || {
  		id: "",
  		name: "light",
+diff --git a/dist/cjs/createVariable.cjs b/dist/cjs/createVariable.cjs
+index f3e0359fe6308985082e8035b45e6958b2fd9375..a0d4d513c66e8bee6d22a9030f4270b8b46c5e76 100644
+--- a/dist/cjs/createVariable.cjs
++++ b/dist/cjs/createVariable.cjs
+@@ -50,7 +50,7 @@ const createVariable = (props, skipHash = false) => {
+ 	const variable = {
+ 		isVar: true,
+ 		key,
+-		name: skipHash ? name : (0, import_helpers.simpleHash)(name, 40),
++		name: skipHash ? name : (0, import_helpers.simpleHash)(name, 1e3),
+ 		val: finalVal,
+ 		variable: import_constants.isWeb ? skipHash ? constructCSSVariableName(name) : createCSSVariable(name) : ""
+ 	};
+@@ -100,13 +100,14 @@ function getVariableValue(v, group) {
+ 	}
+ 	return v;
+ }
++// Rocket.Chat: a variable keeps its full name. The limits here shortened a declared name at 41 characters and a read one at 61, so a rule could declare a name no class reads
+ const createCSSVariable = (nameProp, includeVar = true) => {
+ 	if (process.env.NODE_ENV === "development") {
+ 		if (!nameProp || typeof nameProp !== "string") {
+ 			throw new Error(`createCSSVariable expected string, got: ${nameProp}`);
+ 		}
+ 	}
+-	const name = (0, import_helpers.simpleHash)(nameProp, 60);
++	const name = (0, import_helpers.simpleHash)(nameProp, 1e3);
+ 	return includeVar ? constructCSSVariableName(name) : name;
+ };
+ function px(value) {
+diff --git a/dist/cjs/helpers/getThemeCSSRules.cjs b/dist/cjs/helpers/getThemeCSSRules.cjs
+index 1728c508913b586225a5798e6c2d7967d9edafd0..8595eced5e86ff0392383ae1b378b7a390f67062 100644
+--- a/dist/cjs/helpers/getThemeCSSRules.cjs
++++ b/dist/cjs/helpers/getThemeCSSRules.cjs
+@@ -44,7 +44,7 @@ function getThemeCSSRules(props) {
+ 		for (const themeKey in theme) {
+ 			const variable = theme[themeKey];
+ 			const value = variableCreator(variable.needsPx ? `${variable.val}px` : variable.val).variable;
+-			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${(0, import_helpers.simpleHash)(themeKey, 40)}:${value};`;
++			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${(0, import_helpers.simpleHash)(themeKey, 1e3)}:${value};`; // Rocket.Chat: full names, see createCSSVariable
+ 		}
+ 		const isDarkBase = themeName === "dark";
+ 		const isLightBase = themeName === "light";
+diff --git a/dist/cjs/helpers/variables.cjs b/dist/cjs/helpers/variables.cjs
+index dcb1d6c7ed4902e6c98d08afb12481901756bd5c..96c74efe3df55d2590098f2b2db9750014ce44e6 100644
+--- a/dist/cjs/helpers/variables.cjs
++++ b/dist/cjs/helpers/variables.cjs
+@@ -59,7 +59,8 @@ const getThemeKeySet = (conf) => {
+ 	return set;
+ };
+ const cssVariablePrefix = process.env.TAMAGUI_CSS_VARIABLE_PREFIX || "";
+-const themeKeyVar = (key) => `var(--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 40)})`;
++// Rocket.Chat: full names, see createCSSVariable
++const themeKeyVar = (key) => `var(--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 1e3)})`;
+ function resolveVariableValueToCSS(key, value, conf) {
+ 	if (typeof value === "number") {
+ 		return (0, import_variableValue.isUnitlessVariableKey)(key) ? `${value}` : `${value}px`;
+@@ -100,7 +101,7 @@ const resolveDeclarations = (valuesIn, conf, skip) => {
+ 	}
+ 	return out;
+ };
+-const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 40)}:${value};`).join("");
++const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${(0, import_helpers.simpleHash)(key, 1e3)}:${value};`).join("");
+ const schemePrefix = /^(light|dark)_/;
+ const getThemedBucketNames = (themes) => {
+ 	if (!themes) return [];
+diff --git a/dist/esm/createVariable.mjs b/dist/esm/createVariable.mjs
+index 88690f3a879da60ed00f0a05a951008f9edc9147..98338c5c20b214f302f9cfc9ebc6c9996e162d3a 100644
+--- a/dist/esm/createVariable.mjs
++++ b/dist/esm/createVariable.mjs
+@@ -18,7 +18,7 @@ const createVariable = (props, skipHash = false) => {
+ 	const variable = {
+ 		isVar: true,
+ 		key,
+-		name: skipHash ? name : simpleHash(name, 40),
++		name: skipHash ? name : simpleHash(name, 1e3),
+ 		val: finalVal,
+ 		variable: isWeb ? skipHash ? constructCSSVariableName(name) : createCSSVariable(name) : ""
+ 	};
+@@ -68,13 +68,14 @@ function getVariableValue(v, group) {
+ 	}
+ 	return v;
+ }
++// Rocket.Chat: a variable keeps its full name. The limits here shortened a declared name at 41 characters and a read one at 61, so a rule could declare a name no class reads
+ const createCSSVariable = (nameProp, includeVar = true) => {
+ 	if (process.env.NODE_ENV === "development") {
+ 		if (!nameProp || typeof nameProp !== "string") {
+ 			throw new Error(`createCSSVariable expected string, got: ${nameProp}`);
+ 		}
+ 	}
+-	const name = simpleHash(nameProp, 60);
++	const name = simpleHash(nameProp, 1e3);
+ 	return includeVar ? constructCSSVariableName(name) : name;
+ };
+ function px(value) {
+diff --git a/dist/esm/helpers/getThemeCSSRules.mjs b/dist/esm/helpers/getThemeCSSRules.mjs
+index 29ca006d5a0890fa6fc8b49ed23bf1044f777f88..292d81acc8b9857e4dce91054d831496d3fb74a7 100644
+--- a/dist/esm/helpers/getThemeCSSRules.mjs
++++ b/dist/esm/helpers/getThemeCSSRules.mjs
+@@ -22,7 +22,7 @@ function getThemeCSSRules(props) {
+ 		for (const themeKey in theme) {
+ 			const variable = theme[themeKey];
+ 			const value = variableCreator(variable.needsPx ? `${variable.val}px` : variable.val).variable;
+-			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${simpleHash(themeKey, 40)}:${value};`;
++			vars += `--${process.env.TAMAGUI_CSS_VARIABLE_PREFIX || ""}${simpleHash(themeKey, 1e3)}:${value};`; // Rocket.Chat: full names, see createCSSVariable
+ 		}
+ 		const isDarkBase = themeName === "dark";
+ 		const isLightBase = themeName === "light";
+diff --git a/dist/esm/helpers/variables.mjs b/dist/esm/helpers/variables.mjs
+index 0751ea89c9a8857e553e31a1a32501ebef97cc75..52b4d3b0645b061bd1e880b5ebbdee3cf0d61a0d 100644
+--- a/dist/esm/helpers/variables.mjs
++++ b/dist/esm/helpers/variables.mjs
+@@ -30,7 +30,8 @@ const getThemeKeySet = (conf) => {
+ 	return set;
+ };
+ const cssVariablePrefix = process.env.TAMAGUI_CSS_VARIABLE_PREFIX || "";
+-const themeKeyVar = (key) => `var(--${cssVariablePrefix}${simpleHash(key, 40)})`;
++// Rocket.Chat: full names, see createCSSVariable
++const themeKeyVar = (key) => `var(--${cssVariablePrefix}${simpleHash(key, 1e3)})`;
+ function resolveVariableValueToCSS(key, value, conf) {
+ 	if (typeof value === "number") {
+ 		return isUnitlessVariableKey(key) ? `${value}` : `${value}px`;
+@@ -71,7 +72,7 @@ const resolveDeclarations = (valuesIn, conf, skip) => {
+ 	}
+ 	return out;
+ };
+-const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${simpleHash(key, 40)}:${value};`).join("");
++const toDeclarationBlock = (declarations) => declarations.map(([key, value]) => `--${cssVariablePrefix}${simpleHash(key, 1e3)}:${value};`).join("");
+ const schemePrefix = /^(light|dark)_/;
+ const getThemedBucketNames = (themes) => {
+ 	if (!themes) return [];

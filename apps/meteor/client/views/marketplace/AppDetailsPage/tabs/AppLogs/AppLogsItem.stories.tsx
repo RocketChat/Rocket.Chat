@@ -1,12 +1,13 @@
+import { Page } from '@rocket.chat/ui-client';
 import type { StoryObj, Meta } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
 import AppLogsItem from './AppLogsItem';
-import { CollapsiblePanel } from './Components/CollapsiblePanel';
+import { CollapsiblePanel } from './layout/CollapsiblePanel';
 
 export default {
 	component: AppLogsItem,
-	decorators: [(fn) => <CollapsiblePanel style={{ padding: 24 }}>{fn()}</CollapsiblePanel>],
+	decorators: [(fn) => <CollapsiblePanel style={{ padding: 24 }}>{fn()}</CollapsiblePanel>, (fn) => <Page>{fn()}</Page>],
 	args: {
 		_id: '683da1e32025cfca7b3d8238',
 		appId: 'ce0e318b-ffc0-4ce4-832b-f1b464beb22a',
@@ -34,9 +35,19 @@ export default {
 		instanceId: 'b97ce445-b9ff-4513-8206-966afd799cd6',
 		_updatedAt: '2025-06-02T13:06:43.778Z',
 	},
+	argTypes: {
+		onExpand: { action: 'onExpand' },
+	},
 	parameters: {
 		layout: 'fullscreen',
 	},
 } satisfies Meta<ComponentProps<typeof AppLogsItem>>;
 
 export const Simple: StoryObj<ComponentProps<typeof AppLogsItem>> = {};
+
+export const Expanded: StoryObj<ComponentProps<typeof AppLogsItem>> = {
+	args: {
+		regionId: 'app-log-region',
+		expanded: true,
+	},
+};

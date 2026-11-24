@@ -26,7 +26,8 @@ import MessageReactions, { MessageReaction, MessageReactionAction, MessageReacti
 import MessageRole from './MessageRole';
 import MessageRoles from './MessageRoles';
 import MessageTimestamp from './MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from './MessageToolbar';
+import { MessageToolbar, MessageToolbarItem } from './MessageToolbar';
+import RevealedMessageToolbarWrapper from './MessageToolbar/RevealedMessageToolbarWrapper';
 import MessageUsername from './MessageUsername';
 import {
 	ThreadMessage,
@@ -162,13 +163,13 @@ export const Default: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -316,26 +317,26 @@ export const WithSequential: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
@@ -348,13 +349,13 @@ export const WithSequential: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
@@ -364,13 +365,13 @@ export const WithSequential: Story = {
 						<MessageEmoji name='grinning'>😀</MessageEmoji>
 					</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
@@ -382,13 +383,13 @@ export const WithSequential: Story = {
 						</MessageEmoji>
 					</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -432,26 +433,26 @@ export const MessageWithThread: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
@@ -464,13 +465,13 @@ export const MessageWithThread: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<ThreadMessage>
 				<ThreadMessageRow>
@@ -602,26 +603,26 @@ export const MessageEditing: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential isEditing>
 				<MessageLeftContainer />
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' clickable sequential>
 				<MessageLeftContainer />
@@ -634,13 +635,13 @@ export const MessageEditing: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -687,13 +688,13 @@ export const MessageUnorderedList: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -740,13 +741,13 @@ export const MessageOrderedList: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -778,26 +779,26 @@ export const MessagePending: Story = {
 						eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 					</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' isPending sequential>
 				<MessageLeftContainer />
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 			<Message className='customclass' isPending sequential>
 				<MessageLeftContainer />
@@ -810,13 +811,13 @@ export const MessagePending: Story = {
 				<MessageContainer>
 					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -862,13 +863,13 @@ export const MessageWithMetrics: Story = {
 						</MessageMetrics>
 					</MessageBlock>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -908,13 +909,13 @@ export const MessageWithHeadings: Story = {
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
 					</MessageBody>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -954,13 +955,13 @@ export const LotsOfReactions: Story = {
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),
@@ -997,13 +998,13 @@ export const BlockAfterHeader: Story = {
 						/>
 					</MessageBlock>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<RevealedMessageToolbarWrapper>
 					<MessageToolbar>
 						<MessageToolbarItem icon='quote' />
 						<MessageToolbarItem icon='clock' />
 						<MessageToolbarItem icon='thread' />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</RevealedMessageToolbarWrapper>
 			</Message>
 		</Box>
 	),

@@ -1,5 +1,42 @@
 # @rocket.chat/rest-typings
 
+## 9.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@9.1.0-rc.2
+
+  </details>
+
+## 9.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@9.1.0-rc.1
+
+  </details>
+
+## 9.1.0-rc.0
+
+### Minor Changes
+
+- ([#41943](https://github.com/RocketChat/Rocket.Chat/pull/41943)) Adds a server-to-server Outlook integration: administrators configure one Exchange connection, through Microsoft Graph or on-premises EWS, instead of each user signing in from the desktop app. Calendars sync on the server and reach web, mobile and desktop alike, with contact sync following on the same connection.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+### Patch Changes
+
+- ([#43534](https://github.com/RocketChat/Rocket.Chat/pull/43534)) Adds the "Delete original discussion messages" retention policy setting. When it is off and "Do not prune discussion messages" is on, the prune keeps the message that starts each discussion, and its files. This applies to discussions that start after the update. When the prune deletes the file of a discussion's first message, quotes of that message in the discussion now show "File deleted".
+
+- <details><summary>Updated dependencies [46cba6391140d334aecbe764a0fc3341feb27ce9, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 42f9f7efa463480e5168ff054a66f9c086bbf809, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+
+  </details>
+
 ## 9.0.0
 
 ### Major Changes

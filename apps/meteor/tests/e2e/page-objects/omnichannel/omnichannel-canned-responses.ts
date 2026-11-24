@@ -47,8 +47,4 @@ export class OmnichannelCannedResponses extends OmnichannelAdmin {
 	get btnSave(): Locator {
 		return this.page.getByRole('button', { name: 'Save', exact: true });
 	}
-
-	get btnNew(): Locator {
-		return this.page.locator('role=button[name="Create canned response"]').first();
-	}
 }

@@ -1,5 +1,32 @@
 # @rocket.chat/core-typings
 
+## 9.1.0-rc.2
+
+## 9.1.0-rc.1
+
+## 9.1.0-rc.0
+
+### Minor Changes
+
+- ([#41943](https://github.com/RocketChat/Rocket.Chat/pull/41943)) Adds a server-to-server Outlook integration: administrators configure one Exchange connection, through Microsoft Graph or on-premises EWS, instead of each user signing in from the desktop app. Calendars sync on the server and reach web, mobile and desktop alike, with contact sync following on the same connection.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Keeps the UiKit modals, contextual bars and banners an app opens for a logged-in user on the server, so when the user submits or closes one the app receives the view as it sent it, with the values the user filled in.
+  A submit with no record of the view (expired, or never recorded) is refused, and a close with no record never reaches the app. Views opened for a Livechat visitor are not recorded: the app receives the visitor's copy.
+  For a view opened for a logged-in user, `private_metadata` stays on the server and never reaches the browser. A visitor's view keeps it.
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+### Patch Changes
+
+- ([#43534](https://github.com/RocketChat/Rocket.Chat/pull/43534)) Adds the "Delete original discussion messages" retention policy setting. When it is off and "Do not prune discussion messages" is on, the prune keeps the message that starts each discussion, and its files. This applies to discussions that start after the update. When the prune deletes the file of a discussion's first message, quotes of that message in the discussion now show "File deleted".
+
+- <details><summary>Updated dependencies [34234f0163d4052dc611034b4dd5d18971a973d8, 25a57072d42d76566eb34d086c3ae09060d09e86, 34234f0163d4052dc611034b4dd5d18971a973d8, 183bca8af1fc26ab280120fef087f72f92982302, 65784586850ac2bddf383225524cc70eede65825, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 50a86d79876838745564b1adaf2d8409cb50c9a3, 25a57072d42d76566eb34d086c3ae09060d09e86, 9fe037ae8446c6aa6ac3149ce7c954a8698c721c, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 34234f0163d4052dc611034b4dd5d18971a973d8, 438544159fd6359527759d2a97dd227ae9f6c58c, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4, 10deeafc95d3d62507d1679707749db70954b0f8, 47bbdf898ed3bc2abae979e46ccaa7581b7b3dac, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b58dc3f74d95770724a0ad8770e681dfc83e1873, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 42f9f7efa463480e5168ff054a66f9c086bbf809, e074eb52ce5cca7934b85080c090b16e82010320, 2764e60c1343f9ed870bd40deef2d2019acaf477, e34b44c4aefa9952f18aa625be9910adeec8b76b, 34234f0163d4052dc611034b4dd5d18971a973d8, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/fuselage@2.0.0-rc.0
+  - @rocket.chat/icons@0.53.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+
+  </details>
+
 ## 9.0.0
 
 ### Major Changes

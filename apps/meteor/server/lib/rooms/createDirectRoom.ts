@@ -38,6 +38,113 @@ const generateSubscription = (
 	},
 });
 
+async function applyPreRoomCreateAppEvents<T extends object>(roomInfo: T, usernames: string[]): Promise<void> {
+	const tmpRoom: { _USERNAMES?: (string | undefined)[] } & T = {
+		...roomInfo,
+		_USERNAMES: usernames,
+	};
+
+	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmpRoom).catch((error) => {
+		if (error.name === AppsEngineException.name) {
+			throw new ClientSafeError('error-app-prevented', error.message);
+		}
+
+		throw error;
+	});
+
+	if (prevent) {
+		throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+	}
+
+	const result = await Apps.self?.triggerEvent(
+		AppEvents.IPreRoomCreateModify,
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomCreateExtend, tmpRoom),
+	);
+
+	if (typeof result === 'object') {
+		Object.assign(roomInfo, result);
+	}
+
+	delete tmpRoom._USERNAMES;
+}
+
+async function upsertSelfDirectSubscription(rid: IRoom['_id'], member: IUser, subscriptionExtra?: ISubscriptionExtraData): Promise<void> {
+	const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
+		{ rid, 'u._id': member._id },
+		{
+			$set: { open: true },
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
+			$setOnInsert: generateSubscription(member.name! || member.username!, member.username!, member, {
+				...subscriptionExtra,
+			}),
+		},
+		{ upsert: true },
+	);
+	if (modifiedCount || upsertedCount) {
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, member._id, modifiedCount ? 'updated' : 'inserted');
+	}
+}
+
+async function upsertMembersDirectSubscriptions(
+	rid: IRoom['_id'],
+	roomMembers: IUser[],
+	membersCount: number,
+	roomExtraData: Partial<IRoom>,
+	options: {
+		creator?: IUser['_id'];
+		subscriptionExtra?: ISubscriptionExtraData;
+	},
+): Promise<void> {
+	const memberIds = roomMembers.map((member) => member._id);
+	const membersWithPreferences: IUser[] = await Users.find(
+		{ _id: { $in: memberIds } },
+		{ projection: { 'username': 1, 'settings.preferences': 1 } },
+	).toArray();
+
+	const creatorUser = roomMembers.find((member) => member._id === options?.creator);
+	if (roomExtraData.federated && !creatorUser) {
+		throw new ClientSafeError('error-creator-not-in-room', 'The creator user must be part of the direct room');
+	}
+
+	const roomNames = getNameForDMs(roomMembers);
+
+	for (const member of membersWithPreferences) {
+		const subscriptionStatus: Partial<ISubscription> =
+			roomExtraData.federated && options.creator !== member._id && creatorUser
+				? {
+						status: 'INVITED',
+						inviter: {
+							_id: creatorUser._id,
+							username: creatorUser.username!,
+							name: creatorUser.name,
+						},
+						open: true,
+						unread: 1,
+						userMentions: 1,
+					}
+				: {};
+
+		const { fname, name } = roomNames[member._id];
+
+		const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
+			{ rid, 'u._id': member._id },
+			{
+				...(options?.creator === member._id && { $set: { open: true } }),
+				$setOnInsert: generateSubscription(fname, name, member, {
+					...(options?.creator !== member._id && { open: membersCount > 2 }),
+					...options?.subscriptionExtra,
+					...subscriptionStatus,
+					...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
+				}),
+			},
+			{ upsert: true },
+		);
+		if (modifiedCount || upsertedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, member._id, modifiedCount ? 'updated' : 'inserted');
+		}
+	}
+}
+
 export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
@@ -98,33 +205,7 @@ export async function createDirectRoom(
 	};
 
 	if (isNewRoom) {
-		const tmpRoom: { _USERNAMES?: (string | undefined)[] } & typeof roomInfo = {
-			...roomInfo,
-			_USERNAMES: usernames,
-		};
-
-		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmpRoom).catch((error) => {
-			if (error.name === AppsEngineException.name) {
-				throw new ClientSafeError('error-app-prevented', error.message);
-			}
-
-			throw error;
-		});
-
-		if (prevent) {
-			throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
-		}
-
-		const result = await Apps.self?.triggerEvent(
-			AppEvents.IPreRoomCreateModify,
-			await Apps.self?.triggerEvent(AppEvents.IPreRoomCreateExtend, tmpRoom),
-		);
-
-		if (typeof result === 'object') {
-			Object.assign(roomInfo, result);
-		}
-
-		delete tmpRoom._USERNAMES;
+		await applyPreRoomCreateAppEvents(roomInfo, usernames);
 	}
 
 	// @ts-expect-error - TODO: room expects `u` to be passed, but it's not part of the original object in here
@@ -134,71 +215,10 @@ export async function createDirectRoom(
 
 	if (roomMembers.length === 1) {
 		// dm to yourself
-		const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
-			{ rid, 'u._id': roomMembers[0]._id },
-			{
-				$set: { open: true },
-				// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
-				$setOnInsert: generateSubscription(roomMembers[0].name! || roomMembers[0].username!, roomMembers[0].username!, roomMembers[0], {
-					...options?.subscriptionExtra,
-				}),
-			},
-			{ upsert: true },
-		);
-		if (modifiedCount || upsertedCount) {
-			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, roomMembers[0]._id, modifiedCount ? 'updated' : 'inserted');
-		}
+		await upsertSelfDirectSubscription(rid, roomMembers[0], options?.subscriptionExtra);
 	} else {
-		const memberIds = roomMembers.map((member) => member._id);
-		const membersWithPreferences: IUser[] = await Users.find(
-			{ _id: { $in: memberIds } },
-			{ projection: { 'username': 1, 'settings.preferences': 1 } },
-		).toArray();
-
-		const creatorUser = roomMembers.find((member) => member._id === options?.creator);
-		if (roomExtraData.federated && !creatorUser) {
-			throw new ClientSafeError('error-creator-not-in-room', 'The creator user must be part of the direct room');
-		}
-
-		const roomNames = getNameForDMs(roomMembers);
-
-		for (const member of membersWithPreferences) {
-			const subscriptionStatus: Partial<ISubscription> =
-				roomExtraData.federated && options.creator !== member._id && creatorUser
-					? {
-							status: 'INVITED',
-							inviter: {
-								_id: creatorUser._id,
-								username: creatorUser.username!,
-								name: creatorUser.name,
-							},
-							open: true,
-							unread: 1,
-							userMentions: 1,
-						}
-					: {};
-
-			const { fname, name } = roomNames[member._id];
-
-			const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
-				{ rid, 'u._id': member._id },
-				{
-					...(options?.creator === member._id && { $set: { open: true } }),
-					$setOnInsert: generateSubscription(fname, name, member, {
-						...(options?.creator !== member._id && { open: members.length > 2 }),
-						...options?.subscriptionExtra,
-						...subscriptionStatus,
-						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
-					}),
-				},
-				{ upsert: true },
-			);
-			if (modifiedCount || upsertedCount) {
-				void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, member._id, modifiedCount ? 'updated' : 'inserted');
-			}
-		}
+		await upsertMembersDirectSubscriptions(rid, roomMembers, members.length, roomExtraData, options);
 	}
-
 	// If the room is new, run a callback
 	if (isNewRoom) {
 		const insertedRoom = await Rooms.findOneById(rid);

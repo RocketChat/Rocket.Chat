@@ -56,7 +56,7 @@ export const addUiKitRateLimiter = (): void => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
 	const apiLimiter = rateLimit({
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
-		max: (settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') as number) * 60,
+		max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
 		skip: () =>
 			settings.get('API_Enable_Rate_Limiter') !== true ||
 			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
@@ -214,222 +214,276 @@ export class AppUIKitInteractionApi {
 		router.post('/:id', this.routeHandler.bind(this));
 	}
 
+	private async handleBlockAction(
+		appId: string,
+		body: Extract<UiKitUserInteractionRequest['body'], { type: 'blockAction' }>,
+		reqUser: UiKitUserInteractionRequest['user'],
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
+	): Promise<void> {
+		const { orch } = this;
+
+		const { type, actionId, triggerId, payload, container, rid } = body;
+		const mid = 'mid' in body ? body.mid : undefined;
+
+		const { visitor } = body;
+		const user = orch.getConverters()?.get('users').convertToApp(reqUser);
+		const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+		const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+		const action = {
+			type,
+			container,
+			appId,
+			actionId,
+			message,
+			triggerId,
+			payload,
+			user,
+			visitor,
+			room,
+		};
+
+		try {
+			const eventInterface = !visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler;
+
+			const result = await orch.triggerEvent(eventInterface, action);
+
+			if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: reqUser?._id })) {
+				res.send({});
+				return;
+			}
+
+			await withDefaultCloseTarget(result, container, appId, reqUser?._id);
+			const delivered = await recordInteractionView(result, appId, reqUser?._id);
+			res.send(delivered ? result : {});
+		} catch (e) {
+			const error = e instanceof Error ? e.message : e;
+			res.status(500).send({ error });
+		}
+	}
+
+	private async handleBlockSuggestion(
+		appId: string,
+		body: Extract<UiKitUserInteractionRequest['body'], { type: 'blockSuggestion' }>,
+		reqUser: UiKitUserInteractionRequest['user'],
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
+	): Promise<void> {
+		const { orch } = this;
+
+		const { type, actionId, blockId, value, container, triggerId, rid } = body;
+		const mid = 'mid' in body ? body.mid : undefined;
+
+		const user = orch.getConverters()?.get('users').convertToApp(reqUser);
+		const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+		const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+		const action = { type, appId, actionId, blockId, value, container, triggerId, user, message, room };
+
+		try {
+			const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+
+			res.send(result);
+		} catch (e) {
+			const error = e instanceof Error ? e.message : e;
+			res.status(500).send({ error });
+		}
+	}
+
+	private async handleViewClosed(
+		appId: string,
+		body: Extract<UiKitUserInteractionRequest['body'], { type: 'viewClosed' }>,
+		reqUser: UiKitUserInteractionRequest['user'],
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
+	): Promise<void> {
+		const { orch } = this;
+
+		const {
+			type,
+			rid,
+			triggerId,
+			payload: { view, isCleared },
+		} = body;
+
+		const user = orch.getConverters()?.get('users').convertToApp(reqUser);
+		const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+		const recordedView = await withRecordedView(view, appId, reqUser?._id);
+		if (!recordedView) {
+			// A view the server no longer has still closes for the user.
+			res.send({});
+			return;
+		}
+
+		const { visitor } = body;
+		const action = {
+			type,
+			appId,
+			triggerId,
+			user,
+			visitor,
+			room,
+			payload: {
+				view: recordedView,
+				isCleared,
+			},
+		};
+
+		try {
+			const result = await orch.triggerEvent(
+				!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+				action,
+			);
+
+			if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: reqUser?._id })) {
+				res.send({});
+				return;
+			}
+
+			const delivered = await recordInteractionView(result, appId, reqUser?._id);
+			res.send(delivered ? result : {});
+		} catch (e) {
+			const error = e instanceof Error ? e.message : e;
+			res.status(500).send({ error });
+		}
+	}
+
+	private async handleViewSubmit(
+		appId: string,
+		body: Extract<UiKitUserInteractionRequest['body'], { type: 'viewSubmit' }>,
+		reqUser: UiKitUserInteractionRequest['user'],
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
+	): Promise<void> {
+		const { orch } = this;
+
+		const { type, actionId, triggerId, payload, rid } = body;
+
+		const user = orch.getConverters()?.get('users').convertToApp(reqUser);
+		const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+		const view = await withRecordedView(payload.view, appId, reqUser?._id);
+		if (!view) {
+			res.status(400).send({ error: 'The view is no longer available' });
+			return;
+		}
+
+		const { visitor } = body;
+		const action = {
+			type,
+			appId,
+			actionId,
+			triggerId,
+			payload: { ...payload, view },
+			user,
+			visitor,
+			room,
+		};
+
+		try {
+			await confirmViewFiles(view, reqUser?._id);
+			const result = await orch.triggerEvent(
+				!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+				action,
+			);
+
+			if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: reqUser?._id })) {
+				res.send({});
+				return;
+			}
+
+			if (typeof view.id === 'string') {
+				await withDefaultCloseTarget(result, { type: 'view', id: view.id }, appId, reqUser?._id);
+			}
+			const delivered = await recordInteractionView(result, appId, reqUser?._id);
+			const answer = viewSubmitAnswer(delivered, result);
+			res.status(answer.status).send(answer.body);
+		} catch (e) {
+			const error = e instanceof Error ? e.message : e;
+			res.status(500).send({ error });
+		}
+	}
+
+	private async handleActionButton(
+		appId: string,
+		body: Extract<UiKitUserInteractionRequest['body'], { type: 'actionButton' }>,
+		reqUser: UiKitUserInteractionRequest['user'],
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
+	): Promise<void> {
+		const { orch } = this;
+
+		const {
+			type,
+			actionId,
+			triggerId,
+			rid,
+			mid,
+			tmid,
+			payload: { context, message: msgText },
+		} = body;
+
+		const user = orch.getConverters()?.get('users').convertToApp(reqUser);
+		const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+		const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+
+		const action = {
+			type,
+			appId,
+			actionId,
+			triggerId,
+			user,
+			room,
+			message,
+			tmid,
+			payload: {
+				context,
+				...(msgText ? { message: msgText } : {}),
+			},
+		};
+
+		try {
+			const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+
+			if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: reqUser?._id })) {
+				res.send({});
+				return;
+			}
+
+			const delivered = await recordInteractionView(result, appId, reqUser?._id);
+			res.send(delivered ? result : {});
+		} catch (e) {
+			const error = e instanceof Error ? e.message : e;
+			res.status(500).send({ error });
+		}
+	}
+
 	private async routeHandler(
 		req: UiKitUserInteractionRequest,
 		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
 	): Promise<void> {
-		const { orch } = this;
 		const { id: appId } = req.params;
 
 		switch (req.body.type) {
 			case 'blockAction': {
-				const { type, actionId, triggerId, payload, container, rid } = req.body;
-				const mid = 'mid' in req.body ? req.body.mid : undefined;
-
-				const { visitor } = req.body;
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
-				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
-
-				const action = {
-					type,
-					container,
-					appId,
-					actionId,
-					message,
-					triggerId,
-					payload,
-					user,
-					visitor,
-					room,
-				};
-
-				try {
-					const eventInterface = !visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler;
-
-					const result = await orch.triggerEvent(eventInterface, action);
-
-					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
-						res.send({});
-						break;
-					}
-
-					await withDefaultCloseTarget(result, container, appId, req.user?._id);
-					const delivered = await recordInteractionView(result, appId, req.user?._id);
-					res.send(delivered ? result : {});
-				} catch (e) {
-					const error = e instanceof Error ? e.message : e;
-					res.status(500).send({ error });
-				}
+				await this.handleBlockAction(appId, req.body, req.user, res);
 				break;
 			}
 
 			case 'blockSuggestion': {
-				const { type, actionId, blockId, value, container, triggerId, rid } = req.body;
-				const mid = 'mid' in req.body ? req.body.mid : undefined;
-
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
-				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
-
-				const action = { type, appId, actionId, blockId, value, container, triggerId, user, message, room };
-
-				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
-
-					res.send(result);
-				} catch (e) {
-					const error = e instanceof Error ? e.message : e;
-					res.status(500).send({ error });
-				}
+				await this.handleBlockSuggestion(appId, req.body, req.user, res);
 				break;
 			}
 
 			case 'viewClosed': {
-				const {
-					type,
-					rid,
-					triggerId,
-					payload: { view, isCleared },
-				} = req.body;
-
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
-
-				const recordedView = await withRecordedView(view, appId, req.user?._id);
-				if (!recordedView) {
-					// A view the server no longer has still closes for the user.
-					res.send({});
-					break;
-				}
-
-				const { visitor } = req.body;
-				const action = {
-					type,
-					appId,
-					triggerId,
-					user,
-					visitor,
-					room,
-					payload: {
-						view: recordedView,
-						isCleared,
-					},
-				};
-
-				try {
-					const result = await orch.triggerEvent(
-						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
-						action,
-					);
-
-					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
-						res.send({});
-						break;
-					}
-
-					const delivered = await recordInteractionView(result, appId, req.user?._id);
-					res.send(delivered ? result : {});
-				} catch (e) {
-					const error = e instanceof Error ? e.message : e;
-					res.status(500).send({ error });
-				}
+				await this.handleViewClosed(appId, req.body, req.user, res);
 				break;
 			}
 
 			case 'viewSubmit': {
-				const { type, actionId, triggerId, payload, rid } = req.body;
-
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
-
-				const view = await withRecordedView(payload.view, appId, req.user?._id);
-				if (!view) {
-					res.status(400).send({ error: 'The view is no longer available' });
-					break;
-				}
-
-				const { visitor } = req.body;
-				const action = {
-					type,
-					appId,
-					actionId,
-					triggerId,
-					payload: { ...payload, view },
-					user,
-					visitor,
-					room,
-				};
-
-				try {
-					await confirmViewFiles(view, req.user?._id);
-					const result = await orch.triggerEvent(
-						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
-						action,
-					);
-
-					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
-						res.send({});
-						break;
-					}
-
-					if (typeof view.id === 'string') {
-						await withDefaultCloseTarget(result, { type: 'view', id: view.id }, appId, req.user?._id);
-					}
-					const delivered = await recordInteractionView(result, appId, req.user?._id);
-					const answer = viewSubmitAnswer(delivered, result);
-					res.status(answer.status).send(answer.body);
-				} catch (e) {
-					const error = e instanceof Error ? e.message : e;
-					res.status(500).send({ error });
-				}
+				await this.handleViewSubmit(appId, req.body, req.user, res);
 				break;
 			}
 
 			case 'actionButton': {
-				const {
-					type,
-					actionId,
-					triggerId,
-					rid,
-					mid,
-					tmid,
-					payload: { context, message: msgText },
-				} = req.body;
-
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
-				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
-
-				const action = {
-					type,
-					appId,
-					actionId,
-					triggerId,
-					user,
-					room,
-					message,
-					tmid,
-					payload: {
-						context,
-						...(msgText ? { message: msgText } : {}),
-					},
-				};
-
-				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
-
-					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
-						res.send({});
-						break;
-					}
-
-					const delivered = await recordInteractionView(result, appId, req.user?._id);
-					res.send(delivered ? result : {});
-				} catch (e) {
-					const error = e instanceof Error ? e.message : e;
-					res.status(500).send({ error });
-				}
+				await this.handleActionButton(appId, req.body, req.user, res);
 				break;
 			}
 

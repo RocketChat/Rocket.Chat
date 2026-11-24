@@ -654,3 +654,28 @@ describe('UploadsStore unload warning', () => {
 		}
 	});
 });
+
+describe('UploadsStore progress', () => {
+	it('keeps an upload below 100% once all its bytes are sent, until the server answers', () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		void store.send(createFile());
+
+		xhrs[0].progress(6, 6);
+
+		expect(store.get()[0]).toMatchObject({ percentage: 99 });
+		expect(store.get()[0]).not.toHaveProperty('url');
+	});
+
+	it('completes the upload with the file url once the server accepts it', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		const sending = store.send(createFile());
+		xhrs[0].progress(6, 6);
+
+		completeUpload(xhrs[0], 'file-1');
+		await sending;
+
+		expect(store.get()[0]).toMatchObject({ id: 'file-1', url: '/file-upload/file-1/file', percentage: 100 });
+	});
+});

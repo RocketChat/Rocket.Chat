@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { tamaguiPlugin } from '@tamagui/vite-plugin';
 import type { Plugin, ResolvedConfig } from 'vite';
@@ -69,6 +69,11 @@ const withoutFuselageGlobalStylesheet = (): Plugin => ({
 	},
 });
 
+// Why a zero stylesheet cannot ship: a token the Tamagui config lacks, or a theme key no theme class declares. The check
+// lives with Fuselage's verify scripts, reached by path as the Tamagui config is.
+const zeroStylesheetErrors = async (css: string): Promise<string[]> =>
+	(await import(pathToFileURL(join(fuselageRoot, 'scripts/verify/zero-stylesheet.mjs')).href)).zeroStylesheetErrors(css);
+
 // Moves Tamagui's zero-runtime stylesheet next to the widget's other files under a content hash, linked from
 // `index.html` the way its scripts are.
 const zeroStylesheetWithWidget = (): Plugin => {
@@ -84,7 +89,7 @@ const zeroStylesheetWithWidget = (): Plugin => {
 		closeBundle: {
 			order: 'post',
 			sequential: true,
-			handler() {
+			async handler() {
 				const { outDir } = config.build;
 				const written = join(outDir, 'tamagui-zero.css');
 				if (!existsSync(written)) {
@@ -92,6 +97,10 @@ const zeroStylesheetWithWidget = (): Plugin => {
 				}
 
 				const css = readFileSync(written);
+				const errors = await zeroStylesheetErrors(css.toString());
+				if (errors.length) {
+					throw new Error(`Tamagui's zero-runtime stylesheet cannot ship. ${errors.join('. ')}`);
+				}
 				const file = `tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
 				writeFileSync(join(outDir, file), css);
 				rmSync(written);

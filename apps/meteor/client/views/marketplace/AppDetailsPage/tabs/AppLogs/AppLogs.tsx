@@ -1,17 +1,19 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Pagination, Stack } from '@rocket.chat/fuselage';
 import { CustomScrollbars, usePagination, GenericNoResults, GenericError } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
-import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
+import { CollapsiblePanel } from './layout/CollapsiblePanel';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
+import ListViewport from '../../../../../components/ListViewport';
 import { marketplaceQueryKeys } from '../../../../../lib/queryKeys';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 function expandedReducer(
 	expandedStates: { id: string; expanded: boolean }[],
@@ -110,34 +112,38 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	return (
 		<>
-			<Box paddingBlock={16}>
-				<AppLogsFilter
-					appId={id}
-					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
-					isLoading={isFetching}
-					expandAll={() => handleExpandAll()}
-					collapseAll={() => handleCollapseAll()}
-					refetchLogs={() => refetch()}
-				/>
-			</Box>
-			{isFetching && <AccordionLoading />}
-			{isError && <GenericError title={parsedError} />}
-			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
-			{!isFetching && isSuccess && data?.logs?.length > 0 && (
-				<CustomScrollbars>
-					<CollapsiblePanel width='100%' alignSelf='center'>
-						{data?.logs?.map((log, index) => (
-							<AppLogsItem
-								regionId={log._id}
-								expanded={expandedStates.find((state) => state.id === log._id)?.expanded || false}
-								onExpand={handleExpand}
-								key={`${index}-${log._createdAt}`}
-								{...log}
-							/>
-						))}
-					</CollapsiblePanel>
-				</CustomScrollbars>
-			)}
+			<Stack gap='x16' grow>
+				<AppDetailsTabContent>
+					<AppLogsFilter
+						appId={id}
+						noResults={isFetching || !isSuccess || data?.logs?.length === 0}
+						isLoading={isFetching}
+						expandAll={() => handleExpandAll()}
+						collapseAll={() => handleCollapseAll()}
+						refetchLogs={() => refetch()}
+					/>
+				</AppDetailsTabContent>
+				<ListViewport>
+					{isFetching && <AccordionLoading />}
+					{isError && <GenericError title={parsedError} />}
+					{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
+					{!isFetching && isSuccess && data?.logs?.length > 0 && (
+						<CustomScrollbars>
+							<CollapsiblePanel width='100%' alignSelf='center'>
+								{data?.logs?.map((log, index) => (
+									<AppLogsItem
+										regionId={log._id}
+										expanded={expandedStates.find((state) => state.id === log._id)?.expanded || false}
+										onExpand={handleExpand}
+										key={`${index}-${log._createdAt}`}
+										{...log}
+									/>
+								))}
+							</CollapsiblePanel>
+						</CustomScrollbars>
+					)}
+				</ListViewport>
+			</Stack>
 			<Pagination
 				divider
 				current={current}

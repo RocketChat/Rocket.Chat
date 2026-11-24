@@ -1,0 +1,30 @@
+import type { AnchorHTMLAttributes, MouseEvent, Ref } from 'react';
+
+/** The `data-*` attributes tests and the app select elements by. */
+export type WebDataAttributes = {
+	[name: `data-${string}`]: string | number | boolean | undefined;
+};
+
+/** What any part takes on the web besides its contract; it takes no `style`. */
+export type WebAttributes<TElement extends Element> = WebDataAttributes & {
+	id?: string;
+	/** Joined after the part's own classes. */
+	className?: string;
+	ref?: Ref<TElement>;
+};
+
+/** The address of a part rendered as a link. */
+export type WebLinkAttributes = Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'rel'>;
+
+/** The closed set of tags a part can render as. */
+export type WebTagAttributes<TTag extends keyof HTMLElementTagNameMap> = {
+	is?: TTag;
+};
+
+export type WebPressAlias<TElement extends Element> = {
+	/** @deprecated Use `onPress`. */
+	onClick?: (event: MouseEvent<TElement>) => void;
+};
+
+/** A contract as the web renderer takes it: its `ref` points at the element, and the web attributes are added. */
+export type WebProps<TContract, TElement extends Element> = Omit<TContract, 'ref'> & WebAttributes<TElement>;

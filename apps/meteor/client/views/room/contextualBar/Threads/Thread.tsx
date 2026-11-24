@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ModalBackdrop, Skeleton, useStyle } from '@rocket.chat/fuselage';
+import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -43,9 +43,6 @@ const Thread = ({ tmid }: ThreadProps) => {
 	});
 
 	const t = useTranslation();
-	const backdropClassName = useStyle(css`
-		position: absolute !important;
-	`);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canExpand = useLayoutContextualBarExpanded();
@@ -91,7 +88,6 @@ const Thread = ({ tmid }: ThreadProps) => {
 	const threadContent = (
 		// The thread view lays itself over the room, so it builds the contextual bar's surface itself instead of a Contextualbar
 		<Box
-			rcx-vertical-bar
 			rcx-thread-view
 			className={
 				isExpanded
@@ -104,6 +100,8 @@ const Thread = ({ tmid }: ThreadProps) => {
 					: undefined
 			}
 			backgroundColor='room'
+			borderInlineStartWidth='default'
+			borderInlineStartColor='extra-light'
 			color='default'
 			display='flex'
 			flexDirection='column'
@@ -155,7 +153,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 				{portalTarget ? (
 					createPortal(
 						<>
-							<ModalBackdrop className={backdropClassName} onClick={handleBackdropClick} />
+							<ModalBackdrop contained onClick={handleBackdropClick} />
 							{threadContent}
 						</>,
 						portalTarget,

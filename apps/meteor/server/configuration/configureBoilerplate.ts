@@ -39,7 +39,7 @@ export function configureBoilerplate(settings: ICachedSettings): void {
 			}
 			let host = value.replace(/\/$/, '');
 			// let prefix = '';
-			const match = value.match(/([^\/]+\/{2}[^\/]+)(\/.+)/);
+			const match = value.match(/([^/]+\/{2}[^/]+)(\/.+)/);
 			if (match != null) {
 				host = match[1];
 				// prefix = match[2].replace(/\/$/, '');
@@ -49,7 +49,7 @@ export function configureBoilerplate(settings: ICachedSettings): void {
 			// hostname = host.replace(/^https?:\/\//, '');
 			process.env.MOBILE_ROOT_URL = host;
 			process.env.MOBILE_DDP_URL = host;
-			if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {
+			if (WebAppInternals?.generateBoilerplate) {
 				await WebAppInternals.generateBoilerplate();
 			}
 		}),

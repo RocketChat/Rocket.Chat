@@ -1,0 +1,5 @@
+{
+	"permissions": {
+		"ask": ["Bash(gh pr create:*)", "Bash(gh pr ready:*)"]
+	}
+}

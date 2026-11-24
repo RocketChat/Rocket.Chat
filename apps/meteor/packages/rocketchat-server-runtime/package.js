@@ -15,7 +15,6 @@ const serverPackages = [
 	'accounts-password@3.3.1',
 	'ddp-rate-limiter@1.3.0',
 	'rate-limit@1.2.0',
-	'email@3.2.0',
 	'ddp-common@1.4.5',
 	'webapp@2.3.0',
 	'mongo@2.5.1',

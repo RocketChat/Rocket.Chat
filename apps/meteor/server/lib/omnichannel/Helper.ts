@@ -276,7 +276,7 @@ export const createLivechatSubscription = async (
 		},
 		ts: new Date(),
 		...(department && { department }),
-	} as InsertionModel<ISubscription>;
+	};
 
 	const response = await Subscriptions.insertOne(subscriptionData);
 
@@ -478,7 +478,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		throw new Error('error-invalid-inquiry');
 	}
 
-	if (oldServedBy && agentId === oldServedBy._id) {
+	if (agentId === oldServedBy?._id) {
 		throw new Error('error-selected-agent-room-agent-are-same');
 	}
 
@@ -575,6 +575,41 @@ export const updateChatDepartment = async ({
 		newDepartmentId,
 		oldDepartmentId,
 	});
+};
+
+const forwardToFallbackDepartment = async (
+	room: IOmnichannelRoom,
+	guest: ILivechatVisitor,
+	transferData: TransferData,
+	department: Pick<ILivechatDepartment, 'allowReceiveForwardOffline' | 'fallbackForwardDepartment' | 'name'> | null,
+	servedBy: NonNullable<IOmnichannelRoom['servedBy']>,
+	oldServedBy: NonNullable<IOmnichannelRoom['servedBy']>,
+) => {
+	if (!department?.fallbackForwardDepartment?.length) {
+		logger.debug({
+			msg: 'Cannot forward room. Chat assigned to agent instead',
+			roomId: room._id,
+			agentId: servedBy._id,
+			previousAgentId: oldServedBy._id,
+		});
+		throw new Error('error-no-agents-available-for-service-on-department');
+	}
+
+	if (!transferData.originalDepartmentName) {
+		transferData.originalDepartmentName = department.name;
+	}
+	// if a chat has a fallback department, attempt to redirect chat to there [EE]
+	const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
+	// On CE theres no callback so it will return the room
+	if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
+		logger.debug({
+			msg: 'Cannot forward room. Unable to delegate inquiry',
+			roomId: room._id,
+		});
+		return false;
+	}
+
+	return true;
 };
 
 export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) => {
@@ -696,31 +731,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && oldServedBy._id === servedBy?._id) {
-		if (!department?.fallbackForwardDepartment?.length) {
-			logger.debug({
-				msg: 'Cannot forward room. Chat assigned to agent instead',
-				roomId: room._id,
-				agentId: servedBy._id,
-				previousAgentId: oldServedBy._id,
-			});
-			throw new Error('error-no-agents-available-for-service-on-department');
-		}
-
-		if (!transferData.originalDepartmentName) {
-			transferData.originalDepartmentName = department.name;
-		}
-		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
-		// On CE theres no callback so it will return the room
-		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
-			logger.debug({
-				msg: 'Cannot forward room. Unable to delegate inquiry',
-				roomId: room._id,
-			});
-			return false;
-		}
-
-		return true;
+		return forwardToFallbackDepartment(room, guest, transferData, department, servedBy, oldServedBy);
 	}
 
 	// Send just 1 message to the room to inform the user that the chat was transferred

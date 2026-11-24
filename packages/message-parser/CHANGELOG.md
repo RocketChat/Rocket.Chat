@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.33.1-rc.0
+
+### Patch Changes
+
+- ([#43512](https://github.com/RocketChat/Rocket.Chat/pull/43512)) Declares itself an ES module. The bundle it ships is unchanged, and the redundant `module` field is removed.
+
+- ([#42494](https://github.com/RocketChat/Rocket.Chat/pull/42494)) Fixes the second of two consecutive user mentions being sent as plain text when they are separated by a non-breaking space, which the realtime message composer inserts while typing
+
 ## 0.33.0
 
 ### Minor Changes

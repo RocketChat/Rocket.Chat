@@ -104,7 +104,7 @@ export class BusinessHourManager {
 	}
 
 	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
-		const type = this.getBusinessHourType((businessHourData.type as string) || LivechatBusinessHourTypes.DEFAULT) as IBusinessHourType;
+		const type = this.getBusinessHourType(businessHourData.type || LivechatBusinessHourTypes.DEFAULT) as IBusinessHourType;
 		const saved = await type.saveBusinessHour(businessHourData);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
