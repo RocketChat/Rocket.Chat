@@ -63,8 +63,8 @@
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "2.0.0-rc.0",
 		"@rocket.chat/styled": "0.35.0-rc.0",
-		"react": "*",
-		"react-dom": "*"
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

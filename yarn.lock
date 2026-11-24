@@ -9178,8 +9178,8 @@ __metadata:
   peerDependencies:
     "@rocket.chat/fuselage": 2.0.0-rc.0
     "@rocket.chat/fuselage-hooks": 0.44.1-rc.0
-    react: "*"
-    react-dom: "*"
+    react: ^19.0.0
+    react-dom: ^19.0.0
   languageName: unknown
   linkType: soft
 
@@ -9209,7 +9209,7 @@ __metadata:
     rollup: "npm:~4.62.5"
     typescript: "npm:~5.9.3"
   peerDependencies:
-    react: "*"
+    react: ^19.0.0
   languageName: unknown
   linkType: soft
 
@@ -9237,8 +9237,8 @@ __metadata:
   peerDependencies:
     "@rocket.chat/fuselage": 2.0.0-rc.0
     "@rocket.chat/styled": 0.35.0-rc.0
-    react: "*"
-    react-dom: "*"
+    react: ^19.0.0
+    react-dom: ^19.0.0
   languageName: unknown
   linkType: soft
 
@@ -9311,8 +9311,8 @@ __metadata:
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@tanstack/react-query": "*"
     i18next: "*"
-    react: "*"
-    react-dom: "*"
+    react: ^19.0.0
+    react-dom: ^19.0.0
     react-i18next: "*"
   languageName: unknown
   linkType: soft
@@ -9376,8 +9376,8 @@ __metadata:
   peerDependencies:
     "@rocket.chat/fuselage-hooks": 0.44.1-rc.0
     "@rocket.chat/icons": 0.53.0-rc.0
-    react: "*"
-    react-dom: "*"
+    react: ^19.0.0
+    react-dom: ^19.0.0
     react-virtuoso: "*"
   languageName: unknown
   linkType: soft

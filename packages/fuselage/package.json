@@ -116,8 +116,8 @@
 	"peerDependencies": {
 		"@rocket.chat/fuselage-hooks": "0.44.1-rc.0",
 		"@rocket.chat/icons": "0.53.0-rc.0",
-		"react": "*",
-		"react-dom": "*",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
 		"react-virtuoso": "*"
 	},
 	"volta": {
