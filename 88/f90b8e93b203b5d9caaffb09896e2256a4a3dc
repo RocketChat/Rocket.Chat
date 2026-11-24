@@ -1,0 +1,25 @@
+apps/meteor/server/lib/import/csv/CsvImporter.ts
+  s_5f60e8c34d8641::t_2496709abc7444 9
+apps/meteor/server/lib/import/csvParser.ts
+  s_5f60e8c34d8641::t_5438a7a5cf98fe 1
+apps/meteor/server/lib/import/slack-users/SlackUsersImporter.ts
+  s_5f60e8c34d8641::t_2496709abc7444 11
+apps/meteor/server/lib/import/omnichannel-contacts/ContactImporter.ts
+  s_5f60e8c34d8641::t_c44c7b1c5f5b05 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "88f90b8e93b203b5d9caaffb09896e2256a4a3dc",
+  "prompts": {},
+  "sessions": {
+    "s_5f60e8c34d8641": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9a65cee5-5d45-472c-a8f3-675b2f6b8edb",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
