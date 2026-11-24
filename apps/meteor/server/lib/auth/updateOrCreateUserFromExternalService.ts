@@ -44,14 +44,6 @@ const updateOrCreateServiceUser = async (
 	serviceData: Record<string, any>,
 	options: InsertUserOptions,
 ): Promise<ExternalServiceLoginResult> => {
-	if (serviceName === 'password' || serviceName === 'resume') {
-		throw new Error(`Can't use updateOrCreateUserFromExternalService with internal service ${serviceName}`);
-	}
-
-	if (!Object.hasOwn(serviceData, 'id')) {
-		throw new Error(`Service data for service ${serviceName} must include id`);
-	}
-
 	const user = await Users.findOneByServiceId(serviceName, serviceData.id, { projection: { _id: 1 } });
 	if (user) {
 		await Users.setServiceDataById(user._id, serviceName, serviceData);
@@ -67,6 +59,14 @@ export async function updateOrCreateUserFromExternalService(
 	serviceData: Record<string, any> = {},
 	options: InsertUserOptions = {},
 ): Promise<ExternalServiceLoginResult | undefined> {
+	if (serviceName === 'password' || serviceName === 'resume') {
+		throw new Error(`Can't use updateOrCreateUserFromExternalService with internal service ${serviceName}`);
+	}
+
+	if (serviceData.id === undefined || serviceData.id === null) {
+		throw new Error(`Service data for service ${serviceName} must include id`);
+	}
+
 	await claimUserWithSameEmail(serviceName, serviceData);
 
 	if (!isCustomOAuthServiceAllowed(serviceName)) {

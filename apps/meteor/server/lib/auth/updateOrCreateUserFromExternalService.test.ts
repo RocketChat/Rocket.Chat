@@ -92,6 +92,26 @@ describe('updateOrCreateUserFromExternalService', () => {
 			await expect(updateOrCreateUserFromExternalService('github', {})).to.be.rejectedWith('must include id');
 			sinon.assert.notCalled(insertUser);
 		});
+
+		it('should refuse a missing service id before reading or changing any user', async () => {
+			Users.findOneByEmailAddress.resolves({ _id: 'local-user', services: { github: { id: 'gh-1' } } });
+
+			for (const id of [null, undefined]) {
+				await expect(updateOrCreateUserFromExternalService('github', { id, email: 'alice@example.com' })).to.be.rejectedWith(
+					'must include id',
+				);
+			}
+			await expect(updateOrCreateUserFromExternalService('github', { email: 'alice@example.com' })).to.be.rejectedWith('must include id');
+			await expect(updateOrCreateUserFromExternalService('password', { id: 'x', email: 'alice@example.com' })).to.be.rejectedWith(
+				'internal service password',
+			);
+
+			for (const stub of Object.values(Users)) {
+				sinon.assert.notCalled(stub);
+			}
+			sinon.assert.notCalled(processCustomOAuthUser);
+			sinon.assert.notCalled(insertUser);
+		});
 	});
 
 	describe('claiming a user with the same email', () => {
