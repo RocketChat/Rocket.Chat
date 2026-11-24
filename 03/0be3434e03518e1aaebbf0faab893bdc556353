@@ -1,0 +1,37 @@
+scripts/step6-harness/harness.mjs
+  s_bb699ee5e6108a::t_93df183138fa37 1-489
+  s_bb699ee5e6108a::t_48a5c2fe0702b5 490-492
+  s_bb699ee5e6108a::t_4b6139971ed91d 493-519
+scripts/step6-harness/README.md
+  s_bb699ee5e6108a::t_0ecf544a10b1b2 1-79
+  s_bb699ee5e6108a::t_6311aaa1bac421 80-82
+  s_bb699ee5e6108a::t_3888b0e290a2be 83
+scripts/step6-harness/paths/slice1-file-handlers.json
+  s_bb699ee5e6108a::t_cd54f7fbf40529 1-51
+scripts/step6-harness/paths/slice2-oauth2-server.json
+  s_bb699ee5e6108a::t_29e736a4ad94da 1-21
+scripts/step6-harness/paths/slice2-seats-swagger.json
+  s_bb699ee5e6108a::t_d7d7a90dd2a8ea 1-17
+scripts/step6-harness/paths/00-core.json
+  s_bb699ee5e6108a::t_13e8738834242c 1-20
+scripts/step6-harness/paths/ddp.json
+  s_bb699ee5e6108a::t_93455416a3dfda 1-32
+scripts/step6-harness/paths/slice4-compression.json
+  s_bb699ee5e6108a::t_e3eee8b716c20f 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "030be3434e03518e1aaebbf0faab893bdc556353",
+  "prompts": {},
+  "sessions": {
+    "s_bb699ee5e6108a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3ea9430-7128-4301-b8bb-a426f51f66a5",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
