@@ -1,0 +1,24 @@
+docs/features/video-conference-persistent-chat/README.md
+  s_5f60e8c34d8641::t_0541e43430fc05 1038
+docs/proposals/apps-converters-zod/README.md
+  s_5f60e8c34d8641::t_0541e43430fc05 252-253
+docs/backend-folder-structure.md
+  s_5f60e8c34d8641::t_21ec75b33482d0 131
+  s_5f60e8c34d8641::t_0541e43430fc05 125-129,133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9e26a2cc1d020ec0b131da60e93adb106360eff4",
+  "prompts": {},
+  "sessions": {
+    "s_5f60e8c34d8641": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9a65cee5-5d45-472c-a8f3-675b2f6b8edb",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
