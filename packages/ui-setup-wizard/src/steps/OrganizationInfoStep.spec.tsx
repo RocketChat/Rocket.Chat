@@ -14,7 +14,7 @@ const organizationData = {
 	country: 'brazil',
 };
 
-const renderStep = (overrides: Partial<SetupWizardContextValue>) => {
+const renderStep = (overrides: Partial<SetupWizardContextValue>, dispatchToastMessage: jest.Mock = jest.fn()) => {
 	const defaultValue: SetupWizardContextValue = {
 		setupWizardData: {
 			organizationData,
@@ -51,7 +51,7 @@ const renderStep = (overrides: Partial<SetupWizardContextValue>) => {
 		<SetupWizardContext.Provider value={{ ...defaultValue, ...overrides }}>
 			<OrganizationInfoStep />
 		</SetupWizardContext.Provider>,
-		{ wrapper: mockAppRoot().build() },
+		{ wrapper: mockAppRoot().withToastMessageDispatch(dispatchToastMessage).build() },
 	);
 };
 
@@ -78,4 +78,20 @@ it('saves the organization info when the workspace is already registered', async
 	await waitFor(() => expect(completeSetupWizard).toHaveBeenCalled());
 	expect(saveOrganizationData).toHaveBeenCalledWith(organizationData);
 	expect(saveOrganizationData.mock.invocationCallOrder[0]).toBeLessThan(completeSetupWizard.mock.invocationCallOrder[0]);
+});
+
+it('shows an error and stays on the step when the organization info cannot be saved', async () => {
+	const error = new Error('failed to save');
+	const saveOrganizationData = jest.fn(async () => {
+		throw error;
+	});
+	const completeSetupWizard = jest.fn(async () => undefined);
+	const dispatchToastMessage = jest.fn();
+
+	renderStep({ saveOrganizationData, completeSetupWizard, skipCloudRegistration: true, maxSteps: 2 }, dispatchToastMessage);
+
+	fireEvent.submit(screen.getByRole('form'));
+
+	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: error }));
+	expect(completeSetupWizard).not.toHaveBeenCalled();
 });

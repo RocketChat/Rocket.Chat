@@ -1,4 +1,5 @@
 import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
@@ -20,11 +21,17 @@ const OrganizationInfoStep = () => {
 		skipCloudRegistration,
 		maxSteps,
 	} = useSetupWizardContext();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleSubmit: ComponentProps<typeof OrganizationInfoPage>['onSubmit'] = async (data) => {
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
 
-		await saveOrganizationData(data);
+		try {
+			await saveOrganizationData(data);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+			return;
+		}
 
 		if (skipCloudRegistration) {
 			return completeSetupWizard();
