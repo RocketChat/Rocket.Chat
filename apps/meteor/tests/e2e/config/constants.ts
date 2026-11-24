@@ -12,6 +12,9 @@ export const URL_MONGODB = process.env.MONGO_URL || 'mongodb://localhost:3001/me
 
 export const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || 'http://localhost:4000';
 
+// The mock server as Rocket.Chat reaches it; in CI the server runs in its own container
+export const MOCK_SERVER_URL_FROM_SERVER = process.env.MOCK_SERVER_URL_FROM_SERVER || 'http://mock-server.dev:8080';
+
 export const ADMIN_CREDENTIALS = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',
