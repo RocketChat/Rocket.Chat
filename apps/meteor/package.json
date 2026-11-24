@@ -54,6 +54,7 @@
 		"test": "yarn testunit && yarn testapi",
 		"test:e2e": "playwright test",
 		"test:e2e:nyc": "nyc report --reporter=lcovonly",
+		"test:update-tester-app": "tsx .scripts/update-tester-app.ts",
 		"testapi": "yarn .testapi 'tests/end-to-end/api/**/*.ts' 'tests/end-to-end/apps/**/*.ts'",
 		"testapi:livechat": "yarn .testapi 'tests/end-to-end/api-livechat/**/*.ts'",
 		"testunit": "yarn .testunit:jest && yarn .testunit:server:cov",

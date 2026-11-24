@@ -1906,8 +1906,8 @@ export class AbacRoomCreationTestApp extends App {
 
 #### Apps.RocketChat.Tester
 
-File name: `appsrocketchattester_0.3.0.zip`
+File name: `appsrocketchattester.zip`
 
-The general-purpose test app most suites install through `installTestApp()`: a video conference provider, slash commands, message senders and livechat hooks. Its source lives in [RocketChat/Apps.RocketChat.Tester](https://github.com/RocketChat/Apps.RocketChat.Tester); this is a copy of `dist/appsrocketchattester_0.3.0.zip` from that repository, kept here so those suites don't download it at run time.
+The general-purpose test app most suites install through `installTestApp()`: a video conference provider, slash commands, message senders and livechat hooks. Its source lives in [RocketChat/Apps.RocketChat.Tester](https://github.com/RocketChat/Apps.RocketChat.Tester); this is a copy of a release from that repository's `dist/` folder, kept here so those suites don't download it at run time. To replace it with the latest release, run `yarn test:update-tester-app` from `apps/meteor`.
 
 `tests/end-to-end/apps/installation.ts` covers installing from a URL, which the Rocket.Chat server downloads from `APP_TEST_URL`. CI points it at the mock-server, which serves this folder under `/__fixtures/`; without it, the tests download the package from GitHub.

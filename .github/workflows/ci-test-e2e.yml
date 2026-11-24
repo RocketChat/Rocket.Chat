@@ -222,7 +222,7 @@ jobs:
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin.dev'
-          APP_TEST_URL: 'http://mock-server.dev:8080/__fixtures/appsrocketchattester_0.3.0.zip'
+          APP_TEST_URL: 'http://mock-server.dev:8080/__fixtures/appsrocketchattester.zip'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace

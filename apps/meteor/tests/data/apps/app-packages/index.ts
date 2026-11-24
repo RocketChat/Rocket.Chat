@@ -31,4 +31,4 @@ export const appMediaCallEventsTest = path.resolve(__dirname, './media-call-even
 
 export const appAbacRoomCreationTest = path.resolve(__dirname, './abac-room-creation-test_0.0.1.zip');
 
-export const appRocketChatTester = path.resolve(__dirname, './appsrocketchattester_0.3.0.zip');
+export const appRocketChatTester = path.resolve(__dirname, './appsrocketchattester.zip');
