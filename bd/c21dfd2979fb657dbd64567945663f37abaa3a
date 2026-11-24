@@ -1,0 +1,21 @@
+packages/models/src/models/Users.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 3001-3004
+packages/model-typings/src/models/IUsersModel.ts
+  s_0a304bdf8a7b6c::t_64b2727da0f002 589
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bdc21dfd2979fb657dbd64567945663f37abaa3a",
+  "prompts": {},
+  "sessions": {
+    "s_0a304bdf8a7b6c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "69423af9-a854-412a-a9fd-51adaed2a934",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
