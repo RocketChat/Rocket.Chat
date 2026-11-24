@@ -11,9 +11,8 @@ let disableCustomScripts: () => boolean;
 
 before(async () => {
 	const license = await import('@rocket.chat/license');
-	const moduleMocks = [mock.module('@rocket.chat/license', { exports: { ...license, License: mockLicense } })];
+	mock.module('@rocket.chat/license', { exports: { ...license, License: mockLicense } });
 	({ disableCustomScripts } = await import('./disableCustomScripts'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('disableCustomScripts', () => {

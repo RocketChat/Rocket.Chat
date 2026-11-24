@@ -13,27 +13,24 @@ let isOmnichannelClosingMessage: typeof import('./sendToCRM').isOmnichannelClosi
 let getAdditionalFieldsByType: typeof import('./sendToCRM').getAdditionalFieldsByType;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings', {
-			exports: {
-				settings: {
-					get() {
-						return resultObj.result;
-					},
+	mock.module('../../settings', {
+		exports: {
+			settings: {
+				get() {
+					return resultObj.result;
 				},
 			},
-		}),
-		mock.module('../../lib/utils/functions/normalizeMessageFileUpload', {
-			exports: {
-				normalizeMessageFileUpload: sinon.stub().returnsArg(0),
-			},
-		}),
-		mock.module('../../lib/omnichannel/webhooks', { exports: {} }),
-		mock.module('../../lib/omnichannel/guests', { exports: { getLivechatRoomGuestInfo: sinon.stub() } }),
-	];
+		},
+	});
+	mock.module('../../lib/utils/functions/normalizeMessageFileUpload', {
+		exports: {
+			normalizeMessageFileUpload: sinon.stub().returnsArg(0),
+		},
+	});
+	mock.module('../../lib/omnichannel/webhooks', { exports: {} });
+	mock.module('../../lib/omnichannel/guests', { exports: { getLivechatRoomGuestInfo: sinon.stub() } });
 	({ sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } =
 		await import('./sendToCRM'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('[OC] Send TO CRM', () => {

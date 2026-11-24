@@ -39,12 +39,12 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 			slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
 		},
 	};
-	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) =>
-		mock.module(requireFromSubject.resolve(specifier), { exports: exports as Record<string, unknown> }),
-	);
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(requireFromSubject.resolve(specifier), { exports: exports as Record<string, unknown> });
+	}
 	delete requireFromSubject.cache[subject];
 	requireFromSubject(subject);
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 
 	return {
 		broadcast,

@@ -11,23 +11,20 @@ class ClientSafeError extends Error {}
 let BeforeSavePreventMention: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				Authorization,
-				ClientSafeError,
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			Authorization,
+			ClientSafeError,
+		},
+	});
+	mock.module('../../../lib/i18n', {
+		exports: {
+			i18n: {
+				t: (s: any) => s,
 			},
-		}),
-		mock.module('../../../lib/i18n', {
-			exports: {
-				i18n: {
-					t: (s: any) => s,
-				},
-			},
-		}),
-	];
+		},
+	});
 	({ BeforeSavePreventMention } = await import('./BeforeSavePreventMention'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Prevent mention on messages', () => {

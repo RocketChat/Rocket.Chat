@@ -21,38 +21,34 @@ const saveCustomFields = sinon.stub();
 const validateUserEditing = sinon.stub();
 const saveUserIdentity = sinon.stub();
 
-const moduleMocks = [
-	mock.module('@rocket.chat/account-utils', { exports: { hashPassword } }),
-	mock.module('@rocket.chat/apps', {
-		exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
-	}),
-	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
-	mock.module('./setEmail', { exports: { setEmailFunction } }),
-	mock.module('./setUserStatus', { exports: { setUserStatusMethod } }),
-	mock.module('../../api/lib/getUserInfo', { exports: { getUserInfo } }),
-	mock.module('../../lib/2fa/twoFactorRequired', {
-		exports: {
-			twoFactorRequired: (fn: (...args: unknown[]) => Promise<unknown>, options: unknown) =>
-				async function (this: unknown, ...args: unknown[]) {
-					twoFactorCall(options, ...args);
-					return fn.apply(this, args);
-				},
-		},
-	}),
-	mock.module('../../lib/auth/passwordPolicy', { exports: { passwordPolicy: { validate: passwordPolicyValidate } } }),
-	mock.module('../../lib/callbacks', { exports: { callbacks: { run: callbacksRun } } }),
-	mock.module('../../lib/compareUserPassword', { exports: { compareUserPassword } }),
-	mock.module('../../lib/compareUserPasswordHistory', { exports: { compareUserPasswordHistory } }),
-	mock.module('../../lib/notifyListener', { exports: { notifyOnUserChange } }),
-	mock.module('../../lib/users/saveCustomFields', { exports: { saveCustomFields } }),
-	mock.module('../../lib/users/saveUser', { exports: { validateUserEditing } }),
-	mock.module('../../lib/users/saveUserIdentity', { exports: { saveUserIdentity } }),
-	mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-];
+mock.module('@rocket.chat/account-utils', { exports: { hashPassword } });
+mock.module('@rocket.chat/apps', {
+	exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
+});
+mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+mock.module('./setEmail', { exports: { setEmailFunction } });
+mock.module('./setUserStatus', { exports: { setUserStatusMethod } });
+mock.module('../../api/lib/getUserInfo', { exports: { getUserInfo } });
+mock.module('../../lib/2fa/twoFactorRequired', {
+	exports: {
+		twoFactorRequired: (fn: (...args: unknown[]) => Promise<unknown>, options: unknown) =>
+			async function (this: unknown, ...args: unknown[]) {
+				twoFactorCall(options, ...args);
+				return fn.apply(this, args);
+			},
+	},
+});
+mock.module('../../lib/auth/passwordPolicy', { exports: { passwordPolicy: { validate: passwordPolicyValidate } } });
+mock.module('../../lib/callbacks', { exports: { callbacks: { run: callbacksRun } } });
+mock.module('../../lib/compareUserPassword', { exports: { compareUserPassword } });
+mock.module('../../lib/compareUserPasswordHistory', { exports: { compareUserPasswordHistory } });
+mock.module('../../lib/notifyListener', { exports: { notifyOnUserChange } });
+mock.module('../../lib/users/saveCustomFields', { exports: { saveCustomFields } });
+mock.module('../../lib/users/saveUser', { exports: { validateUserEditing } });
+mock.module('../../lib/users/saveUserIdentity', { exports: { saveUserIdentity } });
+mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
 // oxlint-disable-next-line @typescript-eslint/no-require-imports
 const { executeSaveUserProfile } = require('./saveUserProfile');
-
-moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 describe('executeSaveUserProfile', () => {
 	let Users: Record<string, sinon.SinonStub>;

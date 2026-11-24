@@ -37,70 +37,67 @@ const filterDefaultChannelsForUser = sinon.stub();
 let service: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				Room,
-				Authorization: {},
-				Message,
-				ServiceClassInternal: class {},
-				api: {},
-			},
-		}),
-		mock.module('@rocket.chat/tools', {
-			exports: {
-				escapeRegExp: (value: string) => value,
-			},
-		}),
-		mock.module('../../lib/rooms/settings', {
-			exports: {
-				saveRoomName: sinon.stub(),
-			},
-		}),
-		mock.module('../../lib/rooms/settings/saveRoomType', {
-			exports: {
-				saveRoomType: sinon.stub(),
-			},
-		}),
-		mock.module('../../lib/rooms/addUserToRoom', {
-			exports: {
-				addUserToRoom,
-			},
-		}),
-		mock.module('../../lib/rooms/filterDefaultChannelsForUser', {
-			exports: {
-				filterDefaultChannelsForUser,
-			},
-		}),
-		mock.module('../../lib/users/checkUsernameAvailability', {
-			exports: {
-				checkUsernameAvailability,
-			},
-		}),
-		mock.module('../../lib/rooms/getRoomsWithSingleOwner', {
-			exports: {
-				getSubscribedRoomsForUserWithDetails: sinon.stub(),
-			},
-		}),
-		mock.module('../../lib/rooms/removeUserFromRoom', {
-			exports: {
-				removeUserFromRoom: sinon.stub(),
-			},
-		}),
-		mock.module('../../lib/notifyListener', {
-			exports: {
-				notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
-				notifyOnRoomChangedById: sinon.stub(),
-			},
-		}),
-		mock.module('../../settings', {
-			exports: {
-				settings: { get: sinon.stub() },
-			},
-		}),
-	];
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			Room,
+			Authorization: {},
+			Message,
+			ServiceClassInternal: class {},
+			api: {},
+		},
+	});
+	mock.module('@rocket.chat/tools', {
+		exports: {
+			escapeRegExp: (value: string) => value,
+		},
+	});
+	mock.module('../../lib/rooms/settings', {
+		exports: {
+			saveRoomName: sinon.stub(),
+		},
+	});
+	mock.module('../../lib/rooms/settings/saveRoomType', {
+		exports: {
+			saveRoomType: sinon.stub(),
+		},
+	});
+	mock.module('../../lib/rooms/addUserToRoom', {
+		exports: {
+			addUserToRoom,
+		},
+	});
+	mock.module('../../lib/rooms/filterDefaultChannelsForUser', {
+		exports: {
+			filterDefaultChannelsForUser,
+		},
+	});
+	mock.module('../../lib/users/checkUsernameAvailability', {
+		exports: {
+			checkUsernameAvailability,
+		},
+	});
+	mock.module('../../lib/rooms/getRoomsWithSingleOwner', {
+		exports: {
+			getSubscribedRoomsForUserWithDetails: sinon.stub(),
+		},
+	});
+	mock.module('../../lib/rooms/removeUserFromRoom', {
+		exports: {
+			removeUserFromRoom: sinon.stub(),
+		},
+	});
+	mock.module('../../lib/notifyListener', {
+		exports: {
+			notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
+			notifyOnRoomChangedById: sinon.stub(),
+		},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: { get: sinon.stub() },
+		},
+	});
 	const { TeamService } = await import('./service');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 	service = new TeamService();
 });

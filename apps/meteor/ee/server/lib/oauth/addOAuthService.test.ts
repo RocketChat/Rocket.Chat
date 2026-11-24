@@ -8,9 +8,8 @@ const add = sinon.stub();
 let addOAuthService: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../../../server/settings', { exports: { settingsRegistry: { add } } })];
+	mock.module('../../../../server/settings', { exports: { settingsRegistry: { add } } });
 	({ addOAuthService } = await import('./addOAuthService'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const defaultValues = [

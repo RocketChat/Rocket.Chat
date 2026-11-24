@@ -9,15 +9,13 @@ const rawBody = sinon.stub();
 const connectHandlersUse = sinon.stub();
 
 const loadInject = (): typeof import('./inject') => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/meteorhacks:inject-initial'), { exports: { Inject: { rawModHtml, rawBody } } }),
-		mock.module(require.resolve('meteor/webapp'), { exports: { WebApp: { connectHandlers: { use: connectHandlersUse } } } }),
-		mock.module('../utils/getURL', { exports: { getURL: (path: string) => `/${path}` } }),
-	];
+	mock.module(require.resolve('meteor/meteorhacks:inject-initial'), { exports: { Inject: { rawModHtml, rawBody } } });
+	mock.module(require.resolve('meteor/webapp'), { exports: { WebApp: { connectHandlers: { use: connectHandlersUse } } } });
+	mock.module('../utils/getURL', { exports: { getURL: (path: string) => `/${path}` } });
 	delete require.cache[require.resolve('./inject')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const inject = require('./inject');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 	return inject;
 };
 

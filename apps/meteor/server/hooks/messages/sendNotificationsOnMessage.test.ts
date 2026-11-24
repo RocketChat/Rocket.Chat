@@ -22,24 +22,21 @@ const usersFindOneById = sinon.stub();
 let sendNotification: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./notifyUsersOnMessage', { exports: { getMentions: sinon.stub() } }),
-		mock.module('../../../lib/emoji-native/shortnameToUnicode', { exports: { shortnameToUnicode } }),
-		mock.module('../../lib/authorization/hasPermission', { exports: { hasPermissionAsync } }),
-		mock.module('../../lib/callbacks', { exports: { callbacks: {} } }),
-		mock.module('../../lib/notifications/message', {
-			exports: { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames: sinon.stub() },
-		}),
-		mock.module('../../lib/notifications/message/desktop', { exports: { notifyDesktopUser, shouldNotifyDesktop } }),
-		mock.module('../../lib/notifications/message/email', { exports: { getEmailData, shouldNotifyEmail } }),
-		mock.module('../../lib/notifications/message/messageContainsHighlight', { exports: { messageContainsHighlight } }),
-		mock.module('../../lib/notifications/message/mobile', { exports: { getPushData, shouldNotifyMobile } }),
-		mock.module('../../lib/notifications/queue/NotificationQueue', { exports: { Notification: { scheduleItem } } }),
-		mock.module('../../lib/rooms/roomCoordinator', { exports: { roomCoordinator: {} } }),
-		mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key], watch: sinon.stub() } } }),
-	];
+	mock.module('./notifyUsersOnMessage', { exports: { getMentions: sinon.stub() } });
+	mock.module('../../../lib/emoji-native/shortnameToUnicode', { exports: { shortnameToUnicode } });
+	mock.module('../../lib/authorization/hasPermission', { exports: { hasPermissionAsync } });
+	mock.module('../../lib/callbacks', { exports: { callbacks: {} } });
+	mock.module('../../lib/notifications/message', {
+		exports: { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames: sinon.stub() },
+	});
+	mock.module('../../lib/notifications/message/desktop', { exports: { notifyDesktopUser, shouldNotifyDesktop } });
+	mock.module('../../lib/notifications/message/email', { exports: { getEmailData, shouldNotifyEmail } });
+	mock.module('../../lib/notifications/message/messageContainsHighlight', { exports: { messageContainsHighlight } });
+	mock.module('../../lib/notifications/message/mobile', { exports: { getPushData, shouldNotifyMobile } });
+	mock.module('../../lib/notifications/queue/NotificationQueue', { exports: { Notification: { scheduleItem } } });
+	mock.module('../../lib/rooms/roomCoordinator', { exports: { roomCoordinator: {} } });
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key], watch: sinon.stub() } } });
 	({ sendNotification } = await import('./sendNotificationsOnMessage'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const sender = { _id: 'sender-id', name: 'Sender', username: 'sender' };

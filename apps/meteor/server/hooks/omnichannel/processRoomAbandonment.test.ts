@@ -30,22 +30,19 @@ let getSecondsSinceLastAgentResponse: any;
 let onCloseRoom: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../lib/callbacks', {
-			exports: {
-				callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
-			},
-		}),
-		mock.module('../../settings', {
-			exports: {
-				settings: { get: settingsStub },
-			},
-		}),
-		mock.module('../../lib/omnichannel/business-hour', { exports: { businessHourManager: businessHourManagerMock } }),
-	];
+	mock.module('../../lib/callbacks', {
+		exports: {
+			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
+		},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: { get: settingsStub },
+		},
+	});
+	mock.module('../../lib/omnichannel/business-hour', { exports: { businessHourManager: businessHourManagerMock } });
 	({ getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } =
 		await import('./processRoomAbandonment'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('processRoomAbandonment', () => {

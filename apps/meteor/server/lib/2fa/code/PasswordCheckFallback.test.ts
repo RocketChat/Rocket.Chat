@@ -9,12 +9,9 @@ const checkPassword = sinon.stub();
 let PasswordCheckFallback: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../compareUserPassword', { exports: { compareUserPassword: checkPassword } }),
-		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
-	];
+	mock.module('../../compareUserPassword', { exports: { compareUserPassword: checkPassword } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
 	({ PasswordCheckFallback } = await import('./PasswordCheckFallback'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const userWithPassword = { _id: 'user-id', services: { password: { bcrypt: 'hashed' } } };

@@ -10,9 +10,8 @@ const findUsersByUsernames = sinon.stub();
 let normalizeMessagesForUser: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../../settings', { exports: { settings: { get: settingsGet } } })];
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
 	({ normalizeMessagesForUser } = await import('./normalizeMessagesForUser'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('normalizeMessagesForUser', () => {

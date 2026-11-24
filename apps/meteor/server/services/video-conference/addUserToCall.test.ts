@@ -74,9 +74,11 @@ before(async () => {
 		'../../lib/messaging/threads/functions': { follow: followStub },
 		'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 	};
-	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
 	({ VideoConfService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 });
 
 describe('VideoConfService.addUserToCall provider gating', () => {

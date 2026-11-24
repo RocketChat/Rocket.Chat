@@ -8,12 +8,9 @@ const configureMailTransport = sinon.stub();
 let configureSMTP: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../lib/logger/system', { exports: { SystemLogger: { info: sinon.stub() } } }),
-		mock.module('../lib/notifications/email/transport', { exports: { configureMailTransport } }),
-	];
+	mock.module('../lib/logger/system', { exports: { SystemLogger: { info: sinon.stub() } } });
+	mock.module('../lib/notifications/email/transport', { exports: { configureMailTransport } });
 	({ configureSMTP } = await import('./configureSMTP'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const applySettings = (values: Record<string, unknown>) => {

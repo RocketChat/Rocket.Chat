@@ -23,30 +23,27 @@ const getStore = sinon.stub();
 let deleteUser: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', {
-			exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserDeleted: 'IPostUserDeleted' } },
-		}),
-		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } }),
-		mock.module('./getUserSingleOwnedRooms', { exports: { getUserSingleOwnedRooms } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
-		mock.module('../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } }),
-		mock.module('../media/file-upload', { exports: { FileUpload: { getStore } } }),
-		mock.module('../notifyListener', {
-			exports: {
-				notifyOnRoomChangedById,
-				notifyOnIntegrationChangedByUserId,
-				notifyOnLivechatDepartmentAgentChanged,
-				notifyOnUserChange,
-			},
-		}),
-		mock.module('../rooms/getRoomsWithSingleOwner', { exports: { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } }),
-		mock.module('../rooms/relinquishRoomOwnerships', { exports: { relinquishRoomOwnerships } }),
-		mock.module('../rooms/updateGroupDMsName', { exports: { updateGroupDMsName } }),
-	];
+	mock.module('@rocket.chat/apps', {
+		exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserDeleted: 'IPostUserDeleted' } },
+	});
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } });
+	mock.module('./getUserSingleOwnedRooms', { exports: { getUserSingleOwnedRooms } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } });
+	mock.module('../media/file-upload', { exports: { FileUpload: { getStore } } });
+	mock.module('../notifyListener', {
+		exports: {
+			notifyOnRoomChangedById,
+			notifyOnIntegrationChangedByUserId,
+			notifyOnLivechatDepartmentAgentChanged,
+			notifyOnUserChange,
+		},
+	});
+	mock.module('../rooms/getRoomsWithSingleOwner', { exports: { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } });
+	mock.module('../rooms/relinquishRoomOwnerships', { exports: { relinquishRoomOwnerships } });
+	mock.module('../rooms/updateGroupDMsName', { exports: { updateGroupDMsName } });
 	({ deleteUser } = await import('./deleteUser'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('deleteUser', () => {

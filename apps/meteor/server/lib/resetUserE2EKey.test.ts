@@ -21,16 +21,13 @@ const getFixedT = sandbox.stub();
 let resetUserE2EEncriptionKey: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } }),
-		mock.module('./i18n', { exports: { i18n: { getFixedT } } }),
-		mock.module('./isUserIdFederated', { exports: { isUserIdFederated } }),
-		mock.module('./notifications/email/api', { exports: { send: sendEmail } }),
-		mock.module('./notifyListener', { exports: { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } }),
-		mock.module('../settings', { exports: { settings: { get: settingsGet } } }),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } });
+	mock.module('./i18n', { exports: { i18n: { getFixedT } } });
+	mock.module('./isUserIdFederated', { exports: { isUserIdFederated } });
+	mock.module('./notifications/email/api', { exports: { send: sendEmail } });
+	mock.module('./notifyListener', { exports: { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } });
+	mock.module('../settings', { exports: { settings: { get: settingsGet } } });
 	({ resetUserE2EEncriptionKey } = await import('./resetUserE2EKey'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const UID = 'user-id';

@@ -4,29 +4,27 @@ import { describe, it, mock } from 'node:test';
 import { expect } from 'chai';
 
 const loadEmail = (settingsValue: boolean) => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/tools', { exports: { escapeHTML: (str: string) => str } }),
-		mock.module('../../callbacks', { exports: { callbacks: { run: () => {} } } }),
-		mock.module('../../i18n', { exports: { i18n: { t: (trans: string) => trans } } }),
-		mock.module('../../rooms/roomCoordinator', {
-			exports: {
-				roomCoordinator: {
-					getRoomDirectives: () => ({
-						isGroupChat: () => true,
-					}),
-					getRoomName: () => '',
-				},
+	mock.module('@rocket.chat/tools', { exports: { escapeHTML: (str: string) => str } });
+	mock.module('../../callbacks', { exports: { callbacks: { run: () => {} } } });
+	mock.module('../../i18n', { exports: { i18n: { t: (trans: string) => trans } } });
+	mock.module('../../rooms/roomCoordinator', {
+		exports: {
+			roomCoordinator: {
+				getRoomDirectives: () => ({
+					isGroupChat: () => true,
+				}),
+				getRoomName: () => '',
 			},
-		}),
-		mock.module('../email/api', { exports: { getTemplate: () => {}, send: () => {}, replace: () => {} } }),
-		mock.module('../../../settings', { exports: { settings: { get: () => settingsValue, watch: () => {} } } }),
-		mock.module('../../metrics', { exports: { metrics: {} } }),
-		mock.module('../../utils/getURL', { exports: { getURL: () => {} } }),
-	];
+		},
+	});
+	mock.module('../email/api', { exports: { getTemplate: () => {}, send: () => {}, replace: () => {} } });
+	mock.module('../../../settings', { exports: { settings: { get: () => settingsValue, watch: () => {} } } });
+	mock.module('../../metrics', { exports: { metrics: {} } });
+	mock.module('../../utils/getURL', { exports: { getURL: () => {} } });
 	delete require.cache[require.resolve('./email.js')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const email = require('./email.js');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 	return email;
 };
 

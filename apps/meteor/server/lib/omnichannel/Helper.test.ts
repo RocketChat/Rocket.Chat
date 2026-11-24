@@ -69,43 +69,40 @@ const routingManager = {
 let forwardRoomToDepartment: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', { exports: { Apps: { self: undefined }, AppEvents: {} } }),
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				api: { broadcast },
-				Message: { saveSystemMessage },
-				Omnichannel: { isWithinMACLimit },
-				ClientSafeError,
-			},
-		}),
-		mock.module('@rocket.chat/logger', { exports: { Logger: MockLogger } }),
-		mock.module('./QueueManager', { exports: { queueInquiry, saveQueueInquiry: sinon.stub() } }),
-		mock.module('./RoutingManager', { exports: { RoutingManager: routingManager } }),
-		mock.module('./contacts/isVerifiedChannelInSource', { exports: { isVerifiedChannelInSource: sinon.stub() } }),
-		mock.module('./contacts/migrateVisitorIfMissingContact', { exports: { migrateVisitorIfMissingContact: sinon.stub() } }),
-		mock.module('./hooks', { exports: { afterRoomQueued: sinon.stub(), beforeNewRoom: sinon.stub() } }),
-		mock.module('./service-status', { exports: { checkOnlineAgents, getOnlineAgents: sinon.stub() } }),
-		mock.module('./transfer', { exports: { saveTransferHistory } }),
-		mock.module('../../hooks/messages/sendNotificationsOnMessage', { exports: { sendNotification: sinon.stub() } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../authorization/hasRole', { exports: { hasRoleAsync: sinon.stub() } }),
-		mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
-		mock.module('../i18n', { exports: { i18n: { t: sinon.stub() } } }),
-		mock.module('../notifyListener', {
-			exports: {
-				notifyOnLivechatDepartmentAgentChanged: sinon.stub(),
-				notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId: sinon.stub(),
-				notifyOnSubscriptionChangedById: sinon.stub(),
-				notifyOnSubscriptionChangedByRoomId,
-				notifyOnSubscriptionChanged: sinon.stub(),
-				notifyOnRoomChangedById,
-				notifyOnLivechatInquiryChangedByRoom,
-			},
-		}),
-	];
+	mock.module('@rocket.chat/apps', { exports: { Apps: { self: undefined }, AppEvents: {} } });
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			api: { broadcast },
+			Message: { saveSystemMessage },
+			Omnichannel: { isWithinMACLimit },
+			ClientSafeError,
+		},
+	});
+	mock.module('@rocket.chat/logger', { exports: { Logger: MockLogger } });
+	mock.module('./QueueManager', { exports: { queueInquiry, saveQueueInquiry: sinon.stub() } });
+	mock.module('./RoutingManager', { exports: { RoutingManager: routingManager } });
+	mock.module('./contacts/isVerifiedChannelInSource', { exports: { isVerifiedChannelInSource: sinon.stub() } });
+	mock.module('./contacts/migrateVisitorIfMissingContact', { exports: { migrateVisitorIfMissingContact: sinon.stub() } });
+	mock.module('./hooks', { exports: { afterRoomQueued: sinon.stub(), beforeNewRoom: sinon.stub() } });
+	mock.module('./service-status', { exports: { checkOnlineAgents, getOnlineAgents: sinon.stub() } });
+	mock.module('./transfer', { exports: { saveTransferHistory } });
+	mock.module('../../hooks/messages/sendNotificationsOnMessage', { exports: { sendNotification: sinon.stub() } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../authorization/hasRole', { exports: { hasRoleAsync: sinon.stub() } });
+	mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../i18n', { exports: { i18n: { t: sinon.stub() } } });
+	mock.module('../notifyListener', {
+		exports: {
+			notifyOnLivechatDepartmentAgentChanged: sinon.stub(),
+			notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId: sinon.stub(),
+			notifyOnSubscriptionChangedById: sinon.stub(),
+			notifyOnSubscriptionChangedByRoomId,
+			notifyOnSubscriptionChanged: sinon.stub(),
+			notifyOnRoomChangedById,
+			notifyOnLivechatInquiryChangedByRoom,
+		},
+	});
 	({ forwardRoomToDepartment } = await import('./Helper'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('forwardRoomToDepartment', () => {

@@ -15,27 +15,24 @@ const userPermissions: { [k: string]: string[] } = {
 let checkPermissionsForInvocation: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../lib/authorization/hasPermission', {
-			exports: {
-				hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
-					return permissions.every((permission) => userPermissions[userId].includes(permission));
-				},
-				hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
-					return permissions.some((permission) => userPermissions[userId].includes(permission));
-				},
+	mock.module('../lib/authorization/hasPermission', {
+		exports: {
+			hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
+				return permissions.every((permission) => userPermissions[userId].includes(permission));
 			},
-		}),
-		mock.module('../lib/deprecationWarningLogger', {
-			exports: {
-				apiDeprecationLogger: {
-					endpoint: Sinon.stub(),
-				},
+			hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
+				return permissions.some((permission) => userPermissions[userId].includes(permission));
 			},
-		}),
-	];
+		},
+	});
+	mock.module('../lib/deprecationWarningLogger', {
+		exports: {
+			apiDeprecationLogger: {
+				endpoint: Sinon.stub(),
+			},
+		},
+	});
 	({ checkPermissionsForInvocation } = await import('./api.helpers'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('checkPermissionsForInvocation', () => {

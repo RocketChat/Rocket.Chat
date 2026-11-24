@@ -14,23 +14,20 @@ const settingsGet = sinon.stub();
 let getCallConfig: typeof import('./callConfig').getCallConfig;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { Authorization: { canAccessConference } } }),
-		mock.module('@rocket.chat/logger', {
-			exports: {
-				Logger: class {
-					error = sinon.stub();
-				},
+	mock.module('@rocket.chat/core-services', { exports: { Authorization: { canAccessConference } } });
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = sinon.stub();
 			},
-		}),
-		mock.module('./config', {
-			exports: { isLiveKitFullyConfigured, isLiveKitLicensed, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
-		}),
-		mock.module('./token', { exports: { createLiveKitAccessToken } }),
-		mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } }),
-	];
+		},
+	});
+	mock.module('./config', {
+		exports: { isLiveKitFullyConfigured, isLiveKitLicensed, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
+	});
+	mock.module('./token', { exports: { createLiveKitAccessToken } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } });
 	({ getCallConfig } = await import('./callConfig'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const user = { _id: 'uid', name: 'Real Name', username: 'user.name' };

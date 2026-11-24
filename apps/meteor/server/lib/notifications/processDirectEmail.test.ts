@@ -37,17 +37,14 @@ const authorization = new AuthorizationDouble();
 let processDirectEmail: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../hooks/rooms/beforeSendMessageToRoom', { exports: { beforeSendMessageToRoom } }),
-		mock.module('../../settings', { exports: { settings: { get: (id: string) => settingValues[id] } } }),
-		mock.module('../authorization', { exports: { canAccessRoomAsync } }),
-		mock.module('../messages/sendMessage', { exports: { sendMessage } }),
-		mock.module('../metrics', {
-			exports: { metrics: { messagesSent: { inc: sandbox.stub() }, messagesSentTotal: { inc: sandbox.stub() } } },
-		}),
-	];
+	mock.module('../../hooks/rooms/beforeSendMessageToRoom', { exports: { beforeSendMessageToRoom } });
+	mock.module('../../settings', { exports: { settings: { get: (id: string) => settingValues[id] } } });
+	mock.module('../authorization', { exports: { canAccessRoomAsync } });
+	mock.module('../messages/sendMessage', { exports: { sendMessage } });
+	mock.module('../metrics', {
+		exports: { metrics: { messagesSent: { inc: sandbox.stub() }, messagesSentTotal: { inc: sandbox.stub() } } },
+	});
 	({ processDirectEmail } = await import('./processDirectEmail'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const mid = 'message-id';

@@ -22,37 +22,34 @@ const stubs = {
 let saveUserIdentity: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } }),
-		mock.module('../media/file-upload', {
-			exports: {
-				FileUpload: stubs.FileUpload,
-			},
-		}),
-		mock.module('./setUsername', {
-			exports: {
-				_setUsername: stubs.setUsername,
-				_setUsernameWithSession: () => stubs.setUsername,
-			},
-		}),
-		mock.module('./setRealName', {
-			exports: {
-				setRealName: stubs.setRealName,
-			},
-		}),
-		mock.module('../rooms/updateGroupDMsName', {
-			exports: {
-				updateGroupDMsName: sinon.stub(),
-			},
-		}),
-		mock.module('../shared/validateName', {
-			exports: {
-				validateName: stubs.validateName,
-			},
-		}),
-	];
+	mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } });
+	mock.module('../media/file-upload', {
+		exports: {
+			FileUpload: stubs.FileUpload,
+		},
+	});
+	mock.module('./setUsername', {
+		exports: {
+			_setUsername: stubs.setUsername,
+			_setUsernameWithSession: () => stubs.setUsername,
+		},
+	});
+	mock.module('./setRealName', {
+		exports: {
+			setRealName: stubs.setRealName,
+		},
+	});
+	mock.module('../rooms/updateGroupDMsName', {
+		exports: {
+			updateGroupDMsName: sinon.stub(),
+		},
+	});
+	mock.module('../shared/validateName', {
+		exports: {
+			validateName: stubs.validateName,
+		},
+	});
 	({ saveUserIdentity } = await import('./saveUserIdentity'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Users - saveUserIdentity', () => {

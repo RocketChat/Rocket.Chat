@@ -37,14 +37,12 @@ describe('restrictQuery', () => {
 
 		mockModel('LivechatDepartment', { find: findStub });
 
-		const moduleMocks = [
-			mock.module('@rocket.chat/omni-core-ee', { exports: { getUnitsFromUser: getUnitsFromUserStub } }),
-			mock.module('./logger', { exports: { cbLogger: { debug: debugStub } } }),
-		];
+		mock.module('@rocket.chat/omni-core-ee', { exports: { getUnitsFromUser: getUnitsFromUserStub } });
+		mock.module('./logger', { exports: { cbLogger: { debug: debugStub } } });
 		delete require.cache[require.resolve('./restrictQuery')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		const { restrictQuery } = require('./restrictQuery');
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 
 		return { restrictQuery, getUnitsFromUserStub, findStub, debugStub, findArgs };
 	};

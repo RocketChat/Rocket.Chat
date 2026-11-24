@@ -9,15 +9,12 @@ const findStub = sinon.stub();
 let beforeNewRoomPatched: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../../server/lib/omnichannel/hooks', {
-			exports: {
-				beforeNewRoom: { patch: sinon.stub() },
-			},
-		}),
-	];
+	mock.module('../../../../server/lib/omnichannel/hooks', {
+		exports: {
+			beforeNewRoom: { patch: sinon.stub() },
+		},
+	});
 	({ beforeNewRoomPatched } = await import('./beforeNewRoom'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('beforeRoom', () => {

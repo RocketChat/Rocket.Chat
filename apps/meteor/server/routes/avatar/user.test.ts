@@ -24,23 +24,20 @@ let userAvatarById: any;
 let userAvatarByUsername: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings', {
-			exports: {
-				settings: {
-					get: mocks.settingsGet,
-				},
+	mock.module('../../settings', {
+		exports: {
+			settings: {
+				get: mocks.settingsGet,
 			},
-		}),
-		mock.module('./utils', { exports: { default: mocks.utils } }),
-		mock.module('@rocket.chat/server-fetch', {
-			exports: {
-				serverFetch: mocks.serverFetch,
-			},
-		}),
-	];
+		},
+	});
+	mock.module('./utils', { exports: { default: mocks.utils } });
+	mock.module('@rocket.chat/server-fetch', {
+		exports: {
+			serverFetch: mocks.serverFetch,
+		},
+	});
 	({ userAvatarById, userAvatarByUsername } = await import('./user'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const registerModels = () => {

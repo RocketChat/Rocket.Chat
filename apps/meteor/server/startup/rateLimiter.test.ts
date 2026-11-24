@@ -47,25 +47,22 @@ const call = (overrides: Partial<Input> = {}): Input => {
 describe('DDP rate limiter rules', () => {
 	before(async () => {
 		addRule.callsFake(() => `rule-${addRule.callCount}`);
-		const moduleMocks = [
-			mock.module('underscore', { exports: { default: { each: _.each, debounce: (fn: unknown) => fn } } }),
-			mock.module(require.resolve('meteor/ddp-rate-limiter'), { exports: { DDPRateLimiter } }),
-			mock.module(require.resolve('meteor/meteor'), {
-				exports: { Meteor: { bindEnvironment: (fn: unknown) => fn, server: { sessions } } },
-			}),
-			mock.module(require.resolve('meteor/rate-limit'), { exports: { RateLimiter: class {} } }),
-			mock.module('../lib/metrics', { exports: { metrics: {} } }),
-			mock.module('../settings', {
-				exports: {
-					settings: {
-						get: (key: string) => settingValues.get(key),
-						watchByRegex: (regex: RegExp, callback: () => void) => watchers.push([regex, callback]),
-					},
+		mock.module('underscore', { exports: { default: { each: _.each, debounce: (fn: unknown) => fn } } });
+		mock.module(require.resolve('meteor/ddp-rate-limiter'), { exports: { DDPRateLimiter } });
+		mock.module(require.resolve('meteor/meteor'), {
+			exports: { Meteor: { bindEnvironment: (fn: unknown) => fn, server: { sessions } } },
+		});
+		mock.module(require.resolve('meteor/rate-limit'), { exports: { RateLimiter: class {} } });
+		mock.module('../lib/metrics', { exports: { metrics: {} } });
+		mock.module('../settings', {
+			exports: {
+				settings: {
+					get: (key: string) => settingValues.get(key),
+					watchByRegex: (regex: RegExp, callback: () => void) => watchers.push([regex, callback]),
 				},
-			}),
-		];
+			},
+		});
 		await import('./rateLimiter.js');
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	});
 
 	const configure = (limit: string, values: { enabled: boolean; allowed?: number; interval?: number }) => {

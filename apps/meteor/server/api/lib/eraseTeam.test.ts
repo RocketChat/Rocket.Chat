@@ -12,22 +12,20 @@ describe('eraseTeam (TypeScript) module', () => {
 	let subject: any;
 
 	const loadEraseTeam = (apps = stubs['@rocket.chat/apps']) => {
-		const moduleMocks = [
-			mock.module('@rocket.chat/apps', { exports: apps }),
-			mock.module('../../lib/eraseRoom', { exports: { eraseRoom: stubs.eraseRoomStub } }),
-			mock.module('../../lib/rooms/deleteRoom', { exports: { deleteRoom: stubs.deleteRoomStub } }),
-			mock.module('../../lib/logger/system', { exports: stubs['../../lib/logger/system'] }),
-			mock.module('@rocket.chat/core-services', {
-				exports: {
-					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-					Team: stubs.Team,
-				},
-			}),
-		];
+		mock.module('@rocket.chat/apps', { exports: apps });
+		mock.module('../../lib/eraseRoom', { exports: { eraseRoom: stubs.eraseRoomStub } });
+		mock.module('../../lib/rooms/deleteRoom', { exports: { deleteRoom: stubs.deleteRoomStub } });
+		mock.module('../../lib/logger/system', { exports: stubs['../../lib/logger/system'] });
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
+				Team: stubs.Team,
+			},
+		});
 		delete require.cache[require.resolve('./eraseTeam')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		const eraseTeam = require('./eraseTeam');
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 		return eraseTeam;
 	};
 

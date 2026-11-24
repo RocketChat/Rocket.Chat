@@ -26,14 +26,11 @@ const contactMergerStub = {
 let runMergeContacts: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: { patch: sinon.stub() } } }),
-		mock.module('../../../server/lib/omnichannel/contacts/ContactMerger', { exports: { ContactMerger: contactMergerStub } }),
-		mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } }),
-		mock.module('../../../server/lib/notifyListener', { exports: { notifyOnSettingChanged: sinon.stub() } }),
-	];
+	mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: { patch: sinon.stub() } } });
+	mock.module('../../../server/lib/omnichannel/contacts/ContactMerger', { exports: { ContactMerger: contactMergerStub } });
+	mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } });
+	mock.module('../../../server/lib/notifyListener', { exports: { notifyOnSettingChanged: sinon.stub() } });
 	({ runMergeContacts } = await import('./mergeContacts'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('mergeContacts', () => {

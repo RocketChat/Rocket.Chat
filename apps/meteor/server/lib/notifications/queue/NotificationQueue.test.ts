@@ -16,14 +16,11 @@ const pushNotificationStub = { send: sinon.stub() };
 let Notification: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/tracing', { exports: { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() } }),
-		mock.module('../../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-		mock.module('../message/email', { exports: { sendEmailFromData: sinon.stub() } }),
-		mock.module('../push-config', { exports: { PushNotification: pushNotificationStub } }),
-	];
+	mock.module('@rocket.chat/tracing', { exports: { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() } });
+	mock.module('../../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+	mock.module('../message/email', { exports: { sendEmailFromData: sinon.stub() } });
+	mock.module('../push-config', { exports: { PushNotification: pushNotificationStub } });
 	({ Notification } = await import('./NotificationQueue'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const queueItem = (id: string) => ({ _id: id, uid: 'user1', rid: 'room1', mid: 'msg1', items: [{ type: 'push', data: {} }] });

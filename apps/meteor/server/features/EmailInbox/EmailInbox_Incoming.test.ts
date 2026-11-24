@@ -20,22 +20,19 @@ const fileStore = { insert: sinon.stub() };
 let onEmailReceived: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/omni-core', { exports: { registerGuest } }),
-		mock.module('./logger', { exports: { logger: { info: sinon.stub(), debug: sinon.stub(), error: sinon.stub() } } }),
-		mock.module('../../lib/media/file-upload', {
-			exports: {
-				FileUpload: { getStore: () => fileStore, getPath: (path: string) => `/file-upload/${path}` },
-			},
-		}),
-		mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange } }),
-		mock.module('../../lib/omnichannel/QueueManager', { exports: { QueueManager: { unarchiveRoom } } }),
-		mock.module('../../lib/omnichannel/departmentsLib', { exports: { setDepartmentForGuest } }),
-		mock.module('../../lib/omnichannel/messages', { exports: { sendMessage } }),
-		mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } }),
-	];
+	mock.module('@rocket.chat/omni-core', { exports: { registerGuest } });
+	mock.module('./logger', { exports: { logger: { info: sinon.stub(), debug: sinon.stub(), error: sinon.stub() } } });
+	mock.module('../../lib/media/file-upload', {
+		exports: {
+			FileUpload: { getStore: () => fileStore, getPath: (path: string) => `/file-upload/${path}` },
+		},
+	});
+	mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange } });
+	mock.module('../../lib/omnichannel/QueueManager', { exports: { QueueManager: { unarchiveRoom } } });
+	mock.module('../../lib/omnichannel/departmentsLib', { exports: { setDepartmentForGuest } });
+	mock.module('../../lib/omnichannel/messages', { exports: { sendMessage } });
+	mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } });
 	({ onEmailReceived } = await import('./EmailInbox_Incoming'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const guest = { _id: 'visitor1', token: 'visitor-token', department: 'sales' };

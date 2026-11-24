@@ -60,25 +60,22 @@ const tStub = sinon.stub();
 let sendTranscript: any;
 
 before(async () => {
-	const moduleMocks = [
-		// mocked so the spec doesn't depend on whichever broker a previously-run spec installed
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				Message: { saveSystemMessage: sinon.stub().resolves() },
-				Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
-				ClientSafeError,
-			},
-		}),
-		mock.module('@rocket.chat/logger', { exports: { Logger: mockLogger } }),
-		mock.module('../callbacks', { exports: { callbacks: { run: sinon.stub() } } }),
-		mock.module('../i18n', { exports: { i18n: { t: tStub } } }),
-		mock.module('../notifications/email/api', { exports: { send: mailerMock } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsMock } } }),
-		mock.module('../utils/lib/getTimezone', { exports: { getTimezone: getTimezoneMock } }),
-		mock.module('../media/file-upload', { exports: { FileUpload: { getBuffer: getBufferMock } } }),
-	];
+	// mocked so the spec doesn't depend on whichever broker a previously-run spec installed
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			Message: { saveSystemMessage: sinon.stub().resolves() },
+			Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
+			ClientSafeError,
+		},
+	});
+	mock.module('@rocket.chat/logger', { exports: { Logger: mockLogger } });
+	mock.module('../callbacks', { exports: { callbacks: { run: sinon.stub() } } });
+	mock.module('../i18n', { exports: { i18n: { t: tStub } } });
+	mock.module('../notifications/email/api', { exports: { send: mailerMock } });
+	mock.module('../../settings', { exports: { settings: { get: settingsMock } } });
+	mock.module('../utils/lib/getTimezone', { exports: { getTimezone: getTimezoneMock } });
+	mock.module('../media/file-upload', { exports: { FileUpload: { getBuffer: getBufferMock } } });
 	({ sendTranscript } = await import('./sendTranscript'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Send transcript', () => {

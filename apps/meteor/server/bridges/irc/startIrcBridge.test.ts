@@ -14,12 +14,9 @@ const BridgeMock = sandbox.stub().callsFake(function (this: { init: typeof initM
 let startIrcBridge: typeof import('./startIrcBridge').startIrcBridge;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./irc-bridge', { exports: { default: { __esModule: true, default: BridgeMock } } }),
-		mock.module('../../settings/cached', { exports: { settings: { get: settingsGetMock } } }),
-	];
+	mock.module('./irc-bridge', { exports: { default: { __esModule: true, default: BridgeMock } } });
+	mock.module('../../settings/cached', { exports: { settings: { get: settingsGetMock } } });
 	({ startIrcBridge } = await import('./startIrcBridge'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const settingValues: Record<string, unknown> = {

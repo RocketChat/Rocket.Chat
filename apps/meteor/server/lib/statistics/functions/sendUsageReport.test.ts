@@ -28,15 +28,12 @@ const mocks = {
 let sendUsageReport: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: mocks.serverFetch } }),
-		mock.module('../index', { exports: { statistics: mocks.statistics } }),
-		mock.module('../../cloud', { exports: { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken } }),
-		mock.module('../../utils/getURL', { exports: { getWorkspaceURL: mocks.getWorkspaceURL } }),
-		mock.module('../../../../rocketchat.info', { exports: { Info: mocks.Info } }),
-	];
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: mocks.serverFetch } });
+	mock.module('../index', { exports: { statistics: mocks.statistics } });
+	mock.module('../../cloud', { exports: { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken } });
+	mock.module('../../utils/getURL', { exports: { getWorkspaceURL: mocks.getWorkspaceURL } });
+	mock.module('../../../../rocketchat.info', { exports: { Info: mocks.Info } });
 	({ sendUsageReport } = await import('./sendUsageReport'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('sendUsageReport', () => {

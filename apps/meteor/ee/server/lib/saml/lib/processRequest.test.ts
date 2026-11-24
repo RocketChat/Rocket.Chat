@@ -48,24 +48,21 @@ class SAMLServiceProvider {
 let SAML: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } }),
-		mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } }),
-		mock.module('./ServiceProvider', { exports: { SAMLServiceProvider } }),
-		mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope } }),
-		mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: {} }),
-		mock.module('../../../../../server/lib/rooms/createRoom', { exports: {} }),
-		mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: {} }),
-		mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: {} }),
-		mock.module('../../../../../server/lib/utils/getURL', {
-			exports: {
-				getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
-			},
-		}),
-		mock.module('../../../../../server/settings', { exports: { settings: {} } }),
-	];
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } });
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
+	mock.module('./ServiceProvider', { exports: { SAMLServiceProvider } });
+	mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope } });
+	mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: {} });
+	mock.module('../../../../../server/lib/rooms/createRoom', { exports: {} });
+	mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: {} });
+	mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: {} });
+	mock.module('../../../../../server/lib/utils/getURL', {
+		exports: {
+			getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
+		},
+	});
+	mock.module('../../../../../server/settings', { exports: { settings: {} } });
 	({ SAML } = await import('./SAML'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const buildResponse = () => {

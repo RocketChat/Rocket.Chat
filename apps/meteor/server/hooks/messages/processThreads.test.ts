@@ -14,20 +14,17 @@ const callbacksRunAsyncMock = sinon.stub();
 let processThreads: typeof import('./processThreads').processThreads;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./notifyUsersOnMessage', { exports: { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock } }),
-		mock.module('./sendNotificationsOnMessage', { exports: { sendMessageNotifications: sinon.stub() } }),
-		mock.module('../../lib/callbacks', {
-			exports: {
-				callbacks: { runAsync: callbacksRunAsyncMock, add: sinon.stub(), remove: sinon.stub(), priority: { LOW: 'low' } },
-			},
-		}),
-		mock.module('../../lib/messaging/threads/functions', { exports: { reply: replyMock } }),
-		mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange: sinon.stub() } }),
-		mock.module('../../settings', { exports: { settings: { watch: sinon.stub() } } }),
-	];
+	mock.module('./notifyUsersOnMessage', { exports: { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock } });
+	mock.module('./sendNotificationsOnMessage', { exports: { sendMessageNotifications: sinon.stub() } });
+	mock.module('../../lib/callbacks', {
+		exports: {
+			callbacks: { runAsync: callbacksRunAsyncMock, add: sinon.stub(), remove: sinon.stub(), priority: { LOW: 'low' } },
+		},
+	});
+	mock.module('../../lib/messaging/threads/functions', { exports: { reply: replyMock } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange: sinon.stub() } });
+	mock.module('../../settings', { exports: { settings: { watch: sinon.stub() } } });
 	({ processThreads } = await import('./processThreads'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('processThreads', () => {

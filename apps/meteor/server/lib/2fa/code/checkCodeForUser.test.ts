@@ -59,30 +59,27 @@ let checkCodeForUser: any;
 let getFingerprintFromConnection: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), {
-			exports: {
-				Accounts: {
-					_getLoginToken: () => 'token-hash',
-				},
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: {
+				_getLoginToken: () => 'token-hash',
 			},
-		}),
-		mock.module('./TOTPCheck', { exports: { TOTPCheck } }),
-		mock.module('./EmailCheck', { exports: { EmailCheck } }),
-		mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback } }),
-		mock.module('../../shared/getModifiedHttpHeaders', {
-			exports: {
-				normalizeHeaders: (headers: unknown) => headers,
-			},
-		}),
-		mock.module('../../../settings', {
-			exports: {
-				settings: { get: settingsGet },
-			},
-		}),
-	];
+		},
+	});
+	mock.module('./TOTPCheck', { exports: { TOTPCheck } });
+	mock.module('./EmailCheck', { exports: { EmailCheck } });
+	mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback } });
+	mock.module('../../shared/getModifiedHttpHeaders', {
+		exports: {
+			normalizeHeaders: (headers: unknown) => headers,
+		},
+	});
+	mock.module('../../../settings', {
+		exports: {
+			settings: { get: settingsGet },
+		},
+	});
 	({ checkCodeForUser, getFingerprintFromConnection } = await import('./index'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const REMEMBER_FOR_SECONDS = 1800;

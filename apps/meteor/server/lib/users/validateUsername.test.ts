@@ -15,9 +15,8 @@ describe('validateUsername', () => {
 	let validateUsername: any;
 
 	before(async () => {
-		const settingsMock = mock.module('../../settings', { exports: proxySettings });
+		mock.module('../../settings', { exports: proxySettings });
 		({ validateUsername } = await import('./validateUsername'));
-		settingsMock.restore();
 	});
 
 	beforeEach(() => {

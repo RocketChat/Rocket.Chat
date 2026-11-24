@@ -26,18 +26,15 @@ let replyByEmail: any;
 let sendEmailAttachment: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./EmailInbox', { exports: { inboxes } }),
-		mock.module('./logger', { exports: { logger: { info: sinon.stub(), error: sinon.stub() } } }),
-		mock.module('../../lib/callbacks', { exports: { callbacks: { add: callbacksAdd, priority: { LOW: 1 } } } }),
-		mock.module('../../lib/media/file-upload', { exports: { FileUpload: { getBuffer } } }),
-		mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } }),
-		mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange } }),
-		mock.module('../../lib/utils/slashCommand', { exports: { slashCommands: { add: slashCommandsAdd } } }),
-		mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } }),
-	];
+	mock.module('./EmailInbox', { exports: { inboxes } });
+	mock.module('./logger', { exports: { logger: { info: sinon.stub(), error: sinon.stub() } } });
+	mock.module('../../lib/callbacks', { exports: { callbacks: { add: callbacksAdd, priority: { LOW: 1 } } } });
+	mock.module('../../lib/media/file-upload', { exports: { FileUpload: { getBuffer } } });
+	mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange } });
+	mock.module('../../lib/utils/slashCommand', { exports: { slashCommands: { add: slashCommandsAdd } } });
+	mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } });
 	({ sendTestEmailToInbox } = await import('./EmailInbox_Outgoing'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 	[, replyByEmail] = callbacksAdd.firstCall.args;
 	[{ callback: sendEmailAttachment }] = slashCommandsAdd.firstCall.args;

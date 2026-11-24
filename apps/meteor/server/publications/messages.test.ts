@@ -25,19 +25,17 @@ let handleCursorPagination: any;
 let getMessageHistory: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../lib/authorization/canAccessRoom', {
-			exports: {
-				canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
-			},
-		}),
-		mock.module('../meteor-methods/messages/getChannelHistory', {
-			exports: {
-				getChannelHistory: getChannelHistoryStub,
-			},
-		}),
-		mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
-	];
+	mock.module('../lib/authorization/canAccessRoom', {
+		exports: {
+			canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
+		},
+	});
+	mock.module('../meteor-methods/messages/getChannelHistory', {
+		exports: {
+			getChannelHistory: getChannelHistoryStub,
+		},
+	});
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
 	({
 		extractTimestampFromCursor,
 		mountCursorQuery,
@@ -48,7 +46,6 @@ before(async () => {
 		handleCursorPagination,
 		getMessageHistory,
 	} = await import('./messages'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('extractTimestampFromCursor', () => {

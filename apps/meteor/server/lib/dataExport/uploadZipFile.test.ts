@@ -17,34 +17,31 @@ const stubs = {
 let uploadZipFile: typeof import('./uploadZipFile').uploadZipFile;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/random', {
-			exports: {
-				Random: {
-					id: stubs.randomId,
-				},
+	mock.module('@rocket.chat/random', {
+		exports: {
+			Random: {
+				id: stubs.randomId,
 			},
-		}),
-		mock.module('node:fs/promises', {
-			exports: {
-				stat: stubs.stat,
+		},
+	});
+	mock.module('node:fs/promises', {
+		exports: {
+			stat: stubs.stat,
+		},
+	});
+	mock.module('node:fs', {
+		exports: {
+			createReadStream: stubs.createReadStream,
+		},
+	});
+	mock.module('../media/file-upload', {
+		exports: {
+			FileUpload: {
+				getStore: stubs.getStore,
 			},
-		}),
-		mock.module('node:fs', {
-			exports: {
-				createReadStream: stubs.createReadStream,
-			},
-		}),
-		mock.module('../media/file-upload', {
-			exports: {
-				FileUpload: {
-					getStore: stubs.getStore,
-				},
-			},
-		}),
-	];
+		},
+	});
 	({ uploadZipFile } = await import('./uploadZipFile'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Export - uploadZipFile', () => {

@@ -32,16 +32,13 @@ let pushToLimit: any;
 let replicateMongoSlice: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../notifyListener', {
-			exports: {
-				notifyOnRoomChanged: sinon.stub(),
-				notifyOnSubscriptionChanged: sinon.stub(),
-			},
-		}),
-	];
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnRoomChanged: sinon.stub(),
+			notifyOnSubscriptionChanged: sinon.stub(),
+		},
+	});
 	({ resetRoomKey, pushToLimit, replicateMongoSlice } = await import('./resetRoomKey'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('pushToLimit', () => {

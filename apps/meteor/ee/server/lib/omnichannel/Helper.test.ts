@@ -14,14 +14,11 @@ const departmentsMock = { findOneById: sinon.stub() };
 let isAgentWithinChatLimits: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./QueueInactivityMonitor', { exports: { stop: sinon.stub() } }),
-		mock.module('../../../../server/lib/omnichannel/settings', { exports: { getInquirySortMechanismSetting: sinon.stub() } }),
-		mock.module('../../../../lib/livechat/inquiries', { exports: { getOmniChatSortQuery: sinon.stub() } }),
-		mock.module('../../../../server/settings', { exports: { settings: { get: settingGetMock } } }),
-	];
+	mock.module('./QueueInactivityMonitor', { exports: { stop: sinon.stub() } });
+	mock.module('../../../../server/lib/omnichannel/settings', { exports: { getInquirySortMechanismSetting: sinon.stub() } });
+	mock.module('../../../../lib/livechat/inquiries', { exports: { getOmniChatSortQuery: sinon.stub() } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingGetMock } } });
 	({ isAgentWithinChatLimits } = await import('./Helper'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('isAgentWithinChatLimits', () => {

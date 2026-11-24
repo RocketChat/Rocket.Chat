@@ -51,25 +51,22 @@ describe('setUsername', () => {
 	let _setUsername: any;
 
 	before(async () => {
-		const moduleMocks = [
-			mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } }),
-			mock.module('@rocket.chat/core-services', { exports: { api: stubs.api, ClientSafeError } }),
-			mock.module('../auth/accountEmails', { exports: stubs.accountEmails }),
-			mock.module('underscore', { exports: { default: stubs.underscore } }),
-			mock.module('../../settings', { exports: { settings: stubs.settings } }),
-			mock.module('../notifyListener', { exports: { notifyOnUserChange: stubs.notifyOnUserChange } }),
-			mock.module('../rooms/addUserToRoom', { exports: { addUserToRoom: stubs.addUserToRoom } }),
-			mock.module('./checkUsernameAvailability', { exports: { checkUsernameAvailability: stubs.checkUsernameAvailability } }),
-			mock.module('./getAvatarSuggestionForUser', { exports: { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser } }),
-			mock.module('../rooms/joinDefaultChannels', { exports: { joinDefaultChannels: stubs.joinDefaultChannels } }),
-			mock.module('./saveUserIdentity', { exports: { saveUserIdentity: stubs.saveUserIdentity } }),
-			mock.module('./setUserAvatar', { exports: { setUserAvatar: stubs.setUserAvatar } }),
-			mock.module('./validateUsername', { exports: { validateUsername: stubs.validateUsername } }),
-			mock.module('../callbacks', { exports: { callbacks: stubs.callbacks } }),
-			mock.module('../logger/system', { exports: { SystemLogger: stubs.SystemLogger } }),
-		];
+		mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } });
+		mock.module('@rocket.chat/core-services', { exports: { api: stubs.api, ClientSafeError } });
+		mock.module('../auth/accountEmails', { exports: stubs.accountEmails });
+		mock.module('underscore', { exports: { default: stubs.underscore } });
+		mock.module('../../settings', { exports: { settings: stubs.settings } });
+		mock.module('../notifyListener', { exports: { notifyOnUserChange: stubs.notifyOnUserChange } });
+		mock.module('../rooms/addUserToRoom', { exports: { addUserToRoom: stubs.addUserToRoom } });
+		mock.module('./checkUsernameAvailability', { exports: { checkUsernameAvailability: stubs.checkUsernameAvailability } });
+		mock.module('./getAvatarSuggestionForUser', { exports: { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser } });
+		mock.module('../rooms/joinDefaultChannels', { exports: { joinDefaultChannels: stubs.joinDefaultChannels } });
+		mock.module('./saveUserIdentity', { exports: { saveUserIdentity: stubs.saveUserIdentity } });
+		mock.module('./setUserAvatar', { exports: { setUserAvatar: stubs.setUserAvatar } });
+		mock.module('./validateUsername', { exports: { validateUsername: stubs.validateUsername } });
+		mock.module('../callbacks', { exports: { callbacks: stubs.callbacks } });
+		mock.module('../logger/system', { exports: { SystemLogger: stubs.SystemLogger } });
 		({ setUsernameWithValidation, _setUsername } = await import('./setUsername'));
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 		mockModel('Users', stubs.Users);
 		mockModel('Invites', stubs.Invites);

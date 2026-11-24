@@ -8,9 +8,8 @@ const readPrivateAssetText = sinon.stub();
 let getMomentLocale: typeof import('./getMomentLocale').getMomentLocale;
 
 before(async () => {
-	const moduleMocks = [mock.module('./privateAssets', { exports: { readPrivateAssetText } })];
+	mock.module('./privateAssets', { exports: { readPrivateAssetText } });
 	({ getMomentLocale } = await import('./getMomentLocale'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('getMomentLocale', () => {

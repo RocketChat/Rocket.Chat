@@ -23,12 +23,9 @@ const removeGuestMock = { removeGuest: sinon.stub() };
 let disableContactById: typeof import('./disableContact').disableContactById;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../guests', { exports: { default: removeGuestMock } }),
-		mock.module('../../../settings', { exports: { settings: settingsMock } }),
-	];
+	mock.module('../guests', { exports: { default: removeGuestMock } });
+	mock.module('../../../settings', { exports: { settings: settingsMock } });
 	({ disableContactById } = await import('./disableContact'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('disableContact', () => {

@@ -9,68 +9,65 @@ const settingsStub = { get: sinon.stub() };
 let SlackImporter: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('..', {
-			exports: {
-				Importer: class MockImporter {
-					logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
+	mock.module('..', {
+		exports: {
+			Importer: class MockImporter {
+				logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 
-					progress = { count: { total: 0 } };
+				progress = { count: { total: 0 } };
 
-					converter = {
-						addMessage: addMessageStub,
-						addUser: sinon.stub().resolves(),
-						addChannel: sinon.stub().resolves(),
-					};
+				converter = {
+					addMessage: addMessageStub,
+					addUser: sinon.stub().resolves(),
+					addChannel: sinon.stub().resolves(),
+				};
 
-					_useUpsert = false;
+				_useUpsert = false;
 
-					reportProgress() {
-						// no-op
-					}
+				reportProgress() {
+					// no-op
+				}
 
-					async updateProgress() {
-						// no-op
-					}
+				async updateProgress() {
+					// no-op
+				}
 
-					async updateRecord() {
-						// no-op
-					}
+				async updateRecord() {
+					// no-op
+				}
 
-					getProgress() {
-						return this.progress;
-					}
-				},
-				ProgressStep: {
-					PREPARING_STARTED: 'preparing_started',
-					IMPORTING_USERS: 'importing_users',
-					IMPORTING_CHANNELS: 'importing_channels',
-					IMPORTING_MESSAGES: 'importing_messages',
-					DONE: 'done',
-					ERROR: 'error',
-				},
-				ImporterWebsocket: { progressUpdated: sinon.stub() },
+				getProgress() {
+					return this.progress;
+				}
 			},
-		}),
-		mock.module('../../notifyListener', { exports: { notifyOnSettingChanged: sinon.stub() } }),
-		mock.module('../../../../lib/MentionsParser', {
-			exports: {
-				MentionsParser: class {
-					getUserMentions() {
-						return [];
-					}
-
-					getChannelMentions() {
-						return [];
-					}
-				},
+			ProgressStep: {
+				PREPARING_STARTED: 'preparing_started',
+				IMPORTING_USERS: 'importing_users',
+				IMPORTING_CHANNELS: 'importing_channels',
+				IMPORTING_MESSAGES: 'importing_messages',
+				DONE: 'done',
+				ERROR: 'error',
 			},
-		}),
-		mock.module('../../../settings', { exports: { settings: settingsStub } }),
-		mock.module('../../utils/getUserAvatarURL', { exports: { getUserAvatarURL: sinon.stub().returns('/avatar/user') } }),
-	];
+			ImporterWebsocket: { progressUpdated: sinon.stub() },
+		},
+	});
+	mock.module('../../notifyListener', { exports: { notifyOnSettingChanged: sinon.stub() } });
+	mock.module('../../../../lib/MentionsParser', {
+		exports: {
+			MentionsParser: class {
+				getUserMentions() {
+					return [];
+				}
+
+				getChannelMentions() {
+					return [];
+				}
+			},
+		},
+	});
+	mock.module('../../../settings', { exports: { settings: settingsStub } });
+	mock.module('../../utils/getUserAvatarURL', { exports: { getUserAvatarURL: sinon.stub().returns('/avatar/user') } });
 	({ SlackImporter } = await import('./SlackImporter'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('SlackImporter', () => {

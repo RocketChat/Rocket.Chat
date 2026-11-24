@@ -483,11 +483,10 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 		// The uploads codec derives `url` via the server-side `getURL`, which transitively imports
 		// `server/settings` — a module with a top-level await that esbuild cannot emit as CJS.
 		before(async () => {
-			const getURLMock = mock.module('../../../lib/utils/getURL', {
+			mock.module('../../../lib/utils/getURL', {
 				exports: { getURL: (path: string) => `http://siteurl.test${path}` },
 			});
 			const { AppUploadsConverter } = await import('./uploads');
-			getURLMock.restore();
 			converter = new AppUploadsConverter(stubOrch);
 		});
 

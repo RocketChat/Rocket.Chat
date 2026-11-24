@@ -12,15 +12,12 @@ const notifyOnLoginServiceConfigurationChangedByService = sandbox.stub();
 let updateCasServices: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./logger', { exports: { logger: { info: sandbox.stub() } } }),
-		mock.module('../../settings/cached', { exports: { settings: { get: (id: string) => settingValues.get(id) } } }),
-		mock.module('../notifyListener', {
-			exports: { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
-		}),
-	];
+	mock.module('./logger', { exports: { logger: { info: sandbox.stub() } } });
+	mock.module('../../settings/cached', { exports: { settings: { get: (id: string) => settingValues.get(id) } } });
+	mock.module('../notifyListener', {
+		exports: { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
+	});
 	({ updateCasServices } = await import('./updateCasService'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('updateCasServices', () => {

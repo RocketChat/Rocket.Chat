@@ -38,19 +38,16 @@ let insertAdminUserFromEnv: any;
 let insertInitialData: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/account-utils', { exports: { hashPassword: async (password: string) => `hashed=${password}` } }),
-		mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } }),
-		mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore: () => avatarStore } } }),
-		mock.module('../lib/privateAssets', { exports: { readPrivateAsset: sinon.stub().resolves(Buffer.from('png')) } }),
-		mock.module('../lib/rooms/addUserToDefaultChannels', { exports: {} }),
-		mock.module('../lib/users/checkUsernameAvailability', { exports: { checkUsernameAvailability } }),
-		mock.module('../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('@rocket.chat/tools', { exports: { validateEmail } }),
-		mock.module('../lib/roles/addUserRoles', { exports: { addUserRolesAsync } }),
-	];
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword: async (password: string) => `hashed=${password}` } });
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
+	mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore: () => avatarStore } } });
+	mock.module('../lib/privateAssets', { exports: { readPrivateAsset: sinon.stub().resolves(Buffer.from('png')) } });
+	mock.module('../lib/rooms/addUserToDefaultChannels', { exports: {} });
+	mock.module('../lib/users/checkUsernameAvailability', { exports: { checkUsernameAvailability } });
+	mock.module('../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('@rocket.chat/tools', { exports: { validateEmail } });
+	mock.module('../lib/roles/addUserRoles', { exports: { addUserRolesAsync } });
 	({ insertAdminUserFromEnv, insertInitialData } = await import('./initialData'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('insertAdminUserFromEnv', () => {

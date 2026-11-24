@@ -22,20 +22,17 @@ const getUnitsFromUserStub = sinon.stub();
 let manageDepartmentUnit: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/omni-core-ee', {
-			exports: {
-				getUnitsFromUser: getUnitsFromUserStub,
-			},
-		}),
-		mock.module('../../../../server/lib/authorization/hasRole', {
-			exports: {
-				hasAnyRoleAsync: hasAnyRoleStub,
-			},
-		}),
-	];
+	mock.module('@rocket.chat/omni-core-ee', {
+		exports: {
+			getUnitsFromUser: getUnitsFromUserStub,
+		},
+	});
+	mock.module('../../../../server/lib/authorization/hasRole', {
+		exports: {
+			hasAnyRoleAsync: hasAnyRoleStub,
+		},
+	});
 	({ manageDepartmentUnit } = await import('./manageDepartmentUnit'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('hooks/manageDepartmentUnit', () => {

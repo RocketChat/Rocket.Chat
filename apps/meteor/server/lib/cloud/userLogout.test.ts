@@ -14,16 +14,13 @@ const settingsGetStub = sinon.stub();
 let userLogout: typeof import('./userLogout').userLogout;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } }),
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } }),
-		mock.module('./retrieveRegistrationStatus', { exports: { retrieveRegistrationStatus: retrieveRegistrationStatusStub } }),
-		mock.module('./userLoggedOut', { exports: { userLoggedOut: userLoggedOutStub } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGetStub } } }),
-		mock.module('../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } });
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } });
+	mock.module('./retrieveRegistrationStatus', { exports: { retrieveRegistrationStatus: retrieveRegistrationStatusStub } });
+	mock.module('./userLoggedOut', { exports: { userLoggedOut: userLoggedOutStub } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGetStub } } });
+	mock.module('../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
 	({ userLogout } = await import('./userLogout'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('userLogout', () => {

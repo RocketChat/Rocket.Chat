@@ -24,19 +24,16 @@ const generateTempPassword = sinon.stub();
 let UserConverter: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../callbacks', { exports: { callbacks } }),
-		mock.module('../../../rooms/addUserToDefaultChannels', { exports: { addUserToDefaultChannels } }),
-		mock.module('../../../users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } }),
-		mock.module('../../../users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } }),
-		mock.module('../../../users/setUserActiveStatus', { exports: { setUserActiveStatus: sinon.stub() } }),
-		mock.module('../../../notifyListener', { exports: { notifyOnUserChange: sinon.stub() } }),
-		mock.module('./generateTempPassword', { exports: { generateTempPassword } }),
-		mock.module('@rocket.chat/account-utils', { exports: { hashPassword: hashPasswordMock } }),
-		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { insertUserDoc } } }),
-	];
+	mock.module('../../../callbacks', { exports: { callbacks } });
+	mock.module('../../../rooms/addUserToDefaultChannels', { exports: { addUserToDefaultChannels } });
+	mock.module('../../../users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } });
+	mock.module('../../../users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } });
+	mock.module('../../../users/setUserActiveStatus', { exports: { setUserActiveStatus: sinon.stub() } });
+	mock.module('../../../notifyListener', { exports: { notifyOnUserChange: sinon.stub() } });
+	mock.module('./generateTempPassword', { exports: { generateTempPassword } });
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword: hashPasswordMock } });
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { insertUserDoc } } });
 	({ UserConverter } = await import('./UserConverter'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('User Converter', () => {

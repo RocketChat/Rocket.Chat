@@ -11,32 +11,29 @@ describe.skip('#getServerInfo()', () => {
 	let getServerInfo: any;
 
 	before(async () => {
-		const moduleMocks = [
-			mock.module('../../../rocketchat.info', {
-				exports: {
-					Info: {
-						version: '3.0.1',
-					},
+		mock.module('../../../rocketchat.info', {
+			exports: {
+				Info: {
+					version: '3.0.1',
 				},
-			}),
-			mock.module('../../lib/authorization/hasPermission', {
-				exports: {
-					hasPermissionAsync: hasAllPermissionAsyncMock,
-				},
-			}),
-			mock.module('../../lib/cloud/supportedVersionsToken/supportedVersionsToken', {
-				exports: {
-					getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
-				},
-			}),
-			mock.module('../../settings', {
-				exports: {
-					settings: new Map(),
-				},
-			}),
-		];
+			},
+		});
+		mock.module('../../lib/authorization/hasPermission', {
+			exports: {
+				hasPermissionAsync: hasAllPermissionAsyncMock,
+			},
+		});
+		mock.module('../../lib/cloud/supportedVersionsToken/supportedVersionsToken', {
+			exports: {
+				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
+			},
+		});
+		mock.module('../../settings', {
+			exports: {
+				settings: new Map(),
+			},
+		});
 		({ getServerInfo } = await import('./getServerInfo'));
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	});
 
 	beforeEach(() => {

@@ -26,21 +26,18 @@ const modelsMock = {
 let createDirectMessage: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/federation-matrix', { exports: { validateFederatedUsername: validateFederatedUsernameMock } }),
-		mock.module('../../lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionMock } }),
-		mock.module('../../lib/callbacks', { exports: { callbacks: { run: sandbox.stub() } } }),
-		mock.module('../../lib/rooms/createRoom', { exports: { createRoom: createRoomMock } }),
-		mock.module('../../services/federation/utils', {
-			exports: {
-				isFederationEnabled: isFederationEnabledMock,
-				isXMPPServerEnabled: isXMPPServerEnabledMock,
-			},
-		}),
-		mock.module('../../settings', { exports: { settings: { get: settingsGetMock } } }),
-	];
+	mock.module('@rocket.chat/federation-matrix', { exports: { validateFederatedUsername: validateFederatedUsernameMock } });
+	mock.module('../../lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionMock } });
+	mock.module('../../lib/callbacks', { exports: { callbacks: { run: sandbox.stub() } } });
+	mock.module('../../lib/rooms/createRoom', { exports: { createRoom: createRoomMock } });
+	mock.module('../../services/federation/utils', {
+		exports: {
+			isFederationEnabled: isFederationEnabledMock,
+			isXMPPServerEnabled: isXMPPServerEnabledMock,
+		},
+	});
+	mock.module('../../settings', { exports: { settings: { get: settingsGetMock } } });
 	({ createDirectMessage } = await import('./createDirectMessage'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const me = { _id: 'me', username: 'me' };

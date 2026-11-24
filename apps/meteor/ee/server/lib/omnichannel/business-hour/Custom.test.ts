@@ -39,11 +39,10 @@ const registerBusinessHourTypeStub = sinon.stub();
 let customBusinessHour: any;
 
 before(async () => {
-	const businessHourMock = mock.module('../../../../../server/lib/omnichannel/business-hour', {
+	mock.module('../../../../../server/lib/omnichannel/business-hour', {
 		exports: { businessHourManager: { registerBusinessHourType: registerBusinessHourTypeStub } },
 	});
 	await import('./Custom');
-	businessHourMock.restore();
 	customBusinessHour = registerBusinessHourTypeStub.firstCall.args[0];
 });
 

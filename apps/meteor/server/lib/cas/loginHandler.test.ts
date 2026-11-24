@@ -14,21 +14,18 @@ const setRealName = sinon.stub().resolves();
 let handler: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), {
-			exports: {
-				Accounts: {
-					LoginCancelledError: { numericError: 403 },
-				},
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: {
+				LoginCancelledError: { numericError: 403 },
 			},
-		}),
-		mock.module('./createNewUser', { exports: { createNewUser } }),
-		mock.module('./findExistingCASUser', { exports: { findExistingCASUser } }),
-		mock.module('../users/setRealName', { exports: { setRealName } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-	];
+		},
+	});
+	mock.module('./createNewUser', { exports: { createNewUser } });
+	mock.module('./findExistingCASUser', { exports: { findExistingCASUser } });
+	mock.module('../users/setRealName', { exports: { setRealName } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
 	({ loginHandlerCAS: handler } = await import('./loginHandler'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('loginHandlerCAS', () => {

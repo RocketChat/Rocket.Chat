@@ -41,17 +41,14 @@ const queueManager = {
 let runVerifyContactChannel: typeof import('./verifyContactChannel').runVerifyContactChannel;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: mergeContactsStub } }),
-		mock.module('../../../server/lib/omnichannel/contacts/verifyContactChannel', {
-			exports: { verifyContactChannel: { patch: sinon.stub() } },
-		}),
-		mock.module('../../../server/lib/omnichannel/QueueManager', { exports: { QueueManager: queueManager } }),
-		mock.module('../../../server/database/utils', { exports: { client: clientMock } }),
-		mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } }),
-	];
+	mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: mergeContactsStub } });
+	mock.module('../../../server/lib/omnichannel/contacts/verifyContactChannel', {
+		exports: { verifyContactChannel: { patch: sinon.stub() } },
+	});
+	mock.module('../../../server/lib/omnichannel/QueueManager', { exports: { QueueManager: queueManager } });
+	mock.module('../../../server/database/utils', { exports: { client: clientMock } });
+	mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } });
 	({ runVerifyContactChannel } = await import('./verifyContactChannel'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('verifyContactChannel', () => {

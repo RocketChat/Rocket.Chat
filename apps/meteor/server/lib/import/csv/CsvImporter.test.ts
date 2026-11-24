@@ -73,13 +73,10 @@ class MockImporter {
 let CsvImporter: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../csvParser', { exports: { parse } }),
-		mock.module('..', { exports: { Importer: MockImporter, ProgressStep, ImporterWebsocket: { progressUpdated } } }),
-		mock.module('../../notifyListener', { exports: { notifyOnSettingChanged } }),
-	];
+	mock.module('../csvParser', { exports: { parse } });
+	mock.module('..', { exports: { Importer: MockImporter, ProgressStep, ImporterWebsocket: { progressUpdated } } });
+	mock.module('../../notifyListener', { exports: { notifyOnSettingChanged } });
 	({ CsvImporter } = await import('./CsvImporter'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const allStubs = [

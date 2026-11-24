@@ -36,22 +36,19 @@ let executeSetReaction: any;
 let setReaction: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { Message: { beforeReacted: sinon.stub() }, ClientSafeError } }),
-		mock.module('../../callbacks', { exports: { callbacks: { run: callbacksRunMock } } }),
-		mock.module('../../i18n', { exports: { i18n: i18nMock } }),
-		mock.module('../../authorization', { exports: { canAccessRoomAsync: canAccessRoomAsyncMock } }),
-		mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } }),
-		mock.module('../emoji', { exports: { emoji: { list: emojiList } } }),
-		mock.module('../../messages/isTheLastMessage', { exports: { isTheLastMessage: isTheLastMessageMock } }),
-		mock.module('../../notifyListener', {
-			exports: {
-				notifyOnMessageChange: notifyOnMessageChangeMock,
-			},
-		}),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { Message: { beforeReacted: sinon.stub() }, ClientSafeError } });
+	mock.module('../../callbacks', { exports: { callbacks: { run: callbacksRunMock } } });
+	mock.module('../../i18n', { exports: { i18n: i18nMock } });
+	mock.module('../../authorization', { exports: { canAccessRoomAsync: canAccessRoomAsyncMock } });
+	mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } });
+	mock.module('../emoji', { exports: { emoji: { list: emojiList } } });
+	mock.module('../../messages/isTheLastMessage', { exports: { isTheLastMessage: isTheLastMessageMock } });
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnMessageChange: notifyOnMessageChangeMock,
+		},
+	});
 	({ removeUserReaction, executeSetReaction, setReaction } = await import('./setReaction'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Reactions', () => {

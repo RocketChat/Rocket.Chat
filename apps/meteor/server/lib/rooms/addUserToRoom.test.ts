@@ -32,19 +32,16 @@ const AppEvents = { IPreRoomUserJoined: 'IPreRoomUserJoined', IPostRoomUserJoine
 let addUserToRoom: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/abac', { exports: { AbacContractError } }),
-		mock.module('@rocket.chat/apps', { exports: { Apps: { self: { triggerEvent } }, AppEvents } }),
-		mock.module('@rocket.chat/core-services', { exports: { Message, Team, Room, ClientSafeError, isClientSafeError } }),
-		mock.module('./roomCoordinator', { exports: { roomCoordinator: { getRoomDirectives } } }),
-		mock.module('../../hooks/rooms/beforeAddUserToRoom', { exports: { beforeAddUserToRoom: beforeAddUserToRoomPatch } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
-		mock.module('../callbacks/beforeAddUserToRoom', { exports: { beforeAddUserToRoom } }),
-		mock.module('../notifyListener', { exports: { notifyOnRoomChangedById, notifyOnSubscriptionChanged } }),
-	];
+	mock.module('@rocket.chat/abac', { exports: { AbacContractError } });
+	mock.module('@rocket.chat/apps', { exports: { Apps: { self: { triggerEvent } }, AppEvents } });
+	mock.module('@rocket.chat/core-services', { exports: { Message, Team, Room, ClientSafeError, isClientSafeError } });
+	mock.module('./roomCoordinator', { exports: { roomCoordinator: { getRoomDirectives } } });
+	mock.module('../../hooks/rooms/beforeAddUserToRoom', { exports: { beforeAddUserToRoom: beforeAddUserToRoomPatch } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../callbacks/beforeAddUserToRoom', { exports: { beforeAddUserToRoom } });
+	mock.module('../notifyListener', { exports: { notifyOnRoomChangedById, notifyOnSubscriptionChanged } });
 	({ addUserToRoom } = await import('./addUserToRoom'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const room = { _id: 'rid1', t: 'c' };

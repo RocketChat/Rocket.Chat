@@ -12,9 +12,8 @@ const settingsValues: Record<string, unknown> = {
 let compareUserPasswordHistory: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../settings', { exports: { settings: { get: (id: string) => settingsValues[id] } } })];
+	mock.module('../settings', { exports: { settings: { get: (id: string) => settingsValues[id] } } });
 	({ compareUserPasswordHistory } = await import('./compareUserPasswordHistory'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const hash = (password: string) => bcrypt.hashSync(SHA256(password), 4);

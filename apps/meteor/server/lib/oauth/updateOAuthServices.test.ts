@@ -15,22 +15,19 @@ const LoginServiceConfiguration = { createOrUpdateService: sandbox.stub(), remov
 let updateOAuthServices: typeof import('./updateOAuthServices').updateOAuthServices;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings/cached', {
-			exports: {
-				settings: {
-					get: (key: string) => settingValues.get(key),
-					getByRegexp: (regex: RegExp) => [...settingValues].filter(([key]) => regex.test(key)),
-				},
+	mock.module('../../settings/cached', {
+		exports: {
+			settings: {
+				get: (key: string) => settingValues.get(key),
+				getByRegexp: (regex: RegExp) => [...settingValues].filter(([key]) => regex.test(key)),
 			},
-		}),
-		mock.module('./addPassportCustomOAuth', { exports: { addPassportCustomOAuth } }),
-		mock.module('../notifyListener', {
-			exports: { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
-		}),
-	];
+		},
+	});
+	mock.module('./addPassportCustomOAuth', { exports: { addPassportCustomOAuth } });
+	mock.module('../notifyListener', {
+		exports: { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
+	});
 	({ updateOAuthServices } = await import('./updateOAuthServices'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('updateOAuthServices', () => {

@@ -12,16 +12,13 @@ const getAllowedCustomFields = sinon.stub();
 let mapVisitorToContact: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./getContactManagerIdByUsername', {
-			exports: {
-				getContactManagerIdByUsername,
-			},
-		}),
-		mock.module('./getAllowedCustomFields', { exports: { getAllowedCustomFields } }),
-	];
+	mock.module('./getContactManagerIdByUsername', {
+		exports: {
+			getContactManagerIdByUsername,
+		},
+	});
+	mock.module('./getAllowedCustomFields', { exports: { getAllowedCustomFields } });
 	({ mapVisitorToContact } = await import('./mapVisitorToContact'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const testDate = new Date();

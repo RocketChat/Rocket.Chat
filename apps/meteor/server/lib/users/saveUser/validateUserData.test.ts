@@ -13,17 +13,14 @@ const checkUsernameAvailability = sinon.stub();
 let validateUserData: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./saveUser', { exports: { isUpdateUserData: (params: { _id?: string }) => '_id' in params && !!params._id } }),
-		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../../authorization/getRoles', { exports: { getRoleIds } }),
-		mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync } }),
-		mock.module('../../statusVisibility/settings', { exports: { isAdminHidingAllowed } }),
-		mock.module('../checkEmailAvailability', { exports: { checkEmailAvailability } }),
-		mock.module('../checkUsernameAvailability', { exports: { checkUsernameAvailability } }),
-	];
+	mock.module('./saveUser', { exports: { isUpdateUserData: (params: { _id?: string }) => '_id' in params && !!params._id } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../../authorization/getRoles', { exports: { getRoleIds } });
+	mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync } });
+	mock.module('../../statusVisibility/settings', { exports: { isAdminHidingAllowed } });
+	mock.module('../checkEmailAvailability', { exports: { checkEmailAvailability } });
+	mock.module('../checkUsernameAvailability', { exports: { checkUsernameAvailability } });
 	({ validateUserData } = await import('./validateUserData'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('validateUserData', () => {

@@ -14,9 +14,8 @@ let protectAvatarsWithFallback: any;
 let protectAvatars: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../utils', { exports: { default: mocks.utils } })];
+	mock.module('../utils', { exports: { default: mocks.utils } });
 	({ protectAvatarsWithFallback, protectAvatars } = await import('./auth'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#protectAvatarsWithFallback()', () => {

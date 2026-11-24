@@ -11,23 +11,20 @@ const createClient = sinon.stub();
 let LDAPConnection: typeof import('./Connection').LDAPConnection;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('ldapjs', { exports: { ...ldapjs, createClient } }),
-		mock.module('../../../../server/settings', { exports: { settings: { get: sinon.stub() } } }),
-		mock.module('./getLDAPConditionalSetting', { exports: { getLDAPConditionalSetting: sinon.stub().returns('') } }),
-		mock.module('./Logger', {
-			exports: {
-				logger: loggerStub,
-				connLogger: loggerStub,
-				bindLogger: loggerStub,
-				searchLogger: loggerStub,
-				authLogger: loggerStub,
-				mapLogger: loggerStub,
-			},
-		}),
-	];
+	mock.module('ldapjs', { exports: { ...ldapjs, createClient } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: sinon.stub() } } });
+	mock.module('./getLDAPConditionalSetting', { exports: { getLDAPConditionalSetting: sinon.stub().returns('') } });
+	mock.module('./Logger', {
+		exports: {
+			logger: loggerStub,
+			connLogger: loggerStub,
+			bindLogger: loggerStub,
+			searchLogger: loggerStub,
+			authLogger: loggerStub,
+			mapLogger: loggerStub,
+		},
+	});
 	({ LDAPConnection } = await import('./Connection'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('LDAPConnection', () => {

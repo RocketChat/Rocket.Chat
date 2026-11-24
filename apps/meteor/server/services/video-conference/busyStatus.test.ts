@@ -81,9 +81,11 @@ before(async () => {
 		},
 		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },
 	};
-	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
 	({ VideoConfService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 });
 
 const ts = new Date('2026-08-02T10:00:00.000Z');

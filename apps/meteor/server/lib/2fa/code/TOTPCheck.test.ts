@@ -9,12 +9,9 @@ const verify = sinon.stub();
 let TOTPCheck: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../lib/totp', { exports: { TOTP: { verify } } }),
-	];
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../lib/totp', { exports: { TOTP: { verify } } });
 	({ TOTPCheck } = await import('./TOTPCheck'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const hashedBackup = ['hashed-backup-code'];

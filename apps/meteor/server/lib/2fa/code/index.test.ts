@@ -36,18 +36,16 @@ class DisabledCheckMock {
 }
 
 const loadTwoFactor = (TOTPCheck: typeof TOTPCheckMock, settingsGet: sinon.SinonStub, getLoginToken: () => unknown) => {
-	const moduleMocks = [
-		mock.module('./TOTPCheck', { exports: { TOTPCheck } }),
-		mock.module('./EmailCheck', { exports: { EmailCheck: DisabledCheckMock } }),
-		mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback: class extends DisabledCheckMock {} } }),
-		mock.module('../../shared/getModifiedHttpHeaders', { exports: { normalizeHeaders: (headers: unknown) => headers } }),
-		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { _getLoginToken: getLoginToken } } }),
-	];
+	mock.module('./TOTPCheck', { exports: { TOTPCheck } });
+	mock.module('./EmailCheck', { exports: { EmailCheck: DisabledCheckMock } });
+	mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback: class extends DisabledCheckMock {} } });
+	mock.module('../../shared/getModifiedHttpHeaders', { exports: { normalizeHeaders: (headers: unknown) => headers } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { _getLoginToken: getLoginToken } } });
 	delete require.cache[require.resolve('./index')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const twoFactor = require('./index');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 	return twoFactor;
 };
 

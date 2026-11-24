@@ -5,13 +5,10 @@ import { expect } from 'chai';
 let removeAttachmentMarkdown: typeof import('./removeAttachmentMarkdown').removeAttachmentMarkdown;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/tools', {
-			exports: { isRecord: (value: unknown) => typeof value === 'object' && value !== null && !Array.isArray(value) },
-		}),
-	];
+	mock.module('@rocket.chat/tools', {
+		exports: { isRecord: (value: unknown) => typeof value === 'object' && value !== null && !Array.isArray(value) },
+	});
 	({ removeAttachmentMarkdown } = await import('./removeAttachmentMarkdown'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('removeAttachmentMarkdown', () => {

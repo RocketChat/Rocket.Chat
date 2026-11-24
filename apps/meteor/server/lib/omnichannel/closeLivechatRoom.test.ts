@@ -25,16 +25,13 @@ const hasPermissionStub = sinon.stub();
 let closeLivechatRoom: typeof import('./closeLivechatRoom').closeLivechatRoom;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./closeRoom', { exports: { default: livechatStub } }),
-		mock.module('../authorization/hasPermission', {
-			exports: {
-				hasPermissionAsync: hasPermissionStub,
-			},
-		}),
-	];
+	mock.module('./closeRoom', { exports: { default: livechatStub } });
+	mock.module('../authorization/hasPermission', {
+		exports: {
+			hasPermissionAsync: hasPermissionStub,
+		},
+	});
 	({ closeLivechatRoom } = await import('./closeLivechatRoom'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('closeLivechatRoom', () => {

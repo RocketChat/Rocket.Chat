@@ -5,13 +5,11 @@ import { expect } from 'chai';
 let splitSendMessageFields: typeof import('./splitSendMessageFields').splitSendMessageFields;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/rest-typings', {
-			exports: { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
-		}),
-	];
+	mock.module('@rocket.chat/rest-typings', {
+		exports: { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
+	});
 	({ splitSendMessageFields } = await import('./splitSendMessageFields'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 });
 
 describe('splitSendMessageFields', () => {

@@ -26,12 +26,9 @@ let isValidLoginAttemptByIp: typeof import('./restrictLoginAttempts').isValidLog
 let isValidAttemptByUser: typeof import('./restrictLoginAttempts').isValidAttemptByUser;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } }),
-		mock.module('../messages/sendMessage', { exports: { sendMessage } }),
-	];
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } });
+	mock.module('../messages/sendMessage', { exports: { sendMessage } });
 	({ isValidLoginAttemptByIp, isValidAttemptByUser } = await import('./restrictLoginAttempts'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const lastFailedAt = new Date('2026-11-04T10:00:00.000Z');

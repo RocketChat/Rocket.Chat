@@ -20,11 +20,10 @@ const orch = {
 let codec: any;
 
 before(async () => {
-	const getURLMock = mock.module('../../../../lib/utils/getURL', {
+	mock.module('../../../../lib/utils/getURL', {
 		exports: { getURL: (path: string) => `http://localhost:3000${path}` },
 	});
 	const { createUploadsCodec } = await import('./uploads');
-	getURLMock.restore();
 	codec = createUploadsCodec(orch);
 });
 

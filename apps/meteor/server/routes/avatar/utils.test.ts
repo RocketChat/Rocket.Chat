@@ -10,17 +10,13 @@ const mocks = {
 	fileUploadGet: sinon.spy(),
 };
 
-const moduleMocks = [
-	mock.module('../../lib/media/file-upload', { exports: { FileUpload: { get: mocks.fileUploadGet } } }),
-	mock.module('../../settings', { exports: { settings: { get: mocks.settingsGet } } }),
-	mock.module('sharp', {
-		exports: { default: () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }) },
-	}),
-];
+mock.module('../../lib/media/file-upload', { exports: { FileUpload: { get: mocks.fileUploadGet } } });
+mock.module('../../settings', { exports: { settings: { get: mocks.settingsGet } } });
+mock.module('sharp', {
+	exports: { default: () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }) },
+});
 // oxlint-disable-next-line @typescript-eslint/no-require-imports
 const utils = require('./utils');
-
-moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 const {
 	getAvatarSizeFromRequest,

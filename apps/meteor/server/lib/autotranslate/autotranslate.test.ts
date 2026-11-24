@@ -23,16 +23,14 @@ describe('TranslationProviderRegistry', () => {
 		addStub = sinon.stub();
 		removeStub = sinon.stub();
 
-		const moduleMocks = [
-			mock.module('../../settings', { exports: { settings: { watch: sinon.stub(), get: sinon.stub() } } }),
-			mock.module('../callbacks', { exports: { callbacks: { add: addStub, remove: removeStub, priority: { MEDIUM: 2 } } } }),
-			mock.module('../messaging/markdown', { exports: { Markdown: {} } }),
-			mock.module('../notifyListener', { exports: { notifyOnMessageChange: sinon.stub() } }),
-		];
+		mock.module('../../settings', { exports: { settings: { watch: sinon.stub(), get: sinon.stub() } } });
+		mock.module('../callbacks', { exports: { callbacks: { add: addStub, remove: removeStub, priority: { MEDIUM: 2 } } } });
+		mock.module('../messaging/markdown', { exports: { Markdown: {} } });
+		mock.module('../notifyListener', { exports: { notifyOnMessageChange: sinon.stub() } });
 		delete require.cache[require.resolve('./autotranslate')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		({ TranslationProviderRegistry } = require('./autotranslate'));
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 	});
 
 	it('should remove the afterSaveMessage callback and not register a new one when disabled', () => {

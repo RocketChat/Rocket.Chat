@@ -22,7 +22,7 @@ const LocalBrokerMock = {
 	broadcastLocal: sinon.stub(),
 };
 
-const mockServiceDependencies = (transporter: unknown = 'nats://localhost:4222') => [
+const mockServiceDependencies = (transporter: unknown = 'nats://localhost:4222') => {
 	mock.module('@rocket.chat/core-services', {
 		exports: {
 			ServiceClassInternal: class {
@@ -32,15 +32,15 @@ const mockServiceDependencies = (transporter: unknown = 'nats://localhost:4222')
 			},
 			Apps: AppsMock,
 		},
-	}),
+	});
 	mock.module('@rocket.chat/instance-status', {
 		exports: {
 			InstanceStatus: { id: () => 'self' },
 			defaultPingInterval: 10,
 			indexExpire: 30,
 		},
-	}),
-	mock.module('./getTransporter', { exports: { getTransporter: () => transporter } }),
+	});
+	mock.module('./getTransporter', { exports: { getTransporter: () => transporter } });
 	mock.module('moleculer', {
 		exports: {
 			...moleculer,
@@ -53,15 +53,15 @@ const mockServiceDependencies = (transporter: unknown = 'nats://localhost:4222')
 				TCP: class {},
 			},
 		},
-	}),
-];
+	});
+};
 
 let InstanceService: any;
 
 before(async () => {
-	const moduleMocks = mockServiceDependencies();
+	mockServiceDependencies();
 	({ InstanceService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 });
 
 describe('InstanceService', () => {
@@ -208,14 +208,12 @@ describe('InstanceService encryption warning', () => {
 	const originalSecret = process.env.MOLECULER_ENCRYPTION_SECRET;
 
 	const load = (transporter: unknown) => {
-		const moduleMocks = [
-			...mockServiceDependencies(transporter),
-			mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { warn, error: sinon.stub() } } }),
-		];
+		mockServiceDependencies(transporter);
+		mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { warn, error: sinon.stub() } } });
 		delete require.cache[require.resolve('./service')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		const { InstanceService } = require('./service');
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 		return InstanceService;
 	};
 

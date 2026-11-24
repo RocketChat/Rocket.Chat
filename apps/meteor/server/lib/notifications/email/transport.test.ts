@@ -10,12 +10,9 @@ let configureMailTransport: any;
 let sendMail: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('nodemailer', { exports: { default: { createTransport } } }),
-		mock.module('../../logger/system', { exports: { SystemLogger } }),
-	];
+	mock.module('nodemailer', { exports: { default: { createTransport } } });
+	mock.module('../../logger/system', { exports: { SystemLogger } });
 	({ configureMailTransport, sendMail } = await import('./transport'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const fakeTransport = () => ({ sendMail: sinon.stub().resolves(), close: sinon.stub() });

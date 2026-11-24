@@ -19,15 +19,12 @@ const unsetLoginTokens = sinon.stub();
 let resetTOTP: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../../i18n', { exports: { i18n: { getFixedT } } }),
-		mock.module('../../isUserIdFederated', { exports: { isUserIdFederated } }),
-		mock.module('../../notifications/email/api', { exports: { send: sendEmail } }),
-		mock.module('../../notifyListener', { exports: { notifyOnUserChange } }),
-	];
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../../i18n', { exports: { i18n: { getFixedT } } });
+	mock.module('../../isUserIdFederated', { exports: { isUserIdFederated } });
+	mock.module('../../notifications/email/api', { exports: { send: sendEmail } });
+	mock.module('../../notifyListener', { exports: { notifyOnUserChange } });
 	({ resetTOTP } = await import('./resetTOTP'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const userWithVerifiedEmail = {

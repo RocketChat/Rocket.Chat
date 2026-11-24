@@ -60,23 +60,20 @@ const registerRoute = (path: string, options: (typeof routeOptions)[string], act
 };
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../lib/utils/lib/normalizeMessagesForUser', { exports: { normalizeMessagesForUser: normalizeMessages } }),
-		mock.module('../api', {
-			exports: {
-				API: {
-					v1: {
-						get: registerRoute,
-						post: registerRoute,
-						success: (body: unknown) => ({ statusCode: 200, body }),
-						forbidden: () => ({ statusCode: 403 }),
-					},
+	mock.module('../../lib/utils/lib/normalizeMessagesForUser', { exports: { normalizeMessagesForUser: normalizeMessages } });
+	mock.module('../api', {
+		exports: {
+			API: {
+				v1: {
+					get: registerRoute,
+					post: registerRoute,
+					success: (body: unknown) => ({ statusCode: 200, body }),
+					forbidden: () => ({ statusCode: 403 }),
 				},
 			},
-		}),
-	];
+		},
+	});
 	await import('./ai-search');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const userId = 'user-id';

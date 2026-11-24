@@ -26,12 +26,9 @@ before(async () => {
 	mockModel('Avatars', { findOneContactAvatar: mocks.findOneContactAvatar });
 	mockModel('Users', { findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken });
 
-	const moduleMocks = [
-		mock.module('@rocket.chat/account-utils', { exports: { hashLoginToken: mocks.hashLoginToken } }),
-		mock.module('./utils', { exports: mocks.utils }),
-	];
+	mock.module('@rocket.chat/account-utils', { exports: { hashLoginToken: mocks.hashLoginToken } });
+	mock.module('./utils', { exports: mocks.utils });
 	({ contactAvatar } = await import('./contact'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const OWNER = 'owner-uid';

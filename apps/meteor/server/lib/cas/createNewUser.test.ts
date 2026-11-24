@@ -14,12 +14,9 @@ const Rooms = { findOneByNameAndType: sandbox.stub() };
 let createNewUser: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { insertUserDoc } } }),
-		mock.module('../rooms/createRoom', { exports: { createRoom } }),
-	];
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { insertUserDoc } } });
+	mock.module('../rooms/createRoom', { exports: { createRoom } });
 	({ createNewUser } = await import('./createNewUser'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const created = { _id: 'new-user-id', username: 'alice' };

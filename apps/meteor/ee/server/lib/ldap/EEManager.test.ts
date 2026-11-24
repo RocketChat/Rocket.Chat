@@ -22,30 +22,27 @@ class LDAPManagerStub {
 let LDAPEEManager: typeof import('./EEManager').LDAPEEManager;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { Abac: {}, Team: {} } }),
-		mock.module('@rocket.chat/license', { exports: { License: { hasModule: () => false } } }),
-		mock.module('../../../../server/lib/import/definitions/IConversionCallbacks', { exports: {} }),
-		mock.module('../../../../server/settings', { exports: { settings: settingsStub } }),
-		mock.module('../../../../server/lib/utils/lib/getValidRoomName', {
-			exports: { getValidRoomName: (name: string) => Promise.resolve(name) },
-		}),
-		mock.module('../../../../lib/utils/arrayUtils', {
-			exports: { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },
-		}),
-		mock.module('./Connection', { exports: { LDAPConnection: class {} } }),
-		mock.module('./Logger', { exports: { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub } }),
-		mock.module('./Manager', { exports: { LDAPManager: LDAPManagerStub } }),
-		mock.module('./UserConverter', { exports: { LDAPUserConverter: class {} } }),
-		mock.module('../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: addUserToRoomStub } }),
-		mock.module('../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } }),
-		mock.module('../../../../server/lib/rooms/removeUserFromRoom', { exports: { removeUserFromRoom: removeUserFromRoomStub } }),
-		mock.module('../../../../server/lib/users/setUserActiveStatus', { exports: { setUserActiveStatus: setUserActiveStatusStub } }),
-		mock.module('../syncUserRoles', { exports: { syncUserRoles: sinon.stub() } }),
-		mock.module('./copyCustomFieldsLDAP', { exports: { copyCustomFieldsLDAP: sinon.stub() } }),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { Abac: {}, Team: {} } });
+	mock.module('@rocket.chat/license', { exports: { License: { hasModule: () => false } } });
+	mock.module('../../../../server/lib/import/definitions/IConversionCallbacks', { exports: {} });
+	mock.module('../../../../server/settings', { exports: { settings: settingsStub } });
+	mock.module('../../../../server/lib/utils/lib/getValidRoomName', {
+		exports: { getValidRoomName: (name: string) => Promise.resolve(name) },
+	});
+	mock.module('../../../../lib/utils/arrayUtils', {
+		exports: { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },
+	});
+	mock.module('./Connection', { exports: { LDAPConnection: class {} } });
+	mock.module('./Logger', { exports: { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub } });
+	mock.module('./Manager', { exports: { LDAPManager: LDAPManagerStub } });
+	mock.module('./UserConverter', { exports: { LDAPUserConverter: class {} } });
+	mock.module('../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: addUserToRoomStub } });
+	mock.module('../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } });
+	mock.module('../../../../server/lib/rooms/removeUserFromRoom', { exports: { removeUserFromRoom: removeUserFromRoomStub } });
+	mock.module('../../../../server/lib/users/setUserActiveStatus', { exports: { setUserActiveStatus: setUserActiveStatusStub } });
+	mock.module('../syncUserRoles', { exports: { syncUserRoles: sinon.stub() } });
+	mock.module('./copyCustomFieldsLDAP', { exports: { copyCustomFieldsLDAP: sinon.stub() } });
 	({ LDAPEEManager } = await import('./EEManager'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const user = { _id: 'userId', username: 'john' };

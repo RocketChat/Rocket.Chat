@@ -47,24 +47,21 @@ const AppEvents = {
 let createRoom: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', {
-			exports: { Apps: { self: { triggerEvent: selfTriggerEvent }, triggerEvent: appsTriggerEvent }, AppEvents },
-		}),
-		mock.module('@rocket.chat/core-services', { exports: { FederationMatrix, Message, Room, Team, ClientSafeError, XMPPServer } }),
-		mock.module('./createDirectRoom', { exports: { createDirectRoom } }),
-		mock.module('./filterUsersAllowedInRoom', { exports: { filterUsersAllowedInRoom } }),
-		mock.module('../callbacks', { exports: { callbacks } }),
-		mock.module('../callbacks/afterCreateRoomCallback', { exports: { afterCreateRoomCallback } }),
-		mock.module('../callbacks/beforeAddUserToRoom', { exports: { beforeAddUserToRoom } }),
-		mock.module('../callbacks/beforeCreateRoomCallback', { exports: { beforeCreateRoomCallback, prepareCreateRoomCallback } }),
-		mock.module('../getSubscriptionAutotranslateDefaultConfig', { exports: { getSubscriptionAutotranslateDefaultConfig } }),
-		mock.module('../notifyListener', { exports: { notifyOnRoomChanged, notifyOnSubscriptionChangedById } }),
-		mock.module('../roles/syncRoomRolePriority', { exports: { syncRoomRolePriorityForUserAndRoom } }),
-		mock.module('../utils/lib/getValidRoomName', { exports: { getValidRoomName } }),
-	];
+	mock.module('@rocket.chat/apps', {
+		exports: { Apps: { self: { triggerEvent: selfTriggerEvent }, triggerEvent: appsTriggerEvent }, AppEvents },
+	});
+	mock.module('@rocket.chat/core-services', { exports: { FederationMatrix, Message, Room, Team, ClientSafeError, XMPPServer } });
+	mock.module('./createDirectRoom', { exports: { createDirectRoom } });
+	mock.module('./filterUsersAllowedInRoom', { exports: { filterUsersAllowedInRoom } });
+	mock.module('../callbacks', { exports: { callbacks } });
+	mock.module('../callbacks/afterCreateRoomCallback', { exports: { afterCreateRoomCallback } });
+	mock.module('../callbacks/beforeAddUserToRoom', { exports: { beforeAddUserToRoom } });
+	mock.module('../callbacks/beforeCreateRoomCallback', { exports: { beforeCreateRoomCallback, prepareCreateRoomCallback } });
+	mock.module('../getSubscriptionAutotranslateDefaultConfig', { exports: { getSubscriptionAutotranslateDefaultConfig } });
+	mock.module('../notifyListener', { exports: { notifyOnRoomChanged, notifyOnSubscriptionChangedById } });
+	mock.module('../roles/syncRoomRolePriority', { exports: { syncRoomRolePriorityForUserAndRoom } });
+	mock.module('../utils/lib/getValidRoomName', { exports: { getValidRoomName } });
 	({ createRoom } = await import('./createRoom'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const owner = { _id: 'owner1', username: 'owner', name: 'Owner' };

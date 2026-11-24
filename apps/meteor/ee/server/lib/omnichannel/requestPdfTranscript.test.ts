@@ -9,20 +9,17 @@ const queueWorkStub = sinon.stub();
 let requestPdfTranscript: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				OmnichannelTranscript: {
-					workOnPdf: workOnPdfStub,
-				},
-				QueueWorker: {
-					queueWork: queueWorkStub,
-				},
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			OmnichannelTranscript: {
+				workOnPdf: workOnPdfStub,
 			},
-		}),
-	];
+			QueueWorker: {
+				queueWork: queueWorkStub,
+			},
+		},
+	});
 	({ requestPdfTranscript } = await import('./requestPdfTranscript'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('requestPdfTranscript', () => {

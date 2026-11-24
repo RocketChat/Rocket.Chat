@@ -36,20 +36,17 @@ const notifyOnMessageChangeMock = sinon.stub();
 let cleanRoomHistory: typeof import('./cleanRoomHistory').cleanRoomHistory;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast: broadcastMock } } }),
-		mock.module('./deleteRoom', { exports: { deleteRoom: sinon.stub() } }),
-		mock.module('../media/file-upload', { exports: { FileUpload: { getStore: sinon.stub() } } }),
-		mock.module('../notifyListener', {
-			exports: {
-				notifyOnMessageChange: notifyOnMessageChangeMock,
-				notifyOnRoomChangedById: sinon.stub(),
-				notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
-			},
-		}),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast: broadcastMock } } });
+	mock.module('./deleteRoom', { exports: { deleteRoom: sinon.stub() } });
+	mock.module('../media/file-upload', { exports: { FileUpload: { getStore: sinon.stub() } } });
+	mock.module('../notifyListener', {
+		exports: {
+			notifyOnMessageChange: notifyOnMessageChangeMock,
+			notifyOnRoomChangedById: sinon.stub(),
+			notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
+		},
+	});
 	({ cleanRoomHistory } = await import('./cleanRoomHistory'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const ids = (prefix: string, count: number) => Array.from({ length: count }, (_, i) => `${prefix}${i}`);

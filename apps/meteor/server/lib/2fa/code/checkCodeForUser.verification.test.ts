@@ -36,15 +36,12 @@ let getFingerprintFromConnection: any;
 let rememberAuthorizationByToken: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { _getLoginToken: getLoginToken } } }),
-		mock.module('./TOTPCheck', { exports: { TOTPCheck: buildCheck('totp', totp) } }),
-		mock.module('./EmailCheck', { exports: { EmailCheck: buildCheck('email', email) } }),
-		mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback: buildCheck('password', password) } }),
-		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
-	];
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { _getLoginToken: getLoginToken } } });
+	mock.module('./TOTPCheck', { exports: { TOTPCheck: buildCheck('totp', totp) } });
+	mock.module('./EmailCheck', { exports: { EmailCheck: buildCheck('email', email) } });
+	mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback: buildCheck('password', password) } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
 	({ checkCodeForUser, getFingerprintFromConnection, rememberAuthorizationByToken } = await import('./index'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const user = {

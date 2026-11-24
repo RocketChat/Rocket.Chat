@@ -20,39 +20,36 @@ const hasModule = sinon.stub().returns(true);
 
 const handler = sinon.stub();
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', {
-			exports: {
-				License: { hasModule },
-			},
-		}),
-		mock.module(require.resolve('meteor/accounts-base'), {
-			exports: {
-				Accounts: {
-					LoginCancelledError: { numericError: 403 },
-					registerLoginHandler: (_name: string, fn: any) => {
-						handler.callsFake(fn);
-					},
+	mock.module('@rocket.chat/license', {
+		exports: {
+			License: { hasModule },
+		},
+	});
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: {
+				LoginCancelledError: { numericError: 403 },
+				registerLoginHandler: (_name: string, fn: any) => {
+					handler.callsFake(fn);
 				},
 			},
-		}),
-		mock.module('./lib/SAML', {
-			exports: {
-				SAML: { retrieveCredential, insertOrUpdateSAMLUser },
-			},
-		}),
-		mock.module('./lib/Utils', {
-			exports: {
-				SAMLUtils: samlUtilsMock,
-			},
-		}),
-		mock.module('../../../../server/lib/2fa/code', { exports: { getUserForCheck } }),
-		mock.module('../../../../server/lib/oauth/twoFactorAuth', { exports: { doesUserRequire2FA } }),
-		mock.module('../../../../server/lib/i18n', { exports: { i18n: { t: sinon.stub().returns('') } } }),
-		mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-	];
+		},
+	});
+	mock.module('./lib/SAML', {
+		exports: {
+			SAML: { retrieveCredential, insertOrUpdateSAMLUser },
+		},
+	});
+	mock.module('./lib/Utils', {
+		exports: {
+			SAMLUtils: samlUtilsMock,
+		},
+	});
+	mock.module('../../../../server/lib/2fa/code', { exports: { getUserForCheck } });
+	mock.module('../../../../server/lib/oauth/twoFactorAuth', { exports: { doesUserRequire2FA } });
+	mock.module('../../../../server/lib/i18n', { exports: { i18n: { t: sinon.stub().returns('') } } });
+	mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
 	await import('./loginHandler');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('SAML loginHandler', () => {

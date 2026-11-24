@@ -16,15 +16,12 @@ let restoreDiscussionEnabled: (typeof import('./discussionEnforcementOverride'))
 let restoreDiscussionEnabledWithoutLicense: (typeof import('./discussionEnforcementOverride'))['restoreDiscussionEnabledWithoutLicense'];
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: { hasModule: hasModuleMock } } }),
-		mock.module('@rocket.chat/logger', { exports: { Logger: sinon.stub().returns(loggerMock) } }),
-		mock.module('../../../../server/lib/notifyListener', { exports: { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock } }),
-		mock.module('../../../../server/settings', { exports: { settings: { get: settingsGetMock } } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License: { hasModule: hasModuleMock } } });
+	mock.module('@rocket.chat/logger', { exports: { Logger: sinon.stub().returns(loggerMock) } });
+	mock.module('../../../../server/lib/notifyListener', { exports: { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingsGetMock } } });
 	({ applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDiscussionEnabledWithoutLicense } =
 		await import('./discussionEnforcementOverride'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const valueWrittenTo = (settingId: string): unknown => updateValueByIdMock.getCalls().find((call) => call.args[0] === settingId)?.args[1];

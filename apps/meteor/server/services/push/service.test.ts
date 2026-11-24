@@ -15,18 +15,15 @@ const registerPushTokenStub = sandbox.stub();
 let PushService: typeof import('./service').PushService;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./tokenManagement/registerPushToken', { exports: { registerPushToken: registerPushTokenStub } }),
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				ServiceClassInternal: class {
-					onEvent = (): void => undefined;
-				},
+	mock.module('./tokenManagement/registerPushToken', { exports: { registerPushToken: registerPushTokenStub } });
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			ServiceClassInternal: class {
+				onEvent = (): void => undefined;
 			},
-		}),
-	];
+		},
+	});
 	({ PushService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('PushService.registerPushToken()', () => {

@@ -35,37 +35,34 @@ const serverFetch = sinon.stub();
 let AISearchService: typeof import('./service').AISearchService;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				License,
-				ServiceClass: class {
-					protected name = '';
-				},
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			License,
+			ServiceClass: class {
+				protected name = '';
 			},
-		}),
-		mock.module('../../settings', {
-			exports: {
-				settings: cachedSettings,
-			},
-		}),
-		mock.module('@rocket.chat/logger', {
-			exports: {
-				Logger: class {
-					debug = sinon.stub();
+		},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: cachedSettings,
+		},
+	});
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				debug = sinon.stub();
 
-					warn = sinon.stub();
-				},
+				warn = sinon.stub();
 			},
-		}),
-		mock.module('@rocket.chat/server-fetch', {
-			exports: {
-				serverFetch,
-			},
-		}),
-	];
+		},
+	});
+	mock.module('@rocket.chat/server-fetch', {
+		exports: {
+			serverFetch,
+		},
+	});
 	({ AISearchService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 type CursorResult<T> = {

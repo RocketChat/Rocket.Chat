@@ -29,14 +29,11 @@ const loggerStub = sinon.stub();
 let BusinessHourManager: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../settings', { exports: {} }),
-		mock.module('../../callbacks', { exports: {} }),
-		mock.module('moment-timezone', { exports: { default: momentStub } }),
-		mock.module('../logger', { exports: { businessHourLogger: { error: loggerStub } } }),
-	];
+	mock.module('../../../settings', { exports: {} });
+	mock.module('../../callbacks', { exports: {} });
+	mock.module('moment-timezone', { exports: { default: momentStub } });
+	mock.module('../logger', { exports: { businessHourLogger: { error: loggerStub } } });
 	({ BusinessHourManager } = await import('./BusinessHourManager'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const cronAddStub = sinon.stub();

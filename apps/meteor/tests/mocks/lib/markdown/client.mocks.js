@@ -1,6 +1,6 @@
 import { mock } from 'node:test';
 
-const randomMock = mock.module('@rocket.chat/random', {
+mock.module('@rocket.chat/random', {
 	exports: {
 		Random: {
 			id() {
@@ -13,5 +13,3 @@ const randomMock = mock.module('@rocket.chat/random', {
 export const { Markdown } = require('../../../../lib/markdown/markdown');
 export const { original } = require('../../../../lib/markdown/parser/original/original');
 export const { filtered } = require('../../../../lib/markdown/parser/filtered/filtered');
-
-randomMock.restore();

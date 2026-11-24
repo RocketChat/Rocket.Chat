@@ -15,9 +15,8 @@ let videoConfProviders: typeof import('../../../../server/lib/videoConfProviders
 let CORE_PROVIDER_APP_ID: typeof import('../../../../server/lib/videoConfProviders').CORE_PROVIDER_APP_ID;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../../../server/settings', { exports: { settings: { get: () => undefined } } })];
+	mock.module('../../../../server/settings', { exports: { settings: { get: () => undefined } } });
 	({ videoConfProviders, CORE_PROVIDER_APP_ID } = await import('../../../../server/lib/videoConfProviders'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const registered = (): VideoConferenceCapabilities | undefined => videoConfProviders.getProviderCapabilities('livekit');

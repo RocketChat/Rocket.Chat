@@ -16,25 +16,22 @@ const queueMonitorStub = {
 let afterInquiryQueued: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../../server/settings', {
-			exports: {
-				settings: settingStub,
-			},
-		}),
-		mock.module('../../lib/omnichannel/QueueInactivityMonitor', {
-			exports: {
-				OmnichannelQueueInactivityMonitor: queueMonitorStub,
-			},
-		}),
-		mock.module('../../../../server/lib/omnichannel/hooks', {
-			exports: {
-				afterInquiryQueued: { patch: sinon.stub() },
-			},
-		}),
-	];
+	mock.module('../../../../server/settings', {
+		exports: {
+			settings: settingStub,
+		},
+	});
+	mock.module('../../lib/omnichannel/QueueInactivityMonitor', {
+		exports: {
+			OmnichannelQueueInactivityMonitor: queueMonitorStub,
+		},
+	});
+	mock.module('../../../../server/lib/omnichannel/hooks', {
+		exports: {
+			afterInquiryQueued: { patch: sinon.stub() },
+		},
+	});
 	({ afterInquiryQueuedFunc: afterInquiryQueued } = await import('./afterInquiryQueued'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('hooks/afterInquiryQueued', () => {

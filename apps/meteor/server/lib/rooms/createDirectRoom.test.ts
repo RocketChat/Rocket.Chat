@@ -28,15 +28,12 @@ const AppEvents = {
 let createDirectRoom: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', { exports: { Apps: { self: { triggerEvent } }, AppEvents } }),
-		mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
-		mock.module('../notifyListener', { exports: { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } }),
-	];
+	mock.module('@rocket.chat/apps', { exports: { Apps: { self: { triggerEvent } }, AppEvents } });
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../notifyListener', { exports: { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } });
 	({ createDirectRoom } = await import('./createDirectRoom'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const alice = { _id: 'u2', username: 'alice', name: 'Alice' };

@@ -15,17 +15,14 @@ const pushTokenModelStub = { findAllTokensByUserId: sinon.stub() };
 let Push: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: () => false } } }),
-		mock.module('./logger', { exports: { logger: loggerStub } }),
-		mock.module('../../../settings', { exports: { settings: settingsStub } }),
-		mock.module('./apn', { exports: { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() } }),
-		mock.module('./fcm', { exports: { sendFCM: sendFCMStub } }),
-		mock.module('@rocket.chat/tools', { exports: { isRecord, pick, truncateString } }),
-		mock.module('../../utils/getURL', { exports: { getWorkspaceURL: sinon.stub().returns('http://localhost') } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: () => false } } });
+	mock.module('./logger', { exports: { logger: loggerStub } });
+	mock.module('../../../settings', { exports: { settings: settingsStub } });
+	mock.module('./apn', { exports: { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() } });
+	mock.module('./fcm', { exports: { sendFCM: sendFCMStub } });
+	mock.module('@rocket.chat/tools', { exports: { isRecord, pick, truncateString } });
+	mock.module('../../utils/getURL', { exports: { getWorkspaceURL: sinon.stub().returns('http://localhost') } });
 	({ Push } = await import('./push'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Push Notifications [PushClass]', () => {

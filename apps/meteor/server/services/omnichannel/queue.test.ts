@@ -46,39 +46,36 @@ const license = {
 let OmnichannelQueue: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../lib/omnichannel/Helper', {
-			exports: {
-				dispatchAgentDelegated,
+	mock.module('../../lib/omnichannel/Helper', {
+		exports: {
+			dispatchAgentDelegated,
+		},
+	});
+	mock.module('../../lib/omnichannel/RoutingManager', {
+		exports: {
+			RoutingManager: {
+				getConfig,
+				delegateInquiry,
 			},
-		}),
-		mock.module('../../lib/omnichannel/RoutingManager', {
-			exports: {
-				RoutingManager: {
-					getConfig,
-					delegateInquiry,
-				},
+		},
+	});
+	mock.module('../../lib/omnichannel/settings', { exports: { default: libSettings } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnLivechatInquiryChangedByRoom: Sinon.stub() } });
+	mock.module('../../settings', { exports: { settings } });
+	mock.module('./logger', { exports: { queueLogger } });
+	mock.module('@rocket.chat/license', { exports: { License: license } });
+	mock.module('../../lib/metrics', {
+		exports: {
+			metrics: {
+				timeToQueueProcessingByQueue: { observe: Sinon.stub() },
+				timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },
+				totalItemsProcessedByQueue: { inc: Sinon.stub() },
+				totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
+				totalItemsFailedByQueue: { inc: Sinon.stub() },
 			},
-		}),
-		mock.module('../../lib/omnichannel/settings', { exports: { default: libSettings } }),
-		mock.module('../../lib/notifyListener', { exports: { notifyOnLivechatInquiryChangedByRoom: Sinon.stub() } }),
-		mock.module('../../settings', { exports: { settings } }),
-		mock.module('./logger', { exports: { queueLogger } }),
-		mock.module('@rocket.chat/license', { exports: { License: license } }),
-		mock.module('../../lib/metrics', {
-			exports: {
-				metrics: {
-					timeToQueueProcessingByQueue: { observe: Sinon.stub() },
-					timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },
-					totalItemsProcessedByQueue: { inc: Sinon.stub() },
-					totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
-					totalItemsFailedByQueue: { inc: Sinon.stub() },
-				},
-			},
-		}),
-	];
+		},
+	});
 	({ OmnichannelQueue } = await import('./queue'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Omnichannel Queue processor', () => {

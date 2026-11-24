@@ -20,24 +20,21 @@ let fullFields: any;
 let defaultFieldsWithoutAbac: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/logger', {
-			exports: {
-				Logger: class {
-					warn = loggerWarn;
-				},
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				warn = loggerWarn;
 			},
-		}),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet, watch: settingsWatch } } }),
-		mock.module('../authorization/hasPermission', { exports: { hasPermissionAsync } }),
-		mock.module('../statusVisibility/hiddenUsers', { exports: { getUsersHiddenFrom, redactHiddenUser } }),
-		mock.module('../statusVisibility/resolveUsers', { exports: { resolveUsersByIds } }),
-		mock.module('../statusVisibility/settings', { exports: { isAdminHidingAllowed, isUserHidingAllowed } }),
-	];
+		},
+	});
+	mock.module('../../settings', { exports: { settings: { get: settingsGet, watch: settingsWatch } } });
+	mock.module('../authorization/hasPermission', { exports: { hasPermissionAsync } });
+	mock.module('../statusVisibility/hiddenUsers', { exports: { getUsersHiddenFrom, redactHiddenUser } });
+	mock.module('../statusVisibility/resolveUsers', { exports: { resolveUsersByIds } });
+	mock.module('../statusVisibility/settings', { exports: { isAdminHidingAllowed, isUserHidingAllowed } });
 	({ getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } = await import('./getFullUserData'));
 	const { abacAttributes: _abac, ...withoutAbac } = defaultFields;
 	defaultFieldsWithoutAbac = withoutAbac;
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const setCustomFieldsSetting = (value: string) => settingsWatch.firstCall.args[1](value);

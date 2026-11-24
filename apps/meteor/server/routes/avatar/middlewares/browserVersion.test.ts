@@ -7,15 +7,12 @@ let handleBrowserVersionCheck: any;
 let isIEOlderThan11: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../lib/utils/getURL', {
-			exports: {
-				getURL: () => '',
-			},
-		}),
-	];
+	mock.module('../../../lib/utils/getURL', {
+		exports: {
+			getURL: () => '',
+		},
+	});
 	({ handleBrowserVersionCheck, isIEOlderThan11 } = await import('./browserVersion'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#isIEOlderThan11()', () => {

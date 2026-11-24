@@ -19,18 +19,15 @@ let validateSettingRules: any;
 let SettingValidationError: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/logger', {
-			exports: {
-				Logger: class {
-					error = loggerErrorMock;
-				},
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = loggerErrorMock;
 			},
-		}),
-		mock.module('../settings', { exports: { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } } }),
-	];
+		},
+	});
+	mock.module('../settings', { exports: { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } } });
 	({ validateSettingRules, SettingValidationError } = await import('./settingValidationRules'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const validationBySettingId: Record<string, unknown> = {

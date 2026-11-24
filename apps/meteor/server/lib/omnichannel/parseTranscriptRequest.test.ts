@@ -20,9 +20,8 @@ const settingsGetMock = {
 let parseTranscriptRequest: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../settings', { exports: { settings: settingsGetMock } })];
+	mock.module('../../settings', { exports: { settings: settingsGetMock } });
 	({ parseTranscriptRequest } = await import('./parseTranscriptRequest'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('parseTranscriptRequest', () => {

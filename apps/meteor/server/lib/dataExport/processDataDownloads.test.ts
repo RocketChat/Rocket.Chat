@@ -115,78 +115,75 @@ let requestDataDownload: (args: { userData: { _id: string }; fullExport?: boolea
 let processDataDownloads: (typeof import('./processDataDownloads'))['processDataDownloads'];
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings', {
-			exports: {
-				settings: {
-					get: (_key: string) => {
-						return undefined;
-					},
+	mock.module('../../settings', {
+		exports: {
+			settings: {
+				get: (_key: string) => {
+					return undefined;
 				},
 			},
-		}),
-		mock.module('../i18n', {
-			exports: {
-				i18n: {
-					t: (key: string) => key,
+		},
+	});
+	mock.module('../i18n', {
+		exports: {
+			i18n: {
+				t: (key: string) => key,
+			},
+		},
+	});
+	mock.module('./index', {
+		exports: {
+			getPath: (fileId: string) => `/data-download/${fileId}`,
+		},
+	});
+	mock.module('../media/file-upload', {
+		exports: {
+			FileUpload: {
+				copy: async (fileId: string, _options: any) => {
+					return `copied-${fileId}`;
 				},
 			},
-		}),
-		mock.module('./index', {
-			exports: {
-				getPath: (fileId: string) => `/data-download/${fileId}`,
+		},
+	});
+	mock.module('../utils/getURL', {
+		exports: {
+			getURL: (path: string) => `https://example.com${path}`,
+		},
+	});
+	mock.module('./copyFileUpload', {
+		exports: {
+			copyFileUpload: (_attachmentData: { _id: string; name: string }, _assetsPath: string) => {
+				return Promise.resolve();
 			},
-		}),
-		mock.module('../media/file-upload', {
-			exports: {
-				FileUpload: {
-					copy: async (fileId: string, _options: any) => {
-						return `copied-${fileId}`;
-					},
-				},
-			},
-		}),
-		mock.module('../utils/getURL', {
-			exports: {
-				getURL: (path: string) => `https://example.com${path}`,
-			},
-		}),
-		mock.module('./copyFileUpload', {
-			exports: {
-				copyFileUpload: (_attachmentData: { _id: string; name: string }, _assetsPath: string) => {
-					return Promise.resolve();
-				},
-			},
-		}),
-		mock.module('./getRoomData', {
-			exports: {
-				getRoomData: Sinon.stub().resolves({
-					roomId: 'GENERAL',
-					roomName: 'general',
-					type: 'c',
-					exportedCount: 0,
-					status: 'pending',
-					userId: 'user1',
-					targetFile: 'general.json',
-				}),
-			},
-		}),
-		mock.module('./sendEmail', {
-			exports: {
-				sendEmail: Sinon.stub().resolves(),
-			},
-		}),
-		mock.module('./uploadZipFile', {
-			exports: {
-				uploadZipFile: Sinon.stub().resolves({ _id: 'file1' }),
-			},
-		}),
-	];
+		},
+	});
+	mock.module('./getRoomData', {
+		exports: {
+			getRoomData: Sinon.stub().resolves({
+				roomId: 'GENERAL',
+				roomName: 'general',
+				type: 'c',
+				exportedCount: 0,
+				status: 'pending',
+				userId: 'user1',
+				targetFile: 'general.json',
+			}),
+		},
+	});
+	mock.module('./sendEmail', {
+		exports: {
+			sendEmail: Sinon.stub().resolves(),
+		},
+	});
+	mock.module('./uploadZipFile', {
+		exports: {
+			uploadZipFile: Sinon.stub().resolves({ _id: 'file1' }),
+		},
+	});
 	({ requestDataDownload } = (await import('../../meteor-methods/platform/requestDataDownload')) as unknown as {
 		requestDataDownload: typeof requestDataDownload;
 	});
 	({ processDataDownloads } = await import('./processDataDownloads'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const userData = { _id: 'user1', username: 'userone' };

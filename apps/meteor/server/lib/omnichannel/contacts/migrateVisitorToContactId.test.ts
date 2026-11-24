@@ -20,29 +20,26 @@ const mergeVisitorIntoContact = sinon.stub();
 let migrateVisitorToContactId: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./createContactFromVisitor', {
-			exports: {
-				createContactFromVisitor,
+	mock.module('./createContactFromVisitor', {
+		exports: {
+			createContactFromVisitor,
+		},
+	});
+	mock.module('./ContactMerger', {
+		exports: {
+			ContactMerger: {
+				mergeVisitorIntoContact,
 			},
-		}),
-		mock.module('./ContactMerger', {
-			exports: {
-				ContactMerger: {
-					mergeVisitorIntoContact,
-				},
+		},
+	});
+	mock.module('../logger', {
+		exports: {
+			livechatContactsLogger: {
+				debug: sinon.stub(),
 			},
-		}),
-		mock.module('../logger', {
-			exports: {
-				livechatContactsLogger: {
-					debug: sinon.stub(),
-				},
-			},
-		}),
-	];
+		},
+	});
 	({ migrateVisitorToContactId } = await import('./migrateVisitorToContactId'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('migrateVisitorToContactId', () => {

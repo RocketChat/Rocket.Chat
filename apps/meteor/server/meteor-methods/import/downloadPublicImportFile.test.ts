@@ -32,19 +32,16 @@ class MockImporter {
 let executeDownloadPublicImportFile: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { Import: { newOperation: stubs.newOperation } } }),
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: stubs.serverFetch } }),
-		mock.module('../../lib/import', { exports: { Importers: { get: stubs.importersGet } } }),
-		mock.module('../../lib/import/startup/store', {
-			exports: { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
-		}),
-		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: stubs.systemLoggerError } } }),
-		mock.module('../../settings', { exports: { settings: { get: sinon.stub().returns('') } } }),
-		mock.module('../../../lib/importer/ImporterProgressStep', { exports: { ProgressStep: progressStep } }),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { Import: { newOperation: stubs.newOperation } } });
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: stubs.serverFetch } });
+	mock.module('../../lib/import', { exports: { Importers: { get: stubs.importersGet } } });
+	mock.module('../../lib/import/startup/store', {
+		exports: { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
+	});
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: stubs.systemLoggerError } } });
+	mock.module('../../settings', { exports: { settings: { get: sinon.stub().returns('') } } });
+	mock.module('../../../lib/importer/ImporterProgressStep', { exports: { ProgressStep: progressStep } });
 	({ executeDownloadPublicImportFile } = await import('./downloadPublicImportFile'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('executeDownloadPublicImportFile', () => {

@@ -25,19 +25,16 @@ const mocks = {
 let sendMail: typeof import('./sendMail').sendMail;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { ClientSafeError: Error } }),
-		mock.module('../../../logger/system', { exports: { SystemLogger: { debug: sinon.stub() } } }),
-		mock.module('../../../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://open.rocket.chat/${path}` } }),
-		mock.module('../../../utils/placeholders', {
-			exports: {
-				placeholders: { replace: (body: string, data: { unsubscribe: string }) => body.replace('[unsubscribe]', data.unsubscribe) },
-			},
-		}),
-		mock.module('../../email/api', { exports: { default: mocks.Mailer } }),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError: Error } });
+	mock.module('../../../logger/system', { exports: { SystemLogger: { debug: sinon.stub() } } });
+	mock.module('../../../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://open.rocket.chat/${path}` } });
+	mock.module('../../../utils/placeholders', {
+		exports: {
+			placeholders: { replace: (body: string, data: { unsubscribe: string }) => body.replace('[unsubscribe]', data.unsubscribe) },
+		},
+	});
+	mock.module('../../email/api', { exports: { default: mocks.Mailer } });
 	({ sendMail } = await import('./sendMail'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const unsubscribeUrl = `https://open.rocket.chat/mailer/unsubscribe/user1/${user.createdAt.getTime()}`;

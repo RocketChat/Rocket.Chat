@@ -27,19 +27,17 @@ const loadLogger = (env: Env = {}) => {
 		deprecationsTotal: { inc: sinon.stub() },
 	};
 
-	const moduleMocks = [
-		mock.module('@rocket.chat/logger', {
-			exports: {
-				Logger: class {
-					section(name: string) {
-						warn[name] = sinon.stub();
-						return { warn: warn[name] };
-					}
-				},
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				section(name: string) {
+					warn[name] = sinon.stub();
+					return { warn: warn[name] };
+				}
 			},
-		}),
-		mock.module('./metrics/lib/metrics', { exports: { metrics } }),
-	];
+		},
+	});
+	mock.module('./metrics/lib/metrics', { exports: { metrics } });
 	setEnv(env);
 	try {
 		delete require.cache[require.resolve('./deprecationWarningLogger')];
@@ -49,7 +47,7 @@ const loadLogger = (env: Env = {}) => {
 		return { ...module, warn, metrics };
 	} finally {
 		setEnv(previousEnv);
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 	}
 };
 

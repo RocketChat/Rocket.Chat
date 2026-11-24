@@ -16,29 +16,26 @@ const getRoomAbacLockContextMock = sinon.stub();
 let guard: Guard;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: licenseMock } }),
-		mock.module('../../../../server/hooks/rooms/beforeRemoveRoomAbacAttributes', {
-			exports: {
-				beforeRemoveRoomAbacAttributes: {
-					patch: (fn: Guard) => {
-						guard = fn;
-					},
+	mock.module('@rocket.chat/license', { exports: { License: licenseMock } });
+	mock.module('../../../../server/hooks/rooms/beforeRemoveRoomAbacAttributes', {
+		exports: {
+			beforeRemoveRoomAbacAttributes: {
+				patch: (fn: Guard) => {
+					guard = fn;
 				},
 			},
-		}),
-		mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
-			exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
-		}),
-		mock.module('../../../../server/lib/authorization/hasPermission', {
-			exports: {
-				hasAllPermissionAsync: hasAllPermissionAsyncMock,
-				hasPermissionAsync: hasPermissionAsyncMock,
-			},
-		}),
-	];
+		},
+	});
+	mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
+		exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
+	});
+	mock.module('../../../../server/lib/authorization/hasPermission', {
+		exports: {
+			hasAllPermissionAsync: hasAllPermissionAsyncMock,
+			hasPermissionAsync: hasPermissionAsyncMock,
+		},
+	});
 	await import('./beforeRemoveRoomAbacAttributes');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const room: Room = { _id: 'rid', abacAttributes: [{ key: 'clearance', values: ['TS'] }] };

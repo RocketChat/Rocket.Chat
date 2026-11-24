@@ -11,21 +11,18 @@ const userPermissions: Record<string, string[]> = {
 let canBypassRateLimit: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../lib/authorization/hasPermission', {
-			exports: {
-				hasAtLeastOnePermissionAsync: async (userId: string, permissions: string[]): Promise<boolean> =>
-					permissions.some((permission) => userPermissions[userId].includes(permission)),
-			},
-		}),
-		mock.module('../lib/deprecationWarningLogger', {
-			exports: {
-				apiDeprecationLogger: { endpoint: () => undefined },
-			},
-		}),
-	];
+	mock.module('../lib/authorization/hasPermission', {
+		exports: {
+			hasAtLeastOnePermissionAsync: async (userId: string, permissions: string[]): Promise<boolean> =>
+				permissions.some((permission) => userPermissions[userId].includes(permission)),
+		},
+	});
+	mock.module('../lib/deprecationWarningLogger', {
+		exports: {
+			apiDeprecationLogger: { endpoint: () => undefined },
+		},
+	});
 	({ canBypassRateLimit } = await import('./api.helpers'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('canBypassRateLimit', () => {

@@ -29,14 +29,11 @@ process.env.CREATE_TOKENS_FOR_USERS_SECRET = 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7';
 let generateAccessToken: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: { Authorization: AuthorizationMock, ClientSafeError: MeteorErrorMock, User: UserMock },
-		}),
-		mock.module('../../lib/auth/issueLoginToken', { exports: { issueLoginToken: issueLoginTokenStub } }),
-	];
+	mock.module('@rocket.chat/core-services', {
+		exports: { Authorization: AuthorizationMock, ClientSafeError: MeteorErrorMock, User: UserMock },
+	});
+	mock.module('../../lib/auth/issueLoginToken', { exports: { issueLoginToken: issueLoginTokenStub } });
 	({ generateAccessToken } = await import('./createToken'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('generateAccessToken', () => {

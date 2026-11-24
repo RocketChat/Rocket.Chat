@@ -26,14 +26,11 @@ const getbannerforadminsMock = sinon.stub();
 let NPSService: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { ...coreServices, ...servicesMock } }),
-		mock.module('./sendNpsResults', { exports: { sendNpsResults: sinon.stub() } }),
-		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-		mock.module('./notification', { exports: { notifyAdmins: sinon.stub(), getBannerForAdmins: getbannerforadminsMock } }),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { ...coreServices, ...servicesMock } });
+	mock.module('./sendNpsResults', { exports: { sendNpsResults: sinon.stub() } });
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+	mock.module('./notification', { exports: { notifyAdmins: sinon.stub(), getBannerForAdmins: getbannerforadminsMock } });
 	({ NPSService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('NPS Service', () => {

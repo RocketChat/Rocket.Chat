@@ -43,15 +43,12 @@ let notifyAppsOfMediaCallEnded: any;
 let runPreMediaCallCreatedAppHook: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', { exports: { Apps: AppsMock, AppEvents: AppInterface } }),
-		mock.module('./logger', { exports: { logger: loggerMock } }),
-		mock.module('../../lib/i18n', { exports: { i18n: i18nMock } }),
-		mock.module('../../settings', { exports: { settings: settingsMock } }),
-	];
+	mock.module('@rocket.chat/apps', { exports: { Apps: AppsMock, AppEvents: AppInterface } });
+	mock.module('./logger', { exports: { logger: loggerMock } });
+	mock.module('../../lib/i18n', { exports: { i18n: i18nMock } });
+	mock.module('../../settings', { exports: { settings: settingsMock } });
 	({ notifyAppsOfMediaCallStarted, notifyAppsOfMediaCallParticipantJoined, notifyAppsOfMediaCallEnded, runPreMediaCallCreatedAppHook } =
 		await import('./appEvents'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 /**

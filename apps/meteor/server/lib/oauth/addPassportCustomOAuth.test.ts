@@ -11,18 +11,15 @@ const authenticate = sinon.stub();
 let addPassportCustomOAuth: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('passport', { exports: { default: { use: sinon.stub(), unuse: sinon.stub(), authenticate } } }),
-		mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sinon.stub() } }),
-		mock.module('./passportOAuthCallback', { exports: { passportOAuthCallback: () => sinon.stub(), passportOAuthErrorCallback } }),
-		mock.module('./removeOAuthRoutes', { exports: { removeOAuthRoutes: sinon.stub() } }),
-		mock.module('./verifyFunction', { exports: { verifyFunction: sinon.stub() } }),
-		mock.module('../../configuration/configurePassport', { exports: { oAuthRouter: routes } }),
-		mock.module('../../settings', { exports: { settings: { get: () => 'https://chat.example.com/' } } }),
-		mock.module('../auth-providers/custom-oauth/customOAuth', { exports: { CustomOAuthStrategy: class {} } }),
-	];
+	mock.module('passport', { exports: { default: { use: sinon.stub(), unuse: sinon.stub(), authenticate } } });
+	mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sinon.stub() } });
+	mock.module('./passportOAuthCallback', { exports: { passportOAuthCallback: () => sinon.stub(), passportOAuthErrorCallback } });
+	mock.module('./removeOAuthRoutes', { exports: { removeOAuthRoutes: sinon.stub() } });
+	mock.module('./verifyFunction', { exports: { verifyFunction: sinon.stub() } });
+	mock.module('../../configuration/configurePassport', { exports: { oAuthRouter: routes } });
+	mock.module('../../settings', { exports: { settings: { get: () => 'https://chat.example.com/' } } });
+	mock.module('../auth-providers/custom-oauth/customOAuth', { exports: { CustomOAuthStrategy: class {} } });
 	({ addPassportCustomOAuth } = await import('./addPassportCustomOAuth'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('addPassportCustomOAuth', () => {

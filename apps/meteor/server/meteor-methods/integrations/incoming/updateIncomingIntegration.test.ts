@@ -22,17 +22,13 @@ const usersFindOne = sinon.stub();
 const usersFindOneByUsername = sinon.stub();
 const subscriptionsFindOneByRoomIdAndUserId = sinon.stub();
 
-const moduleMocks = [
-	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
-	mock.module('../../../lib/authorization/hasPermission', { exports: { hasAllPermissionAsync, hasPermissionAsync } }),
-	mock.module('../../../lib/integrations/lib/validateScriptEngine', { exports: { isScriptEngineFrozen, validateScriptEngine } }),
-	mock.module('../../../lib/integrations/lib/validateScriptSyntax', { exports: { validateScriptSyntax } }),
-	mock.module('../../../lib/notifyListener', { exports: { notifyOnIntegrationChanged } }),
-];
+mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+mock.module('../../../lib/authorization/hasPermission', { exports: { hasAllPermissionAsync, hasPermissionAsync } });
+mock.module('../../../lib/integrations/lib/validateScriptEngine', { exports: { isScriptEngineFrozen, validateScriptEngine } });
+mock.module('../../../lib/integrations/lib/validateScriptSyntax', { exports: { validateScriptSyntax } });
+mock.module('../../../lib/notifyListener', { exports: { notifyOnIntegrationChanged } });
 // oxlint-disable-next-line @typescript-eslint/no-require-imports
 const { updateIncomingIntegration } = require('./updateIncomingIntegration');
-
-moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 const NOW = new Date('2026-01-01T12:00:00.000Z');
 const updatedBy = { _id: 'user-id', username: 'admin' };

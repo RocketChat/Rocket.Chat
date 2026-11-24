@@ -14,18 +14,15 @@ const loginErrorCallback = sandbox.stub();
 let configureOAuthServices: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } }),
-		mock.module('passport', { exports: { default: { use: sandbox.stub(), unuse: sandbox.stub(), authenticate } } }),
-		mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sandbox.stub() } }),
-		mock.module('./passportOAuthCallback', {
-			exports: { passportOAuthCallback: () => loginCallback, passportOAuthErrorCallback: () => loginErrorCallback },
-		}),
-		mock.module('./removeOAuthRoutes', { exports: { removeOAuthRoutes: sandbox.stub() } }),
-		mock.module('../../configuration/configurePassport', { exports: { oAuthRouter: routes } }),
-	];
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } });
+	mock.module('passport', { exports: { default: { use: sandbox.stub(), unuse: sandbox.stub(), authenticate } } });
+	mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sandbox.stub() } });
+	mock.module('./passportOAuthCallback', {
+		exports: { passportOAuthCallback: () => loginCallback, passportOAuthErrorCallback: () => loginErrorCallback },
+	});
+	mock.module('./removeOAuthRoutes', { exports: { removeOAuthRoutes: sandbox.stub() } });
+	mock.module('../../configuration/configurePassport', { exports: { oAuthRouter: routes } });
 	({ configureOAuthServices } = await import('./configureOAuthServices'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 let verify: (...args: unknown[]) => Promise<unknown>;

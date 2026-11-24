@@ -25,30 +25,27 @@ let filterUsers: Patched;
 let filterUsersOrThrow: Patched;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { ...coreServices, Abac: abacMock } }),
-		mock.module('@rocket.chat/license', { exports: { License: licenseMock } }),
-		mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
-			exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
-		}),
-		mock.module('../../../../server/lib/rooms/filterUsersAllowedInRoom', {
-			exports: {
-				filterUsersAllowedInRoom: {
-					patch: (fn: Patched) => {
-						filterUsers = fn;
-					},
-				},
-				filterUsersAllowedInRoomOrThrow: {
-					patch: (fn: Patched) => {
-						filterUsersOrThrow = fn;
-					},
+	mock.module('@rocket.chat/core-services', { exports: { ...coreServices, Abac: abacMock } });
+	mock.module('@rocket.chat/license', { exports: { License: licenseMock } });
+	mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
+		exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
+	});
+	mock.module('../../../../server/lib/rooms/filterUsersAllowedInRoom', {
+		exports: {
+			filterUsersAllowedInRoom: {
+				patch: (fn: Patched) => {
+					filterUsers = fn;
 				},
 			},
-		}),
-		mock.module('../../../../server/settings', { exports: { settings: settingsMock } }),
-	];
+			filterUsersAllowedInRoomOrThrow: {
+				patch: (fn: Patched) => {
+					filterUsersOrThrow = fn;
+				},
+			},
+		},
+	});
+	mock.module('../../../../server/settings', { exports: { settings: settingsMock } });
 	await import('./filterUsersAllowedInRoom');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const room = { _id: 'p1', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] } as IRoom;

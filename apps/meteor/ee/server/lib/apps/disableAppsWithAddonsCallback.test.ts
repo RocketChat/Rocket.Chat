@@ -7,17 +7,14 @@ import type { AppServerOrchestrator } from './orchestrator';
 let _disableAppsWithAddonsCallback: typeof import('./disableAppsWithAddonsCallback')._disableAppsWithAddonsCallback;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./orchestrator', { exports: {} }),
-		mock.module('../../../../server/lib/sendMessagesToAdmins', { exports: { sendMessagesToAdmins: () => undefined } }),
-		mock.module('../../../../server/lib/i18n', {
-			exports: {
-				i18n: { t: () => undefined },
-			},
-		}),
-	];
+	mock.module('./orchestrator', { exports: {} });
+	mock.module('../../../../server/lib/sendMessagesToAdmins', { exports: { sendMessagesToAdmins: () => undefined } });
+	mock.module('../../../../server/lib/i18n', {
+		exports: {
+			i18n: { t: () => undefined },
+		},
+	});
 	({ _disableAppsWithAddonsCallback } = await import('./disableAppsWithAddonsCallback'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 /**

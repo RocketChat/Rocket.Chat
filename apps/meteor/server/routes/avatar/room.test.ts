@@ -20,18 +20,15 @@ const mocks = {
 let roomAvatar: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./utils', { exports: { default: mocks.utils } }),
-		mock.module('../../lib/rooms/roomCoordinator', {
-			exports: {
-				roomCoordinator: {
-					getRoomName: mocks.getRoomName,
-				},
+	mock.module('./utils', { exports: { default: mocks.utils } });
+	mock.module('../../lib/rooms/roomCoordinator', {
+		exports: {
+			roomCoordinator: {
+				getRoomName: mocks.getRoomName,
 			},
-		}),
-	];
+		},
+	});
 	({ roomAvatar } = await import('./room'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#roomAvatar()', () => {

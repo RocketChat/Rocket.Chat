@@ -135,11 +135,13 @@ export const createService = ({
 		},
 		...overrides,
 	};
-	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
 	delete require.cache[require.resolve('./service')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const { VideoConfService } = require('./service');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 
 	const doubles: Partial<Record<ModelName, object>> = {
 		Users: { findOneById: sinon.stub().resolves(null) },

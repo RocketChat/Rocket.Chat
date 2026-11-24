@@ -17,29 +17,26 @@ const validateCreationAttributesMock = sinon.stub();
 let guard: Guard;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: { ...coreServices, Abac: { validateCreationAttributes: validateCreationAttributesMock } },
-		}),
-		mock.module('@rocket.chat/license', { exports: { License: licenseMock } }),
-		mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
-			exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
-		}),
-		mock.module('../../../../server/lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } }),
-		mock.module('../../../../server/lib/callbacks', { exports: { callbacks: { priority: { HIGH: 1 } } } }),
-		mock.module('../../../../server/lib/callbacks/beforeCreateRoomCallback', {
-			exports: {
-				beforeCreateRoomCallback: {
-					add: (fn: Guard) => {
-						guard = fn;
-					},
+	mock.module('@rocket.chat/core-services', {
+		exports: { ...coreServices, Abac: { validateCreationAttributes: validateCreationAttributesMock } },
+	});
+	mock.module('@rocket.chat/license', { exports: { License: licenseMock } });
+	mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
+		exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
+	});
+	mock.module('../../../../server/lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } });
+	mock.module('../../../../server/lib/callbacks', { exports: { callbacks: { priority: { HIGH: 1 } } } });
+	mock.module('../../../../server/lib/callbacks/beforeCreateRoomCallback', {
+		exports: {
+			beforeCreateRoomCallback: {
+				add: (fn: Guard) => {
+					guard = fn;
 				},
 			},
-		}),
-		mock.module('../../../../server/settings', { exports: { settings: settingsMock } }),
-	];
+		},
+	});
+	mock.module('../../../../server/settings', { exports: { settings: settingsMock } });
 	await import('./beforeCreateRoom');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const owner = { _id: 'owner', username: 'owner', name: 'Owner' } as IUser;

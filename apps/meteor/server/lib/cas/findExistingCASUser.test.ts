@@ -12,9 +12,8 @@ const Users = { findOne: sandbox.stub(), setCasExternalIdByUsername: sandbox.stu
 let findExistingCASUser: typeof import('./findExistingCASUser').findExistingCASUser;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } })];
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } });
 	({ findExistingCASUser } = await import('./findExistingCASUser'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const localAlice = { _id: 'local-alice', username: 'alice' };

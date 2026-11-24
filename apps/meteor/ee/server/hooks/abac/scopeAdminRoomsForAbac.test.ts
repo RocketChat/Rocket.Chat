@@ -17,22 +17,19 @@ const findOneById = sinon.stub();
 let scope: Scope;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { Abac: { scopeRoomsForAdmin } } }),
-		mock.module('@rocket.chat/license', { exports: { License: { hasModule: () => true } } }),
-		mock.module('../../../../server/api/lib/scopeAdminRoomsForAbac', {
-			exports: {
-				scopeAdminRoomsForAbac: {
-					patch: (fn: Scope) => {
-						scope = fn;
-					},
+	mock.module('@rocket.chat/core-services', { exports: { Abac: { scopeRoomsForAdmin } } });
+	mock.module('@rocket.chat/license', { exports: { License: { hasModule: () => true } } });
+	mock.module('../../../../server/api/lib/scopeAdminRoomsForAbac', {
+		exports: {
+			scopeAdminRoomsForAbac: {
+				patch: (fn: Scope) => {
+					scope = fn;
 				},
 			},
-		}),
-		mock.module('../../../../server/settings', { exports: { settings: { get: () => true } } }),
-	];
+		},
+	});
+	mock.module('../../../../server/settings', { exports: { settings: { get: () => true } } });
 	await import('./scopeAdminRoomsForAbac');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('scopeAdminRoomsForAbac', () => {

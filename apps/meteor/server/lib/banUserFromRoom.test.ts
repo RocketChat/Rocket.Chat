@@ -36,21 +36,18 @@ const RoomMemberActions = {
 let banUserFromRoomMethod: typeof import('./banUserFromRoom').banUserFromRoomMethod;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-typings', {
-			exports: {
-				isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
-			},
-		}),
-		mock.module('./authorization', { exports: { canAccessRoomAsync: canAccessRoomAsyncMock } }),
-		mock.module('./authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } }),
-		mock.module('./authorization/hasRole', { exports: { hasRoleAsync: hasRoleAsyncMock } }),
-		mock.module('./rooms/banUserFromRoom', { exports: { banUserFromRoom: banUserFromRoomMock } }),
-		mock.module('../../definition/IRoomTypeConfig', { exports: { RoomMemberActions } }),
-		mock.module('./rooms/roomCoordinator', { exports: { roomCoordinator: roomCoordinatorMock } }),
-	];
+	mock.module('@rocket.chat/core-typings', {
+		exports: {
+			isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
+		},
+	});
+	mock.module('./authorization', { exports: { canAccessRoomAsync: canAccessRoomAsyncMock } });
+	mock.module('./authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } });
+	mock.module('./authorization/hasRole', { exports: { hasRoleAsync: hasRoleAsyncMock } });
+	mock.module('./rooms/banUserFromRoom', { exports: { banUserFromRoom: banUserFromRoomMock } });
+	mock.module('../../definition/IRoomTypeConfig', { exports: { RoomMemberActions } });
+	mock.module('./rooms/roomCoordinator', { exports: { roomCoordinator: roomCoordinatorMock } });
 	({ banUserFromRoomMethod } = await import('./banUserFromRoom'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('banUserFromRoomMethod', () => {

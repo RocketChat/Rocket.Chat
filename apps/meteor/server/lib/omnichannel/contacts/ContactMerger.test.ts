@@ -15,9 +15,8 @@ const getContactManagerIdByUsername = sinon.stub();
 let ContactMerger: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('./getContactManagerIdByUsername', { exports: { getContactManagerIdByUsername } })];
+	mock.module('./getContactManagerIdByUsername', { exports: { getContactManagerIdByUsername } });
 	({ ContactMerger } = await import('./ContactMerger'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('ContactMerger.mergeFieldsIntoContact', () => {

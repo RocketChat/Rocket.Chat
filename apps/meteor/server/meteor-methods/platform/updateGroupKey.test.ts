@@ -18,7 +18,7 @@ const models = {
 let updateGroupKey: any;
 
 before(async () => {
-	const notifyListenerMock = mock.module('../../lib/notifyListener', {
+	mock.module('../../lib/notifyListener', {
 		exports: {
 			notifyOnSubscriptionChanged: sinon.stub(),
 			notifyOnRoomChangedById: sinon.stub(),
@@ -26,7 +26,6 @@ before(async () => {
 		},
 	});
 	({ updateGroupKey } = await import('./updateGroupKey'));
-	notifyListenerMock.restore();
 });
 
 describe('updateGroupKey', () => {

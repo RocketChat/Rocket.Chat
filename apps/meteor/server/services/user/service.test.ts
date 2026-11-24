@@ -12,9 +12,8 @@ const maxTokens = {
 let UserService: typeof import('./service').UserService;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../lib/getMaxLoginTokens', { exports: { default: maxTokens } })];
+	mock.module('../../lib/getMaxLoginTokens', { exports: { default: maxTokens } });
 	({ UserService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 class UsersModel extends BaseRaw<any> {

@@ -20,19 +20,16 @@ const messagesFindOneById = sinon.stub();
 let executeSendMessage: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } }),
-		mock.module('../../lib/authorization/canSendMessage', { exports: { canSendMessageAsync } }),
-		mock.module('../../lib/i18n', { exports: { i18n: { t: translate } } }),
-		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: systemLoggerError } } }),
-		mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } }),
-		mock.module('../../lib/metrics', {
-			exports: { metrics: { messagesSent: { inc: messagesSentInc }, messagesSentTotal: { inc: messagesSentTotalInc } } },
-		}),
-		mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key] } } }),
-	];
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } });
+	mock.module('../../lib/authorization/canSendMessage', { exports: { canSendMessageAsync } });
+	mock.module('../../lib/i18n', { exports: { i18n: { t: translate } } });
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: systemLoggerError } } });
+	mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } });
+	mock.module('../../lib/metrics', {
+		exports: { metrics: { messagesSent: { inc: messagesSentInc }, messagesSentTotal: { inc: messagesSentTotalInc } } },
+	});
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key] } } });
 	({ executeSendMessage } = await import('./sendMessage'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const NOW = new Date('2026-01-01T12:00:00.000Z');

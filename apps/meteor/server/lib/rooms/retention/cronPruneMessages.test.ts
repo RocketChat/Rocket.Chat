@@ -12,32 +12,29 @@ let job: () => Promise<void>;
 const cleanRoomHistoryMock = sinon.stub();
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../settings', {
-			exports: {
-				settings: {
-					get: (id: string) => settingValues[id],
-					watchMultiple: (_ids: string[], callback: () => Promise<void>) => {
-						reloadPolicy = callback;
-					},
+	mock.module('../../../settings', {
+		exports: {
+			settings: {
+				get: (id: string) => settingValues[id],
+				watchMultiple: (_ids: string[], callback: () => Promise<void>) => {
+					reloadPolicy = callback;
 				},
 			},
-		}),
-		mock.module('@rocket.chat/cron', {
-			exports: {
-				cronJobs: {
-					has: async () => false,
-					remove: async () => undefined,
-					add: async (_name: string, _precision: string, fn: () => Promise<void>) => {
-						job = fn;
-					},
+		},
+	});
+	mock.module('@rocket.chat/cron', {
+		exports: {
+			cronJobs: {
+				has: async () => false,
+				remove: async () => undefined,
+				add: async (_name: string, _precision: string, fn: () => Promise<void>) => {
+					job = fn;
 				},
 			},
-		}),
-		mock.module('../cleanRoomHistory', { exports: { cleanRoomHistory: cleanRoomHistoryMock } }),
-	];
+		},
+	});
+	mock.module('../cleanRoomHistory', { exports: { cleanRoomHistory: cleanRoomHistoryMock } });
 	await import('./cronPruneMessages');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const cursorOf = (docs: unknown[]) => ({ toArray: async () => docs });

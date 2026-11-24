@@ -17,18 +17,15 @@ const loggerErrorStub = sinon.stub();
 let getWorkspaceAccessTokenWithScope: typeof import('./getWorkspaceAccessTokenWithScope').getWorkspaceAccessTokenWithScope;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } }),
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } }),
-		mock.module('./getRedirectUri', { exports: { getRedirectUri: () => 'https://open.rocket.chat/admin/cloud/oauth-callback' } }),
-		mock.module('./getWorkspaceAccessToken', { exports: { CloudWorkspaceAccessTokenError } }),
-		mock.module('./removeWorkspaceRegistrationInfo', { exports: { removeWorkspaceRegistrationInfo: removeWorkspaceRegistrationInfoStub } }),
-		mock.module('./retrieveRegistrationStatus', { exports: { retrieveRegistrationStatus: retrieveRegistrationStatusStub } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGetStub } } }),
-		mock.module('../logger/system', { exports: { SystemLogger: { error: loggerErrorStub } } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } });
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } });
+	mock.module('./getRedirectUri', { exports: { getRedirectUri: () => 'https://open.rocket.chat/admin/cloud/oauth-callback' } });
+	mock.module('./getWorkspaceAccessToken', { exports: { CloudWorkspaceAccessTokenError } });
+	mock.module('./removeWorkspaceRegistrationInfo', { exports: { removeWorkspaceRegistrationInfo: removeWorkspaceRegistrationInfoStub } });
+	mock.module('./retrieveRegistrationStatus', { exports: { retrieveRegistrationStatus: retrieveRegistrationStatusStub } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGetStub } } });
+	mock.module('../logger/system', { exports: { SystemLogger: { error: loggerErrorStub } } });
 	({ getWorkspaceAccessTokenWithScope } = await import('./getWorkspaceAccessTokenWithScope'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const now = new Date('2026-10-15T12:00:00.000Z');

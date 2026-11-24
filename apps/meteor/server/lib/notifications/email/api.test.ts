@@ -42,14 +42,11 @@ const incrementValueById = sinon.stub();
 let Mailer: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../settings', { exports: { settings: settingsMock } }),
-		mock.module('../../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } }),
-		mock.module('./transport', { exports: { sendMail } }),
-		mock.module('@rocket.chat/apps', { exports: { ...apps, Apps: { self: { triggerEvent } } } }),
-	];
+	mock.module('../../../settings', { exports: { settings: settingsMock } });
+	mock.module('../../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } });
+	mock.module('./transport', { exports: { sendMail } });
+	mock.module('@rocket.chat/apps', { exports: { ...apps, Apps: { self: { triggerEvent } } } });
 	Mailer = await import('./api');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const deliveredEmail = async () => {

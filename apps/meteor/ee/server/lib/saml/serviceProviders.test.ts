@@ -70,24 +70,22 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
 	const notifyOnLoginServiceConfigurationChanged = sinon.stub();
 
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License } }),
-		mock.module('./lib/Utils', { exports: { SAMLUtils } }),
-		mock.module('../../../../server/lib/utils/getURL', { exports: { getWorkspaceURL: () => 'http://localhost:3000/' } }),
-		mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { warn: sinon.stub() } } }),
-		mock.module('../../../../server/lib/notifyListener', {
-			exports: {
-				notifyOnLoginServiceConfigurationChanged,
-				notifyOnLoginServiceConfigurationChangedByService: sinon.stub(),
-			},
-		}),
-		mock.module('../../../../server/settings', { exports: { settings, settingsRegistry: {} } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License } });
+	mock.module('./lib/Utils', { exports: { SAMLUtils } });
+	mock.module('../../../../server/lib/utils/getURL', { exports: { getWorkspaceURL: () => 'http://localhost:3000/' } });
+	mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { warn: sinon.stub() } } });
+	mock.module('../../../../server/lib/notifyListener', {
+		exports: {
+			notifyOnLoginServiceConfigurationChanged,
+			notifyOnLoginServiceConfigurationChangedByService: sinon.stub(),
+		},
+	});
+	mock.module('../../../../server/settings', { exports: { settings, settingsRegistry: {} } });
 	delete require.cache[require.resolve('./lib/settings')];
 	delete require.cache[require.resolve('./serviceProviders')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const samlStartup = require('./serviceProviders');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 	samlStartup.watchSamlServiceProviders();
 
 	// Same listener ee/server/configuration/saml.ts registers once the module is licensed.

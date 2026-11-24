@@ -16,22 +16,19 @@ import { AppServerOrchestratorMock } from '../../../../tests/mocks/server/module
 let AppMessagesConverter;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/random', {
-			exports: {
-				Random: {
-					id: () => 1,
-				},
+	mock.module('@rocket.chat/random', {
+		exports: {
+			Random: {
+				id: () => 1,
 			},
-		}),
-		mock.module('@rocket.chat/core-typings', {
-			exports: {
-				isMessageFromVisitor: (message) => 'token' in message,
-			},
-		}),
-	];
+		},
+	});
+	mock.module('@rocket.chat/core-typings', {
+		exports: {
+			isMessageFromVisitor: (message) => 'token' in message,
+		},
+	});
 	({ AppMessagesConverter } = await import('./messages'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('The AppMessagesConverter instance', () => {

@@ -12,15 +12,12 @@ const buildRegistrationDataStub = sinon.stub();
 let registerPreIntentWorkspaceWizard: typeof import('./registerPreIntentWorkspaceWizard').registerPreIntentWorkspaceWizard;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } }),
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } }),
-		mock.module('./buildRegistrationData', { exports: { buildWorkspaceRegistrationData: buildRegistrationDataStub } }),
-		mock.module('../../settings', { exports: { settings: { get: sinon.stub().returns('https://cloud.rocket.chat') } } }),
-		mock.module('../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } });
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } });
+	mock.module('./buildRegistrationData', { exports: { buildWorkspaceRegistrationData: buildRegistrationDataStub } });
+	mock.module('../../settings', { exports: { settings: { get: sinon.stub().returns('https://cloud.rocket.chat') } } });
+	mock.module('../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
 	({ registerPreIntentWorkspaceWizard } = await import('./registerPreIntentWorkspaceWizard'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('registerPreIntentWorkspaceWizard', () => {

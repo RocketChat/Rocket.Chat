@@ -38,24 +38,21 @@ const matchesQuery = (user: StoredUser, query: Record<string, any>) =>
 let SAML: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module(require.resolve('meteor/accounts-base'), {
-			exports: {
-				Accounts: { insertUserDoc },
-			},
-		}),
-		mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } }),
-		mock.module('./ServiceProvider', { exports: {} }),
-		mock.module('../../../../../lib/i18n', { exports: { i18n: { languages: ['en', 'pt-BR'] } } }),
-		mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom } }),
-		mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom } }),
-		mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } }),
-		mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity } }),
-		mock.module('../../../../../server/lib/utils/getURL', { exports: {} }),
-		mock.module('../../../../../server/settings', { exports: { settings: { get: settingsGet } } }),
-	];
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: { insertUserDoc },
+		},
+	});
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
+	mock.module('./ServiceProvider', { exports: {} });
+	mock.module('../../../../../lib/i18n', { exports: { i18n: { languages: ['en', 'pt-BR'] } } });
+	mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom } });
+	mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom } });
+	mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } });
+	mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity } });
+	mock.module('../../../../../server/lib/utils/getURL', { exports: {} });
+	mock.module('../../../../../server/settings', { exports: { settings: { get: settingsGet } } });
 	({ SAML } = await import('./SAML'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const buildUserObject = (overrides: Partial<ISAMLUser> = {}): ISAMLUser => ({

@@ -26,14 +26,11 @@ const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
 let markRoomResponded: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../lib/callbacks', { exports: { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } } }),
-		mock.module('../../lib/notifyListener', { exports: { notifyOnLivechatInquiryChanged: Sinon.stub() } }),
-		mock.module('../../settings', { exports: { settings: settingsGetMock } }),
-		mock.module('../../lib/omnichannel/isMessageFromBot', { exports: { default: isMessageFromBotMock } }),
-	];
+	mock.module('../../lib/callbacks', { exports: { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnLivechatInquiryChanged: Sinon.stub() } });
+	mock.module('../../settings', { exports: { settings: settingsGetMock } });
+	mock.module('../../lib/omnichannel/isMessageFromBot', { exports: { default: isMessageFromBotMock } });
 	({ markRoomResponded } = await import('./markRoomResponded'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('markRoomResponded', () => {

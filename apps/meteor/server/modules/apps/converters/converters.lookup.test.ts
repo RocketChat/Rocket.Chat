@@ -53,13 +53,10 @@ let uploads: any;
 let videoConferences: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../lib/utils/getURL', { exports: { getURL: (path: string) => path } }),
-		mock.module('@rocket.chat/core-services', { exports: { VideoConf: { getUnfiltered: getVideoConf } } }),
-	];
+	mock.module('../../../lib/utils/getURL', { exports: { getURL: (path: string) => path } });
+	mock.module('@rocket.chat/core-services', { exports: { VideoConf: { getUnfiltered: getVideoConf } } });
 	const { AppUploadsConverter } = await import('./uploads');
 	const { AppVideoConferencesConverter } = await import('./videoConferences');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	uploads = new AppUploadsConverter(orch);
 	videoConferences = new AppVideoConferencesConverter();
 });

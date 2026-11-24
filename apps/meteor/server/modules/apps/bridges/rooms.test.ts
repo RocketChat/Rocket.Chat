@@ -15,19 +15,16 @@ const getSetting = sinon.stub();
 let AppRoomBridge: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps/dist/server/bridges/RoomBridge', { exports: { RoomBridge: class {}, suppliesAbacAttributes } }),
-		mock.module('../../../lib/rooms/addUserToRoom', { exports: {} }),
-		mock.module('../../../lib/rooms/deleteRoom', { exports: {} }),
-		mock.module('../../../lib/rooms/removeUserFromRoom', { exports: {} }),
-		mock.module('../../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } }),
-		mock.module('../../../meteor-methods/messages/createDiscussion', { exports: {} }),
-		mock.module('../../../meteor-methods/rooms/createChannel', { exports: { createChannelMethod } }),
-		mock.module('../../../meteor-methods/rooms/createPrivateGroup', { exports: { createPrivateGroupMethod } }),
-		mock.module('../../../settings', { exports: { settings: { get: getSetting } } }),
-	];
+	mock.module('@rocket.chat/apps/dist/server/bridges/RoomBridge', { exports: { RoomBridge: class {}, suppliesAbacAttributes } });
+	mock.module('../../../lib/rooms/addUserToRoom', { exports: {} });
+	mock.module('../../../lib/rooms/deleteRoom', { exports: {} });
+	mock.module('../../../lib/rooms/removeUserFromRoom', { exports: {} });
+	mock.module('../../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } });
+	mock.module('../../../meteor-methods/messages/createDiscussion', { exports: {} });
+	mock.module('../../../meteor-methods/rooms/createChannel', { exports: { createChannelMethod } });
+	mock.module('../../../meteor-methods/rooms/createPrivateGroup', { exports: { createPrivateGroupMethod } });
+	mock.module('../../../settings', { exports: { settings: { get: getSetting } } });
 	({ AppRoomBridge } = await import('./rooms'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const orchestrator = {

@@ -10,9 +10,8 @@ const settingsValues: Record<string, string> = {
 let getWorkspaceURL: typeof import('./getURL').getWorkspaceURL;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key] } } })];
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key] } } });
 	({ getWorkspaceURL } = await import('./getURL'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const runtimeGlobal = globalThis as typeof globalThis & { __meteor_runtime_config__?: { ROOT_URL_PATH_PREFIX?: string } };

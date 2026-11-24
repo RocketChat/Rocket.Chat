@@ -47,14 +47,12 @@ describe('Message Broadcast Tests', () => {
 	});
 
 	const loadNotifyListener = (coreServicesExports: Record<string, unknown>) => {
-		const moduleMocks = [
-			mock.module('@rocket.chat/core-services', { exports: coreServicesExports }),
-			mock.module('mem', { exports: { default: memStub } }),
-		];
+		mock.module('@rocket.chat/core-services', { exports: coreServicesExports });
+		mock.module('mem', { exports: { default: memStub } });
 		delete require.cache[require.resolve('./notifyListener')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		const notifyListener = require('./notifyListener');
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 		return notifyListener;
 	};
 

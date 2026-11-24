@@ -17,14 +17,11 @@ let routePath: string;
 let userDataDownloadHandler: (req: IncomingMessage, res: ServerResponse, next: () => void) => Promise<void>;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/account-utils', { exports: { hashLoginToken: (token: string) => `hashed:${token}` } }),
-		mock.module(require.resolve('meteor/webapp'), { exports: { WebApp: { connectHandlers: { use: connectHandlersUse } } } }),
-		mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore } } }),
-		mock.module('../settings', { exports: { settings: { get: settingsGet } } }),
-	];
+	mock.module('@rocket.chat/account-utils', { exports: { hashLoginToken: (token: string) => `hashed:${token}` } });
+	mock.module(require.resolve('meteor/webapp'), { exports: { WebApp: { connectHandlers: { use: connectHandlersUse } } } });
+	mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore } } });
+	mock.module('../settings', { exports: { settings: { get: settingsGet } } });
 	await import('./userDataDownload');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 	[routePath, userDataDownloadHandler] = connectHandlersUse.firstCall.args;
 });

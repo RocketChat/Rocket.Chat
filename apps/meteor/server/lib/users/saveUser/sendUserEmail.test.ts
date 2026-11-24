@@ -46,14 +46,12 @@ describe('sendUserEmail', () => {
 		MailerStub = stubs.MailerStub as any;
 		SettingsStub = stubs.SettingsStub as any;
 
-		const moduleMocks = [
-			mock.module('../../notifications/email/api', { exports: MailerStub }),
-			mock.module('../../../settings', { exports: SettingsStub }),
-		];
+		mock.module('../../notifications/email/api', { exports: MailerStub });
+		mock.module('../../../settings', { exports: SettingsStub });
 		delete require.cache[require.resolve('./sendUserEmail')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		const mod = require('./sendUserEmail');
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 
 		sendUserEmail = mod.sendUserEmail as SendUserEmailFn;
 		sendWelcomeEmail = mod.sendWelcomeEmail as SendHelperFn;

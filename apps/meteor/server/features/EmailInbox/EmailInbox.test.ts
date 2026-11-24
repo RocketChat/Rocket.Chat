@@ -43,14 +43,11 @@ let configureEmailInboxes: any;
 let inboxes: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./EmailInbox_Incoming', { exports: { onEmailReceived } }),
-		mock.module('./logger', { exports: { logger: { info: sinon.stub(), error: sinon.stub() } } }),
-		mock.module('../../email/IMAPInterceptor', { exports: { IMAPInterceptor: FakeIMAPInterceptor } }),
-		mock.module('../../settings', { exports: { settings: {} } }),
-	];
+	mock.module('./EmailInbox_Incoming', { exports: { onEmailReceived } });
+	mock.module('./logger', { exports: { logger: { info: sinon.stub(), error: sinon.stub() } } });
+	mock.module('../../email/IMAPInterceptor', { exports: { IMAPInterceptor: FakeIMAPInterceptor } });
+	mock.module('../../settings', { exports: { settings: {} } });
 	({ configureEmailInboxes, inboxes } = await import('./EmailInbox'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const createInbox = (email: string, overrides: Partial<IEmailInbox> = {}): IEmailInbox => ({

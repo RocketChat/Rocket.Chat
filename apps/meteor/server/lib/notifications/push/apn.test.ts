@@ -24,19 +24,16 @@ let initAPN: any;
 let shutdownAPN: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@parse/node-apn', {
-			exports: {
-				default: {
-					default: apnMock,
-					...apnMock,
-				},
+	mock.module('@parse/node-apn', {
+		exports: {
+			default: {
+				default: apnMock,
+				...apnMock,
 			},
-		}),
-		mock.module('./logger', { exports: { logger: mocks.logger } }),
-	];
+		},
+	});
+	mock.module('./logger', { exports: { logger: mocks.logger } });
 	({ initAPN, shutdownAPN } = await import('./apn'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const baseOptions = {

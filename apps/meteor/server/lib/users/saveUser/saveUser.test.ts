@@ -31,51 +31,49 @@ const saveUserIdentity = sinon.stub();
 const setEmail = sinon.stub();
 
 const loadSaveUser = () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', {
-			exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
-		}),
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				ClientSafeError,
-				Presence: { setStatus },
-				StatusVisibility: { isPresenceDisabledFor, invalidate, refresh },
+	mock.module('@rocket.chat/apps', {
+		exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
+	});
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			ClientSafeError,
+			Presence: { setStatus },
+			StatusVisibility: { isPresenceDisabledFor, invalidate, refresh },
+		},
+	});
+	mock.module('./saveNewUser', { exports: { saveNewUser } });
+	mock.module('./sendUserEmail', { exports: { sendPasswordEmail } });
+	mock.module('./setPasswordUpdater', { exports: { setPasswordUpdater } });
+	mock.module('./validateUserData', { exports: { validateUserData } });
+	mock.module('./validateUserEditing', { exports: { validateUserEditing } });
+	mock.module('../../../database/utils', {
+		exports: {
+			wrapInSessionTransaction:
+				(curried: (s: unknown) => (...args: unknown[]) => unknown) =>
+				(...args: unknown[]) =>
+					curried(session)(...args),
+			onceTransactionCommitedSuccessfully: async (cb: () => Promise<void>, s: unknown) => {
+				onceCommitted(s);
+				await cb();
 			},
-		}),
-		mock.module('./saveNewUser', { exports: { saveNewUser } }),
-		mock.module('./sendUserEmail', { exports: { sendPasswordEmail } }),
-		mock.module('./setPasswordUpdater', { exports: { setPasswordUpdater } }),
-		mock.module('./validateUserData', { exports: { validateUserData } }),
-		mock.module('./validateUserEditing', { exports: { validateUserEditing } }),
-		mock.module('../../../database/utils', {
-			exports: {
-				wrapInSessionTransaction:
-					(curried: (s: unknown) => (...args: unknown[]) => unknown) =>
-					(...args: unknown[]) =>
-						curried(session)(...args),
-				onceTransactionCommitedSuccessfully: async (cb: () => Promise<void>, s: unknown) => {
-					onceCommitted(s);
-					await cb();
-				},
-			},
-		}),
-		mock.module('../../auth/generatePassword', { exports: { generatePassword } }),
-		mock.module('../../auth/passwordPolicy', { exports: { passwordPolicy: { validate: passwordPolicyValidate } } }),
-		mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync } }),
-		mock.module('../../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
-		mock.module('../../notifyListener', { exports: { notifyOnUserChange } }),
-		mock.module('../../shouldBreakInVersion', { exports: { shouldBreakInVersion } }),
-		mock.module('../../statusVisibility/resolveUsers', { exports: { resolveUsersByUsernames } }),
-		mock.module('../saveCustomFields', { exports: { saveCustomFields } }),
-		mock.module('../saveUserIdentity', { exports: { saveUserIdentity } }),
-		mock.module('../setEmail', { exports: { setEmail } }),
-	];
+		},
+	});
+	mock.module('../../auth/generatePassword', { exports: { generatePassword } });
+	mock.module('../../auth/passwordPolicy', { exports: { passwordPolicy: { validate: passwordPolicyValidate } } });
+	mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync } });
+	mock.module('../../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../../notifyListener', { exports: { notifyOnUserChange } });
+	mock.module('../../shouldBreakInVersion', { exports: { shouldBreakInVersion } });
+	mock.module('../../statusVisibility/resolveUsers', { exports: { resolveUsersByUsernames } });
+	mock.module('../saveCustomFields', { exports: { saveCustomFields } });
+	mock.module('../saveUserIdentity', { exports: { saveUserIdentity } });
+	mock.module('../setEmail', { exports: { setEmail } });
 	try {
 		delete require.cache[require.resolve('./saveUser')];
 		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		return require('./saveUser');
 	} finally {
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		mock.restoreAll();
 	}
 };
 

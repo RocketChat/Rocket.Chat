@@ -13,13 +13,10 @@ const CredentialTokens = { create: sandbox.stub() };
 let middlewareCAS: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/cas-validate', { exports: { validate } }),
-		mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } }),
-		mock.module('../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` } }),
-	];
+	mock.module('@rocket.chat/cas-validate', { exports: { validate } });
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } });
+	mock.module('../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` } });
 	({ middlewareCAS } = await import('./middleware'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const request = (url: string) =>

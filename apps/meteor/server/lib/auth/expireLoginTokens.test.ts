@@ -15,9 +15,8 @@ const broadcast = sinon.stub();
 let expireLoginTokens: typeof import('./expireLoginTokens').expireLoginTokens;
 
 before(async () => {
-	const moduleMocks = [mock.module('@rocket.chat/core-services', { exports: { api: { broadcast } } })];
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast } } });
 	({ expireLoginTokens } = await import('./expireLoginTokens'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('expireLoginTokens', () => {

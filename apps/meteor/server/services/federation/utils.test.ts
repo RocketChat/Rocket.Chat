@@ -8,9 +8,8 @@ const settingsGet = sinon.stub();
 let isXMPPServerEnabled: typeof import('./utils').isXMPPServerEnabled;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../settings', { exports: { settings: { get: settingsGet } } })];
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
 	({ isXMPPServerEnabled } = await import('./utils'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('isXMPPServerEnabled', () => {

@@ -12,25 +12,22 @@ describe('logMethodCallError', () => {
 	let logMethodCallError: (method: string, err: unknown) => void;
 
 	before(async () => {
-		const moduleMocks = [
-			mock.module(require.resolve('meteor/meteor'), {
-				exports: {
-					Meteor: { _debug: meteorDebugMock },
-				},
-			}),
-			mock.module('../../lib/logger/system', {
-				exports: {
-					SystemLogger: { debug: debugMock, error: errorMock },
-				},
-			}),
-			mock.module('../../settings', {
-				exports: {
-					settings: { get: settingsGetMock },
-				},
-			}),
-		];
+		mock.module(require.resolve('meteor/meteor'), {
+			exports: {
+				Meteor: { _debug: meteorDebugMock },
+			},
+		});
+		mock.module('../../lib/logger/system', {
+			exports: {
+				SystemLogger: { debug: debugMock, error: errorMock },
+			},
+		});
+		mock.module('../../settings', {
+			exports: {
+				settings: { get: settingsGetMock },
+			},
+		});
 		({ logMethodCallError } = await import('./logMethodCallError'));
-		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	});
 
 	beforeEach(() => {

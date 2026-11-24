@@ -53,47 +53,44 @@ const roleMethods = {
 let RoomService: typeof import('./service').RoomService;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				ServiceClassInternal: class {},
-				Authorization,
-				Message,
-				ClientSafeError,
-				FederationMatrix,
-			},
-		}),
-		mock.module('./hooks/BeforeFederationActions', { exports: { FederationActions } }),
-		mock.module('../../lib/getSubscriptionAutotranslateDefaultConfig', {
-			exports: { getSubscriptionAutotranslateDefaultConfig: () => undefined },
-		}),
-		mock.module('../../lib/messaging/threads/functions', { exports: { readThread } }),
-		mock.module('../../lib/notifyListener', {
-			exports: {
-				notifyOnSubscriptionChanged,
-				notifyOnSubscriptionChangedById,
-				notifyOnSubscriptionChangedByRoomIdAndUserId,
-			},
-		}),
-		mock.module('../../lib/readMessages', { exports: { readMessages } }),
-		mock.module('../../lib/rooms/acceptRoomInvite', { exports: {} }),
-		mock.module('../../lib/rooms/addUserToRoom', { exports: { addUserToRoom } }),
-		mock.module('../../lib/rooms/createRoom', { exports: { createRoom } }),
-		mock.module('../../lib/rooms/removeUserFromRoom', { exports: {} }),
-		mock.module('../../lib/rooms/roomCoordinator', { exports: { roomCoordinator } }),
-		mock.module('../../lib/rooms/settings', { exports: { saveRoomName } }),
-		mock.module('../../lib/rooms/settings/saveRoomTopic', { exports: {} }),
-		mock.module('../../lib/utils/lib/getValidRoomName', { exports: {} }),
-		mock.module('../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } }),
-		mock.module('../../meteor-methods/rooms/addRoomLeader', { exports: { addRoomLeader: roleMethods.addRoomLeader } }),
-		mock.module('../../meteor-methods/rooms/addRoomModerator', { exports: { addRoomModerator: roleMethods.addRoomModerator } }),
-		mock.module('../../meteor-methods/rooms/addRoomOwner', { exports: { addRoomOwner: roleMethods.addRoomOwner } }),
-		mock.module('../../meteor-methods/rooms/removeRoomLeader', { exports: { removeRoomLeader: roleMethods.removeRoomLeader } }),
-		mock.module('../../meteor-methods/rooms/removeRoomModerator', { exports: { removeRoomModerator: roleMethods.removeRoomModerator } }),
-		mock.module('../../meteor-methods/rooms/removeRoomOwner', { exports: { removeRoomOwner: roleMethods.removeRoomOwner } }),
-	];
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			ServiceClassInternal: class {},
+			Authorization,
+			Message,
+			ClientSafeError,
+			FederationMatrix,
+		},
+	});
+	mock.module('./hooks/BeforeFederationActions', { exports: { FederationActions } });
+	mock.module('../../lib/getSubscriptionAutotranslateDefaultConfig', {
+		exports: { getSubscriptionAutotranslateDefaultConfig: () => undefined },
+	});
+	mock.module('../../lib/messaging/threads/functions', { exports: { readThread } });
+	mock.module('../../lib/notifyListener', {
+		exports: {
+			notifyOnSubscriptionChanged,
+			notifyOnSubscriptionChangedById,
+			notifyOnSubscriptionChangedByRoomIdAndUserId,
+		},
+	});
+	mock.module('../../lib/readMessages', { exports: { readMessages } });
+	mock.module('../../lib/rooms/acceptRoomInvite', { exports: {} });
+	mock.module('../../lib/rooms/addUserToRoom', { exports: { addUserToRoom } });
+	mock.module('../../lib/rooms/createRoom', { exports: { createRoom } });
+	mock.module('../../lib/rooms/removeUserFromRoom', { exports: {} });
+	mock.module('../../lib/rooms/roomCoordinator', { exports: { roomCoordinator } });
+	mock.module('../../lib/rooms/settings', { exports: { saveRoomName } });
+	mock.module('../../lib/rooms/settings/saveRoomTopic', { exports: {} });
+	mock.module('../../lib/utils/lib/getValidRoomName', { exports: {} });
+	mock.module('../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } });
+	mock.module('../../meteor-methods/rooms/addRoomLeader', { exports: { addRoomLeader: roleMethods.addRoomLeader } });
+	mock.module('../../meteor-methods/rooms/addRoomModerator', { exports: { addRoomModerator: roleMethods.addRoomModerator } });
+	mock.module('../../meteor-methods/rooms/addRoomOwner', { exports: { addRoomOwner: roleMethods.addRoomOwner } });
+	mock.module('../../meteor-methods/rooms/removeRoomLeader', { exports: { removeRoomLeader: roleMethods.removeRoomLeader } });
+	mock.module('../../meteor-methods/rooms/removeRoomModerator', { exports: { removeRoomModerator: roleMethods.removeRoomModerator } });
+	mock.module('../../meteor-methods/rooms/removeRoomOwner', { exports: { removeRoomOwner: roleMethods.removeRoomOwner } });
 	({ RoomService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const cursorOf = <T>(docs: T[]) => ({ toArray: async () => docs });

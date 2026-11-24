@@ -14,20 +14,17 @@ let registerEEBroker: (typeof import('./index'))['registerEEBroker'];
 
 before(async () => {
 	mock.module('./presence', { exports: stub('presence') });
-	const moduleMocks = [
-		mock.module('../hooks/auth/callback', { exports: stub('hooks') }),
-		mock.module('./audit', { exports: stub('audit') }),
-		mock.module('./deviceManagement', { exports: stub('deviceManagement') }),
-		mock.module('./engagementDashboard', { exports: stub('engagementDashboard') }),
-		mock.module('./maxRoomsPerGuest', { exports: stub('maxRoomsPerGuest') }),
-		mock.module('./services', { exports: stub('services') }),
-		mock.module('./readReceiptsArchive', { exports: stub('readReceiptsArchive') }),
-		mock.module('./mcp', { exports: stub('mcp') }),
-		mock.module('@rocket.chat/core-services', { exports: { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } } }),
-		mock.module('../../../server/lib/logger/system', { exports: { SystemLogger: { warn } } }),
-	];
+	mock.module('../hooks/auth/callback', { exports: stub('hooks') });
+	mock.module('./audit', { exports: stub('audit') });
+	mock.module('./deviceManagement', { exports: stub('deviceManagement') });
+	mock.module('./engagementDashboard', { exports: stub('engagementDashboard') });
+	mock.module('./maxRoomsPerGuest', { exports: stub('maxRoomsPerGuest') });
+	mock.module('./services', { exports: stub('services') });
+	mock.module('./readReceiptsArchive', { exports: stub('readReceiptsArchive') });
+	mock.module('./mcp', { exports: stub('mcp') });
+	mock.module('@rocket.chat/core-services', { exports: { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } } });
+	mock.module('../../../server/lib/logger/system', { exports: { SystemLogger: { warn } } });
 	({ registerEEBroker } = await import('./index'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('registerEEBroker encryption warning', () => {

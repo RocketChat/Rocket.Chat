@@ -28,9 +28,11 @@ before(async () => {
 		'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
 		'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 	};
-	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
 	({ VideoConfService } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 });
 
 /** The record the service handed to `sendMessage`, which is the thing under test. */

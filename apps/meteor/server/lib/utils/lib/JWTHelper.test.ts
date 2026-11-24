@@ -22,9 +22,8 @@ let generateJWT: typeof import('./JWTHelper').generateJWT;
 let validateAndDecodeJWT: typeof import('./JWTHelper').validateAndDecodeJWT;
 
 before(async () => {
-	const moduleMocks = [mock.module('jsrsasign', { exports: { default: jsrsasignStub } })];
+	mock.module('jsrsasign', { exports: { default: jsrsasignStub } });
 	({ generateJWT, validateAndDecodeJWT } = await import('./JWTHelper'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('JWTHelper', () => {

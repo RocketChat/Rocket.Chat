@@ -9,9 +9,8 @@ const insertMessage = sinon.stub();
 let MessageConverter: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../../messages/insertMessage', { exports: { insertMessage } })];
+	mock.module('../../../messages/insertMessage', { exports: { insertMessage } });
 	({ MessageConverter } = await import('./MessageConverter'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Message Converter', () => {

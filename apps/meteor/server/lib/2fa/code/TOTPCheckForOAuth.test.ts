@@ -14,9 +14,8 @@ const settings = { get: (key: string) => key === 'Accounts_TwoFactorAuthenticati
 let TOTPCheckForOAuth: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../../../settings', { exports: { settings } })];
+	mock.module('../../../settings', { exports: { settings } });
 	({ TOTPCheckForOAuth } = await import('./TOTPCheckForOAuth'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const TwoFactorChallenges = {

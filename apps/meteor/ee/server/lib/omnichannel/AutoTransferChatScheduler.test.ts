@@ -61,19 +61,16 @@ const getNextAgent = sinon.stub();
 let AutoTransferChatSchedulerClass: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/agenda', { exports: { Agenda: MockAgendaClass } }),
-		mock.module('../../../../server/database/utils', { exports: { client: { db: sinon.stub() } } }),
-		mock.module('../../../../server/lib/omnichannel/RoutingManager', {
-			exports: { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
-		}),
-		mock.module('../../../../server/lib/omnichannel/Helper', { exports: { forwardRoomToAgent } }),
-		mock.module('../../../../server/lib/omnichannel/rooms', { exports: { returnRoomAsInquiry: returnRoomAsInquiryMock } }),
-		mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } }),
-		mock.module('./logger', { exports: { schedulerLogger: mockLogger } }),
-	];
+	mock.module('@rocket.chat/agenda', { exports: { Agenda: MockAgendaClass } });
+	mock.module('../../../../server/database/utils', { exports: { client: { db: sinon.stub() } } });
+	mock.module('../../../../server/lib/omnichannel/RoutingManager', {
+		exports: { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
+	});
+	mock.module('../../../../server/lib/omnichannel/Helper', { exports: { forwardRoomToAgent } });
+	mock.module('../../../../server/lib/omnichannel/rooms', { exports: { returnRoomAsInquiry: returnRoomAsInquiryMock } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('./logger', { exports: { schedulerLogger: mockLogger } });
 	({ AutoTransferChatSchedulerClass } = await import('./AutoTransferChatScheduler'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('AutoTransferChats', () => {

@@ -24,28 +24,25 @@ let exportRoomMessages: any;
 let exportMessageObject: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('fs/promises', {
-			exports: {
-				mkdir: stubs.mkdir,
-				writeFile: stubs.writeFile,
+	mock.module('fs/promises', {
+		exports: {
+			mkdir: stubs.mkdir,
+			writeFile: stubs.writeFile,
+		},
+	});
+	mock.module('../i18n', {
+		exports: {
+			i18n: {
+				t: stubs.translateKey,
 			},
-		}),
-		mock.module('../i18n', {
-			exports: {
-				i18n: {
-					t: stubs.translateKey,
-				},
-			},
-		}),
-		mock.module('../../settings', {
-			exports: {
-				settings: stubs.settings,
-			},
-		}),
-	];
+		},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: stubs.settings,
+		},
+	});
 	({ getMessageData, exportRoomMessages, exportMessageObject } = await import('./exportRoomMessagesToFile'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Export - exportMessageObject', () => {

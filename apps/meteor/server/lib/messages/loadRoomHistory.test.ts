@@ -9,14 +9,11 @@ const findBefore = sinon.stub();
 let loadRoomHistory: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings/cached', { exports: { settings: { get: () => [] } } }),
-		mock.module('../utils/lib/normalizeMessagesForUser', {
-			exports: { normalizeMessagesForUser: async (messages: unknown[]) => messages },
-		}),
-	];
+	mock.module('../../settings/cached', { exports: { settings: { get: () => [] } } });
+	mock.module('../utils/lib/normalizeMessagesForUser', {
+		exports: { normalizeMessagesForUser: async (messages: unknown[]) => messages },
+	});
 	({ loadRoomHistory } = await import('./loadRoomHistory'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const pageOf = (...timestamps: number[]) => ({

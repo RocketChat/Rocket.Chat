@@ -18,12 +18,9 @@ const mockHasRoleAsync = sinon.stub();
 let conditionalLockAgent: typeof import('./conditionalLockAgent').conditionalLockAgent;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../authorization/hasRole', { exports: { hasRoleAsync: mockHasRoleAsync } }),
-		mock.module('../../settings', { exports: { settings: mockSettings } }),
-	];
+	mock.module('../authorization/hasRole', { exports: { hasRoleAsync: mockHasRoleAsync } });
+	mock.module('../../settings', { exports: { settings: mockSettings } });
 	({ conditionalLockAgent } = await import('./conditionalLockAgent'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('conditionalLockAgent', () => {

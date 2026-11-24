@@ -18,19 +18,16 @@ let passportOAuthCallback: any;
 let passportOAuthErrorCallback: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../auth/issueLoginToken', { exports: { issueLoginToken } }),
-		mock.module('./twoFactorAuth', { exports: { doesUserRequire2FA } }),
-		mock.module('@rocket.chat/logger', {
-			exports: {
-				Logger: class {
-					error = logError;
-				},
+	mock.module('../auth/issueLoginToken', { exports: { issueLoginToken } });
+	mock.module('./twoFactorAuth', { exports: { doesUserRequire2FA } });
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = logError;
 			},
-		}),
-	];
+		},
+	});
 	({ passportOAuthCallback, passportOAuthErrorCallback } = await import('./passportOAuthCallback'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const siteUrl = 'https://chat.example.com';

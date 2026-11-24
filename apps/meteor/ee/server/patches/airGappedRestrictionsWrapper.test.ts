@@ -14,20 +14,17 @@ const airgappedModule = {
 };
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', {
-			exports: {
-				AirGappedRestriction: airgappedModule,
-			},
-		}),
-		mock.module('../../../server/lib/cloud/license/airGappedRestrictionsWrapper', {
-			exports: {
-				applyAirGappedRestrictionsValidation,
-			},
-		}),
-	];
+	mock.module('@rocket.chat/license', {
+		exports: {
+			AirGappedRestriction: airgappedModule,
+		},
+	});
+	mock.module('../../../server/lib/cloud/license/airGappedRestrictionsWrapper', {
+		exports: {
+			applyAirGappedRestrictionsValidation,
+		},
+	});
 	await import('./airGappedRestrictionsWrapper');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#airGappedRestrictionsWrapper()', () => {

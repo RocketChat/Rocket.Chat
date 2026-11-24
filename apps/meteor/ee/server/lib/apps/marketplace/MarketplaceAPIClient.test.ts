@@ -11,14 +11,11 @@ class CloudOfflineLicenseError extends Error {}
 let MarketplaceAPIClient: typeof import('./MarketplaceAPIClient').MarketplaceAPIClient;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } }),
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: serverFetchStub, Response: class {} } }),
-		mock.module('./isTesting', { exports: { isTesting: () => false } }),
-		mock.module('../../../../../lib/errors/CloudOfflineLicenseError', { exports: { CloudOfflineLicenseError } }),
-	];
+	mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } });
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: serverFetchStub, Response: class {} } });
+	mock.module('./isTesting', { exports: { isTesting: () => false } });
+	mock.module('../../../../../lib/errors/CloudOfflineLicenseError', { exports: { CloudOfflineLicenseError } });
 	({ MarketplaceAPIClient } = await import('./MarketplaceAPIClient'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('MarketplaceAPIClient', () => {

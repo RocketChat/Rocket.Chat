@@ -59,10 +59,10 @@ let ServiceProviderMetadata: any;
 let SAMLServiceProvider: any;
 
 before(async () => {
-	const getURLMock = mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
+	mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
 	({ ServiceProviderMetadata } = await import('./generators/ServiceProviderMetadata'));
 	({ SAMLServiceProvider } = await import('./ServiceProvider'));
-	getURLMock.restore();
+	mock.restoreAll();
 });
 
 describe('SAML', () => {
@@ -1201,47 +1201,45 @@ describe('SAML', () => {
 		};
 
 		const loadSAML = () => {
-			const moduleMocks = [
-				mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
-				mock.module('@rocket.chat/random', { exports: { Random: { id: () => '__credentialToken__' } } }),
-				mock.module('@rocket.chat/tools', { exports: { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s } }),
-				mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } }),
-				mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub }),
-				mock.module('./ServiceProvider', {
-					exports: {
-						SAMLServiceProvider: class {
-							validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
-								pending = cb(null, replayProfile);
-							}
-						},
+			mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+			mock.module('@rocket.chat/random', { exports: { Random: { id: () => '__credentialToken__' } } });
+			mock.module('@rocket.chat/tools', { exports: { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s } });
+			mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } });
+			mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
+			mock.module('./ServiceProvider', {
+				exports: {
+					SAMLServiceProvider: class {
+						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
+							pending = cb(null, replayProfile);
+						}
 					},
-				}),
-				mock.module('./Utils', {
-					exports: {
-						SAMLUtils: {
-							relayState: null,
-							error: sinon.stub(),
-							warn: sinon.stub(),
-							log: sinon.stub(),
-							getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
-							decodeAuthorizeRelayState: (provider: string) => ({ provider }),
-						},
+				},
+			});
+			mock.module('./Utils', {
+				exports: {
+					SAMLUtils: {
+						relayState: null,
+						error: sinon.stub(),
+						warn: sinon.stub(),
+						log: sinon.stub(),
+						getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
+						decodeAuthorizeRelayState: (provider: string) => ({ provider }),
 					},
-				}),
-				mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope: async () => ({ relayState: null }) } }),
-				mock.module('../../../../../lib/utils/arrayUtils', { exports: { ensureArray: (v: any) => v } }),
-				mock.module('../../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } } }),
-				mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: sinon.stub() } }),
-				mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } }),
-				mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion: sinon.stub() } }),
-				mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } }),
-				mock.module('../../../../../server/settings', { exports: { settings: { get: sinon.stub() } } }),
-				mock.module('../../../../../lib/i18n', { exports: { i18n: { t: (s: string) => s, languages: [] } } }),
-			];
+				},
+			});
+			mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope: async () => ({ relayState: null }) } });
+			mock.module('../../../../../lib/utils/arrayUtils', { exports: { ensureArray: (v: any) => v } });
+			mock.module('../../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } } });
+			mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: sinon.stub() } });
+			mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } });
+			mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion: sinon.stub() } });
+			mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } });
+			mock.module('../../../../../server/settings', { exports: { settings: { get: sinon.stub() } } });
+			mock.module('../../../../../lib/i18n', { exports: { i18n: { t: (s: string) => s, languages: [] } } });
 			delete require.cache[require.resolve('./SAML')];
 			// oxlint-disable-next-line @typescript-eslint/no-require-imports
 			const { SAML } = require('./SAML');
-			moduleMocks.forEach((moduleMock) => moduleMock.restore());
+			mock.restoreAll();
 			return SAML;
 		};
 

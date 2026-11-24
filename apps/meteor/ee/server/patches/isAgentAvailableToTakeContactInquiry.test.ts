@@ -17,15 +17,12 @@ const settingsMock = {
 let runIsAgentAvailableToTakeContactInquiry: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../server/settings', {
-			exports: {
-				settings: settingsMock,
-			},
-		}),
-	];
+	mock.module('../../../server/settings', {
+		exports: {
+			settings: settingsMock,
+		},
+	});
 	({ runIsAgentAvailableToTakeContactInquiry } = await import('./isAgentAvailableToTakeContactInquiry'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('isAgentAvailableToTakeContactInquiry', () => {

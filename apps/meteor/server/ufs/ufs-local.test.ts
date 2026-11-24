@@ -17,13 +17,12 @@ const fakeCollection = {
 let LocalStore: typeof LocalStoreClass;
 
 before(async () => {
-	const ufsStoreMock = mock.module('./ufs-store', { exports: { Store: Object } });
+	mock.module('./ufs-store', { exports: { Store: Object } });
 	const { UploadFS } = await import('./ufs');
-	ufsStoreMock.restore();
+	mock.restoreAll();
 
-	const ufsIndexMock = mock.module('./index', { exports: { UploadFS } });
+	mock.module('./index', { exports: { UploadFS } });
 	({ LocalStore } = await import('./ufs-local'));
-	ufsIndexMock.restore();
 });
 
 describe('LocalStore', () => {

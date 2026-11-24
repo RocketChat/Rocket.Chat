@@ -13,16 +13,13 @@ const getSetting = sinon.stub();
 let AppUploadBridge: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps/dist/server/bridges/UploadBridge', { exports: { UploadBridge: class {} } }),
-		mock.module('../../../../ee/lib/misc/determineFileType', { exports: { determineFileType: () => 'text/plain' } }),
-		mock.module('../../../lib/media/file-upload', { exports: { FileUpload: { getStore: () => ({ insert }) } } }),
-		mock.module('../../../meteor-methods/messages/sendFileMessage', { exports: { sendFileMessage } }),
-		mock.module('../../../meteor-methods/omnichannel/sendFileLivechatMessage', { exports: { sendFileLivechatMessage } }),
-		mock.module('../../../settings', { exports: { settings: { get: getSetting } } }),
-	];
+	mock.module('@rocket.chat/apps/dist/server/bridges/UploadBridge', { exports: { UploadBridge: class {} } });
+	mock.module('../../../../ee/lib/misc/determineFileType', { exports: { determineFileType: () => 'text/plain' } });
+	mock.module('../../../lib/media/file-upload', { exports: { FileUpload: { getStore: () => ({ insert }) } } });
+	mock.module('../../../meteor-methods/messages/sendFileMessage', { exports: { sendFileMessage } });
+	mock.module('../../../meteor-methods/omnichannel/sendFileLivechatMessage', { exports: { sendFileLivechatMessage } });
+	mock.module('../../../settings', { exports: { settings: { get: getSetting } } });
 	({ AppUploadBridge } = await import('./uploads'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const orchestrator = {

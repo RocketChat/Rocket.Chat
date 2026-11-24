@@ -11,13 +11,10 @@ const settingsGet = sinon.stub();
 let sendForgotPasswordEmail: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../lib/auth/accountEmails', { exports: { sendResetPasswordEmail } }),
-		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-	];
+	mock.module('../../lib/auth/accountEmails', { exports: { sendResetPasswordEmail } });
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
 	({ sendForgotPasswordEmail } = await import('./sendForgotPasswordEmail'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('sendForgotPasswordEmail', () => {

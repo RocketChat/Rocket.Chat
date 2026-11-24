@@ -20,20 +20,17 @@ const validateContactManagerMock = sinon.stub();
 let resolveContactConflicts: typeof import('./resolveContactConflicts').resolveContactConflicts;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./validateContactManager', {
-			exports: {
-				validateContactManager: validateContactManagerMock,
-			},
-		}),
-		mock.module('../../notifyListener', {
-			exports: {
-				notifyOnSettingChanged: sinon.stub(),
-			},
-		}),
-	];
+	mock.module('./validateContactManager', {
+		exports: {
+			validateContactManager: validateContactManagerMock,
+		},
+	});
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnSettingChanged: sinon.stub(),
+		},
+	});
 	({ resolveContactConflicts } = await import('./resolveContactConflicts'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('resolveContactConflicts', () => {

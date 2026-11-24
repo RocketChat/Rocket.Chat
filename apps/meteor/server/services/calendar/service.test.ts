@@ -48,18 +48,16 @@ const LicenseMock = { hasModule: sinon.stub() };
 const i18nMock = { t: sinon.stub().returns('Outlook: In a meeting') };
 
 const loadService = () => {
-	const moduleMocks = [
-		mock.module('../../settings', { exports: { settings: settingsMock } }),
-		mock.module('@rocket.chat/core-services', { exports: { api, ServiceClassInternal: class {}, Presence: PresenceMock } }),
-		mock.module('@rocket.chat/cron', { exports: { cronJobs: cronJobsMock } }),
-		mock.module('@rocket.chat/license', { exports: { License: LicenseMock } }),
-		mock.module('../../lib/utils/lib/getUserPreference', { exports: { getUserPreference: getUserPreferenceMock } }),
-		mock.module('../../lib/i18n', { exports: { i18n: i18nMock } }),
-	];
+	mock.module('../../settings', { exports: { settings: settingsMock } });
+	mock.module('@rocket.chat/core-services', { exports: { api, ServiceClassInternal: class {}, Presence: PresenceMock } });
+	mock.module('@rocket.chat/cron', { exports: { cronJobs: cronJobsMock } });
+	mock.module('@rocket.chat/license', { exports: { License: LicenseMock } });
+	mock.module('../../lib/utils/lib/getUserPreference', { exports: { getUserPreference: getUserPreferenceMock } });
+	mock.module('../../lib/i18n', { exports: { i18n: i18nMock } });
 	delete require.cache[require.resolve('./service')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const serviceExports = require('./service');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 	return serviceExports;
 };
 

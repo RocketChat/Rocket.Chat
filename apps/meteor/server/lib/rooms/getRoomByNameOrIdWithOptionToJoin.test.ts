@@ -59,22 +59,19 @@ const isObjectMock = {
 let getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				Room: RoomServiceStub,
-				ClientSafeError,
-			},
-		}),
-		mock.module('../../../lib/utils/isObject', { exports: isObjectMock }),
-		mock.module('../../meteor-methods/messages/createDirectMessage', {
-			exports: {
-				createDirectMessage: createDirectMessageStub,
-			},
-		}),
-	];
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			Room: RoomServiceStub,
+			ClientSafeError,
+		},
+	});
+	mock.module('../../../lib/utils/isObject', { exports: isObjectMock });
+	mock.module('../../meteor-methods/messages/createDirectMessage', {
+		exports: {
+			createDirectMessage: createDirectMessageStub,
+		},
+	});
 	({ getRoomByNameOrIdWithOptionToJoin } = (await import('./getRoomByNameOrIdWithOptionToJoin')) as any);
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('getRoomByNameOrIdWithOptionToJoin', () => {

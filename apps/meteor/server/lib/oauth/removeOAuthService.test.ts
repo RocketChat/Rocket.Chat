@@ -10,9 +10,8 @@ const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 let removeOAuthService: any;
 
 before(async () => {
-	const moduleMocks = [mock.module('../notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } })];
+	mock.module('../notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } });
 	({ removeOAuthService } = await import('./removeOAuthService'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('removeOAuthService', () => {

@@ -16,14 +16,11 @@ const twilioStub = {
 let Twilio: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../../settings', { exports: { settings: settingsStub } }),
-		mock.module('../../../lib/utils/restrictions', { exports: { fileUploadIsValidContentType: sinon.stub() } }),
-		mock.module('../../../lib/i18n', { exports: { i18n: sinon.stub() } }),
-		mock.module('../../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-	];
+	mock.module('../../../settings', { exports: { settings: settingsStub } });
+	mock.module('../../../lib/utils/restrictions', { exports: { fileUploadIsValidContentType: sinon.stub() } });
+	mock.module('../../../lib/i18n', { exports: { i18n: sinon.stub() } });
+	mock.module('../../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
 	({ Twilio } = await import('./twilio'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 /**

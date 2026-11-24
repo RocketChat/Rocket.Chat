@@ -53,16 +53,14 @@ function buildSubject(options?: {
 		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
 	};
 
-	const moduleMocks = [
-		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } }),
-		mock.module('./logger', { exports: { webhooksLogger: logger } }),
-		mock.module('../metrics', { exports: { metrics } }),
-		mock.module('../../settings', { exports: { settings } }),
-	];
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } });
+	mock.module('./logger', { exports: { webhooksLogger: logger } });
+	mock.module('../metrics', { exports: { metrics } });
+	mock.module('../../settings', { exports: { settings } });
 	delete require.cache[require.resolve('./webhooks')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
 	const { sendRequest } = require('./webhooks');
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	mock.restoreAll();
 
 	return {
 		sendRequest,

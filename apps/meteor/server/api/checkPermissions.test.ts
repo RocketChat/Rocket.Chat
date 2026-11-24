@@ -8,17 +8,14 @@ import type { PermissionsPayload } from './api.helpers';
 let checkPermissions: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../lib/deprecationWarningLogger', {
-			exports: {
-				apiDeprecationLogger: {
-					endpoint: Sinon.stub(),
-				},
+	mock.module('../lib/deprecationWarningLogger', {
+		exports: {
+			apiDeprecationLogger: {
+				endpoint: Sinon.stub(),
 			},
-		}),
-	];
+		},
+	});
 	({ checkPermissions } = await import('./api.helpers'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('checkPermissions', () => {

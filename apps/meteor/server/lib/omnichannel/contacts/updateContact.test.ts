@@ -17,33 +17,30 @@ const modelsMock = {
 let updateContact: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./getAllowedCustomFields', {
-			exports: {
-				getAllowedCustomFields: sinon.stub().resolves([]),
-			},
-		}),
-		mock.module('./validateContactManager', {
-			exports: {
-				validateContactManager: sinon.stub(),
-			},
-		}),
-		mock.module('./validateCustomFields', {
-			exports: {
-				validateCustomFields: sinon.stub(),
-			},
-		}),
-		mock.module('../../notifyListener', {
-			exports: {
-				notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
-				notifyOnRoomChangedByContactId: sinon.stub(),
-				notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
-				notifyOnSettingChanged: sinon.stub(),
-			},
-		}),
-	];
+	mock.module('./getAllowedCustomFields', {
+		exports: {
+			getAllowedCustomFields: sinon.stub().resolves([]),
+		},
+	});
+	mock.module('./validateContactManager', {
+		exports: {
+			validateContactManager: sinon.stub(),
+		},
+	});
+	mock.module('./validateCustomFields', {
+		exports: {
+			validateCustomFields: sinon.stub(),
+		},
+	});
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
+			notifyOnRoomChangedByContactId: sinon.stub(),
+			notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
+			notifyOnSettingChanged: sinon.stub(),
+		},
+	});
 	({ updateContact } = await import('./updateContact'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('updateContact', () => {

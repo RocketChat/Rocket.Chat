@@ -87,23 +87,19 @@ const findRoomsByIds = sandbox.stub();
 const findUser = sandbox.stub();
 const disableAutoTranslate = sandbox.stub();
 
-const moduleMocks = [
-	mock.module('../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage', {
-		exports: { updateAndNotifyParentRoomWithParentMessage: notifyParentRoom },
-	}),
-	mock.module('../../lib/rooms/roomCoordinator', {
-		exports: { roomCoordinator: { getRoomDirectives: () => ({ allowRoomSettingChange }) } },
-	}),
-	mock.module('../../lib/rooms/setRoomAvatar', { exports: { setRoomAvatar: savers.setRoomAvatar } }),
-	mock.module('../../lib/rooms/settings/saveRoomCustomFields', { exports: { saveRoomCustomFields: savers.saveRoomCustomFields } }),
-	mock.module('../../lib/rooms/settings/saveRoomName', { exports: { saveRoomName: savers.saveRoomName } }),
-	mock.module('../../lib/rooms/settings/saveRoomType', { exports: { saveRoomType: savers.saveRoomType } }),
-	mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
-];
+mock.module('../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage', {
+	exports: { updateAndNotifyParentRoomWithParentMessage: notifyParentRoom },
+});
+mock.module('../../lib/rooms/roomCoordinator', {
+	exports: { roomCoordinator: { getRoomDirectives: () => ({ allowRoomSettingChange }) } },
+});
+mock.module('../../lib/rooms/setRoomAvatar', { exports: { setRoomAvatar: savers.setRoomAvatar } });
+mock.module('../../lib/rooms/settings/saveRoomCustomFields', { exports: { saveRoomCustomFields: savers.saveRoomCustomFields } });
+mock.module('../../lib/rooms/settings/saveRoomName', { exports: { saveRoomName: savers.saveRoomName } });
+mock.module('../../lib/rooms/settings/saveRoomType', { exports: { saveRoomType: savers.saveRoomType } });
+mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
 // oxlint-disable-next-line @typescript-eslint/no-require-imports
 const { saveRoomSettings } = require('./saveRoomSettings');
-
-moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 const userId = 'user-id';
 const rid = 'room-id';

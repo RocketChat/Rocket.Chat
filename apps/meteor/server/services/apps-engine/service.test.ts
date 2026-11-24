@@ -26,21 +26,18 @@ let AppsEngineService: any;
 let AppsEngineNoNodesFoundError: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('@rocket.chat/apps', { exports: { Apps: AppsMock } }),
-		mock.module('@rocket.chat/core-services', {
-			exports: {
-				api: apiMock,
-				ServiceClassInternal: class {
-					onEvent = sinon.stub();
-				},
+	mock.module('@rocket.chat/apps', { exports: { Apps: AppsMock } });
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			api: apiMock,
+			ServiceClassInternal: class {
+				onEvent = sinon.stub();
 			},
-		}),
-		mock.module('../../lib/isRunningMs', { exports: { isRunningMs: isRunningMsMock } }),
-		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
-	];
+		},
+	});
+	mock.module('../../lib/isRunningMs', { exports: { isRunningMs: isRunningMsMock } });
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
 	({ AppsEngineService, AppsEngineNoNodesFoundError } = await import('./service'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('AppsEngineService', () => {

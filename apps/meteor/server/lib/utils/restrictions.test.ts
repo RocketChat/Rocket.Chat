@@ -7,11 +7,8 @@ const settingValues = new Map<string, string>();
 let fileUploadIsValidContentType: typeof import('./restrictions').fileUploadIsValidContentType;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('../../settings', { exports: { settings: { get: (settingId: string) => settingValues.get(settingId) } } }),
-	];
+	mock.module('../../settings', { exports: { settings: { get: (settingId: string) => settingValues.get(settingId) } } });
 	({ fileUploadIsValidContentType } = await import('./restrictions'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('fileUploadIsValidContentType', () => {

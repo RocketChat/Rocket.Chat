@@ -12,13 +12,10 @@ const updateCasServices = sandbox.stub().resolves();
 let refreshLoginServices: any;
 
 before(async () => {
-	const moduleMocks = [
-		mock.module('./notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } }),
-		mock.module('./oauth/updateOAuthServices', { exports: { updateOAuthServices } }),
-		mock.module('./cas/updateCasService', { exports: { updateCasServices } }),
-	];
+	mock.module('./notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } });
+	mock.module('./oauth/updateOAuthServices', { exports: { updateOAuthServices } });
+	mock.module('./cas/updateCasService', { exports: { updateCasServices } });
 	({ refreshLoginServices } = await import('./refreshLoginServices'));
-	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('refreshLoginServices', () => {
