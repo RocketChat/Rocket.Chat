@@ -29,6 +29,11 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 		this.manageSlaPolicy = new OmnichannelManageSlaPolicyFlexTab(page);
 	}
 
+	override async search(text: string) {
+		await super.search(text);
+		await this.table.waitForSettled(this.emptyState);
+	}
+
 	btnRemove(name: string) {
 		return this.table.findRowByName(name).getByRole('button', { name: 'Remove' });
 	}

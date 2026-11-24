@@ -22,6 +22,7 @@ import { Virtuoso } from 'react-virtuoso';
 import TeamsChannelItem from './TeamsChannelItem';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import ListViewport from '../../../../components/ListViewport';
 
 export type TeamsChannelsProps = {
 	loading: boolean;
@@ -110,7 +111,7 @@ const TeamsChannels = ({
 								{t('Showing_current_of_total', { current: channels.length, total })}
 							</Text>
 						</Box>
-						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>
+						<ListViewport role='list'>
 							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}
@@ -121,7 +122,7 @@ const TeamsChannels = ({
 									)}
 								/>
 							</VirtualizedScrollbars>
-						</Box>
+						</ListViewport>
 					</>
 				)}
 			</ContextualbarContent>

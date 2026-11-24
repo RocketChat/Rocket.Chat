@@ -528,7 +528,7 @@ export default class SlackAdapter {
 
 			if (rocketMsg && rocketUser) {
 				const rocketReaction = `:${slackReactionMsg.reaction}:`;
-				const theReaction = (rocketMsg.reactions || {})[rocketReaction];
+				const theReaction = rocketMsg.reactions?.[rocketReaction];
 
 				// If the Rocket user has already been removed, then this is an echo back from slack
 				if (rocketMsg.reactions && theReaction) {
@@ -1014,7 +1014,7 @@ export default class SlackAdapter {
 	 */
 	async processNewMessage(slackMessage, isImporting) {
 		const rocketChannel = await this.rocket.getChannel(slackMessage);
-		let rocketUser = null;
+		let rocketUser;
 		if (slackMessage.subtype === 'bot_message') {
 			rocketUser = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 		} else {
@@ -1265,7 +1265,7 @@ export default class SlackAdapter {
 		const requestModule = /https/i.test(slackFileURL) ? https : http;
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { Authorization: `Bearer ${this.apiToken}` };
-		await requestModule.get(parsedUrl, async (stream) => {
+		requestModule.get(parsedUrl, async (stream) => {
 			const fileStore = FileUpload.getStore('Uploads');
 
 			const file = await fileStore.insert(details, stream);

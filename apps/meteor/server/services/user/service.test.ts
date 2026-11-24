@@ -1,6 +1,7 @@
 import { afterEach, before, describe, it } from 'node:test';
 
-import { registerModel, BaseRaw } from '@rocket.chat/models';
+import { BaseRaw } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -27,7 +28,7 @@ const usersModel = new UsersModel({ collection: () => ({}) } as unknown as any, 
 
 describe('User service', () => {
 	before(() => {
-		registerModel('IUsersModel', usersModel);
+		mockModel('Users', usersModel);
 	});
 
 	afterEach(() => sinon.restore());

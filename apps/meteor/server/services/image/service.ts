@@ -41,7 +41,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof FitEnum | undefined,
+		fit?: keyof FitEnum,
 	): Promise<ResizeResult> {
 		const stream = this.bufferToStream(input);
 		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
@@ -54,7 +54,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof FitEnum | undefined,
+		fit?: keyof FitEnum,
 	): Promise<ResizeResult> {
 		const transformer = sharp({ limitInputChannels: 8 }).resize({ width, height, fit, withoutEnlargement: !enlarge });
 
@@ -83,7 +83,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	async isImage(buff: Buffer): Promise<boolean> {
 		const data = await ft.fromBuffer(buff);
 		if (!data?.ext) {
-			return false || this.isSvgImage(buff);
+			return this.isSvgImage(buff);
 		}
 		return this.imageExts.has(data.ext) || this.isSvgImage(buff);
 	}

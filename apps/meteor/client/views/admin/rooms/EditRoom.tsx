@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 import AbacAttributesRemovalWarning from '../../../components/ABAC/AbacAttributesRemovalWarning';
+import ModalCalloutContent from '../../../components/ModalCalloutContent';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
@@ -142,9 +143,9 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 				onCancel={() => setModal(null)}
 				onClose={() => setModal(null)}
 			>
-				<Box paddingBlockStart={16}>
+				<ModalCalloutContent>
 					<AbacAttributesRemovalWarning />
-				</Box>
+				</ModalCalloutContent>
 			</GenericModal>,
 		);
 	});

@@ -1,15 +1,16 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { FormSkeleton } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import EmailInboxForm from './EmailInboxForm';
 
 export type EmailInboxFormWithDataProps = { id: IEmailInbox['_id'] };
 
 const EmailInboxFormWithData = ({ id }: EmailInboxFormWithDataProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getEmailInboxById = useEndpoint('GET', '/v1/email-inbox/:_id', { _id: id });
 	const { data, isPending, error } = useQuery({
 		queryKey: ['email-inbox', id],

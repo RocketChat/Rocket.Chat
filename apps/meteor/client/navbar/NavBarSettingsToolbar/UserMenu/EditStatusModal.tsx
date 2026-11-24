@@ -4,10 +4,11 @@ import { InputBox, Box } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select } from '@rocket.chat/fuselage-forms';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ComponentProps } from 'react';
+import { useToastMessageDispatch, useSetting, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent } from 'react';
 import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
@@ -27,7 +28,7 @@ type StatusFormValues = {
 };
 
 const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -92,7 +93,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 			onCancel={onClose}
 			confirmText={t('Save')}
 			confirmDisabled={!isDirty}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSaveStatus)} {...props} />}
+			onSubmit={handleSubmit(handleSaveStatus)}
 		>
 			<FieldGroup>
 				<Field>

@@ -1,5 +1,27 @@
 # Change Log
 
+## 0.53.0-rc.0
+
+### Minor Changes
+
+- ([#43512](https://github.com/RocketChat/Rocket.Chat/pull/43512)) Ships only an ES module build. The CommonJS build and `dist/index.mjs` are gone: `dist/index.js` is now the ES module, and the package declares an `exports` map that still exposes the generated stylesheet, font and SVG files under `dist`. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later), and read the character map from `require('@rocket.chat/icons').default`.
+
+### Patch Changes
+
+- ([#43351](https://github.com/RocketChat/Rocket.Chat/pull/43351) by [@lakshaydevoo-arch](https://github.com/lakshaydevoo-arch)) Fixes the `chevron-left` and `chevron-right` icons, which pointed opposite to their names, and updates the components that used the opposite icon to compensate. The marketplace screenshot carousel's previous and next buttons now have accessible labels
+
+- ([#42773](https://github.com/RocketChat/Rocket.Chat/pull/42773)) Fixes eight icons whose holes rendered filled in the icon font, although their SVGs were right: `sidebar`, `square-slash` and `voicemail` showed as solid blocks, and `bell-dot`, `eye`, `note`, `prune` and `share-alt` lost their clapper, pupil, folded corner, page and top node
+
+## 0.52.0
+
+### Minor Changes
+
+- ([#42659](https://github.com/RocketChat/Rocket.Chat/pull/42659)) Redraws the `login` and `sign-out` icons to match the current iconography. `login` now has its bracket on the right, with the arrow pointing into it. `sign-out` is an alias of `exit`, so `exit` changes too.
+
+### Patch Changes
+
+- ([#42607](https://github.com/RocketChat/Rocket.Chat/pull/42607)) Moved `@rocket.chat/icons` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.51.0 release. The icon set, its names and its code points are unchanged.
+
 ## 0.52.0-rc.0
 
 ### Minor Changes

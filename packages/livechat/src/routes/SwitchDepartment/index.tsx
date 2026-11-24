@@ -76,7 +76,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 			const { success } = result;
 
 			if (!success) {
-				throw t('no_available_agents_to_transfer');
+				throw new Error(t('no_available_agents_to_transfer'));
 			}
 
 			dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });

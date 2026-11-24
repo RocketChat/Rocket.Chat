@@ -148,6 +148,10 @@ export class RoomToolbar extends Toolbar {
 		await this.btnRoomInfo.click();
 	}
 
+	async openThreadsTab() {
+		await this.btnThreads.click();
+	}
+
 	async openMembersTab() {
 		await this.btnMembers.click();
 	}

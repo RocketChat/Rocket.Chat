@@ -1,5 +1,6 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
@@ -17,7 +18,7 @@ export type UseCreateNewItemsParams = {
 };
 
 export const useCreateNewItems = ({ onCreateSuccess }: UseCreateNewItemsParams = {}): GenericMenuItemProps[] => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const discussionEnabled = useSetting('Discussion_enabled');
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);

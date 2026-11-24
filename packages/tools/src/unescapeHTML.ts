@@ -1,4 +1,4 @@
-import { toString } from './toString';
+import { toString } from './toString.js';
 
 const htmlEntityCodeToCharacter = {
 	nbsp: ' ',

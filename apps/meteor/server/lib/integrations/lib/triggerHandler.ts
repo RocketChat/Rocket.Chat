@@ -70,7 +70,7 @@ class RocketChatIntegrationHandler {
 
 	addIntegration(record: IOutgoingIntegration): void {
 		outgoingLogger.debug({ msg: 'Adding integration', integrationName: record.name, event: record.event });
-		let channels = [];
+		let channels: string[];
 		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
@@ -527,7 +527,7 @@ class RocketChatIntegrationHandler {
 			}
 		}
 
-		if (message && message.editedAt && !trigger.runOnEdits) {
+		if (message?.editedAt && !trigger.runOnEdits) {
 			outgoingLogger.debug({ msg: 'Trigger run on edits disabled and message was edited', triggerName: trigger.name });
 			return;
 		}

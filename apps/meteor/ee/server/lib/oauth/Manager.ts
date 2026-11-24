@@ -26,7 +26,7 @@ export class OAuthEEManager {
 				return;
 			}
 
-			for await (const ssoGroup of Object.keys(channelsMap)) {
+			for (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
 					let channels = channelsMap[ssoGroup];
 					if (!Array.isArray(channels)) {
@@ -86,7 +86,7 @@ export class OAuthEEManager {
 
 		const filteredRoles = baseRoles.filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
 		const validRoleList = [];
-		for await (const role of filteredRoles) {
+		for (const role of filteredRoles) {
 			if (await Roles.findOneByIdOrName(role)) {
 				validRoleList.push(role);
 			}

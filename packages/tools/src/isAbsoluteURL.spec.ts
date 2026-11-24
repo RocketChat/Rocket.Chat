@@ -1,4 +1,4 @@
-import { isAbsoluteURL } from './isAbsoluteURL';
+import { isAbsoluteURL } from './isAbsoluteURL.js';
 
 describe('isAbsoluteURL', () => {
 	test.each([
@@ -19,6 +19,8 @@ describe('isAbsoluteURL', () => {
 		['http://rocket.chat', true],
 		['https://example.com/path?query=1#hash', true],
 		['http://localhost:3000', true],
+		['HTTPS://rocket.chat', true],
+		['Http://rocket.chat', true],
 		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', true],
 		['data:text/plain;charset=utf-8,Hello', true],
 	])('should return true for absolute URL %# (%s)', (input, expected) => {

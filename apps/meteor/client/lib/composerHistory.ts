@@ -1,4 +1,5 @@
 import { getSelectionRange } from './selectionRange';
+import { isMacOS } from './utils/isMacOS';
 
 export type ComposerHistoryEntry = {
 	text: string;
@@ -13,8 +14,6 @@ export type ComposerHistory = {
 };
 
 type EntryKind = 'insert' | 'delete' | 'newline' | 'paste' | 'programmatic';
-
-const isMacOS = (): boolean => navigator.platform.indexOf('Mac') !== -1;
 
 // Empty contenteditable normalizes between '' and '\n' depending on the render/reducer path,
 // so treat both as the same state when deduping snapshots.

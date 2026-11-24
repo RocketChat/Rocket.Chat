@@ -4,8 +4,11 @@ import { renderHook } from '@testing-library/react';
 
 import { useNotification } from './useNotification';
 import { useNotificationAllowed } from './useNotificationAllowed';
+import { createFakeSubscription } from '../../../tests/mocks/data';
 import { sdk } from '../../lib/SDKClient';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
+import { openNotifications } from '../../lib/openNotifications';
+import { Subscriptions } from '../../stores';
 
 jest.mock('./useNotificationAllowed', () => ({
 	useNotificationAllowed: jest.fn(),
@@ -179,6 +182,117 @@ describe('useNotification', () => {
 			jest.advanceTimersByTime(60_000);
 
 			expect(instance.close).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('open notifications', () => {
+		it('leaves a conference ring open when its room is read', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+			const payload = buildPayload();
+
+			await result.current({ ...payload, payload: { ...payload.payload, conferenceId: 'conferenceId' } });
+			await result.current(payload);
+			openNotifications.closeReadNotifications({ rid: 'roomId', alert: false, unread: 0, tunread: [] });
+
+			const [ring, message] = MockNotification.instances;
+			expect(ring.close).not.toHaveBeenCalled();
+			expect(message.close).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not show a notification for a room read while the message was being prepared', async () => {
+			Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:00:00Z') }));
+			(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation(async (message: any) => {
+				Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:05:00Z') }));
+				return message;
+			});
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			expect(MockNotification.instances).toHaveLength(0);
+			Subscriptions.state.replaceAll([]);
+		});
+
+		it('does not show a notification for a room read for the first time while the message was being prepared', async () => {
+			Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: undefined }));
+			(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation(async (message: any) => {
+				Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:05:00Z') }));
+				return message;
+			});
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			expect(MockNotification.instances).toHaveLength(0);
+			Subscriptions.state.replaceAll([]);
+		});
+
+		it('does not show a notification for a room left while the message was being prepared', async () => {
+			Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:00:00Z') }));
+			(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation(async (message: any) => {
+				Subscriptions.state.replaceAll([]);
+				return message;
+			});
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			expect(MockNotification.instances).toHaveLength(0);
+		});
+
+		it('shows a notification whose subscription arrives while the message is being prepared', async () => {
+			(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation(async (message: any) => {
+				Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:05:00Z') }));
+				return message;
+			});
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			expect(MockNotification.instances).toHaveLength(1);
+			Subscriptions.state.replaceAll([]);
+		});
+
+		it('shows a thread notification when its room is read but the thread stays unread', async () => {
+			Subscriptions.state.store(createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:00:00Z') }));
+			(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation(async (message: any) => {
+				Subscriptions.state.store(
+					createFakeSubscription({ _id: 'subId', rid: 'roomId', ls: new Date('2026-01-01T10:05:00Z'), tunread: ['threadId'] }),
+				);
+				return message;
+			});
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload('threadId'));
+
+			expect(MockNotification.instances).toHaveLength(1);
+			Subscriptions.state.replaceAll([]);
+		});
+
+		it('does not show a notification prepared before the user changed', async () => {
+			(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation(async (message: any) => {
+				openNotifications.closeAll();
+				return message;
+			});
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			expect(MockNotification.instances).toHaveLength(0);
 		});
 	});
 

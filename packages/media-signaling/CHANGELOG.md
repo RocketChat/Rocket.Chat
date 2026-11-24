@@ -1,5 +1,33 @@
 # @rocket.chat/media-signaling
 
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- ([#43538](https://github.com/RocketChat/Rocket.Chat/pull/43538)) Declares itself an ES module. `dist` already held ES module syntax, but the package didn't say so, so Node.js could only load it by detecting the syntax. It now sets `"type": "module"` and declares an `exports` map, so deep imports into `dist` no longer resolve. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later).
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+
+  </details>
+
+## 1.4.0
+
+### Minor Changes
+
+- ([#42744](https://github.com/RocketChat/Rocket.Chat/pull/42744)) Adds a private **TURN servers** setting for voice calls. TURN servers and their credentials configured there are only handed to users on a call, instead of being readable by anyone through the public ICE servers setting. Each server can use fixed credentials or a shared secret, in which case the workspace issues each user time-limited credentials for every call and the secret never leaves the server (TURN REST API, as supported by coturn's `use-auth-secret`).
+
+- ([#41224](https://github.com/RocketChat/Rocket.Chat/pull/41224)) External calls will now only play the ringing sound effect once the call has been sent out from the server
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [dd082311778ac467d36a72589bc675f1ab2b2cbe]:</summary>
+  - @rocket.chat/emitter@0.33.1
+
+  </details>
+
 ## 1.4.0-rc.0
 
 ### Minor Changes

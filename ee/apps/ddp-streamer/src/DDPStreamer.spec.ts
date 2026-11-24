@@ -2,7 +2,7 @@ import type { IApiService, IBroker, IServiceMetrics } from '@rocket.chat/core-se
 import { Presence, asyncLocalStorage } from '@rocket.chat/core-services';
 import { ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server, createStreamAdapter } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
 import { DDPStreamer } from './DDPStreamer';
@@ -14,13 +14,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 		newConnection: jest.fn().mockResolvedValue(undefined),
 		removeConnection: jest.fn().mockResolvedValue(undefined),
 		updateConnection: jest.fn().mockResolvedValue(undefined),
-	},
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	...jest.requireActual('@rocket.chat/models'),
-	Users: {
-		findOneById: jest.fn(),
 	},
 }));
 
@@ -38,7 +31,7 @@ jest.mock('@rocket.chat/logger', () => ({
 	}),
 }));
 
-const mockFindOneById = jest.mocked(Users.findOneById);
+const mockFindOneById = jest.fn();
 
 const server = new Server();
 const notifications = new NotificationsModule(createStreamAdapter(server), 'self');
@@ -90,6 +83,10 @@ async function flushMicrotasks(): Promise<void> {
 }
 
 describe('DDPStreamer lifecycle handling', () => {
+	beforeAll(() => {
+		mockModel('Users', { findOneById: mockFindOneById });
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});

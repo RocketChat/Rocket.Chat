@@ -242,7 +242,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			return {
 				type: 'viewSubmit',
 				payload: {
-					view: view as any,
+					view,
 				},
 				triggerId,
 				viewId: view.id,

@@ -84,6 +84,9 @@ export async function publishRelease({
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
 
+	core.info('update lockfile after version bump');
+	await exec('yarn', ['install', '--no-immutable']);
+
 	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
 
 	const { data: latestRelease } = await octokit.rest.repos.getLatestRelease({

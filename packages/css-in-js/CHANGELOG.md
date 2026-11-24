@@ -1,5 +1,31 @@
 # Change Log
 
+## 0.34.0-rc.0
+
+### Minor Changes
+
+- ([#43538](https://github.com/RocketChat/Rocket.Chat/pull/43538)) Ships only an ES module build. The CommonJS build and `dist/index.module.js` are gone: `dist/index.js` is now the ES module, and the package declares an `exports` map, so deep imports into `dist` no longer resolve. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later).
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [be88a0ba4a3a72f9a606f054d5c2d051650140ee, 9971f492da4960edce747fa9feb07c7fc332dbac, be88a0ba4a3a72f9a606f054d5c2d051650140ee]:</summary>
+  - @rocket.chat/css-supports@0.32.0-rc.0
+  - @rocket.chat/memo@0.32.0-rc.0
+  - @rocket.chat/stylis-logical-props-middleware@0.32.0-rc.0
+
+  </details>
+
+## 0.33.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec]:</summary>
+  - @rocket.chat/memo@0.31.26
+  - @rocket.chat/css-supports@0.31.27
+  - @rocket.chat/stylis-logical-props-middleware@0.31.27
+
+  </details>
+
 ## 0.33.3-rc.0
 
 ### Patch Changes

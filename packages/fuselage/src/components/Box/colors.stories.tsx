@@ -88,7 +88,7 @@ export const StatusColors: Story = {
 							alignItems: 'center',
 							justifyContent: 'center',
 						} satisfies BoxProps,
-						child.props.backgroundColor.replace('status-background-', ''),
+						(child.props.backgroundColor as string).replace('status-background-', ''),
 					),
 				)}
 			</Box>

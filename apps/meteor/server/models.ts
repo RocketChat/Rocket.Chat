@@ -8,6 +8,7 @@ import {
 	BannersDismissRaw,
 	BannersRaw,
 	CalendarEventRaw,
+	ContactsRaw,
 	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
@@ -16,6 +17,9 @@ import {
 	EmailInboxRaw,
 	EmailMessageHistoryRaw,
 	EmojiCustomRaw,
+	ExchangeCalendarSyncStateRaw,
+	ExchangeContactSyncStateRaw,
+	ExchangeSyncLeaseRaw,
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	ImportDataRaw,
@@ -49,6 +53,7 @@ import {
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
 	LoginCodesRaw,
+	UiKitViewsRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -90,6 +95,7 @@ registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
 registerModel('ICallHistoryModel', new CallHistoryRaw(db));
+registerModel('IContactsModel', new ContactsRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
@@ -97,6 +103,9 @@ registerModel('ICustomUserStatusModel', new CustomUserStatusRaw(db));
 registerModel('IEmailInboxModel', new EmailInboxRaw(db));
 registerModel('IEmailMessageHistoryModel', new EmailMessageHistoryRaw(db));
 registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
+registerModel('IExchangeCalendarSyncStateModel', new ExchangeCalendarSyncStateRaw(db));
+registerModel('IExchangeContactSyncStateModel', new ExchangeContactSyncStateRaw(db));
+registerModel('IExchangeSyncLeaseModel', new ExchangeSyncLeaseRaw(db));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
@@ -136,6 +145,7 @@ registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('ILoginCodesModel', new LoginCodesRaw(db));
+registerModel('IUiKitViewsModel', new UiKitViewsRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));

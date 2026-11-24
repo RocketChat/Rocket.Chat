@@ -1,5 +1,55 @@
 # @rocket.chat/livechat Change Log
 
+## 4.0.0-rc.0
+
+### Minor Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `container` block, a titled and optionally collapsible frame around other blocks, and the `layout` block, which arranges blocks in rows of up to 3 weighted items. Livechat draws the `fallback` blocks of a layout.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+### Patch Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Gives the Livechat modal dialog semantics and focus handling: it has the `dialog` role (`alertdialog` for alerts and confirmations), is named by its title or message, moves focus into the dialog when it opens, keeps Tab inside it and returns focus to the opener when it closes
+
+- ([#43611](https://github.com/RocketChat/Rocket.Chat/pull/43611)) Fixes the Livechat widget no longer showing new messages after a network outage longer than about a minute; the widget now keeps trying to reconnect until the server is reachable again
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac, fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 42f9f7efa463480e5168ff054a66f9c086bbf809, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+  - @rocket.chat/gazzodown@37.0.0-rc.0
+  - @rocket.chat/logo@0.33.4-rc.0
+
+  </details>
+
+## 3.0.0
+
+### Minor Changes
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+### Patch Changes
+
+- ([#42976](https://github.com/RocketChat/Rocket.Chat/pull/42976)) Stops re-rendering every component that talks to the server whenever the connection status changes, including on each reconnection attempt
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the Livechat client ignoring a visitor token set through `credentials.token`, `onQueuePositionChange` subscribing without the visitor token, and visitor endpoints throwing synchronously instead of rejecting when there is no token
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- <details><summary>Updated dependencies [dd082311778ac467d36a72589bc675f1ab2b2cbe, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 909b2e6aa0a360075c5a91eb52b955824909423a, 909b2e6aa0a360075c5a91eb52b955824909423a, 909b2e6aa0a360075c5a91eb52b955824909423a, c9aa43916295df79a799e53b8e09c58011991a97, c9aa43916295df79a799e53b8e09c58011991a97, 9e401e55fbd71b95dc7c4b273024219ce2564856, e2f037838f6226f4894faa28613cc86f6d6f8e2d, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, 8fddbd4ebf2e4ac77a716b22a676077054506b7b]:</summary>
+  - @rocket.chat/emitter@0.33.1
+  - @rocket.chat/fuselage-tokens@0.36.0
+  - @rocket.chat/logo@0.33.3
+  - @rocket.chat/message-parser@0.33.0
+  - @rocket.chat/gazzodown@36.0.0
+  - @rocket.chat/ui-kit@2.0.0
+
+  </details>
+
 ## 3.0.0-rc.0
 
 ### Minor Changes

@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import AxeBuilder from '@axe-core/playwright';
-import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
+import type { Locator, APIResponse, APIRequestContext, ExpectMatcherState } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
@@ -132,36 +132,27 @@ export const test = baseTest.extend<BaseTest>({
 
 export const { expect } = test;
 
+/**
+ * Waits for `attribute="true"`, or under `.not` for it to clear.
+ */
+const matchAriaState = async (state: ExpectMatcherState, received: Locator, attribute: 'aria-invalid' | 'aria-busy', adjective: string) => {
+	const message = () => `expected ${received} ${state.isNot ? 'not ' : ''}to be ${adjective}`;
+
+	try {
+		await (state.isNot ? expect(received).not : expect(received)).toHaveAttribute(attribute, 'true');
+
+		return { message, pass: !state.isNot };
+	} catch {
+		return { message, pass: state.isNot };
+	}
+};
+
 expect.extend({
-	async toBeInvalid(received: Locator) {
-		try {
-			await expect(received).toHaveAttribute('aria-invalid', 'true');
-
-			return {
-				message: () => `expected ${received} to be invalid`,
-				pass: true,
-			};
-		} catch (error) {
-			return {
-				message: () => `expected ${received} to be invalid`,
-				pass: false,
-			};
-		}
+	toBeInvalid(this: ExpectMatcherState, received: Locator) {
+		return matchAriaState(this, received, 'aria-invalid', 'invalid');
 	},
-	async toBeBusy(received: Locator) {
-		try {
-			await expect(received).toHaveAttribute('aria-busy', 'true');
-
-			return {
-				message: () => `expected ${received} to be busy`,
-				pass: true,
-			};
-		} catch (error) {
-			return {
-				message: () => `expected ${received} to be busy`,
-				pass: false,
-			};
-		}
+	toBeBusy(this: ExpectMatcherState, received: Locator) {
+		return matchAriaState(this, received, 'aria-busy', 'busy');
 	},
 	async hasAttribute(received: Locator, attribute: string) {
 		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);

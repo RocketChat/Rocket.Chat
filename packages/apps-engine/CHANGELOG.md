@@ -1,5 +1,37 @@
 # @rocket.chat/apps-engine
 
+## 1.69.0-rc.0
+
+### Minor Changes
+
+- ([#43624](https://github.com/RocketChat/Rocket.Chat/pull/43624)) Adds ES module entry points next to the CommonJS build. `import` now resolves `@rocket.chat/apps-engine/definition/…` to modules under `esm/` that re-export the CommonJS ones, so both formats share the same classes and `instanceof` checks keep working across them. `require` loads the same modules as before, including through extensionless and directory paths such as `definition/accessors`.
+
+  The package now declares an `exports` map, which only exposes `definition/…` and `package.json`; nothing else was ever published.
+
+- ([#43647](https://github.com/RocketChat/Rocket.Chat/pull/43647)) Lets apps upload a file into a thread with the new `threadId` field of `IUploadDescriptor`
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `on_enter_pressed` to `dispatchActionConfig`, so an input element sends a `blockAction` with its current value when the user presses Enter
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+## 1.68.0
+
+### Minor Changes
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds the **Edit room ABAC attributes** permission, scoped to a room and held by administrators and room owners by default. In private channels and teams that carry attributes or are locked by enforcement, its holders and ABAC administrators get an **Attribute-based access control** panel to view and change the room's attributes, and a locked room offers them **Manage attributes** in place of the composer. Before anything is saved, this panel and editing a room in **Administration > ABAC > Rooms** preview which members lose or keep access.
+
+  With the local Policy Decision Point and **Restrict room creators and editors to attributes they hold** on, the default, holders can only add values they hold. While enforcement is on and attributes are required, they cannot remove a required attribute or every attribute. ABAC administrators are not restricted by either rule. `POST /v1/abac/rooms/:rid/attributes` accepts an empty set to clear a room, and `attributes.listAssignable` and `rooms.evaluateMembership` accept a room id. With Virtru, an attribute change by a user also removes members whose access cannot be decided.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
 ## 1.68.0-rc.0
 
 ### Minor Changes

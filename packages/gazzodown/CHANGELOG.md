@@ -1,5 +1,45 @@
 # @rocket.chat/gazzodown
 
+## 37.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [34234f0163d4052dc611034b4dd5d18971a973d8, 25a57072d42d76566eb34d086c3ae09060d09e86, 34234f0163d4052dc611034b4dd5d18971a973d8, 183bca8af1fc26ab280120fef087f72f92982302, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 65784586850ac2bddf383225524cc70eede65825, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 50a86d79876838745564b1adaf2d8409cb50c9a3, 25a57072d42d76566eb34d086c3ae09060d09e86, 9fe037ae8446c6aa6ac3149ce7c954a8698c721c, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 34234f0163d4052dc611034b4dd5d18971a973d8, 438544159fd6359527759d2a97dd227ae9f6c58c, fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, 10deeafc95d3d62507d1679707749db70954b0f8, 47bbdf898ed3bc2abae979e46ccaa7581b7b3dac, 46cba6391140d334aecbe764a0fc3341feb27ce9, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b58dc3f74d95770724a0ad8770e681dfc83e1873, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, 42f9f7efa463480e5168ff054a66f9c086bbf809, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 25a232e58bd49fa2cbad86f13a8e935c0a703170, f1db1bd6e06acaa868f77270356b4be393105a58, 0270870289ea9e3449f658ad7bff80d1525e9937, e074eb52ce5cca7934b85080c090b16e82010320, 2764e60c1343f9ed870bd40deef2d2019acaf477, e34b44c4aefa9952f18aa625be9910adeec8b76b, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 34234f0163d4052dc611034b4dd5d18971a973d8, a0177a4b9570b49735fca52783757ab62a59bb35, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/fuselage@2.0.0-rc.0
+  - @rocket.chat/css-in-js@0.34.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-client@37.0.0-rc.0
+  - @rocket.chat/ui-contexts@37.0.0-rc.0
+  - @rocket.chat/styled@0.35.0-rc.0
+
+  </details>
+
+## 36.0.0
+
+### Minor Changes
+
+- ([#42510](https://github.com/RocketChat/Rocket.Chat/pull/42510)) Opens the user card by hovering a message author's name or avatar, or a user mention, and opens the full user info by clicking them or pressing Enter or Space on the author's name or a mention. A card opened by hover doesn't take focus from what the user is doing.
+
+### Patch Changes
+
+- ([#42686](https://github.com/RocketChat/Rocket.Chat/pull/42686)) Fixes indented list items being rendered as plain text instead of nested lists in messages
+
+- ([#42722](https://github.com/RocketChat/Rocket.Chat/pull/42722)) Fixes the tooltip of links typed without a protocol (e.g. `test.com`) showing stray slashes (`////test.com`) instead of the full link address
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 53bf8feb0c2075ee243d90c42ca2934098b93709, 5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 4c379a0d016fcf010bab86ddd94a22ff2401606e, ad08045f56e3921e88ed021aa2945c9ba670e5f5, cea4d4428a0d86c6fc868542d4fb00a36ffaa27d, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 4c379a0d016fcf010bab86ddd94a22ff2401606e, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 05e9b38a001919252360351f0bc3e46cc990a6ac, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 2184b09b0bdacdb0bced60dc054a818a92c98131, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, ec381cf4a88002601fd2b83b7eed734a2e8165b6, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 6b86dffd3a05f65fff000bb697fbb40350664629, 5e6b6bd25ea82b9c884d49871870f71dc532a061, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, c637a035450ca2241bb04692f276921592e513f6, c9aa43916295df79a799e53b8e09c58011991a97, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, c12e5836df7fc5a4c9ee7a760c6101cb0ee8474a, 2d3331be63dde3449245963c33444dcb15fa8869, f5e483d062fed3e13b07ffd200ba5f04a88a4370, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, c9aa43916295df79a799e53b8e09c58011991a97, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 52fdf8ea1b17b08482cf8cb21156f1be7b80844c, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 05e9b38a001919252360351f0bc3e46cc990a6ac, cd88334c72f7f2310706abc4d481a2712019e373, a39b03fe5c248079365162e31994e1dece63e7c2, 982270a515cc061aafccb82a0605a36ce929d56c, 8fddbd4ebf2e4ac77a716b22a676077054506b7b, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 5e7e4a8aa389be0d3d4ace0861c646069151674d]:</summary>
+  - @rocket.chat/core-typings@9.0.0
+  - @rocket.chat/fuselage@1.0.0
+  - @rocket.chat/ui-contexts@36.0.0
+  - @rocket.chat/ui-client@36.0.0
+  - @rocket.chat/fuselage-tokens@0.36.0
+  - @rocket.chat/message-parser@0.33.0
+  - @rocket.chat/styled@0.34.2
+  - @rocket.chat/css-in-js@0.33.3
+
+  </details>
+
 ## 36.0.0-rc.1
 
 ### Patch Changes

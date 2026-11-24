@@ -20,7 +20,7 @@ const ImageGalleryData = () => {
 		return <ImageGalleryError onClose={onClose} />;
 	}
 
-	return <ImageGallery images={images} loadMore={fetchNextPage} onClose={onClose} />;
+	return <ImageGallery images={[...images].reverse()} loadMore={fetchNextPage} onClose={onClose} />;
 };
 
 export default ImageGalleryData;

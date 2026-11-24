@@ -1,0 +1,21 @@
+import { Box, InputBoxSkeleton, Stack } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
+
+export type EngagementDashboardCardFilterProps = {
+	children?: ReactNode;
+};
+
+/**
+ * The filters of a dashboard section, aligned to the end of the card above its content.
+ */
+const EngagementDashboardCardFilter = ({ children = <InputBoxSkeleton /> }: EngagementDashboardCardFilterProps) => (
+	<Box display='flex' flexGrow={1} flexShrink={1} justifyContent='flex-end' alignItems='center' wrap='no-wrap' paddingBlockEnd='x8'>
+		{children && (
+			<Stack direction='row' align='center' gap='x8'>
+				{children}
+			</Stack>
+		)}
+	</Box>
+);
+
+export default EngagementDashboardCardFilter;

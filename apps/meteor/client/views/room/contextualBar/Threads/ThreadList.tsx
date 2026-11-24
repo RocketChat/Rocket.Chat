@@ -12,9 +12,10 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState, useCallback, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
@@ -30,7 +31,7 @@ type ThreadType = 'all' | 'following' | 'unread';
 
 // TODO: Refactor this component to isolate the data from the visual
 const ThreadList = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const threadListId = useId();
 	const threadListRef = useMessageRowListNavigation();
 
@@ -177,6 +178,7 @@ const ThreadList = () => {
 											unreadUser={subscription?.tunreadUser ?? []}
 											unreadGroup={subscription?.tunreadGroup ?? []}
 											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
+											ignoredUser={Boolean(subscription?.ignored?.includes(data.u._id))}
 											onClick={handleThreadClick}
 										/>
 									)}

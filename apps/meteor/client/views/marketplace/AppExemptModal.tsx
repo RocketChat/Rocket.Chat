@@ -1,4 +1,4 @@
-import { Box, ModalFooterAnnotation } from '@rocket.chat/fuselage';
+import { ModalFooterAnnotation, Stack, Text } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -39,8 +39,10 @@ const AppExemptModal = ({ onCancel, appName }: AppExemptModalProps) => {
 			onCancel={onCancel}
 			onConfirm={goToManageSubscriptionPage}
 		>
-			<Box marginBlockEnd='x24'>{t('Apps_Private_App_Is_Exempt', { appName })}</Box>
-			{t('Upgrade_subscription_to_enable_private_apps')}
+			<Stack gap='x24'>
+				<Text is='p'>{t('Apps_Private_App_Is_Exempt', { appName })}</Text>
+				<Text is='p'>{t('Upgrade_subscription_to_enable_private_apps')}</Text>
+			</Stack>
 		</GenericModal>
 	);
 };

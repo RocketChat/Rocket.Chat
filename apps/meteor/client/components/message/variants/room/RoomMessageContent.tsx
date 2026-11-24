@@ -1,11 +1,12 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { splitQuoteAttachments } from '../../../../lib/utils/splitQuoteAttachments';
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
@@ -17,10 +18,8 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
 import UrlPreviews from '../../content/UrlPreviews';
-import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
-import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useMessageListReadReceipts } from '../../list/MessageListContext';
+import { useMessageListIsBroadcast, useMessageListOembedEnabled, useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 export type RoomMessageContentProps = {
@@ -33,8 +32,8 @@ export type RoomMessageContentProps = {
 
 const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
-	const { enabled: oembedEnabled } = useOembedLayout();
-	const broadcast = useMessageBroadcast(message);
+	const oembedEnabled = useMessageListOembedEnabled();
+	const broadcast = useMessageListIsBroadcast();
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -42,11 +41,9 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const { t } = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
-	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
+	const isMessageEncrypted = encrypted && normalizedMessage.e2e === 'pending';
 
-	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
-
-	const attachments = normalizedMessage?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
+	const { quotes, attachments } = splitQuoteAttachments(normalizedMessage.attachments);
 
 	return (
 		<>
@@ -56,7 +53,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				</MessageBody>
 			)}
 
-			{!!quotes?.length && (
+			{!!quotes.length && (
 				<Attachments
 					attachments={quotes}
 					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
@@ -108,14 +105,14 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			{chat && isThreadMainMessage(normalizedMessage) && (
 				<ThreadMetrics
 					counter={normalizedMessage.tcount}
-					following={Boolean(uid && normalizedMessage?.replies?.indexOf(uid) > -1)}
+					following={Boolean(uid && normalizedMessage.replies?.includes(uid))}
 					mid={normalizedMessage._id}
 					rid={normalizedMessage.rid}
 					lm={normalizedMessage.tlm}
 					unread={unread}
 					mention={mention}
 					all={all}
-					participants={normalizedMessage?.replies}
+					participants={normalizedMessage.replies}
 				/>
 			)}
 

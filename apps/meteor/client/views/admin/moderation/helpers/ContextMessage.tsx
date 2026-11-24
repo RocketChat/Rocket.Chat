@@ -12,7 +12,6 @@ import {
 	MessageName,
 	MessageToolbar,
 	MessageToolbarItem,
-	MessageToolbarWrapper,
 	MessageUsername,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -23,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import ReportReasonCollapsible from './ReportReasonCollapsible';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
+import MessageToolbarReveal, { messageToolbarScope } from '../../../../components/message/toolbar/MessageToolbarReveal';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
@@ -67,7 +67,7 @@ const ContextMessage = ({
 	return (
 		<>
 			<MessageDivider>{formatDate(message._updatedAt)}</MessageDivider>
-			<Message>
+			<Message className={messageToolbarScope} tabIndex={0}>
 				<MessageLeftContainer>
 					<UserAvatar username={message.u.username} />
 				</MessageLeftContainer>
@@ -103,7 +103,7 @@ const ContextMessage = ({
 						<MessageReportInfo msgId={message._id} />
 					</ReportReasonCollapsible>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<MessageToolbarReveal>
 					<MessageToolbar>
 						<MessageToolbarItem
 							icon='checkmark-circled'
@@ -113,7 +113,7 @@ const ContextMessage = ({
 						<MessageToolbarItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
 						<MessageToolbarItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</MessageToolbarReveal>
 			</Message>
 		</>
 	);

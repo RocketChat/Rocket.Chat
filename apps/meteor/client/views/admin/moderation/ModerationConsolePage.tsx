@@ -1,6 +1,7 @@
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
@@ -16,7 +17,7 @@ export type ModerationConsolePageProps = {
 };
 
 const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationConsolePageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();

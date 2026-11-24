@@ -61,7 +61,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		const roomNames = getNameForDMs([...roomMembers, ...(updatedNames ?? [])]);
 
-		for await (const sub of subs) {
+		for (const sub of subs) {
 			// don't update the name if the user is invited but hasn't accepted yet
 			if (!ignoreStatusFromSubs?.includes(sub._id) && sub.status === 'INVITED') {
 				continue;
@@ -175,7 +175,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
-		return roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name });
+		return roomCoordinator.getRouteLink(room.t, { rid: room._id, name: room.name });
 	}
 
 	/**
@@ -273,7 +273,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			return; // 'user' role essentially
 		}
 
-		for await (const currentRole of sub.roles) {
+		for (const currentRole of sub.roles) {
 			if (currentRole === 'owner') {
 				await removeRoomOwner(fromUserId, roomId, userId);
 				return;
