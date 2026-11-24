@@ -1,5 +1,14 @@
 # @rocket.chat/logger
 
+## 1.0.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+
+  </details>
+
 ## 1.0.2
 
 ### Patch Changes

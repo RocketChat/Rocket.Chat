@@ -113,6 +113,10 @@ export type * from './VideoConferenceCapabilities';
 
 export type * from './SpotlightUser';
 export type * from './ICalendarEvent';
+export * from './IContact';
+export type * from './IExchangeCalendarSyncState';
+export type * from './IExchangeContactSyncState';
+export type * from './IExchangeSyncLease';
 
 export type * from './search';
 export * from './omnichannel';

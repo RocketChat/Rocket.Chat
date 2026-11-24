@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -87,7 +87,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
+			onSubmit={onSubmit}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Enter_authentication_code')}

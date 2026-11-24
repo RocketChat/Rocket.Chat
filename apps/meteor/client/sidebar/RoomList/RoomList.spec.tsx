@@ -112,12 +112,16 @@ jest.mock('../hooks/usePreventDefault', () => ({
 	usePreventDefault: (ref: unknown) => mockUsePreventDefault(ref),
 }));
 
+let mockGroups = groups;
+
 jest.mock('../hooks/useRoomList', () => ({
 	...jest.requireActual('../hooks/useRoomList'),
-	useRoomList: () => ({
-		groups,
-		groupsCount: [2, 1, 0],
-		totalCount: 3,
+	useRoomList: ({ filterText = '' }: { filterText?: string }) => ({
+		groups: mockGroups,
+		groupKeys: mockGroups.map((group) => group.key),
+		filtering: Boolean(filterText.trim()),
+		groupsCount: mockGroups.map((group) => group.rooms.length),
+		totalCount: mockGroups.reduce((acc, group) => acc + group.rooms.length, 0),
 	}),
 }));
 
@@ -151,6 +155,16 @@ const appRoot = mockAppRoot().withJohnDoe().withUserPreference('sidebarViewMode'
 describe('RoomList', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		mockGroups = groups;
+	});
+
+	it('shows "No results found" when the filter matches no room', () => {
+		mockGroups = [];
+
+		render(<RoomList filterText='nothing' />, { wrapper: appRoot });
+
+		expect(screen.getByRole('group', { name: 'No_results_found' })).toBeInTheDocument();
+		expect(mockSidebarVirtualList).not.toHaveBeenCalled();
 	});
 
 	it('passes grouped room data to SidebarVirtualList', () => {

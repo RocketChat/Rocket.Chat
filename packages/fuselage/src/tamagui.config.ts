@@ -1,9 +1,11 @@
 import { createTamagui, createTokens } from '@tamagui/web';
 
-/** Colors and lengths stay on the `--rcx-*` custom properties, so palettes and custom themes keep reaching every component. */
+import { themes, tokens, webTokens } from './tamagui.tokens';
+
+/** The one set of tokens and themes the web and native clients share. */
 export const tamaguiConfig = createTamagui({
-	tokens: createTokens({ color: {}, space: {}, size: {}, radius: {}, zIndex: {} }),
-	themes: { light: {} },
+	tokens: createTokens(process.env.TAMAGUI_TARGET === 'native' ? tokens : webTokens),
+	themes,
 	settings: { addThemeClassName: false },
 });
 

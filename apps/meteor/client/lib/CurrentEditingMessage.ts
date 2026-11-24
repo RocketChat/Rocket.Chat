@@ -35,20 +35,23 @@ export class CurrentEditingMessage {
 
 	public stop = async () => {
 		await this.runExclusive(async () => {
-			if (!this.chat.composer || !this.mid) {
+			if (!this.mid) {
 				return;
 			}
 
-			const message = await this.chat.data.findMessageByID(this.mid);
-			const draft = this.chat.composer.text;
+			if (this.chat.composer) {
+				const message = await this.chat.data.findMessageByID(this.mid);
+				const draft = this.chat.composer.text;
 
-			if (draft === message?.msg) {
-				await this.chat.data.discardDraft(this.mid);
-			} else {
-				await this.chat.data.saveDraft(this.mid, (await this.chat.data.getDraft(this.mid)) || draft);
+				if (draft === message?.msg) {
+					await this.chat.data.discardDraft(this.mid);
+				} else {
+					await this.chat.data.saveDraft(this.mid, (await this.chat.data.getDraft(this.mid)) || draft);
+				}
+
+				this.chat.composer.setEditingMode(false);
 			}
 
-			this.chat.composer.setEditingMode(false);
 			this.mid = undefined;
 			clearHighlightMessage();
 		});

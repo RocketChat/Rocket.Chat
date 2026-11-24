@@ -23,7 +23,7 @@ const RESPONSE_CODE_TO_ERROR: Record<string, { code: ExchangeErrorCode; message:
 	ErrorImpersonationDenied: { code: 'authorization-failed', message: 'Impersonation was denied by the Exchange server' },
 	ErrorNonExistentMailbox: { code: 'mailbox-not-found', message: 'The mailbox does not exist on this Exchange server' },
 	ErrorNameResolutionNoResults: { code: 'mailbox-not-found', message: 'Exchange could not resolve the mailbox address' },
-	ErrorInvalidSyncStateData: { code: 'unexpected-response', message: 'The stored sync state is no longer valid and must be reset' },
+	ErrorInvalidSyncStateData: { code: 'sync-state-invalid', message: 'The stored sync state is no longer valid and must be reset' },
 	ErrorServerBusy: { code: 'rate-limited', message: 'Exchange is throttling the service account' },
 };
 
@@ -57,6 +57,24 @@ export const firstByTag = (scope: Document | Element, ns: string, tag: string): 
 
 export const allByTag = (scope: Document | Element, ns: string, tag: string): Element[] =>
 	Array.from(scope.getElementsByTagNameNS(ns, tag) as unknown as ArrayLike<Element>);
+
+export const attributeOf = (scope: Document | Element | undefined, tag: string, attribute: string): string | undefined => {
+	const found = scope && firstByTag(scope, TYPES_NS, tag);
+	return found?.getAttribute(attribute) ?? undefined;
+};
+
+/** Several contact fields are keyed dictionaries rather than plain lists */
+export const dictionaryEntries = (scope: Element, tag: string): { key: string; value: string }[] => {
+	const dictionary = firstByTag(scope, TYPES_NS, tag);
+
+	if (!dictionary) {
+		return [];
+	}
+
+	return allByTag(dictionary, TYPES_NS, 'Entry')
+		.map((entry) => ({ key: entry.getAttribute('Key') ?? '', value: textOf(entry) ?? '' }))
+		.filter(({ value }) => value);
+};
 
 export const parseEwsDateTime = (value: string | undefined): Date | undefined => {
 	if (!value) {

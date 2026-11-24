@@ -75,7 +75,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
 			getPath(file: IUpload) {
-				const avatarFile = file.rid ? `room-${file.rid}` : file.userId;
+				const avatarFile = (file.rid && `room-${file.rid}`) || (file.contactId && `contact-${file._id}`) || file.userId;
 				return `${settings.get('uniqueID')}/avatars/${avatarFile}`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
@@ -93,6 +93,18 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 		};
 	},
 };
+
+async function triggerPreFileUploadEvent(file: IUpload, content?: Buffer | string) {
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new ClientSafeError('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+}
 
 export const FileUpload = {
 	handlers,
@@ -176,15 +188,7 @@ export const FileUpload = {
 		}
 
 		// App IPreFileUpload event hook
-		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
-		} catch (error: any) {
-			if (error.name === AppsEngineException.name) {
-				throw new ClientSafeError('error-app-prevented', error.message);
-			}
-
-			throw error;
-		}
+		await triggerPreFileUploadEvent(file, content);
 
 		return true;
 	},
@@ -225,7 +229,7 @@ export const FileUpload = {
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = settings.get('Accounts_AvatarSize') as number;
-		const width = height as number;
+		const width = height;
 
 		const s = sharp(tempFilePath);
 		if (settings.get('FileUpload_RotateImages') === true) {
@@ -323,7 +327,7 @@ export const FileUpload = {
 			height: pageHeight ?? height,
 			thumbFileType: (mime.lookup(format) as string) || '',
 			thumbFileName: file?.name as string,
-			originalFileId: file?._id as string,
+			originalFileId: file?._id,
 		}));
 		image.pipe(transformer);
 
@@ -418,7 +422,7 @@ export const FileUpload = {
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (file.rid) {
+		if (file.rid || file.contactId) {
 			return;
 		}
 

@@ -113,7 +113,7 @@ test.describe.serial('Threads', () => {
 			await expect(page).not.toHaveURL(/.*thread/);
 		});
 		test('expect delete the thread message and keep thread open if has more than one message', async ({ page }) => {
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('another reply message');
+			await poHomeChannel.threadComposer.inputMessage.type('another reply message');
 			await page.keyboard.press('Enter');
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);

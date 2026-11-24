@@ -166,6 +166,16 @@ describe('Mailer API', () => {
 		expect((await deliveredEmail()).text).to.equal('Hello Ana');
 	});
 
+	it('should keep link targets in the text built from the HTML', async () => {
+		await Mailer.send({
+			...email,
+			html: '<p>Hi</p><a class="btn" href="[Forgot_Password_Url]">Reset</a>',
+			data: { Forgot_Password_Url: 'https://chat.example.com/reset/abc' },
+		});
+
+		expect((await deliveredEmail()).text).to.equal('Hi Reset (https://chat.example.com/reset/abc)');
+	});
+
 	it('should send no HTML in plain-text-only mode', async () => {
 		settingValues.email_plain_text_only = true;
 
@@ -174,6 +184,16 @@ describe('Mailer API', () => {
 		const sent = await deliveredEmail();
 		expect(sent.html).to.be.undefined;
 		expect(sent.text).to.equal('Hello');
+	});
+
+	it('should keep link targets in the text sent in plain-text-only mode', async () => {
+		settingValues.email_plain_text_only = true;
+
+		await Mailer.sendNoWrap({ ...email, html: '<a href="https://chat.example.com/verify/abc">Verify</a>' });
+
+		const sent = await deliveredEmail();
+		expect(sent.html).to.be.undefined;
+		expect(sent.text).to.equal('Verify (https://chat.example.com/verify/abc)');
 	});
 
 	it('should wrap the HTML with the header and footer', async () => {

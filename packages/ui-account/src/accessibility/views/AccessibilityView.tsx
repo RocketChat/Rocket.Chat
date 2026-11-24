@@ -22,6 +22,7 @@ import {
 	getDirtyFields,
 	links,
 	useCreateFontStyleElement,
+	useThemePreview,
 } from '@rocket.chat/ui-client';
 import { useLocationHash } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
@@ -68,6 +69,8 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 	});
 
 	const currentData = watch();
+
+	useThemePreview(currentData.themeAppearence);
 
 	const handleSaveData = async (formData: AccessibilityPreferencesData) => {
 		const changes = getDirtyFields(formData, dirtyFields);

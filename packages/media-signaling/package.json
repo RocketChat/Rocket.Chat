@@ -8,7 +8,7 @@
 			"default": "./dist/index.js"
 		}
 	},
-	"version": "1.4.0",
+	"version": "1.5.0-rc.0",
 	"license": "MIT",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat/#readme",
 	"repository": {

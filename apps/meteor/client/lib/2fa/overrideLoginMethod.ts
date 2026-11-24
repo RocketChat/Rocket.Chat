@@ -63,6 +63,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 ) => {
 	return (...args: [...loginArgs: Parameters<TLoginFunction>, callback?: LoginCallback]) => {
 		const loginArgs = args.slice(0, -1) as Parameters<TLoginFunction>;
+		// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- tsc needs this cast; oxlint type-aware disagrees
 		const callback = args.slice(-1)[0] as LoginCallback | undefined;
 
 		return login(...loginArgs)

@@ -1,5 +1,34 @@
 # @rocket.chat/ui-client
 
+## 37.0.0-rc.0
+
+### Minor Changes
+
+- ([#43818](https://github.com/RocketChat/Rocket.Chat/pull/43818)) Replaces `Modal`'s `wrapper` and `wrapperFunction` with `onSubmit` and `formId`: `Modal` renders its own surface, as a `form` when `onSubmit` is given. The handler takes no event, and `Modal` prevents the browser's own submission. `GenericModal`'s `wrapperFunction` becomes `onSubmit`, and the app's `ModalForm` is removed.
+
+  ### Breaking for npm consumers
+  - `Modal` no longer accepts `wrapper` or `wrapperFunction`. Pass `onSubmit` (and `formId` when the form needs an `id`) instead of rendering a `form` yourself.
+  - `GenericModal` no longer accepts `wrapperFunction`. Pass `onSubmit`; the confirm button is still a `type='submit'` button when it is given.
+
+- ([#42670](https://github.com/RocketChat/Rocket.Chat/pull/42670)) Adds `usePaginatedQuery`, which fills each table page with as many requests as needed when the server returns fewer items than requested and either joins the rows under `itemsKey`, runs a custom `combine` over the query results, or returns one query result per request when neither is given; when both are given, `combine` is used. Also adds a `resetKey` option to `usePagination` that goes back to the first page when the key changes
+
+- ([#43836](https://github.com/RocketChat/Rocket.Chat/pull/43836)) Previews the selected theme across the app as soon as it is picked in Accessibility & Appearance, before saving. Leaving the page without saving restores the saved theme.
+
+### Patch Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes closing a modal through the handle returned when it opened: it closed whatever modal was on top instead of its own, so an app's modal closing late could dismiss a modal opened after it.
+
+- <details><summary>Updated dependencies [34234f0163d4052dc611034b4dd5d18971a973d8, 25a57072d42d76566eb34d086c3ae09060d09e86, 34234f0163d4052dc611034b4dd5d18971a973d8, 183bca8af1fc26ab280120fef087f72f92982302, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 65784586850ac2bddf383225524cc70eede65825, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 50a86d79876838745564b1adaf2d8409cb50c9a3, 25a57072d42d76566eb34d086c3ae09060d09e86, 9fe037ae8446c6aa6ac3149ce7c954a8698c721c, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 34234f0163d4052dc611034b4dd5d18971a973d8, 438544159fd6359527759d2a97dd227ae9f6c58c, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4, 10deeafc95d3d62507d1679707749db70954b0f8, 47bbdf898ed3bc2abae979e46ccaa7581b7b3dac, 46cba6391140d334aecbe764a0fc3341feb27ce9, b58dc3f74d95770724a0ad8770e681dfc83e1873, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 0270870289ea9e3449f658ad7bff80d1525e9937, e074eb52ce5cca7934b85080c090b16e82010320, 2764e60c1343f9ed870bd40deef2d2019acaf477, e34b44c4aefa9952f18aa625be9910adeec8b76b, 34234f0163d4052dc611034b4dd5d18971a973d8, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/fuselage@2.0.0-rc.0
+  - @rocket.chat/icons@0.53.0-rc.0
+  - @rocket.chat/css-in-js@0.34.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/ui-contexts@37.0.0-rc.0
+  - @rocket.chat/ui-avatar@33.0.0-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.1-rc.0
+
+  </details>
+
 ## 36.0.0
 
 ### Major Changes

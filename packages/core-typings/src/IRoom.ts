@@ -44,6 +44,8 @@ export interface IRoom extends IRocketChatRecord {
 	};
 
 	prid?: string;
+	pmid?: string;
+
 	avatarETag?: string;
 
 	teamMain?: boolean;
