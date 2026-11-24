@@ -259,6 +259,39 @@ it('checks and unchecks the options of checkboxes in an input block, and submits
 	expect(sentState('viewSubmit')).toEqual({ 'colors-block': { colors: ['green'] } });
 });
 
+it('submits the checked options of checkboxes in an input block that send each click to the app', async () => {
+	renderModal(
+		view({
+			blocks: [
+				{
+					type: 'input',
+					appId: 'app',
+					blockId: 'colors-block',
+					label: plainText('Colors'),
+					element: {
+						type: 'checkbox',
+						appId: 'app',
+						blockId: 'colors-block',
+						actionId: 'colors',
+						options,
+						dispatchActionConfig: ['on_item_selected'],
+					},
+				},
+			],
+		}),
+	);
+
+	await userEvent.click(screen.getByLabelText('Red'));
+	await waitFor(() => expect(screen.getByLabelText('Red')).toBeEnabled());
+	await userEvent.click(screen.getByLabelText('Green'));
+	await waitFor(() => expect(screen.getByLabelText('Green')).toBeEnabled());
+	await userEvent.click(screen.getByLabelText('Red'));
+	await waitFor(() => expect(screen.getByLabelText('Red')).toBeEnabled());
+	await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+	expect(sentState('viewSubmit')).toEqual({ 'colors-block': { colors: ['green'] } });
+});
+
 it('submits the checked options of toggle switches in an input block that start with none', async () => {
 	renderModal(
 		view({

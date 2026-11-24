@@ -71,10 +71,13 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 			target: { value: elValue },
 		} = e;
 
-		setLoading(true);
-		setValue(getNextValue(elValue));
+		const nextValue = getNextValue(elValue);
 
-		await updateState?.({ blockId, appId, actionId, value: elValue, viewId }, e);
+		setLoading(true);
+		setValue(nextValue);
+
+		// An input block submits what is displayed; actions and section blocks keep the option clicked in the state.
+		await updateState?.({ blockId, appId, actionId, value: context === UiKit.BlockContext.FORM ? nextValue : elValue, viewId }, e);
 		await action(
 			{
 				blockId,
