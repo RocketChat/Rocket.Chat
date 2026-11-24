@@ -135,9 +135,9 @@ export const Spacing: Story = {
 		await expect(rect('two').left - rect('one').right).toBe(8);
 		await expect(rect('three').left - rect('two').right).toBe(8);
 
-		// The label sits 4px after the icon, and 4px in from the edge when it is alone
+		// The label sits 4px after the icon, and on the item's start edge when it is alone
 		await expect(rect('label').left - rect('icon').right).toBe(4);
-		await expect(rect('lone-label').left - rect('three').left).toBe(4);
+		await expect(rect('lone-label').left - rect('three').left).toBe(0);
 
 		await expect(computed(el(canvasElement, 'one'), 'display')).toBe('flex');
 		await expect(computed(el(canvasElement, 'one'), 'align-items')).toBe('center');
