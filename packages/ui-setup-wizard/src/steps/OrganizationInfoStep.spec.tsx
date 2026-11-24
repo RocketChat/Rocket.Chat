@@ -61,10 +61,12 @@ it('saves the organization info before going to the next step', async () => {
 
 	renderStep({ saveOrganizationData, goToNextStep });
 
+	fireEvent.change(screen.getByDisplayValue('Acme'), { target: { value: 'Acme Corp' } });
 	fireEvent.submit(screen.getByRole('form'));
 
 	await waitFor(() => expect(goToNextStep).toHaveBeenCalled());
-	expect(saveOrganizationData).toHaveBeenCalledWith(organizationData);
+	expect(saveOrganizationData).toHaveBeenCalledWith({ ...organizationData, organizationName: 'Acme Corp' });
+	expect(saveOrganizationData.mock.invocationCallOrder[0]).toBeLessThan(goToNextStep.mock.invocationCallOrder[0]);
 });
 
 it('saves the organization info when the workspace is already registered', async () => {
@@ -73,10 +75,11 @@ it('saves the organization info when the workspace is already registered', async
 
 	renderStep({ saveOrganizationData, completeSetupWizard, skipCloudRegistration: true, maxSteps: 2 });
 
+	fireEvent.change(screen.getByDisplayValue('Acme'), { target: { value: 'Acme Corp' } });
 	fireEvent.submit(screen.getByRole('form'));
 
 	await waitFor(() => expect(completeSetupWizard).toHaveBeenCalled());
-	expect(saveOrganizationData).toHaveBeenCalledWith(organizationData);
+	expect(saveOrganizationData).toHaveBeenCalledWith({ ...organizationData, organizationName: 'Acme Corp' });
 	expect(saveOrganizationData.mock.invocationCallOrder[0]).toBeLessThan(completeSetupWizard.mock.invocationCallOrder[0]);
 });
 
