@@ -77,7 +77,7 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"ButtonGroup/ButtonGroup.styles.scss": {

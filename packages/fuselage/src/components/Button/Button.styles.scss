@@ -11,9 +11,7 @@
 // total inset to get the padding value.
 $border-width: theme('button-border-width', lengths.border-width('default'));
 
-// Inline inset, one padding-scale step per size. The icon side reads 2px
-// tighter than this, but that is an optical correction carried by the icon's
-// own margin, so every inset here stays a plain scale value.
+// Inline inset, one padding-scale step per size, the same on both sides.
 $inset-default: lengths.padding(16); // 16px
 $inset-medium: lengths.padding(12); // 12px
 $inset-small: lengths.padding(8); // 8px
@@ -77,12 +75,11 @@ $inset-large: lengths.padding(24); // 24px
 	@include with-rectangular-size($height: 40, $inline-inset: $inset-default, $line-height: line-height(p2));
 
 	&.rcx-button--with-icon {
-		// The margins only have a job beside a label: the end margin separates
-		// icon from label, and the start margin is the optical correction that
-		// makes the pair read as centred. An icon-only button needs neither, so
-		// they are scoped here rather than applied to every icon.
+		// The margin separates the icon from the label, so it belongs only to the
+		// buttons that have both; an icon-only button would be thrown off centre
+		// by it.
 		.rcx-button__icon {
-			margin-inline: lengths.margin(-2) lengths.margin(4);
+			margin-inline-end: lengths.margin(4);
 		}
 	}
 
