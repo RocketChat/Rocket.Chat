@@ -16,9 +16,10 @@ import {
 	links,
 	GenericError,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
@@ -26,7 +27,7 @@ import FilterByText from '../../../components/FilterByText';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const ManagersTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 

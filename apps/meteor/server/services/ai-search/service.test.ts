@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -49,12 +50,6 @@ const { AISearchService } = proxyquire.noCallThru().load('./service', {
 			warn = sinon.stub();
 		},
 	},
-	'@rocket.chat/models': {
-		Messages,
-		Rooms,
-		Subscriptions,
-		Users,
-	},
 	'@rocket.chat/server-fetch': {
 		serverFetch,
 	},
@@ -91,6 +86,13 @@ const settings: Record<string, unknown> = {
 const createService = (): InstanceType<typeof AISearchService> => new AISearchService();
 
 describe('AISearchService', () => {
+	before(() => {
+		mockModel('Messages', Messages);
+		mockModel('Rooms', Rooms);
+		mockModel('Subscriptions', Subscriptions);
+		mockModel('Users', Users);
+	});
+
 	beforeEach(() => {
 		License.hasModule.reset();
 		cachedSettings.get.reset();

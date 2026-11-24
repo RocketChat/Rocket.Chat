@@ -1807,4 +1807,44 @@ describe('LIVECHAT - visitors', () => {
 			});
 		});
 	});
+
+	describe('livechat/visitor/:token/room', () => {
+		let roomVisitor: ILivechatVisitor;
+		let closedRoom: IOmnichannelRoom;
+		let openRoom: IOmnichannelRoom;
+
+		before(async () => {
+			roomVisitor = await createVisitor();
+			closedRoom = await createLivechatRoom(roomVisitor.token);
+			await closeOmnichannelRoom(closedRoom._id);
+			openRoom = await createLivechatRoom(roomVisitor.token);
+		});
+
+		after(async () => {
+			await closeOmnichannelRoom(openRoom._id);
+			await deleteVisitor(roomVisitor.token);
+		});
+
+		it("should list only the visitor's open rooms", async () => {
+			const { body } = await request
+				.get(api(`livechat/visitor/${roomVisitor.token}/room`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.map(({ _id }: IOmnichannelRoom) => _id)).to.deep.equal([openRoom._id]);
+		});
+
+		describe('without the view-livechat-manager permission', () => {
+			before(() => updatePermission('view-livechat-manager', []));
+
+			after(() => updatePermission('view-livechat-manager', ['admin']));
+
+			it('should fail if user doesnt have view-livechat-manager permission', async () => {
+				await request
+					.get(api(`livechat/visitor/${roomVisitor.token}/room`))
+					.set(credentials)
+					.expect(403);
+			});
+		});
+	});
 });

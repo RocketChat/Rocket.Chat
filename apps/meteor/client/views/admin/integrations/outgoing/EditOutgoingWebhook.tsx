@@ -1,9 +1,10 @@
 import type { IOutgoingIntegration, OutgoingIntegrationEvent, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { GenericModal, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import OutgoingWebhookForm from './OutgoingWebhookForm';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
@@ -35,7 +36,13 @@ type EditOutgoingWebhookFormData = {
 	runOnEdits: boolean;
 };
 
-const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string): EditOutgoingWebhookFormData => ({
+type TriggerFormFields =
+	'enabled' | 'impersonateUser' | 'event' | 'urls' | 'token' | 'triggerWords' | 'targetRoom' | 'channel' | 'username';
+
+const getInitialTriggerValue = (
+	webhookData: Serialized<IOutgoingIntegration> | undefined,
+	defaultToken: string,
+): Pick<EditOutgoingWebhookFormData, TriggerFormFields> => ({
 	enabled: webhookData?.enabled ?? true,
 	impersonateUser: webhookData?.impersonateUser ?? false,
 	event: webhookData?.event ?? 'sendMessage',
@@ -45,6 +52,10 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 	targetRoom: webhookData?.targetRoom ?? '',
 	channel: webhookData?.channel.join(', ') ?? '',
 	username: webhookData?.username ?? '',
+});
+
+const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string): EditOutgoingWebhookFormData => ({
+	...getInitialTriggerValue(webhookData, defaultToken),
 	name: webhookData?.name ?? '',
 	alias: webhookData?.alias ?? '',
 	avatar: webhookData?.avatar ?? '',
@@ -66,7 +77,7 @@ export type EditOutgoingWebhookProps = {
 };
 
 const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();
 

@@ -10,6 +10,8 @@ import type {
 	ILivechatAgentStatus,
 	IMeteorLoginToken,
 	IRoom,
+	PasswordTokenRecord,
+	EmailVerificationTokenRecord,
 } from '@rocket.chat/core-typings';
 import type {
 	Document,
@@ -280,7 +282,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		values: Record<string, unknown>,
 		clear?: string[],
 		extraFilter?: Filter<IUser>,
-	): Promise<IUser | null>;
+	): Promise<Pick<
+		IUser,
+		'_id' | 'username' | 'name' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles' | 'xmppFederation'
+	> | null>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
 
@@ -301,6 +306,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeBusinessHoursFromAllUsers(): any;
 
 	resetTOTPById(userId: any): any;
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken): Promise<UpdateResult>;
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	removeLoginTokensOlderThan(date: Date): Promise<UpdateResult>;
 
 	unsetLoginTokens(userId: any): any;
 
@@ -577,6 +591,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
+	setPasswordHash(_id: IUser['_id'], passwordHash: string): Promise<UpdateResult>;
+
+	setPasswordResetToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
+
+	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
+
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
 		requirePasswordChange: boolean,
@@ -638,6 +658,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<DocumentWithProjection<T, O> | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
+	addEmailVerificationToken(_id: IUser['_id'], tokenRecord: EmailVerificationTokenRecord): Promise<UpdateResult>;
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string): Promise<UpdateResult>;
 	findOneByEmailVerificationToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		token: string,

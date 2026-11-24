@@ -10,7 +10,7 @@ import type { BlockProps } from '../utils/BlockProps';
 export type PlainTextInputElementProps = BlockProps<UiKit.PlainTextInputElement>;
 
 const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) => {
-	const [{ loading, value, error }, action] = useUiKitState(block, context);
+	const [{ loading, value, error, onKeyDown }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 	const inField = context === UiKit.BlockContext.FORM;
 
@@ -43,6 +43,7 @@ const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) =
 			error={error}
 			value={value}
 			onChange={action}
+			onKeyDown={onKeyDown}
 			placeholder={fromTextObjectToString(block.placeholder)}
 		/>
 	);

@@ -10,6 +10,22 @@ import { livechatLogger } from './logger';
 import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId, notifyOnLivechatDepartmentAgentChanged } from '../notifyListener';
+
+async function ensureUnitKeepsADepartment(
+	departmentUnit: { _id?: string } | undefined,
+	department: Pick<ILivechatDepartment, '_id' | 'archived' | 'enabled' | 'parentId'> | null,
+): Promise<void> {
+	if (!departmentUnit || departmentUnit._id || !department?.parentId) {
+		return;
+	}
+
+	if ((await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1) {
+		throw new ClientSafeError('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
+			method: 'livechat:saveDepartment',
+		});
+	}
+}
+
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
@@ -38,14 +54,7 @@ export async function saveDepartment(
 			})
 		: null;
 
-	if (departmentUnit && !departmentUnit._id && department && department.parentId) {
-		const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
-		if (isLastDepartmentInUnit) {
-			throw new ClientSafeError('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
-				method: 'livechat:saveDepartment',
-			});
-		}
-	}
+	await ensureUnitKeepsADepartment(departmentUnit, department);
 
 	if (!department && !(await isDepartmentCreationAvailable())) {
 		throw new ClientSafeError('error-max-departments-number-reached', 'Maximum number of departments reached', {

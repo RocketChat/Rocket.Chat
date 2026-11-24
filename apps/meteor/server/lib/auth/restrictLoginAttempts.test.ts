@@ -1,7 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import type { IRoomsModel, IServerEventsModel, IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -37,9 +36,9 @@ const loginAs = (username?: string) => ({ methodArguments: [{ user: username ? {
 
 describe('restrictLoginAttempts', () => {
 	before(() => {
-		registerModel('IServerEventsModel', ServerEvents as unknown as IServerEventsModel);
-		registerModel('IRoomsModel', Rooms as unknown as IRoomsModel);
-		registerModel('IUsersModel', Users as unknown as IUsersModel);
+		mockModel('ServerEvents', ServerEvents);
+		mockModel('Rooms', Rooms);
+		mockModel('Users', Users);
 	});
 
 	beforeEach(() => {

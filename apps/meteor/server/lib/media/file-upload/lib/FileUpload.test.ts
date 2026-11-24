@@ -3,6 +3,7 @@ import { PassThrough, Readable } from 'node:stream';
 import { text } from 'node:stream/consumers';
 import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -15,12 +16,6 @@ const settingsGetMap = new Map();
 const messagesModelStub = {
 	find: sinon.stub(),
 };
-const usersModelStub = {
-	findOneByIdAndLoginToken: sinon.stub(),
-};
-const subscriptionsModelStub = {
-	findOneByRoomIdAndUserId: sinon.stub(),
-};
 const validateAndDecodeJWTStub = sinon.stub();
 const systemLoggerStub = {
 	error: sinon.stub(),
@@ -30,11 +25,6 @@ const roomCoordinatorStub = {
 };
 
 const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUpload', {
-	'@rocket.chat/models': {
-		Messages: messagesModelStub,
-		Users: usersModelStub,
-		Subscriptions: subscriptionsModelStub,
-	},
 	'meteor/meteor': sinon.stub(),
 	'sharp': sinon.stub(),
 	'stream-buffers': sinon.stub(),
@@ -58,6 +48,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 
 describe('FileUpload', () => {
 	before(() => {
+		mockModel('Messages', messagesModelStub);
 		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: {} });
 		settingsGetMap.set('FileUpload_Storage_Type', 'fakeStorage');
 		settingsStub.get.callsFake((settingName) => settingsGetMap.get(settingName));
@@ -67,8 +58,6 @@ describe('FileUpload', () => {
 		messagesModelStub.find.reset();
 		fakeStorageModel.findOneById.reset();
 		fakeStorageModel.deleteFile.reset();
-		usersModelStub.findOneByIdAndLoginToken.reset();
-		subscriptionsModelStub.findOneByRoomIdAndUserId.reset();
 		validateAndDecodeJWTStub.reset();
 		systemLoggerStub.error.reset();
 		roomCoordinatorStub.getRoomDirectives.reset();

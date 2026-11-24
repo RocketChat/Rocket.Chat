@@ -301,3 +301,27 @@ type TestUser = { user: IUser; credentials: Credentials };
 		});
 	});
 });
+
+(IS_EE ? describe : describe.skip)('Omnichannel - Monitors without manage-livechat-monitors', () => {
+	let user: IUser;
+	let userCredentials: Credentials;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+	});
+
+	after(() => deleteUser(user));
+
+	it('should refuse livechat/monitors.create and keep the user without the monitor role', async (t) => {
+		const target = await createUser();
+		t.after(() => deleteUser(target));
+
+		await request.post(api('livechat/monitors.create')).set(userCredentials).send({ username: target.username }).expect(403);
+
+		const res = await request.get(api('users.info')).set(credentials).query({ userId: target._id }).expect(200);
+		expect(res.body.user.roles).to.not.include('livechat-monitor');
+	});
+});

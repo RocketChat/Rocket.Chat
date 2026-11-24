@@ -16,7 +16,9 @@ Screens compose named layout containers. They don't lay themselves out with `Box
 | a list of records                                           | `GenericTable`                                                                                                              |
 | a list that fills the rest of a panel and scrolls inside it | `ListViewport`                                                                                                              |
 | a form                                                      | `FieldGroup` › `Field` › `FieldLabel` / `FieldRow` / `FieldHint` / `FieldError`                                             |
-| a modal that submits its fields                             | `ModalForm`, as `GenericModal`'s `wrapperFunction`                                                                          |
+| a modal that submits its fields                             | `GenericModal`'s `onSubmit` (or `Modal`'s `onSubmit` and `formId`); the handler takes no event                              |
+| a callout that is a modal's whole content                   | `ModalCalloutContent`                                                                                                       |
+| a row of a `role='list'` container that isn't a Fuselage item| `ListRow`                                                                                                                   |
 | a page's or a tab's content in a centred column             | `ContentColumn` (`size='form'`, 600px; `size='wide'`, 640px)                                                                |
 | things in a row or a column, inside a container             | `Stack` (`direction`, `gap`, `align`, `justify`, `wrap`, and `is` for the element: `section`, `ul`, `li`, `form`…)          |
 | buttons side by side                                        | `ButtonGroup` (`stretch='equal'` for equal widths)                                                                          |

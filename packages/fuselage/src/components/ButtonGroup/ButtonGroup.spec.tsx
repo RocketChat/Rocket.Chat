@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react';
+import { screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './ButtonGroup.stories';
@@ -9,6 +10,7 @@ const { Default } = composeStories(stories);
 describe('[ButtonGroup Component]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+		expect(within(screen.getByRole('group')).getAllByRole('button')).toHaveLength(3);
 	});
 
 	it('should have no a11y violations', async () => {

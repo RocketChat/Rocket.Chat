@@ -21,7 +21,7 @@ const getMessagesToSendToAdmins = async (
 	adminUser: IUser,
 ): Promise<{ msg: string }[]> => {
 	const msgs = [];
-	for await (const alert of alerts) {
+	for (const alert of alerts) {
 		if (!(await Users.bannerExistsById(adminUser._id, `alert-${alert.id}`))) {
 			continue;
 		}

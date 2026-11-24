@@ -1,9 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBox, Stack } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage-forms';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { validateStatusExpiration } from '../../../../lib/statusDurations';
 import type { AccountProfileFormValues } from '../getProfileInitialValues';
@@ -18,7 +18,7 @@ type StatusExpirationFieldProps = {
  * Chooses when the status clears, with a date and time picker for a custom expiration.
  */
 const StatusExpirationField = ({ statusDurationOptions, durationDisabled, customDateTimeDisabled }: StatusExpirationFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		control,
 		watch,

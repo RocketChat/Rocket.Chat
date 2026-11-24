@@ -1,5 +1,35 @@
 # @rocket.chat/federation-matrix
 
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Supports federated rooms on Matrix room version 12: invites to version 12 rooms and DMs created on other homeservers reach Rocket.Chat users, who can accept them and exchange messages as in rooms on earlier versions. Rooms joined from an invite sent by a user on a different server than the one that created the room now show the creating server after the room name, as they already did once the room was renamed.
+
+### Patch Changes
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Rejects incoming federated events over the Matrix limits (more than 20 `prev_events`, more than 10 `auth_events`, or larger than 64 KiB) before validating them, so oversized events are cheap to refuse and no longer produce unbounded log lines
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes rooms joined from a federated invite showing up as a DM named after the inviter instead of under the room's name, when the inviting homeserver (such as tuwunel) sends the invite without `unsigned` data
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes messages sent to a federated room failing for good with "Unable to process event, we don't have complete state yet" after joining it, when the remote server delivered the join while the room's history was still being fetched
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes federated events, such as a remote user joining, being permanently rejected when they arrive before the events that authorize them; the missing events are now fetched from the sending server and the event is processed once they are stored
+
+- ([#43657](https://github.com/RocketChat/Rocket.Chat/pull/43657)) Fixes federated invites failing when the inviting server sends a room join rule without a value; such rooms are now treated as invite-only
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 9971f492da4960edce747fa9feb07c7fc332dbac, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 1cb836204af9f9e59b64db1dba9df53836e927a0, 46cba6391140d334aecbe764a0fc3341feb27ce9, 17b9f5a0a07f83c42e4b198c38a6bf2fc9d5589e, 25a232e58bd49fa2cbad86f13a8e935c0a703170, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, c5122522318b69d930199043b89ce2aadcbf51ae, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/models@3.1.0-rc.0
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/core-services@1.1.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/network-broker@0.2.42-rc.0
+  - @rocket.chat/license@1.2.3-rc.0
+  - @rocket.chat/http-router@7.9.26-rc.0
+
+  </details>
+
 ## 0.3.1
 
 ### Patch Changes

@@ -12,16 +12,17 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const TeamsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 	const [text, setText] = useState('');
 

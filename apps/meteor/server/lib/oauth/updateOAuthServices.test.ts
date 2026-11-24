@@ -1,7 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -27,7 +26,7 @@ const { updateOAuthServices } = p.noCallThru().load('./updateOAuthServices.ts', 
 
 describe('updateOAuthServices', () => {
 	before(() => {
-		registerModel('ILoginServiceConfigurationModel', LoginServiceConfiguration as unknown as ILoginServiceConfigurationModel);
+		mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
 	});
 
 	beforeEach(() => {

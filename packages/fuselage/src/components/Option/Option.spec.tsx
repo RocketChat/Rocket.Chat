@@ -1,4 +1,6 @@
 import { composeStories } from '@storybook/react';
+import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import CheckOption from './CheckOption';
@@ -19,6 +21,8 @@ describe('Option', () => {
 				<OptionContent>Lorem Ipsum Lorem</OptionContent>
 			</Option>,
 		);
+
+		expect(screen.getByText('Lorem Ipsum Lorem')).toBeInTheDocument();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
@@ -32,9 +36,9 @@ describe('Option', () => {
 	});
 
 	it('should render an `Item` row that keeps the `Option` classes, value and states', () => {
-		const { getByRole } = render(<Option role='option' value='1' label='Lorem' focus selected />);
+		render(<Option role='option' value='1' label='Lorem' focus selected />);
 
-		const option = getByRole('option', { name: 'Lorem' });
+		const option = screen.getByRole('option', { name: 'Lorem' });
 
 		expect(option.tagName).toBe('LI');
 		expect(option).toHaveClass(
@@ -52,45 +56,49 @@ describe('Option', () => {
 	});
 
 	it('should keep the `rcx-option__content` class on the label', () => {
-		const { getByText } = render(<Option label='Empty' />);
+		render(<Option label='Empty' />);
 
-		expect(getByText('Empty').closest('div.rcx-option__content')).not.toBe(null);
+		// oxlint-disable-next-line testing-library/no-node-access -- the content wrapper has no role, label or text of its own
+		expect(screen.getByText('Empty').closest('div.rcx-option__content')).not.toBe(null);
 	});
 
 	it('should name the icon with `iconLabel` and hide it otherwise', () => {
-		const { getByRole, rerender, container } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
+		const { rerender, container } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
 
-		expect(getByRole('img', { name: 'Federated' })).toBeInTheDocument();
+		expect(screen.getByRole('img', { name: 'Federated' })).toBeInTheDocument();
 
 		rerender(<Option label='rocket.cat' icon='globe' />);
 
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- a hidden icon has no role, label or text to query by
 		expect(container.querySelector('.rcx-option__column')).toHaveAttribute('aria-hidden', 'true');
 	});
 
-	it('should call onClick when click', () => {
+	it('should call onClick when click', async () => {
+		const user = userEvent.setup();
 		const click = jest.fn();
 
-		const { getByText } = render(
+		render(
 			<Option onClick={click}>
 				<OptionContent>Option</OptionContent>
 			</Option>,
 		);
 
-		getByText('Option').click();
+		await user.click(screen.getByText('Option'));
 
 		expect(click).toHaveBeenCalledTimes(1);
 	});
 
-	it('should call prevent when click on disabled', () => {
+	it('should call prevent when click on disabled', async () => {
+		const user = userEvent.setup();
 		const click = jest.fn();
 
-		const { getByText } = render(
+		render(
 			<Option disabled onClick={click}>
 				<OptionContent>Option</OptionContent>
 			</Option>,
 		);
 
-		getByText('Option').click();
+		await user.click(screen.getByText('Option'));
 
 		expect(click).toHaveBeenCalledTimes(0);
 		expect(prevent).toHaveBeenCalledTimes(1);
@@ -99,17 +107,19 @@ describe('Option', () => {
 
 describe('CheckOption', () => {
 	it('should announce selection through `aria-selected` and hide the checkbox', () => {
-		const { getByRole } = render(
+		render(
 			<CheckOption role='option' selected>
 				Lorem
 			</CheckOption>,
 		);
 
-		const option = getByRole('option', { name: 'Lorem' });
+		const option = screen.getByRole('option', { name: 'Lorem' });
+
+		const checkbox = within(option).getByRole('checkbox', { hidden: true });
 
 		expect(option).toHaveAttribute('aria-selected', 'true');
-		expect(option.querySelector('input[type="checkbox"]')).toHaveAttribute('aria-hidden', 'true');
-		expect(option.querySelector('input[type="checkbox"]')).toHaveAttribute('tabindex', '-1');
-		expect(option.querySelector('input[type="checkbox"]')).toBeChecked();
+		expect(checkbox).toHaveAttribute('aria-hidden', 'true');
+		expect(checkbox).toHaveAttribute('tabindex', '-1');
+		expect(checkbox).toBeChecked();
 	});
 });

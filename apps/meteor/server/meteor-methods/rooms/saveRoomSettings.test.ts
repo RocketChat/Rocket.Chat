@@ -3,8 +3,7 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError, LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAuthorization, IMessageService, IRoomService, ITeamService } from '@rocket.chat/core-services';
 import { TeamType } from '@rocket.chat/core-typings';
-import type { IRoomsModel, ISubscriptionsModel, IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -134,9 +133,9 @@ describe('saveRoomSettings', () => {
 	before(() => {
 		api.setBroker(new LocalBroker());
 		services.forEach((service) => api.registerService(service));
-		registerModel('IRoomsModel', { findOneById: findRoom, findByIds: findRoomsByIds, ...roomWrites } as unknown as IRoomsModel);
-		registerModel('IUsersModel', { findOneById: findUser } as unknown as IUsersModel);
-		registerModel('ISubscriptionsModel', { disableAutoTranslateByRoomId: disableAutoTranslate } as unknown as ISubscriptionsModel);
+		mockModel('Rooms', { findOneById: findRoom, findByIds: findRoomsByIds, ...roomWrites });
+		mockModel('Users', { findOneById: findUser });
+		mockModel('Subscriptions', { disableAutoTranslateByRoomId: disableAutoTranslate });
 	});
 
 	after(async () => {
@@ -147,7 +146,7 @@ describe('saveRoomSettings', () => {
 		sandbox.reset();
 		hasPermission.resolves(false);
 		grant('edit-room', rid);
-		allowRoomSettingChange.resolves(true);
+		allowRoomSettingChange.returns(true);
 		findUser.withArgs(userId).resolves(user);
 		savers.saveRoomName.resolves(true);
 		savers.saveRoomType.resolves(true);
@@ -365,7 +364,7 @@ describe('saveRoomSettings', () => {
 
 		it('should refuse a change in rooms that do not support encryption', async () => {
 			grant('toggle-room-e2e-encryption', rid);
-			allowRoomSettingChange.resolves(false);
+			allowRoomSettingChange.returns(false);
 
 			await expectRefused({ encrypted: true });
 		});

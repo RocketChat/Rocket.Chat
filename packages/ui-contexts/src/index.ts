@@ -6,6 +6,7 @@ export { ConnectionStatusContext, type ConnectionStatusContextValue } from './Co
 export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, type LayoutContextValue } from './LayoutContext';
 export { ModalContext, type ModalContextValue } from './ModalContext';
+export { NotificationSoundsContext, type NotificationSoundsContextValue } from './NotificationSoundsContext';
 export * from './RouterContext';
 export {
 	RoomToolboxContext,
@@ -34,6 +35,7 @@ export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEm
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
+export { useContactAvatarPath } from './hooks/useContactAvatarPath';
 export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
@@ -55,11 +57,13 @@ export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
 export { useLoginWithIframe } from './hooks/useLoginWithIframe';
 export { useLoginWithToken } from './hooks/useLoginWithToken';
+export { useLoginWithSamlToken } from './hooks/useLoginWithSamlToken';
 export { useLoginWithTokenRoute } from './hooks/useLoginWithTokenRoute';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
+export { useNotificationSounds } from './hooks/useNotificationSounds';
 export { usePermission } from './hooks/usePermission';
 export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useRole } from './hooks/useRole';

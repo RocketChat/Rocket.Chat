@@ -1,7 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import type { ICredentialTokensModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -32,7 +31,7 @@ const casAnswers = (...answer: unknown[]) => validate.callsFake((_options, _tick
 
 describe('middlewareCAS', () => {
 	before(() => {
-		registerModel('ICredentialTokensModel', CredentialTokens as unknown as ICredentialTokensModel);
+		mockModel('CredentialTokens', CredentialTokens);
 	});
 
 	beforeEach(() => {
@@ -58,6 +57,16 @@ describe('middlewareCAS', () => {
 		expect(body).to.include('window.close()');
 		expect(next.called).to.be.false;
 		expect(validate.called).to.be.false;
+	});
+
+	it('should close the login popup without validating the ticket while CAS is disabled', async () => {
+		settingValues.set('CAS_enabled', false);
+
+		const { body } = await request('/_cas/credential-token?ticket=ST-1');
+
+		expect(body).to.include('window.close()');
+		expect(validate.called).to.be.false;
+		expect(CredentialTokens.create.called).to.be.false;
 	});
 
 	it('should validate the ticket for this workspace and keep the CAS user and attributes under the credential token', async () => {

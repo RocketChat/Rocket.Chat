@@ -1,7 +1,6 @@
 import { after, before, beforeEach, describe, it } from 'node:test';
 
-import type { ITwoFactorChallengesModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -32,7 +31,7 @@ describe('TOTPCheckForOAuth.verifyEmailTwoFactorChallenge', () => {
 
 	before(() => {
 		clock = sinon.useFakeTimers({ now: new Date('2026-11-04T10:00:10.000Z'), toFake: ['Date'] });
-		registerModel('ITwoFactorChallengesModel', TwoFactorChallenges as unknown as ITwoFactorChallengesModel);
+		mockModel('TwoFactorChallenges', TwoFactorChallenges);
 	});
 
 	after(() => {

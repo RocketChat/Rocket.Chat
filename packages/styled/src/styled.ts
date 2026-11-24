@@ -2,7 +2,7 @@ import { attachRules, createClassName, css, escapeName, transpile } from '@rocke
 import type { JSX, ReactElement } from 'react';
 import { createElement, Fragment, useDebugValue, useInsertionEffect } from 'react';
 
-import { useOwnerDocument } from './OwnerDocument';
+import { useOwnerDocument } from './OwnerDocument.js';
 
 type StyledComponentType<P> = ((props: P) => ReactElement) & { displayName?: string };
 

@@ -1,4 +1,4 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useIsPrivilegedSettingsContext } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import AdminFeaturePreviewPage from './AdminFeaturePreviewPage';
@@ -7,9 +7,10 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
 const AdminFeaturePreviewRoute = () => {
-	const canViewFeaturesPreview = usePermission('manage-cloud');
+	const hasPermission = useIsPrivilegedSettingsContext();
+	const canManageFeatures = usePermission('manage-feature-preview');
 
-	if (!canViewFeaturesPreview) {
+	if (!canManageFeatures || !hasPermission) {
 		return <NotAuthorizedPage />;
 	}
 

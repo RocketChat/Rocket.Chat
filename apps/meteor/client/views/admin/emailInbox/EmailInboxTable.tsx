@@ -12,13 +12,14 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import SendTestButton from './SendTestButton';
 
 const EmailInboxTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRoute('admin-email-inboxes');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 

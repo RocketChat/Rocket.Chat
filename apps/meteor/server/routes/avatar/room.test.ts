@@ -1,5 +1,6 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -18,14 +19,6 @@ const mocks = {
 };
 
 const { roomAvatar } = proxyquire.noCallThru().load('./room', {
-	'@rocket.chat/models': {
-		Rooms: {
-			findOneById: mocks.findOneById,
-		},
-		Avatars: {
-			findOneByRoomId: mocks.avatarFindOneByRoomId,
-		},
-	},
 	'./utils': mocks.utils,
 	'../../lib/rooms/roomCoordinator': {
 		roomCoordinator: {
@@ -41,6 +34,11 @@ describe('#roomAvatar()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(() => {
+		mockModel('Rooms', { findOneById: mocks.findOneById });
+		mockModel('Avatars', { findOneByRoomId: mocks.avatarFindOneByRoomId });
+	});
 
 	afterEach(() => {
 		mocks.settingsGet.reset();

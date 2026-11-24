@@ -33,6 +33,7 @@ describe('[PaginatedSelectFiltered Component]', () => {
 		expect(screen.getByRole('textbox')).toHaveAttribute('placeholder', placeholder);
 
 		// Necessary due to styles not being properly computed in the test environment
+		// oxlint-disable-next-line testing-library/no-node-access -- the wrapper has no role, label or text
 		expect(screen.getByRole('textbox').parentElement).not.toHaveClass(hiddenClass);
 
 		rerender(<PaginatedSelectFiltered {...defaultProps} value='item1' />);
@@ -40,6 +41,7 @@ describe('[PaginatedSelectFiltered Component]', () => {
 		expect(screen.getByRole('textbox')).not.toHaveAttribute('placeholder', placeholder);
 
 		// Necessary due to styles not being properly computed in the test environment
+		// oxlint-disable-next-line testing-library/no-node-access -- the wrapper has no role, label or text
 		expect(screen.getByRole('textbox').parentElement).toHaveClass(hiddenClass);
 	});
 

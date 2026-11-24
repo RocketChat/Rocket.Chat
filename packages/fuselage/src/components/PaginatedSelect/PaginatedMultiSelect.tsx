@@ -73,7 +73,7 @@ const PaginatedMultiSelect = ({
 	error,
 	disabled,
 	'anchor': Anchor = SelectFocus,
-	onChange = () => {},
+	onChange = () => undefined,
 	placeholder,
 	'renderOptions': OptionsComponent = OptionsPaginated,
 	renderItem = Option,
@@ -100,7 +100,7 @@ const PaginatedMultiSelect = ({
 		if (visible === AnimatedVisibility.VISIBLE) {
 			return hide();
 		}
-		if (ref && ref.current) {
+		if (ref?.current) {
 			ref.current.focus();
 			return show();
 		}

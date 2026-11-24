@@ -26,7 +26,7 @@ const getSettingValue = async (key: string) => Settings.getValueById(key);
 async function updateOAuthServices(): Promise<void> {
 	const services = await Settings.find({ _id: { $regex: /^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i } }).toArray();
 	const filteredServices = services.filter(({ value }) => typeof value === 'boolean');
-	for await (const { _id: key, value } of filteredServices) {
+	for (const { _id: key, value } of filteredServices) {
 		if (value !== true) {
 			continue;
 		}

@@ -1,5 +1,24 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.5.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 0c2d151aef9a37c30c0c0b71903290580484bebe, 10a9c7a35ba00cef6c31b28a0b9cc1aa8ad6659f, 9971f492da4960edce747fa9feb07c7fc332dbac, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 1cb836204af9f9e59b64db1dba9df53836e927a0, 46cba6391140d334aecbe764a0fc3341feb27ce9, 17b9f5a0a07f83c42e4b198c38a6bf2fc9d5589e, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 0805e0fa09e552ae024e8ba2ace2e85f9bf62aa0, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, c5122522318b69d930199043b89ce2aadcbf51ae, 66a6efc626f470f3677af8bcd32f9bb8a5c504b8, 2764e60c1343f9ed870bd40deef2d2019acaf477, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 84264107a7355044bfc97d00dcf277d4a9016dbc]:</summary>
+  - @rocket.chat/model-typings@3.1.0-rc.0
+  - @rocket.chat/models@3.1.0-rc.0
+  - @rocket.chat/i18n@6.0.0-rc.0
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/core-services@1.1.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/tools@0.6.0-rc.0
+  - @rocket.chat/pdf-worker@0.3.38-rc.0
+  - @rocket.chat/omnichannel-services@0.3.60-rc.0
+  - @rocket.chat/logger@1.0.3-rc.0
+  - @rocket.chat/network-broker@0.2.42-rc.0
+
+  </details>
+
 ## 0.5.3
 
 ### Patch Changes

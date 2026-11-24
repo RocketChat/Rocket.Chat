@@ -1,6 +1,6 @@
 export interface IOmnichannelQueue {
 	start(): Promise<void>;
-	shouldStart(): void;
+	shouldStart(): Promise<void>;
 	stop(): Promise<void>;
 	isRunning(): boolean;
 }

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-js/no-useless-escape -- JS drops the backslash in `\@`, so the page receives an unescaped `@` and browsers skip the `.rcx-@…` rules. Fuselage's selector baseline (packages/fuselage/scripts/verify/selector-inventory.baseline.json) records these lines as written; CORE-3092 fixes the escapes to `\\@` and updates the baseline together. */
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { IIncomingMessage } from '@rocket.chat/core-typings';

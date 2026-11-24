@@ -1,5 +1,7 @@
 import * as Aes from './crypto/aes';
 import { E2ERoom } from './rocketchat.e2e.room';
+import { createFakeMessage, createFakeSubscription } from '../../../tests/mocks/data';
+import { Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
 
 jest.mock('./crypto/aes');
@@ -77,5 +79,25 @@ describe('E2ERoom.createGroupKey', () => {
 
 		expect(encryptForOthersSpy).toHaveBeenCalledTimes(1);
 		expect(sdk.rest.post).toHaveBeenCalledTimes(2); // both setRoomKeyID and updateGroupKey are called
+	});
+});
+
+describe('E2ERoom.decryptSubscription', () => {
+	it('should store the decrypted last message so the room list shows it', async () => {
+		const e2eRoom = makeRoom();
+		jest.spyOn(e2eRoom, 'decrypt').mockResolvedValue({ msg: 'hello' });
+		const lastMessage = createFakeMessage({
+			rid: 'room-1',
+			t: 'e2e',
+			msg: '',
+			content: { algorithm: 'rc.v1.aes-sha2', ciphertext: 'encrypted' },
+		});
+		Subscriptions.state.store(createFakeSubscription({ _id: 'subscription-1', rid: 'room-1', lastMessage }));
+		const stored = Subscriptions.state.get('subscription-1');
+
+		await e2eRoom.decryptSubscription();
+
+		expect(Subscriptions.state.get('subscription-1')).not.toBe(stored);
+		expect(Subscriptions.state.get('subscription-1')?.lastMessage).toMatchObject({ msg: 'hello', e2e: 'done' });
 	});
 });

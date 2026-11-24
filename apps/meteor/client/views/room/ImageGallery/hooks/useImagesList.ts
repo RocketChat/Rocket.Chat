@@ -29,7 +29,7 @@ export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']
 				_updatedAt: new Date(file._updatedAt),
 			}));
 
-			for await (const file of items) {
+			for (const file of items) {
 				if (file.rid && file.content) {
 					const e2eRoom = await e2e.getInstanceByRoomId(file.rid);
 					if (e2eRoom?.shouldConvertReceivedMessages()) {

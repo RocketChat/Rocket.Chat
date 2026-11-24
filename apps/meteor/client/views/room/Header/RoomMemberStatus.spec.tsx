@@ -76,9 +76,7 @@ describe('RoomMemberStatus', () => {
 			},
 		);
 
-		const wrapper = screen.getByText('In a meeting').closest('[title]');
-		expect(wrapper).toHaveAttribute('title');
-		expect(wrapper?.getAttribute('title')).not.toBe('');
+		expect(screen.getByTitle(/.+/)).toHaveTextContent('In a meeting');
 	});
 
 	it('should not render statusText for multi-user DMs (3+ participants)', () => {

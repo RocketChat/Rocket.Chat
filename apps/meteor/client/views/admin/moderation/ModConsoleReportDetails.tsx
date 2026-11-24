@@ -2,8 +2,9 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarClose, ContextualbarDialog, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/ui-client';
-import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';
@@ -15,7 +16,7 @@ export type ModConsoleReportDetailsProps = {
 };
 
 const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: ModConsoleReportDetailsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [tab, setTab] = useState<string>(defaultTab);
 	const moderationRoute = useRouter();
 

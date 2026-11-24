@@ -113,7 +113,7 @@ const singlePackageFormat = (): Plugin => ({
 			return null;
 		}
 
-		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true } as typeof options);
+		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true });
 	},
 });
 
@@ -255,6 +255,7 @@ const devPage = (): Plugin => ({
 });
 const serverRoutes = [
 	'/api',
+	'^/oauth/(?!authorize|error/)',
 	'/_oauth',
 	'/_saml',
 	'/_cas',
@@ -279,6 +280,9 @@ const serverRoutes = [
 	'^/[^?]*\\?(hash|meteor_js_resource|meteor_css_resource)=',
 	'^/(packages|app)/[0-9a-f]+\\.map$',
 	'/__meteor__',
+	// Federation: other homeservers reach the server through the dev origin.
+	'/_matrix',
+	'/.well-known/matrix',
 ];
 
 // Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.
@@ -393,11 +397,12 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-client',
 	'@rocket.chat/ui-composer',
 	'@rocket.chat/ui-conference',
+	'@rocket.chat/ui-contacts',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
+	'@rocket.chat/ui-registration',
 	'@rocket.chat/ui-video-conf',
 	'@rocket.chat/ui-voip',
-	'@rocket.chat/web-ui-registration',
 ];
 
 export default defineConfig({
@@ -466,6 +471,8 @@ export default defineConfig({
 		port: Number(process.env.PORT) || 3000,
 		// Same default as the Meteor server this replaces in dev.
 		host: process.env.BIND_IP || '0.0.0.0',
+		// Comma-separated hostnames to accept behind a reverse proxy (e.g. a federation test domain).
+		allowedHosts: process.env.RC_DEV_ALLOWED_HOSTS?.split(','),
 		strictPort: true,
 		proxy: {
 			...Object.fromEntries(serverRoutes.map((route) => [route, proxyTo()])),

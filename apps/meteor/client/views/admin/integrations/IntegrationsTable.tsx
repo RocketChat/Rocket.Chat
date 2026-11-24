@@ -12,8 +12,9 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useLayout } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
@@ -21,7 +22,7 @@ import FilterByText from '../../../components/FilterByText';
 export type IntegrationsTableProps = { type?: string };
 
 const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { isMobile } = useLayout();
 
 	const [text, setText] = useState('');

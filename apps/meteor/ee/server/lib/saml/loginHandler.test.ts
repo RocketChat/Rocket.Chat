@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -23,9 +24,6 @@ proxyquire.noCallThru().load('./loginHandler', {
 	'@rocket.chat/license': {
 		License: { hasModule },
 	},
-	'@rocket.chat/models': {
-		CredentialTokens: { removeById },
-	},
 	'meteor/accounts-base': {
 		Accounts: {
 			LoginCancelledError: { numericError: 403 },
@@ -47,6 +45,10 @@ proxyquire.noCallThru().load('./loginHandler', {
 });
 
 describe('SAML loginHandler', () => {
+	before(() => {
+		mockModel('CredentialTokens', { removeById });
+	});
+
 	beforeEach(() => {
 		retrieveCredential.reset();
 		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });

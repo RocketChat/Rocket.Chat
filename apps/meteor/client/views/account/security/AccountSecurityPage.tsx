@@ -1,8 +1,9 @@
 import { Accordion, AccordionItem, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
@@ -14,7 +15,7 @@ import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
 const AccountSecurityPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 
 	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_OAuth_users');

@@ -22,9 +22,10 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
 
@@ -34,7 +35,7 @@ export type CustomEmojiProps = {
 };
 
 const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
@@ -83,7 +84,9 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	});
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => {
+			void refetch();
+		};
 	}, [reload, refetch]);
 
 	return (

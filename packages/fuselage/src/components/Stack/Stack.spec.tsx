@@ -9,17 +9,19 @@ const { Default, Row, List, Form, Inline } = composeStories(stories);
 describe('[Stack Component]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+
+		expect(screen.getByText('One')).toBeInTheDocument();
 	});
 
 	it('lays out a column by default', () => {
-		const { container } = render(<Default />);
-		expect(container.firstElementChild?.tagName).toBe('DIV');
-		expect(getComputedStyle(container.firstElementChild as Element)).toMatchObject({ display: 'flex', flexDirection: 'column' });
+		render(<Default data-testid='stack' />);
+		expect(screen.getByTestId('stack').tagName).toBe('DIV');
+		expect(getComputedStyle(screen.getByTestId('stack'))).toMatchObject({ display: 'flex', flexDirection: 'column' });
 	});
 
 	it('maps align and justify to flex values', () => {
-		const { container } = render(<Row />);
-		expect(getComputedStyle(container.firstElementChild as Element)).toMatchObject({
+		render(<Row data-testid='stack' />);
+		expect(getComputedStyle(screen.getByTestId('stack'))).toMatchObject({
 			flexDirection: 'row',
 			alignItems: 'flex-start',
 			justifyContent: 'space-between',

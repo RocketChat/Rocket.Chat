@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.44.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac, fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+
+  </details>
+
 ## 0.44.0
 
 ### Minor Changes

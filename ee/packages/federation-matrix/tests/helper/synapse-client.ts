@@ -144,7 +144,7 @@ export class SynapseClient {
 		throw new Error(`No room found with name ${roomName}`);
 	}
 
-	async createRoom(roomName: string, visibility: Visibility = Visibility.Private): Promise<string> {
+	async createRoom(roomName: string, visibility: Visibility = Visibility.Private, roomVersion?: string): Promise<string> {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
@@ -152,22 +152,32 @@ export class SynapseClient {
 		const room = await this.matrixClient.createRoom({
 			name: roomName,
 			visibility,
+			...(roomVersion && { room_version: roomVersion }),
 		});
 
 		return room.room_id;
 	}
 
-	async createDM(userIds: string[]) {
+	async createDM(userIds: string[], roomVersion?: string): Promise<Room> {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
 
-		const dmRoom = await this.matrixClient.createRoom({
+		const { room_id: roomId } = await this.matrixClient.createRoom({
 			is_direct: true,
 			invite: userIds,
+			...(roomVersion && { room_version: roomVersion }),
 		});
 
-		return this.matrixClient.getRoom(dmRoom.room_id);
+		for (let attempt = 1; attempt <= 10; attempt++) {
+			const room = this.matrixClient.getRoom(roomId);
+			if (room) {
+				return room;
+			}
+			await wait(500);
+		}
+
+		throw new Error(`Room ${roomId} did not reach the client store`);
 	}
 
 	async inviteUserToRoom(roomId: string, userId: string): Promise<void> {
@@ -689,7 +699,7 @@ export class SynapseClient {
 
 			return downloadedBuffer.equals(originalBuffer);
 		} catch (error) {
-			throw new Error(`Failed to download and compare media from ${mxcUri}: ${error}`);
+			throw new Error(`Failed to download and compare media from ${mxcUri}: ${error}`, { cause: error });
 		}
 	}
 
@@ -730,7 +740,7 @@ export class SynapseClient {
 	 * @returns Promise that resolves when cleanup is complete
 	 */
 	async close(): Promise<void> {
-		if (this.matrixClient) {
+		if (this._matrixClient) {
 			this.matrixClient.stopClient();
 			await this.matrixClient.store?.deleteAllData?.();
 			await this.matrixClient.clearStores?.();

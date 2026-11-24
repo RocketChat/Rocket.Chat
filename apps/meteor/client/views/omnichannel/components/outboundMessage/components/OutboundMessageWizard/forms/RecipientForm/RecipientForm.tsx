@@ -148,7 +148,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 	}, [clearErrors, isErrorProvider, validateProviderField]);
 
 	useEffect(() => {
-		isDirty && onDirty && onDirty();
+		isDirty && onDirty?.();
 	}, [isDirty, onDirty]);
 
 	const submit = useStableCallback(async (values: RecipientFormData) => {
