@@ -22,13 +22,13 @@ const OrganizationInfoStep = () => {
 	} = useSetupWizardContext();
 
 	const handleSubmit: ComponentProps<typeof OrganizationInfoPage>['onSubmit'] = async (data) => {
-		if (skipCloudRegistration) {
-			return completeSetupWizard();
-		}
-
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
 
 		await saveOrganizationData(data);
+
+		if (skipCloudRegistration) {
+			return completeSetupWizard();
+		}
 
 		goToNextStep();
 	};
