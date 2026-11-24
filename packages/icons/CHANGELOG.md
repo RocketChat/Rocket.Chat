@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.53.0-rc.0
+
+### Minor Changes
+
+- ([#43512](https://github.com/RocketChat/Rocket.Chat/pull/43512)) Ships only an ES module build. The CommonJS build and `dist/index.mjs` are gone: `dist/index.js` is now the ES module, and the package declares an `exports` map that still exposes the generated stylesheet, font and SVG files under `dist`. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later), and read the character map from `require('@rocket.chat/icons').default`.
+
+### Patch Changes
+
+- ([#43351](https://github.com/RocketChat/Rocket.Chat/pull/43351) by [@lakshaydevoo-arch](https://github.com/lakshaydevoo-arch)) Fixes the `chevron-left` and `chevron-right` icons, which pointed opposite to their names, and updates the components that used the opposite icon to compensate. The marketplace screenshot carousel's previous and next buttons now have accessible labels
+
+- ([#42773](https://github.com/RocketChat/Rocket.Chat/pull/42773)) Fixes eight icons whose holes rendered filled in the icon font, although their SVGs were right: `sidebar`, `square-slash` and `voicemail` showed as solid blocks, and `bell-dot`, `eye`, `note`, `prune` and `share-alt` lost their clapper, pupil, folded corner, page and top node
+
 ## 0.52.0
 
 ### Minor Changes

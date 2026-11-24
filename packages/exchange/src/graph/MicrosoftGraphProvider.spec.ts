@@ -108,6 +108,25 @@ describe('MicrosoftGraphProvider', () => {
 			expect(graphCall()[0]).toBe(cursor);
 		});
 
+		// TODO: migrate to a proper benchmark test
+		it('handles hosts with 100k slashes followed by another character quickly', async () => {
+			const slashes = '/'.repeat(100_000);
+			mockTokenThen(graphResponse({ value: [] }));
+
+			const startedAt = performance.now();
+			await new MicrosoftGraphProvider({
+				...config,
+				authorityHost: `https://login.microsoftonline.com${slashes}x`,
+				graphHost: `https://graph.microsoft.com${slashes}x`,
+			}).listEvents('user@contoso.com', timeWindow);
+			const elapsedMs = performance.now() - startedAt;
+
+			expect(serverFetch.mock.calls[0][0]).toBe('https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/token');
+			expect(serverFetch.mock.calls[0][1].body.get('scope')).toBe('https://graph.microsoft.com/.default');
+			expect(graphCall()[0]).toMatch(/^https:\/\/graph\.microsoft\.com\/v1\.0\/users\//);
+			expect(elapsedMs).toBeLessThan(500);
+		});
+
 		it('maps a Graph event onto the normalized shape', async () => {
 			const SUBJECT = 'Sprint review';
 			const DESCRIPTION = 'Agenda here';

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/exchange",
-	"version": "0.0.1",
+	"version": "0.1.0-rc.0",
 	"private": true,
 	"description": "Server-to-server Exchange connection: Microsoft Graph and EWS providers behind one interface",
 	"main": "./dist/index.js",

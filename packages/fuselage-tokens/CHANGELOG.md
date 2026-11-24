@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.37.0-rc.0
+
+### Minor Changes
+
+- ([#43638](https://github.com/RocketChat/Rocket.Chat/pull/43638)) Adds the `zIndex` token group with the semantic layers `raised` (1), `overlap` (2), `sticky` (10) and `overlay` (100), in JSON, SCSS and TypeScript declaration formats
+
+### Patch Changes
+
+- ([#43619](https://github.com/RocketChat/Rocket.Chat/pull/43619)) Declares the JSON token files with `export =` and ships `dist/package.json` as `{"type": "commonjs"}`, so TypeScript types a default import of them correctly from ES module packages too.
+
 ## 0.36.0
 
 ### Minor Changes
