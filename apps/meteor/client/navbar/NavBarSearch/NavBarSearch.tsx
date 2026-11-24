@@ -36,7 +36,7 @@ const NavBarSearch = () => {
 
 	const state = useOverlayTriggerState({});
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
-	delete triggerProps.onPress;
+	const { onPress: _, ...cleanTriggerProps } = triggerProps;
 
 	const { activeId, handleKeyDown, handleInput, contextValue } = useSearchActiveOption(state, overlayProps.id);
 	const handleFocus = useSearchFocus(state);
@@ -78,7 +78,7 @@ const NavBarSearch = () => {
 			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} marginInline={8} position='relative'>
 				<TextInput
 					{...rest}
-					{...triggerProps}
+					{...cleanTriggerProps}
 					onFocus={handleFocus}
 					onKeyDown={handleKeyDown}
 					onInput={handleInput}
