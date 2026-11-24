@@ -52,30 +52,32 @@ const NowPlayingSection = () => {
 	};
 
 	return (
-		<SidebarCard>
-			<Item multiline>
-				{track.username && (
-					<ItemMedia>
-						<UserAvatar username={track.username} size='x24' />
-					</ItemMedia>
-				)}
-				<ItemContent>
-					<ItemTitle>
-						{track.rid ? (
-							<ItemLink is='button' onClick={() => void openConversation()} title={t('Jump_to_message')}>
-								{title}
-							</ItemLink>
-						) : (
-							title
-						)}
-					</ItemTitle>
-					<ItemDescription>{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}</ItemDescription>
-				</ItemContent>
-				<ItemActions>
-					<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
-				</ItemActions>
-			</Item>
-
+		<SidebarCard
+			header={
+				<Item multiline align='start'>
+					{track.username && (
+						<ItemMedia>
+							<UserAvatar username={track.username} size='x32' />
+						</ItemMedia>
+					)}
+					<ItemContent>
+						<ItemTitle>
+							{track.rid ? (
+								<ItemLink is='button' onClick={() => void openConversation()} title={t('Jump_to_message')}>
+									{title}
+								</ItemLink>
+							) : (
+								title
+							)}
+						</ItemTitle>
+						<ItemDescription>{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}</ItemDescription>
+					</ItemContent>
+					<ItemActions>
+						<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
+					</ItemActions>
+				</Item>
+			}
+		>
 			<AudioPlayerControls
 				isPlaying={playing}
 				currentTime={currentTime}
