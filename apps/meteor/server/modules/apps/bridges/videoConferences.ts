@@ -39,6 +39,7 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 			throw new Error('A video conference must exist to update.');
 		}
 
+		// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- without the cast the parenthesized optional chain is flagged as unsafe
 		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 

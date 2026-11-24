@@ -110,7 +110,7 @@ export class AppsRestApi {
 
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!err.hasOwnProperty('response')) {
+			if (!Object.hasOwn(err, 'response')) {
 				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}

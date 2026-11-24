@@ -276,7 +276,7 @@ export const createLivechatSubscription = async (
 		},
 		ts: new Date(),
 		...(department && { department }),
-	} as InsertionModel<ISubscription>;
+	};
 
 	const response = await Subscriptions.insertOne(subscriptionData);
 
@@ -478,7 +478,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		throw new Error('error-invalid-inquiry');
 	}
 
-	if (oldServedBy && agentId === oldServedBy._id) {
+	if (agentId === oldServedBy?._id) {
 		throw new Error('error-selected-agent-room-agent-are-same');
 	}
 

@@ -276,6 +276,7 @@ export async function appRoomToRocketChat(room: any, isPartial = false): Promise
 		Object.assign(newRoom, room._unmappedProperties_);
 	}
 
+	// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- tsc needs this cast; oxlint type-aware disagrees
 	return newRoom as unknown as Partial<IRoom>;
 }
 

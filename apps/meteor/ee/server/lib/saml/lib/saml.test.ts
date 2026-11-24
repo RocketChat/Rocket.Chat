@@ -1204,7 +1204,7 @@ describe('SAML', () => {
 			mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
 			mock.module('@rocket.chat/random', { exports: { Random: { id: () => '__credentialToken__' } } });
 			mock.module('@rocket.chat/tools', { exports: { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s } });
-			mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } });
+			mock.module('../../../../../server/lib/auth/insertUser', { exports: {} });
 			mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
 			mock.module('./ServiceProvider', {
 				exports: {

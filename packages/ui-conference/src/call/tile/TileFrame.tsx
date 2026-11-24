@@ -4,6 +4,8 @@ import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import TileBadge from './TileBadge';
+import TilePin from './TilePin';
 import VoiceActivity from '../VoiceActivity';
 import { useSpeakingRing } from '../hooks/useSpeakingRing';
 import { REACTION_VISIBLE_MS } from '../lib/reactions';
@@ -77,17 +79,6 @@ const indicatorRowStyles = css`
 	z-index: 2;
 `;
 
-const indicatorBadgeStyles = css`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 1.75rem;
-	height: 1.75rem;
-	border-radius: 50%;
-	background-color: ${Palette.surface['surface-overlay'].toString()};
-	color: ${Palette.text['font-pure-white'].toString()};
-`;
-
 /** Seen for exactly as long as the same reaction rises over the call. */
 const reactionBadgeStyles = css`
 	font-size: 1rem;
@@ -150,19 +141,32 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 	 * else's encoder is doing is not something this client can honestly claim.
 	 */
 	sendHeight?: number;
+	/** Whose tile it is, where the tile offers to pin them. */
+	participantId?: string;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
 
 /** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand, their reaction. */
-const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reaction, ringWidth, sendHeight, children }: TileFrameProps) => {
+const TileFrame = ({
+	displayName,
+	muted,
+	held,
+	audioStream,
+	handPosition,
+	reaction,
+	ringWidth,
+	sendHeight,
+	participantId,
+	children,
+}: TileFrameProps) => {
 	const { t } = useTranslation();
 	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
 	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
 	const ringColor = Palette.stroke['stroke-highlight'].toString();
 
 	return (
-		<Box className={tileStyles}>
+		<Box className={tileStyles} data-tile>
 			{displayLevel > 0 && (
 				<Box
 					style={{
@@ -204,27 +208,28 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reacti
 					{/* Keyed by the reaction, so a newer one starts over instead of taking up the fade of the one it replaces.
 					    Hidden from assistive technology: the call already announces each reaction as it arrives. */}
 					{reaction && (
-						<Box key={reaction.id} className={[indicatorBadgeStyles, reactionBadgeStyles]} aria-hidden>
+						<TileBadge key={reaction.id} className={reactionBadgeStyles} aria-hidden>
 							{reaction.emoji}
-						</Box>
+						</TileBadge>
 					)}
 				</Box>
 			)}
 			<Box className={indicatorRowStyles}>
+				{participantId && <TilePin participantId={participantId} name={displayName} />}
 				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
-					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>
+					<TileBadge title={t('Microphone_muted')}>
 						<Icon name='mic-off' size='x16' />
 						<VisuallyHidden>{t('Microphone_muted')}</VisuallyHidden>
-					</Box>
+					</TileBadge>
 				) : (
 					<VoiceActivity level={rawLevel} size={18} badge />
 				)}
 				{held && (
-					<Box className={indicatorBadgeStyles} title={t('On_Hold')}>
+					<TileBadge title={t('On_Hold')}>
 						<Icon name='pause-shape-unfilled' size='x16' />
 						<VisuallyHidden>{t('On_Hold')}</VisuallyHidden>
-					</Box>
+					</TileBadge>
 				)}
 			</Box>
 		</Box>

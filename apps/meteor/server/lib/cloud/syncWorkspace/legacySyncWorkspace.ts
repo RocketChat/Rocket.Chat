@@ -63,13 +63,15 @@ const fetchWorkspaceClientPayload = async ({
 /** @deprecated */
 const consumeWorkspaceSyncPayload = async (result: Cloud.WorkspaceSyncPayload) => {
 	if (result.publicKey) {
-		(await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey)).modifiedCount &&
+		if ((await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey)).modifiedCount) {
 			void notifyOnSettingChangedById('Cloud_Workspace_PublicKey');
+		}
 	}
 
 	if (result.trial?.trialID) {
-		(await Settings.updateValueById('Cloud_Workspace_Had_Trial', true)).modifiedCount &&
+		if ((await Settings.updateValueById('Cloud_Workspace_Had_Trial', true)).modifiedCount) {
 			void notifyOnSettingChangedById('Cloud_Workspace_Had_Trial');
+		}
 	}
 
 	// add banners

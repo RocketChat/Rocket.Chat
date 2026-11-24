@@ -44,6 +44,12 @@ test('a frame that reads a browser global fails', () => {
 	assert.deepEqual(checkFrame(frame('const width = globalThis.window.innerWidth;')), ['reads the browser global window']);
 });
 
+test('a typeof check of a browser global and the DOM document and window types fail', () => {
+	assert.deepEqual(checkFrame(frame("const web = typeof window !== 'undefined';")), ['reads the browser global window']);
+	assert.deepEqual(checkFrame(frame('type Owner = { document: Document };')), ['uses the DOM-only type Document']);
+	assert.deepEqual(checkFrame(frame('type Owner = { view: Window };')), ['uses the DOM-only type Window']);
+});
+
 test('a property or key named like a browser global does not count', () => {
 	assert.deepEqual(
 		checkFrame(frame('const { document } = props.owner;\nconst value = props.window;\nconst options = { document: 1 };')),
@@ -76,6 +82,21 @@ test('checkFrames reports each invalid frame in a directory and skips specs', ()
 		writeFileSync(join(directory, 'Good.tsx'), frame(''));
 		writeFileSync(join(directory, 'Bad.spec.tsx'), frame("import { createPortal } from 'react-dom';"));
 		assert.deepEqual(checkFrames(directory), [`${join(directory, 'Bad.tsx')}: imports react-dom`]);
+	} finally {
+		rmSync(directory, { recursive: true, force: true });
+	}
+});
+
+test('a contract is checked without declaring a frame', () => {
+	const directory = mkdtempSync(join(tmpdir(), 'frame-platform-'));
+	try {
+		writeFileSync(join(directory, 'Bad.contract.ts'), 'export type BadContract = { onPress?: (event: MouseEvent) => void };\n');
+		writeFileSync(
+			join(directory, 'Good.contract.ts'),
+			"import type { AriaRole } from 'react';\nexport type GoodContract = { role?: AriaRole };\n",
+		);
+		writeFileSync(join(directory, 'WebOnly.ts'), 'export type WebOnly = { onClick?: (event: MouseEvent) => void };\n');
+		assert.deepEqual(checkFrames(directory), [`${join(directory, 'Bad.contract.ts')}: uses the DOM-only type MouseEvent`]);
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
 	}

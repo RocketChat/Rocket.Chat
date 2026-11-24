@@ -126,7 +126,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				return;
 			}
 
-			const result = await this.processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
+			const result = await this.processWaitingQueue(queue, nextInquiry);
 
 			if (!result) {
 				queueLogger.debug({ msg: 'Inquiry not taken. Unlocking and re-queueing', inquiry: nextInquiry._id });

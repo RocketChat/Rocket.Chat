@@ -48,7 +48,7 @@ class SAMLServiceProvider {
 let SAML: any;
 
 before(async () => {
-	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } });
+	mock.module('../../../../../server/lib/auth/insertUser', { exports: {} });
 	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
 	mock.module('./ServiceProvider', { exports: { SAMLServiceProvider } });
 	mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope } });

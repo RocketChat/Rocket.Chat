@@ -2,10 +2,10 @@ import { hashPassword } from '@rocket.chat/account-utils';
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
+import { insertUser } from '../../../auth/insertUser';
 import { callbacks as systemCallbacks } from '../../../callbacks';
 import { notifyOnUserChange } from '../../../notifyListener';
 import { addUserToDefaultChannels } from '../../../rooms/addUserToDefaultChannels';
@@ -201,7 +201,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const subset = (source: Record<string, any>, currentPath: string): void => {
 			for (const key in source) {
-				if (!source.hasOwnProperty(key) || source[key] === undefined) {
+				if (!Object.hasOwn(source, key) || source[key] === undefined) {
 					continue;
 				}
 
@@ -314,7 +314,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const localUsername = userData.federated ? undefined : userData.username;
 		if (userData.name || localUsername) {
-			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername });
 		}
 
 		if (userData.importIds.length) {
@@ -400,10 +400,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	async insertUser(userData: IImportUser): Promise<IUser['_id']> {
 		const user = await this.buildNewUserObject(userData);
 
-		return Accounts.insertUserDoc(
+		return insertUser(
 			{
 				joinDefaultChannels: false,
-				skipEmailValidation: true,
 				skipAdminCheck: true,
 				skipAdminEmail: true,
 				skipOnCreateUserCallback: this._options.skipUserCallbacks,

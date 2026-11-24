@@ -1,5 +1,77 @@
 # Change Log
 
+## 37.0.0-rc.0
+
+### Minor Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `rich_text` layout block and the `rich_text_input` element to UiKit. `rich_text` renders structured text (styled text, lists, quotes, code, mentions by id, links, emoji, dates) in messages, modals and contextual bars; `rich_text_input` lets the user type Markdown and reports the value as a `rich_text` block.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `alert` block: a short notice of up to 200 characters, styled by its `level` (`default`, `info`, `warning`, `error` or `success`), for messages, modals and contextual bars.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `card` block, with an optional hero image, icon, title, subtitle, body, subtext and up to 3 buttons, and the `carousel` block, a row of 1 to 10 cards that scrolls sideways with previous and next buttons.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds a confirmation dialog to UiKit elements that carry a `confirm` object: the action is only sent once the user confirms
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `container` block, a titled and optionally collapsible frame around other blocks, and the `layout` block, which arranges blocks in rows of up to 3 weighted items. Livechat draws the `fallback` blocks of a layout.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_table` block, a table with a caption that the reader can filter, sort by column and page through, whose cells hold text, numbers, rich text or a button (`action_cell`).
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_visualization` block, a pie, bar, area or line chart under a title, for messages, modals and contextual bars. A message can hold up to 2 of them.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `file_input` element, which lets apps collect files in modals and contextual bars, and the `file` block, which shows an uploaded file in a message. Files picked in a view are uploaded as temporary files of the room and kept when the view is submitted.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) UiKit messages now give `layout`, `data_table`, `data_visualization`, `carousel`, `table` blocks the full width of the message, and `container` blocks size themselves, while every other block keeps the message block width. `container` widths are now 280px (`narrow`), the message block width (`standard`), 640px (`wide`) and uncapped (`full`).
+
+- ([#43557](https://github.com/RocketChat/Rocket.Chat/pull/43557)) Tightens the layout of UiKit blocks: in messages, blocks sit 8px apart instead of 16px; section fields always use two columns with less space between them, the accessory of a section keeps the same distance from the text at every window width, headers use the title color, context text uses the metadata color, and info cards use the same corner radius as images
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `on_enter_pressed` to `dispatchActionConfig`, so an input element sends a `blockAction` with its current value when the user presses Enter
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `color`, `tag`, `citation`, `message_mention`, `attachment_mention`, `usergroup` and `team` inline elements to the UiKit `rich_text` block. Tags are drawn as chips, citations as numbered links, and message, team and user group mentions resolve their targets by id.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `focus_on_load` to `static_select` and `multi_static_select`, and makes the Fuselage filtered selects focus their input when given `autoFocus`.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `task_card` and `plan` blocks and the `url` source element, for apps that show the progress of a multi-step task, such as an AI agent. A task card has a title, a status (`pending`, `in_progress`, `complete` or `error`), optional details and output, and links to its sources; a plan shows up to 50 tasks together under a title. An app updates the message or view to change their statuses.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds an optional `timezone` to the time picker, naming the IANA time zone of its value; the picker shows the zone's short name next to the time
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds alternative UiKit element type names (`checkboxes`, `radio_buttons`, `timepicker`), widens the icons available to `icon` and `icon_button`, and renders emoji-only `mrkdwn` text at normal size outside the `markdown` block
+
+### Patch Changes
+
+- ([#43167](https://github.com/RocketChat/Rocket.Chat/pull/43167)) Components no longer take a visual state from class names. The classes `hover`, `is-hovered`, `active`, `is-active`, `focus`, `is-focused`, `disabled`, `is-disabled`, `invalid` and `is-visited` used to force the hovered, pressed, focused, disabled, invalid or visited look on buttons, inputs, selection controls, links, tabs, sidebar and accordion items, pagination and chips. States now come only from the element itself (`:hover`, `:active`, `:focus`, `:focus-visible`, `:disabled`, `:invalid`, `:visited`) or from the component's props, so a consumer class with one of those names no longer changes how a component looks.
+
+  Along with it:
+
+  - `SelectLegacy` no longer needs two clicks to open again after it lost focus while open.
+  - Inputs with only a start addon show the invalid border, and inputs with an addon drop it when their value is changed programmatically.
+  - The selected point of a UiKit linear scale element is a primary button when the element is not in an error state, and is announced as pressed.
+  - The transcript subject field of the close chat modal shows its focus ring.
+
+- ([#43557](https://github.com/RocketChat/Rocket.Chat/pull/43557)) Fixes the overflow menu of a UiKit actions block taking almost half the row and wrapping to its own line instead of sitting next to the buttons
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Translates the built-in labels of the task card, carousel and file input with the core strings instead of the app's, so they show in the user's language
+
+- ([#43557](https://github.com/RocketChat/Rocket.Chat/pull/43557)) Fixes UiKit images (image blocks and image elements) being framed in a fixed translucent grey instead of the theme's colors, which showed as a light halo in dark mode
+
+- ([#43524](https://github.com/RocketChat/Rocket.Chat/pull/43524)) Fixes UiKit `info_card` and landscape `image` blocks rendering narrower than link previews and attachments in the same message
+
+- <details><summary>Updated dependencies [34234f0163d4052dc611034b4dd5d18971a973d8, 25a57072d42d76566eb34d086c3ae09060d09e86, 38bba63905a0f2d56bdd4e2f8dae8e9eed8e5c96, 370295b5a1d4c81b56505c5c8136f6624eecb6f6, 34234f0163d4052dc611034b4dd5d18971a973d8, 183bca8af1fc26ab280120fef087f72f92982302, 65784586850ac2bddf383225524cc70eede65825, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 50a86d79876838745564b1adaf2d8409cb50c9a3, 25a57072d42d76566eb34d086c3ae09060d09e86, 9fe037ae8446c6aa6ac3149ce7c954a8698c721c, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 34234f0163d4052dc611034b4dd5d18971a973d8, 438544159fd6359527759d2a97dd227ae9f6c58c, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4, 10deeafc95d3d62507d1679707749db70954b0f8, 47bbdf898ed3bc2abae979e46ccaa7581b7b3dac, 46cba6391140d334aecbe764a0fc3341feb27ce9, b58dc3f74d95770724a0ad8770e681dfc83e1873, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 42f9f7efa463480e5168ff054a66f9c086bbf809, 0270870289ea9e3449f658ad7bff80d1525e9937, e074eb52ce5cca7934b85080c090b16e82010320, 2764e60c1343f9ed870bd40deef2d2019acaf477, e34b44c4aefa9952f18aa625be9910adeec8b76b, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 34234f0163d4052dc611034b4dd5d18971a973d8, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/fuselage@2.0.0-rc.0
+  - @rocket.chat/apps-engine@1.69.0-rc.0
+  - @rocket.chat/icons@0.53.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+  - @rocket.chat/ui-contexts@37.0.0-rc.0
+  - @rocket.chat/styled@0.35.0-rc.0
+  - @rocket.chat/gazzodown@37.0.0-rc.0
+  - @rocket.chat/ui-avatar@33.0.0-rc.0
+  - @rocket.chat/ui-video-conf@37.0.0-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.1-rc.0
+
+  </details>
+
 ## 36.0.0
 
 ### Minor Changes

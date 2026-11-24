@@ -1,5 +1,29 @@
 # @rocket.chat/livechat Change Log
 
+## 4.0.0-rc.0
+
+### Minor Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `container` block, a titled and optionally collapsible frame around other blocks, and the `layout` block, which arranges blocks in rows of up to 3 weighted items. Livechat draws the `fallback` blocks of a layout.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+### Patch Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Gives the Livechat modal dialog semantics and focus handling: it has the `dialog` role (`alertdialog` for alerts and confirmations), is named by its title or message, moves focus into the dialog when it opens, keeps Tab inside it and returns focus to the opener when it closes
+
+- ([#43611](https://github.com/RocketChat/Rocket.Chat/pull/43611)) Fixes the Livechat widget no longer showing new messages after a network outage longer than about a minute; the widget now keeps trying to reconnect until the server is reachable again
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac, fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 42f9f7efa463480e5168ff054a66f9c086bbf809, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+  - @rocket.chat/gazzodown@37.0.0-rc.0
+  - @rocket.chat/logo@0.33.4-rc.0
+
+  </details>
+
 ## 3.0.0
 
 ### Minor Changes

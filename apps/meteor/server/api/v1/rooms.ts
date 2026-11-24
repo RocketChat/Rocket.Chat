@@ -117,7 +117,7 @@ export async function findRoomByIdOrName({
 }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
-		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
+		('roomId' in params && !params.roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
 		throw new ClientSafeError('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -1850,6 +1850,6 @@ type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends RoomEndpoints {}
 }

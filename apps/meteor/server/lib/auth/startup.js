@@ -1,25 +1,16 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User, ClientSafeError } from '@rocket.chat/core-services';
-import { Roles, Settings, Users } from '@rocket.chat/models';
-import { escapeRegExp, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
+import { Users } from '@rocket.chat/models';
+import { getLoginExpirationInDays } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
-import { getUserToActivateEmail, sendEnrollmentEmail, sendResetPasswordEmail, sendVerificationEmail } from './accountEmails';
+import { sendEnrollmentEmail, sendResetPasswordEmail, sendVerificationEmail } from './accountEmails';
+import { insertUser } from './insertUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
-import { parseCSV } from '../../../lib/utils/parseCSV';
-import { getNewUserRoles } from '../../services/user/lib/getNewUserRoles';
 import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
-import { beforeCreateUserCallback } from '../callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../getClientAddress';
 import { getMaxLoginTokens } from '../getMaxLoginTokens';
-import * as Mailer from '../notifications/email/api';
-import { notifyOnSettingChangedById } from '../notifyListener';
-import { addUserRolesAsync } from '../roles/addUserRoles';
-import { joinDefaultChannels } from '../rooms/joinDefaultChannels';
-import { getAvatarSuggestionForUser } from '../users/getAvatarSuggestionForUser';
-import { setAvatarFromServiceWithValidation } from '../users/setUserAvatar';
 import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
 
 Accounts.config({
@@ -46,213 +37,8 @@ Accounts.sendResetPasswordEmail = sendResetPasswordEmail;
 Accounts.sendVerificationEmail = sendVerificationEmail;
 Accounts.sendEnrollmentEmail = sendEnrollmentEmail;
 
-const validateEmailDomain = (user) => {
-	if (user.type === 'visitor') {
-		return true;
-	}
-
-	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
-	if (_.isEmpty(domainWhiteList?.trim())) {
-		return true;
-	}
-
-	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
-
-	if (user.emails && user.emails.length > 0) {
-		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
-
-		if (!inWhiteList) {
-			throw new ClientSafeError('error-invalid-domain');
-		}
-	}
-
-	return true;
-};
-
-const onCreateUserAsync = async function (options, user = {}) {
-	if (!options.skipBeforeCreateUserCallback) {
-		await beforeCreateUserCallback.run(options, user);
-	}
-	user.status = 'offline';
-
-	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
-	if (settings.get('Accounts_ManuallyApproveNewUsers') && !user.active) {
-		user.inactiveReason = 'pending_approval';
-	}
-
-	if (!user.name) {
-		if (options.profile?.name) {
-			user.name = options.profile.name;
-		}
-	}
-
-	if (user.services) {
-		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
-
-		for (const service of Object.values(user.services)) {
-			const suggestedName = service.name || service.username;
-			if (!user.name && suggestedName) {
-				user.name = suggestedName;
-			}
-
-			if (!user.emails && service.email) {
-				user.emails = [
-					{
-						address: service.email,
-						verified,
-					},
-				];
-			}
-		}
-	}
-
-	if (!options.skipAdminEmail && !user.active) {
-		const destinations = [];
-		const usersInRole = await Roles.findUsersInRole('admin');
-		await usersInRole.forEach((adminUser) => {
-			if (Array.isArray(adminUser.emails)) {
-				adminUser.emails.forEach((email) => {
-					destinations.push(`${adminUser.name}<${email.address}>`);
-				});
-			}
-		});
-
-		const email = {
-			to: destinations,
-			from: settings.get('From_Email'),
-			...getUserToActivateEmail({
-				...options,
-				name: options.name || options.profile?.name,
-				email: options.email || user.emails[0].address,
-			}),
-		};
-
-		await Mailer.send(email);
-	}
-
-	if (!options.skipOnCreateUserCallback) {
-		await callbacks.run('onCreateUser', options, user);
-	}
-
-	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
-		throw new ClientSafeError(403, 'User validation failed');
-	}
-
-	return removeEmpty(user);
-};
-
-Accounts.onCreateUser(function (...args) {
-	// Depends on meteor support for Async
-	return onCreateUserAsync.call(this, ...args);
-});
-
-const { insertUserDoc } = Accounts;
-
-Accounts.insertUserDoc = async function (options, user) {
-	const globalRoles = new Set(
-		[options.globalRoles, user.globalRoles]
-			.filter((roles) => Array.isArray(roles) && roles.every((role) => typeof role === 'string'))
-			.flat(),
-	);
-
-	delete user.globalRoles;
-
-	// for some reason, the name is not being set in the user object but is being set in the options object
-	if (options.name && typeof options.name === 'string') {
-		user.name = options.name;
-	}
-
-	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
-		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
-
-		if (defaultAuthServiceRoles.length > 0) {
-			defaultAuthServiceRoles.map((role) => globalRoles.add(role));
-		}
-	}
-
-	const arrayGlobalRoles = [...globalRoles];
-	const roles = options.skipNewUserRolesSetting ? arrayGlobalRoles : getNewUserRoles(arrayGlobalRoles);
-
-	if (!user.type) {
-		user.type = 'user';
-	}
-
-	if (
-		settings.get('Accounts_TwoFactorAuthentication_Enabled') &&
-		settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled') &&
-		settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')
-	) {
-		user.services = user.services || {};
-		user.services.email2fa = {
-			enabled: true,
-			changedAt: new Date(),
-		};
-	}
-
-	// Make sure that the user has the field 'roles'
-	if (!user.roles) {
-		user.roles = [];
-	}
-
-	const _id = await insertUserDoc.call(Accounts, options, user);
-
-	user = await Users.findOne({
-		_id,
-	});
-
-	/**
-	 * if settings shows setup wizard to be pending
-	 * and no admin's been found,
-	 * and existing role list doesn't include admin
-	 * create this user admin.
-	 * count this as the completion of setup wizard step 1.
-	 */
-	if (!options.skipAdminCheck) {
-		const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
-		if (!roles.includes('admin') && !hasAdmin) {
-			roles.push('admin');
-			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				// TODO: audit
-				(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
-					void notifyOnSettingChangedById('Show_Setup_Wizard');
-			}
-		}
-	}
-
-	await addUserRolesAsync(_id, roles);
-
-	// Make user's roles to be present on callback
-	user = await Users.findOneById(_id, { projection: { username: 1, type: 1, roles: 1 } });
-
-	if (user.username) {
-		if (options.joinDefaultChannels !== false) {
-			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
-		}
-
-		if (!options.skipAfterCreateUserCallback && user.type !== 'visitor') {
-			setImmediate(() => {
-				return callbacks.run('afterCreateUser', user);
-			});
-		}
-		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			const [service] = Object.keys(avatarSuggestions);
-			if (service) {
-				await setAvatarFromServiceWithValidation(_id, avatarSuggestions[service].blob, '', service);
-			}
-		}
-	}
-
-	if (!options.skipAppsEngineEvent) {
-		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: options.performedBy }).catch((e) => {
-			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
-		});
-	}
-
-	return _id;
-};
+// oxlint-disable-next-line eslint-js/no-restricted-syntax -- Meteor's updateOrCreateUserFromExternalService still creates users through this
+Accounts.insertUserDoc = insertUser;
 
 const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('beforeValidateLogin', login);
@@ -324,46 +110,6 @@ const validateLoginAttemptAsync = async function (login) {
 Accounts.validateLoginAttempt(function (...args) {
 	// Depends on meteor support for Async
 	return validateLoginAttemptAsync.call(this, ...args);
-});
-
-Accounts.validateNewUser((user) => {
-	if (user.type === 'visitor') {
-		return true;
-	}
-
-	if (
-		settings.get('Accounts_Registration_AuthenticationServices_Enabled') === false &&
-		settings.get('LDAP_Enable') === false &&
-		!(user.services && user.services.password)
-	) {
-		throw new ClientSafeError('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
-	}
-
-	return true;
-});
-
-Accounts.validateNewUser((user) => {
-	if (user.type === 'visitor') {
-		return true;
-	}
-
-	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
-	if (_.isEmpty(domainWhiteList?.trim())) {
-		return true;
-	}
-
-	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
-
-	if (user.emails && user.emails.length > 0) {
-		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
-
-		if (inWhiteList === false) {
-			throw new ClientSafeError('error-invalid-domain');
-		}
-	}
-
-	return true;
 });
 
 Accounts.onLogin(async ({ user }) => {
