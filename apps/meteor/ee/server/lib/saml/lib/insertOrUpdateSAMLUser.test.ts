@@ -1,9 +1,8 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IRolesModel, IRoomsModel, IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { SAMLUtils } from './Utils';
@@ -36,17 +35,20 @@ const matchesQuery = (user: StoredUser, query: Record<string, any>) =>
 		return user.services?.saml?.[path.replace('services.saml.', '')] === expected;
 	});
 
-const { SAML } = proxyquire.noCallThru().load('./SAML', {
-	'../../../../../server/lib/auth/insertUser': { insertUser },
-	'meteor/meteor': { Meteor: {} },
-	'./ServiceProvider': {},
-	'../../../../../lib/i18n': { i18n: { languages: ['en', 'pt-BR'] } },
-	'../../../../../server/lib/rooms/addUserToRoom': { addUserToRoom },
-	'../../../../../server/lib/rooms/createRoom': { createRoom },
-	'../../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion },
-	'../../../../../server/lib/users/saveUserIdentity': { saveUserIdentity },
-	'../../../../../server/lib/utils/getURL': {},
-	'../../../../../server/settings': { settings: { get: settingsGet } },
+let SAML: any;
+
+before(async () => {
+	mock.module('../../../../../server/lib/auth/insertUser', { exports: { insertUser } });
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
+	mock.module('./ServiceProvider', { exports: {} });
+	mock.module('../../../../../lib/i18n', { exports: { i18n: { languages: ['en', 'pt-BR'] } } });
+	mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom } });
+	mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom } });
+	mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } });
+	mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity } });
+	mock.module('../../../../../server/lib/utils/getURL', { exports: {} });
+	mock.module('../../../../../server/settings', { exports: { settings: { get: settingsGet } } });
+	({ SAML } = await import('./SAML'));
 });
 
 const buildUserObject = (overrides: Partial<ISAMLUser> = {}): ISAMLUser => ({

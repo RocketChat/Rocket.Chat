@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -12,9 +11,12 @@ const createRoom = sandbox.stub();
 const Users = { findOneById: sandbox.stub() };
 const Rooms = { findOneByNameAndType: sandbox.stub() };
 
-const { createNewUser } = p.noCallThru().load('./createNewUser.ts', {
-	'../auth/insertUser': { insertUser },
-	'../rooms/createRoom': { createRoom },
+let createNewUser: any;
+
+before(async () => {
+	mock.module('../auth/insertUser', { exports: { insertUser } });
+	mock.module('../rooms/createRoom', { exports: { createRoom } });
+	({ createNewUser } = await import('./createNewUser'));
 });
 
 const created = { _id: 'new-user-id', username: 'alice' };

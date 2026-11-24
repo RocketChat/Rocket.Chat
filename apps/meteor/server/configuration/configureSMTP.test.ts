@@ -1,14 +1,16 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const configureMailTransport = sinon.stub();
 
-const { configureSMTP } = proxyquire.noCallThru().load('./configureSMTP', {
-	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
-	'../lib/notifications/email/transport': { configureMailTransport },
+let configureSMTP: any;
+
+before(async () => {
+	mock.module('../lib/logger/system', { exports: { SystemLogger: { info: sinon.stub() } } });
+	mock.module('../lib/notifications/email/transport', { exports: { configureMailTransport } });
+	({ configureSMTP } = await import('./configureSMTP'));
 });
 
 const applySettings = (values: Record<string, unknown>) => {

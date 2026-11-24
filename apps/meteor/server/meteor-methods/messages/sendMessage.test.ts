@@ -1,9 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsValues: Record<string, unknown> = {};
@@ -18,14 +17,19 @@ const translate = sinon.stub();
 const usersFindOneById = sinon.stub();
 const messagesFindOneById = sinon.stub();
 
-const { executeSendMessage } = proxyquire.noCallThru().load('./sendMessage', {
-	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
-	'../../lib/authorization/canSendMessage': { canSendMessageAsync },
-	'../../lib/i18n': { i18n: { t: translate } },
-	'../../lib/logger/system': { SystemLogger: { error: systemLoggerError } },
-	'../../lib/messages/sendMessage': { sendMessage },
-	'../../lib/metrics': { metrics: { messagesSent: { inc: messagesSentInc }, messagesSentTotal: { inc: messagesSentTotalInc } } },
-	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+let executeSendMessage: any;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } });
+	mock.module('../../lib/authorization/canSendMessage', { exports: { canSendMessageAsync } });
+	mock.module('../../lib/i18n', { exports: { i18n: { t: translate } } });
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: systemLoggerError } } });
+	mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } });
+	mock.module('../../lib/metrics', {
+		exports: { metrics: { messagesSent: { inc: messagesSentInc }, messagesSentTotal: { inc: messagesSentTotalInc } } },
+	});
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key] } } });
+	({ executeSendMessage } = await import('./sendMessage'));
 });
 
 const NOW = new Date('2026-01-01T12:00:00.000Z');

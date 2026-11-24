@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const Users = {
@@ -26,28 +25,35 @@ const getAvatarSuggestionForUser = sinon.stub();
 const setAvatarFromServiceWithValidation = sinon.stub();
 const triggerEvent = sinon.stub();
 
-const { insertUser } = proxyquire.noCallThru().load('./insertUser.ts', {
-	'@rocket.chat/apps': {
-		Apps: { self: { triggerEvent, getRocketChatLogger: () => ({ error: sinon.stub() }) } },
-		AppEvents: { IPostUserCreated: 'IPostUserCreated' },
-	},
-	'./accountEmails': {
-		getUserToActivateEmail: (options: { name?: string; email?: string }) => ({
-			subject: 'Activate',
-			html: `${options.name} ${options.email}`,
-		}),
-	},
-	'../../services/user/lib/getNewUserRoles': { getNewUserRoles },
-	'../../settings': { settings: { get: (key: string) => settingValues.get(key) } },
-	'../auth-providers/custom-oauth/customOAuth': { applyCustomOAuthUserFields },
-	'../callbacks': { callbacks: { run: runCallback } },
-	'../callbacks/beforeCreateUserCallback': { beforeCreateUserCallback: { run: runBeforeCreateUser } },
-	'../notifications/email/api': { send: sendEmail },
-	'../notifyListener': { notifyOnSettingChangedById },
-	'../roles/addUserRoles': { addUserRolesAsync },
-	'../rooms/joinDefaultChannels': { joinDefaultChannels },
-	'../users/getAvatarSuggestionForUser': { getAvatarSuggestionForUser },
-	'../users/setUserAvatar': { setAvatarFromServiceWithValidation },
+let insertUser: any;
+
+before(async () => {
+	mock.module('@rocket.chat/apps', {
+		exports: {
+			Apps: { self: { triggerEvent, getRocketChatLogger: () => ({ error: sinon.stub() }) } },
+			AppEvents: { IPostUserCreated: 'IPostUserCreated' },
+		},
+	});
+	mock.module('./accountEmails', {
+		exports: {
+			getUserToActivateEmail: (options: { name?: string; email?: string }) => ({
+				subject: 'Activate',
+				html: `${options.name} ${options.email}`,
+			}),
+		},
+	});
+	mock.module('../../services/user/lib/getNewUserRoles', { exports: { getNewUserRoles } });
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } });
+	mock.module('../auth-providers/custom-oauth/customOAuth', { exports: { applyCustomOAuthUserFields } });
+	mock.module('../callbacks', { exports: { callbacks: { run: runCallback } } });
+	mock.module('../callbacks/beforeCreateUserCallback', { exports: { beforeCreateUserCallback: { run: runBeforeCreateUser } } });
+	mock.module('../notifications/email/api', { exports: { send: sendEmail } });
+	mock.module('../notifyListener', { exports: { notifyOnSettingChangedById } });
+	mock.module('../roles/addUserRoles', { exports: { addUserRolesAsync } });
+	mock.module('../rooms/joinDefaultChannels', { exports: { joinDefaultChannels } });
+	mock.module('../users/getAvatarSuggestionForUser', { exports: { getAvatarSuggestionForUser } });
+	mock.module('../users/setUserAvatar', { exports: { setAvatarFromServiceWithValidation } });
+	({ insertUser } = await import('./insertUser'));
 });
 
 const insertedUser = () => Users.insertOne.firstCall.args[0];

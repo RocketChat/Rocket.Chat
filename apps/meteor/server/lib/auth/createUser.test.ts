@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const Users = {
@@ -15,9 +14,12 @@ const Users = {
 const insertUser = sinon.stub();
 const hashPassword = sinon.stub();
 
-const { createUser } = proxyquire.noCallThru().load('./createUser.ts', {
-	'@rocket.chat/account-utils': { hashPassword },
-	'./insertUser': { insertUser },
+let createUser: any;
+
+before(async () => {
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword } });
+	mock.module('./insertUser', { exports: { insertUser } });
+	({ createUser } = await import('./createUser'));
 });
 
 describe('createUser', () => {

@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
@@ -22,35 +21,19 @@ const callbacks = {
 const hashPasswordMock = sinon.stub();
 const generateTempPassword = sinon.stub();
 
-const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
-	'../../../callbacks': {
-		callbacks,
-	},
-	'../../../rooms/addUserToDefaultChannels': {
-		addUserToDefaultChannels,
-	},
-	'../../../users/getUsernameSuggestion': {
-		generateUsernameSuggestion,
-	},
-	'../../../users/saveUserIdentity': {
-		saveUserIdentity: sinon.stub(),
-	},
-	'../../../users/setUserActiveStatus': {
-		setUserActiveStatus: sinon.stub(),
-	},
-	'../../../notifyListener': {
-		notifyOnUserChange: sinon.stub(),
-	},
-	'./generateTempPassword': {
-		generateTempPassword,
-	},
-	'@rocket.chat/account-utils': {
-		hashPassword: hashPasswordMock,
-	},
-	'meteor/meteor': sinon.stub(),
-	'../../../auth/insertUser': {
-		insertUser,
-	},
+let UserConverter: any;
+
+before(async () => {
+	mock.module('../../../callbacks', { exports: { callbacks } });
+	mock.module('../../../rooms/addUserToDefaultChannels', { exports: { addUserToDefaultChannels } });
+	mock.module('../../../users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } });
+	mock.module('../../../users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } });
+	mock.module('../../../users/setUserActiveStatus', { exports: { setUserActiveStatus: sinon.stub() } });
+	mock.module('../../../notifyListener', { exports: { notifyOnUserChange: sinon.stub() } });
+	mock.module('./generateTempPassword', { exports: { generateTempPassword } });
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword: hashPasswordMock } });
+	mock.module('../../../auth/insertUser', { exports: { insertUser } });
+	({ UserConverter } = await import('./UserConverter'));
 });
 
 describe('User Converter', () => {
@@ -128,7 +111,11 @@ describe('User Converter', () => {
 			...expectedData,
 		});
 
-		const converter = new UserConverter({ workInMemory: true });
+		let converter: any;
+
+		before(() => {
+			converter = new UserConverter({ workInMemory: true });
+		});
 
 		generateTempPassword.returns('tempPassword');
 		hashPasswordMock.callsFake(async (pass: string) => `hashed=${pass}`);

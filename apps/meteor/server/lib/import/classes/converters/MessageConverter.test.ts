@@ -1,17 +1,16 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
 const insertMessage = sinon.stub();
 
-const { MessageConverter } = proxyquire.noCallThru().load('./MessageConverter', {
-	'../../../messages/insertMessage': {
-		insertMessage,
-	},
-	'meteor/meteor': sinon.stub(),
+let MessageConverter: any;
+
+before(async () => {
+	mock.module('../../../messages/insertMessage', { exports: { insertMessage } });
+	({ MessageConverter } = await import('./MessageConverter'));
 });
 
 describe('Message Converter', () => {

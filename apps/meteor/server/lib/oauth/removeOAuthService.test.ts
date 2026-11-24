@@ -1,18 +1,24 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
-import p from 'proxyquire';
+import { mockModel } from '@rocket.chat/models/testing';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
 const LoginServiceConfiguration = { removeByService: sandbox.stub() };
 const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 
-const { removeOAuthService } = p.noCallThru().load('./removeOAuthService.ts', {
-	'@rocket.chat/models': { LoginServiceConfiguration },
-	'../notifyListener': { notifyOnLoginServiceConfigurationChanged },
+let removeOAuthService: any;
+
+before(async () => {
+	mock.module('../notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } });
+	({ removeOAuthService } = await import('./removeOAuthService'));
 });
 
 describe('removeOAuthService', () => {
+	before(() => {
+		mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
+	});
+
 	beforeEach(() => {
 		sandbox.resetHistory();
 	});
