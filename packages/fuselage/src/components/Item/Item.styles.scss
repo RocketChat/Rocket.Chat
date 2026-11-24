@@ -133,6 +133,18 @@ $item-group-narrow-width: 320px;
 		align-items: flex-start;
 	}
 
+	&--divided::after {
+		position: absolute;
+		inset-block-end: 0;
+		inset-inline: 0;
+
+		content: '';
+
+		pointer-events: none;
+
+		border-block-end: lengths.border-width(default) solid $item-color-stroke-divider;
+	}
+
 	&:where(.rcx-item--hoverable):hover {
 		background-color: $item-color-surface-hover;
 	}

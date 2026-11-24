@@ -20,6 +20,10 @@ export type ItemProps = {
 	 */
 	insetBlock?: ItemInset;
 	/**
+	 * Draws a rule along the row's bottom edge, for lists whose rows need a line between them.
+	 */
+	divided?: boolean;
+	/**
 	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
 	 */
 	align?: 'center' | 'start';
@@ -91,6 +95,7 @@ const Item = ({
 	is: Tag = 'div',
 	inset = 'none',
 	insetBlock = 'none',
+	divided,
 	align = 'center',
 	hoverable,
 	selected,
@@ -149,6 +154,7 @@ const Item = ({
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
 						[`inset-block-${insetBlock}`]: insetBlock !== 'none',
+						'divided': !!divided,
 						[`align-${align}`]: align !== 'center',
 						'hoverable': !!hoverable,
 						'clickable': !!onClick,

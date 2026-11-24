@@ -19,6 +19,10 @@ export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 		 * Adds space above and below the message, for a list of separate messages such as a panel's threads or discussions.
 		 */
 		insetBlock?: ItemInset;
+		/**
+		 * Draws a rule under the message, for a list of separate messages that needs a line between them.
+		 */
+		divided?: boolean;
 	};
 
 function Message({ className, clickable, hoverable = true, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {
