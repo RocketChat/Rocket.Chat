@@ -4,7 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "node init && tsc",
+    "build": "tsc",
     "lint": "yarn run -T oxlint",
     "typecheck": "tsc --noEmit"
   },

@@ -12,12 +12,12 @@
     "/build"
   ],
   "scripts": {
-    "build": "node init && yarn clean && cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
-    "build-storybook": "node init && storybook build",
+    "build": "yarn clean && cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
+    "build-storybook": "storybook build",
     "clean": "rm -rf dist",
-    "dev": "node init && yarn build",
+    "dev": "yarn build",
     "lint": "yarn run -T oxlint && yarn run stylelint",
-    "start": "node init && cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
+    "start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
     "storybook": "storybook dev -p 9001 -c .storybook",
     "stylelint": "stylelint 'src/**/*.scss'",
     "typecheck": "tsc -p tsconfig.json --noEmit"

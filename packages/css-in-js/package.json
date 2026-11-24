@@ -27,7 +27,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && rollup -c",
+    "build": "rm -rf dist && rollup -c",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "test": "jest",

@@ -8,9 +8,9 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && tsc -p tsconfig.build.json && yarn build:post",
-    "build:post": "node init && node --no-warnings dist/generate-landing-view.js && rm -f dist/generate-landing-view.*",
-    "dev": "node init && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && yarn build:post",
+    "build:post": "node --no-warnings dist/generate-landing-view.js && rm -f dist/generate-landing-view.*",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "storybook": "storybook dev -p 6006",

@@ -39,10 +39,10 @@
     "definition/**"
   ],
   "scripts": {
-    "build": "node init && run-s build:clean build:default",
-    "build:clean": "node init && rm -rf definition",
-    "build:default": "node init && tsc -p tsconfig.json",
-    "dev": "node init && yarn build:default --watch",
+    "build": "run-s build:clean build:default",
+    "build:clean": "rm -rf definition",
+    "build:default": "tsc -p tsconfig.json",
+    "dev": "yarn build:default --watch",
     "gen-doc": "typedoc",
     "lint": "yarn run -T oxlint",
     "typecheck": "run-s typecheck:default typecheck:types",

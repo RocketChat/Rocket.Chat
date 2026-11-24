@@ -13,8 +13,8 @@
   "main": "./dist/base64.js",
   "types": "./dist/base64.d.ts",
   "scripts": {
-    "build": "node init && rm -rf dist && tsc -p tsconfig.build.json",
-    "dev": "node init && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "test": "jest",

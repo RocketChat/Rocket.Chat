@@ -21,8 +21,8 @@
     "ee/packages/*"
   ],
   "scripts": {
-    "build": "node init && turbo run build",
-    "dev": "node init && turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
+    "build": "turbo run build",
+    "dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
     "docs:check-links": "node scripts/check-docs-links.mjs docs",
     "dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
     "ms": "turbo run ms --env-mode=loose",

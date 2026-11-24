@@ -10,12 +10,12 @@
     "node-runtime/"
   ],
   "scripts": {
-    "build": "node init && run-s build:clean build:default build:base-runtime build:node-runtime",
-    "build:clean": "node init && rm -rf dist base-runtime/dist node-runtime/dist",
-    "build:default": "node init && tsc -p tsconfig.json",
-    "build:base-runtime": "node init && tsc -p base-runtime/tsconfig.json",
-    "build:node-runtime": "node init && tsc -p node-runtime/tsconfig.json",
-    "dev": "node init && tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "build": "run-s build:clean build:default build:base-runtime build:node-runtime",
+    "build:clean": "rm -rf dist base-runtime/dist node-runtime/dist",
+    "build:default": "tsc -p tsconfig.json",
+    "build:base-runtime": "tsc -p base-runtime/tsconfig.json",
+    "build:node-runtime": "tsc -p node-runtime/tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "lint": "yarn run -T oxlint",
     "test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test-timeout=60000 --test \"tests/**/*.test.ts\"",
     "test:base-runtime": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test \"base-runtime/**/*.test.ts\"",

@@ -24,7 +24,7 @@
   "scripts": {
     ".:build:clean": "rimraf dist",
     ".:build:tsc": "ttsc --binary \"$(node -e 'const p=require(`path`);process.stdout.write(p.join(p.dirname(require.resolve(`@typescript/native-preview/package.json`)),`bin`,`tsgo`))')\" -p tsconfig.build.json",
-    "build": "node init && run-s .:build:clean .:build:tsc",
+    "build": "run-s .:build:clean .:build:tsc",
     "lint": "yarn run -T oxlint",
     "test": "jest",
     "testunit": "jest",

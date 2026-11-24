@@ -27,7 +27,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && node ./build.js",
+    "build": "rm -rf dist && node ./build.js",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix"
   },

@@ -8,7 +8,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && tsc",
+    "build": "tsc",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "test": "jest",

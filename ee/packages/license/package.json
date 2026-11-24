@@ -8,8 +8,8 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && tsc",
-    "dev": "node init && tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "test": "jest",

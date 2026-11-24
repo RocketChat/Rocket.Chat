@@ -32,7 +32,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rollup -c",
+    "build": "rollup -c",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "test": "jest",

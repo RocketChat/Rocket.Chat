@@ -22,7 +22,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
+    "build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "test": "jest",

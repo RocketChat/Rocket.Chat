@@ -22,7 +22,7 @@
     "/server"
   ],
   "scripts": {
-    "build": "node init && tsc",
+    "build": "tsc",
     "clean": "rm -rf ./dist",
     "lint": "yarn run -T oxlint",
     "typecheck": "tsc --noEmit"

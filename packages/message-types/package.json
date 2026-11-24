@@ -8,7 +8,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "lint": "yarn run -T oxlint",
     "test": "jest",
     "testunit": "jest"

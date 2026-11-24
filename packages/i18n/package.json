@@ -24,7 +24,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
     "check": "node --experimental-transform-types ./src/scripts/check.mts",
     "lint": "yarn run -T oxlint && node --experimental-transform-types ./src/scripts/check.mts",
     "lint:fix": "yarn run -T oxlint --fix && node --experimental-transform-types ./src/scripts/check.mts --fix",

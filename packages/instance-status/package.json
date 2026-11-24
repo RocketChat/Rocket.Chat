@@ -8,8 +8,8 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && rm -rf dist && tsc -p tsconfig.json",
-    "dev": "node init && tsc --watch --preserveWatchOutput -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "typecheck": "tsc --noEmit"

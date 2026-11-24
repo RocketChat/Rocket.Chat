@@ -21,7 +21,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "node init && node scripts/buildIcons.mjs",
+    "build": "node scripts/buildIcons.mjs",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix"
   },
