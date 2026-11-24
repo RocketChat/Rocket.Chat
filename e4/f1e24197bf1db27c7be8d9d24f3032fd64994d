@@ -1,0 +1,60 @@
+apps/meteor/server/lib/auth/updateOrCreateUserFromExternalService.test.ts
+  s_cbe68936cb4058::t_41837cd400f985 1-211,230-246
+  s_5049b5fc09b80f::t_6d355eaf123863 212-229
+apps/meteor/server/lib/auth-providers/apple/loginHandler.spec.ts
+  s_cbe68936cb4058::t_85105f84a0b927 61,83,102
+  s_cbe68936cb4058::t_73b4b0d0eef9fd 5,24-27,65,87
+apps/meteor/server/lib/oauth/verifyFunction.test.ts
+  s_cbe68936cb4058::t_73b4b0d0eef9fd 10
+apps/meteor/server/lib/auth/updateOrCreateUserFromExternalService.ts
+  s_cbe68936cb4058::t_71d7ac3dbeba7d 1-92
+apps/meteor/server/lib/auth-providers/apple/loginHandler.ts
+  s_cbe68936cb4058::t_a3f2f17b6b261e 31
+  s_cbe68936cb4058::t_544a2c47190b75 6
+apps/meteor/server/lib/auth-providers/apple/applePassportOAuth.ts
+  s_cbe68936cb4058::t_544a2c47190b75 14
+  s_cbe68936cb4058::t_a3f2f17b6b261e 124
+apps/meteor/server/lib/oauth/verifyFunction.ts
+  s_cbe68936cb4058::t_a3f2f17b6b261e 4-5,18
+apps/meteor/server/lib/oauth/configureOAuthServices.ts
+  s_cbe68936cb4058::t_544a2c47190b75 11
+apps/meteor/server/lib/auth-providers/custom-oauth/customOAuth.spec.ts
+  s_cbe68936cb4058::t_b4e661065a2d38 86-87,104-109,117-118,423,425,488,497
+  s_cbe68936cb4058::t_bb67288ed8d826 92,711-712,714,718,721,724-726
+apps/meteor/server/lib/auth-providers/custom-oauth/customOAuth.ts
+  s_cbe68936cb4058::t_91274f6148db0e 1,384-386,388,390
+.oxlintrc.json
+  s_cbe68936cb4058::t_cf51c5b61e1e41 406-409
+apps/meteor/ee/server/lib/saml/lib/insertOrUpdateSAMLUser.test.ts
+  s_5049b5fc09b80f::t_dce56f1f613bcf 15,40,68-69,96,112,277,283
+apps/meteor/ee/server/lib/saml/lib/processRequest.test.ts
+  s_5049b5fc09b80f::t_a8530cf07d5af9 50
+apps/meteor/ee/server/lib/saml/lib/saml.test.ts
+  s_5049b5fc09b80f::t_64f12c0d4433d1 1206
+apps/meteor/server/lib/oauth/configureOAuthServices.test.ts
+  s_5049b5fc09b80f::t_e563d3c6657a91 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e4f1e24197bf1db27c7be8d9d24f3032fd64994d",
+  "prompts": {},
+  "sessions": {
+    "s_5049b5fc09b80f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01526df1-4d4b-4bbf-84a2-f233028c823d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_cbe68936cb4058": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "897ac47e-99d8-4522-96d5-674729b4ae7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
