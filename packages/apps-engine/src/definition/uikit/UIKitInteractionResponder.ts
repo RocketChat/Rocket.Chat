@@ -56,28 +56,28 @@ export class UIKitInteractionResponder {
 
 	/** Opens a modal on top of the one the user has open; an app keeps at most 3 stacked, beyond that the top one is replaced. */
 	public pushModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
-			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_PUSH }),
+			...formatModalInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.MODAL_PUSH }),
 		};
 	}
 
 	/** Closes every modal the app has open. */
 	public clearModalViewsResponse(): IUIKitModalClearResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
-		return { success: true, ...formatModalClearInteraction({ appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_CLEAR }) };
+		return { success: true, ...formatModalClearInteraction({ appId, triggerId, type: UIKitInteractionType.MODAL_CLEAR }) };
 	}
 
 	/** Closes the modal with the given id, or the one the interaction came from when no id is given. */
 	public closeModalViewResponse(viewId?: string): IUIKitModalCloseResponse {
-		const { appId, triggerId } = this.baseContext;
+		const { appId, triggerId = '' } = this.baseContext;
 
 		return {
 			success: true,
-			...formatModalCloseInteraction(viewId, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_CLOSE }),
+			...formatModalCloseInteraction(viewId, { appId, triggerId, type: UIKitInteractionType.MODAL_CLOSE }),
 		};
 	}
 

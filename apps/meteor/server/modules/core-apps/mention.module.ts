@@ -28,10 +28,13 @@ export class MentionModule implements IUiKitCoreApp {
 		const {
 			actionId,
 			payload: { value: stringifiedMentions, blockId: referenceMessageId },
+			user,
+			room,
 		} = payload;
 
-		const user = payload.user!;
-		const room = payload.room!;
+		if (!user || !room) {
+			throw new Error('Mention bot - Missing user or room information');
+		}
 
 		const mentions = retrieveMentionsFromPayload(stringifiedMentions as string);
 
