@@ -1,0 +1,21 @@
+packages/rest-typings/src/v1/users/UserRegisterParamsPOST.ts
+  s_836b0f9d62329e::t_fecfeb7bec1364 29
+packages/rest-typings/src/v1/users/UserCreateParamsPOST.ts
+  s_836b0f9d62329e::t_fecfeb7bec1364 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f439da30cd3f41e49fd61b27ec00af76cc602dc4",
+  "prompts": {},
+  "sessions": {
+    "s_836b0f9d62329e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "02aa1a58-34e4-40d2-98ff-2b796d0e06e5",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
