@@ -9,12 +9,12 @@ DISCLAIMER: App related source code shown here are for testing purposes only, an
 In your tests, add a `before` step and call the `installLocalTestPackage` function, passing the path of your desired package. For instance:
 
 ```javascript
-import { appImplementsIPreFileUpload } from '../../data/apps/app-packages';
+import { appFileUploadTest } from '../../data/apps/app-packages';
 import { installLocalTestPackage } from '../../data/apps/helper';
 
 describe('My tests', () => {
 	before(async () => {
-		await installLocalTestPackage(appImplementsIPreFileUpload);
+		await installLocalTestPackage(appFileUploadTest);
 	});
 });
 ```
@@ -46,25 +46,71 @@ Three things to know:
 - Keep an app to a single class file. `rc-apps package` bundles the whole app into one file anyway, and one
   file is what this document can show.
 
+`rc-apps package` also needs these in the scratch dir, and none of them goes in the package's `<details>` block:
+
+- A `package.json` listing `@rocket.chat/apps-engine`, such as
+  `{ "name": "<app-name>", "private": true, "devDependencies": { "@rocket.chat/apps-engine": "^1.58.0" } }`. Without it,
+  `npx` runs from the enclosing workspace and reports a missing `app.json`.
+- TypeScript 5, installed with `npm i --no-save --no-package-lock --ignore-scripts typescript@5`. The CLI uses the
+  TypeScript compiler API, which the monorepo's TypeScript 7 does not ship.
+
 ### Available apps
 
-#### IPreFileUpload handler
+#### File upload test
 
 File name: `file-upload-test_0.0.1.zip`
 
 An app that handles the `IPreFileUpload` event. If the file name starts with `"test-should-reject"`, the app will prevent the upload from happening. The error message will contain the contents of the uploaded file as evidence that the app could successfully read them.
 
+It also provides a public `POST upload-buffer` endpoint that uploads a file through `UploadCreator.uploadBuffer`. The body is `{ roomId, userId, filename, base64 }`, and the response is `{ type }`, the MIME type the server gave the upload.
+
 <details>
 <summary>App source code</summary>
 
 ```typescript
-import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import {
+	HttpStatusCode,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, ApiSecurity, ApiVisibility, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { FileUploadNotAllowedException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 
-export class TestIPreFileUpload extends App implements IPreFileUpload {
+class UploadBufferEndpoint extends ApiEndpoint {
+	public path = 'upload-buffer';
+
+	public async post(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify): Promise<IApiResponse> {
+		const { roomId, userId, filename, base64 } = request.content;
+		const room = await read.getRoomReader().getById(roomId);
+		if (!room) {
+			return { status: HttpStatusCode.NOT_FOUND };
+		}
+
+		const upload = await modify
+			.getCreator()
+			.getUploadCreator()
+			.uploadBuffer(Buffer.from(base64, 'base64'), { filename, room, user: await read.getUserReader().getById(userId) });
+
+		return { status: HttpStatusCode.OK, content: { type: upload.type } };
+	}
+}
+
+export class TestFileUpload extends App implements IPreFileUpload {
+	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new UploadBufferEndpoint(this)],
+		});
+	}
+
 	public async executePreFileUpload(
 		context: IFileUploadContext,
 		read: IRead,
