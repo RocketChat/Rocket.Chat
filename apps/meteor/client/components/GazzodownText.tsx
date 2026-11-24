@@ -49,7 +49,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 			return;
 		}
 
-		return (): RegExp => new RegExp(`(${searchText})(?![^<]*>)`, 'gi');
+		return (): RegExp => new RegExp(`(${escapeRegExp(searchText)})(?![^<]*>)`, 'gi');
 	}, [searchText]);
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);

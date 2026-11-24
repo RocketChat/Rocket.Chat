@@ -227,3 +227,37 @@ in it.`;
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^test$/i);
 	});
 });
+
+describe('GazzodownText search marks', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		mockUseMessageListHighlights.mockReturnValue([]);
+	});
+
+	const renderMarks = (searchText: string, text: string) => {
+		render(
+			<GazzodownText searchText={searchText}>
+				<HighlightTester text={text} />
+			</GazzodownText>,
+			{ wrapper: wrapper.build() },
+		);
+
+		return screen.queryAllByText(() => true, { selector: 'mark' }).map((mark) => mark.textContent);
+	};
+
+	it.each([
+		['c++', 'We write C++ every day', ['C++']],
+		['(foo', 'call (foo now', ['(foo']],
+		['*', 'rated * of 5', ['*']],
+		['\\', 'a path\\to', ['\\']],
+	])('marks %p literally instead of failing as a regular expression', (searchText, text, marks) => {
+		expect(renderMarks(searchText, text)).toEqual(marks);
+	});
+
+	it.each([
+		['a.c', 'abc and a.c', ['a.c']],
+		['x?', 'yes x? no', ['x?']],
+	])('marks only the literal %p, not what it would match as a pattern', (searchText, text, marks) => {
+		expect(renderMarks(searchText, text)).toEqual(marks);
+	});
+});
