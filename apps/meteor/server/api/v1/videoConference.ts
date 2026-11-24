@@ -592,7 +592,7 @@ API.v1.get(
 	{
 		authRequired: true,
 		query: isVideoConfInfoProps,
-		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 },
+		rateLimiterOptions: { numRequestsAllowed: 50, intervalTimeInMS: 3000 },
 		response: {
 			200: infoResponseSchema,
 			400: validateBadRequestErrorResponse,
