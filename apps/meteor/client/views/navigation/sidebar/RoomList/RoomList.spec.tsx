@@ -69,15 +69,17 @@ describe('RoomList', () => {
 		mockCollapsedGroups = [];
 	});
 
-	it('passes computeItemKey to GroupedVirtuoso keying items by group and id', () => {
+	it('passes computeItemKey to GroupedVirtuoso keying headers and items by group and id', () => {
 		render(<RoomList />);
 
 		expect(mockGroupedVirtuoso).toHaveBeenCalled();
 		const { computeItemKey } = mockGroupedVirtuoso.mock.calls[0][0];
 
-		expect(computeItemKey(0)).toBe('unread-room-1');
-		expect(computeItemKey(1)).toBe('unread-rid-2');
-		expect(computeItemKey(2)).toBe('channels-room-3');
+		expect(computeItemKey(0)).toBe('header-unread');
+		expect(computeItemKey(1)).toBe('unread-room-1');
+		expect(computeItemKey(2)).toBe('unread-rid-2');
+		expect(computeItemKey(3)).toBe('header-channels');
+		expect(computeItemKey(4)).toBe('channels-room-3');
 		expect(computeItemKey(99)).toBe(99);
 	});
 
@@ -88,6 +90,8 @@ describe('RoomList', () => {
 		expect(mockGroupedVirtuoso).toHaveBeenCalled();
 		const { computeItemKey } = mockGroupedVirtuoso.mock.calls[0][0];
 
-		expect(computeItemKey(0)).toBe('channels-room-3');
+		expect(computeItemKey(0)).toBe('header-unread');
+		expect(computeItemKey(1)).toBe('header-channels');
+		expect(computeItemKey(2)).toBe('channels-room-3');
 	});
 });

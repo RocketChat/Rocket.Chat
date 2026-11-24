@@ -31,11 +31,12 @@ const RoomList = () => {
 		[isAnonymous, t],
 	);
 
-	const flatRooms = useMemo(
+	const flatItems = useMemo(
 		() =>
-			roomListGroups.flatMap(({ group, rooms }) =>
-				collapsedGroups.includes(group) ? [] : rooms.map((room) => ({ group, room })),
-			),
+			roomListGroups.flatMap(({ group, rooms }) => [
+				{ type: 'header' as const, key: `header-${group}` },
+				...(collapsedGroups.includes(group) ? [] : rooms.map((room) => ({ type: 'room' as const, group, room }))),
+			]),
 		[roomListGroups, collapsedGroups],
 	);
 
@@ -62,8 +63,14 @@ const RoomList = () => {
 						);
 					}}
 					computeItemKey={(index) => {
-						const item = flatRooms[index];
-						return item ? `${item.group}-${item.room._id || item.room.rid || index}` : index;
+						const item = flatItems[index];
+						if (!item) {
+							return index;
+						}
+						if (item.type === 'header') {
+							return item.key;
+						}
+						return `${item.group}-${item.room._id || item.room.rid || index}`;
 					}}
 					{...(totalCount > 0 && {
 						itemContent: (index, groupIndex) => {
