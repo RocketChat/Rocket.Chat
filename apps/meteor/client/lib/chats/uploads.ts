@@ -249,8 +249,7 @@ const trackUploadInFlight = (): (() => void) => {
 
 const isUploadInFlight = (upload: Upload): boolean => !upload.url && !upload.error;
 
-// A room or thread keeps its store while a composer shows it or one of its uploads is still running, so coming back
-// to it finds those uploads still going and still in reach of whatever the composer does to its uploads.
+// Uploads still running stay in reach of their room's next composer.
 const stores = new Map<string, UploadsStore>();
 
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
@@ -320,8 +319,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		const entries = readPersistedUploads(this.storageKey);
 		const kept = this.uploads
 			.filter((upload) => !removed.includes(upload.id))
-			// A rename or a new description made elsewhere reaches the chip, what is sent with it, and what its next edit
-			// saves. An upload of this composer's own keeps the bytes it holds; a restored one has none to keep.
+			// A rename or a new description made elsewhere reaches this composer, without costing it the bytes it holds.
 			.map((upload) => {
 				const entry = entries.find(({ id }) => id === upload.id);
 				if (!entry || (entry.fileName === upload.file.name && entry.altText === upload.altText)) {
@@ -484,6 +482,13 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	};
 
 	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
+		// An upload still being prepared when its room was left belongs to whatever composer the room has now.
+		const current = stores.get(this.storageKey);
+		if (current && current !== this) {
+			return current.send(file, encrypted);
+		}
+		stores.set(this.storageKey, this);
+
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
 		const id = Random.id();

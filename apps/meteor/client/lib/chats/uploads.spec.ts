@@ -219,6 +219,30 @@ describe('UploadsStore persistence', () => {
 		expect(second.get()).toMatchObject([{ id: 'file-1' }, { id: 'file-2', percentage: 100 }]);
 	});
 
+	it('shows an upload that only started after its room was left on the next visit', () => {
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		first.detach();
+		void first.send(createFile());
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+
+		expect(second.get()).toMatchObject([{ file: { name: 'photo.png' }, percentage: 0 }]);
+	});
+
+	it('shows an upload that only started once its room was visited again', () => {
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		first.detach();
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+		void first.send(createFile());
+
+		expect(second.get()).toMatchObject([{ file: { name: 'photo.png' }, percentage: 0 }]);
+	});
+
 	it('shows an upload in flight on the next visit even when its composer was reattached before it started', () => {
 		const first = createUploadsAPI({ rid: 'room' });
 		attach(first);
