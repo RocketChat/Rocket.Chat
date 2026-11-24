@@ -1,0 +1,21 @@
+apps/meteor/tests/e2e/config/constants.ts
+  s_0290515cf8e72a::t_2f28d7fce20297 15-17
+apps/meteor/tests/e2e/oauth.spec.ts
+  s_0290515cf8e72a::t_b9d04776d89c6f 1,3-5,7,11,122-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c90b865ef8a3d235a85ab13568f2cc6db3662b16",
+  "prompts": {},
+  "sessions": {
+    "s_0290515cf8e72a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8a3dae25-e329-4a80-8350-302a4451545b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
