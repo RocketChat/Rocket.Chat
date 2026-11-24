@@ -45,5 +45,5 @@ Import the helpers from `../../testing/g0`, and `expect` and `fn` from `storyboo
 - `play` runs in jsdom without the Storybook decorators and in the browser with them, so the helpers take the story root
   (`canvasElement`) and never `document.body`.
 - Two more checks need no spec: `textNodes.spec.tsx` renders every story and fails on a text node under a `View`, and
-  `yarn workspace @rocket.chat/fuselage test:verify` covers `scripts/verify/frame-platform.mjs`, which fails a Tamagui frame that
-  imports `react-dom` or names a DOM-only type.
+  `yarn workspace @rocket.chat/fuselage test:verify` covers `scripts/verify/frame-platform.mjs`, which fails a Tamagui frame or a
+  `*.contract.ts` module that imports `react-dom` or names a DOM-only type.
