@@ -1,10 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 type Stubbed = { [k: string]: any };
 
@@ -12,6 +10,26 @@ describe('eraseTeam (TypeScript) module', () => {
 	let sandbox: sinon.SinonSandbox;
 	let stubs: Stubbed;
 	let subject: any;
+
+	const loadEraseTeam = (apps = stubs['@rocket.chat/apps']) => {
+		const moduleMocks = [
+			mock.module('@rocket.chat/apps', { exports: apps }),
+			mock.module('../../lib/eraseRoom', { exports: { eraseRoom: stubs.eraseRoomStub } }),
+			mock.module('../../lib/rooms/deleteRoom', { exports: { deleteRoom: stubs.deleteRoomStub } }),
+			mock.module('../../lib/logger/system', { exports: stubs['../../lib/logger/system'] }),
+			mock.module('@rocket.chat/core-services', {
+				exports: {
+					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
+					Team: stubs.Team,
+				},
+			}),
+		];
+		delete require.cache[require.resolve('./eraseTeam')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const eraseTeam = require('./eraseTeam');
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		return eraseTeam;
+	};
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();
@@ -65,16 +83,7 @@ describe('eraseTeam (TypeScript) module', () => {
 
 		mockModel('Rooms', stubs.Rooms);
 
-		subject = loadWithMocks('./eraseTeam', {
-			'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-			'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-			'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-			'../../lib/logger/system': stubs['../../lib/logger/system'],
-			'@rocket.chat/core-services': {
-				ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-				Team: stubs.Team,
-			},
-		});
+		subject = loadEraseTeam();
 	});
 
 	afterEach(() => {
@@ -151,16 +160,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			stubs.deleteRoomStub.withArgs('r1').resolves();
 			stubs.deleteRoomStub.withArgs('r2').rejects(new Error('boom'));
 
-			const base = loadWithMocks('./eraseTeam', {
-				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../lib/logger/system': stubs['../../lib/logger/system'],
-				'@rocket.chat/core-services': {
-					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-					Team: stubs.Team,
-				},
-			});
+			const base = loadEraseTeam();
 
 			const result: string[] = await base.eraseTeamOnRelinquishRoomOwnerships(team, ['r1', 'r2']);
 			expect(result).to.be.an('array').that.includes('r1').and.not.includes('r2');
@@ -171,16 +171,7 @@ describe('eraseTeam (TypeScript) module', () => {
 		let baseModule: any;
 
 		beforeEach(() => {
-			baseModule = loadWithMocks('./eraseTeam', {
-				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../lib/logger/system': stubs['../../lib/logger/system'],
-				'@rocket.chat/core-services': {
-					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-					Team: stubs.Team,
-				},
-			});
+			baseModule = loadEraseTeam();
 		});
 
 		it('returns false when room not found', async () => {
@@ -207,16 +198,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				},
 			};
 
-			const m = loadWithMocks('./eraseTeam', {
-				'@rocket.chat/apps': AppsStub,
-				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../lib/logger/system': stubs['../../lib/logger/system'],
-				'@rocket.chat/core-services': {
-					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-					Team: stubs.Team,
-				},
-			});
+			const m = loadEraseTeam(AppsStub);
 
 			stubs.Rooms.findOneById.resolves({ _id: 'r', federated: false });
 
@@ -229,16 +211,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			stubs.Rooms.findOneById.resolves({ _id: 'r', federated: false });
 			stubs.deleteRoomStub.rejects(new Error('boom'));
 
-			const m = loadWithMocks('./eraseTeam', {
-				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../lib/logger/system': stubs['../../lib/logger/system'],
-				'@rocket.chat/core-services': {
-					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-					Team: stubs.Team,
-				},
-			});
+			const m = loadEraseTeam();
 
 			const res = await m.eraseRoomLooseValidation('r');
 			expect(res).to.be.false;
@@ -258,16 +231,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			};
 
 			stubs.deleteRoomStub.resolves();
-			const m = loadWithMocks('./eraseTeam', {
-				'@rocket.chat/apps': AppsStub,
-				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../lib/logger/system': stubs['../../lib/logger/system'],
-				'@rocket.chat/core-services': {
-					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
-					Team: stubs.Team,
-				},
-			});
+			const m = loadEraseTeam(AppsStub);
 
 			stubs.Rooms.findOneById.resolves({ _id: 'r', federated: false });
 

@@ -1,4 +1,4 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
@@ -8,7 +8,6 @@ import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
 import { PRESENCE_LEASE_MS } from '../../../lib/videoConference/presence';
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * The claim this suite is about is made through `Presence`, which the shared harness has no stub for — so this one
@@ -64,20 +63,27 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', language
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = loadWithMocks('./service', {
-	...commonServiceStubs,
-	'@rocket.chat/core-services': {
-		api: { broadcast: broadcastStub },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
+let VideoConfService: any;
+
+before(async () => {
+	const stubs: Record<string, Record<string, unknown>> = {
+		...commonServiceStubs,
+		'@rocket.chat/core-services': {
+			api: { broadcast: broadcastStub },
+			ServiceClassInternal: class {
+				onEvent() {
+					/* no-op */
+				}
+			},
+			Message: { saveSystemMessage: sinon.stub().resolves() },
+			Room: { addUserToRoom: sinon.stub().resolves() },
+			Presence: PresenceMock,
 		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-		Presence: PresenceMock,
-	},
-	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },
+		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },
+	};
+	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	({ VideoConfService } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const ts = new Date('2026-08-02T10:00:00.000Z');

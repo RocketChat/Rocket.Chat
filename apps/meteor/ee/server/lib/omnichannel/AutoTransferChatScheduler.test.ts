@@ -1,12 +1,10 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 chai.use(chaiDateTime);
 
@@ -60,17 +58,23 @@ const settingsGet = sinon.stub();
 const routingConfigMock = sinon.stub();
 const getNextAgent = sinon.stub();
 
-const mocks = {
-	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'../../../../server/database/utils': { client: { db: sinon.stub() } },
-	'../../../../server/lib/omnichannel/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
-	'../../../../server/lib/omnichannel/Helper': { forwardRoomToAgent },
-	'../../../../server/lib/omnichannel/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
-	'../../../../server/settings': { settings: { get: settingsGet } },
-	'./logger': { schedulerLogger: mockLogger },
-};
+let AutoTransferChatSchedulerClass: any;
 
-const { AutoTransferChatSchedulerClass } = loadWithMocks('./AutoTransferChatScheduler', mocks);
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/agenda', { exports: { Agenda: MockAgendaClass } }),
+		mock.module('../../../../server/database/utils', { exports: { client: { db: sinon.stub() } } }),
+		mock.module('../../../../server/lib/omnichannel/RoutingManager', {
+			exports: { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
+		}),
+		mock.module('../../../../server/lib/omnichannel/Helper', { exports: { forwardRoomToAgent } }),
+		mock.module('../../../../server/lib/omnichannel/rooms', { exports: { returnRoomAsInquiry: returnRoomAsInquiryMock } }),
+		mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } }),
+		mock.module('./logger', { exports: { schedulerLogger: mockLogger } }),
+	];
+	({ AutoTransferChatSchedulerClass } = await import('./AutoTransferChatScheduler'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('AutoTransferChats', () => {
 	before(() => {

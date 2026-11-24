@@ -1,15 +1,19 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
-
 const configureMailTransport = sinon.stub();
 
-const { configureSMTP } = loadWithMocks('./configureSMTP', {
-	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
-	'../lib/notifications/email/transport': { configureMailTransport },
+let configureSMTP: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../lib/logger/system', { exports: { SystemLogger: { info: sinon.stub() } } }),
+		mock.module('../lib/notifications/email/transport', { exports: { configureMailTransport } }),
+	];
+	({ configureSMTP } = await import('./configureSMTP'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const applySettings = (values: Record<string, unknown>) => {

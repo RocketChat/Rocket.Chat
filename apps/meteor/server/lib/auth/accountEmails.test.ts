@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const findOneById = sinon.stub();
 const setPasswordResetToken = sinon.stub().resolves();
@@ -28,16 +26,27 @@ const settingValues: Record<string, string> = {
 const replace = (str: string, data: Record<string, unknown> = {}) =>
 	str.replace(/\[(\w+)\]/g, (match, key) => (key in data ? String(data[key]) : match));
 
-const { sendResetPasswordEmail, sendEnrollmentEmail, sendVerificationEmail, getUserActivatedEmail } = loadWithMocks('./accountEmails', {
-	'../notifications/email/api': {
-		getTemplateWrapped: (template: string, fn: (html: string) => void) => fn(templates[template]),
-		replace,
-		replacekey: (str: string, key: string, value: string) => str.replace(`[${key}]`, value),
-		sendNoWrap,
-	},
-	'../../settings': { settings: { get: (id: string) => settingValues[id] } },
-	'../i18n': { i18n: { t: (key: string) => key } },
-	'../utils/getURL': { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` },
+let sendResetPasswordEmail: any;
+let sendEnrollmentEmail: any;
+let sendVerificationEmail: any;
+let getUserActivatedEmail: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../notifications/email/api', {
+			exports: {
+				getTemplateWrapped: (template: string, fn: (html: string) => void) => fn(templates[template]),
+				replace,
+				replacekey: (str: string, key: string, value: string) => str.replace(`[${key}]`, value),
+				sendNoWrap,
+			},
+		}),
+		mock.module('../../settings', { exports: { settings: { get: (id: string) => settingValues[id] } } }),
+		mock.module('../i18n', { exports: { i18n: { t: (key: string) => key } } }),
+		mock.module('../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` } }),
+	];
+	({ sendResetPasswordEmail, sendEnrollmentEmail, sendVerificationEmail, getUserActivatedEmail } = await import('./accountEmails'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const user = {

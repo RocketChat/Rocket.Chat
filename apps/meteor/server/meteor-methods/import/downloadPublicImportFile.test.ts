@@ -1,10 +1,8 @@
 import { PassThrough } from 'node:stream';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const progressStep = {
 	DOWNLOADING_FILE: 'importer_downloading_file',
@@ -31,17 +29,22 @@ class MockImporter {
 	updateRecord = stubs.updateRecord;
 }
 
-const { executeDownloadPublicImportFile } = loadWithMocks('./downloadPublicImportFile.ts', {
-	'@rocket.chat/core-services': { Import: { newOperation: stubs.newOperation } },
-	'@rocket.chat/server-fetch': { serverFetch: stubs.serverFetch },
-	'meteor/meteor': { Meteor: { methods: sinon.stub() } },
-	'../../lib/authorization/hasPermission': { hasPermissionAsync: sinon.stub() },
-	'../../lib/deprecationWarningLogger': { methodDeprecationLogger: { method: sinon.stub() } },
-	'../../lib/import': { Importers: { get: stubs.importersGet } },
-	'../../lib/import/startup/store': { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
-	'../../lib/logger/system': { SystemLogger: { error: stubs.systemLoggerError } },
-	'../../settings': { settings: { get: sinon.stub().returns('') } },
-	'../../../lib/importer/ImporterProgressStep': { ProgressStep: progressStep },
+let executeDownloadPublicImportFile: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', { exports: { Import: { newOperation: stubs.newOperation } } }),
+		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: stubs.serverFetch } }),
+		mock.module('../../lib/import', { exports: { Importers: { get: stubs.importersGet } } }),
+		mock.module('../../lib/import/startup/store', {
+			exports: { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
+		}),
+		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: stubs.systemLoggerError } } }),
+		mock.module('../../settings', { exports: { settings: { get: sinon.stub().returns('') } } }),
+		mock.module('../../../lib/importer/ImporterProgressStep', { exports: { ProgressStep: progressStep } }),
+	];
+	({ executeDownloadPublicImportFile } = await import('./downloadPublicImportFile'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('executeDownloadPublicImportFile', () => {

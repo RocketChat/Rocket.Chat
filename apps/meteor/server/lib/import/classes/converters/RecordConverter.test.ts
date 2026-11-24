@@ -5,8 +5,6 @@ import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
-
 const settingsStub = sinon.stub();
 const modelsMock = {
 	ImportData: {
@@ -18,19 +16,21 @@ const modelsMock = {
 	},
 };
 
-const { RecordConverter } = loadWithMocks('./RecordConverter', {
-	'meteor/meteor': sinon.stub(),
+let TestConverter: any;
+
+before(async () => {
+	const { RecordConverter } = await import('./RecordConverter');
+
+	TestConverter = class extends RecordConverter<IImportRecord> {
+		constructor(workInMemory = true) {
+			super({ workInMemory });
+		}
+
+		protected override getDataType(): IImportRecordType {
+			return 'user';
+		}
+	};
 });
-
-class TestConverter extends RecordConverter<IImportRecord> {
-	constructor(workInMemory = true) {
-		super({ workInMemory });
-	}
-
-	protected getDataType(): IImportRecordType {
-		return 'user';
-	}
-}
 
 describe('Record Converter', () => {
 	before(() => {

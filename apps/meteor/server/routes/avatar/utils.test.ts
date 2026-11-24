@@ -1,16 +1,26 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	settingsGet: sinon.stub(),
 	findOneByIdAndLoginToken: sinon.stub(),
 	fileUploadGet: sinon.spy(),
 };
+
+const moduleMocks = [
+	mock.module('../../lib/media/file-upload', { exports: { FileUpload: { get: mocks.fileUploadGet } } }),
+	mock.module('../../settings', { exports: { settings: { get: mocks.settingsGet } } }),
+	mock.module('sharp', {
+		exports: { default: () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }) },
+	}),
+];
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
+const utils = require('./utils');
+
+moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 const {
 	getAvatarSizeFromRequest,
@@ -22,19 +32,7 @@ const {
 	wasFallbackModified,
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
-} = loadWithMocks('./utils', {
-	'../../lib/media/file-upload': {
-		FileUpload: {
-			get: mocks.fileUploadGet,
-		},
-	},
-	'../../settings': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'sharp': () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
-});
+} = utils;
 
 describe('#serveAvatarFile()', () => {
 	const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };

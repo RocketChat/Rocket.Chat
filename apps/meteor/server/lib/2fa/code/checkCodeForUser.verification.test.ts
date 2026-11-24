@@ -1,12 +1,10 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const findOneById = sinon.stub();
@@ -33,12 +31,20 @@ const buildCheck = (name: string, doubles: typeof totp) =>
 		}
 	};
 
-const { checkCodeForUser, getFingerprintFromConnection, rememberAuthorizationByToken } = loadWithMocks('./index', {
-	'meteor/accounts-base': { Accounts: { _getLoginToken: getLoginToken } },
-	'./TOTPCheck': { TOTPCheck: buildCheck('totp', totp) },
-	'./EmailCheck': { EmailCheck: buildCheck('email', email) },
-	'./PasswordCheckFallback': { PasswordCheckFallback: buildCheck('password', password) },
-	'../../../settings': { settings: { get: settingsGet } },
+let checkCodeForUser: any;
+let getFingerprintFromConnection: any;
+let rememberAuthorizationByToken: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { _getLoginToken: getLoginToken } } }),
+		mock.module('./TOTPCheck', { exports: { TOTPCheck: buildCheck('totp', totp) } }),
+		mock.module('./EmailCheck', { exports: { EmailCheck: buildCheck('email', email) } }),
+		mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback: buildCheck('password', password) } }),
+		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
+	];
+	({ checkCodeForUser, getFingerprintFromConnection, rememberAuthorizationByToken } = await import('./index'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const user = {

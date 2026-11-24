@@ -1,8 +1,6 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const userPermissions: Record<string, string[]> = {
 	bot: ['api-bypass-rate-limit', 'send-many-messages'],
@@ -10,17 +8,25 @@ const userPermissions: Record<string, string[]> = {
 	regular: [],
 };
 
-const mocks = {
-	'../lib/authorization/hasPermission': {
-		hasAtLeastOnePermissionAsync: async (userId: string, permissions: string[]): Promise<boolean> =>
-			permissions.some((permission) => userPermissions[userId].includes(permission)),
-	},
-	'../lib/deprecationWarningLogger': {
-		apiDeprecationLogger: { endpoint: () => undefined },
-	},
-};
+let canBypassRateLimit: any;
 
-const { canBypassRateLimit } = loadWithMocks('./api.helpers', mocks);
+before(async () => {
+	const moduleMocks = [
+		mock.module('../lib/authorization/hasPermission', {
+			exports: {
+				hasAtLeastOnePermissionAsync: async (userId: string, permissions: string[]): Promise<boolean> =>
+					permissions.some((permission) => userPermissions[userId].includes(permission)),
+			},
+		}),
+		mock.module('../lib/deprecationWarningLogger', {
+			exports: {
+				apiDeprecationLogger: { endpoint: () => undefined },
+			},
+		}),
+	];
+	({ canBypassRateLimit } = await import('./api.helpers'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('canBypassRateLimit', () => {
 	it('should let a user holding api-bypass-rate-limit through on any route', async () => {

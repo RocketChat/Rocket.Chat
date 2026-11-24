@@ -1,14 +1,18 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
 const updateOrCreateUserFromExternalService = sinon.stub();
 
-const { verifyFunction } = loadWithMocks('./verifyFunction.ts', {
-	'meteor/accounts-base': { Accounts: { updateOrCreateUserFromExternalService } },
+let verifyFunction: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } }),
+	];
+	({ verifyFunction } = await import('./verifyFunction'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('verifyFunction', () => {

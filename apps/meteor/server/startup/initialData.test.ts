@@ -1,10 +1,8 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const checkUsernameAvailability = sinon.stub();
 const validateEmail = sinon.stub();
@@ -36,32 +34,23 @@ const avatarStore = {
 	insert: sinon.stub(),
 };
 
-const { insertAdminUserFromEnv, insertInitialData } = loadWithMocks('./initialData', {
-	'@rocket.chat/account-utils': {
-		hashPassword: async (password: string) => `hashed=${password}`,
-	},
-	'meteor/meteor': {
-		Meteor: {},
-	},
-	'../lib/media/file-upload': {
-		FileUpload: { getStore: () => avatarStore },
-	},
-	'../lib/privateAssets': {
-		readPrivateAsset: sinon.stub().resolves(Buffer.from('png')),
-	},
-	'../lib/rooms/addUserToDefaultChannels': {},
-	'../lib/users/checkUsernameAvailability': {
-		checkUsernameAvailability,
-	},
-	'../settings': {
-		settings: { get: settingsGet },
-	},
-	'@rocket.chat/tools': {
-		validateEmail,
-	},
-	'../lib/roles/addUserRoles': {
-		addUserRolesAsync,
-	},
+let insertAdminUserFromEnv: any;
+let insertInitialData: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/account-utils', { exports: { hashPassword: async (password: string) => `hashed=${password}` } }),
+		mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } }),
+		mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore: () => avatarStore } } }),
+		mock.module('../lib/privateAssets', { exports: { readPrivateAsset: sinon.stub().resolves(Buffer.from('png')) } }),
+		mock.module('../lib/rooms/addUserToDefaultChannels', { exports: {} }),
+		mock.module('../lib/users/checkUsernameAvailability', { exports: { checkUsernameAvailability } }),
+		mock.module('../settings', { exports: { settings: { get: settingsGet } } }),
+		mock.module('@rocket.chat/tools', { exports: { validateEmail } }),
+		mock.module('../lib/roles/addUserRoles', { exports: { addUserRolesAsync } }),
+	];
+	({ insertAdminUserFromEnv, insertInitialData } = await import('./initialData'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('insertAdminUserFromEnv', () => {
@@ -253,7 +242,7 @@ describe('insertAdminUserFromEnv', () => {
 });
 
 describe('initial data startup', () => {
-	const runStartup = insertInitialData;
+	const runStartup = () => insertInitialData();
 	const { TEST_MODE } = process.env;
 
 	before(() => {

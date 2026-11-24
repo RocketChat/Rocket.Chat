@@ -1,15 +1,19 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+let SearchResultValidationService: any;
 
-const { SearchResultValidationService } = loadWithMocks('./SearchResultValidationService', {
-	'meteor/meteor': { Meteor: { userId: () => 'viewer' } },
-	'../../authorization': { canAccessRoomAsync: sinon.stub().resolves(true) },
-	'../logger/logger': { SearchLogger: { debug: sinon.stub() } },
+before(async () => {
+	const moduleMocks = [
+		mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: { userId: () => 'viewer' } } }),
+		mock.module('../../authorization', { exports: { canAccessRoomAsync: sinon.stub().resolves(true) } }),
+		mock.module('../logger/logger', { exports: { SearchLogger: { debug: sinon.stub() } } }),
+	];
+	({ SearchResultValidationService } = await import('./SearchResultValidationService'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('SearchResultValidationService', () => {

@@ -1,10 +1,9 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import Sinon from 'sinon';
 
 import type { PermissionsPayload } from './api.helpers';
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const userPermissions: { [k: string]: string[] } = {
 	'4r3fsadfasf': ['view-all', 'view-none'],
@@ -13,23 +12,31 @@ const userPermissions: { [k: string]: string[] } = {
 	'4r3fsadfasf4': [],
 };
 
-const mocks = {
-	'../lib/authorization/hasPermission': {
-		hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
-			return permissions.every((permission) => userPermissions[userId].includes(permission));
-		},
-		hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
-			return permissions.some((permission) => userPermissions[userId].includes(permission));
-		},
-	},
-	'../lib/deprecationWarningLogger': {
-		apiDeprecationLogger: {
-			endpoint: Sinon.stub(),
-		},
-	},
-};
+let checkPermissionsForInvocation: any;
 
-const { checkPermissionsForInvocation } = loadWithMocks('./api.helpers', mocks);
+before(async () => {
+	const moduleMocks = [
+		mock.module('../lib/authorization/hasPermission', {
+			exports: {
+				hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
+					return permissions.every((permission) => userPermissions[userId].includes(permission));
+				},
+				hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
+					return permissions.some((permission) => userPermissions[userId].includes(permission));
+				},
+			},
+		}),
+		mock.module('../lib/deprecationWarningLogger', {
+			exports: {
+				apiDeprecationLogger: {
+					endpoint: Sinon.stub(),
+				},
+			},
+		}),
+	];
+	({ checkPermissionsForInvocation } = await import('./api.helpers'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {

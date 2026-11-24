@@ -1,11 +1,9 @@
 import { EventEmitter } from 'node:events';
-import { describe, it } from 'node:test';
+import { describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	const store = new Map<string, unknown>([
@@ -72,24 +70,24 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
 	const notifyOnLoginServiceConfigurationChanged = sinon.stub();
 
-	const samlSettings = loadWithMocks('./lib/settings', {
-		'@rocket.chat/license': { License },
-		'./Utils': { SAMLUtils },
-		'../../../../../server/lib/utils/getURL': { getWorkspaceURL: () => 'http://localhost:3000/' },
-		'../../../../../server/lib/logger/system': { SystemLogger: { warn: sinon.stub() } },
-		'../../../../../server/lib/notifyListener': {
-			notifyOnLoginServiceConfigurationChanged,
-			notifyOnLoginServiceConfigurationChangedByService: sinon.stub(),
-		},
-		'../../../../../server/settings': { settings, settingsRegistry: {} },
-	});
-
-	const samlStartup = loadWithMocks('./serviceProviders', {
-		'@rocket.chat/license': { License },
-		'./lib/Utils': { SAMLUtils },
-		'./lib/settings': samlSettings,
-		'../../../../server/settings': { settings },
-	});
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', { exports: { License } }),
+		mock.module('./lib/Utils', { exports: { SAMLUtils } }),
+		mock.module('../../../../server/lib/utils/getURL', { exports: { getWorkspaceURL: () => 'http://localhost:3000/' } }),
+		mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { warn: sinon.stub() } } }),
+		mock.module('../../../../server/lib/notifyListener', {
+			exports: {
+				notifyOnLoginServiceConfigurationChanged,
+				notifyOnLoginServiceConfigurationChangedByService: sinon.stub(),
+			},
+		}),
+		mock.module('../../../../server/settings', { exports: { settings, settingsRegistry: {} } }),
+	];
+	delete require.cache[require.resolve('./lib/settings')];
+	delete require.cache[require.resolve('./serviceProviders')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const samlStartup = require('./serviceProviders');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	samlStartup.watchSamlServiceProviders();
 
 	// Same listener ee/server/configuration/saml.ts registers once the module is licensed.

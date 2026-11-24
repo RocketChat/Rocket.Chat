@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const modelsMock = {
@@ -23,37 +21,22 @@ const callbacks = {
 const hashPasswordMock = sinon.stub();
 const generateTempPassword = sinon.stub();
 
-const { UserConverter } = loadWithMocks('./UserConverter', {
-	'../../../callbacks': {
-		callbacks,
-	},
-	'../../../rooms/addUserToDefaultChannels': {
-		addUserToDefaultChannels,
-	},
-	'../../../users/getUsernameSuggestion': {
-		generateUsernameSuggestion,
-	},
-	'../../../users/saveUserIdentity': {
-		saveUserIdentity: sinon.stub(),
-	},
-	'../../../users/setUserActiveStatus': {
-		setUserActiveStatus: sinon.stub(),
-	},
-	'../../../notifyListener': {
-		notifyOnUserChange: sinon.stub(),
-	},
-	'./generateTempPassword': {
-		generateTempPassword,
-	},
-	'@rocket.chat/account-utils': {
-		hashPassword: hashPasswordMock,
-	},
-	'meteor/meteor': sinon.stub(),
-	'meteor/accounts-base': {
-		Accounts: {
-			insertUserDoc,
-		},
-	},
+let UserConverter: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../callbacks', { exports: { callbacks } }),
+		mock.module('../../../rooms/addUserToDefaultChannels', { exports: { addUserToDefaultChannels } }),
+		mock.module('../../../users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } }),
+		mock.module('../../../users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } }),
+		mock.module('../../../users/setUserActiveStatus', { exports: { setUserActiveStatus: sinon.stub() } }),
+		mock.module('../../../notifyListener', { exports: { notifyOnUserChange: sinon.stub() } }),
+		mock.module('./generateTempPassword', { exports: { generateTempPassword } }),
+		mock.module('@rocket.chat/account-utils', { exports: { hashPassword: hashPasswordMock } }),
+		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { insertUserDoc } } }),
+	];
+	({ UserConverter } = await import('./UserConverter'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('User Converter', () => {
@@ -131,7 +114,11 @@ describe('User Converter', () => {
 			...expectedData,
 		});
 
-		const converter = new UserConverter({ workInMemory: true });
+		let converter: any;
+
+		before(() => {
+			converter = new UserConverter({ workInMemory: true });
+		});
 
 		generateTempPassword.returns('tempPassword');
 		hashPasswordMock.callsFake(async (pass: string) => `hashed=${pass}`);

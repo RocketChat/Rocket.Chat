@@ -1,16 +1,20 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
-
 const settingsGet = sinon.stub();
 const verify = sinon.stub();
 
-const { TOTPCheck } = loadWithMocks('./TOTPCheck', {
-	'../../../settings': { settings: { get: settingsGet } },
-	'../lib/totp': { TOTP: { verify } },
+let TOTPCheck: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
+		mock.module('../lib/totp', { exports: { TOTP: { verify } } }),
+	];
+	({ TOTPCheck } = await import('./TOTPCheck'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const hashedBackup = ['hashed-backup-code'];

@@ -1,9 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const debugMock = sinon.stub();
 const errorMock = sinon.stub();
@@ -13,18 +11,26 @@ const settingsGetMock = sinon.stub();
 describe('logMethodCallError', () => {
 	let logMethodCallError: (method: string, err: unknown) => void;
 
-	before(() => {
-		({ logMethodCallError } = loadWithMocks('./logMethodCallError', {
-			'meteor/meteor': {
-				Meteor: { _debug: meteorDebugMock },
-			},
-			'../../lib/logger/system': {
-				SystemLogger: { debug: debugMock, error: errorMock },
-			},
-			'../../settings': {
-				settings: { get: settingsGetMock },
-			},
-		}));
+	before(async () => {
+		const moduleMocks = [
+			mock.module(require.resolve('meteor/meteor'), {
+				exports: {
+					Meteor: { _debug: meteorDebugMock },
+				},
+			}),
+			mock.module('../../lib/logger/system', {
+				exports: {
+					SystemLogger: { debug: debugMock, error: errorMock },
+				},
+			}),
+			mock.module('../../settings', {
+				exports: {
+					settings: { get: settingsGetMock },
+				},
+			}),
+		];
+		({ logMethodCallError } = await import('./logMethodCallError'));
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	});
 
 	beforeEach(() => {

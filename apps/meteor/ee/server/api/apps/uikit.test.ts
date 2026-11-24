@@ -1,35 +1,45 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const AppEvents = {
 	IUIKitInteractionHandler: 'IUIKitInteractionHandler',
 	IUIKitLivechatInteractionHandler: 'IUIKitLivechatInteractionHandler',
 };
 
-const { AppUIKitInteractionApi } = loadWithMocks('./uikit', {
-	'@rocket.chat/apps': { AppEvents },
-	'@rocket.chat/core-services': { UiKitCoreApp: { isRegistered: sinon.stub() } },
-	'@rocket.chat/http-router': { nodeHandler: () => () => undefined },
-	'@rocket.chat/logger': { Logger: class {} },
-	'../../../../server/api/v1/middlewares/authentication': { authenticationMiddleware: () => () => undefined },
-	'../../../../server/api/v1/middlewares/logger': { nodeLoggerMiddleware: () => () => undefined },
-	'../../../../server/lib/http/httpServer': { httpApp: { use: sinon.stub() } },
-	'../../../../server/lib/uikit/confirmViewFiles': { confirmViewFiles: sinon.stub().resolves() },
-	'../../../../server/lib/uikit/interactionResponses': {
-		withDefaultCloseTarget: sinon.stub().resolves(),
-		viewSubmitAnswer: (_delivered: boolean, body: unknown) => ({ status: 200, body }),
-	},
-	'../../../../server/lib/uikit/recordedViews': {
-		recordInteractionView: sinon.stub().resolves(true),
-		withRecordedView: async (view: unknown) => view,
-	},
-	'../../../../server/lib/uikit/reportInvalidBlocks': { reportInvalidInteractionBlocks: sinon.stub().returns(false) },
-	'../../../../server/settings': { settings: { watch: sinon.stub(), get: sinon.stub() } },
-	'../../lib/apps/orchestrator': { Apps: {} },
+let AppUIKitInteractionApi: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/apps', { exports: { AppEvents } }),
+		mock.module('@rocket.chat/core-services', { exports: { UiKitCoreApp: { isRegistered: sinon.stub() } } }),
+		mock.module('@rocket.chat/http-router', { exports: { nodeHandler: () => () => undefined } }),
+		mock.module('@rocket.chat/logger', { exports: { Logger: class {} } }),
+		mock.module('../../../../server/api/v1/middlewares/authentication', { exports: { authenticationMiddleware: () => () => undefined } }),
+		mock.module('../../../../server/api/v1/middlewares/logger', { exports: { nodeLoggerMiddleware: () => () => undefined } }),
+		mock.module('../../../../server/lib/http/httpServer', { exports: { httpApp: { use: sinon.stub() } } }),
+		mock.module('../../../../server/lib/uikit/confirmViewFiles', { exports: { confirmViewFiles: sinon.stub().resolves() } }),
+		mock.module('../../../../server/lib/uikit/interactionResponses', {
+			exports: {
+				withDefaultCloseTarget: sinon.stub().resolves(),
+				viewSubmitAnswer: (_delivered: boolean, body: unknown) => ({ status: 200, body }),
+			},
+		}),
+		mock.module('../../../../server/lib/uikit/recordedViews', {
+			exports: {
+				recordInteractionView: sinon.stub().resolves(true),
+				withRecordedView: async (view: unknown) => view,
+			},
+		}),
+		mock.module('../../../../server/lib/uikit/reportInvalidBlocks', {
+			exports: { reportInvalidInteractionBlocks: sinon.stub().returns(false) },
+		}),
+		mock.module('../../../../server/settings', { exports: { settings: { watch: sinon.stub(), get: sinon.stub() } } }),
+		mock.module('../../lib/apps/orchestrator', { exports: { Apps: {} } }),
+	];
+	({ AppUIKitInteractionApi } = await import('./uikit'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const convertToApp = sinon.stub();

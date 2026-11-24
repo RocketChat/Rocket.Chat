@@ -1,10 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const settingsWatch = sinon.stub();
@@ -16,17 +14,30 @@ const resolveUsersByIds = sinon.stub();
 const isAdminHidingAllowed = sinon.stub();
 const isUserHidingAllowed = sinon.stub();
 
-const { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } = loadWithMocks('./getFullUserData', {
-	'@rocket.chat/logger': {
-		Logger: class {
-			warn = loggerWarn;
-		},
-	},
-	'../../settings': { settings: { get: settingsGet, watch: settingsWatch } },
-	'../authorization/hasPermission': { hasPermissionAsync },
-	'../statusVisibility/hiddenUsers': { getUsersHiddenFrom, redactHiddenUser },
-	'../statusVisibility/resolveUsers': { resolveUsersByIds },
-	'../statusVisibility/settings': { isAdminHidingAllowed, isUserHidingAllowed },
+let getFullUserDataByUniqueSearchTerm: any;
+let defaultFields: any;
+let fullFields: any;
+let defaultFieldsWithoutAbac: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/logger', {
+			exports: {
+				Logger: class {
+					warn = loggerWarn;
+				},
+			},
+		}),
+		mock.module('../../settings', { exports: { settings: { get: settingsGet, watch: settingsWatch } } }),
+		mock.module('../authorization/hasPermission', { exports: { hasPermissionAsync } }),
+		mock.module('../statusVisibility/hiddenUsers', { exports: { getUsersHiddenFrom, redactHiddenUser } }),
+		mock.module('../statusVisibility/resolveUsers', { exports: { resolveUsersByIds } }),
+		mock.module('../statusVisibility/settings', { exports: { isAdminHidingAllowed, isUserHidingAllowed } }),
+	];
+	({ getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } = await import('./getFullUserData'));
+	const { abacAttributes: _abac, ...withoutAbac } = defaultFields;
+	defaultFieldsWithoutAbac = withoutAbac;
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const setCustomFieldsSetting = (value: string) => settingsWatch.firstCall.args[1](value);
@@ -41,8 +52,6 @@ describe('getFullUserDataByUniqueSearchTerm', () => {
 		emails: [{ address: ' Me@Example.com ' }],
 		sipExtension: '1000',
 	};
-
-	const { abacAttributes: _abac, ...defaultFieldsWithoutAbac } = defaultFields;
 
 	beforeEach(() => {
 		Users = {

@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -13,9 +11,15 @@ const createRoom = sandbox.stub();
 const Users = { findOneById: sandbox.stub() };
 const Rooms = { findOneByNameAndType: sandbox.stub() };
 
-const { createNewUser } = loadWithMocks('./createNewUser.ts', {
-	'meteor/accounts-base': { Accounts: { insertUserDoc } },
-	'../rooms/createRoom': { createRoom },
+let createNewUser: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { insertUserDoc } } }),
+		mock.module('../rooms/createRoom', { exports: { createRoom } }),
+	];
+	({ createNewUser } = await import('./createNewUser'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const created = { _id: 'new-user-id', username: 'alice' };

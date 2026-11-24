@@ -1,4 +1,4 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { mockModel } from '@rocket.chat/models/testing';
@@ -13,7 +13,6 @@ import { AppRoomsConverter } from './rooms';
 import { AppSettingsConverter } from './settings';
 import { AppUsersConverter } from './users';
 import { AppVisitorsConverter } from './visitors';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -31,18 +30,6 @@ const findVisitorById = sandbox.stub();
 const findVisitorByToken = sandbox.stub();
 const getVideoConf = sandbox.stub();
 
-const load = (module: string, stubs: Record<string, unknown>) => loadWithMocks(`./${module}`, stubs);
-
-const uploadsCodec = loadWithMocks('./codecs/uploads', {
-	'../../../../lib/utils/getURL': { getURL: (path: string) => path },
-});
-const { AppUploadsConverter } = load('uploads', {
-	'./codecs/uploads': uploadsCodec,
-});
-const { AppVideoConferencesConverter } = load('videoConferences', {
-	'@rocket.chat/core-services': { VideoConf: { getUnfiltered: getVideoConf } },
-});
-
 const orch = {
 	getConverters: () => ({
 		get: (key: string) => ({
@@ -59,10 +46,23 @@ const messages = new AppMessagesConverter(orch);
 const roles = new AppRolesConverter();
 const rooms = new AppRoomsConverter(orch);
 const settings = new AppSettingsConverter(orch);
-const uploads = new AppUploadsConverter(orch);
 const users = new AppUsersConverter(orch);
 const visitors = new AppVisitorsConverter(orch);
-const videoConferences = new AppVideoConferencesConverter(orch);
+
+let uploads: any;
+let videoConferences: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../lib/utils/getURL', { exports: { getURL: (path: string) => path } }),
+		mock.module('@rocket.chat/core-services', { exports: { VideoConf: { getUnfiltered: getVideoConf } } }),
+	];
+	const { AppUploadsConverter } = await import('./uploads');
+	const { AppVideoConferencesConverter } = await import('./videoConferences');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+	uploads = new AppUploadsConverter(orch);
+	videoConferences = new AppVideoConferencesConverter();
+});
 
 const lookups = [
 	{

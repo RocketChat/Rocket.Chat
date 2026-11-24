@@ -1,18 +1,23 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+let auditGetMessagesMethod: any;
+let auditGetOmnichannelMessagesMethod: any;
 
-const { auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } = loadWithMocks('./functions', {
-	'@rocket.chat/core-services': { ClientSafeError },
-	'../../../../server/lib/authorization/hasPermission': { hasPermissionAsync: sinon.stub().resolves(true) },
-	'../../../../server/lib/callbacks': { callbacks: { run: sinon.stub() } },
-	'../../../../server/lib/i18n': { i18n: { t: (key: string) => key } },
-	'../../../../server/lib/statistics': { updateCounter: sinon.stub() },
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
+		mock.module('../../../../server/lib/authorization/hasPermission', { exports: { hasPermissionAsync: sinon.stub().resolves(true) } }),
+		mock.module('../../../../server/lib/callbacks', { exports: { callbacks: { run: sinon.stub() } } }),
+		mock.module('../../../../server/lib/i18n', { exports: { i18n: { t: (key: string) => key } } }),
+		mock.module('../../../../server/lib/statistics', { exports: { updateCounter: sinon.stub() } }),
+	];
+	({ auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } = await import('./functions'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const storedMessage = () => ({

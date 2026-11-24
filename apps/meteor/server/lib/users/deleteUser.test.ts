@@ -1,11 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const triggerEvent = sinon.stub();
@@ -22,23 +20,33 @@ const notifyOnLivechatDepartmentAgentChanged = sinon.stub();
 const notifyOnUserChange = sinon.stub();
 const getStore = sinon.stub();
 
-const { deleteUser } = loadWithMocks('./deleteUser', {
-	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserDeleted: 'IPostUserDeleted' } },
-	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
-	'./getUserSingleOwnedRooms': { getUserSingleOwnedRooms },
-	'../../settings': { settings: { get: settingsGet } },
-	'../callbacks': { callbacks: { run: callbacksRun } },
-	'../i18n': { i18n: { t: (key: string) => `t:${key}` } },
-	'../media/file-upload': { FileUpload: { getStore } },
-	'../notifyListener': {
-		notifyOnRoomChangedById,
-		notifyOnIntegrationChangedByUserId,
-		notifyOnLivechatDepartmentAgentChanged,
-		notifyOnUserChange,
-	},
-	'../rooms/getRoomsWithSingleOwner': { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner },
-	'../rooms/relinquishRoomOwnerships': { relinquishRoomOwnerships },
-	'../rooms/updateGroupDMsName': { updateGroupDMsName },
+let deleteUser: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/apps', {
+			exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserDeleted: 'IPostUserDeleted' } },
+		}),
+		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } }),
+		mock.module('./getUserSingleOwnedRooms', { exports: { getUserSingleOwnedRooms } }),
+		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
+		mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
+		mock.module('../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } }),
+		mock.module('../media/file-upload', { exports: { FileUpload: { getStore } } }),
+		mock.module('../notifyListener', {
+			exports: {
+				notifyOnRoomChangedById,
+				notifyOnIntegrationChangedByUserId,
+				notifyOnLivechatDepartmentAgentChanged,
+				notifyOnUserChange,
+			},
+		}),
+		mock.module('../rooms/getRoomsWithSingleOwner', { exports: { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } }),
+		mock.module('../rooms/relinquishRoomOwnerships', { exports: { relinquishRoomOwnerships } }),
+		mock.module('../rooms/updateGroupDMsName', { exports: { updateGroupDMsName } }),
+	];
+	({ deleteUser } = await import('./deleteUser'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('deleteUser', () => {

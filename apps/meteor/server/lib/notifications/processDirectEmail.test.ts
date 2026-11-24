@@ -1,4 +1,4 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAuthorization } from '@rocket.chat/core-services';
@@ -6,7 +6,6 @@ import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 import { canAccessRoomAsync } from '../authorization/canAccessRoom';
 
 const sandbox = sinon.createSandbox();
@@ -35,12 +34,20 @@ class AuthorizationDouble extends ServiceClass implements Pick<IAuthorization, '
 
 const authorization = new AuthorizationDouble();
 
-const { processDirectEmail } = loadWithMocks('./processDirectEmail', {
-	'../../hooks/rooms/beforeSendMessageToRoom': { beforeSendMessageToRoom },
-	'../../settings': { settings: { get: (id: string) => settingValues[id] } },
-	'../authorization': { canAccessRoomAsync },
-	'../messages/sendMessage': { sendMessage },
-	'../metrics': { metrics: { messagesSent: { inc: sandbox.stub() }, messagesSentTotal: { inc: sandbox.stub() } } },
+let processDirectEmail: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../hooks/rooms/beforeSendMessageToRoom', { exports: { beforeSendMessageToRoom } }),
+		mock.module('../../settings', { exports: { settings: { get: (id: string) => settingValues[id] } } }),
+		mock.module('../authorization', { exports: { canAccessRoomAsync } }),
+		mock.module('../messages/sendMessage', { exports: { sendMessage } }),
+		mock.module('../metrics', {
+			exports: { metrics: { messagesSent: { inc: sandbox.stub() }, messagesSentTotal: { inc: sandbox.stub() } } },
+		}),
+	];
+	({ processDirectEmail } = await import('./processDirectEmail'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const mid = 'message-id';
@@ -169,7 +176,7 @@ describe('processDirectEmail', () => {
 		['the room refuses new messages', () => beforeSendMessageToRoom.rejects(new Error('error-room-archived')), replyEmail],
 	];
 
-	for (const [condition, arrange, email] of dropped) {
+	dropped.forEach(([condition, arrange, email]) => {
 		it(`should drop the reply when ${condition}`, async () => {
 			arrange();
 
@@ -177,5 +184,5 @@ describe('processDirectEmail', () => {
 
 			expect(sendMessage.called).to.be.false;
 		});
-	}
+	});
 });

@@ -1,4 +1,4 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { ICredentialTokensModel, ISamlUsedAssertionsModel, IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
@@ -8,7 +8,6 @@ import sinon from 'sinon';
 import { SAMLUtils } from './Utils';
 import { getURLWithoutSettings } from '../../../../../lib/getURL';
 import { serviceProviderOptions } from '../../../../../tests/mocks/server/lib/saml/data';
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const HOME_URL = 'http://localhost:3000/';
 const IDP_LOGOUT_URL = 'https://idp.example/logout/redirect';
@@ -46,19 +45,27 @@ class SAMLServiceProvider {
 	generateServiceProviderMetadata = generateServiceProviderMetadata;
 }
 
-const { SAML } = loadWithMocks('./SAML', {
-	'meteor/accounts-base': { Accounts: {} },
-	'meteor/meteor': { Meteor: {} },
-	'./ServiceProvider': { SAMLServiceProvider },
-	'./getSAMLEnvelope': { getSAMLEnvelope },
-	'../../../../../server/lib/rooms/addUserToRoom': {},
-	'../../../../../server/lib/rooms/createRoom': {},
-	'../../../../../server/lib/users/getUsernameSuggestion': {},
-	'../../../../../server/lib/users/saveUserIdentity': {},
-	'../../../../../server/lib/utils/getURL': {
-		getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
-	},
-	'../../../../../server/settings': { settings: {} },
+let SAML: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } }),
+		mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } }),
+		mock.module('./ServiceProvider', { exports: { SAMLServiceProvider } }),
+		mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope } }),
+		mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: {} }),
+		mock.module('../../../../../server/lib/rooms/createRoom', { exports: {} }),
+		mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: {} }),
+		mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: {} }),
+		mock.module('../../../../../server/lib/utils/getURL', {
+			exports: {
+				getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
+			},
+		}),
+		mock.module('../../../../../server/settings', { exports: { settings: {} } }),
+	];
+	({ SAML } = await import('./SAML'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const buildResponse = () => {

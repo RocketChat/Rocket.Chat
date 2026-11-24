@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { ClusterTransport } from '@rocket.chat/core-services';
 import { expect } from 'chai';
+import * as moleculer from 'moleculer';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const ServiceBrokerMock = {
@@ -22,36 +22,47 @@ const LocalBrokerMock = {
 	broadcastLocal: sinon.stub(),
 };
 
-const serviceMocks = {
-	'@rocket.chat/core-services': {
-		ServiceClassInternal: class {
-			onEvent = sinon.stub();
+const mockServiceDependencies = (transporter: unknown = 'nats://localhost:4222') => [
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			ServiceClassInternal: class {
+				onEvent = sinon.stub();
 
-			onSettingChanged = sinon.stub();
+				onSettingChanged = sinon.stub();
+			},
+			Apps: AppsMock,
 		},
-		Apps: AppsMock,
-	},
-	'@rocket.chat/instance-status': {
-		InstanceStatus: { id: () => 'self' },
-		defaultPingInterval: 10,
-		indexExpire: 30,
-	},
-	'./getTransporter': {
-		getTransporter: () => 'nats://localhost:4222',
-	},
-	'moleculer': {
-		ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
-		Serializers: {
-			Base: class {},
+	}),
+	mock.module('@rocket.chat/instance-status', {
+		exports: {
+			InstanceStatus: { id: () => 'self' },
+			defaultPingInterval: 10,
+			indexExpire: 30,
 		},
-		Transporters: {
-			NATS: class {},
-			TCP: class {},
+	}),
+	mock.module('./getTransporter', { exports: { getTransporter: () => transporter } }),
+	mock.module('moleculer', {
+		exports: {
+			...moleculer,
+			ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
+			Serializers: {
+				Base: class {},
+			},
+			Transporters: {
+				NATS: class {},
+				TCP: class {},
+			},
 		},
-	},
-};
+	}),
+];
 
-const { InstanceService } = loadWithMocks('./service', serviceMocks);
+let InstanceService: any;
+
+before(async () => {
+	const moduleMocks = mockServiceDependencies();
+	({ InstanceService } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('InstanceService', () => {
 	let service: IInstanceService;
@@ -196,12 +207,17 @@ describe('InstanceService encryption warning', () => {
 	const warn = sinon.stub();
 	const originalSecret = process.env.MOLECULER_ENCRYPTION_SECRET;
 
-	const load = (transporter: unknown) =>
-		loadWithMocks('./service', {
-			...serviceMocks,
-			'./getTransporter': { getTransporter: () => transporter },
-			'../../../../server/lib/logger/system': { SystemLogger: { warn, error: sinon.stub() } },
-		}).InstanceService;
+	const load = (transporter: unknown) => {
+		const moduleMocks = [
+			...mockServiceDependencies(transporter),
+			mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { warn, error: sinon.stub() } } }),
+		];
+		delete require.cache[require.resolve('./service')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const { InstanceService } = require('./service');
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
+		return InstanceService;
+	};
 
 	afterEach(() => {
 		warn.reset();

@@ -1,10 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const AppsMock = {
 	self: {
@@ -24,19 +22,26 @@ const apiMock = {
 
 const isRunningMsMock = sinon.stub();
 
-const serviceMocks = {
-	'@rocket.chat/apps': { Apps: AppsMock },
-	'@rocket.chat/core-services': {
-		api: apiMock,
-		ServiceClassInternal: class {
-			onEvent = sinon.stub();
-		},
-	},
-	'../../lib/isRunningMs': { isRunningMs: isRunningMsMock },
-	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
-};
+let AppsEngineService: any;
+let AppsEngineNoNodesFoundError: any;
 
-const { AppsEngineService, AppsEngineNoNodesFoundError } = loadWithMocks('./service', serviceMocks);
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/apps', { exports: { Apps: AppsMock } }),
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				api: apiMock,
+				ServiceClassInternal: class {
+					onEvent = sinon.stub();
+				},
+			},
+		}),
+		mock.module('../../lib/isRunningMs', { exports: { isRunningMs: isRunningMsMock } }),
+		mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } }),
+	];
+	({ AppsEngineService, AppsEngineNoNodesFoundError } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('AppsEngineService', () => {
 	let service: IAppsEngineService;

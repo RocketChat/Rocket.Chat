@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const modelsMock = {
@@ -19,23 +17,18 @@ const modelsMock = {
 const createDirectMessage = sinon.stub();
 const saveRoomSettings = sinon.stub();
 
-const { RoomConverter } = loadWithMocks('./RoomConverter', {
-	'../../../../meteor-methods/messages/createDirectMessage': {
-		createDirectMessage,
-	},
-	'../../../../meteor-methods/rooms/saveRoomSettings': {
-		saveRoomSettings,
-	},
-	'../../../notifyListener': {
-		notifyOnSubscriptionChangedByRoomId: sinon.stub(),
-	},
-	'../../../../meteor-methods/rooms/createChannel': {
-		createChannelMethod: sinon.stub(),
-	},
-	'../../../../meteor-methods/rooms/createPrivateGroup': {
-		createPrivateGroupMethod: sinon.stub(),
-	},
-	'meteor/meteor': sinon.stub(),
+let RoomConverter: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } }),
+		mock.module('../../../../meteor-methods/rooms/saveRoomSettings', { exports: { saveRoomSettings } }),
+		mock.module('../../../notifyListener', { exports: { notifyOnSubscriptionChangedByRoomId: sinon.stub() } }),
+		mock.module('../../../../meteor-methods/rooms/createChannel', { exports: { createChannelMethod: sinon.stub() } }),
+		mock.module('../../../../meteor-methods/rooms/createPrivateGroup', { exports: { createPrivateGroupMethod: sinon.stub() } }),
+	];
+	({ RoomConverter } = await import('./RoomConverter'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Room Converter', () => {

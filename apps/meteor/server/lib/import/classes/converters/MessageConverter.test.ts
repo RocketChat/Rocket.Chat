@@ -1,18 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
-
 const settingsStub = sinon.stub();
 const insertMessage = sinon.stub();
 
-const { MessageConverter } = loadWithMocks('./MessageConverter', {
-	'../../../messages/insertMessage': {
-		insertMessage,
-	},
-	'meteor/meteor': sinon.stub(),
+let MessageConverter: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../../messages/insertMessage', { exports: { insertMessage } })];
+	({ MessageConverter } = await import('./MessageConverter'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Message Converter', () => {

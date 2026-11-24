@@ -1,3 +1,5 @@
+import { mock } from 'node:test';
+
 import type {
 	IGroupVideoConference,
 	IDirectVideoConference,
@@ -8,8 +10,6 @@ import type {
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { mockModel, type ModelName } from '@rocket.chat/models/testing';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What `videoConfProviders.getProviderCapabilities` answers, for every service loaded through this harness.
@@ -119,9 +119,9 @@ export const createService = ({
 }: {
 	broadcast?: sinon.SinonStub;
 	models?: Partial<Record<ModelName, object>>;
-	overrides?: Record<string, unknown>;
+	overrides?: Record<string, Record<string, unknown>>;
 } = {}) => {
-	const { VideoConfService } = loadWithMocks('./service', {
+	const stubs: Record<string, Record<string, unknown>> = {
 		...commonServiceStubs,
 		'@rocket.chat/core-services': {
 			api: { broadcast },
@@ -134,7 +134,12 @@ export const createService = ({
 			Room: { addUserToRoom: sinon.stub().resolves() },
 		},
 		...overrides,
-	});
+	};
+	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	delete require.cache[require.resolve('./service')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const { VideoConfService } = require('./service');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 	const doubles: Partial<Record<ModelName, object>> = {
 		Users: { findOneById: sinon.stub().resolves(null) },

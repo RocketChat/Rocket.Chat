@@ -1,9 +1,7 @@
-import { describe, it } from 'node:test';
+import { describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 type Env = { TEST_MODE?: string; ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER?: string };
 
@@ -29,10 +27,9 @@ const loadLogger = (env: Env = {}) => {
 		deprecationsTotal: { inc: sinon.stub() },
 	};
 
-	setEnv(env);
-	try {
-		const module = loadWithMocks('./deprecationWarningLogger', {
-			'@rocket.chat/logger': {
+	const moduleMocks = [
+		mock.module('@rocket.chat/logger', {
+			exports: {
 				Logger: class {
 					section(name: string) {
 						warn[name] = sinon.stub();
@@ -40,12 +37,19 @@ const loadLogger = (env: Env = {}) => {
 					}
 				},
 			},
-			'./metrics/lib/metrics': { metrics },
-		});
+		}),
+		mock.module('./metrics/lib/metrics', { exports: { metrics } }),
+	];
+	setEnv(env);
+	try {
+		delete require.cache[require.resolve('./deprecationWarningLogger')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const module = require('./deprecationWarningLogger');
 
 		return { ...module, warn, metrics };
 	} finally {
 		setEnv(previousEnv);
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	}
 };
 

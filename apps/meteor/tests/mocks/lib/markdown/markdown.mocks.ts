@@ -1,4 +1,4 @@
-import { loadWithMocks } from '../../utils/loadWithMocks';
+import { original as originalParser } from '../../../../lib/markdown/parser/original/original';
 
 export type MarkdownToken = { token: string; type?: string; text: string; noHtml?: string };
 
@@ -6,26 +6,11 @@ export type ParsedMessage = { html?: string; msg?: string; tokens?: MarkdownToke
 
 export type MarkdownOptions = { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string };
 
-const mocks = {};
+export { Markdown, createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../../../../lib/markdown/markdown';
+export { filterMarkdown } from '../../../../lib/markdown/parser/filtered/filtered';
+export { code } from '../../../../lib/markdown/parser/original/code';
 
-export const { Markdown, createMarkdownMessageRenderer, createMarkdownNotificationRenderer } = loadWithMocks(
-	'../../../../lib/markdown/markdown',
-	mocks,
-) as typeof import('../../../../lib/markdown/markdown');
-
-export const { filterMarkdown } = loadWithMocks(
-	'../../../../lib/markdown/parser/filtered/filtered',
-	mocks,
-) as typeof import('../../../../lib/markdown/parser/filtered/filtered');
-
-export const { original } = loadWithMocks('../../../../lib/markdown/parser/original/original', mocks) as {
-	original: (message: ParsedMessage, options?: MarkdownOptions) => ParsedMessage;
-};
-
-export const { code } = loadWithMocks(
-	'../../../../lib/markdown/parser/original/code',
-	mocks,
-) as typeof import('../../../../lib/markdown/parser/original/code');
+export const original: (message: ParsedMessage, options?: MarkdownOptions) => ParsedMessage = originalParser;
 
 const copyonly = (text: string, marker: string) => `<span class="copyonly">${marker}</span>${text}<span class="copyonly">${marker}</span>`;
 

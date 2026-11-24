@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	Subscriptions: {
@@ -17,13 +15,18 @@ const models = {
 	},
 };
 
-const { updateGroupKey } = loadWithMocks('./updateGroupKey.ts', {
-	'../../lib/notifyListener': {
-		notifyOnSubscriptionChanged: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
-		notifyOnSubscriptionChangedById: sinon.stub(),
-	},
-	'meteor/meteor': { Meteor: { methods: sinon.stub() } },
+let updateGroupKey: any;
+
+before(async () => {
+	const notifyListenerMock = mock.module('../../lib/notifyListener', {
+		exports: {
+			notifyOnSubscriptionChanged: sinon.stub(),
+			notifyOnRoomChangedById: sinon.stub(),
+			notifyOnSubscriptionChangedById: sinon.stub(),
+		},
+	});
+	({ updateGroupKey } = await import('./updateGroupKey'));
+	notifyListenerMock.restore();
 });
 
 describe('updateGroupKey', () => {

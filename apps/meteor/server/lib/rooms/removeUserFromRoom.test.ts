@@ -1,20 +1,24 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
 const messageMock = { saveSystemMessage: sinon.stub().resolves() };
 
-const { performUserRemoval } = loadWithMocks('./removeUserFromRoom.ts', {
-	'@rocket.chat/apps': { Apps: {}, AppEvents: {} },
-	'@rocket.chat/core-services': { Message: messageMock, Team: {}, Room: {}, ClientSafeError: Error },
-	'../../settings': { settings: { get: sinon.stub() } },
-	'../callbacks/afterLeaveRoomCallback': { afterLeaveRoomCallback: { run: sinon.stub() } },
-	'../callbacks/beforeLeaveRoomCallback': { beforeLeaveRoomCallback: { run: sinon.stub() } },
-	'../notifyListener': { notifyOnRoomChangedById: sinon.stub(), notifyOnSubscriptionChanged: sinon.stub() },
+let performUserRemoval: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/apps', { exports: { Apps: {}, AppEvents: {} } }),
+		mock.module('@rocket.chat/core-services', { exports: { Message: messageMock, Team: {}, Room: {}, ClientSafeError: Error } }),
+		mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } }),
+		mock.module('../callbacks/afterLeaveRoomCallback', { exports: { afterLeaveRoomCallback: { run: sinon.stub() } } }),
+		mock.module('../callbacks/beforeLeaveRoomCallback', { exports: { beforeLeaveRoomCallback: { run: sinon.stub() } } }),
+		mock.module('../notifyListener', { exports: { notifyOnRoomChangedById: sinon.stub(), notifyOnSubscriptionChanged: sinon.stub() } }),
+	];
+	({ performUserRemoval } = await import('./removeUserFromRoom'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('performUserRemoval', () => {

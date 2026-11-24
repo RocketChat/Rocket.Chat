@@ -1,8 +1,7 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 const LoginServiceConfiguration = { removeAll: sandbox.stub().resolves(['google-id', 'cas-id']) };
@@ -10,14 +9,23 @@ const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const updateOAuthServices = sandbox.stub().resolves();
 const updateCasServices = sandbox.stub().resolves();
 
-const { refreshLoginServices } = loadWithMocks('./refreshLoginServices.ts', {
-	'@rocket.chat/models': { LoginServiceConfiguration },
-	'./notifyListener': { notifyOnLoginServiceConfigurationChanged },
-	'./oauth/updateOAuthServices': { updateOAuthServices },
-	'./cas/updateCasService': { updateCasServices },
+let refreshLoginServices: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } }),
+		mock.module('./oauth/updateOAuthServices', { exports: { updateOAuthServices } }),
+		mock.module('./cas/updateCasService', { exports: { updateCasServices } }),
+	];
+	({ refreshLoginServices } = await import('./refreshLoginServices'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('refreshLoginServices', () => {
+	before(() => {
+		mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
+	});
+
 	it('should tell connected clients about every login service it removes before rebuilding them', async () => {
 		await refreshLoginServices();
 

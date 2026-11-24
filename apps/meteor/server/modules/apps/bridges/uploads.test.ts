@@ -1,9 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const findOneById = sinon.stub();
 const insert = sinon.stub();
@@ -11,14 +10,19 @@ const sendFileMessage = sinon.stub();
 const sendFileLivechatMessage = sinon.stub();
 const getSetting = sinon.stub();
 
-const { AppUploadBridge } = loadWithMocks('./uploads', {
-	'@rocket.chat/apps/dist/server/bridges/UploadBridge': { UploadBridge: class {} },
-	'@rocket.chat/models': { Messages: { findOneById } },
-	'../../../../ee/lib/misc/determineFileType': { determineFileType: () => 'text/plain' },
-	'../../../lib/media/file-upload': { FileUpload: { getStore: () => ({ insert }) } },
-	'../../../meteor-methods/messages/sendFileMessage': { sendFileMessage },
-	'../../../meteor-methods/omnichannel/sendFileLivechatMessage': { sendFileLivechatMessage },
-	'../../../settings': { settings: { get: getSetting } },
+let AppUploadBridge: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/apps/dist/server/bridges/UploadBridge', { exports: { UploadBridge: class {} } }),
+		mock.module('../../../../ee/lib/misc/determineFileType', { exports: { determineFileType: () => 'text/plain' } }),
+		mock.module('../../../lib/media/file-upload', { exports: { FileUpload: { getStore: () => ({ insert }) } } }),
+		mock.module('../../../meteor-methods/messages/sendFileMessage', { exports: { sendFileMessage } }),
+		mock.module('../../../meteor-methods/omnichannel/sendFileLivechatMessage', { exports: { sendFileLivechatMessage } }),
+		mock.module('../../../settings', { exports: { settings: { get: getSetting } } }),
+	];
+	({ AppUploadBridge } = await import('./uploads'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const orchestrator = {
@@ -31,6 +35,10 @@ const baseDetails = { name: 'f.txt', size: 1, type: '', rid: 'room-id', userId: 
 
 describe('AppUploadBridge.createUpload', () => {
 	let bridge: any;
+
+	before(() => {
+		mockModel('Messages', { findOneById });
+	});
 
 	beforeEach(() => {
 		for (const stub of [findOneById, insert, sendFileMessage, sendFileLivechatMessage, getSetting]) {

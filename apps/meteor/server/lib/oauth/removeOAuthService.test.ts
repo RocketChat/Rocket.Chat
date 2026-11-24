@@ -1,19 +1,25 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 const LoginServiceConfiguration = { removeByService: sandbox.stub() };
 const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 
-const { removeOAuthService } = loadWithMocks('./removeOAuthService.ts', {
-	'@rocket.chat/models': { LoginServiceConfiguration },
-	'../notifyListener': { notifyOnLoginServiceConfigurationChanged },
+let removeOAuthService: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } })];
+	({ removeOAuthService } = await import('./removeOAuthService'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('removeOAuthService', () => {
+	before(() => {
+		mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
+	});
+
 	beforeEach(() => {
 		sandbox.resetHistory();
 	});

@@ -1,15 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as z from 'zod';
-
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
-
-const { createUploadsCodec } = loadWithMocks('./uploads', {
-	'../../../../lib/utils/getURL': { getURL: (path: string) => `http://localhost:3000${path}` },
-});
 
 const sandbox = sinon.createSandbox();
 
@@ -23,7 +17,16 @@ const orch = {
 	getConverters: () => ({ get: (key: 'rooms' | 'users' | 'visitors') => (converters as any)[key] }),
 } as unknown as IAppServerOrchestrator;
 
-const codec = createUploadsCodec(orch);
+let codec: any;
+
+before(async () => {
+	const getURLMock = mock.module('../../../../lib/utils/getURL', {
+		exports: { getURL: (path: string) => `http://localhost:3000${path}` },
+	});
+	const { createUploadsCodec } = await import('./uploads');
+	getURLMock.restore();
+	codec = createUploadsCodec(orch);
+});
 
 describe('createUploadsCodec', () => {
 	beforeEach(() => {

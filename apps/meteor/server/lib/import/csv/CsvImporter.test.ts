@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -10,7 +10,6 @@ import { parse } from 'csv-parse/sync';
 import sinon from 'sinon';
 
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const converter = {
 	clearImportData: sinon.stub(),
@@ -71,14 +70,16 @@ class MockImporter {
 	}
 }
 
-const { CsvImporter } = loadWithMocks('./CsvImporter', {
-	'csv-parse/lib/sync': { parse },
-	'..': {
-		Importer: MockImporter,
-		ProgressStep,
-		ImporterWebsocket: { progressUpdated },
-	},
-	'../../notifyListener': { notifyOnSettingChanged },
+let CsvImporter: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../csvParser', { exports: { parse } }),
+		mock.module('..', { exports: { Importer: MockImporter, ProgressStep, ImporterWebsocket: { progressUpdated } } }),
+		mock.module('../../notifyListener', { exports: { notifyOnSettingChanged } }),
+	];
+	({ CsvImporter } = await import('./CsvImporter'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const allStubs = [

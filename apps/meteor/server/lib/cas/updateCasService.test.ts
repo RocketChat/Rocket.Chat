@@ -1,8 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 const settingValues = new Map<string, unknown>();
@@ -10,14 +9,25 @@ const LoginServiceConfiguration = { createOrUpdateService: sandbox.stub(), remov
 const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const notifyOnLoginServiceConfigurationChangedByService = sandbox.stub();
 
-const { updateCasServices } = loadWithMocks('./updateCasService.ts', {
-	'@rocket.chat/models': { LoginServiceConfiguration },
-	'./logger': { logger: { info: sandbox.stub() } },
-	'../../settings/cached': { settings: { get: (id: string) => settingValues.get(id) } },
-	'../notifyListener': { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
+let updateCasServices: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./logger', { exports: { logger: { info: sandbox.stub() } } }),
+		mock.module('../../settings/cached', { exports: { settings: { get: (id: string) => settingValues.get(id) } } }),
+		mock.module('../notifyListener', {
+			exports: { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService },
+		}),
+	];
+	({ updateCasServices } = await import('./updateCasService'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('updateCasServices', () => {
+	before(() => {
+		mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
+	});
+
 	beforeEach(() => {
 		sandbox.resetHistory();
 		settingValues.clear();

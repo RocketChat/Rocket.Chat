@@ -4,8 +4,6 @@ import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
-
 const modelsMock = {
 	Users: {
 		findOneAgentById: sinon.stub(),
@@ -28,9 +26,10 @@ const modelsMock = {
 	},
 };
 
-const { registerContact } = loadWithMocks('./registerContact', {
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
+let registerContact: any;
+
+before(async () => {
+	({ registerContact } = await import('./registerContact'));
 });
 
 describe('registerContact', () => {

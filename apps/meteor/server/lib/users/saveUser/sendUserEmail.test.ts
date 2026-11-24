@@ -1,10 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import Sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 type SendUserEmailFn = (subject: string, html: string, user: { email?: string; password?: string; name?: string }) => Promise<void>;
 type SendHelperFn = (user: { email?: string; password?: string; name?: string }) => Promise<void>;
@@ -48,10 +46,14 @@ describe('sendUserEmail', () => {
 		MailerStub = stubs.MailerStub as any;
 		SettingsStub = stubs.SettingsStub as any;
 
-		const mod = loadWithMocks('./sendUserEmail.ts', {
-			'../../notifications/email/api': MailerStub,
-			'../../../settings': SettingsStub,
-		}) as any;
+		const moduleMocks = [
+			mock.module('../../notifications/email/api', { exports: MailerStub }),
+			mock.module('../../../settings', { exports: SettingsStub }),
+		];
+		delete require.cache[require.resolve('./sendUserEmail')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const mod = require('./sendUserEmail');
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 		sendUserEmail = mod.sendUserEmail as SendUserEmailFn;
 		sendWelcomeEmail = mod.sendWelcomeEmail as SendHelperFn;

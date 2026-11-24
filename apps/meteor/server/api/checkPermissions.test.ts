@@ -1,19 +1,25 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import Sinon from 'sinon';
 
 import type { PermissionsPayload } from './api.helpers';
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
-const mocks = {
-	'../lib/deprecationWarningLogger': {
-		apiDeprecationLogger: {
-			endpoint: Sinon.stub(),
-		},
-	},
-};
-const { checkPermissions } = loadWithMocks('./api.helpers', mocks);
+let checkPermissions: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../lib/deprecationWarningLogger', {
+			exports: {
+				apiDeprecationLogger: {
+					endpoint: Sinon.stub(),
+				},
+			},
+		}),
+	];
+	({ checkPermissions } = await import('./api.helpers'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {

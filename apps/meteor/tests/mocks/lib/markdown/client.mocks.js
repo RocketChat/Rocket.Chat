@@ -1,16 +1,17 @@
-import { loadWithMocks } from '../../utils/loadWithMocks';
+import { mock } from 'node:test';
 
-const mocks = {
-	'@rocket.chat/random': {
-		'Random': {
+const randomMock = mock.module('@rocket.chat/random', {
+	exports: {
+		Random: {
 			id() {
 				return Math.random().toString().replace('0.', 'A');
 			},
 		},
-		'@global': true,
 	},
-};
+});
 
-export const { Markdown } = loadWithMocks('../../../../lib/markdown/markdown', mocks);
-export const { original } = loadWithMocks('../../../../lib/markdown/parser/original/original', mocks);
-export const { filtered } = loadWithMocks('../../../../lib/markdown/parser/filtered/filtered', mocks);
+export const { Markdown } = require('../../../../lib/markdown/markdown');
+export const { original } = require('../../../../lib/markdown/parser/original/original');
+export const { filtered } = require('../../../../lib/markdown/parser/filtered/filtered');
+
+randomMock.restore();

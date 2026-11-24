@@ -1,11 +1,10 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What the call's own message in the room carries as text.
@@ -21,10 +20,17 @@ let settingsValues: Record<string, unknown> = {};
 
 const sendMessageStub = sinon.stub().resolves({ _id: 'msg1' });
 
-const { VideoConfService } = loadWithMocks('./service', {
-	...commonServiceStubs,
-	'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
-	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+let VideoConfService: any;
+
+before(async () => {
+	const stubs: Record<string, Record<string, unknown>> = {
+		...commonServiceStubs,
+		'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
+		'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+	};
+	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) => mock.module(specifier, { exports }));
+	({ VideoConfService } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 /** The record the service handed to `sendMessage`, which is the thing under test. */

@@ -1,10 +1,12 @@
-import { describe, it } from 'node:test';
+import { before, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+let isVerifiedChannelInSource: any;
 
-const { isVerifiedChannelInSource } = loadWithMocks('./isVerifiedChannelInSource', {});
+before(async () => {
+	({ isVerifiedChannelInSource } = await import('./isVerifiedChannelInSource'));
+});
 
 describe('isVerifiedChannelInSource', () => {
 	it('should return false if channel is not verified', () => {

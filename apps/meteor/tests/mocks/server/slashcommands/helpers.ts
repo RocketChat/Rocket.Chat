@@ -1,8 +1,9 @@
+import { createRequire } from 'node:module';
+import { mock } from 'node:test';
+
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams, SlashCommandOptions } from '@rocket.chat/core-typings';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../utils/loadWithMocks';
 
 type Registration = {
 	command: string;
@@ -26,7 +27,9 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 	const logger = { error: sinon.stub(), warn: sinon.stub(), info: sinon.stub(), debug: sinon.stub() };
 	let lastInvocation: SlashCommandCallbackParams<string> | undefined;
 
-	loadWithMocks(`../../../../server/slashcommands/${path}`, {
+	const subject = require.resolve(`../../../../server/slashcommands/${path}`);
+	const requireFromSubject = createRequire(subject);
+	const stubs: Record<string, unknown> = {
 		'@rocket.chat/logger': { Logger: sinon.stub().returns(logger) },
 		'../../lib/i18n': { i18n: { t: translate, exists: translationExists } },
 		'../../settings': { settings },
@@ -35,7 +38,13 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 		'../../lib/utils/slashCommand': {
 			slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
 		},
-	});
+	};
+	const moduleMocks = Object.entries(stubs).map(([specifier, exports]) =>
+		mock.module(requireFromSubject.resolve(specifier), { exports: exports as Record<string, unknown> }),
+	);
+	delete requireFromSubject.cache[subject];
+	requireFromSubject(subject);
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 	return {
 		broadcast,

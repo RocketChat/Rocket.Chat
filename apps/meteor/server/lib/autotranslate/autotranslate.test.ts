@@ -1,10 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { beforeEach, describe, it, mock } from 'node:test';
 
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 describe('TranslationProviderRegistry', () => {
 	let TranslationProviderRegistry: any;
@@ -25,12 +23,16 @@ describe('TranslationProviderRegistry', () => {
 		addStub = sinon.stub();
 		removeStub = sinon.stub();
 
-		({ TranslationProviderRegistry } = loadWithMocks('./autotranslate', {
-			'../../settings': { settings: { watch: sinon.stub(), get: sinon.stub() } },
-			'../callbacks': { callbacks: { add: addStub, remove: removeStub, priority: { MEDIUM: 2 } } },
-			'../messaging/markdown': { Markdown: {} },
-			'../notifyListener': { notifyOnMessageChange: sinon.stub() },
-		}));
+		const moduleMocks = [
+			mock.module('../../settings', { exports: { settings: { watch: sinon.stub(), get: sinon.stub() } } }),
+			mock.module('../callbacks', { exports: { callbacks: { add: addStub, remove: removeStub, priority: { MEDIUM: 2 } } } }),
+			mock.module('../messaging/markdown', { exports: { Markdown: {} } }),
+			mock.module('../notifyListener', { exports: { notifyOnMessageChange: sinon.stub() } }),
+		];
+		delete require.cache[require.resolve('./autotranslate')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		({ TranslationProviderRegistry } = require('./autotranslate'));
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	});
 
 	it('should remove the afterSaveMessage callback and not register a new one when disabled', () => {

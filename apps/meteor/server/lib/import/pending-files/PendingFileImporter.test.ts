@@ -1,10 +1,8 @@
 import { EventEmitter } from 'events';
-import { beforeEach, describe, it } from 'node:test';
+import { beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 class MockIncomingMessage extends EventEmitter {
 	statusCode: number;
@@ -44,55 +42,61 @@ const createMockHttpModule = (responseFactory: () => MockIncomingMessage, errorO
 });
 
 const createPendingFileImporter = (httpMock: ReturnType<typeof createMockHttpModule>) => {
-	const { PendingFileImporter } = loadWithMocks('./PendingFileImporter', {
-		'node:http': httpMock,
-		'node:https': httpMock,
-		'@rocket.chat/core-services': { api: { broadcast: sinon.stub() } },
-		'@rocket.chat/random': { Random: { id: () => 'random-id' } },
-		'../../media/file-upload': { FileUpload: { getStore: sinon.stub(), getPath: sinon.stub() } },
-		'../../../meteor-methods/messages/sendFileMessage': { parseFileIntoMessageAttachments: sinon.stub() },
-		'..': {
-			Importer: class MockImporter {
-				logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub() };
+	const moduleMocks = [
+		mock.module('node:http', { exports: { default: httpMock } }),
+		mock.module('node:https', { exports: { default: httpMock } }),
+		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast: sinon.stub() } } }),
+		mock.module('@rocket.chat/random', { exports: { Random: { id: () => 'random-id' } } }),
+		mock.module('../../media/file-upload', { exports: { FileUpload: { getStore: sinon.stub(), getPath: sinon.stub() } } }),
+		mock.module('../../../meteor-methods/messages/sendFileMessage', { exports: { parseFileIntoMessageAttachments: sinon.stub() } }),
+		mock.module('..', {
+			exports: {
+				Importer: class MockImporter {
+					logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub() };
 
-				progress = { count: { total: 0 } };
+					progress = { count: { total: 0 } };
 
-				reportProgress() {
-					// no-op
-				}
+					reportProgress() {
+						// no-op
+					}
 
-				async updateProgress() {
-					// no-op
-				}
+					async updateProgress() {
+						// no-op
+					}
 
-				async updateRecord() {
-					// no-op
-				}
+					async updateRecord() {
+						// no-op
+					}
 
-				async addCountCompleted() {
-					// no-op
-				}
+					async addCountCompleted() {
+						// no-op
+					}
 
-				async addCountError() {
-					// no-op
-				}
+					async addCountError() {
+						// no-op
+					}
 
-				getProgress() {
-					return this.progress;
-				}
+					getProgress() {
+						return this.progress;
+					}
 
-				isCursorNotFoundError() {
-					return false;
-				}
+					isCursorNotFoundError() {
+						return false;
+					}
+				},
+				ProgressStep: {
+					PREPARING_STARTED: 'preparing_started',
+					IMPORTING_FILES: 'importing_files',
+					DONE: 'done',
+					ERROR: 'error',
+				},
 			},
-			ProgressStep: {
-				PREPARING_STARTED: 'preparing_started',
-				IMPORTING_FILES: 'importing_files',
-				DONE: 'done',
-				ERROR: 'error',
-			},
-		},
-	});
+		}),
+	];
+	delete require.cache[require.resolve('./PendingFileImporter')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const { PendingFileImporter } = require('./PendingFileImporter');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 	const info = { key: 'pending-files', name: 'Pending Files' };
 	const importRecord = { _id: 'test-import' };

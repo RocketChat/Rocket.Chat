@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -25,23 +23,24 @@ const modelsMock = {
 	},
 };
 
-const { createDirectMessage } = loadWithMocks('./createDirectMessage', {
-	'meteor/meteor': {
-		Meteor: {
-			userId: sandbox.stub(),
-			methods: sandbox.stub(),
-		},
-	},
-	'@rocket.chat/federation-matrix': { validateFederatedUsername: validateFederatedUsernameMock },
-	'../../lib/RateLimiter': { RateLimiterClass: { limitMethod: sandbox.stub() } },
-	'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionMock },
-	'../../lib/callbacks': { callbacks: { run: sandbox.stub() } },
-	'../../lib/rooms/createRoom': { createRoom: createRoomMock },
-	'../../services/federation/utils': {
-		isFederationEnabled: isFederationEnabledMock,
-		isXMPPServerEnabled: isXMPPServerEnabledMock,
-	},
-	'../../settings': { settings: { get: settingsGetMock } },
+let createDirectMessage: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/federation-matrix', { exports: { validateFederatedUsername: validateFederatedUsernameMock } }),
+		mock.module('../../lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionMock } }),
+		mock.module('../../lib/callbacks', { exports: { callbacks: { run: sandbox.stub() } } }),
+		mock.module('../../lib/rooms/createRoom', { exports: { createRoom: createRoomMock } }),
+		mock.module('../../services/federation/utils', {
+			exports: {
+				isFederationEnabled: isFederationEnabledMock,
+				isXMPPServerEnabled: isXMPPServerEnabledMock,
+			},
+		}),
+		mock.module('../../settings', { exports: { settings: { get: settingsGetMock } } }),
+	];
+	({ createDirectMessage } = await import('./createDirectMessage'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const me = { _id: 'me', username: 'me' };

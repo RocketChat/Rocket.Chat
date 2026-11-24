@@ -1,15 +1,14 @@
 import { afterEach, before, describe, it } from 'node:test';
 
-import type { BannerPlatform, IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
+import type { IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
 import { BaseRaw } from '@rocket.chat/models';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { FindCursor, FindOptions } from 'mongodb';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
-const { BannerService } = loadWithMocks('./service', {});
+import { BannerService } from './service';
 
 class BannerModel extends BaseRaw<any> {
 	findActiveByRoleOrId(
@@ -88,7 +87,7 @@ describe('Banners service', () => {
 			);
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
-			const banners = await service.getBannersForUser('a-fake-id', 'web');
+			const banners = await service.getBannersForUser('a-fake-id', BannerPlatform.Web);
 
 			expect(findActiveByRoleOrIdMock.callCount).to.be.equal(1);
 			expect(findByUserIdAndBannerIdMock.callCount).to.be.equal(1);
@@ -114,7 +113,7 @@ describe('Banners service', () => {
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
 
-			const banners = await service.getBannersForUser('a-fake-id', 'web');
+			const banners = await service.getBannersForUser('a-fake-id', BannerPlatform.Web);
 
 			expect(findActiveByRoleOrIdMock.callCount).to.be.equal(1);
 			expect(findByUserIdAndBannerIdMock.callCount).to.be.equal(1);
@@ -138,7 +137,7 @@ describe('Banners service', () => {
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
 
-			const banners = await service.getBannersForUser('a-fake-id', 'web');
+			const banners = await service.getBannersForUser('a-fake-id', BannerPlatform.Web);
 
 			expect(findActiveByRoleOrIdMock.callCount).to.be.equal(1);
 			expect(findByUserIdAndBannerIdMock.callCount).to.be.equal(1);

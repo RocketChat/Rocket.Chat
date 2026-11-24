@@ -1,4 +1,4 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IImport, IImportChannel, IImportRecord, IImportUser, IImporterShortSelection } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
@@ -10,7 +10,6 @@ import { SelectionChannel } from './ImporterSelectionChannel';
 import { SelectionUser } from './ImporterSelectionUser';
 import { RecordConverter } from './converters/RecordConverter';
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 let imported: string[];
 let onRecordImported: (id: string) => void;
@@ -33,18 +32,22 @@ const fakeConverter = (dataType: IImportRecord['dataType']) =>
 		}
 	};
 
-const { ImportDataConverter } = loadWithMocks('./ImportDataConverter', {
-	'./converters/UserConverter': { UserConverter: fakeConverter('user') },
-	'./converters/ContactConverter': { ContactConverter: fakeConverter('contact') },
-	'./converters/RoomConverter': { RoomConverter: fakeConverter('channel') },
-	'./converters/MessageConverter': { MessageConverter: fakeConverter('message') },
-});
+let Importer: any;
 
-const { Importer } = loadWithMocks('./Importer', {
-	'./ImportDataConverter': { ImportDataConverter },
-	'./ImporterWebsocket': { ImporterWebsocket: { progressUpdated: () => undefined } },
-	'../../notifyListener': { notifyOnSettingChanged: () => undefined, notifyOnSettingChangedById: () => undefined },
-	'../index': { Selection: ImporterSelection, SelectionChannel, SelectionUser },
+before(async () => {
+	const moduleMocks = [
+		mock.module('./converters/UserConverter', { exports: { UserConverter: fakeConverter('user') } }),
+		mock.module('./converters/ContactConverter', { exports: { ContactConverter: fakeConverter('contact') } }),
+		mock.module('./converters/RoomConverter', { exports: { RoomConverter: fakeConverter('channel') } }),
+		mock.module('./converters/MessageConverter', { exports: { MessageConverter: fakeConverter('message') } }),
+		mock.module('./ImporterWebsocket', { exports: { ImporterWebsocket: { progressUpdated: () => undefined } } }),
+		mock.module('../../notifyListener', {
+			exports: { notifyOnSettingChanged: () => undefined, notifyOnSettingChangedById: () => undefined },
+		}),
+		mock.module('../index', { exports: { Selection: ImporterSelection, SelectionChannel, SelectionUser } }),
+	];
+	({ Importer } = await import('./Importer'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 let importRecord: IImport;

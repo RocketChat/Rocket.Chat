@@ -1,4 +1,4 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 import zlib from 'node:zlib';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
@@ -50,22 +50,19 @@ import {
 	makeLogoutRequestEnvelope,
 	makeLogoutResponseEnvelope,
 } from '../../../../../tests/mocks/server/lib/saml/helpers';
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const getURLStub = {
 	getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
 };
 
-const getURLStubs = {
-	'../../../../../server/lib/utils/getURL': getURLStub,
-	'../../../../../../server/lib/utils/getURL': getURLStub,
-};
+let ServiceProviderMetadata: any;
+let SAMLServiceProvider: any;
 
-const { ServiceProviderMetadata } = loadWithMocks('./generators/ServiceProviderMetadata', getURLStubs);
-
-const { SAMLServiceProvider } = loadWithMocks('./ServiceProvider', {
-	...getURLStubs,
-	'./generators/ServiceProviderMetadata': { ServiceProviderMetadata },
+before(async () => {
+	const getURLMock = mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
+	({ ServiceProviderMetadata } = await import('./generators/ServiceProviderMetadata'));
+	({ SAMLServiceProvider } = await import('./ServiceProvider'));
+	getURLMock.restore();
 });
 
 describe('SAML', () => {
@@ -293,7 +290,11 @@ describe('SAML', () => {
 		});
 
 		describe('logoutResponseToUrl', () => {
-			const serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+			let serviceProvider: any;
+
+			before(() => {
+				serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+			});
 
 			const generateUrl = (relayState: string | undefined): Promise<string> =>
 				new Promise((resolve, reject) => {
@@ -1199,40 +1200,50 @@ describe('SAML', () => {
 			end: () => undefined,
 		};
 
-		const loadSAML = () =>
-			loadWithMocks('./SAML', {
-				'@rocket.chat/core-services': { ClientSafeError },
-				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
-				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
-				'meteor/accounts-base': { Accounts: {} },
-				...getURLStubs,
-				'./ServiceProvider': {
-					SAMLServiceProvider: class {
-						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
-							pending = cb(null, replayProfile);
-						}
+		const loadSAML = () => {
+			const moduleMocks = [
+				mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
+				mock.module('@rocket.chat/random', { exports: { Random: { id: () => '__credentialToken__' } } }),
+				mock.module('@rocket.chat/tools', { exports: { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s } }),
+				mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: {} } }),
+				mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub }),
+				mock.module('./ServiceProvider', {
+					exports: {
+						SAMLServiceProvider: class {
+							validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
+								pending = cb(null, replayProfile);
+							}
+						},
 					},
-				},
-				'./Utils': {
-					SAMLUtils: {
-						relayState: null,
-						error: sinon.stub(),
-						warn: sinon.stub(),
-						log: sinon.stub(),
-						getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
-						decodeAuthorizeRelayState: (provider: string) => ({ provider }),
+				}),
+				mock.module('./Utils', {
+					exports: {
+						SAMLUtils: {
+							relayState: null,
+							error: sinon.stub(),
+							warn: sinon.stub(),
+							log: sinon.stub(),
+							getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
+							decodeAuthorizeRelayState: (provider: string) => ({ provider }),
+						},
 					},
-				},
-				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },
-				'../../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
-				'../../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
-				'../../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: sinon.stub() },
-				'../../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
-				'../../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
-				'../../../../../server/lib/users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
-				'../../../../../server/settings': { settings: { get: sinon.stub() } },
-				'../../../../../lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
-			}).SAML;
+				}),
+				mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope: async () => ({ relayState: null }) } }),
+				mock.module('../../../../../lib/utils/arrayUtils', { exports: { ensureArray: (v: any) => v } }),
+				mock.module('../../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } } }),
+				mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: sinon.stub() } }),
+				mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } }),
+				mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion: sinon.stub() } }),
+				mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } }),
+				mock.module('../../../../../server/settings', { exports: { settings: { get: sinon.stub() } } }),
+				mock.module('../../../../../lib/i18n', { exports: { i18n: { t: (s: string) => s, languages: [] } } }),
+			];
+			delete require.cache[require.resolve('./SAML')];
+			// oxlint-disable-next-line @typescript-eslint/no-require-imports
+			const { SAML } = require('./SAML');
+			moduleMocks.forEach((moduleMock) => moduleMock.restore());
+			return SAML;
+		};
 
 		const service = { ...serviceProviderOptions } as any;
 		const samlObject = { actionName: 'validate', serviceName: 'test-sp', credentialToken: '' } as any;

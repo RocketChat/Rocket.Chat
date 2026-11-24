@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -14,8 +12,12 @@ const modelsMock = {
 
 const getContactManagerIdByUsername = sinon.stub();
 
-const { ContactMerger } = loadWithMocks('./ContactMerger', {
-	'./getContactManagerIdByUsername': { getContactManagerIdByUsername },
+let ContactMerger: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('./getContactManagerIdByUsername', { exports: { getContactManagerIdByUsername } })];
+	({ ContactMerger } = await import('./ContactMerger'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('ContactMerger.mergeFieldsIntoContact', () => {

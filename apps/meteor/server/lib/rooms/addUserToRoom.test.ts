@@ -1,12 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 class AbacContractError extends Error {}
 
@@ -31,16 +29,22 @@ const Subscriptions = { findOneByRoomIdAndUserId: sandbox.stub(), removeByRoomId
 
 const AppEvents = { IPreRoomUserJoined: 'IPreRoomUserJoined', IPostRoomUserJoined: 'IPostRoomUserJoined' };
 
-const { addUserToRoom } = loadWithMocks('./addUserToRoom.ts', {
-	'@rocket.chat/abac': { AbacContractError },
-	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents },
-	'@rocket.chat/core-services': { Message, Team, Room, ClientSafeError, isClientSafeError },
-	'./roomCoordinator': { roomCoordinator: { getRoomDirectives } },
-	'../../hooks/rooms/beforeAddUserToRoom': { beforeAddUserToRoom: beforeAddUserToRoomPatch },
-	'../../settings': { settings: { get: settingsGet } },
-	'../callbacks': { callbacks: { run: callbacksRun } },
-	'../callbacks/beforeAddUserToRoom': { beforeAddUserToRoom },
-	'../notifyListener': { notifyOnRoomChangedById, notifyOnSubscriptionChanged },
+let addUserToRoom: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/abac', { exports: { AbacContractError } }),
+		mock.module('@rocket.chat/apps', { exports: { Apps: { self: { triggerEvent } }, AppEvents } }),
+		mock.module('@rocket.chat/core-services', { exports: { Message, Team, Room, ClientSafeError, isClientSafeError } }),
+		mock.module('./roomCoordinator', { exports: { roomCoordinator: { getRoomDirectives } } }),
+		mock.module('../../hooks/rooms/beforeAddUserToRoom', { exports: { beforeAddUserToRoom: beforeAddUserToRoomPatch } }),
+		mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
+		mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } }),
+		mock.module('../callbacks/beforeAddUserToRoom', { exports: { beforeAddUserToRoom } }),
+		mock.module('../notifyListener', { exports: { notifyOnRoomChangedById, notifyOnSubscriptionChanged } }),
+	];
+	({ addUserToRoom } = await import('./addUserToRoom'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const room = { _id: 'rid1', t: 'c' };
@@ -206,7 +210,7 @@ describe('addUserToRoom', () => {
 		expect(Room.createUserSubscription.called).to.be.false;
 	});
 
-	for (const t of ['c', 'p', 'l']) {
+	['c', 'p', 'l'].forEach((t) => {
 		it(`runs beforeAddedToRoom with the room and beforeJoinRoom for rooms of type ${t}`, async () => {
 			const typedRoom = { ...room, t };
 			Rooms.findOneById.resolves(typedRoom);
@@ -219,7 +223,7 @@ describe('addUserToRoom', () => {
 				['beforeJoinRoom', user, typedRoom],
 			]);
 		});
-	}
+	});
 
 	it('does not run the join callbacks for direct rooms', async () => {
 		Rooms.findOneById.resolves({ ...room, t: 'd' });
@@ -313,7 +317,7 @@ describe('addUserToRoom', () => {
 		expect(Room.createUserSubscription.firstCall.args[0]).to.deep.include({ createAsHidden: false, inviter: undefined });
 	});
 
-	for (const t of ['c', 'p']) {
+	['c', 'p'].forEach((t) => {
 		it(`runs the after-join hooks after returning for rooms of type ${t}`, async () => {
 			const typedRoom = { ...room, t };
 			Rooms.findOneById.resolves(typedRoom);
@@ -332,7 +336,7 @@ describe('addUserToRoom', () => {
 			]);
 			expect(triggerEvent.calledWith('IPostRoomUserJoined', typedRoom, user, inviter)).to.be.true;
 		});
-	}
+	});
 
 	it('does not run the after-join hooks for livechat rooms', async () => {
 		const livechatRoom = { ...room, t: 'l' };

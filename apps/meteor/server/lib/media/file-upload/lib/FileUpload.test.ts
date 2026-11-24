@@ -1,14 +1,13 @@
 import { once } from 'node:events';
 import { PassThrough, Readable } from 'node:stream';
 import { text } from 'node:stream/consumers';
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { createFakeMessageWithAttachment } from '../../../../../tests/mocks/data';
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const fakeStorageModel = { findOneById: sinon.stub(), deleteFile: sinon.stub() };
 const settingsStub = { watch: sinon.stub(), get: sinon.stub() };
@@ -24,26 +23,33 @@ const roomCoordinatorStub = {
 	getRoomDirectives: sinon.stub(),
 };
 
-const { FileUpload, FileUploadClass } = loadWithMocks('./FileUpload', {
-	'meteor/meteor': sinon.stub(),
-	'sharp': sinon.stub(),
-	'stream-buffers': sinon.stub(),
-	'@rocket.chat/tools': sinon.stub(),
-	'../../../i18n': sinon.stub(),
-	'../../../logger/system': { SystemLogger: systemLoggerStub },
-	'../../../rooms/roomCoordinator': { roomCoordinator: roomCoordinatorStub },
-	'../../../../ufs': sinon.stub(),
-	'../../../../ufs/ufs-methods': sinon.stub(),
-	'../../../../settings': { settings: settingsStub },
-	'../../../../../lib/mimeTypes': sinon.stub(),
-	'../../../utils/getURL': { getURL: sinon.stub() },
-	'../../../utils/lib/JWTHelper': {
-		validateAndDecodeJWT: validateAndDecodeJWTStub,
-		generateJWT: sinon.stub(),
-	},
-	'../../../utils/restrictions': sinon.stub(),
-	'../../../../api/lib/MultipartUploadHandler': sinon.stub(),
-	'@rocket.chat/account-utils': { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
+let FileUpload: any;
+let FileUploadClass: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('sharp', { exports: { default: sinon.stub() } }),
+		mock.module('stream-buffers', { exports: { default: sinon.stub() } }),
+		mock.module('@rocket.chat/tools', { exports: {} }),
+		mock.module('../../../i18n', { exports: {} }),
+		mock.module('../../../logger/system', { exports: { SystemLogger: systemLoggerStub } }),
+		mock.module('../../../rooms/roomCoordinator', { exports: { roomCoordinator: roomCoordinatorStub } }),
+		mock.module('../../../../ufs', { exports: {} }),
+		mock.module('../../../../ufs/ufs-methods', { exports: {} }),
+		mock.module('../../../../settings', { exports: { settings: settingsStub } }),
+		mock.module('../../../../../lib/mimeTypes', { exports: {} }),
+		mock.module('../../../utils/getURL', { exports: { getURL: sinon.stub() } }),
+		mock.module('../../../utils/lib/JWTHelper', {
+			exports: { validateAndDecodeJWT: validateAndDecodeJWTStub, generateJWT: sinon.stub() },
+		}),
+		mock.module('../../../utils/restrictions', { exports: {} }),
+		mock.module('../../../../api/lib/MultipartUploadHandler', { exports: {} }),
+		mock.module('@rocket.chat/account-utils', {
+			exports: { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
+		}),
+	];
+	({ FileUpload, FileUploadClass } = await import('./FileUpload'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('FileUpload', () => {

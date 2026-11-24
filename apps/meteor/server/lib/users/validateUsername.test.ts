@@ -1,9 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 describe('validateUsername', () => {
 	const getStub = sinon.stub();
@@ -14,8 +12,12 @@ describe('validateUsername', () => {
 		},
 	};
 
-	const { validateUsername } = loadWithMocks('./validateUsername', {
-		'../../settings': proxySettings,
+	let validateUsername: any;
+
+	before(async () => {
+		const settingsMock = mock.module('../../settings', { exports: proxySettings });
+		({ validateUsername } = await import('./validateUsername'));
+		settingsMock.restore();
 	});
 
 	beforeEach(() => {

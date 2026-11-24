@@ -1,14 +1,16 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
-
 const add = sinon.stub();
 
-const { addOAuthService } = loadWithMocks('./addOAuthService', {
-	'../../../../server/settings': { settingsRegistry: { add } },
+let addOAuthService: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../../../server/settings', { exports: { settingsRegistry: { add } } })];
+	({ addOAuthService } = await import('./addOAuthService'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const defaultValues = [

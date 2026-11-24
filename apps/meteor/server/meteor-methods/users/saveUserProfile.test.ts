@@ -1,11 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const hashPassword = sinon.stub();
@@ -23,30 +21,38 @@ const saveCustomFields = sinon.stub();
 const validateUserEditing = sinon.stub();
 const saveUserIdentity = sinon.stub();
 
-const { executeSaveUserProfile } = loadWithMocks('./saveUserProfile', {
-	'@rocket.chat/account-utils': { hashPassword },
-	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
-	'@rocket.chat/core-services': { ClientSafeError },
-	'./setEmail': { setEmailFunction },
-	'./setUserStatus': { setUserStatusMethod },
-	'../../api/lib/getUserInfo': { getUserInfo },
-	'../../lib/2fa/twoFactorRequired': {
-		twoFactorRequired: (fn: (...args: unknown[]) => Promise<unknown>, options: unknown) =>
-			async function (this: unknown, ...args: unknown[]) {
-				twoFactorCall(options, ...args);
-				return fn.apply(this, args);
-			},
-	},
-	'../../lib/auth/passwordPolicy': { passwordPolicy: { validate: passwordPolicyValidate } },
-	'../../lib/callbacks': { callbacks: { run: callbacksRun } },
-	'../../lib/compareUserPassword': { compareUserPassword },
-	'../../lib/compareUserPasswordHistory': { compareUserPasswordHistory },
-	'../../lib/notifyListener': { notifyOnUserChange },
-	'../../lib/users/saveCustomFields': { saveCustomFields },
-	'../../lib/users/saveUser': { validateUserEditing },
-	'../../lib/users/saveUserIdentity': { saveUserIdentity },
-	'../../settings': { settings: { get: settingsGet } },
-});
+const moduleMocks = [
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword } }),
+	mock.module('@rocket.chat/apps', {
+		exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
+	}),
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } }),
+	mock.module('./setEmail', { exports: { setEmailFunction } }),
+	mock.module('./setUserStatus', { exports: { setUserStatusMethod } }),
+	mock.module('../../api/lib/getUserInfo', { exports: { getUserInfo } }),
+	mock.module('../../lib/2fa/twoFactorRequired', {
+		exports: {
+			twoFactorRequired: (fn: (...args: unknown[]) => Promise<unknown>, options: unknown) =>
+				async function (this: unknown, ...args: unknown[]) {
+					twoFactorCall(options, ...args);
+					return fn.apply(this, args);
+				},
+		},
+	}),
+	mock.module('../../lib/auth/passwordPolicy', { exports: { passwordPolicy: { validate: passwordPolicyValidate } } }),
+	mock.module('../../lib/callbacks', { exports: { callbacks: { run: callbacksRun } } }),
+	mock.module('../../lib/compareUserPassword', { exports: { compareUserPassword } }),
+	mock.module('../../lib/compareUserPasswordHistory', { exports: { compareUserPasswordHistory } }),
+	mock.module('../../lib/notifyListener', { exports: { notifyOnUserChange } }),
+	mock.module('../../lib/users/saveCustomFields', { exports: { saveCustomFields } }),
+	mock.module('../../lib/users/saveUser', { exports: { validateUserEditing } }),
+	mock.module('../../lib/users/saveUserIdentity', { exports: { saveUserIdentity } }),
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } }),
+];
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
+const { executeSaveUserProfile } = require('./saveUserProfile');
+
+moduleMocks.forEach((moduleMock) => moduleMock.restore());
 
 describe('executeSaveUserProfile', () => {
 	let Users: Record<string, sinon.SinonStub>;

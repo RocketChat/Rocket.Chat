@@ -1,12 +1,10 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const isUserIdFederated = sinon.stub();
@@ -18,12 +16,18 @@ const findOneById = sinon.stub();
 const resetTOTPById = sinon.stub();
 const unsetLoginTokens = sinon.stub();
 
-const { resetTOTP } = loadWithMocks('./resetTOTP', {
-	'../../../settings': { settings: { get: settingsGet } },
-	'../../i18n': { i18n: { getFixedT } },
-	'../../isUserIdFederated': { isUserIdFederated },
-	'../../notifications/email/api': { send: sendEmail },
-	'../../notifyListener': { notifyOnUserChange },
+let resetTOTP: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../settings', { exports: { settings: { get: settingsGet } } }),
+		mock.module('../../i18n', { exports: { i18n: { getFixedT } } }),
+		mock.module('../../isUserIdFederated', { exports: { isUserIdFederated } }),
+		mock.module('../../notifications/email/api', { exports: { send: sendEmail } }),
+		mock.module('../../notifyListener', { exports: { notifyOnUserChange } }),
+	];
+	({ resetTOTP } = await import('./resetTOTP'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const userWithVerifiedEmail = {

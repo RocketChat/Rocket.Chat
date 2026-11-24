@@ -1,9 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const hasAllPermissionAsyncMock = sinon.stub();
 const getCachedSupportedVersionsTokenMock = sinon.stub();
@@ -12,25 +10,33 @@ const getCachedSupportedVersionsTokenMock = sinon.stub();
 describe.skip('#getServerInfo()', () => {
 	let getServerInfo: any;
 
-	before(() => {
-		const { getServerInfo: importedGetServerInfo } = loadWithMocks('./getServerInfo', {
-			'../../../rocketchat.info': {
-				Info: {
-					version: '3.0.1',
+	before(async () => {
+		const moduleMocks = [
+			mock.module('../../../rocketchat.info', {
+				exports: {
+					Info: {
+						version: '3.0.1',
+					},
 				},
-			},
-			'../../lib/authorization/hasPermission': {
-				hasPermissionAsync: hasAllPermissionAsyncMock,
-			},
-			'../../lib/cloud/supportedVersionsToken/supportedVersionsToken': {
-				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
-			},
-			'../../settings': {
-				settings: new Map(),
-			},
-		});
-
-		getServerInfo = importedGetServerInfo;
+			}),
+			mock.module('../../lib/authorization/hasPermission', {
+				exports: {
+					hasPermissionAsync: hasAllPermissionAsyncMock,
+				},
+			}),
+			mock.module('../../lib/cloud/supportedVersionsToken/supportedVersionsToken', {
+				exports: {
+					getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
+				},
+			}),
+			mock.module('../../settings', {
+				exports: {
+					settings: new Map(),
+				},
+			}),
+		];
+		({ getServerInfo } = await import('./getServerInfo'));
+		moduleMocks.forEach((moduleMock) => moduleMock.restore());
 	});
 
 	beforeEach(() => {

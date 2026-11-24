@@ -1,9 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -13,13 +11,21 @@ const authenticate = sandbox.stub();
 const loginCallback = sandbox.stub();
 const loginErrorCallback = sandbox.stub();
 
-const { configureOAuthServices } = loadWithMocks('./configureOAuthServices.ts', {
-	'meteor/accounts-base': { Accounts: { updateOrCreateUserFromExternalService } },
-	'passport': { use: sandbox.stub(), unuse: sandbox.stub(), authenticate },
-	'./allowPassportOAuthMiddleware': { allowPassportOAuthMiddleware: () => sandbox.stub() },
-	'./passportOAuthCallback': { passportOAuthCallback: () => loginCallback, passportOAuthErrorCallback: () => loginErrorCallback },
-	'./removeOAuthRoutes': { removeOAuthRoutes: sandbox.stub() },
-	'../../configuration/configurePassport': { oAuthRouter: routes },
+let configureOAuthServices: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } }),
+		mock.module('passport', { exports: { default: { use: sandbox.stub(), unuse: sandbox.stub(), authenticate } } }),
+		mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sandbox.stub() } }),
+		mock.module('./passportOAuthCallback', {
+			exports: { passportOAuthCallback: () => loginCallback, passportOAuthErrorCallback: () => loginErrorCallback },
+		}),
+		mock.module('./removeOAuthRoutes', { exports: { removeOAuthRoutes: sandbox.stub() } }),
+		mock.module('../../configuration/configurePassport', { exports: { oAuthRouter: routes } }),
+	];
+	({ configureOAuthServices } = await import('./configureOAuthServices'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 let verify: (...args: unknown[]) => Promise<unknown>;
