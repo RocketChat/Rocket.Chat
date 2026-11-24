@@ -1,0 +1,21 @@
+apps/meteor/server/lib/auth/updateOrCreateUserFromExternalService.ts
+  s_94627289c72832::t_f74a68b97dded6 62-69
+apps/meteor/server/lib/auth/updateOrCreateUserFromExternalService.test.ts
+  s_94627289c72832::t_30b619d63ddcc0 93-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2b0d137bda25ba4c5580a7f0348fd56fb196a0d0",
+  "prompts": {},
+  "sessions": {
+    "s_94627289c72832": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3993bc6d-0a02-4ba1-b0a5-a2abc510685c",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
