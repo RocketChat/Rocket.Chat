@@ -155,7 +155,7 @@ const ThreadList = () => {
 						icon='circle-exclamation'
 						iconVariation='danger'
 						title={t('Something_went_wrong')}
-						subtitle={getErrorMessage(error)}
+						subtitle={getErrorMessage(error, t('Something_went_wrong'))}
 					/>
 				)}
 				{isSuccess && (
