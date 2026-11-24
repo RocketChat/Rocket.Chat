@@ -1,6 +1,6 @@
 # Changesets
 
-A changeset is a file in `.changeset/` that becomes a changelog entry and decides the version bump of each package it names. Create one with `yarn changeset`, or write the file by hand:
+A changeset is a file in `.changeset/` that becomes a changelog entry and decides the version bump of each package it names. Create one with `yarn changeset`:
 
 ```md
 ---
