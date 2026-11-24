@@ -13,18 +13,18 @@ The package exports two things:
 | `SetupWizardRoute` | Lazy-loaded component that renders the wizard at `/setup-wizard/:step?`. |
 | `useRedirectToSetupWizard` | Hook that sends the user to the wizard while the workspace still needs to be set up. |
 
-Register the route with the id `setup-wizard`:
+Register the route with the id `setup-wizard` in the web client's router:
 
 ```tsx
 import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 
-const routes = [
+router.defineRoutes([
 	{
 		path: '/setup-wizard/:step?',
 		id: 'setup-wizard',
 		element: <SetupWizardRoute />,
 	},
-];
+]);
 ```
 
 Call the redirect hook from the main layout:
