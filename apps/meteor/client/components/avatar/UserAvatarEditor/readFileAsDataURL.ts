@@ -9,8 +9,8 @@ export const readFileAsDataURL = (file: File) =>
 			}
 			reject(new Error('Failed to read file'));
 		};
-		reader.onerror = (event) => {
-			reject(new Error(`Failed to read file: ${event}`));
+		reader.onerror = () => {
+			reject(new Error('Failed to read file', { cause: reader.error }));
 		};
 		reader.readAsDataURL(file);
 	});

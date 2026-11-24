@@ -18,7 +18,7 @@ const getName = (t: TFunction, permission: IPermission): string => {
 		if (permission.section) {
 			path = `${path}${t(permission.section)} > `;
 		}
-		return `${path}${t(permission.settingId!)}`;
+		return `${path}${t(permission.settingId ?? permission._id)}`;
 	}
 
 	return t(permission._id);
