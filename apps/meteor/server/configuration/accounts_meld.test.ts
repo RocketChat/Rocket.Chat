@@ -11,7 +11,7 @@ const Users = {
 	unsetPassword: sinon.stub(),
 	setServiceId: sinon.stub(),
 	setEmailVerified: sinon.stub(),
-	unsetRequirePasswordChange: sinon.stub(),
+	unsetRequirePasswordChangeWithoutPassword: sinon.stub(),
 };
 
 const originalUpdateOrCreate = sinon.stub();
@@ -55,7 +55,7 @@ describe('configureAccounts (accounts meld)', () => {
 		expect(Users.unsetPassword.calledOnceWith('user-id')).to.be.true;
 		expect(Users.setServiceId.calledOnceWith('user-id', 'authentik', 'sub-1')).to.be.true;
 		expect(Users.setEmailVerified.calledOnceWith('user-id', 'user@example.com')).to.be.true;
-		expect(Users.unsetRequirePasswordChange.called).to.be.false;
+		expect(Users.unsetRequirePasswordChangeWithoutPassword.called).to.be.false;
 		expect(originalUpdateOrCreate.calledOnce).to.be.true;
 	});
 
@@ -84,7 +84,7 @@ describe('configureAccounts (accounts meld)', () => {
 
 		expect(Users.unsetPassword.called).to.be.false;
 		expect(Users.setServiceId.called).to.be.false;
-		expect(Users.unsetRequirePasswordChange.called).to.be.false;
+		expect(Users.unsetRequirePasswordChangeWithoutPassword.called).to.be.false;
 	});
 
 	it('should release accounts left on the reset password page by a previous meld', async () => {
@@ -98,7 +98,7 @@ describe('configureAccounts (accounts meld)', () => {
 
 		await login('authentik', { _OAuthCustom: true, email: 'user@example.com', id: 'sub-1' });
 
-		expect(Users.unsetRequirePasswordChange.calledOnceWith('user-id')).to.be.true;
+		expect(Users.unsetRequirePasswordChangeWithoutPassword.calledOnceWith('user-id', UNVERIFIED_EMAIL_REASON)).to.be.true;
 		expect(originalUpdateOrCreate.calledOnce).to.be.true;
 	});
 
@@ -113,6 +113,50 @@ describe('configureAccounts (accounts meld)', () => {
 
 		await login('authentik', { _OAuthCustom: true, email: 'user@example.com', id: 'sub-1' });
 
-		expect(Users.unsetRequirePasswordChange.called).to.be.false;
+		expect(Users.unsetRequirePasswordChangeWithoutPassword.called).to.be.false;
+	});
+
+	it('should keep the password when any listed copy of the email is verified', async () => {
+		Users.findOneByEmailAddress.resolves({
+			_id: 'user-id',
+			emails: [
+				{ address: 'user@example.com', verified: false },
+				{ address: 'User@example.com', verified: true },
+			],
+			services: { password: { bcrypt: 'hash' } },
+		});
+
+		await login('authentik', { _OAuthCustom: true, email: 'user@example.com', id: 'sub-1' });
+
+		expect(Users.unsetPassword.called).to.be.false;
+		expect(Users.setServiceId.calledOnceWith('user-id', 'authentik', 'sub-1')).to.be.true;
+	});
+
+	it('should keep the meld password change while the account still has a password', async () => {
+		Users.findOneByEmailAddress.resolves({
+			_id: 'user-id',
+			emails: [{ address: 'user@example.com', verified: true }],
+			services: { authentik: { id: 'sub-1' }, password: { bcrypt: 'hash' } },
+			requirePasswordChange: true,
+			requirePasswordChangeReason: UNVERIFIED_EMAIL_REASON,
+		});
+
+		await login('authentik', { _OAuthCustom: true, email: 'user@example.com', id: 'sub-1' });
+
+		expect(Users.unsetRequirePasswordChangeWithoutPassword.called).to.be.false;
+	});
+
+	it('should release a stuck account whose password entry holds only a reset token', async () => {
+		Users.findOneByEmailAddress.resolves({
+			_id: 'user-id',
+			emails: [{ address: 'user@example.com', verified: true }],
+			services: { authentik: { id: 'sub-1' }, password: { reset: { token: 'token', when: new Date() } } },
+			requirePasswordChange: true,
+			requirePasswordChangeReason: UNVERIFIED_EMAIL_REASON,
+		});
+
+		await login('authentik', { _OAuthCustom: true, email: 'user@example.com', id: 'sub-1' });
+
+		expect(Users.unsetRequirePasswordChangeWithoutPassword.calledOnceWith('user-id', UNVERIFIED_EMAIL_REASON)).to.be.true;
 	});
 });

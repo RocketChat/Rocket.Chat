@@ -19,10 +19,12 @@ export async function configureAccounts() {
 			const user = await Users.findOneByEmailAddress(serviceData.email);
 			if (user != null) {
 				// the lookup above is case insensitive, so the comparison here must be too
-				const matchingEmail = user.emails?.find(({ address }) => isSameEmailAddress(address, serviceData.email));
+				// and the same address can be listed more than once, so check every copy
+				const matchingEmails = user.emails?.filter(({ address }) => isSameEmailAddress(address, serviceData.email)) ?? [];
+				const isEmailVerified = matchingEmails.some(({ verified }) => verified === true);
 
 				if (user.services?.[serviceName]?.id !== serviceData.id) {
-					if (user.services?.password && matchingEmail?.verified !== true) {
+					if (user.services?.password && !isEmailVerified) {
 						// Nobody proved ownership of this address, so the local password can't be trusted: drop it and
 						// let the external service be the way in. Requiring a password change here would trap the user,
 						// since there is no longer a password to change (and OAuth users may not be allowed to set one).
@@ -30,12 +32,18 @@ export async function configureAccounts() {
 					}
 
 					await Users.setServiceId(user._id, serviceName, serviceData.id);
-					await Users.setEmailVerified(user._id, matchingEmail?.address ?? serviceData.email);
+					await Users.setEmailVerified(user._id, matchingEmails[0]?.address ?? serviceData.email);
 				}
 
-				// Release accounts that older versions locked on the reset password page after melding
-				if (user.requirePasswordChange && user.requirePasswordChangeReason === UNVERIFIED_EMAIL_REASON && !user.services?.password) {
-					await Users.unsetRequirePasswordChange(user._id);
+				// Release accounts that older versions locked on the reset password page after melding. A reset or enroll
+				// token can leave services.password without a usable hash, so check the hash; the write re-checks both
+				// conditions, so a password change required for another reason in the meantime is kept.
+				if (
+					user.requirePasswordChange &&
+					user.requirePasswordChangeReason === UNVERIFIED_EMAIL_REASON &&
+					!user.services?.password?.bcrypt
+				) {
+					await Users.unsetRequirePasswordChangeWithoutPassword(user._id, UNVERIFIED_EMAIL_REASON);
 				}
 			}
 		}

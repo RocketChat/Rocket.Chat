@@ -599,11 +599,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	unsetPassword(userId: string): Promise<UpdateResult>;
 
-	resetPasswordAndSetRequirePasswordChange(
-		userId: string,
-		requirePasswordChange: boolean,
-		requirePasswordChangeReason: string,
-	): Promise<UpdateResult>;
+	unsetRequirePasswordChangeWithoutPassword(userId: string, requirePasswordChangeReason: string): Promise<UpdateResult>;
 	setLanguage(userId: string, language: string): Promise<UpdateResult>;
 	setProfile(userId: string, profile: Record<string, unknown>): Promise<UpdateResult>;
 	setBio(userId: string, bio?: string): Promise<UpdateResult>;
