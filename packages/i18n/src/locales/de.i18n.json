@@ -30,8 +30,8 @@
     "other": "{{count}} Personen im Anruf"
   },
   "__count__people_joined": {
-    "one": "{{count}} Person beigetreten",
-    "other": "{{count}} Personen beigetreten"
+    "one": "{{count}} Person ist beigetreten",
+    "other": "{{count}} Personen sind beigetreten"
   },
   "__count__replies": "{{count}} Antworten",
   "__count__replies__date__": "{{count}} Antworten, {{date}}",
@@ -49,7 +49,7 @@
   "__name__raised_their_hand": "{{name}} hat die Hand gehoben",
   "__name__screen": "{{name}} – Bildschirm",
   "__name__will_be_notified_when_you_start_the_call": "{{name}} wird benachrichtigt, wenn Sie den Anruf starten",
-  "__name__you_presenting": "{{name}} (Sie, präsentieren)",
+  "__name__you_presenting": "{{name}} (Sie präsentieren)",
   "__param__Video_Call_Chat": "{{param}} Videoanruf-Chat",
   "__roomName__encryption_keys_need_to_be_updated": "Die Verschlüsselungsschlüssel von {{roomName}} müssen aktualisiert werden, um Ihnen Zugriff zu geben. Dafür muss ein anderes Raummitglied online sein.",
   "__roomName__is_encrypted": "{{roomName}} ist verschlüsselt",
@@ -7264,7 +7264,7 @@
   "VideoConf_LiveKit_Enabled": "LiveKit aktiviert",
   "VideoConf_LiveKit_Enabled_Description": "Aktiviert den integrierten LiveKit-Videokonferenzanbieter. Dazu müssen eine LiveKit-Server-URL, ein API-Schlüssel und ein API-Secret konfiguriert sein.",
   "VideoConf_LiveKit_Token_TTL": "Gültigkeitsdauer des Zugriffstokens (Stunden)",
-  "VideoConf_LiveKit_Token_TTL_Description": "Wie lange das LiveKit-Zugriffstoken eines Teilnehmers gültig bleibt. Für jemanden, der zu Beginn beigetreten ist, kann ein Anruf nicht länger dauern.",
+  "VideoConf_LiveKit_Token_TTL_Description": "Wie lange das LiveKit-Zugriffstoken eines Teilnehmers gültig bleibt. Für jemanden, der zu Beginn beigetreten ist, kann ein Anruf nicht länger als diese Zeit dauern.",
   "VideoConf_LiveKit_Url": "LiveKit-URL",
   "VideoConf_Mobile_Ringing": "Klingeln auf Mobilgeräten aktivieren",
   "VideoConf_Mobile_Ringing_Alert": "Diese Funktion befindet sich derzeit in einem experimentellen Stadium und wird möglicherweise noch nicht vollständig von der mobilen App unterstützt. Wenn aktiviert, werden zusätzliche Push-Benachrichtigungen an die Benutzer gesendet.",
