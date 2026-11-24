@@ -211,6 +211,9 @@ const RichTextMessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
+	const popupOptions = useComposerPopupOptions();
+	const popup = useComposerBoxPopup(popupOptions);
+
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
@@ -440,9 +443,6 @@ const RichTextMessageBox = ({
 	const handleMouseMove = useStableCallback((event: MouseEvent<HTMLDivElement>) => setLinkModifier(isCmdOrCtrlPressed(event)));
 
 	const handleMouseLeave = useStableCallback(() => setLinkModifier(false));
-
-	const popupOptions = useComposerPopupOptions();
-	const popup = useComposerBoxPopup(popupOptions);
 
 	const keyDownHandlerCallbackRef = useCallback(
 		(node: HTMLDivElement) => {
