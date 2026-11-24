@@ -110,7 +110,7 @@ type Listing = {
 	};
 
 	const setMemberHistoryAccess = (userId: IUser['_id'], restricted: boolean, userCredentials = credentials) =>
-		request.post(api('rooms.setMemberHistoryAccess')).set(userCredentials).send({ roomId: room._id, userId, restricted });
+		request.post('/api/experimental/rooms.setMemberHistoryAccess').set(userCredentials).send({ roomId: room._id, userId, restricted });
 
 	const messageIds = (messages: Pick<IMessage, '_id'>[]) => messages.map(({ _id }) => _id);
 
