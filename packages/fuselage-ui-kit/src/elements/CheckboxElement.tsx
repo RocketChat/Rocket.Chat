@@ -14,7 +14,7 @@ const CheckboxElement = ({ block, context, surfaceRenderer }: CheckboxElementPro
 	return (
 		<Box>
 			{options.map((option: UiKit.Option, index) => {
-				const isChecked = value?.includes(option.value);
+				const isChecked = value?.includes(option.value) ?? false;
 				const id = `${block.actionId}-${option.value}`;
 
 				return (
