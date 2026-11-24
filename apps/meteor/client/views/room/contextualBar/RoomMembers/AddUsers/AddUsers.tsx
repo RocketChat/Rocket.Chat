@@ -30,6 +30,8 @@ export type AddUsersProps = {
 };
 
 const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();

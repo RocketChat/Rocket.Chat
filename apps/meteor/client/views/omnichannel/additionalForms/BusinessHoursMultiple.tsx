@@ -11,6 +11,8 @@ import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartment
 export type BusinessHoursMultipleProps = { className?: ComponentProps<typeof Field>['className'] };
 
 const BusinessHoursMultiple = ({ className }: BusinessHoursMultipleProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const {
 		control,

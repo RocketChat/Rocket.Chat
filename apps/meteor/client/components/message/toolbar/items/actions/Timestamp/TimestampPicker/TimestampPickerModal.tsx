@@ -24,6 +24,8 @@ type TimestampPickerProps = {
 };
 
 export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const {
 		control,

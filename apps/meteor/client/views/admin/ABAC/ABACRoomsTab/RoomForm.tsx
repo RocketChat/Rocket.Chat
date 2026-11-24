@@ -24,6 +24,8 @@ export type RoomFormData = {
 };
 
 const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setSelectedRoomLabel, redacted = false }: RoomFormProps) => {
+	'use no memo';
+
 	const {
 		control,
 		handleSubmit,

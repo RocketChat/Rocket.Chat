@@ -10,6 +10,8 @@ export type EditInviteLinkProps = {
 };
 
 const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const {
 		handleSubmit,

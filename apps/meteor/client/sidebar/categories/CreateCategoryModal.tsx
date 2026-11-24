@@ -16,6 +16,8 @@ type CreateCategoryModalProps = {
 };
 
 const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const validateName = useValidateCategoryName();
 	const createCategoryMutation = useCreateCustomCategory({ settleCallback: onClose });

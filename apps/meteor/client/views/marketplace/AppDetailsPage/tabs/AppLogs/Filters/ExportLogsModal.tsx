@@ -34,6 +34,8 @@ type FormDataType = {
 };
 
 export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogsModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 
 	const appId = useRouteParameter('id');

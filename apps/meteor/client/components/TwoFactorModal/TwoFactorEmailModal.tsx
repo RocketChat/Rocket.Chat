@@ -29,6 +29,8 @@ type TwoFactorEmailFormData = {
 };
 
 const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUsername, challengeId }: TwoFactorEmailModalProps) => {
+	'use no memo';
+
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 

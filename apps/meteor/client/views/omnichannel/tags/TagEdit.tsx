@@ -30,6 +30,8 @@ export type TagEditProps = {
 };
 
 const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const handleDeleteTag = useRemoveTag();

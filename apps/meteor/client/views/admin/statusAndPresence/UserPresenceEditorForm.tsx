@@ -44,6 +44,8 @@ export type UserPresenceEditorFormProps = {
 };
 
 const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresenceEditorFormProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const userId = user?._id;
 	const defaultValues: UserPresenceEditorFormValues = {

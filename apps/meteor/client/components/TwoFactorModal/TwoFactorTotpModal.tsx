@@ -19,6 +19,8 @@ type TwoFactorTotpFormData = {
 };
 
 const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 
 	const {

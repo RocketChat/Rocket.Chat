@@ -15,6 +15,8 @@ type StatusVisibilityFormValues = {
 };
 
 export const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();

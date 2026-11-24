@@ -14,6 +14,8 @@ type CreateOAuthModalFields = {
 };
 
 const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps) => {
+	'use no memo';
+
 	const {
 		register,
 		handleSubmit,

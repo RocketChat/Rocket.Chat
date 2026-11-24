@@ -38,6 +38,8 @@ type AbacAttributesManageProps = {
 };
 
 const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: AbacAttributesManageProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const formId = useId();
 	const router = useRouter();

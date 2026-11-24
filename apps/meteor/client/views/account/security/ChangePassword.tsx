@@ -21,6 +21,8 @@ function getAriaDescribedbyForPassword(
 }
 
 const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

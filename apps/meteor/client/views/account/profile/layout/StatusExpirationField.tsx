@@ -18,6 +18,8 @@ type StatusExpirationFieldProps = {
  * Chooses when the status clears, with a date and time picker for a custom expiration.
  */
 const StatusExpirationField = ({ statusDurationOptions, durationDisabled, customDateTimeDisabled }: StatusExpirationFieldProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const {
 		control,

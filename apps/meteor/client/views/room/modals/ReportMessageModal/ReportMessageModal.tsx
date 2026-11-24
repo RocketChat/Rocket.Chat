@@ -26,6 +26,8 @@ const wordBreak = css`
 `;
 
 const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const reasonForReportId = useId();
 	const {

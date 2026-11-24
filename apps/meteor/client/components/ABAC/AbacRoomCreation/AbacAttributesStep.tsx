@@ -28,6 +28,8 @@ type AbacAttributesStepProps = {
 };
 
 const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error, showTitle = true }: AbacAttributesStepProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const { control, getValues } = useFormContext<AbacAttributesFormData>();
 	const { fields, append, prepend, remove } = useFieldArray({ control, name: 'attributes' });

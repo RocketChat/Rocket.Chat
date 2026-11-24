@@ -21,6 +21,8 @@ export type AttributesFormProps = {
 };
 
 const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) => {
+	'use no memo';
+
 	const {
 		handleSubmit,
 		register,

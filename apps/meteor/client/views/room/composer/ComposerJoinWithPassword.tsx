@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { useRoom } from '../contexts/RoomContext';
 
 const ComposerJoinWithPassword = () => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -32,6 +32,8 @@ export type AppDetailsPageProps = {
 };
 
 const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();

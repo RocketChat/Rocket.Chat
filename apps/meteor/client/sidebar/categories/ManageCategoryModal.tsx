@@ -17,6 +17,8 @@ type ManageCategoryModalProps = {
 };
 
 const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const updateCategory = useUpdateCategory();

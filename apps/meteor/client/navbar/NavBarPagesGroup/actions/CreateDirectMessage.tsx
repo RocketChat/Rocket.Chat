@@ -22,6 +22,8 @@ import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
 const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
 	const xmppEnabled = useSetting('XMPP_Server_Enabled', false);

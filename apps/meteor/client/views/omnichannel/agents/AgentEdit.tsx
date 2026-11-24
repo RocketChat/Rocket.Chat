@@ -36,6 +36,8 @@ export type AgentEditProps = {
 };
 
 const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();

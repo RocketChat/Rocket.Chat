@@ -14,6 +14,8 @@ export type RoleFormProps = {
 };
 
 const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const scopeField = useId();
 	const {

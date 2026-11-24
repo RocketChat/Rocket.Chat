@@ -74,6 +74,8 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 });
 
 const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivechatTrigger>; onClose: () => void }) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();

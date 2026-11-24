@@ -33,6 +33,8 @@ type SendEmailFormValue = {
 const initialData = { fromEmail: '', query: '', dryRun: false, subject: '', emailBody: '' };
 
 const MailerPage = () => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

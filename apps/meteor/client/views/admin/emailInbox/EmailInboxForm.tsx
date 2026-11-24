@@ -102,6 +102,8 @@ const getEmailInboxFormValues = ({
 });
 
 const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();

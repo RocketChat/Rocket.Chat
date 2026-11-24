@@ -36,6 +36,8 @@ export type FileUploadModalProps = {
 };
 
 const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');

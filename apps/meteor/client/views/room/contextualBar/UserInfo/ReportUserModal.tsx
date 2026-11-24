@@ -17,6 +17,8 @@ type ReportUserModalsFields = {
 };
 
 const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUserModalProps) => {
+	'use no memo';
+
 	const {
 		register,
 		handleSubmit,

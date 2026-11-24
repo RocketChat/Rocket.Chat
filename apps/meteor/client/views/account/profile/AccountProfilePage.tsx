@@ -15,6 +15,8 @@ import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = () => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();

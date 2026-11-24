@@ -18,6 +18,8 @@ type TwoFactorPasswordFormData = {
 };
 
 const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorPasswordModalProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 
 	const {
