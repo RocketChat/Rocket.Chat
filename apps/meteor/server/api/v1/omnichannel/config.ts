@@ -1,4 +1,4 @@
-import { GETLivechatConfigRouting, isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
+import { ajv, GETLivechatConfigRouting, isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
 import mem from 'mem';
 
 import { API } from '../..';
@@ -13,17 +13,41 @@ const cachedSettings = mem(settings, {
 	cacheKey: JSON.stringify,
 });
 
-API.v1.addRoute(
-	'livechat/config',
-	{ validateParams: isGETLivechatConfigParams },
-	{
-		async get() {
+const livechatConfigResponseSchema = ajv.compile<{
+	config: Record<string, unknown>;
+}>({
+	type: 'object',
+	properties: {
+		config: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['config', 'success'],
+	additionalProperties: false,
+});
+
+const livechatConfigEndpoints = API.v1
+	.get(
+		'livechat/config',
+		{
+			query: isGETLivechatConfigParams,
+			response: {
+				200: livechatConfigResponseSchema,
+			},
+		},
+		async function action() {
 			const enabled = serverSettings.get<boolean>('Livechat_enabled');
 
 			if (!enabled) {
-				return API.v1.success({ config: { enabled: false } });
+				return API.v1.success({
+					config: { enabled: false },
+				});
 			}
-
 			const { token, department, businessUnit } = this.queryParams;
 			const [config, status, guest] = await Promise.all([
 				cachedSettings({ businessUnit }),
@@ -34,30 +58,26 @@ API.v1.addRoute(
 			const room = guest ? await findOpenRoom(guest.token, undefined, this.userId) : undefined;
 			const agentPromise = room?.servedBy ? findAgent(room.servedBy._id) : null;
 			const extraInfoPromise = getExtraConfigInfo({ room });
-
 			const [agent, extraInfo] = await Promise.all([agentPromise, extraInfoPromise]);
 
 			return API.v1.success({
 				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
 			});
 		},
-	},
-);
-
-const livechatConfigEndpoints = API.v1.get(
-	'livechat/config/routing',
-	{
-		response: {
-			200: GETLivechatConfigRouting,
+	)
+	.get(
+		'livechat/config/routing',
+		{
+			response: {
+				200: GETLivechatConfigRouting,
+			},
+			authRequired: true,
 		},
-		authRequired: true,
-	},
-	async function action() {
-		const config = RoutingManager.getConfig();
-
-		return API.v1.success({ config });
-	},
-);
+		async function action() {
+			const config = RoutingManager.getConfig();
+			return API.v1.success({ config });
+		},
+	);
 
 type LivechatConfigEndpoints = ExtractRoutesFromAPI<typeof livechatConfigEndpoints>;
 
