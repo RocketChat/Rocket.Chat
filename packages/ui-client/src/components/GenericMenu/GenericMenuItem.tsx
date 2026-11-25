@@ -20,7 +20,10 @@ type GenericMenuItemFields = {
 	 * string for typeahead and to announce, and cannot read one out of arbitrary JSX.
 	 */
 	textValue?: string;
-	/** What the item is announced as, for a row that shows more than its `content` says, such as a status. */
+	/**
+	 * What the item is announced as in place of its `content`, for a row that shows more than its `content` says,
+	 * such as a status. It has no effect on an item that has no `content`.
+	 */
 	label?: string;
 };
 
