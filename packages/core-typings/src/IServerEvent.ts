@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
+import type { IServerEventAiAgentChanged } from './ServerAudit/IAuditAiAgentEvent';
 import type {
 	IServerEventAbacActionPerformed,
 	IServerEventAbacAttributeChanged,
@@ -78,6 +79,7 @@ export interface IServerEvents {
 	'abac.membership.evaluated': IServerEventAbacMembershipEvaluated;
 	'settings.changed': IServerEventSettingsChanged;
 	'user.changed': IServerEventUserChanged;
+	'ai-agent.changed': IServerEventAiAgentChanged;
 }
 
 type KeyValuePair = { key: string; value: any };

@@ -229,4 +229,28 @@ export const createAISettings = async (): Promise<void> => {
 		i18nLabel: 'OAuth2_Allow_Dynamic_Client_Registration',
 		i18nDescription: 'OAuth2_Allow_Dynamic_Client_Registration_Description',
 	});
+
+	await settingsRegistry.add('AI_Agents_Enabled', false, {
+		group: AI_SETTINGS_GROUP,
+		section: 'AI_Agents',
+		type: 'boolean',
+		public: false,
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: false,
+		i18nLabel: 'AI_Agents_Enabled',
+		i18nDescription: 'AI_Agents_Enabled_Description',
+	});
+
+	await settingsRegistry.add('AI_Agents_Engine_Credential_Days', 90, {
+		group: AI_SETTINGS_GROUP,
+		section: 'AI_Agents',
+		type: 'int',
+		public: false,
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: 90,
+		i18nLabel: 'AI_Agents_Engine_Credential_Days',
+		i18nDescription: 'AI_Agents_Engine_Credential_Days_Description',
+	});
 };

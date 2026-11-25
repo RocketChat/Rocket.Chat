@@ -12,4 +12,5 @@ import './audit';
 import './abac';
 import './exchange';
 import './mcp';
+import './experimental/aiAgents';
 import './videoConferenceCallConfig';

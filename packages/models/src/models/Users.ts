@@ -3378,6 +3378,44 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.insertOne(user);
 	}
 
+	insertReservedAgentBot({ username, name, engineId, createdAt }: { username: string; name: string; engineId: string; createdAt: Date }) {
+		return this.insertOne({
+			createdAt,
+			username,
+			name,
+			type: 'bot',
+			roles: ['bot'],
+			active: false,
+			avatarOrigin: 'none',
+			aiAgents: { engineId },
+		});
+	}
+
+	activateReservedAgentBot(userId: IUser['_id'], engineId: string, displayName: string) {
+		const now = new Date();
+		return this.updateOne(
+			{
+				'_id': userId,
+				'aiAgents.engineId': engineId,
+				'type': 'bot',
+				'roles': { $size: 1, $all: ['bot'] },
+				'services.password': { $exists: false },
+				'services.resume.loginTokens.0': { $exists: false },
+				'inactiveReason': { $exists: false },
+				'$or': [{ active: true }, { 'aiAgents.activatedAt': { $exists: false } }],
+			},
+			[
+				{
+					$set: {
+						'name': displayName,
+						'active': true,
+						'aiAgents.activatedAt': { $ifNull: ['$aiAgents.activatedAt', now] },
+					},
+				},
+			],
+		);
+	}
+
 	createIfNotExists({ _id, ...data }: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },

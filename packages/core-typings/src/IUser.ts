@@ -279,6 +279,11 @@ export interface IUser extends IRocketChatRecord {
 	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
 	providerId?: string;
 	abacAttributes?: IAbacAttributeDefinition[];
+	/** Set on a bot reserved for a seat of an AI agents engine; the AI agents feature owns it */
+	aiAgents?: {
+		engineId: string;
+		activatedAt?: Date;
+	};
 }
 
 export interface IRegisterUser extends IUser {

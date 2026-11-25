@@ -6,6 +6,7 @@ import './maxRoomsPerGuest';
 import './services';
 import './readReceiptsArchive';
 import './mcp';
+import './aiAgents';
 import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';

@@ -614,6 +614,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
 	create(data: Partial<IUser>): Promise<InsertOneResult<IUser>>;
+	/** Inserts an inactive bot with no login service, email or default room, owned by the AI agents feature for one engine */
+	insertReservedAgentBot(bot: { username: string; name: string; engineId: string; createdAt: Date }): Promise<InsertOneResult<IUser>>;
+	/**
+	 * Names and activates a bot reserved for the engine, in one update that matches only while it still is one: the engine's
+	 * marker, type bot, roles exactly bot, no password and no login or personal access token. Matches nothing otherwise.
+	 */
+	activateReservedAgentBot(userId: IUser['_id'], engineId: string, displayName: string): Promise<UpdateResult>;
 	createIfNotExists(data: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult>;
 	removeById(userId: string): Promise<DeleteResult>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;

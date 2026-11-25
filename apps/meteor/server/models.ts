@@ -76,6 +76,10 @@ import {
 	VideoConferenceRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
+	AiAgentRevisionsRaw,
+	AiAgentsRaw,
+	AiEnginesRaw,
+	AiSeatsRaw,
 	TwoFactorChallengesRaw,
 	SamlUsedAssertionsRaw,
 } from '@rocket.chat/models';
@@ -165,5 +169,9 @@ registerModel('IUsersSessionsModel', new UsersSessionsRaw(db));
 registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
+registerModel('IAiAgentRevisionsModel', new AiAgentRevisionsRaw(db));
+registerModel('IAiAgentsModel', new AiAgentsRaw(db));
+registerModel('IAiEnginesModel', new AiEnginesRaw(db));
+registerModel('IAiSeatsModel', new AiSeatsRaw(db));
 registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
 registerModel('ISamlUsedAssertionsModel', new SamlUsedAssertionsRaw(db));

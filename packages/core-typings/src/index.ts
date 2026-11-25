@@ -115,6 +115,10 @@ export type * from './SpotlightUser';
 export type * from './ICalendarEvent';
 export type * from './IExchangeCalendarSyncState';
 export type * from './IExchangeSyncLease';
+export type * from './IAiEngine';
+export type * from './IAiAgent';
+export type * from './IAiAgentRevision';
+export type * from './IAiSeat';
 
 export type * from './search';
 export * from './omnichannel';
