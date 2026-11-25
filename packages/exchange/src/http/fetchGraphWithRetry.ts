@@ -15,8 +15,8 @@ import { sleep } from '../sleep';
  *   validation is the exception: it must never be looped on.
  * - A total budget bounds the call. Waiting less than the server asked only prolongs the throttling, so a
  *   wait that does not fit ends the attempt rather than being shortened.
- * - A request that reads one mailbox reports running out on a 429 as that mailbox's. Outlook throttles
- *   each app and mailbox pair apart, so the other mailboxes are not affected.
+ * - A request that reads one mailbox treats running out on a 429 as mailbox-scoped, since Outlook limits
+ *   each app and mailbox pair apart and Graph names no scope on such a 429.
  */
 
 const MAX_RETRIES = 5;

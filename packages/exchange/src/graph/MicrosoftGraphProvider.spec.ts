@@ -274,7 +274,7 @@ describe('MicrosoftGraphProvider', () => {
 			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({ code });
 		});
 
-		it('reports a 429 that runs out of retries as mailbox-rate-limited, since Outlook throttles each mailbox apart', async () => {
+		it('reports a 429 whose Retry-After exceeds the retry budget as mailbox-rate-limited', async () => {
 			mockTokenThen({ ...graphResponse({ error: {} }, 429), headers: { get: (name: string) => (name === 'retry-after' ? '120' : null) } });
 
 			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({

@@ -21,7 +21,7 @@ export type ExchangeErrorCode =
 	| 'endpoint-not-recognized'
 	/** Rate limited beyond one mailbox (the EWS service account, or the Graph app or tenant) and out of retries. */
 	| 'rate-limited'
-	/** Graph throttled this one mailbox and retries ran out. Other mailboxes are not affected. */
+	/** Graph throttled a request for one mailbox and retries ran out. Treated as that mailbox's own throttle. */
 	| 'mailbox-rate-limited'
 	/** Another sync of the same mailbox is running, on this instance or another. Exchange was never asked. */
 	| 'sync-in-progress'
