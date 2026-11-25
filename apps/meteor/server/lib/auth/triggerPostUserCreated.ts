@@ -4,6 +4,10 @@ import { Users } from '@rocket.chat/models';
 
 // Tells apps about a new user once its creation flow wrote everything; never fails the creation
 export async function triggerPostUserCreated(userId: IUser['_id'], performedBy?: IUser): Promise<void> {
+	if (!Apps.self?.isLoaded()) {
+		return;
+	}
+
 	try {
 		const user = await Users.findOneById(userId);
 		if (!user) {

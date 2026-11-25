@@ -30,7 +30,7 @@ let insertUser: any;
 before(async () => {
 	mock.module('@rocket.chat/apps', {
 		exports: {
-			Apps: { self: { triggerEvent, getRocketChatLogger: () => ({ error: sinon.stub() }) } },
+			Apps: { self: { isLoaded: () => true, triggerEvent, getRocketChatLogger: () => ({ error: sinon.stub() }) } },
 			AppEvents: { IPostUserCreated: 'IPostUserCreated' },
 		},
 	});

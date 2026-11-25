@@ -1024,22 +1024,24 @@ API.v1.post(
 			return API.v1.failure('Error creating user');
 		}
 
-		// Now set their username
-		const { fields } = await this.parseJsonQuery();
-		await setUsernameWithValidation(userId, this.bodyParams.username);
+		try {
+			// Now set their username
+			const { fields } = await this.parseJsonQuery();
+			await setUsernameWithValidation(userId, this.bodyParams.username);
 
-		const user = await Users.findOneById(userId, { projection: fields });
-		if (!user) {
-			return API.v1.failure('User not found');
+			const user = await Users.findOneById(userId, { projection: fields });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFields(userId, this.bodyParams.customFields);
+			}
+
+			return API.v1.success({ user });
+		} finally {
+			void triggerPostUserCreated(userId);
 		}
-
-		if (this.bodyParams.customFields) {
-			await saveCustomFields(userId, this.bodyParams.customFields);
-		}
-
-		void triggerPostUserCreated(userId);
-
-		return API.v1.success({ user });
 	},
 );
 

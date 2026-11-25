@@ -8,6 +8,7 @@ import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
 import { getNewUserRoles } from '../../../services/user/lib/getNewUserRoles';
 import { createUser } from '../../auth/createUser';
+import { triggerPostUserCreated } from '../../auth/triggerPostUserCreated';
 import { notifyOnUserChangeById } from '../../notifyListener';
 import { validateEmailDomain } from '../../validateEmailDomain';
 
@@ -36,48 +37,54 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	const _id = await createUser(createUserOptions);
 
-	const updater = Users.getUpdater();
+	try {
+		const updater = Users.getUpdater();
 
-	updater.set('settings', userData.settings || {});
-	if (typeof userData.name !== 'undefined') {
-		updater.set('name', userData.name);
-	}
+		updater.set('settings', userData.settings || {});
+		if (typeof userData.name !== 'undefined') {
+			updater.set('name', userData.name);
+		}
 
-	if (typeof userData.requirePasswordChange !== 'undefined') {
-		updater.set('requirePasswordChange', userData.requirePasswordChange);
-	}
+		if (typeof userData.requirePasswordChange !== 'undefined') {
+			updater.set('requirePasswordChange', userData.requirePasswordChange);
+		}
 
-	if (typeof userData.verified === 'boolean') {
-		updater.set('emails.0.verified', userData.verified);
-	}
+		if (typeof userData.verified === 'boolean') {
+			updater.set('emails.0.verified', userData.verified);
+		}
 
-	if (typeof userData.sipExtension === 'string' && userData.sipExtension !== '') {
-		updater.set('sipExtension', userData.sipExtension);
-	}
+		if (typeof userData.sipExtension === 'string' && userData.sipExtension !== '') {
+			updater.set('sipExtension', userData.sipExtension);
+		}
 
-	if (userData.presenceDisabledByAdmin) {
-		updater.set('presenceDisabledByAdmin', true);
-	}
+		if (userData.presenceDisabledByAdmin) {
+			updater.set('presenceDisabledByAdmin', true);
+		}
 
-	if (Array.isArray(userData.phones) && userData.phones.length > 0) {
-		updater.set('phones', userData.phones);
-	}
+		if (Array.isArray(userData.phones) && userData.phones.length > 0) {
+			updater.set('phones', userData.phones);
+		}
 
-	handleBio(updater, userData.bio);
-	handleNickname(updater, userData.nickname);
+		handleBio(updater, userData.bio);
+		handleNickname(updater, userData.nickname);
 
-	await Users.updateFromUpdater({ _id }, updater);
+		await Users.updateFromUpdater({ _id }, updater);
 
-	if (userData.presenceDisabledByAdmin) {
-		void StatusVisibility.invalidate([_id], { allViewers: true });
-	}
+		if (userData.presenceDisabledByAdmin) {
+			void StatusVisibility.invalidate([_id], { allViewers: true });
+		}
 
-	if (userData.sendWelcomeEmail) {
-		await sendWelcomeEmail(userData);
-	}
+		if (userData.sendWelcomeEmail) {
+			await sendWelcomeEmail(userData);
+		}
 
-	if (sendPassword) {
-		await sendPasswordEmail(userData);
+		if (sendPassword) {
+			await sendPasswordEmail(userData);
+		}
+	} catch (error) {
+		// the user exists even though the request fails, so apps still hear about it
+		void triggerPostUserCreated(_id, performedBy);
+		throw error;
 	}
 
 	userData._id = _id;

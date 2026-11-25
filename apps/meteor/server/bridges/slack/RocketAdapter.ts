@@ -401,8 +401,11 @@ export default class RocketAdapter {
 						userUpdate['services.resume.loginTokens'] = [];
 					}
 
-					await Users.updateOne({ _id: rocketUserData.rocketId }, { $set: userUpdate });
-					void triggerPostUserCreated(rocketUserData.rocketId);
+					try {
+						await Users.updateOne({ _id: rocketUserData.rocketId }, { $set: userUpdate });
+					} finally {
+						void triggerPostUserCreated(rocketUserData.rocketId);
+					}
 
 					const user = await Users.findOneById(rocketUserData.rocketId);
 
