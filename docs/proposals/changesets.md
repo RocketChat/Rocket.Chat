@@ -50,7 +50,7 @@ The GitHub release notes are copied only from the `@rocket.chat/meteor` entry in
 
 | Bump | For |
 |---|---|
-| `patch` | a fix |
+| `patch` | a fix, or a performance improvement |
 | `minor` | a feature |
 | `major` | a breaking change; the pull request title carries `!` |
 
