@@ -51,9 +51,15 @@ type SearchIndexSessionOptions = {
 	onError?: (error: unknown) => void;
 };
 
+/** `closed`: E2EE is not ready or the search is off. `failed`: the last open was refused or threw. */
+export type SearchIndexStatus = 'closed' | 'opening' | 'open' | 'failed';
+
 export type SearchIndexSession = {
 	/** The backend after its `open` resolved for the current user, or `undefined` before that and after a logout. */
 	getActiveBackend(): ISearchIndexBackend | undefined;
+	getStatus(): SearchIndexStatus;
+	/** Calls the listener each time `getStatus` changes. Returns the function that removes it. */
+	subscribeToStatus(listener: () => void): () => void;
 	/**
 	 * Whether the active index is encrypted on disk, as its `open` reported. `false` when the desktop app keeps the index in
 	 * memory only (Linux with no key store). `undefined` while no index is active.
@@ -150,6 +156,7 @@ export const createSearchIndexSession = (
 	/** The user whose closed index was wiped because the local search is not allowed, so each state change does not wipe again. */
 	let wipedFor: string | undefined;
 	let active: ActiveIndex | undefined;
+	let status: SearchIndexStatus = 'closed';
 	let pending: Promise<void> = Promise.resolve();
 	const listeners = new Set<() => void>();
 
@@ -160,6 +167,14 @@ export const createSearchIndexSession = (
 			() => undefined,
 		);
 		return run;
+	};
+
+	const statusListeners = new Set<() => void>();
+
+	const setStatus = (next: SearchIndexStatus) => {
+		if (status === next) return;
+		status = next;
+		for (const listener of [...statusListeners]) listener();
 	};
 
 	const setActive = (next: ActiveIndex | undefined) => {
@@ -173,6 +188,7 @@ export const createSearchIndexSession = (
 		generation++;
 		openedFor = undefined;
 		setActive(undefined);
+		setStatus('closed');
 	};
 
 	const close = async (backend: ISearchIndexBackend) => {
@@ -206,6 +222,7 @@ export const createSearchIndexSession = (
 				}
 			}
 
+			setStatus('opening');
 			const wrapKey = await deriveSearchIndexWrapKey(privateKey, userId);
 			if (run !== generation) return;
 
@@ -219,20 +236,26 @@ export const createSearchIndexSession = (
 			// The desktop app did not take the wrap key: no index is open, so the session does not use it.
 			if (opened.locked) {
 				openedFor = undefined;
+				setStatus('failed');
 				return;
 			}
 
 			if (!isAllowed()) {
 				// The admin turned the local search off: no index of this user stays on the device.
 				openedFor = undefined;
+				setStatus('closed');
 				await backend.wipe();
 				return;
 			}
 
 			wipedFor = undefined;
 			setActive({ ...createSessionBackend(backend), raw: backend, encryptedAtRest: opened.encryptedAtRest });
+			setStatus('open');
 		} catch (error) {
-			if (run === generation) openedFor = undefined;
+			if (run === generation) {
+				openedFor = undefined;
+				setStatus('failed');
+			}
 			onError(error);
 		}
 	};
@@ -305,6 +328,13 @@ export const createSearchIndexSession = (
 	return {
 		// From the user switch until the next E2EE state change, the index of the previous user is not used.
 		getActiveBackend: () => (isOtherUser() ? undefined : active?.backend),
+		getStatus: () => (isOtherUser() ? 'closed' : status),
+		subscribeToStatus: (listener) => {
+			statusListeners.add(listener);
+			return () => {
+				statusListeners.delete(listener);
+			};
+		},
 		isEncryptedAtRest: () => (isOtherUser() ? undefined : active?.encryptedAtRest),
 		subscribe: (listener) => {
 			listeners.add(listener);

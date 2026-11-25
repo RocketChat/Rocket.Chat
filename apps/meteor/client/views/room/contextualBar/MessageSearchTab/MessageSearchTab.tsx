@@ -19,9 +19,10 @@ import { Virtuoso } from 'react-virtuoso';
 import LocalMessageSearchResults from './components/LocalMessageSearchResults';
 import LocalSearchIndexRoomPrompt from './components/LocalSearchIndexRoomPrompt';
 import LocalSearchIndexStatus from './components/LocalSearchIndexStatus';
+import LocalSearchIndexStatusPanel from './layout/LocalSearchIndexStatusPanel';
 import MessageSearchForm from './components/MessageSearchForm';
 import { canLoadMoreLocalHits, useLocalMessageSearchQuery } from './hooks/useLocalMessageSearchQuery';
-import { useLocalSearchIndexBackend } from './hooks/useLocalSearchIndexBackend';
+import { useLocalSearchIndexBackend, useLocalSearchIndexStatus } from './hooks/useLocalSearchIndexBackend';
 import { useLocalSearchIndexRoomCatchUp } from './hooks/useLocalSearchIndexChanges';
 import { useLocalSearchIndexExpected } from './hooks/useLocalSearchIndexExpected';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
@@ -57,6 +58,7 @@ const MessageSearchTab = () => {
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
 	const indexBackend = useLocalSearchIndexBackend();
 	const indexExpected = useLocalSearchIndexExpected();
+	const indexStatus = useLocalSearchIndexStatus();
 	const localBackend = room.encrypted ? indexBackend : undefined;
 	// An encrypted room that this device searches locally: the index finds the encrypted messages, and the server search
 	// finds the messages that are not encrypted. Both lists show as one.
@@ -66,6 +68,8 @@ const MessageSearchTab = () => {
 	const localQuery = useLocalMessageSearchQuery({ backend: localBackend, searchText, limit });
 	useLocalSearchIndexRoomCatchUp(room._id, !!localBackend);
 	const canLoadMoreLocal = canLoadMoreLocalHits(localQuery, limit);
+	// With no open index, only the server search runs: the local part is done unless the index is still opening.
+	const localDone = localBackend ? localQuery.isSuccess : indexStatus !== 'opening';
 	const {
 		isSuccess,
 		data: messageSearchData,
@@ -116,8 +120,15 @@ const MessageSearchTab = () => {
 				{providerQuery.isSuccess && localSearch && (
 					<>
 						{roomChosen ? <LocalSearchIndexStatus backend={localBackend} rid={room._id} /> : <LocalSearchIndexRoomPrompt rid={room._id} />}
-						{searchText.trim() && (localQuery.isPending || !localBackend || isPending) && <Throbber />}
-						{searchText.trim() && localQuery.isSuccess && !isPending && hits.length === 0 && (
+						{!localBackend && indexStatus !== 'opening' && (
+							<LocalSearchIndexStatusPanel>
+								<Callout type='warning' data-qa='local-search-index-unavailable'>
+									{t(indexStatus === 'failed' ? 'E2E_Local_Search_Index_Failed' : 'E2E_Local_Search_Index_Closed')}
+								</Callout>
+							</LocalSearchIndexStatusPanel>
+						)}
+						{searchText.trim() && (!localDone || (localBackend && localQuery.isPending) || isPending) && <Throbber />}
+						{searchText.trim() && localDone && !isPending && hits.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />
 						)}
 						{hits.length > 0 && (

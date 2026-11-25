@@ -2382,6 +2382,8 @@
   "E2E_Local_Search_Backoff_Min": "Local search minimum retry wait (seconds)",
   "E2E_Local_Search_Backoff_Min_Description": "This is the base retry wait. After a rate limit (429) or server (5xx) error, the desktop app waits a random time between half of this value and the full value before it tries again. It doubles the base after each new error, up to the maximum. Default: 10. Values below 1 count as 1. Lower values add load on a busy server. A Retry-After time from the server always wins.",
   "E2E_Local_Search_Experimental_Description": "This feature is experimental. It can change or go away in a later version. The settings on this page are stored on this device only, and the server never receives them.",
+  "E2E_Local_Search_Index_Closed": "Encrypted messages are searched after end-to-end encryption is ready on this device. Until then, only messages that are not encrypted are listed.",
+  "E2E_Local_Search_Index_Failed": "The search index of this device could not open. Only messages that are not encrypted are listed.",
   "E2E_Local_Search_Index_Room": "Index this room",
   "E2E_Local_Search_Indexed_Rooms": "Indexed rooms",
   "E2E_Local_Search_Indexed_Rooms_Description": "This device indexes only the encrypted rooms in this list. To add a room, use the field below or the search of the room.",

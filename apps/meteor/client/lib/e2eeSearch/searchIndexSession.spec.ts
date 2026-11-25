@@ -159,16 +159,20 @@ describe('createSearchIndexSession', () => {
 		const { source, setState } = createSource(privateKey);
 		const session = createSearchIndexSession(source, { getBackend: () => backend });
 
+		expect(session.getStatus()).toBe('closed');
+
 		setState('READY');
 		await opened;
 
 		expect(backend.open).toHaveBeenCalled();
 		expect(session.getActiveBackend()).toBeUndefined();
+		expect(session.getStatus()).toBe('opening');
 
 		resolveOpen({ schemaVersion: 1, encryptedAtRest: true });
 		await session.whenSettled();
 
 		expect(session.getActiveBackend()).toBeDefined();
+		expect(session.getStatus()).toBe('open');
 	});
 
 	it('stops using the index on logout, and opens it again on the next login', async () => {
@@ -183,6 +187,7 @@ describe('createSearchIndexSession', () => {
 		setState('DISABLED');
 
 		expect(session.getActiveBackend()).toBeUndefined();
+		expect(session.getStatus()).toBe('closed');
 
 		state.userId = 'u1';
 		state.privateKey = privateKey;
@@ -403,12 +408,14 @@ describe('createSearchIndexSession', () => {
 
 		expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'index locked' }));
 		expect(session.getActiveBackend()).toBeUndefined();
+		expect(session.getStatus()).toBe('failed');
 
 		setState('SAVE_PASSWORD');
 		await session.whenSettled();
 
 		expect(backend.open).toHaveBeenCalledTimes(2);
 		expect(session.getActiveBackend()).toBeDefined();
+		expect(session.getStatus()).toBe('open');
 	});
 
 	it('does not use an index that the desktop app reports as locked, and opens it again on the next ready state', async () => {
@@ -422,6 +429,7 @@ describe('createSearchIndexSession', () => {
 		await session.whenSettled();
 
 		expect(session.getActiveBackend()).toBeUndefined();
+		expect(session.getStatus()).toBe('failed');
 		expect(onError).not.toHaveBeenCalled();
 
 		setState('SAVE_PASSWORD');

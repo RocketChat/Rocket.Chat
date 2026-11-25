@@ -13,6 +13,7 @@ let mockBackend: ISearchIndexBackend | undefined;
 let mockProgress: SearchIndexProgress | undefined;
 let mockEncryptedAtRest: boolean | undefined;
 let mockIndexExpected = false;
+let mockIndexStatus: 'closed' | 'opening' | 'failed' | undefined;
 let mockChosenRooms: string[] = ['r1'];
 const mockStartIndexing = jest.fn();
 const mockRoomCatchUp = jest.fn();
@@ -39,6 +40,7 @@ jest.mock('./hooks/useMessageSearchProviderQuery', () => ({
 
 jest.mock('./hooks/useLocalSearchIndexBackend', () => ({
 	useLocalSearchIndexBackend: () => mockBackend,
+	useLocalSearchIndexStatus: () => (mockBackend ? 'open' : (mockIndexStatus ?? 'closed')),
 }));
 
 jest.mock('./hooks/useLocalSearchIndexProgress', () => ({
@@ -434,6 +436,7 @@ describe('MessageSearchTab local search of file messages', () => {
 describe('MessageSearchTab while the local index of this device is not open yet', () => {
 	afterEach(() => {
 		mockIndexExpected = false;
+		mockIndexStatus = undefined;
 	});
 
 	it('shows the server hits before the index opens', async () => {
@@ -453,9 +456,10 @@ describe('MessageSearchTab while the local index of this device is not open yet'
 		expect(await screen.findByRole('button', { name: /plain note/ })).toBeInTheDocument();
 	});
 
-	it('shows the loading state for a text, and none for a text of only spaces', async () => {
+	it('shows the loading state for a text while the index opens, and none for a text of only spaces', async () => {
 		mockBackend = undefined;
 		mockIndexExpected = true;
+		mockIndexStatus = 'opening';
 		renderTab();
 		const input = screen.getByRole('textbox', { name: 'Search_Messages' });
 
@@ -465,6 +469,19 @@ describe('MessageSearchTab while the local index of this device is not open yet'
 
 		await userEvent.type(input, 'secret');
 		await waitFor(() => expect(document.querySelector('.rcx-throbber__circle')).not.toBeNull());
+	});
+
+	it.each(['failed', 'closed'] as const)('says why encrypted messages are not searched when the index is %s, and stops loading', async (status) => {
+		mockBackend = undefined;
+		mockIndexExpected = true;
+		mockIndexStatus = status;
+		renderTab();
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'secret');
+
+		expect(screen.getByText(status === 'failed' ? 'E2E_Local_Search_Index_Failed' : 'E2E_Local_Search_Index_Closed')).toBeInTheDocument();
+		expect(await screen.findByText('No_results_found')).toBeInTheDocument();
+		expect(document.querySelector('.rcx-throbber__circle')).toBeNull();
 	});
 });
 
