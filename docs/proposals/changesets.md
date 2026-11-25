@@ -20,6 +20,7 @@ For a `refactor` or `chore` it is optional, and the author decides. Most need no
 
 - it changes an interface or signature other packages or apps depend on, such as a component's props or an exported type;
 - it changes a rule others rely on, such as the status code an endpoint responds with.
+- it improves performance noticeably
 
 Don't add one for:
 
