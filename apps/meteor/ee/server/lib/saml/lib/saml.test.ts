@@ -450,6 +450,62 @@ describe('SAML', () => {
 				});
 			});
 
+			it('should accept a response that starts within the allowed clock drift', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() + 1);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 10);
+
+				const response = samlResponseWithConditions
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser({ ...serviceProviderOptions, allowedClockDrift: 2 * 60 * 1000 });
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile) => {
+					expect(err).to.be.null;
+					expect(profile).to.be.an('object');
+				});
+			});
+
+			it('should refuse a response that expires within the allowed clock drift', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 1);
+
+				const response = samlResponseWithConditions
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser({ ...serviceProviderOptions, allowedClockDrift: 2 * 60 * 1000 });
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should use an email NameID as the email when the response has no email attribute', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = samlResponseWithConditions
+					.replace('nameid-format:transient', 'nameid-format:emailAddress')
+					.replace('[NAMEID]', 'alice@example.com')
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile) => {
+					expect(err).to.be.null;
+					expect(profile).to.have.property('email').equal('alice@example.com');
+				});
+			});
+
 			it('should fail to parse an invalid xml', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(makeLoginResponseEnvelope(invalidXml), (err, data, loggedOut) => {
