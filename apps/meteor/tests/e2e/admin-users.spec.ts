@@ -34,7 +34,7 @@ test.describe('Admin > Users', () => {
 		});
 
 		await test.step('should be visible in the Pending tab', async () => {
-			await expect(admin.getTabByName('Pending')).toHaveAccessibleName(/^Pending \(\d+\)$/);
+			await expect(admin.getTabByName('Pending')).toHaveAccessibleName(/^Pending \d+$/);
 			await admin.getTabByName('Pending').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
 		});
