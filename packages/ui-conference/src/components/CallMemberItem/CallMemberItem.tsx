@@ -94,16 +94,25 @@ const CallMemberItem = ({
 			<ItemMedia>
 				<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
-			{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
 			<ItemContent>
 				<ItemRow>
+					{/* On the name's line rather than centred on the row, which a second line would put between the two. */}
+					{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
 					<ItemTitle>
 						{nameOrUsername} {displayUsername && <ItemDescription inline>{displayUsername}</ItemDescription>}
 					</ItemTitle>
 				</ItemRow>
 				{/* Rendered even when empty: Fuselage spaces a row's slots wider once it has a second line, and the
-				    rows of one list have to line up whichever of them has something to say. */}
-				<ItemDescription>{description}</ItemDescription>
+				    rows of one list have to line up whichever of them has something to say. Under the name rather than
+				    the presence dot, which takes an empty slot of the dot's width. */}
+				{description && renderMemberStatus ? (
+					<ItemRow>
+						<ItemIcon />
+						<ItemDescription>{description}</ItemDescription>
+					</ItemRow>
+				) : (
+					<ItemDescription>{description}</ItemDescription>
+				)}
 			</ItemContent>
 			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
 				<ItemActions>

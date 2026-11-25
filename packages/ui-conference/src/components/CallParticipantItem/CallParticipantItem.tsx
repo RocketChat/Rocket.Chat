@@ -39,17 +39,21 @@ const CallParticipantItem = ({ member, ...props }: CallParticipantItemProps) => 
 				{/* No avatar to show, and a blank circle would read as one still loading. */}
 				<Icon name='user-rounded' size={ITEM_MEDIA_SIZE.medium} color='hint' />
 			</ItemMedia>
-			{renderMemberStatus && <ItemIcon />}
 			<ItemContent>
 				<ItemRow>
+					{renderMemberStatus && <ItemIcon />}
 					<ItemTitle>{name}</ItemTitle>
-					<CallParticipantStatus participant={participant} />
 				</ItemRow>
-				<ItemDescription>
-					{[participant.isHost && t('Host'), t(member ? 'Another_connection' : 'External_participant')].filter(Boolean).join(' · ')}
-				</ItemDescription>
+				<ItemRow>
+					{renderMemberStatus && <ItemIcon />}
+					<ItemDescription>
+						{[participant.isHost && t('Host'), t(member ? 'Another_connection' : 'External_participant')].filter(Boolean).join(' · ')}
+					</ItemDescription>
+				</ItemRow>
 			</ItemContent>
 			<ItemActions>
+				{/* Where a member's row shows the same thing, so the icons line up down the panel. */}
+				<CallParticipantStatus participant={participant} />
 				<CallParticipantControls name={name} {...props} />
 			</ItemActions>
 		</Item>
