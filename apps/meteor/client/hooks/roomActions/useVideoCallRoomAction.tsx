@@ -56,7 +56,8 @@ export const useVideoCallRoomAction = () => {
 	);
 
 	const visible = groups.length > 0;
-	const native = useEmbeddedVideoConfProvider(preflight && visible);
+	const offersLinks = room.t !== 'l';
+	const native = useEmbeddedVideoConfProvider(preflight && visible && offersLinks);
 	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
 	const unavailable = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
 	// A room open only as a preview can't start a call: the call is the members', so the user is told to join first

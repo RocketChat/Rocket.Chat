@@ -211,7 +211,8 @@ it.each([false, true])('does not ask an agent to join an omnichannel room (nativ
 	subscribed = false;
 	fakeRoom = createFakeRoom({ t: 'l' });
 
-	const { result } = native ? await renderNativeAction() : renderAction(true);
+	const { result } = renderAction(true, native ? { capabilities: NATIVE } : undefined);
+	await settle();
 
 	expect(result.current).toBeDefined();
 	expect(result.current?.tooltip).not.toBe('Join_the_room_to_start_a_call');
@@ -301,6 +302,22 @@ describe('with the native provider', () => {
 
 		expect(result.current?.action).toBeUndefined();
 		expectMenuItem(result.current);
+	});
+
+	// Links cannot be created in an omnichannel room, so the agent keeps the one-click start.
+	it("returns today's action in an omnichannel room", async () => {
+		fakeRoom = createFakeRoom({ t: 'l' });
+
+		const { result, getCapabilities } = renderAction(true, { capabilities: NATIVE });
+		await settle();
+
+		expectTodaysAction(result.current);
+		expect(getCapabilities).not.toHaveBeenCalled();
+
+		const { result: withoutPermission } = renderAction(true, { capabilities: NATIVE, callManagement: false });
+		await settle();
+
+		expect(withoutPermission.current).toBeUndefined();
 	});
 
 	it('returns nothing when no call group is enabled', async () => {
