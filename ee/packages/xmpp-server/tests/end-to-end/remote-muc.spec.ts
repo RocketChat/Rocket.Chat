@@ -28,7 +28,7 @@ import {
 	waitForMessage,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat } from './helper/rocketchat';
-import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
+import { assertFederationReachable, registerXmppUser, setupSuite, waitUntilHandled } from './helper/suite';
 import type { XmppUser } from './helper/xmpp-client';
 import { retry } from '../../../../../apps/meteor/tests/data/retry';
 
@@ -338,10 +338,12 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await mallory.directInvite(hosted.xmppFederation.muc, banned.jid);
 			await mallory.directInvite(unhostedRoomJid, outsider.jid);
 
-			// Handling a legitimate invitation sent after them means the service has read the ones before
+			// A legitimate invitation behind them on the same stream: once it has an effect, they were all decoded, and the service then finishes them
 			const { roomJid, shadowName } = await openRoom({ archive: false });
-			await inviteFromXmpp(roomJid, outsider);
+			await alice.grantMembership(roomJid, outsider.jid);
+			await mallory.directInvite(roomJid, outsider.jid);
 			await waitForShadowRoom(shadowName, roomJid, outsider);
+			await waitUntilHandled('muc.inviteReceived');
 		});
 
 		it('does not add the invitee to a private hosted room (R14)', async () => {
