@@ -1607,6 +1607,8 @@
   "Conference_call_apps": "Conference call apps",
   "Conference_call_has_ended": "_Call has ended._",
   "Conference_name": "Conference name",
+  "Conference_not_started_yet": "{{title}} has not started yet",
+  "Conference_not_started_yet_description": "You will be let in as soon as the conference starts. You can keep this page open.",
   "Config_needed": "Config needed",
   "Configuration_update": "Configuration update",
   "Configuration_update_confirmed": "Configuration update confirmed",
