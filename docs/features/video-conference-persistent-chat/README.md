@@ -359,9 +359,15 @@ For the rest, one status from `getConferenceMemberStatus`:
 | Status | Meaning |
 |---|---|
 | **Ringing** | rung within the last 15s, and hasn't answered yet |
-| **Waiting for answer** | rung longer ago than that, and never answered |
+| **Not answered** | rung longer ago than that, and never answered |
 | **Declined** | dismissed the ring |
 | **Left** | joined and left since |
+| *(nothing)* | never asked anything: added without a ring, or answered and still connecting |
+
+The last row is deliberately silent. Joining clears `ringingAt`, and on a provider that reports presence the
+member is only in the call once the provider says they connected, so for those few seconds they look exactly
+like someone nobody has asked yet. No label is true of both; "waiting for answer" was true of neither. A join
+that never connects stays silent too, instead of claiming to wait for something.
 
 The entry accumulates rather than replaces — `joined` never goes back to false, and a decline stays recorded
 after the person changes their mind — so the fields are read in order of what happened *last*. Being in the call
