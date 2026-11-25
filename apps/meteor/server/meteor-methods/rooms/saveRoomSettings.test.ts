@@ -1,11 +1,10 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError, LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAuthorization, IMessageService, IRoomService, ITeamService } from '@rocket.chat/core-services';
 import { TeamType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -88,22 +87,19 @@ const findRoomsByIds = sandbox.stub();
 const findUser = sandbox.stub();
 const disableAutoTranslate = sandbox.stub();
 
-const { isABACManagedRoom } = proxyquire.noCallThru().load('../../lib/authorization/isABACManagedRoom', {
-	'../../settings': { settings: { get: settingsGet } },
+mock.module('../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage', {
+	exports: { updateAndNotifyParentRoomWithParentMessage: notifyParentRoom },
 });
-
-const { saveRoomSettings } = proxyquire.noCallThru().load('./saveRoomSettings', {
-	'../../lib/authorization/isABACManagedRoom': { isABACManagedRoom },
-	'../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage': {
-		updateAndNotifyParentRoomWithParentMessage: notifyParentRoom,
-	},
-	'../../lib/rooms/roomCoordinator': { roomCoordinator: { getRoomDirectives: () => ({ allowRoomSettingChange }) } },
-	'../../lib/rooms/setRoomAvatar': { setRoomAvatar: savers.setRoomAvatar },
-	'../../lib/rooms/settings/saveRoomCustomFields': { saveRoomCustomFields: savers.saveRoomCustomFields },
-	'../../lib/rooms/settings/saveRoomName': { saveRoomName: savers.saveRoomName },
-	'../../lib/rooms/settings/saveRoomType': { saveRoomType: savers.saveRoomType },
-	'../../settings': { settings: { get: settingsGet } },
+mock.module('../../lib/rooms/roomCoordinator', {
+	exports: { roomCoordinator: { getRoomDirectives: () => ({ allowRoomSettingChange }) } },
 });
+mock.module('../../lib/rooms/setRoomAvatar', { exports: { setRoomAvatar: savers.setRoomAvatar } });
+mock.module('../../lib/rooms/settings/saveRoomCustomFields', { exports: { saveRoomCustomFields: savers.saveRoomCustomFields } });
+mock.module('../../lib/rooms/settings/saveRoomName', { exports: { saveRoomName: savers.saveRoomName } });
+mock.module('../../lib/rooms/settings/saveRoomType', { exports: { saveRoomType: savers.saveRoomType } });
+mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
+const { saveRoomSettings } = require('./saveRoomSettings');
 
 const userId = 'user-id';
 const rid = 'room-id';
@@ -146,7 +142,7 @@ describe('saveRoomSettings', () => {
 		sandbox.reset();
 		hasPermission.resolves(false);
 		grant('edit-room', rid);
-		allowRoomSettingChange.resolves(true);
+		allowRoomSettingChange.returns(true);
 		findUser.withArgs(userId).resolves(user);
 		savers.saveRoomName.resolves(true);
 		savers.saveRoomType.resolves(true);
@@ -364,7 +360,7 @@ describe('saveRoomSettings', () => {
 
 		it('should refuse a change in rooms that do not support encryption', async () => {
 			grant('toggle-room-e2e-encryption', rid);
-			allowRoomSettingChange.resolves(false);
+			allowRoomSettingChange.returns(false);
 
 			await expectRefused({ encrypted: true });
 		});

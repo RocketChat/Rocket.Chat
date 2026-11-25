@@ -1693,6 +1693,7 @@
   "Example_payload": "Exemple de charge utile",
   "Example_s": "Exemple : <code>{{value}}</code>",
   "except_pinned": "(sauf ceux qui sont épinglés)",
+  "Exchange_Graph_Client_Secret": "Clé secrète client",
   "Exclude_Botnames": "Exclure les bots",
   "Exclude_Botnames_Description": "Ne pas transmettre les messages des bots dont le nom correspond à l'expression régulière ci-dessus. Si ce champ est vide, tous les messages seront transmis.",
   "Exclude_pinned": "Exclure les messages épinglés",

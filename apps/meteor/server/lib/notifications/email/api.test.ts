@@ -1,8 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
+import * as apps from '@rocket.chat/apps';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { replaceVariables } from './replaceVariables';
@@ -39,11 +39,14 @@ const sendMail = sinon.stub();
 const triggerEvent = sinon.stub();
 const incrementValueById = sinon.stub();
 
-const Mailer = proxyquire.noCallThru().load('./api', {
-	'../../../settings': { settings: settingsMock },
-	'../../i18n': { i18n: { t: (key: string) => `t:${key}` } },
-	'./transport': { sendMail },
-	'@rocket.chat/apps': { 'Apps': { self: { triggerEvent } }, '@noCallThru': false },
+let Mailer: any;
+
+before(async () => {
+	mock.module('../../../settings', { exports: { settings: settingsMock } });
+	mock.module('../../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } });
+	mock.module('./transport', { exports: { sendMail } });
+	mock.module('@rocket.chat/apps', { exports: { ...apps, Apps: { self: { triggerEvent } } } });
+	Mailer = await import('./api');
 });
 
 const deliveredEmail = async () => {
@@ -166,6 +169,16 @@ describe('Mailer API', () => {
 		expect((await deliveredEmail()).text).to.equal('Hello Ana');
 	});
 
+	it('should keep link targets in the text built from the HTML', async () => {
+		await Mailer.send({
+			...email,
+			html: '<p>Hi</p><a class="btn" href="[Forgot_Password_Url]">Reset</a>',
+			data: { Forgot_Password_Url: 'https://chat.example.com/reset/abc' },
+		});
+
+		expect((await deliveredEmail()).text).to.equal('Hi Reset (https://chat.example.com/reset/abc)');
+	});
+
 	it('should send no HTML in plain-text-only mode', async () => {
 		settingValues.email_plain_text_only = true;
 
@@ -174,6 +187,16 @@ describe('Mailer API', () => {
 		const sent = await deliveredEmail();
 		expect(sent.html).to.be.undefined;
 		expect(sent.text).to.equal('Hello');
+	});
+
+	it('should keep link targets in the text sent in plain-text-only mode', async () => {
+		settingValues.email_plain_text_only = true;
+
+		await Mailer.sendNoWrap({ ...email, html: '<a href="https://chat.example.com/verify/abc">Verify</a>' });
+
+		const sent = await deliveredEmail();
+		expect(sent.html).to.be.undefined;
+		expect(sent.text).to.equal('Verify (https://chat.example.com/verify/abc)');
 	});
 
 	it('should wrap the HTML with the header and footer', async () => {

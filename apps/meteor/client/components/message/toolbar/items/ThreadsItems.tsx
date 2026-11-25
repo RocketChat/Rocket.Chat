@@ -18,7 +18,7 @@ const ThreadsItems = ({ message, room, subscription, onChangeMenuVisibility }: T
 			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<QuoteMessageAction message={message} subscription={subscription} />
 			<ForwardMessageAction message={message} room={room} />
-			<JumpToMessageAction id='jump-to-message' message={message} />
+			{!message.tmid && <JumpToMessageAction id='jump-to-message' message={message} />}
 		</>
 	);
 };

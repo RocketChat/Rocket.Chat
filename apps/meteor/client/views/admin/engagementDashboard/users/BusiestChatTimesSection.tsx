@@ -2,9 +2,9 @@ import { Select } from '@rocket.chat/fuselage';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import ContentForDays from './ContentForDays';
 import ContentForHours from './ContentForHours';
+import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
 
 type TimeUnit = 'hours' | 'days';
 

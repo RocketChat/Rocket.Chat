@@ -9,7 +9,7 @@ addMigration({
 		const customOauthServices = await Settings.find({ _id: /Accounts_OAuth_Custom-[^-]+$/ }, { projection: { _id: 1 } }).toArray();
 		const serviceNames = customOauthServices.map(({ _id }) => _id.replace('Accounts_OAuth_Custom-', ''));
 
-		for await (const serviceName of serviceNames) {
+		for (const serviceName of serviceNames) {
 			await settingsRegistry.add(`Accounts_OAuth_Custom-${serviceName}-merge_users_distinct_services`, false, {
 				type: 'boolean',
 				group: 'OAuth',

@@ -130,7 +130,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.content.sendMessage('hello');
 		await poHomeTeam.content.openReplyInThread();
-		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetTeam}"]`).type('any-reply-message');
+		await poHomeTeam.threadComposer.inputMessage.type('any-reply-message');
 		await page.keyboard.press('Enter');
 		await expect(poHomeTeam.content.lastUserThreadMessage).toHaveText('any-reply-message');
 	});

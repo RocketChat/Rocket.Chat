@@ -1,8 +1,9 @@
 import type {
-	ContactFolder,
+	ContactFolderListing,
 	DateRange,
+	EventPage,
 	ExchangeContact,
-	ExchangeEvent,
+	ExchangeContactPhoto,
 	Page,
 	ExchangeProviderId,
 	ExchangeProviderCapabilities,
@@ -15,10 +16,13 @@ export interface IExchangeProvider {
 	testConnection(): Promise<void>;
 
 	/** `timeWindow` bounds the range, `cursor` is an opaque continuation/delta token, omitted for an initial sync. */
-	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
+	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage>;
 
-	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
+	listContactFolders(mailbox: string): Promise<ContactFolderListing>;
 
 	/** Per folder, because both providers scope the contact delta token to one. */
-	listContacts?(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
+	listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
+
+	/** Streamed, because a folder's worth of images held at once runs to hundreds of megabytes. */
+	getContactPhotos(mailbox: string, folderId: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto>;
 }

@@ -2,10 +2,10 @@ import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import ConferencePreflight from './ConferencePreflight';
-import type { PreviewVideoProviderProps } from '../call/previewVideo';
-import type { PreflightMedia } from '../context/definitions';
-import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState';
+import ConferencePreflight from './ConferencePreflight.js';
+import type { PreviewVideoProviderProps } from '../call/previewVideo.js';
+import type { PreflightMedia } from '../context/definitions.js';
+import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState.js';
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
 

@@ -1420,6 +1420,7 @@
   "Example_payload": "Příklad obsahu",
   "Example_s": "Příklad: <code>{{value}}</code>",
   "except_pinned": "(kromě těch, které jsou připnuty)",
+  "Exchange_Graph_Client_Secret": "Secret klienta",
   "Exclude_Botnames": "Vyloučit boty",
   "Exclude_Botnames_Description": "Nepřevádět v potaz zprávy botu, jejichž jména odpovídají výše uvedenému regulárnímu výrazu. Pokud je pole prázdné, budou převedeny zprávy všech botů",
   "Exclude_pinned": "Vyloučit připoutané zprávy",

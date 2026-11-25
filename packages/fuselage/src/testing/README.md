@@ -28,6 +28,11 @@ Import the helpers from `../../testing/g0`, and `expect` and `fn` from `storyboo
 | `expectKeyboardActivation`, `expectTabOrder`           | Enter and Space on a control; the Tab order                                                        |
 | `expectCompositeList`, `expectCombobox`, `expectMenu`  | the three keyboard models of [list-keyboard-navigation.md](../../../../docs/frontend/list-keyboard-navigation.md) |
 
+A computed style is read in the browser only: guard it with `isJsdom()`. `forcePseudo(element, 'hover')` applies a state that a `play`
+function cannot drive with the pointer (storybook-addon-pseudo-states rewrites every `:hover` rule to a `.pseudo-hover` one), and
+`expectComputed(element, property, value)` waits for the style to settle. `atViewport(width, storyId, read)` renders another story in an
+iframe of that width, for the media queries of a narrower viewport.
+
 ## What a spec covers
 
 - **Forwarding**: render the component with `className`, `id`, `title`, `data-qa`, `data-anything`, `aria-label`, a `ref` and the handlers, for
@@ -45,5 +50,5 @@ Import the helpers from `../../testing/g0`, and `expect` and `fn` from `storyboo
 - `play` runs in jsdom without the Storybook decorators and in the browser with them, so the helpers take the story root
   (`canvasElement`) and never `document.body`.
 - Two more checks need no spec: `textNodes.spec.tsx` renders every story and fails on a text node under a `View`, and
-  `yarn workspace @rocket.chat/fuselage test:verify` covers `scripts/verify/frame-platform.mjs`, which fails a Tamagui frame that
-  imports `react-dom` or names a DOM-only type.
+  `yarn workspace @rocket.chat/fuselage test:verify` covers `scripts/verify/frame-platform.mjs`, which fails a Tamagui frame or a
+  `*.contract.ts` module that imports `react-dom` or names a DOM-only type.

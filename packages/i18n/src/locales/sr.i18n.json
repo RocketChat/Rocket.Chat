@@ -915,6 +915,7 @@
   "Everyone_can_access_this_channel": "Свако може да приступи овом каналу",
   "Example_s": "Пример: <code>{{value}}</code>",
   "except_pinned": "(осим оних које су закачене)",
+  "Exchange_Graph_Client_Secret": "Тајна клијента",
   "Exclude_Botnames": "Изузми ботове",
   "Exclude_pinned": "Изузми закачене поруке",
   "Execute_Synchronization_Now": "Изврши синхронизацију одмах",

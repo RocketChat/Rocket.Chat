@@ -2,6 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useThemeMode } from './useThemeMode';
+import { useThemePreview } from './useThemePreview';
 
 const mockUseDarkMode = jest.fn();
 
@@ -66,5 +67,43 @@ describe('useThemeMode', () => {
 		});
 
 		expect(result.current).toBe('high-contrast');
+	});
+
+	it('should resolve to the previewed preference while a preview is mounted', () => {
+		mockUseDarkMode.mockImplementation((forced?: boolean) => forced ?? false);
+
+		const { result, rerender, unmount } = renderHook(
+			({ preview }: { preview?: 'dark' | 'high-contrast' }) => {
+				useThemePreview(preview);
+				return useThemeMode();
+			},
+			{
+				initialProps: { preview: 'dark' as 'dark' | 'high-contrast' | undefined },
+				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'light').build(),
+			},
+		);
+
+		expect(result.current).toBe('dark');
+
+		rerender({ preview: 'high-contrast' });
+		expect(result.current).toBe('high-contrast');
+
+		rerender({ preview: undefined });
+		expect(result.current).toBe('light');
+
+		unmount();
+	});
+
+	it('should fall back to the saved preference once the preview unmounts', () => {
+		mockUseDarkMode.mockImplementation((forced?: boolean) => forced ?? false);
+		const wrapper = mockAppRoot().withUserPreference('themeAppearence', 'light').build();
+
+		const { unmount: unmountPreview } = renderHook(() => useThemePreview('dark'), { wrapper });
+		const { result } = renderHook(() => useThemeMode(), { wrapper });
+
+		expect(result.current).toBe('dark');
+
+		unmountPreview();
+		expect(result.current).toBe('light');
 	});
 });

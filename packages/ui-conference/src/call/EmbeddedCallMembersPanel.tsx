@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import { useCallActions, useCallState } from './context';
-import type { MembersInCall } from '../components/CallMembersPanel/CallMembersPanel';
-import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
+import { useCallActions, useCallState } from './context.js';
+import type { MembersInCall } from '../components/CallMembersPanel/CallMembersPanel.js';
+import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel.js';
 
 export type EmbeddedCallMembersPanelProps = {
 	onClose: () => void;

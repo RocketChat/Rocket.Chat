@@ -9,7 +9,9 @@ import mem from 'mem';
 
 import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
 import { getFederatedRoomName } from '../helpers/getFederatedRoomName';
+import { getJoinRuleType } from '../helpers/getJoinRuleType';
 import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
+import { getRoomOrigin } from '../helpers/getRoomOrigin';
 import { getUsernameServername } from '../helpers/getUsernameServername';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -76,6 +78,7 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Prom
 
 async function getOrCreateFederatedRoom({
 	matrixRoomId,
+	origin,
 	roomName,
 	roomFName,
 	roomType,
@@ -84,6 +87,7 @@ async function getOrCreateFederatedRoom({
 	inviteeUsername,
 }: {
 	matrixRoomId: string;
+	origin: string;
 	roomName: string;
 	roomFName: string;
 	roomType: RoomType;
@@ -95,11 +99,6 @@ async function getOrCreateFederatedRoom({
 		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
 		if (room) {
 			return room;
-		}
-
-		const origin = matrixRoomId.split(':').pop();
-		if (!origin) {
-			throw new Error(`Room origin not found for Matrix ID: ${matrixRoomId}`);
 		}
 
 		// TODO room creator is not always the inviter
@@ -128,36 +127,6 @@ async function getOrCreateFederatedRoom({
 	}
 }
 
-// get the join rule type from the stripped state stored in the unsigned section of the event
-// as per the spec, we must support several types but we only support invite and public for now.
-// in the future, we must start looking into 'knock', 'knock_restricted', 'restricted' and 'private'.
-function getJoinRuleType(strippedState: PduForType[] | undefined): 'p' | 'c' | 'd' {
-	const joinRulesState = strippedState?.find((state) => state.type === 'm.room.join_rules');
-
-	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
-	if (!joinRulesState) {
-		return 'p';
-	}
-
-	const joinRule = joinRulesState?.content?.join_rule;
-	switch (joinRule) {
-		case 'invite':
-			return 'p';
-		case 'public':
-			return 'c';
-		case 'knock':
-			throw new Error(`Knock join rule is not supported`);
-		case 'knock_restricted':
-			throw new Error(`Knock restricted join rule is not supported`);
-		case 'restricted':
-			throw new Error(`Restricted join rule is not supported`);
-		case 'private':
-			throw new Error(`Private join rule is not supported`);
-		default:
-			throw new Error(`Unknown join rule type: ${String(joinRule)}`);
-	}
-}
-
 async function handleInvite({
 	sender: senderId,
 	state_key: userId,
@@ -172,10 +141,7 @@ async function handleInvite({
 
 	const joinRuleType = getJoinRuleType(strippedState);
 
-	const roomOriginDomain = senderId.split(':')?.pop();
-	if (!roomOriginDomain) {
-		throw new Error(`Room origin domain not found: ${roomId}`);
-	}
+	const roomOriginDomain = getRoomOrigin(roomId, strippedState);
 
 	const roomNameState = strippedState?.find((state) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
@@ -197,6 +163,7 @@ async function handleInvite({
 
 	const room = await getOrCreateFederatedRoom({
 		matrixRoomId: roomId,
+		origin: roomOriginDomain,
 		roomName,
 		roomFName,
 		roomType,

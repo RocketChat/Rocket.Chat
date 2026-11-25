@@ -11,7 +11,7 @@ import { notifyOnRoomChangedById } from '../../../../server/lib/notifyListener';
 import { closeRoom } from '../../../../server/lib/omnichannel/closeRoom';
 import { settings } from '../../../../server/settings';
 
-const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
+const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result?.status === 'rejected';
 
 export class VisitorInactivityMonitor {
 	_started: boolean;

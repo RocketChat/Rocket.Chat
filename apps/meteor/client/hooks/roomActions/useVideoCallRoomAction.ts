@@ -98,7 +98,9 @@ export const useVideoCallRoomAction = () => {
 			title: 'Video_call',
 			icon: 'video',
 			featured: true,
-			action: handleOpenVideoConf,
+			action: () => {
+				void handleOpenVideoConf();
+			},
 			order: 1,
 			groups,
 			disabled,

@@ -201,7 +201,7 @@ export const useQuickActions = (): {
 			case QuickActionsEnum.TranscriptPDF:
 				handleSendTranscriptPDF();
 				break;
-			case QuickActionsEnum.TranscriptEmail:
+			case QuickActionsEnum.TranscriptEmail: {
 				const visitorEmail = await getVisitorEmail();
 
 				if (!visitorEmail) {
@@ -220,12 +220,13 @@ export const useQuickActions = (): {
 					/>,
 				);
 				break;
+			}
 			case QuickActionsEnum.ChatForward:
 				setModal(
 					<ForwardChatModal room={room} showIdleAgents={idleAgentsAllowedForForwarding} onForward={forwardChat} onCancel={closeModal} />,
 				);
 				break;
-			case QuickActionsEnum.CloseChat:
+			case QuickActionsEnum.CloseChat: {
 				const email = await getVisitorEmail();
 				setModal(
 					room.departmentId ? (
@@ -235,6 +236,7 @@ export const useQuickActions = (): {
 					),
 				);
 				break;
+			}
 			case QuickActionsEnum.OnHoldChat:
 				setModal(
 					<PlaceChatOnHoldModal

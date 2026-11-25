@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+import { isDeepStrictEqual } from 'node:util';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
@@ -3737,11 +3738,11 @@ describe('[Users]', () => {
 				return fields;
 			};
 
-			const waitForStatusFields = (predicate: (fields: Partial<IUser>) => boolean) =>
+			const waitForStatusFields = (expected: Partial<IUser>) =>
 				withTimeout(async (signal) => {
 					for (;;) {
 						const fields = await findStatusFields();
-						if ((fields && predicate(fields)) || signal.aborted) {
+						if (isDeepStrictEqual(fields, expected) || signal.aborted) {
 							return fields;
 						}
 						await sleep(200);
@@ -3770,8 +3771,8 @@ describe('[Users]', () => {
 				const { body } = await updateStatusText('set by an admin');
 				expect(body.user).to.have.property('statusText', 'set by an admin');
 
-				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
-				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
+				const expected: Partial<IUser> = { statusText: 'set by an admin', statusDefault: UserStatus.BUSY, statusSource: 'manual' };
+				expect(await waitForStatusFields(expected)).to.deep.equal(expected);
 			});
 
 			it('should not leave the user busy when the message is replaced during a meeting', async () => {
@@ -3784,8 +3785,8 @@ describe('[Users]', () => {
 
 				await updateStatusText('set by an admin');
 
-				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
-				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
+				const expected: Partial<IUser> = { statusText: 'set by an admin', statusDefault: UserStatus.ONLINE, statusSource: 'manual' };
+				expect(await waitForStatusFields(expected)).to.deep.equal(expected);
 			});
 		});
 
@@ -7357,6 +7358,64 @@ describe('[Users]', () => {
 
 				expect(await storedCode()).to.not.equal('pending-code');
 			});
+		});
+	});
+
+	describe('[/twoFactorChallenges.sendEmailCode]', () => {
+		let user: TestUser<IUser>;
+
+		const insertChallenge = async (challenge: Record<string, unknown>) => {
+			const challengeId = `send-${Date.now()}-${Math.random()}`;
+			await withDatabase((db) =>
+				db.collection('rocketchat_two_factor_challenges').insertOne({
+					_id: challengeId,
+					userId: user._id,
+					method: 'email',
+					createdAt: new Date(),
+					expireAt: new Date(Date.now() + 60_000),
+					...challenge,
+				} as any),
+			);
+			return challengeId;
+		};
+
+		const storedCode = async () => {
+			const stored = await withDatabase((db) =>
+				db.collection<IUser>('users').findOne({ _id: user._id }, { projection: { 'services.emailCode.code': 1 } }),
+			);
+			return stored?.services?.emailCode?.code;
+		};
+
+		before(async () => {
+			user = await createUser({ verified: true });
+		});
+
+		after(() => deleteUser(user));
+
+		it('should not send a code for a challenge that uses another method', async () => {
+			const challengeId = await insertChallenge({ method: 'totp' });
+
+			const res = await request.post(api('twoFactorChallenges.sendEmailCode')).send({ challengeId }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-invalid-challenge-method');
+			expect(await storedCode()).to.be.undefined;
+		});
+
+		it('should not send a code for an expired challenge', async () => {
+			const challengeId = await insertChallenge({ expireAt: new Date(Date.now() - 1_000) });
+
+			const res = await request.post(api('twoFactorChallenges.sendEmailCode')).send({ challengeId }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-challenge-expired');
+			expect(await storedCode()).to.be.undefined;
+		});
+
+		it('should store a new email code for the user of a pending email challenge', async () => {
+			const challengeId = await insertChallenge({});
+
+			await request.post(api('twoFactorChallenges.sendEmailCode')).send({ challengeId }).expect(200);
+
+			expect(await storedCode()).to.be.a('string');
 		});
 	});
 

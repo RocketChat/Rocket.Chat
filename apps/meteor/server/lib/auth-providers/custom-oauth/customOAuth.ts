@@ -24,6 +24,18 @@ const BeforeUpdateOrCreateUserFromExternalService = new Map<
 >();
 const CustomOAuthInstances = new Map<string, CustomOAuthStrategy>();
 
+const resolveEndpoint = (serverURL: string, path: string): string => {
+	if (isAbsoluteURL(path)) {
+		return path;
+	}
+
+	if (path.startsWith('?')) {
+		return serverURL + path;
+	}
+
+	return `${serverURL.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+};
+
 export class CustomOAuthStrategy extends Strategy {
 	options: StrategyOptions;
 
@@ -64,9 +76,11 @@ export class CustomOAuthStrategy extends Strategy {
 			throw new ClientSafeError('customOAuth: serverURL is required and must be String');
 		}
 
+		const tokenURL = resolveEndpoint(config.serverURL, config.tokenPath || '/oauth/token');
+
 		const options: StrategyOptions = {
-			authorizationURL: config.serverURL + config.authorizePath,
-			tokenURL: config.serverURL + config.tokenPath,
+			authorizationURL: resolveEndpoint(config.serverURL, config.authorizePath || '/oauth/authorize'),
+			tokenURL,
 			clientID: config.clientId,
 			clientSecret: config.clientSecret,
 			callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/${name}`,
@@ -78,8 +92,8 @@ export class CustomOAuthStrategy extends Strategy {
 		super(options, verify);
 
 		this.serverURL = config.serverURL;
-		this.tokenPath = config.tokenPath || '/oauth/token';
-		this.identityPath = config.identityPath || '/me';
+		this.tokenPath = tokenURL;
+		this.identityPath = resolveEndpoint(config.serverURL, config.identityPath || '/me');
 		this.tokenSentVia = config.tokenSentVia;
 		this.identityTokenSentVia = config.identityTokenSentVia;
 		this.keyField = config.keyField;
@@ -94,14 +108,6 @@ export class CustomOAuthStrategy extends Strategy {
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
-		}
-
-		if (!isAbsoluteURL(this.tokenPath)) {
-			this.tokenPath = this.serverURL + this.tokenPath;
-		}
-
-		if (!isAbsoluteURL(this.identityPath)) {
-			this.identityPath = this.serverURL + this.identityPath;
 		}
 
 		if (this.emailPath && !isAbsoluteURL(this.emailPath)) {
@@ -222,6 +228,8 @@ export class CustomOAuthStrategy extends Strategy {
 			identity.name = this.getName(identity);
 		}
 
+		identity.displayName = identity.name || identity.displayName;
+
 		return renameInvalidProperties(identity);
 	}
 
@@ -244,6 +252,7 @@ export class CustomOAuthStrategy extends Strategy {
 				const normalizedIdentity = this.normalizeIdentity(result);
 				//Nextcloud URL needed on addWebdavServer
 				normalizedIdentity.serverURL = this.serverURL;
+				normalizedIdentity._OAuthCustom = true;
 				return done(null, normalizedIdentity);
 			} catch (e) {
 				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
@@ -257,7 +266,9 @@ export class CustomOAuthStrategy extends Strategy {
 				return;
 			}
 
-			if (serviceData.username) {
+			const lookupValue = this.keyField === 'email' ? serviceData.email : serviceData.username;
+
+			if (lookupValue) {
 				let user: IUser | null = null;
 
 				if (this.keyField === 'username') {
@@ -346,7 +357,7 @@ export class CustomOAuthStrategy extends Strategy {
 	}
 }
 
-Accounts.validateNewUser((user: IUser & { email: string }) => {
+export const applyCustomOAuthUserFields = (user: Partial<IUser> & { email?: string }) => {
 	for (const [name, instance] of CustomOAuthInstances) {
 		const service = user.services?.[name as keyof NonNullable<IUser['services']>];
 		if (!service?.id) {
@@ -368,9 +379,7 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 			user.name = service.name;
 		}
 	}
-
-	return true;
-});
+};
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 

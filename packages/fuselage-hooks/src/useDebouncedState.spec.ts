@@ -1,5 +1,5 @@
-import { renderHook, act } from './testing';
-import { useDebouncedState } from './useDebouncedState';
+import { renderHook, act } from './testing.js';
+import { useDebouncedState } from './useDebouncedState.js';
 
 beforeAll(() => {
 	jest.useFakeTimers();

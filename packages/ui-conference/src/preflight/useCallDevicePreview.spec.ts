@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { useCallDevicePreview } from './useCallDevicePreview';
+import { useCallDevicePreview } from './useCallDevicePreview.js';
 
 const getUserMedia = jest.fn();
 const enumerateDevices = jest.fn(() => Promise.resolve([] as MediaDeviceInfo[]));

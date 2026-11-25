@@ -3,7 +3,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Invites, Users, Subscriptions } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
@@ -14,6 +13,7 @@ import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 import { settings } from '../../settings';
+import { sendEnrollmentEmail } from '../auth/accountEmails';
 import { callbacks } from '../callbacks';
 import { SystemLogger } from '../logger/system';
 import { notifyOnUserChange } from '../notifyListener';
@@ -115,7 +115,7 @@ export const _setUsername = async function (
 		await onceTransactionCommitedSuccessfully(() => {
 			try {
 				setImmediate(() => {
-					Accounts.sendEnrollmentEmail(user._id);
+					void sendEnrollmentEmail(user._id).catch((err) => SystemLogger.error({ err }));
 				});
 			} catch (err: any) {
 				SystemLogger.error({ err });

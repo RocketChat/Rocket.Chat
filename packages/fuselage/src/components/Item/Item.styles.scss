@@ -59,6 +59,20 @@ $item-indents: (
 	}
 }
 
+@mixin inset-block-scale {
+	&--inset-block-sm {
+		--rcx-item-inset-block: #{lengths.padding(4)};
+	}
+
+	&--inset-block-md {
+		--rcx-item-inset-block: #{lengths.padding(8)};
+	}
+
+	&--inset-block-lg {
+		--rcx-item-inset-block: #{lengths.padding(12)};
+	}
+}
+
 @mixin focus-ring {
 	// Forced colors drop the box-shadow and paint the transparent outline instead.
 	outline: lengths.border-width(medium) solid transparent;
@@ -96,6 +110,7 @@ $item-indents: (
 	--rcx-item-gap: #{lengths.margin(4)};
 	// A unitless zero would make the padding calc() invalid.
 	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+	--rcx-item-inset-block: 0px; /* stylelint-disable-line length-zero-no-unit */
 	--rcx-item-start: #{$item-padding};
 
 	position: relative;
@@ -106,7 +121,7 @@ $item-indents: (
 	box-sizing: border-box;
 	min-width: 0;
 	margin: 0;
-	padding-block: $item-padding;
+	padding-block: calc(#{$item-padding} + var(--rcx-item-inset-block));
 	padding-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
 	padding-inline-start: calc(var(--rcx-item-start) + var(--rcx-item-inset-inline));
 
@@ -123,6 +138,8 @@ $item-indents: (
 	@include use-font-scale(p2);
 	@include inset-scale;
 
+	@include inset-block-scale;
+
 	&:has(> .rcx-item__content > :nth-child(2)),
 	&--multiline {
 		--rcx-item-gap: #{lengths.margin(8)};
@@ -138,6 +155,18 @@ $item-indents: (
 
 	&--align-start {
 		align-items: flex-start;
+	}
+
+	&--divided::after {
+		position: absolute;
+		inset-block-end: 0;
+		inset-inline: 0;
+
+		content: '';
+
+		pointer-events: none;
+
+		border-block-end: lengths.border-width(default) solid $item-color-stroke-divider;
 	}
 
 	&:where(.rcx-item--hoverable):hover {
@@ -420,6 +449,7 @@ $item-indents: (
 	--rcx-item-gap: #{lengths.margin(4)};
 	// A unitless zero would make the padding calc() invalid.
 	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+	--rcx-item-inset-block: 0px; /* stylelint-disable-line length-zero-no-unit */
 
 	position: relative;
 
@@ -430,7 +460,7 @@ $item-indents: (
 	min-width: 0;
 	min-height: lengths.size(28);
 	margin: 0;
-	padding-block: $item-padding;
+	padding-block: calc(#{$item-padding} + var(--rcx-item-inset-block));
 	padding-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
 
 	list-style: none;
@@ -443,12 +473,14 @@ $item-indents: (
 	@include use-font-scale(c2);
 	@include inset-scale;
 
+	@include inset-block-scale;
+
 	&--sticky {
 		position: sticky;
 		z-index: 2;
 		top: 0;
 
-		background-color: $item-group-header-color-surface;
+		background-color: var(--rcx-surface, #{$item-group-header-color-surface});
 	}
 
 	&:has(.rcx-item-group-title:is(button)):hover {

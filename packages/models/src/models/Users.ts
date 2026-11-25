@@ -2,6 +2,7 @@ import type {
 	AvailableAgentsAggregation,
 	AtLeast,
 	DeepWritable,
+	EmailVerificationTokenRecord,
 	ILivechatAgent,
 	ILoginToken,
 	IMeteorLoginToken,
@@ -9,6 +10,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	PasswordTokenRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -37,7 +39,7 @@ import type {
 	AnyBulkWriteOperation,
 } from 'mongodb';
 
-import { Rooms, Subscriptions } from '../index';
+import { Rooms, Subscriptions } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
@@ -624,6 +626,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 
 		const query = { username };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { username, _id: { $ne: exceptUserId } };
 
 		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
 		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
@@ -2532,6 +2549,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { 'emails.address': String(emailAddress).trim(), '_id': { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -2598,12 +2630,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
-		const query = { roles, type };
+		const query = { roles: role, type };
 
 		return this.findOne<T, O>(query, options);
 	}
@@ -3141,6 +3173,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	setPasswordResetToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord) {
+		return this.updateOne({ _id }, { $set: { 'services.password.reset': tokenRecord } });
+	}
+
+	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord) {
+		return this.updateOne({ _id }, { $set: { 'services.password.enroll': tokenRecord } });
+	}
+
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
 		const update = {
 			$unset: {
@@ -3524,6 +3564,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			return 0;
 		}
 		return this.countDocuments({ _id: { $in: room.uids }, active: true });
+	}
+
+	addEmailVerificationToken(_id: IUser['_id'], tokenRecord: EmailVerificationTokenRecord) {
+		return this.updateOne({ _id }, { $push: { 'services.email.verificationTokens': tokenRecord } });
 	}
 
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string) {

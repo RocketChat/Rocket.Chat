@@ -1,6 +1,7 @@
-import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
+
+import { sendVerificationEmail } from '../../lib/auth/accountEmails';
+import { SystemLogger } from '../../lib/logger/system';
 
 export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 	const email = to.trim();
@@ -16,13 +17,6 @@ export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 		return false;
 	}
 
-	try {
-		Accounts.sendVerificationEmail(user._id, target.address);
-		return true;
-	} catch (error: any) {
-		throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${error.message}`, {
-			method: 'registerUser',
-			message: error.message,
-		});
-	}
+	void sendVerificationEmail(user._id, target.address).catch((err) => SystemLogger.error({ err }));
+	return true;
 };

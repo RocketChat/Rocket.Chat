@@ -1,4 +1,4 @@
-import { Box, Label } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -43,14 +43,20 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 			confirmText={t('Apply')}
 			onConfirm={handleSave}
 		>
-			<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-				<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
-				<DateTimeFilter control={control} type='start' />
-			</Box>
-			<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
-				<Label htmlFor='timeFilter'>{t('Until')}</Label>
-				<DateTimeFilter control={control} type='end' />
-			</Box>
+			<Stack gap='x24'>
+				<Field>
+					<FieldLabel htmlFor='timeFilter'>{t('Logs_from')}</FieldLabel>
+					<FieldRow>
+						<DateTimeFilter control={control} type='start' />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor='timeFilter'>{t('Until')}</FieldLabel>
+					<FieldRow>
+						<DateTimeFilter control={control} type='end' />
+					</FieldRow>
+				</Field>
+			</Stack>
 		</GenericModal>
 	);
 };

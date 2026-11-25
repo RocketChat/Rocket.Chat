@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const removeNotExpiredById = sinon.stub().resolves(null);
@@ -12,16 +11,21 @@ const updateUser = sinon.stub().resolves();
 const createNewUser = sinon.stub().resolves({ _id: 'newUserId' });
 const setRealName = sinon.stub().resolves();
 
-const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandler', {
-	'meteor/accounts-base': {
-		Accounts: {
-			LoginCancelledError: { numericError: 403 },
+let handler: any;
+
+before(async () => {
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: {
+				LoginCancelledError: { numericError: 403 },
+			},
 		},
-	},
-	'./createNewUser': { createNewUser },
-	'./findExistingCASUser': { findExistingCASUser },
-	'../users/setRealName': { setRealName },
-	'../../settings': { settings: { get: settingsGet } },
+	});
+	mock.module('./createNewUser', { exports: { createNewUser } });
+	mock.module('./findExistingCASUser', { exports: { findExistingCASUser } });
+	mock.module('../users/setRealName', { exports: { setRealName } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+	({ loginHandlerCAS: handler } = await import('./loginHandler'));
 });
 
 describe('loginHandlerCAS', () => {

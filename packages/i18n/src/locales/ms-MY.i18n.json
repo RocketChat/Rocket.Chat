@@ -996,6 +996,7 @@
   "Everyone_can_access_this_channel": "Semua orang boleh mengakses saluran ini",
   "Example_s": "Contoh: <code>{{value}}</code>",
   "except_pinned": "(kecuali yang disematkan)",
+  "Exchange_Graph_Client_Secret": "Secret Pelanggan",
   "Exclude_Botnames": "Kecualikan Bot",
   "Exclude_Botnames_Description": "Jangan menyebarkan mesej dari bot yang namanya sepadan dengan ungkapan biasa di atas. Sekiranya dibiarkan kosong, semua mesej dari bot akan disebarkan.",
   "Exclude_pinned": "Kecualikan mesej yang disematkan",

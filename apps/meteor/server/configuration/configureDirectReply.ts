@@ -19,7 +19,7 @@ export async function configureDirectReply(settings: ICachedSettings): Promise<v
 			settings.get('Direct_Reply_Password');
 
 		if (client) {
-			await client.stop();
+			client.stop();
 		}
 
 		if (!isEnabled) {

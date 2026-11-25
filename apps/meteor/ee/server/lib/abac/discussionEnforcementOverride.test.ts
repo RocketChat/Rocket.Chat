@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const loggerMock = { info: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), debug: sinon.stub() };
@@ -12,18 +11,18 @@ const notifyOnSettingChangedByIdMock = sinon.stub();
 const settingsGetMock = sinon.stub();
 const hasModuleMock = sinon.stub();
 
-const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDiscussionEnabledWithoutLicense } = p
-	.noCallThru()
-	.load('./discussionEnforcementOverride.ts', {
-		'@rocket.chat/license': { License: { hasModule: hasModuleMock } },
-		'@rocket.chat/logger': { Logger: sinon.stub().returns(loggerMock) },
-		'../../../../server/lib/notifyListener': { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock },
-		'../../../../server/settings': { settings: { get: settingsGetMock } },
-	}) as {
-	applyDiscussionEnforcementOverride: () => Promise<void>;
-	restoreDiscussionEnabled: () => Promise<void>;
-	restoreDiscussionEnabledWithoutLicense: () => Promise<void>;
-};
+let applyDiscussionEnforcementOverride: (typeof import('./discussionEnforcementOverride'))['applyDiscussionEnforcementOverride'];
+let restoreDiscussionEnabled: (typeof import('./discussionEnforcementOverride'))['restoreDiscussionEnabled'];
+let restoreDiscussionEnabledWithoutLicense: (typeof import('./discussionEnforcementOverride'))['restoreDiscussionEnabledWithoutLicense'];
+
+before(async () => {
+	mock.module('@rocket.chat/license', { exports: { License: { hasModule: hasModuleMock } } });
+	mock.module('@rocket.chat/logger', { exports: { Logger: sinon.stub().returns(loggerMock) } });
+	mock.module('../../../../server/lib/notifyListener', { exports: { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingsGetMock } } });
+	({ applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDiscussionEnabledWithoutLicense } =
+		await import('./discussionEnforcementOverride'));
+});
 
 const valueWrittenTo = (settingId: string): unknown => updateValueByIdMock.getCalls().find((call) => call.args[0] === settingId)?.args[1];
 

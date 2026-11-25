@@ -7,7 +7,7 @@ import {
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
 import { useHasLicenseModule } from '@rocket.chat/ui-client';
-import { useUser, useSetting, usePermission, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, usePermission, useEndpoint, useStream, useNotificationSounds } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
@@ -73,7 +73,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
 
-	const { notificationSounds } = useCustomSound();
+	const notificationSounds = useNotificationSounds();
 
 	const {
 		data: { priorities = [] } = {},

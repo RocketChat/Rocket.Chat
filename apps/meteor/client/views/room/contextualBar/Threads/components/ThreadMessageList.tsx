@@ -22,12 +22,17 @@ import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMounte
 import { getDistanceFromBottom } from '../../../MessageList/lib/getDistanceFromBottom';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
-import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
+import {
+	clearHighlightMessage,
+	getSnapshot as getHighlightedMessageId,
+	setHighlightMessage,
+} from '../../../MessageList/providers/messageHighlightSubscription';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
+import MessageListLoadMore from '../../../layout/MessageListLoadMore';
 import { SelectedMessageStore } from '../../../providers/SelectedMessageStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
@@ -85,6 +90,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const userInteractedRef = useRef(false);
 	const isJumpingToMessageRef = useRef(false);
 	const isPrependRef = useRef(false);
+	const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const highlightedIdRef = useRef<IMessage['_id'] | undefined>(undefined);
 
 	const loadMoreMessages = useDebouncedCallback(
 		() => {
@@ -245,6 +252,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	useEffect(() => {
 		if (!msgJumpParam) {
 			isJumpingToMessageRef.current = false;
+			lastThreadJumpKeyRef.current = undefined;
 			return;
 		}
 		isJumpingToMessageRef.current = true;
@@ -326,7 +334,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		recenter();
 
 		setHighlightMessage(msgJumpParam);
-		const highlightTimeout = setTimeout(() => {
+		highlightedIdRef.current = msgJumpParam;
+		clearTimeout(highlightTimeoutRef.current);
+		highlightTimeoutRef.current = setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 		const settleTimeout = setTimeout(() => {
@@ -335,10 +345,20 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 		return () => {
 			cancelAnimationFrame(rafId);
-			clearTimeout(highlightTimeout);
 			clearTimeout(settleTimeout);
 		};
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
+
+	useEffect(
+		() => () => {
+			clearTimeout(highlightTimeoutRef.current);
+			lastThreadJumpKeyRef.current = undefined;
+			if (getHighlightedMessageId() === highlightedIdRef.current) {
+				clearHighlightMessage();
+			}
+		},
+		[],
+	);
 
 	useEffect(() => {
 		if (!msgJumpParam) {
@@ -425,14 +445,12 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							}}
 						>
 							{loading ? (
-								<div className='load-more' role='presentation'>
+								<MessageListLoadMore>
 									<LoadingMessagesIndicator />
-								</div>
+								</MessageListLoadMore>
 							) : null}
 							{!loading && hasPreviousPage ? (
-								<div className='load-more' role='presentation'>
-									{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
-								</div>
+								<MessageListLoadMore>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</MessageListLoadMore>
 							) : null}
 							{!loading &&
 								items.map((message, index, { [index - 1]: previous }) => {
@@ -457,9 +475,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 									);
 								})}
 							{!loading && hasNextPage ? (
-								<div className='load-more' role='presentation'>
+								<MessageListLoadMore>
 									{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
-								</div>
+								</MessageListLoadMore>
 							) : null}
 						</VList>
 					</SelectedMessageContext.Provider>

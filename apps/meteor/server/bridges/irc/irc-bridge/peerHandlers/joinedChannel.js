@@ -13,11 +13,10 @@ export default async function handleJoinedChannel(args) {
 		throw new Error(`Could not find a user with nick ${args.nick}`);
 	}
 
-	let room = await Rooms.findOneByName(args.roomName);
+	const room = await Rooms.findOneByName(args.roomName);
 
 	if (!room) {
-		const createdRoom = await createRoom('c', args.roomName, user, []);
-		room = await Rooms.findOne({ _id: createdRoom.rid });
+		await createRoom('c', args.roomName, user, []);
 
 		this.log(`${user.username} created room ${args.roomName}`);
 	} else {

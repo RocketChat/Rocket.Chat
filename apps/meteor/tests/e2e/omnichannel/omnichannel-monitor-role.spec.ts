@@ -154,15 +154,6 @@ test.describe('OC - Monitor Role', () => {
 		// await test.step('expect to be able to edit custom fields', async () => {});
 	});
 
-	test('OC - Monitor Role - Canned responses', async () => {
-		// TODO: move to unit test
-		await test.step('expect not to be able to create public canned responses (administration)', async () => {
-			await poOmnichannel.cannedResponses.goto();
-			await poOmnichannel.cannedResponses.btnNew.click();
-			await expect(poOmnichannel.cannedResponses.radioPublic).toBeDisabled();
-		});
-	});
-
 	test('OC - Monitor Role - Contact Center', async () => {
 		await test.step('expect to be able to view only chats from same unit', async () => {
 			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).toBeVisible();

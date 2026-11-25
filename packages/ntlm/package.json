@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ntlm",
-	"version": "0.0.1",
+	"version": "0.1.0-rc.0",
 	"private": true,
 	"description": "NTLMv2 with channel binding for Extended Protection; no NTLM client on npm reaches the binding field",
 	"main": "./dist/index.js",

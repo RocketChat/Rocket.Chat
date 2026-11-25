@@ -1845,6 +1845,7 @@
   "Example_payload": "Példa hasznos teher",
   "Example_s": "Például: <code>{{value}}</code>",
   "except_pinned": "(kivéve azokat, amelyek ki vannak tűzve)",
+  "Exchange_Graph_Client_Secret": "Ügyféltitok",
   "Exclude_Botnames": "Robotok kizárása",
   "Exclude_Botnames_Description": "Ne terjessze a robotoktól származó olyan üzeneteket, amelyek neve illeszkedik a fenti reguláris kifejezésre. Ha üresen hagyja, akkor a robotoktól származó összes üzenet terjesztésre kerül.",
   "Exclude_pinned": "Kitűzött üzenetek kizárása",

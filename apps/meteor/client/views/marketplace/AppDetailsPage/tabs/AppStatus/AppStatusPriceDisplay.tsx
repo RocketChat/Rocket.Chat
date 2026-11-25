@@ -1,5 +1,5 @@
 import type { AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
-import { Box, Tag, Text } from '@rocket.chat/fuselage';
+import { Tag, Text } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,7 @@ const AppStatusPriceDisplay = ({ purchaseType, pricingPlans, price, showType = t
 	return (
 		<Tag>
 			{showType && <Text color='default'>{i18n.exists(type) ? t(type) : type}</Text>}
-			<Box>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
+			<Text>{!showType && type === 'Free' ? t(type) : formattedPrice}</Text>
 		</Tag>
 	);
 };

@@ -1,5 +1,345 @@
 # @rocket.chat/meteor
 
+## 9.1.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43756](https://github.com/RocketChat/Rocket.Chat/pull/43756)) Shows why an OAuth login failed on the login page, instead of an "Internal Server Error" page or a popup that never closes. Popup OAuth login now also completes with providers that send `Cross-Origin-Opener-Policy`.
+
+- ([#43877](https://github.com/RocketChat/Rocket.Chat/pull/43877)) Bumps the Node.js runtime in the Docker images to 24.22.3.
+
+- <details><summary>Updated dependencies [4d4a5eb533168d1fd1d4a64711c7cf51a772a31d]:</summary>
+  - @rocket.chat/ui-registration@37.0.0-rc.1
+  - @rocket.chat/i18n@6.0.0-rc.1
+  - @rocket.chat/core-typings@9.1.0-rc.2
+  - @rocket.chat/rest-typings@9.1.0-rc.2
+
+  </details>
+
+## 9.1.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@9.1.0-rc.1
+  - @rocket.chat/rest-typings@9.1.0-rc.1
+
+  </details>
+
+## 9.1.0-rc.0
+
+### Minor Changes
+
+- ([#43647](https://github.com/RocketChat/Rocket.Chat/pull/43647)) Lets apps upload a file into a thread with the new `threadId` field of `IUploadDescriptor`
+
+- ([#42661](https://github.com/RocketChat/Rocket.Chat/pull/42661)) Adds a "Copy error details" button to the screens shown when part of the interface crashes, so users can include the error and their environment when reporting the issue without opening the browser's developer tools
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Supports federated rooms on Matrix room version 12: invites to version 12 rooms and DMs created on other homeservers reach Rocket.Chat users, who can accept them and exchange messages as in rooms on earlier versions. Rooms joined from an invite sent by a user on a different server than the one that created the room now show the creating server after the room name, as they already did once the room was renamed.
+
+- ([#43709](https://github.com/RocketChat/Rocket.Chat/pull/43709)) Opens the Forward message modal from "Let them know" when you mention people who aren't in the room, so you can choose which of them get the direct message.
+
+- ([#43677](https://github.com/RocketChat/Rocket.Chat/pull/43677)) Adds the `MOLECULER_ENCRYPTION_SECRET` environment variable to encrypt Moleculer traffic between monolith instances using the TCP or NATS instance transporter. It is ignored in microservices mode.
+
+- ([#41943](https://github.com/RocketChat/Rocket.Chat/pull/41943)) Adds a server-to-server Outlook integration: administrators configure one Exchange connection, through Microsoft Graph or on-premises EWS, instead of each user signing in from the desktop app. Calendars sync on the server and reach web, mobile and desktop alike, with contact sync following on the same connection.
+
+- ([#43281](https://github.com/RocketChat/Rocket.Chat/pull/43281)) Serves HTTP and the DDP WebSocket from the server's own HTTP server instead of Meteor's. The REST API, webhooks, federation, health probes and the DDP endpoints are answered directly; pages and files still served by Meteor work as before, with the same security headers. DDP behaves as it does in microservices deployments: only the websocket transport is served (`/sockjs` xhr and polling answer 404), every method call and subscription counts against the DDP rate limits, and the `stream-*` methods are no longer reachable through the REST `method.call` endpoints.
+
+- ([#43055](https://github.com/RocketChat/Rocket.Chat/pull/43055)) Builds the web client with Vite and serves it from the server. The page, its runtime config, the CDN and path prefix, the Content-Security-Policy and the new-version notice work as before; the client's files are served from `/bundle/` with a long-lived cache. `yarn dev` now runs the Vite client in front of the local server.
+
+- ([#43633](https://github.com/RocketChat/Rocket.Chat/pull/43633)) Lets sidebar categories be reordered by dragging their headers or with Cmd+Shift+Up/Down (Ctrl+Shift+Up/Down on Windows and Linux), and a room be dragged into Favorites, a custom category, or back to its own group
+
+- ([#43689](https://github.com/RocketChat/Rocket.Chat/pull/43689)) Adds an Inbox header with a room search to the sidebar when the sidebar rail feature preview is on: the search lists only the rooms whose name matches
+
+- ([#43379](https://github.com/RocketChat/Rocket.Chat/pull/43379)) Stops offering admins to change the Site URL when the web client is served from another host than the server
+
+- ([#43836](https://github.com/RocketChat/Rocket.Chat/pull/43836)) Previews the selected theme across the app as soon as it is picked in Accessibility & Appearance, before saving. Leaving the page without saving restores the saved theme.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `alert` block: a short notice of up to 200 characters, styled by its `level` (`default`, `info`, `warning`, `error` or `success`), for messages, modals and contextual bars.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `card` block, with an optional hero image, icon, title, subtitle, body, subtext and up to 3 buttons, and the `carousel` block, a row of 1 to 10 cards that scrolls sideways with previous and next buttons.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_table` block, a table with a caption that the reader can filter, sort by column and page through, whose cells hold text, numbers, rich text or a button (`action_cell`).
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_visualization` block, a pie, bar, area or line chart under a title, for messages, modals and contextual bars. A message can hold up to 2 of them.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `file_input` element, which lets apps collect files in modals and contextual bars, and the `file` block, which shows an uploaded file in a message. Files picked in a view are uploaded as temporary files of the room and kept when the view is submitted.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Renders more UiKit blocks in the Livechat widget (`callout`, `header`, `markdown`, `preview`, `table`, `video`, `context_actions` and `multi_static_select`) and lets visitors use app modals: the widget applies `modal.open`, `modal.push`, `modal.clear`, `modal.update`, `modal.close` and `errors` responses, and sends `viewSubmit` and `viewClosed`, which reach apps through the new `executeLivechatViewSubmitHandler` and `executeLivechatViewClosedHandler` methods.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Logs a warning when an app sends UiKit blocks that do not match their types, in a message or in a view it opens or updates, with where each mismatch is. The blocks are still accepted and rendered as before.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) UiKit messages now give `layout`, `data_table`, `data_visualization`, `carousel`, `table` blocks the full width of the message, and `container` blocks size themselves, while every other block keeps the message block width. `container` widths are now 280px (`narrow`), the message block width (`standard`), 640px (`wide`) and uncapped (`full`).
+
+- ([#43557](https://github.com/RocketChat/Rocket.Chat/pull/43557)) Tightens the layout of UiKit blocks: in messages, blocks sit 8px apart instead of 16px; section fields always use two columns with less space between them, the accessory of a section keeps the same distance from the text at every window width, headers use the title color, context text uses the metadata color, and info cards use the same corner radius as images
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Keeps the UiKit modals, contextual bars and banners an app opens for a logged-in user on the server, so when the user submits or closes one the app receives the view as it sent it, with the values the user filled in.
+  A submit with no record of the view (expired, or never recorded) is refused, and a close with no record never reaches the app. Views opened for a Livechat visitor are not recorded: the app receives the visitor's copy.
+  For a view opened for a logged-in user, `private_metadata` stays on the server and never reaches the browser. A visitor's view keeps it.
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `UiKit_Reject_Invalid_Blocks` setting, which rejects messages with invalid blocks and drops invalid views from apps instead of only logging them, and checks block count, text length and option count limits when blocks are validated
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `task_card` and `plan` blocks and the `url` source element, for apps that show the progress of a multi-step task, such as an AI agent. A task card has a title, a status (`pending`, `in_progress`, `complete` or `error`), optional details and output, and links to its sources; a plan shows up to 50 tasks together under a title. An app updates the message or view to change their statuses.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+- ([#43378](https://github.com/RocketChat/Rocket.Chat/pull/43378)) Shows the web client's commit next to the server's in Workspace > Deployment when the client was built from a different commit, as when it is served from another host
+
+### Patch Changes
+
+- ([#43166](https://github.com/RocketChat/Rocket.Chat/pull/43166)) Fixes the ABAC user attribute sync updating accounts that are not linked to LDAP
+
+- ([#43841](https://github.com/RocketChat/Rocket.Chat/pull/43841)) Fixes password reset, email verification and enrollment emails ignoring the "Plain text only" email setting and carrying an untranslated English text part
+
+- ([#43737](https://github.com/RocketChat/Rocket.Chat/pull/43737)) Fixes the omnichannel agent info panel crashing when opened for a user who is no longer an agent; it now shows "User not found"
+
+- ([#43276](https://github.com/RocketChat/Rocket.Chat/pull/43276)) Fixes the screenshot preview on an app's details page not opening from the keyboard, and not being announced as a button.
+
+- ([#43276](https://github.com/RocketChat/Rocket.Chat/pull/43276)) Fixes a stray "0" shown as the privacy summary on an app's security tab when the app has an empty summary.
+
+- ([#43636](https://github.com/RocketChat/Rocket.Chat/pull/43636)) Fixes the video conference info modal failing with `[object Object]` instead of the actual reason when the app that provides the call is no longer registered.
+
+- ([#43778](https://github.com/RocketChat/Rocket.Chat/pull/43778)) Fixes administrators being notified that apps were disabled after a license update when none of the apps had actually been renewed
+
+- ([#43840](https://github.com/RocketChat/Rocket.Chat/pull/43840)) Fixes _OAuthCustom flag in users logged in using custom OAuth, fixing user avatars from OAuth providers.
+
+- ([#43612](https://github.com/RocketChat/Rocket.Chat/pull/43612)) Fixes the CAS login route validating a ticket and storing a credential token while CAS is disabled.
+
+- ([#43351](https://github.com/RocketChat/Rocket.Chat/pull/43351) by [@lakshaydevoo-arch](https://github.com/lakshaydevoo-arch)) Fixes the `chevron-left` and `chevron-right` icons, which pointed opposite to their names, and updates the components that used the opposite icon to compensate. The marketplace screenshot carousel's previous and next buttons now have accessible labels
+
+- ([#43493](https://github.com/RocketChat/Rocket.Chat/pull/43493)) Shows the first screen about half a second sooner when the web client loads, by no longer pausing between the loading steps
+
+- Fixes links to the domains set in `Message_CustomDomain_AutoLink` not being detected in the composer and in the messages of the audit view
+
+- ([#43807](https://github.com/RocketChat/Rocket.Chat/pull/43807)) Fixes Custom OAuth logins creating users without an email, which also fixes user accounts merging issues from different providers.
+
+- ([#43755](https://github.com/RocketChat/Rocket.Chat/pull/43755)) Rejects the first Custom OAuth login when the mapped username does not match the `UTF8_User_Names_Validation` setting, instead of creating a user that cannot save its profile later. Widen the setting to keep accepting such usernames (for example, `[0-9a-zA-Z-_.@]+` for email addresses).
+
+- ([#43471](https://github.com/RocketChat/Rocket.Chat/pull/43471)) Fixes the floating date shown while scrolling a room carrying over to the next room opened, where it could show the previous room's date or hide one of the new room's day dividers
+
+- ([#43269](https://github.com/RocketChat/Rocket.Chat/pull/43269)) Fixes the web client opening its realtime connection to the Site URL instead of the address the page was loaded from
+
+- ([#43581](https://github.com/RocketChat/Rocket.Chat/pull/43581)) Fixes mobile browsers with an automatic dark mode (such as Chrome on Android and Samsung Internet) recoloring the workspace, which made banners, borders and inputs look different from the selected theme
+
+- ([#43559](https://github.com/RocketChat/Rocket.Chat/pull/43559)) Fixes the memory usage of the desktop app, which increased with each desktop notification. The web client now closes the notifications of a room when the room is read, closes those of a thread when the thread is read, and keeps at most 50 non-conference notifications open.
+
+- ([#43539](https://github.com/RocketChat/Rocket.Chat/pull/43539)) Fixes users who belong to a discussion but not to its parent channel or team being offered to create a discussion that the server always rejects
+
+- ([#42593](https://github.com/RocketChat/Rocket.Chat/pull/42593)) Fixes an issue that can push the composer off-screen in some situations
+
+- ([#43720](https://github.com/RocketChat/Rocket.Chat/pull/43720)) Fixes the text of a message being edited being saved as the room draft, and the edited message staying highlighted, when the user leaves the room without finishing the edit
+
+- ([#43634](https://github.com/RocketChat/Rocket.Chat/pull/43634)) Fixes the Custom tab of the emoji picker not showing as selected when its emojis are in view
+
+- ([#43830](https://github.com/RocketChat/Rocket.Chat/pull/43830)) Fixes mentions of federated users (e.g. `@user:server.org`) showing as plain text instead of a clickable mention
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Rejects incoming federated events over the Matrix limits (more than 20 `prev_events`, more than 10 `auth_events`, or larger than 64 KiB) before validating them, so oversized events are cheap to refuse and no longer produce unbounded log lines
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes rooms joined from a federated invite showing up as a DM named after the inviter instead of under the room's name, when the inviting homeserver (such as tuwunel) sends the invite without `unsigned` data
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes messages sent to a federated room failing for good with "Unable to process event, we don't have complete state yet" after joining it, when the remote server delivered the join while the room's history was still being fetched
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes federated events, such as a remote user joining, being permanently rejected when they arrive before the events that authorize them; the missing events are now fetched from the sending server and the event is processed once they are stored
+
+- ([#43657](https://github.com/RocketChat/Rocket.Chat/pull/43657)) Fixes federated invites failing when the inviting server sends a room join rule without a value; such rooms are now treated as invite-only
+
+- ([#38934](https://github.com/RocketChat/Rocket.Chat/pull/38934) by [@Naetiksoni08](https://github.com/Naetiksoni08)) Fixes missing permission check in feature-preview admin sidebar item
+
+- ([#43167](https://github.com/RocketChat/Rocket.Chat/pull/43167)) Components no longer take a visual state from class names. The classes `hover`, `is-hovered`, `active`, `is-active`, `focus`, `is-focused`, `disabled`, `is-disabled`, `invalid` and `is-visited` used to force the hovered, pressed, focused, disabled, invalid or visited look on buttons, inputs, selection controls, links, tabs, sidebar and accordion items, pagination and chips. States now come only from the element itself (`:hover`, `:active`, `:focus`, `:focus-visible`, `:disabled`, `:invalid`, `:visited`) or from the component's props, so a consumer class with one of those names no longer changes how a component looks.
+
+  Along with it:
+
+  - `SelectLegacy` no longer needs two clicks to open again after it lost focus while open.
+  - Inputs with only a start addon show the invalid border, and inputs with an addon drop it when their value is changed programmatically.
+  - The selected point of a UiKit linear scale element is a primary button when the element is not in an error state, and is announced as pressed.
+  - The transcript subject field of the close chat modal shows its focus ring.
+
+- ([#43054](https://github.com/RocketChat/Rocket.Chat/pull/43054)) Fixes users still showing as online for 15 seconds after they close Rocket.Chat or lose their connection, in monolith deployments
+
+- ([#43635](https://github.com/RocketChat/Rocket.Chat/pull/43635)) Fixes messages and thread replies from an ignored user marking the room or thread as unread and counting as mentions
+
+- ([#43534](https://github.com/RocketChat/Rocket.Chat/pull/43534)) Adds the "Delete original discussion messages" retention policy setting. When it is off and "Do not prune discussion messages" is on, the prune keeps the message that starts each discussion, and its files. This applies to discussions that start after the update. When the prune deletes the file of a discussion's first message, quotes of that message in the discussion now show "File deleted".
+
+- ([#43062](https://github.com/RocketChat/Rocket.Chat/pull/43062)) Fixes Custom OAuth login failing when the authorize or token path is a full URL, or when the token path is left empty.
+
+- ([#43683](https://github.com/RocketChat/Rocket.Chat/pull/43683)) Fixes enabling a login service (OAuth, CAS, SAML or Apple) on a multi-instance deployment failing with a duplicate key error on some instances, which could leave SAML unconfigured on them
+
+- ([#43682](https://github.com/RocketChat/Rocket.Chat/pull/43682)) Fixes the login page keeping stale login buttons until the server restarts after CAS is enabled or disabled, a custom OAuth provider is disabled, or the login services are refreshed
+
+- Fixes the highlight of a jumped-to or edited message not showing once another message list had stopped listening to it
+
+- ([#43631](https://github.com/RocketChat/Rocket.Chat/pull/43631)) Fixes the room and thread message lists scrolling away from the latest messages after closing a fullscreen video
+
+- ([#43820](https://github.com/RocketChat/Rocket.Chat/pull/43820)) Adds `ModalBackdrop` `contained`, which covers its positioned container instead of the viewport. The expanded thread view uses it instead of overriding the backdrop's `position`.
+
+- ([#43818](https://github.com/RocketChat/Rocket.Chat/pull/43818)) Replaces `Modal`'s `wrapper` and `wrapperFunction` with `onSubmit` and `formId`: `Modal` renders its own surface, as a `form` when `onSubmit` is given. The handler takes no event, and `Modal` prevents the browser's own submission. `GenericModal`'s `wrapperFunction` becomes `onSubmit`, and the app's `ModalForm` is removed.
+
+  ### Breaking for npm consumers
+  - `Modal` no longer accepts `wrapper` or `wrapperFunction`. Pass `onSubmit` (and `formId` when the form needs an `id`) instead of rendering a `form` yourself.
+  - `GenericModal` no longer accepts `wrapperFunction`. Pass `onSubmit`; the confirm button is still a `type='submit'` button when it is given.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes closing a modal through the handle returned when it opened: it closed whatever modal was on top instead of its own, so an app's modal closing late could dismiss a modal opened after it.
+
+- ([#43473](https://github.com/RocketChat/Rocket.Chat/pull/43473)) Fixes native calls showing reactions under the speaking ring, a red "You are muted" notice, and chat panel corners that didn't match the tiles
+
+- ([#42494](https://github.com/RocketChat/Rocket.Chat/pull/42494)) Fixes the second of two consecutive user mentions being sent as plain text when they are separated by a non-breaking space, which the realtime message composer inserts while typing
+
+- ([#43843](https://github.com/RocketChat/Rocket.Chat/pull/43843)) Fixes the avatar shrinking and misaligning in the now-playing audio card when the file name is long
+
+- ([#42670](https://github.com/RocketChat/Rocket.Chat/pull/42670)) Fixes paginated tables skipping items when `API_Upper_Count_Limit` is lower than the selected page size, and keeping the current page when filters change
+
+- ([#43733](https://github.com/RocketChat/Rocket.Chat/pull/43733)) Fixes pasting an image while editing a message, which sent the image as a separate message and left the composer stuck in edit mode
+
+- ([#43841](https://github.com/RocketChat/Rocket.Chat/pull/43841)) Fixes the plain-text part of emails dropping link targets, which left plain-text-only emails such as the data download notice without their links
+
+- ([#43732](https://github.com/RocketChat/Rocket.Chat/pull/43732)) Fixes the presence service crashing in microservices deployments when a user who belongs to many rooms connects or disconnects. Apps that listen to `IPostUserStatusChanged` again receive only the user's identity, roles and status fields, as before 8.6.0.
+
+- ([#43630](https://github.com/RocketChat/Rocket.Chat/pull/43630)) Fixes seeking an audio message that is not playing, which stopped the audio already playing and started this one from the beginning
+
+- ([#43339](https://github.com/RocketChat/Rocket.Chat/pull/43339)) Fixes the room image gallery showing images that were attached to the composer and removed without being sent
+
+- ([#43714](https://github.com/RocketChat/Rocket.Chat/pull/43714)) Fixes the author information saved on user removal and ban system messages
+
+- ([#43348](https://github.com/RocketChat/Rocket.Chat/pull/43348)) Fixes the navbar search hiding results that the server matched on a field other than the name, such as a custom field listed in `Accounts_SearchFields`
+
+- ([#43613](https://github.com/RocketChat/Rocket.Chat/pull/43613)) Fixes the Threads list showing the content of threads started by ignored users.
+
+- ([#42472](https://github.com/RocketChat/Rocket.Chat/pull/42472)) Fixes the page reloading to apply an update while a modal, such as the two-factor authentication prompt, is still open
+
+- ([#43488](https://github.com/RocketChat/Rocket.Chat/pull/43488)) Removes the Rdio and SlideShare link preview providers, since neither service offers an oEmbed endpoint anymore
+
+- ([#43654](https://github.com/RocketChat/Rocket.Chat/pull/43654)) Fixes the retention policy notice in the room info panel missing its accessible name
+
+- ([#43551](https://github.com/RocketChat/Rocket.Chat/pull/43551)) Fixes the room's Files list stopping after the second page when the loaded files already fill the panel on its first open
+
+- Fixes opening a message link in a room landing on the message above the linked one
+
+- ([#43769](https://github.com/RocketChat/Rocket.Chat/pull/43769)) Adds `useLoginWithSamlToken` to `@rocket.chat/ui-contexts` so views can finish a SAML login without importing the Meteor login module
+
+- ([#43575](https://github.com/RocketChat/Rocket.Chat/pull/43575)) Fixes SAML logins storing an extra, unused login token unhashed in the user's record
+
+- ([#43352](https://github.com/RocketChat/Rocket.Chat/pull/43352)) Stops rewriting `http://` to `https://` in generated workspace links (emails, push notifications, SAML) when "Force SSL" is enabled; links now use the scheme configured in "Site URL", so set an `https://` Site URL to get secure links
+
+- ([#43605](https://github.com/RocketChat/Rocket.Chat/pull/43605)) Reduces the memory that each desktop notification uses. The avatar in the notification is now at most 128 pixels wide and high.
+
+- ([#43701](https://github.com/RocketChat/Rocket.Chat/pull/43701)) Fixes the "Drop to upload file" overlay sometimes getting stuck when a file is dragged quickly between the room and a thread.
+
+- ([#43790](https://github.com/RocketChat/Rocket.Chat/pull/43790)) Fixes thread replies disappearing from the room after jumping to a message, when "Show thread messages in the main thread" is on
+
+- ([#43687](https://github.com/RocketChat/Rocket.Chat/pull/43687)) Fixes the composer losing the first selected files when a second file selection arrives before the first one is handled
+
+- ([#43802](https://github.com/RocketChat/Rocket.Chat/pull/43802)) Fixes an issue where apps did not get the complete `IUser` object for the `IPostUserDeleted` event when an admin deleted an user
+
+- Fixes a thread showing the same day twice, in the floating date and in the day divider under it, while scrolling
+
+- Fixes "Select all" in a room also counting the system messages of the thread open beside it
+
+- ([#43784](https://github.com/RocketChat/Rocket.Chat/pull/43784)) Fixes clicking a thread reply in the room feed opening the thread at its parent, or briefly highlighting the reply before moving the highlight to the parent and scrolling the room to it
+
+- ([#43793](https://github.com/RocketChat/Rocket.Chat/pull/43793)) Shows "Jump to message" inside a thread only on the message that started it
+
+- Fixes file players and link previews reloading in a long thread, and the thread's floating date showing the day of the wrong message, while older replies remain to load
+
+- ([#43669](https://github.com/RocketChat/Rocket.Chat/pull/43669)) Fixes the toast's progress bar, which kept animating while the toast was hovered and its countdown paused
+
+- ([#43557](https://github.com/RocketChat/Rocket.Chat/pull/43557)) Fixes the overflow menu of a UiKit actions block taking almost half the row and wrapping to its own line instead of sitting next to the buttons
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes UiKit elements that apps put in a section `accessory` or an `input` block's `element` without an `actionId`: they now get one generated, like the elements of an `actions` block, so their interactions reach the app with an id it can match.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Fixes the blocks that apps nest in UiKit `container` and `layout` blocks, in a `conditional` block's `render` or in a `data_table` action cell: they and their elements now get an `appId`, `blockId` and `actionId` generated like those of top-level blocks.
+
+- ([#43557](https://github.com/RocketChat/Rocket.Chat/pull/43557)) Fixes UiKit images (image blocks and image elements) being framed in a fixed translucent grey instead of the theme's colors, which showed as a light halo in dark mode
+
+- ([#43606](https://github.com/RocketChat/Rocket.Chat/pull/43606)) Fixes users without admin permissions being unable to change their password or profile when two-factor authentication is enabled, getting a "too many requests" error after entering the 2FA code
+
+- ([#43831](https://github.com/RocketChat/Rocket.Chat/pull/43831)) Fixes the user profile action buttons being clipped when the contextual bar is narrow
+
+- ([#43254](https://github.com/RocketChat/Rocket.Chat/pull/43254)) Fixes cron settings accepting invalid expressions, including LDAP sync and auto logout intervals.
+
+- ([#43492](https://github.com/RocketChat/Rocket.Chat/pull/43492)) Fixes the voice call action naming a user by their real name in Full profile but by their username in the user card when "Use real name" is disabled
+
+- ([#43314](https://github.com/RocketChat/Rocket.Chat/pull/43314)) Fixes incoming webhooks escaping their rate limit when called with a different query string each time
+
+- ([#43524](https://github.com/RocketChat/Rocket.Chat/pull/43524)) Fixes UiKit `info_card` and landscape `image` blocks rendering narrower than link previews and attachments in the same message
+
+- ([#43487](https://github.com/RocketChat/Rocket.Chat/pull/43487)) Fixes link previews for Twitter/X posts not showing any content
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 34234f0163d4052dc611034b4dd5d18971a973d8, 25a57072d42d76566eb34d086c3ae09060d09e86, 38bba63905a0f2d56bdd4e2f8dae8e9eed8e5c96, 82c9fd12443ccb555dd84844019700a100a30ac3, 370295b5a1d4c81b56505c5c8136f6624eecb6f6, 34234f0163d4052dc611034b4dd5d18971a973d8, 183bca8af1fc26ab280120fef087f72f92982302, 0c2d151aef9a37c30c0c0b71903290580484bebe, be88a0ba4a3a72f9a606f054d5c2d051650140ee, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 10a9c7a35ba00cef6c31b28a0b9cc1aa8ad6659f, 9971f492da4960edce747fa9feb07c7fc332dbac, 0fdd543134055dc9b30643ba3b9b930299d4583c, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 217832d758454635c4f8e49eb290b76b22bb83b4, 68c51e1a876bd00a7588d45014b682d9a154d722, 65784586850ac2bddf383225524cc70eede65825, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 50a86d79876838745564b1adaf2d8409cb50c9a3, 25a57072d42d76566eb34d086c3ae09060d09e86, 9fe037ae8446c6aa6ac3149ce7c954a8698c721c, 17c06737ed3699493e9e88aca0eca9fd26fbb7ff, 34234f0163d4052dc611034b4dd5d18971a973d8, 438544159fd6359527759d2a97dd227ae9f6c58c, fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4, 1cb836204af9f9e59b64db1dba9df53836e927a0, 10deeafc95d3d62507d1679707749db70954b0f8, 47bbdf898ed3bc2abae979e46ccaa7581b7b3dac, 46cba6391140d334aecbe764a0fc3341feb27ce9, 4b01d9d23e2e12378c166f78b745a0d27f870ce0, 07a59105db13500e0270a6cf317a7d99acd20f65, 17b9f5a0a07f83c42e4b198c38a6bf2fc9d5589e, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 9971f492da4960edce747fa9feb07c7fc332dbac, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b58dc3f74d95770724a0ad8770e681dfc83e1873, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, c7c8513c458dbeb4e5694c92dec6fd687656ef2d, 42f9f7efa463480e5168ff054a66f9c086bbf809, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, 10e0083ef0f1d9fee35c51400c0a450cd42ac5d0, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 25a232e58bd49fa2cbad86f13a8e935c0a703170, f1db1bd6e06acaa868f77270356b4be393105a58, 0805e0fa09e552ae024e8ba2ace2e85f9bf62aa0, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, c5122522318b69d930199043b89ce2aadcbf51ae, 42f9f7efa463480e5168ff054a66f9c086bbf809, 0270870289ea9e3449f658ad7bff80d1525e9937, e074eb52ce5cca7934b85080c090b16e82010320, 66a6efc626f470f3677af8bcd32f9bb8a5c504b8, 2764e60c1343f9ed870bd40deef2d2019acaf477, 2764e60c1343f9ed870bd40deef2d2019acaf477, e34b44c4aefa9952f18aa625be9910adeec8b76b, be88a0ba4a3a72f9a606f054d5c2d051650140ee, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 34234f0163d4052dc611034b4dd5d18971a973d8, a0177a4b9570b49735fca52783757ab62a59bb35, 0f059eec0e4010d783a88b611c9482d5e0cea84c, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 51f681b5e628e6eb98ad013afecbe9233316a0ba, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 51f681b5e628e6eb98ad013afecbe9233316a0ba, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 51f681b5e628e6eb98ad013afecbe9233316a0ba, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 618aecf18c5a51bafc49c1852eee5d441d9c8238, 84264107a7355044bfc97d00dcf277d4a9016dbc]:</summary>
+  - @rocket.chat/model-typings@3.1.0-rc.0
+  - @rocket.chat/models@3.1.0-rc.0
+  - @rocket.chat/fuselage@2.0.0-rc.0
+  - @rocket.chat/apps-engine@1.69.0-rc.0
+  - @rocket.chat/apps@0.12.0-rc.0
+  - @rocket.chat/icons@0.53.0-rc.0
+  - @rocket.chat/i18n@6.0.0-rc.0
+  - @rocket.chat/css-in-js@0.34.0-rc.0
+  - @rocket.chat/css-supports@0.32.0-rc.0
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/ui-emoji-picker@1.0.0-rc.0
+  - @rocket.chat/federation-matrix@0.4.0-rc.0
+  - @rocket.chat/core-services@1.1.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@37.0.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/layout@2.0.0-rc.0
+  - @rocket.chat/ddp-client@3.0.0-rc.0
+  - @rocket.chat/media-signaling@1.5.0-rc.0
+  - @rocket.chat/memo@0.32.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-client@37.0.0-rc.0
+  - @rocket.chat/ui-conference@4.0.0-rc.0
+  - @rocket.chat/mp3-encoder@0.32.0-rc.0
+  - @rocket.chat/ui-voip@27.0.0-rc.0
+  - @rocket.chat/media-calls@1.1.0-rc.0
+  - @rocket.chat/ntlm@0.1.0-rc.0
+  - @rocket.chat/exchange@0.1.0-rc.0
+  - @rocket.chat/tools@0.6.0-rc.0
+  - @rocket.chat/pdf-worker@0.3.38-rc.0
+  - @rocket.chat/abac@0.4.1-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+  - @rocket.chat/ui-contexts@37.0.0-rc.0
+  - @rocket.chat/styled@0.35.0-rc.0
+  - @rocket.chat/stylis-logical-props-middleware@0.32.0-rc.0
+  - @rocket.chat/ui-account@2.0.0-rc.0
+  - @rocket.chat/fuselage-toastbar@2.0.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.60-rc.0
+  - @rocket.chat/omni-core-ee@0.0.28-rc.0
+  - @rocket.chat/presence@0.4.1-rc.0
+  - @rocket.chat/xmpp-server@0.2.1-rc.0
+  - @rocket.chat/authorization@0.0.4-rc.0
+  - @rocket.chat/cron@0.1.63-rc.0
+  - @rocket.chat/instance-status@0.1.63-rc.0
+  - @rocket.chat/omni-core@0.1.7-rc.0
+  - @rocket.chat/server-fetch@0.2.7-rc.0
+  - @rocket.chat/streamer@0.1.3-rc.0
+  - @rocket.chat/fuselage-forms@3.0.0-rc.0
+  - @rocket.chat/gazzodown@37.0.0-rc.0
+  - @rocket.chat/onboarding-ui@2.0.0-rc.0
+  - @rocket.chat/ui-avatar@33.0.0-rc.0
+  - @rocket.chat/ui-composer@8.0.0-rc.0
+  - @rocket.chat/ui-contacts@2.0.0-rc.0
+  - @rocket.chat/ui-media@2.0.0-rc.0
+  - @rocket.chat/ui-registration@37.0.0-rc.0
+  - @rocket.chat/ui-setup-wizard@1.0.0-rc.0
+  - @rocket.chat/ui-video-conf@37.0.0-rc.0
+  - @rocket.chat/ddp-server@0.0.2-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.1-rc.0
+  - @rocket.chat/logger@1.0.3-rc.0
+  - @rocket.chat/network-broker@0.2.42-rc.0
+  - @rocket.chat/logo@0.33.4-rc.0
+  - @rocket.chat/gazzodown-alt@1.0.1-rc.0
+  - @rocket.chat/ui-livekit@2.0.0-rc.0
+  - @rocket.chat/license@1.2.3-rc.0
+  - @rocket.chat/http-router@7.9.26-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.3
+
+  </details>
+
 ## 9.0.0
 
 ### Major Changes

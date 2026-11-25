@@ -1,7 +1,5 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
-
-import { stopShareButtonStyles } from './stageStyles';
 
 export type StopShareButtonProps = {
 	onStop: () => void;
@@ -12,9 +10,7 @@ const StopShareButton = ({ onStop }: StopShareButtonProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box className={stopShareButtonStyles}>
-			<IconButton icon='cross' size='small' variant='secondary' onClick={onStop} title={t('Stop_sharing')} aria-label={t('Stop_sharing')} />
-		</Box>
+		<IconButton icon='cross' size='small' variant='secondary' onClick={onStop} title={t('Stop_sharing')} aria-label={t('Stop_sharing')} />
 	);
 };
 

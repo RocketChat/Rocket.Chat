@@ -1,17 +1,17 @@
 import type { ServerResponse } from 'node:http';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type { IUser, IIncomingMessage, IRole } from '@rocket.chat/core-typings';
+import type { IUser, IIncomingMessage, IRole, SettingValue } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users, Roles, SamlUsedAssertions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/tools';
-import { Accounts } from 'meteor/accounts-base';
 
 import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
 import { getSAMLEnvelope } from './getSAMLEnvelope';
 import { i18n } from '../../../../../lib/i18n';
 import { ensureArray } from '../../../../../lib/utils/arrayUtils';
+import { insertUser } from '../../../../../server/lib/auth/insertUser';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../../server/lib/rooms/createRoom';
@@ -20,6 +20,7 @@ import { saveUserIdentity } from '../../../../../server/lib/users/saveUserIdenti
 import { getWorkspaceURL } from '../../../../../server/lib/utils/getURL';
 import { settings } from '../../../../../server/settings';
 import type { ISAMLAction } from '../definition/ISAMLAction';
+import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import type { ISAMLUser } from '../definition/ISAMLUser';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
@@ -102,6 +103,82 @@ export class SAML {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
+	private static async insertSAMLUser(
+		userObject: ISAMLUser,
+		{
+			username: requestedUsername,
+			fullName,
+			active,
+			emails,
+			customIdentifierAttributeName,
+			generateUsername,
+			defaultUserRole,
+			channelsAttributeUpdate,
+		}: {
+			username: ISAMLUser['username'];
+			fullName: ISAMLUser['fullName'];
+			active: boolean;
+			emails: { address: string; verified: SettingValue }[];
+			customIdentifierAttributeName: string | null;
+		} & Pick<ISAMLGlobalSettings, 'generateUsername' | 'defaultUserRole' | 'channelsAttributeUpdate'>,
+	): Promise<{ user: IUser | null; username: ISAMLUser['username'] }> {
+		let username = requestedUsername;
+
+		let roleNamesOrIds: string[] = [];
+		if (userObject.roles && userObject.roles.length > 0) {
+			roleNamesOrIds = userObject.roles;
+		} else if (defaultUserRole) {
+			roleNamesOrIds = ensureArray<string>(defaultUserRole.split(','));
+		}
+
+		const roles = roleNamesOrIds.length > 0 ? await convertRoleNamesToIds(roleNamesOrIds) : [];
+
+		const newUser: Record<string, any> = {
+			name: fullName,
+			active,
+			globalRoles: roles,
+			emails,
+			services: {
+				saml: {
+					provider: userObject.samlLogin.provider,
+					idp: userObject.samlLogin.idp,
+				},
+			},
+		};
+
+		if (customIdentifierAttributeName) {
+			newUser.services.saml[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
+		}
+
+		if (generateUsername === true) {
+			username = await generateUsernameSuggestion(newUser);
+		}
+
+		if (username) {
+			newUser.username = username;
+			newUser.name = newUser.name || SAML.guessNameFromUsername(username);
+		}
+
+		if (userObject.language) {
+			if (i18n.languages?.includes(userObject.language)) {
+				newUser.language = userObject.language;
+			}
+		}
+
+		// only set skipAuthServiceDefaultRoles if SAML is providing its own roles
+		// otherwise, leave it as false to fallback to generic auth service default roles
+		// from Accounts_Registration_AuthenticationServices_Default_Roles
+		const skipAuthServiceDefaultRoles = roleNamesOrIds.length > 0;
+		const userId = await insertUser({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
+		const user = await Users.findOneById(userId);
+
+		if (user && userObject.channels && channelsAttributeUpdate !== true) {
+			await SAML.subscribeToSAMLChannels(userObject.channels, user);
+		}
+
+		return { user, username };
+	}
+
 	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string }> {
 		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole } =
 			SAMLUtils.globalSettings;
@@ -146,57 +223,18 @@ export class SAML {
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 		if (!user) {
-			let roleNamesOrIds: string[] = [];
-			if (userObject.roles && userObject.roles.length > 0) {
-				roleNamesOrIds = userObject.roles;
-			} else if (defaultUserRole) {
-				roleNamesOrIds = ensureArray<string>(defaultUserRole.split(','));
-			}
-
-			const roles = roleNamesOrIds.length > 0 ? await convertRoleNamesToIds(roleNamesOrIds) : [];
-
-			const newUser: Record<string, any> = {
-				name: fullName,
+			const inserted = await SAML.insertSAMLUser(userObject, {
+				username,
+				fullName,
 				active,
-				globalRoles: roles,
 				emails,
-				services: {
-					saml: {
-						provider: userObject.samlLogin.provider,
-						idp: userObject.samlLogin.idp,
-					},
-				},
-			};
-
-			if (customIdentifierAttributeName) {
-				newUser.services.saml[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
-			}
-
-			if (generateUsername === true) {
-				username = await generateUsernameSuggestion(newUser);
-			}
-
-			if (username) {
-				newUser.username = username;
-				newUser.name = newUser.name || SAML.guessNameFromUsername(username);
-			}
-
-			if (userObject.language) {
-				if (i18n.languages?.includes(userObject.language)) {
-					newUser.language = userObject.language;
-				}
-			}
-
-			// only set skipAuthServiceDefaultRoles if SAML is providing its own roles
-			// otherwise, leave it as false to fallback to generic auth service default roles
-			// from Accounts_Registration_AuthenticationServices_Default_Roles
-			const skipAuthServiceDefaultRoles = roleNamesOrIds.length > 0;
-			const userId = await Accounts.insertUserDoc({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
-			user = await Users.findOneById(userId);
-
-			if (user && userObject.channels && channelsAttributeUpdate !== true) {
-				await SAML.subscribeToSAMLChannels(userObject.channels, user);
-			}
+				customIdentifierAttributeName,
+				generateUsername,
+				defaultUserRole,
+				channelsAttributeUpdate,
+			});
+			user = inserted.user;
+			username = inserted.username;
 		}
 
 		if (!user) {

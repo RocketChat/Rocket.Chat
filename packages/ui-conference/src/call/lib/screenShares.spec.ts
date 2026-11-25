@@ -1,5 +1,5 @@
-import type { ScreenShare } from './screenShares';
-import { collectScreenShares, nextPinnedScreen, pickFeaturedScreen, recordShareStarts } from './screenShares';
+import type { ScreenShare } from './screenShares.js';
+import { collectScreenShares, pickFeaturedScreen, recordShareStarts } from './screenShares.js';
 
 const streamA = { id: 'a' } as MediaStream;
 const streamB = { id: 'b' } as MediaStream;
@@ -24,32 +24,15 @@ describe('collectScreenShares', () => {
 describe('recordShareStarts', () => {
 	it('stamps new shares, keeps the stamp of ongoing ones and forgets stopped ones', () => {
 		const first = recordShareStarts(new Map(), [share('ada', streamA), share('bob', streamB)], 100);
-		expect(first.started).toBe('bob');
-
-		const second = recordShareStarts(first.starts, [share('ada', streamA)], 200);
-		expect(second.started).toBeNull();
-		expect([...second.starts]).toEqual([['ada', { stream: streamA, startedAt: 100 }]]);
+		const second = recordShareStarts(first, [share('ada', streamA)], 200);
+		expect([...second]).toEqual([['ada', { stream: streamA, startedAt: 100 }]]);
 	});
 
 	// Stopping and sharing again hands over a new stream: that is a new share, and it takes the stage again.
 	it('treats a new stream from the same person as a new share', () => {
-		const { starts } = recordShareStarts(new Map(), [share('ada', streamA)], 100);
+		const starts = recordShareStarts(new Map(), [share('ada', streamA)], 100);
 		const again = recordShareStarts(starts, [share('ada', streamC)], 300);
-		expect(again.started).toBe('ada');
-		expect(again.starts.get('ada')?.startedAt).toBe(300);
-	});
-});
-
-describe('nextPinnedScreen', () => {
-	const shares = [share('ada', streamA), share('bob', streamB)];
-
-	it('gives the pin to a share that just started', () => {
-		expect(nextPinnedScreen('ada', 'bob', shares)).toBe('bob');
-	});
-
-	it('keeps the pin while the pinned share lasts, and drops it after', () => {
-		expect(nextPinnedScreen('ada', null, shares)).toBe('ada');
-		expect(nextPinnedScreen('carol', null, shares)).toBeNull();
+		expect(again.get('ada')?.startedAt).toBe(300);
 	});
 });
 
@@ -64,7 +47,7 @@ describe('pickFeaturedScreen', () => {
 		expect(pickFeaturedScreen([], null, starts)).toBeNull();
 	});
 
-	it('features the pinned share', () => {
+	it('features the pinned share, even over one that started later', () => {
 		expect(pickFeaturedScreen(shares, 'bob', starts)?.id).toBe('bob');
 	});
 

@@ -110,7 +110,7 @@ export class AppsRestApi {
 
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!err.hasOwnProperty('response')) {
+			if (!Object.hasOwn(err, 'response')) {
 				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
@@ -1192,7 +1192,7 @@ export class AppsRestApi {
 
 					const updated = [];
 
-					for await (const s of this.bodyParams.settings) {
+					for (const s of this.bodyParams.settings) {
 						if (settings[s.id] && settings[s.id].value !== s.value) {
 							await manager.getSettingsManager().updateAppSetting(this.urlParams.id, s);
 							// Updating?

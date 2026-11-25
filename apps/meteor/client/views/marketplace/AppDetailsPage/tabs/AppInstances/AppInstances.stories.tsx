@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Page } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import AppInstances from './AppInstances';
@@ -35,6 +36,7 @@ const statusTranslations = {
 
 export default {
 	component: AppInstances,
+	decorators: [(fn) => <Page>{fn()}</Page>],
 } satisfies Meta<typeof AppInstances>;
 
 type Story = StoryObj<typeof AppInstances>;
@@ -48,6 +50,20 @@ export const Default: Story = {
 				clusterStatus: statusPossibleStates.map((status, i) => ({ instanceId: `instance-id-${i}`, status })) as any,
 			}))
 			.withTranslations('en', 'core', statusTranslations)
+			.buildStoryDecorator(),
+	],
+	args: {
+		id: 'app-id',
+	},
+};
+
+export const NotFound: Story = {
+	decorators: [
+		mockAppRoot()
+			.withEndpoint('GET', '/apps/:id/status', () => {
+				throw new Error('App not found');
+			})
+			.withTranslations('en', 'core', { App_not_found: 'App not found' })
 			.buildStoryDecorator(),
 	],
 	args: {

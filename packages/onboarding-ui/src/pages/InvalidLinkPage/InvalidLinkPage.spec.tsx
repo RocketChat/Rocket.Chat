@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import InvalidLinkPage from './InvalidLinkPage';
+import InvalidLinkPage from './InvalidLinkPage.js';
 
 it('renders without crashing', () => {
 	const { container } = render(<InvalidLinkPage onRequestNewLink={() => undefined} />);

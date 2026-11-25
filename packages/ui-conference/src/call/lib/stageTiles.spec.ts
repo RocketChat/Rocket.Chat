@@ -1,14 +1,15 @@
-import type { StageTile, TileParticipant } from './stageTiles';
+import type { StageTile, TileParticipant } from './stageTiles.js';
 import {
 	absorbLonelyTile,
 	buildStageTiles,
 	gridCellKeys,
 	gridColumnStartFor,
 	pickFeaturedTile,
+	pinnedOrFeaturedTile,
 	sidebarCapacity,
 	splitByPriority,
 	spotlightOrientation,
-} from './stageTiles';
+} from './stageTiles.js';
 
 const stream = {} as MediaStream;
 
@@ -51,6 +52,23 @@ describe('pickFeaturedTile', () => {
 
 	it('features the reader when they are alone', () => {
 		expect(pickFeaturedTile([tile('me')], null, 'me').id).toBe('me');
+	});
+});
+
+describe('pinnedOrFeaturedTile', () => {
+	const all = [tile('me'), tile('ada'), tile('bob')];
+
+	it('features the pinned person over whoever is speaking', () => {
+		expect(pinnedOrFeaturedTile(all, 'ada', 'bob', 'me').id).toBe('ada');
+	});
+
+	it('lets the reader pin themselves', () => {
+		expect(pinnedOrFeaturedTile(all, 'me', 'bob', 'me').id).toBe('me');
+	});
+
+	// A pin waiting out its grace period names someone with no tile; the stage carries on as if nobody were pinned.
+	it('features the speaker while the pinned person has no tile', () => {
+		expect(pinnedOrFeaturedTile(all, 'gone', 'bob', 'me').id).toBe('bob');
 	});
 });
 
@@ -111,6 +129,15 @@ describe('absorbLonelyTile', () => {
 		expect(result.hidden.map(({ id }) => id)).toEqual(['eve', 'x']);
 	});
 
+	// Two screens, five visible and an overflow in three columns: eight cells, nobody alone. One screen fewer and the
+	// overflow is.
+	it('counts the cells drawn ahead of the tiles', () => {
+		const visible = tiles(5);
+		const hidden = [tile('x')];
+		expect(absorbLonelyTile(visible, hidden, 3, null, 'me', 2)).toEqual({ visible, hidden });
+		expect(absorbLonelyTile(visible, hidden, 3, null, 'me', 1).visible).toHaveLength(4);
+	});
+
 	it('does nothing without an overflow to fold into', () => {
 		const visible = tiles(4);
 		expect(absorbLonelyTile(visible, [], 3, null, 'me')).toEqual({ visible, hidden: [] });
@@ -156,5 +183,12 @@ describe('sidebarCapacity', () => {
 		expect(sidebarCapacity({ width: 1600, height: 600 }, 'side-by-side')).toBe(5);
 		expect(sidebarCapacity({ width: 600, height: 800 }, 'stacked')).toBe(4);
 		expect(sidebarCapacity({ width: 50, height: 800 }, 'stacked')).toBe(1);
+	});
+
+	// A screen is wider than a thumb in the strip, and as tall as one in the column.
+	it('leaves room for the screens drawn ahead of the thumbs', () => {
+		expect(sidebarCapacity({ width: 600, height: 800 }, 'stacked', 1)).toBe(2);
+		expect(sidebarCapacity({ width: 1600, height: 600 }, 'side-by-side', 2)).toBe(3);
+		expect(sidebarCapacity({ width: 600, height: 800 }, 'stacked', 5)).toBe(1);
 	});
 });

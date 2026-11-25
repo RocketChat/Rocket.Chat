@@ -8,6 +8,8 @@ import { UIKitInteractionType, UIKitSurfaceType } from '@rocket.chat/apps-engine
 import {
 	formatContextualBarInteraction,
 	formatErrorInteraction,
+	formatModalClearInteraction,
+	formatModalCloseInteraction,
 	formatModalInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionPayloadFormatter';
 import type {
@@ -81,6 +83,41 @@ export class UIController implements IUIController {
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user, true);
 		}
+	}
+
+	public pushModalView(view: IUIKitModalViewParam, context: IUIKitInteractionParam, user: IUser) {
+		const viewWithIds = { ...view, blocks: UIHelper.assignIds(view.blocks, this.appId) };
+
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalInteraction(viewWithIds, { ...context, type: UIKitInteractionType.MODAL_PUSH, appId: this.appId }),
+			'APP_ID',
+		);
+	}
+
+	public closeModalView(viewId: string, context: IUIKitInteractionParam, user: IUser) {
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalCloseInteraction(viewId, { ...context, type: UIKitInteractionType.MODAL_CLOSE, appId: this.appId }),
+			'APP_ID',
+		);
+	}
+
+	public clearModalViews(context: IUIKitInteractionParam, user: IUser) {
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalClearInteraction({ ...context, type: UIKitInteractionType.MODAL_CLEAR, appId: this.appId }),
+			'APP_ID',
+		);
 	}
 
 	public setViewError(errorInteraction: IUIKitErrorInteractionParam, context: IUIKitInteractionParam, user: IUser) {

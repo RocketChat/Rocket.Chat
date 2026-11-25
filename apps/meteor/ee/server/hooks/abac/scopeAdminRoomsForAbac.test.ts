@@ -1,9 +1,8 @@
 import { strict as assert } from 'node:assert';
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import type { IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 type Room = Pick<IRoom, '_id' | 't' | 'abacAttributes'>;
@@ -17,21 +16,20 @@ const scopeRoomsForAdmin = sinon.stub();
 const findOneById = sinon.stub();
 let scope: Scope;
 
-const { isABACManagedRoom } = proxyquire.noCallThru().load('../../../../server/lib/authorization/isABACManagedRoom.ts', {
-	'../../settings': { settings: { get: () => true } },
-});
-
-proxyquire.noCallThru().load('./scopeAdminRoomsForAbac.ts', {
-	'@rocket.chat/core-services': { Abac: { scopeRoomsForAdmin } },
-	'@rocket.chat/license': { License: { hasModule: () => true } },
-	'../../../../server/api/lib/scopeAdminRoomsForAbac': {
-		scopeAdminRoomsForAbac: {
-			patch: (fn: Scope) => {
-				scope = fn;
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { Abac: { scopeRoomsForAdmin } } });
+	mock.module('@rocket.chat/license', { exports: { License: { hasModule: () => true } } });
+	mock.module('../../../../server/api/lib/scopeAdminRoomsForAbac', {
+		exports: {
+			scopeAdminRoomsForAbac: {
+				patch: (fn: Scope) => {
+					scope = fn;
+				},
 			},
 		},
-	},
-	'../../../../server/lib/authorization/isABACManagedRoom': { isABACManagedRoom },
+	});
+	mock.module('../../../../server/settings', { exports: { settings: { get: () => true } } });
+	await import('./scopeAdminRoomsForAbac');
 });
 
 describe('scopeAdminRoomsForAbac', () => {

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import CreateNewPassword from './CreateNewPassword';
+import CreateNewPassword from './CreateNewPassword.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

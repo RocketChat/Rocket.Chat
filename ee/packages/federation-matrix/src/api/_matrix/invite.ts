@@ -2,7 +2,7 @@ import { FederationMatrix } from '@rocket.chat/core-services';
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { getUsernameServername } from '../../helpers/getUsernameServername';
 import { logger } from '../logger';

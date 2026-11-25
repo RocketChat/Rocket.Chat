@@ -94,6 +94,35 @@ describe('GraphTokenClient', () => {
 			expect(client.tokenEndpoint).toBe('https://login.microsoftonline.us/contoso.onmicrosoft.com/oauth2/v2.0/token');
 		});
 
+		it('drops every trailing slash from the configured hosts', () => {
+			const client = new GraphTokenClient({
+				...config,
+				authorityHost: 'https://login.microsoftonline.us///',
+				graphHost: 'https://graph.microsoft.us///',
+			});
+
+			expect(client.tokenEndpoint).toBe('https://login.microsoftonline.us/contoso.onmicrosoft.com/oauth2/v2.0/token');
+			expect(client.scope).toBe('https://graph.microsoft.us/.default');
+		});
+
+		// TODO: migrate to a proper benchmark test
+		it('builds the endpoints quickly from hosts with 100k slashes followed by another character', () => {
+			const slashes = '/'.repeat(100_000);
+			const client = new GraphTokenClient({
+				...config,
+				authorityHost: `https://login.microsoftonline.us${slashes}x`,
+				graphHost: `https://graph.microsoft.us${slashes}x`,
+			});
+
+			const startedAt = performance.now();
+			const { tokenEndpoint, scope } = client;
+			const elapsedMs = performance.now() - startedAt;
+
+			expect(elapsedMs).toBeLessThan(500);
+			expect(tokenEndpoint).toBe('https://login.microsoftonline.us/contoso.onmicrosoft.com/oauth2/v2.0/token');
+			expect(scope).toBe('https://graph.microsoft.us/.default');
+		});
+
 		it('falls back to the defaults when the hosts are empty strings', () => {
 			const client = new GraphTokenClient({ ...config, authorityHost: '', graphHost: '' });
 

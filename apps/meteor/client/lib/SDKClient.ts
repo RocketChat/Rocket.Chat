@@ -149,10 +149,12 @@ const createNewDdpSdkStream = (
 		onChange,
 		ready: () => {
 			if (meta.ready) return Promise.resolve();
+			// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 			if (stopError !== undefined) return Promise.reject(stopError);
 			return new Promise<void>((resolve, reject) => {
 				ee.once('ready', ([err]) => {
 					if (err) {
+						// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 						reject(err);
 						return;
 					}

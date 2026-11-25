@@ -58,7 +58,6 @@ function setup() {
 	const originalAccountOperation = jest.fn();
 	const accounts = {
 		addAutopublishFields: jest.fn(),
-		validateNewUser: jest.fn<void, [(user: IUser & { email?: string }) => boolean]>(),
 		updateOrCreateUserFromExternalService: originalAccountOperation as typeof Accounts.updateOrCreateUserFromExternalService,
 	};
 	const users = {
@@ -87,6 +86,7 @@ function setup() {
 	const ldapLogin = jest.fn().mockResolvedValue(undefined);
 	const hasModule = jest.fn().mockReturnValue(false);
 	let Strategy!: typeof CustomOAuthStrategy;
+	let applyCustomOAuthUserFields!: typeof import('./customOAuth').applyCustomOAuthUserFields;
 	let oauth!: typeof OAuth2;
 
 	jest.isolateModules(() => {
@@ -103,13 +103,14 @@ function setup() {
 		jest.doMock('@rocket.chat/license', () => ({ License: { hasModule } }));
 		jest.doMock('../../users/saveUserIdentity', () => ({ saveUserIdentity: saveIdentity }));
 		// Each test gets fresh service registrations and exactly one Accounts wrapper.
-		Strategy = jest.requireActual<typeof import('./customOAuth')>('./customOAuth').CustomOAuthStrategy;
+		({ CustomOAuthStrategy: Strategy, applyCustomOAuthUserFields } = jest.requireActual<typeof import('./customOAuth')>('./customOAuth'));
 		oauth = jest.requireActual<typeof import('oauth')>('oauth').OAuth2;
 	});
 
 	return {
 		createStrategy: (config: Partial<Config> = {}, name = 'test') => new Strategy(name, makeConfig(config), jest.fn()),
 		accounts,
+		applyCustomOAuthUserFields,
 		originalAccountOperation,
 		users,
 		updater,
@@ -180,9 +181,59 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.createStrategy({ identityPath }).identityPath).toBe(expected);
 		});
 
+		it('appends a query-only identity path to serverURL unchanged', () => {
+			const strategy = env.createStrategy({ serverURL: 'https://identity.example.com/api/me', identityPath: '?fields=id,email' });
+			expect(strategy.identityPath).toBe('https://identity.example.com/api/me?fields=id,email');
+		});
+
 		it('preserves an absolute tokenPath property', () => {
 			const tokenPath = 'https://tokens.example.com/token';
 			expect(env.createStrategy({ tokenPath }).tokenPath).toBe(tokenPath);
+		});
+
+		it.each([
+			['https://tokens.example.com/token', 'https://tokens.example.com/token'],
+			['HTTPS://tokens.example.com/token', 'HTTPS://tokens.example.com/token'],
+			['/token', 'https://identity.example.com/token'],
+		])('resolves the token path %s', (tokenPath, expected) => {
+			expect(env.createStrategy({ tokenPath }).options.tokenURL).toBe(expected);
+		});
+
+		it('passes absolute provider endpoints to Passport unchanged', () => {
+			const strategy = env.createStrategy({
+				authorizePath: 'https://authorize.example.com/authorize',
+				tokenPath: 'https://tokens.example.com/token',
+			});
+			expect(strategy.options.authorizationURL).toBe('https://authorize.example.com/authorize');
+			expect(strategy.options.tokenURL).toBe('https://tokens.example.com/token');
+		});
+
+		it.each(['', undefined])('passes the default authorization endpoint to Passport when authorizePath is %p', (authorizePath) => {
+			expect(env.createStrategy({ authorizePath: authorizePath as string }).options.authorizationURL).toBe(
+				'https://identity.example.com/oauth/authorize',
+			);
+		});
+
+		it.each(['', undefined])('passes the default token endpoint to Passport when tokenPath is %p', (tokenPath) => {
+			expect(env.createStrategy({ tokenPath: tokenPath as string }).options.tokenURL).toBe('https://identity.example.com/oauth/token');
+		});
+
+		it.each([
+			['https://identity.example.com', '/token'],
+			['https://identity.example.com/', '/token'],
+			['https://identity.example.com/', 'token'],
+			['https://identity.example.com', 'token'],
+		])('joins serverURL %s and path %s with a single slash', (serverURL, path) => {
+			const strategy = env.createStrategy({ serverURL, authorizePath: path, tokenPath: path, identityPath: path });
+			expect(strategy.options.authorizationURL).toBe('https://identity.example.com/token');
+			expect(strategy.options.tokenURL).toBe('https://identity.example.com/token');
+			expect(strategy.tokenPath).toBe('https://identity.example.com/token');
+			expect(strategy.identityPath).toBe('https://identity.example.com/token');
+		});
+
+		it('keeps the provider path prefix when serverURL has a trailing slash', () => {
+			const strategy = env.createStrategy({ serverURL: 'https://identity.example.com/realms/main/', authorizePath: '/authorize' });
+			expect(strategy.options.authorizationURL).toBe('https://identity.example.com/realms/main/authorize');
 		});
 
 		it.each([undefined, 'default'] as const)('falls back to token transport when identity transport is %s', (identityTokenSentVia) => {
@@ -253,7 +304,7 @@ describe('CustomOAuthStrategy', () => {
 			(field) => {
 				const strategy = env.createStrategy({ [field]: undefined });
 				const identity = { id: 'external-id', username: 'alice', email: 'alice@example.com', name: 'Alice Smith' };
-				expect(strategy.normalizeIdentity({ ...identity })).toEqual(identity);
+				expect(strategy.normalizeIdentity({ ...identity })).toEqual({ ...identity, displayName: identity.name });
 			},
 		);
 
@@ -276,8 +327,22 @@ describe('CustomOAuthStrategy', () => {
 				username: 'alice',
 				email: 'alice@example.com',
 				name: 'Alice Smith',
+				displayName: 'Alice Smith',
 				avatarUrl: 'https://example.com/avatar',
 				custom_claim: [{ nested_claim: true }],
+			});
+		});
+
+		it('replaces the provider display name with the resolved name', () => {
+			const strategy = env.createStrategy({ nameField: '{{profile.first}} {{profile.last}}' });
+			const identity = { id: 'external-id', displayName: 'alice.smith', profile: { first: 'Alice', last: 'Smith' } };
+			expect(strategy.normalizeIdentity(identity)).toMatchObject({ name: 'Alice Smith', displayName: 'Alice Smith' });
+		});
+
+		it('keeps the provider display name when no name resolves', () => {
+			expect(env.createStrategy().normalizeIdentity({ id: 'external-id', displayName: 'Alice' })).toMatchObject({
+				name: undefined,
+				displayName: 'Alice',
 			});
 		});
 
@@ -396,6 +461,31 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.originalAccountOperation).toHaveBeenCalled();
 			expect(env.runCallback).not.toHaveBeenCalled();
 			expect(env.startSession).not.toHaveBeenCalled();
+		});
+
+		it('looks up an email key without a username', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsersDistinctServices: true }, 'github');
+			const data = { id: 'external-id', email: 'alice@example.com' };
+			await login(data);
+			expect(env.users.findOneByEmailAddress).toHaveBeenCalledWith('alice@example.com');
+			expect(env.originalAccountOperation).toHaveBeenCalledWith('github', data, {});
+		});
+
+		it('merges into the user found by an email key without a username', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsers: true, mergeUsersDistinctServices: true }, 'github');
+			env.users.findOneByEmailAddress.mockResolvedValue(makeUser({ username: undefined, name: undefined }));
+			await login({ id: 'external-id', email: 'alice@example.com' });
+			expect(env.updater.set).toHaveBeenCalledWith('services.github.id', 'external-id');
+			expect(env.users.updateFromUpdater).toHaveBeenCalled();
+			expect(env.session.commitTransaction).toHaveBeenCalled();
+		});
+
+		it('does not look up an email key when the identity has no email', async () => {
+			env.createStrategy({ keyField: 'email', mergeUsersDistinctServices: true }, 'github');
+			await login({ id: 'external-id', username: 'alice' });
+			for (const method of lookupMethods) {
+				expect(env.users[method]).not.toHaveBeenCalled();
+			}
 		});
 
 		it('post-processes an existing user before the original account operation', async () => {
@@ -580,15 +670,14 @@ describe('CustomOAuthStrategy', () => {
 		});
 	});
 
-	describe('new-user validation', () => {
+	describe('new-user field mapping', () => {
 		it('copies configured identity fields from the matching service', () => {
 			env.createStrategy({ usernameField: 'login', emailField: 'mail', nameField: 'displayName' }, 'github');
 			env.createStrategy({}, 'gitlab');
 			const user: IUser & { email?: string } = makeUser({
 				services: { github: { id: 'id', username: 'mapped', email: 'mapped@example.com', name: 'Mapped name' } },
 			});
-			const validate = env.accounts.validateNewUser.mock.calls[0][0];
-			expect(validate(user)).toBe(true);
+			env.applyCustomOAuthUserFields(user);
 			expect(user).toMatchObject({ username: 'mapped', email: 'mapped@example.com', name: 'Mapped name' });
 		});
 
@@ -598,7 +687,7 @@ describe('CustomOAuthStrategy', () => {
 				env.createStrategy({ usernameField: 'login', emailField: 'mail', nameField: 'displayName' }, 'github');
 				const user = makeUser({ services });
 				const before = structuredClone(user);
-				expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+				env.applyCustomOAuthUserFields(user);
 				expect(user).toEqual(before);
 			},
 		);
@@ -606,16 +695,14 @@ describe('CustomOAuthStrategy', () => {
 		it('rejects a mapped username that fails the username validation setting', () => {
 			env.createStrategy({ usernameField: 'login' }, 'github');
 			const user = makeUser({ services: { github: { id: 'id', username: 'alice@example.com' } } });
-			expect(() => env.accounts.validateNewUser.mock.calls[0][0](user)).toThrow(
-				expect.objectContaining({ error: 'error-invalid-username' }),
-			);
+			expect(() => env.applyCustomOAuthUserFields(user)).toThrow(expect.objectContaining({ error: 'error-invalid-username' }));
 		});
 
 		it('accepts a mapped username that the username validation setting allows', () => {
 			env.settingValues.set('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.@]+');
 			env.createStrategy({ usernameField: 'login' }, 'github');
 			const user = makeUser({ services: { github: { id: 'id', username: 'alice@example.com' } } });
-			expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+			env.applyCustomOAuthUserFields(user);
 			expect(user.username).toBe('alice@example.com');
 		});
 
@@ -625,7 +712,7 @@ describe('CustomOAuthStrategy', () => {
 				services: { github: { id: 'id', username: 'different', email: 'different@example.com', name: 'Different' } },
 			});
 			const before = structuredClone(user);
-			expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+			env.applyCustomOAuthUserFields(user);
 			expect(user).toEqual(before);
 		});
 	});
@@ -784,7 +871,9 @@ describe('CustomOAuthStrategy', () => {
 				login: 'alice',
 				username: 'alice',
 				name: 'alice',
+				displayName: 'alice',
 				serverURL: 'https://identity.example.com',
+				_OAuthCustom: true,
 			});
 		});
 

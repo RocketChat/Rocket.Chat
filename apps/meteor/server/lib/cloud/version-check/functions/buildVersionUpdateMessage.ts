@@ -63,7 +63,7 @@ export const buildVersionUpdateMessage = async (
 
 	await cleanupOutdatedVersionUpdateBanners();
 
-	for await (const version of sortedVersions) {
+	for (const version of sortedVersions) {
 		if (semver.prerelease(version.version)) {
 			continue;
 		}
@@ -76,11 +76,15 @@ export const buildVersionUpdateMessage = async (
 			continue;
 		}
 
-		(
-			await updateAuditedBySystem({
-				reason: 'buildVersionUpdateMessage',
-			})(Settings.updateValueById, 'Update_LatestAvailableVersion', version.version)
-		).modifiedCount && void notifyOnSettingChangedById('Update_LatestAvailableVersion');
+		if (
+			(
+				await updateAuditedBySystem({
+					reason: 'buildVersionUpdateMessage',
+				})(Settings.updateValueById, 'Update_LatestAvailableVersion', version.version)
+			).modifiedCount
+		) {
+			void notifyOnSettingChangedById('Update_LatestAvailableVersion');
+		}
 
 		await sendMessagesToAdmins({
 			msgs: async ({ adminUser }) => [

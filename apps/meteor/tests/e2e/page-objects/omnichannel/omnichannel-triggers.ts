@@ -59,22 +59,32 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 			triggerMessage: string;
 		}>,
 	) {
-		data.name && (await this.inputName.fill(data.name));
-		data.description && (await this.inputDescription.fill(data.description));
-		data.condition && (await this.selectCondition(data.condition));
+		if (data.name) {
+			await this.inputName.fill(data.name);
+		}
+		if (data.description) {
+			await this.inputDescription.fill(data.description);
+		}
+		if (data.condition) {
+			await this.selectCondition(data.condition);
+		}
 
 		if (data.conditionValue) {
 			await this.inputConditionValue.fill(data.conditionValue.toString());
 		}
 
-		data.sender && (await this.selectSender(data.sender));
+		if (data.sender) {
+			await this.selectSender(data.sender);
+		}
 		if (data.sender === 'custom' && !data.agentName) {
 			throw new Error('A custom agent is required for this action');
-		} else {
-			data.agentName && (await this.inputAgentName.fill(data.agentName));
+		} else if (data.agentName) {
+			await this.inputAgentName.fill(data.agentName);
 		}
 
-		data.triggerMessage && (await this.inputTriggerMessage.fill(data.triggerMessage));
+		if (data.triggerMessage) {
+			await this.inputTriggerMessage.fill(data.triggerMessage);
+		}
 	}
 }
 

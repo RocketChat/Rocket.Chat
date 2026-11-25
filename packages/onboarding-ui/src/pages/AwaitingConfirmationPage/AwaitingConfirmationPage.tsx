@@ -1,9 +1,9 @@
 import { BackgroundLayer } from '@rocket.chat/layout';
 import type { ReactNode } from 'react';
 
-import type { FormPageLayoutStyleProps } from '../../Types';
-import FormPageLayout from '../../common/FormPageLayout';
-import AwaitingConfirmationForm from '../../forms/AwaitConfirmationForm';
+import type { FormPageLayoutStyleProps } from '../../Types/index.js';
+import FormPageLayout from '../../common/FormPageLayout.js';
+import AwaitingConfirmationForm from '../../forms/AwaitConfirmationForm/index.js';
 
 export type AwaitingConfirmationPageProps = {
 	title?: ReactNode;
