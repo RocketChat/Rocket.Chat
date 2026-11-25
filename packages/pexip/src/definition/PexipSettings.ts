@@ -12,6 +12,7 @@ export type PexipSettings = {
 	pins: {
 		host: string;
 		guest: string;
+		skipForSip: boolean;
 	};
 	customization: {
 		themeName: string;

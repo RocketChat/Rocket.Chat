@@ -62,6 +62,13 @@ export function createPexipSettings(): Promise<void> {
 				invalidValue: '',
 				i18nDescription: `Pexip_Integration_Guest_Pin_Description`,
 			});
+
+			await this.add('Pexip_Integration_Skip_Pin_For_SIP', false, {
+				type: 'boolean',
+				public: false,
+				invalidValue: false,
+				i18nDescription: `Pexip_Integration_Skip_Pin_For_SIP_Description`,
+			});
 		});
 
 		await this.section('Pexip_Integration_Customization', async function () {
@@ -153,6 +160,7 @@ export function getPexipSettings(): PexipSettings {
 		pins: {
 			host: settings.get<string>('Pexip_Integration_Host_Pin'),
 			guest: settings.get<string>('Pexip_Integration_Guest_Pin'),
+			skipForSip: settings.get<boolean>('Pexip_Integration_Skip_Pin_For_SIP'),
 		},
 		customization: {
 			themeName: settings.get<string>('Pexip_Integration_Theme_Name'),

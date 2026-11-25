@@ -20,12 +20,15 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 		const identification = this.getIdentificationFromAlias(alias);
 		const participantSipUri = protocol === 'sip' && direction === 'dial_in' ? participantUri : null;
 
-		return this.getServiceConfigurationForIdentification(identification, participantSipUri);
+		const isSipParticipant = protocol === 'sip';
+
+		return this.getServiceConfigurationForIdentification(identification, participantSipUri, isSipParticipant);
 	}
 
 	private async getServiceConfigurationForIdentification(
 		identification: string,
 		participantSipUri: string | null,
+		isSipParticipant: boolean,
 	): Promise<ServiceConfiguration | null> {
 		const call = await this.getCallByIdentification(identification);
 		if (!call) {
@@ -38,7 +41,8 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 
 		const [hostPin, guestPin] = await this.pexip.createAndStorePinsForCall(call);
 
-		const canSkipPin = await this.detectVoiceCallEscalation(call, participantSipUri);
+		const isEscalation = await this.detectVoiceCallEscalation(call, participantSipUri);
+		const canSkipPin = isEscalation || (isSipParticipant && this.pexip.settings.pins.skipForSip);
 		const guestPinToUse = canSkipPin ? null : guestPin;
 
 		return this.makeServiceConfiguration(call._id, title, hostPin, guestPinToUse);

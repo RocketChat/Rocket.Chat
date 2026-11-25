@@ -4889,6 +4889,8 @@
   "Pexip_Integration_SIP_Host_Description": "Der Host, der beim Weiterleiten von Benutzern an eine Konferenz über SIP verwendet werden soll.",
   "Pexip_Integration_SIP_Port": "SIP-Port",
   "Pexip_Integration_SIP_Port_Description": "Der Port, der beim Weiterleiten von Benutzern an eine Konferenz über SIP verwendet werden soll.",
+  "Pexip_Integration_Skip_Pin_For_SIP": "PIN-Abfrage für SIP-Teilnehmer überspringen",
+  "Pexip_Integration_Skip_Pin_For_SIP_Description": "Wenn aktiviert, werden Gäste, die einer Konferenz über SIP beitreten, nicht nach dem Gast-PIN gefragt.",
   "Pexip_Integration_Theme_Name": "Theme-Name",
   "Pexip_Integration_Theme_Name_Description": "Name des Pexip-Themes, das für Rocket.Chat-Anrufe verwendet werden soll",
   "Pexip_Premium_only": "Pexip (nur Premium)",

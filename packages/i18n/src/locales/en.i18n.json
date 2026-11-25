@@ -5444,6 +5444,8 @@
   "Pexip_Integration_SIP_Host_Description": "The host that should be used when transferring users to a conference through SIP.",
   "Pexip_Integration_SIP_Port": "SIP Port",
   "Pexip_Integration_SIP_Port_Description": "The port that should be used when transferring users to a conference through SIP.",
+  "Pexip_Integration_Skip_Pin_For_SIP": "Skip PIN requirement for SIP participants",
+  "Pexip_Integration_Skip_Pin_For_SIP_Description": "When enabled, guests joining a conference over SIP are not asked for the guest pin.",
   "Pexip_Integration_Theme_Name": "Theme Name",
   "Pexip_Integration_Theme_Name_Description": "Name of the pexip theme to be used on Rocket.Chat calls",
   "Pexip_Premium_only": "Pexip (Premium only)",

@@ -22,8 +22,13 @@ import { EventSinkEndpoint } from '../src/endpoints/eventSink';
 // eslint-disable-next-line import-x/first
 import { ServerConfigurationEndpoint } from '../src/endpoints/serviceConfiguration';
 
+const pins = { host: '', guest: '', skipForSip: false };
+
 const pexip = {
-	settings: { customization: { locked: true, themeName: 'rocket.chat', meetingLayout: 'one_main_seven_pips', overlayText: true } },
+	settings: {
+		pins,
+		customization: { locked: true, themeName: 'rocket.chat', meetingLayout: 'one_main_seven_pips', overlayText: true },
+	},
 	createAndStorePinsForCall: jest.fn().mockResolvedValue(['1234', '5678']),
 } as never;
 
@@ -43,6 +48,7 @@ const settle = () => new Promise((resolve) => setImmediate(resolve));
 
 beforeEach(() => {
 	jest.clearAllMocks();
+	pins.skipForSip = false;
 	findOneByProviderNameAndSipAlias.mockResolvedValue(null);
 	findOneById.mockResolvedValue(null);
 	increaseSipParticipantCount.mockResolvedValue({ _id: 'call1' });
@@ -96,6 +102,33 @@ describe('ServerConfigurationEndpoint', () => {
 
 	it('should answer with nothing when the alias names no conference', async () => {
 		expect(await endpoint().get({ local_alias: '12345678' } as never)).toBeNull();
+	});
+
+	it('should ask SIP participants for the guest pin by default', async () => {
+		findOneById.mockResolvedValue({ _id: 'aBc123', title: 'Standup' });
+
+		const config = await endpoint().get({ local_alias: 'aBc123', protocol: 'sip' } as never);
+
+		expect(config).toMatchObject({ pin: '1234', guest_pin: '5678' });
+	});
+
+	it('should not ask SIP participants for the guest pin when the workspace skips it', async () => {
+		pins.skipForSip = true;
+		findOneById.mockResolvedValue({ _id: 'aBc123', title: 'Standup' });
+
+		const config = await endpoint().get({ local_alias: 'aBc123', protocol: 'sip' } as never);
+
+		expect(config).toMatchObject({ pin: '1234' });
+		expect(config).not.toHaveProperty('guest_pin');
+	});
+
+	it('should still ask other participants for the guest pin when the workspace skips it for SIP', async () => {
+		pins.skipForSip = true;
+		findOneById.mockResolvedValue({ _id: 'aBc123', title: 'Standup' });
+
+		const config = await endpoint().get({ local_alias: 'aBc123', protocol: 'webrtc' } as never);
+
+		expect(config).toMatchObject({ pin: '1234', guest_pin: '5678' });
 	});
 });
 
