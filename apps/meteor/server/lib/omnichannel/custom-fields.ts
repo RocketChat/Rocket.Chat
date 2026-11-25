@@ -37,6 +37,7 @@ export async function updateContactsCustomFields(
 				return prev;
 			}
 			prev.conflictingFields ??= contact.conflictingFields || [];
+			// oxlint-disable-next-line typescript/no-unsafe-call -- accumulator doubles as a dynamic $set document
 			prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
 			return prev;
 		},

@@ -24,7 +24,7 @@ async function findUsers({
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	const query: FilterOperators<ILivechatAgent> = {};
-	const orConditions: FilterOperators<ILivechatAgent>['$or'] = [];
+	const orConditions: FilterOperators<ILivechatAgent>[] = [];
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		orConditions.push({ $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });

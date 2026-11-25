@@ -33,6 +33,7 @@ export class OAuthEEManager {
 						channels = [channels];
 					}
 					for await (const channel of channels) {
+						// oxlint-disable-next-line typescript/no-unsafe-call -- channelsMap comes from a JSON setting typed Record<string, any>
 						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
 						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {

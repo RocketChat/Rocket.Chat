@@ -56,6 +56,7 @@ class BotHelpers {
 			return null;
 		}
 		if (typeof p === 'function') {
+			// oxlint-disable-next-line typescript/no-unsafe-call -- dispatches to whichever method the caller names
 			return p(...params);
 		}
 

@@ -194,6 +194,7 @@ export class ResponseParser {
 			SAMLUtils.log('No Attribute Statement found in SAML response.');
 		}
 
+		// oxlint-disable-next-line typescript/no-unsafe-call -- the parsed SAML profile is typed Record<string, any>
 		if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
 			profile.email = profile.nameID;
 		}

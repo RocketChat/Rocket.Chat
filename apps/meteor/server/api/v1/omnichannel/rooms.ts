@@ -37,6 +37,7 @@ API.v1.addRoute(
 			const closedAtParam = validateDateParams('closedAt', closedAt);
 
 			const hasAdminAccess = await hasPermissionAsync(this.user, 'view-livechat-rooms');
+			// oxlint-disable-next-line typescript/no-unsafe-call -- tsc types agents as string[] from isGETLivechatRoomsParams, but oxlint's checker resolves this legacy addRoute's queryParams as any
 			const hasAgentAccess = (await hasPermissionAsync(this.user, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.forbidden();

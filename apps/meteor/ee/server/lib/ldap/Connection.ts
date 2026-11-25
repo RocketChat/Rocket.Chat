@@ -168,6 +168,7 @@ export class LDAPConnection {
 		};
 
 		if (attribute) {
+			// oxlint-disable-next-line typescript/no-unsafe-call -- @types/ldapjs does not declare the filters namespace
 			searchOptions.filter = new this.ldapjs.filters.EqualityFilter({
 				attribute,
 				value: Buffer.from(id, 'hex'),
@@ -182,12 +183,14 @@ export class LDAPConnection {
 				}
 
 				filters.push(
+					// oxlint-disable-next-line typescript/no-unsafe-call -- @types/ldapjs does not declare the filters namespace
 					new this.ldapjs.filters.EqualityFilter({
 						attribute: field,
 						value: Buffer.from(id, 'hex'),
 					}),
 				);
 			}
+			// oxlint-disable-next-line typescript/no-unsafe-call -- @types/ldapjs does not declare the filters namespace
 			searchOptions.filter = new this.ldapjs.filters.OrFilter({ filters });
 		} else {
 			throw new Error('Unique Identifier Field is not configured.');
@@ -318,6 +321,7 @@ export class LDAPConnection {
 					key,
 					type: dataType,
 					length: values[key].length,
+					// oxlint-disable-next-line typescript/no-unsafe-call -- ILDAPEntry values are typed any
 					value: `${values[key].substr(0, 100)}...`,
 				});
 				return;
@@ -673,6 +677,7 @@ export class LDAPConnection {
 
 	private _updateIdle(override?: boolean): void {
 		// @ts-expect-error use a private function to signal to the lib that we're still working
+		// oxlint-disable-next-line typescript/no-unsafe-call -- _updateIdle is private to ldapjs and absent from its types
 		this.client._updateIdle(override);
 	}
 

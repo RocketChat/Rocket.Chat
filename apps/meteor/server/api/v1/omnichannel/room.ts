@@ -246,6 +246,7 @@ API.v1.addRoute(
 
 			const updateData: { [k: string]: string } = {};
 			for (const item of data) {
+				// oxlint-disable-next-line typescript/no-unsafe-call -- livechat settings() is typed Record<string, any>
 				if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
 					updateData[item.name] = item.value;
 				}

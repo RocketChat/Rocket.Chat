@@ -593,6 +593,7 @@ class RocketChatIntegrationHandler {
 
 		// based on HTTP.call implementation
 		if (opts.auth) {
+			// oxlint-disable-next-line typescript/no-unsafe-call -- wrapScriptEngineCall returns the script result untyped
 			if (opts.auth.indexOf(':') < 0) {
 				throw new Error('auth option should be of the form "username:password"');
 			}

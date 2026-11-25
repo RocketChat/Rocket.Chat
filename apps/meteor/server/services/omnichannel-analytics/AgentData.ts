@@ -296,7 +296,7 @@ export class AgentOverviewData {
 			}
 		});
 
-		agentFirstRespTime.forEach((value, key) => {
+		agentFirstRespTime.forEach((value: number, key: string) => {
 			// calculate avg
 			data.data.push({
 				name: key,

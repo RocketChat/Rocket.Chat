@@ -105,9 +105,10 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 		textClassName: (props: Record<string, unknown>) => string;
 	};
 
-	const { createClassName, escapeName, transpile } = require('@rocket.chat/css-in-js');
-	const { createLogicalPropertiesMiddleware } = require('@rocket.chat/stylis-logical-props-middleware');
-	const { middleware, prefixer, stringify } = require('stylis');
+	const { createClassName, escapeName, transpile } = require('@rocket.chat/css-in-js') as typeof import('@rocket.chat/css-in-js');
+	const { createLogicalPropertiesMiddleware } =
+		require('@rocket.chat/stylis-logical-props-middleware') as typeof import('@rocket.chat/stylis-logical-props-middleware');
+	const { middleware, prefixer, stringify } = require('stylis') as typeof import('stylis');
 
 	const transpileMiddleware = middleware([
 		createLogicalPropertiesMiddleware({

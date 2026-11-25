@@ -87,7 +87,7 @@ const validateAttachmentsActions = (attachmentActions: any) => {
 	});
 };
 
-const validateAttachment = (attachment: any) => {
+const validateAttachment = (attachment: { fields?: unknown[]; actions?: unknown[] }) => {
 	validateFieldsWhenPresent(attachment, {
 		color: isString,
 		text: isString,

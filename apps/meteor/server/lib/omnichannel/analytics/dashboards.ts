@@ -63,6 +63,7 @@ const getProductivityMetricsAsync = async ({
 
 	const totalOfWaitingTime = averageWaitingTime.departments.length;
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfWaitingTime = averageWaitingTime.departments.reduce((acc: number, serviceTime: { averageWaitingTimeInSeconds: number }) => {
 		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
@@ -117,6 +118,7 @@ const getAgentsProductivityMetricsAsync = async ({
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfServiceTime = averageOfServiceTime.departments.reduce(
 		(
 			acc: number,
@@ -169,6 +171,7 @@ const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { 
 	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
 	const totalOfChatDurationTime = averageOfChatDurationTime.departments.length;
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce(
 		(
 			acc: number,
@@ -181,6 +184,7 @@ const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { 
 		},
 		0,
 	);
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfChatDurationTime = averageOfChatDurationTime.departments.reduce(
 		(
 			acc: number,
@@ -193,6 +197,7 @@ const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { 
 		},
 		0,
 	);
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const totalAbandonedRooms = abandonedRooms.departments.reduce(
 		(
 			acc: number,
@@ -292,9 +297,11 @@ const findAllChatMetricsByAgentAsync = async ({
 	});
 
 	const result: Record<string, { open: number; closed: number; onhold?: number }> = {};
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(open || []).forEach((agent: { chats: number; _id: string }) => {
 		result[agent._id] = { open: agent.chats, closed: 0, onhold: 0 };
 	});
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(closed || []).forEach((agent: { _id: string; chats: number }) => {
 		result[agent._id] = {
 			open: result[agent._id] ? result[agent._id].open : 0,
@@ -302,6 +309,7 @@ const findAllChatMetricsByAgentAsync = async ({
 		};
 	});
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(onhold || []).forEach((agent: { _id: string; chats: number }) => {
 		result[agent._id] = {
 			...result[agent._id],
@@ -337,9 +345,11 @@ const findAllChatMetricsByDepartmentAsync = async ({
 		departmentId,
 	});
 	const result: Record<string, { open: number; closed: number }> = {};
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(open || []).forEach((department: { name: string; chats: number }) => {
 		result[department.name] = { open: department.chats, closed: 0 };
 	});
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(closed || []).forEach((department: { name: string; chats: number }) => {
 		result[department.name] = {
 			open: result[department.name] ? result[department.name].open : 0,

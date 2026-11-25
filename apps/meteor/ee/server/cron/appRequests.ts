@@ -36,7 +36,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 
 		const pendingSentUrl = `v1/app-request/sent/pending`;
 		const result = await Apps.getMarketplaceClient().fetch(pendingSentUrl, options);
-		const { data } = await result.json();
+		const { data }: { data: string[] } = await result.json();
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
 		for (const app of filtered) {

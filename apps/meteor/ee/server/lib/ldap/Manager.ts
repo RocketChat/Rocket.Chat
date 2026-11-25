@@ -151,6 +151,7 @@ export class LDAPManager {
 			return;
 		}
 
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILDAPEntry._raw values are typed any
 		const hash = SHA256(avatar.toString());
 		if (user.avatarETag === hash) {
 			return;
@@ -426,6 +427,7 @@ export class LDAPManager {
 		if (key) {
 			return {
 				attribute: key,
+				// oxlint-disable-next-line typescript/no-unsafe-call -- ILDAPEntry._raw values are typed any
 				value: ldapUser._raw[key].toString('hex'),
 			};
 		}

@@ -17,6 +17,7 @@ export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) =>
 };
 
 afterInquiryQueued.patch(async (originalFn: any, inquiry: ILivechatInquiryRecord) => {
+	// oxlint-disable-next-line typescript/no-unsafe-call -- next is called without the inquiry, which its typed signature requires
 	await originalFn();
 	return afterInquiryQueuedFunc(inquiry);
 });

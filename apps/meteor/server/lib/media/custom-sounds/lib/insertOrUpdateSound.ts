@@ -53,6 +53,7 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 	}
 
 	if (soundData.newFile) {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileCustomSoundsInstance is exported untyped from custom-sounds.js
 		await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
 	}
 

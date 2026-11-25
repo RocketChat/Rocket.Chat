@@ -125,6 +125,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 
 		// This path never asks, so the value counts as accepted.
+		// oxlint-disable-next-line typescript/no-unsafe-call -- e is the untyped pseudo-event (FIXME above)
 		e?.onConfirmed?.();
 		setValue(value);
 
@@ -166,6 +167,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
 	const confirmedAction = useStableCallback(async (e: any) => {
 		if (await isAccepted()) {
+			// oxlint-disable-next-line typescript/no-unsafe-call -- e is the untyped pseudo-event (see the FIXME in stateFunction)
 			e?.onConfirmed?.();
 			await actionFunction(e);
 		}

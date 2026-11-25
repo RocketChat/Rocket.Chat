@@ -55,7 +55,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	if (syncUserDataFieldMap) {
 		// Our mapping table: key(int_attr) -> value(ext_attr)
 		// Spoken: Source this internal attribute from these external attributes
-		const attributeMap = wrapExceptions(() => JSON.parse(syncUserDataFieldMap) as Record<string, any>).catch((err) => {
+		const attributeMap = wrapExceptions(() => JSON.parse(syncUserDataFieldMap) as Record<string, string>).catch((err) => {
 			logger.error({ msg: 'Invalid JSON for attribute mapping', err });
 			throw err;
 		});
@@ -65,7 +65,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 				continue;
 			}
 
-			let replacedValue = source as string;
+			let replacedValue = source;
 			for (const externalName of getObjectKeys(externalAttributes)) {
 				replacedValue = replacedValue.replace(`%${externalName}%`, externalAttributes[externalName]);
 			}

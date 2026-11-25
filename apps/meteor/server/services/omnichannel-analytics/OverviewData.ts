@@ -118,10 +118,13 @@ export class OverviewData {
 
 			const dayMap = analyticsMap.get(creationDay);
 
+			// oxlint-disable-next-line typescript/no-unsafe-call -- analyticsMap is untyped; typing it needs new undefined guards
 			if (!dayMap.has(creationHour)) {
+				// oxlint-disable-next-line typescript/no-unsafe-call -- analyticsMap is untyped; typing it needs new undefined guards
 				dayMap.set(creationHour, 0);
 			}
 
+			// oxlint-disable-next-line typescript/no-unsafe-call -- analyticsMap is untyped; typing it needs new undefined guards
 			dayMap.set(creationHour, dayMap.get(creationHour) ? dayMap.get(creationHour) + room.msgs : room.msgs);
 			totalMessages += room.msgs;
 		}

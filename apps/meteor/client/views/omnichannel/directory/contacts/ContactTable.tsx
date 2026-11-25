@@ -113,6 +113,7 @@ function ContactTable() {
 				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
+						{/* oxlint-disable-next-line typescript/no-unsafe-call -- JSX element props are any in React typings */}
 						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>

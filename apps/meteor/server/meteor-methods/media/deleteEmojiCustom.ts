@@ -17,6 +17,7 @@ export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDes
 		});
 	}
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 	await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
 	await EmojiCustom.removeById(emojiID);
 	void api.broadcast('emoji.deleteCustom', emoji);

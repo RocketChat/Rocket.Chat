@@ -154,6 +154,7 @@ export const createService = ({
 	return class extends VideoConfService {
 		constructor() {
 			(Object.entries(doubles) as [ModelName, object][]).forEach(([name, double]) => mockModel(name, double));
+			// oxlint-disable-next-line typescript/no-unsafe-call -- proxyquire.load returns the module untyped
 			super();
 		}
 	} as new () => any;

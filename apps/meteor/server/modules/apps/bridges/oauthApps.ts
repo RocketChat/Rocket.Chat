@@ -48,6 +48,7 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 			return {
 				...rest,
 				id: _id,
+				// oxlint-disable-next-line typescript/no-unsafe-call -- data is cast to any to reshape IOAuthApps into IOAuthApp
 				createdAt: _createdAt.toDateString(),
 				createdBy: {
 					id: _createdBy._id,

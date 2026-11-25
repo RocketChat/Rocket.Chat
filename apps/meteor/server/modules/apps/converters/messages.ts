@@ -121,6 +121,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			type: 't',
 			files: async (message: MessageData) => convertMessageFiles(message.files, attachments),
 			room: async (message: MessageData): Promise<unknown> => {
+				// oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
 				return result;
@@ -133,6 +134,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 					return undefined;
 				}
 
+				// oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
 				return cache.get('user.convertById')(editedBy._id);
 			},
 			attachments: async (message: MessageData) => {
@@ -150,8 +152,10 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 
 				// When the message contains token, means the message is from the visitor(omnichannel)
 				const user = await (isMessageFromVisitor(msgObj)
-					? cache.get('user.convertToApp')(sender)
-					: cache.get('user.convertById')(sender._id));
+					? // oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
+						cache.get('user.convertToApp')(sender)
+					: // oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
+						cache.get('user.convertById')(sender._id));
 
 				delete message.u;
 
@@ -160,6 +164,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
+				// oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
 				return user || cache.get('user.convertToApp')(sender);
 			},
 		} as const;
@@ -283,6 +288,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				collapsed: attachment.collapsed,
 				color: attachment.color,
 				text: attachment.text,
+				// oxlint-disable-next-line typescript/no-unsafe-call -- app attachments carry fields IMessageAttachment does not declare
 				ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
 				message_link: attachment.timestampLink,
 				thumb_url: attachment.thumbnailUrl,

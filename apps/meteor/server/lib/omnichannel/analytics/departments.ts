@@ -13,6 +13,7 @@ export const findAllRoomsAsync = async ({ start, end, answered, departmentId, op
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllRooms({
 		start,
 		answered,
@@ -21,6 +22,7 @@ export const findAllRoomsAsync = async ({ start, end, answered, departmentId, op
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await LivechatRooms.findAllRooms({
 			start,
 			answered,
@@ -36,6 +38,7 @@ export const findAllAverageOfChatDurationTimeAsync = async ({ start, end, depart
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllAverageOfChatDurationTime({
 		start,
 		end,
@@ -43,6 +46,7 @@ export const findAllAverageOfChatDurationTimeAsync = async ({ start, end, depart
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await LivechatRooms.findAllAverageOfChatDurationTime({
 			start,
 			end,
@@ -57,6 +61,7 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId,
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllAverageOfServiceTime({
 		start,
 		end,
@@ -64,6 +69,7 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId,
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await LivechatRooms.findAllAverageOfServiceTime({
 			start,
 			end,
@@ -78,6 +84,7 @@ export const findAllServiceTimeAsync = async ({ start, end, departmentId, option
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllServiceTime({
 		start,
 		end,
@@ -85,6 +92,7 @@ export const findAllServiceTimeAsync = async ({ start, end, departmentId, option
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await LivechatRooms.findAllServiceTime({
 			start,
 			end,
@@ -99,6 +107,7 @@ export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId,
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllAverageWaitingTime({
 		start,
 		end,
@@ -106,6 +115,7 @@ export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId,
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await LivechatRooms.findAllAverageWaitingTime({
 			start,
 			end,
@@ -141,6 +151,7 @@ export const findAllNumberOfAbandonedRoomsAsync = async ({ start, end, departmen
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await (
 		await LivechatRooms.findAllNumberOfAbandonedRooms({
 			start,
@@ -151,6 +162,7 @@ export const findAllNumberOfAbandonedRoomsAsync = async ({ start, end, departmen
 		})
 	).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await (
 			await LivechatRooms.findAllNumberOfAbandonedRooms({
 				start,
@@ -168,6 +180,7 @@ export const findPercentageOfAbandonedRoomsAsync = async ({ start, end, departme
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await (
 		await LivechatRooms.findPercentageOfAbandonedRooms({
 			start,
@@ -178,6 +191,7 @@ export const findPercentageOfAbandonedRoomsAsync = async ({ start, end, departme
 		})
 	).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		departments: await (
 			await LivechatRooms.findPercentageOfAbandonedRooms({
 				start,

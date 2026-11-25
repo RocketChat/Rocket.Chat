@@ -330,6 +330,7 @@ class RocketChatAssetsClass {
 		}
 
 		const hash = crypto.createHash('sha1').update(file.buffer).digest('hex');
+		// oxlint-disable-next-line typescript/no-unsafe-call -- setting values reach processAsset untyped
 		const extension = settingValue.url.split('.').pop();
 
 		assetValue.cache = {

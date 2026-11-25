@@ -319,6 +319,7 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 				historyId,
 				step: `execute-script-error-running-${method}`,
 				error: true,
+				// oxlint-disable-next-line typescript/no-unsafe-call -- errors thrown by integration scripts are untyped
 				errorStack: err.stack.replace(/^/gm, '  '),
 			});
 			this.logger.error({

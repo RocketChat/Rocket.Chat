@@ -1,5 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 import { isLivechatVisitorStatusProps, isPOSTLivechatVisitorProps } from '@rocket.chat/rest-typings';
@@ -24,7 +24,8 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
+			const { customFields, id, token, name, email, department, phone, username, connectionData }: ILivechatVisitorDTO =
+				this.bodyParams.visitor;
 
 			if (!token?.trim()) {
 				throw new ClientSafeError('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });

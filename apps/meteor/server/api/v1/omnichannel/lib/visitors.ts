@@ -1,6 +1,7 @@
 import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser, IVisitor } from '@rocket.chat/core-typings';
+import type { FindPaginated } from '@rocket.chat/model-typings';
 import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
-import type { FindOptions } from 'mongodb';
+import type { FindCursor, FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../../../lib/callbacks';
@@ -63,7 +64,7 @@ export async function findChatHistory({
 	}
 
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
-	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(
+	const { cursor, totalCount }: FindPaginated<FindCursor<IOmnichannelRoom>> = LivechatRooms.findPaginatedByVisitorId(
 		visitorId,
 		{
 			sort: sort || { ts: -1 },
@@ -118,6 +119,7 @@ export async function searchChats({
 		limit: count,
 	};
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: closedChatsOnly !== 'true',
@@ -135,6 +137,7 @@ export async function searchChats({
 		source,
 	});
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const history = await cursor.toArray();
 
 	return {
