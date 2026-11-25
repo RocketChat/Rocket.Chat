@@ -31,10 +31,9 @@ import type {
 
 import { BaseRaw } from './BaseRaw';
 
-// Functions rather than constants, so loading the model does not read the enum: some specs mock it away.
-const liveStatuses = () => [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED];
+const LIVE_STATUSES = [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED];
 
-const liveLinkedConferenceFilter = () => ({ conferenceRoomId: { $exists: true }, status: { $in: liveStatuses() } });
+const liveLinkedConferenceFilter = { conferenceRoomId: { $exists: true }, status: { $in: LIVE_STATUSES } };
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
@@ -53,11 +52,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{
 				key: { status: 1, createdAt: -1 },
 				unique: false,
-				partialFilterExpression: { status: { $in: liveStatuses() } },
+				partialFilterExpression: { status: { $in: LIVE_STATUSES } },
 			},
 			// At most one live conference per link, which is what makes concurrent starts from a link converge.
-			{ key: { conferenceRoomId: 1 }, unique: true, partialFilterExpression: liveLinkedConferenceFilter() },
-			{ key: { customUrl: 1 }, unique: false, partialFilterExpression: liveLinkedConferenceFilter() },
+			{ key: { conferenceRoomId: 1 }, unique: true, partialFilterExpression: liveLinkedConferenceFilter },
+			{ key: { customUrl: 1 }, unique: false, partialFilterExpression: liveLinkedConferenceFilter },
 		];
 	}
 
@@ -458,7 +457,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public findActiveWithMembers(): FindCursor<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>> {
 		return this.find(
 			{
-				status: { $in: liveStatuses() },
+				status: { $in: LIVE_STATUSES },
 				endedAt: { $exists: false },
 			},
 			{ projection: { _id: 1, rid: 1, users: 1, providerName: 1 } },
@@ -469,27 +468,27 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		T extends Document = VideoConference,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
 	>(customUrl: NonNullable<IGroupVideoConference['customUrl']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
-		return this.findOne<T, O>({ customUrl, status: { $in: liveStatuses() } }, options);
+		return this.findOne<T, O>({ customUrl, status: { $in: LIVE_STATUSES } }, options);
 	}
 
 	public findOneActiveByConferenceRoomId<
 		T extends Document = VideoConference,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
 	>(conferenceRoomId: NonNullable<IGroupVideoConference['conferenceRoomId']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
-		return this.findOne<T, O>({ conferenceRoomId, status: { $in: liveStatuses() } }, options);
+		return this.findOne<T, O>({ conferenceRoomId, status: { $in: LIVE_STATUSES } }, options);
 	}
 
 	public findActiveByConferenceRoomIds<
 		T extends Document = VideoConference,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
 	>(conferenceRoomIds: NonNullable<IGroupVideoConference['conferenceRoomId']>[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
-		return this.find<T, O>({ conferenceRoomId: { $in: conferenceRoomIds }, status: { $in: liveStatuses() } }, options);
+		return this.find<T, O>({ conferenceRoomId: { $in: conferenceRoomIds }, status: { $in: LIVE_STATUSES } }, options);
 	}
 
 	public findActiveCustomUrlsStartingWith<
 		T extends Document = VideoConference,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
 	>(prefix: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
-		return this.find<T, O>({ customUrl: { $regex: `^${escapeRegExp(prefix)}` }, status: { $in: liveStatuses() } }, options);
+		return this.find<T, O>({ customUrl: { $regex: `^${escapeRegExp(prefix)}` }, status: { $in: LIVE_STATUSES } }, options);
 	}
 }

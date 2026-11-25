@@ -1,5 +1,6 @@
 import { before, describe, it, mock } from 'node:test';
 
+import * as coreTypings from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 
@@ -25,6 +26,7 @@ before(async () => {
 	});
 	mock.module('@rocket.chat/core-typings', {
 		exports: {
+			...coreTypings,
 			isMessageFromVisitor: (message) => 'token' in message,
 		},
 	});
