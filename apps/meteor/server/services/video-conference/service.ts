@@ -1962,11 +1962,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-room');
 		}
 
+		return this.buildChatAccess(uid, room, []);
+	}
+
+	private async buildChatAccess(uid: IUser['_id'], room: IRoom, membersWithoutAccess: IUser['_id'][]): Promise<VideoConferenceChatAccess> {
 		return {
-			rid,
+			rid: room._id,
 			name: room.fname || room.name || '',
 			type: room.t,
-			membersWithoutAccess: [],
+			membersWithoutAccess,
+			// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
+			// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
 			canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
 		};
 	}
@@ -1998,15 +2004,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const withoutAccess = new Set(membersWithoutAccess);
 
 		return {
-			access: {
-				rid,
-				name: room.fname || room.name || '',
-				type: room.t,
-				membersWithoutAccess,
-				// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
-				// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
-				canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
-			},
+			access: await this.buildChatAccess(uid, room, membersWithoutAccess),
 			usernamesWithoutAccess: call.users
 				.filter(({ _id }) => withoutAccess.has(_id))
 				.map(({ username }) => username)
