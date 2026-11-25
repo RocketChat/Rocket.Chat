@@ -8,20 +8,31 @@ import type { ILoginAttempt } from '../lib/auth/ILoginAttempt';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
 
-Accounts.onLogin((info: ILoginAttempt) => {
-	const {
-		methodArguments,
-		connection: { httpHeaders },
-	} = info;
+// Methods such as verifyEmail pass non-object arguments (e.g. token strings) in methodArguments.
+const getResumeToken = (methodArguments: unknown): string | undefined => {
+	if (!Array.isArray(methodArguments)) {
+		return undefined;
+	}
 
+	const resumeArg = methodArguments.find(
+		(arg): arg is { resume: string } => typeof arg === 'object' && arg !== null && 'resume' in arg && typeof arg.resume === 'string',
+	);
+
+	return resumeArg?.resume;
+};
+
+Accounts.onLogin((info: ILoginAttempt) => {
 	if (!info.user) {
 		return;
 	}
 
-	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
+	const { methodArguments, connection } = info;
+	const httpHeaders = connection?.httpHeaders ?? {};
+
+	const resume = getResumeToken(methodArguments);
 	const loginToken = resume ? hashLoginToken(resume) : '';
 	const instanceId = InstanceStatus.id();
-	const clientAddress = info.connection.clientAddress || getHeader(httpHeaders, 'x-real-ip');
+	const clientAddress = connection?.clientAddress || getHeader(httpHeaders, 'x-real-ip');
 	const userAgent = getHeader(httpHeaders, 'user-agent');
 	const host = getHeader(httpHeaders, 'host');
 
@@ -30,7 +41,7 @@ Accounts.onLogin((info: ILoginAttempt) => {
 		instanceId,
 		userAgent,
 		loginToken,
-		connectionId: info.connection.id,
+		connectionId: connection?.id ?? '',
 		clientAddress,
 		host,
 	});
@@ -45,7 +56,7 @@ Accounts.onLogout((info) => {
 		return;
 	}
 
-	sauEvents.emit('sau.accounts.logout', { userId: info.user._id, sessionId: info.connection.id });
+	sauEvents.emit('sau.accounts.logout', { userId: info.user._id, sessionId: info.connection?.id ?? '' });
 });
 
 Meteor.onConnection((connection) => {
