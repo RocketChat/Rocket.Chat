@@ -17,8 +17,8 @@ import {
 	FieldRow,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useClipboardWithToast } from '@rocket.chat/ui-client';
-import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useClipboardWithToast, UserAutoComplete } from '@rocket.chat/ui-client';
+import { useAbsoluteUrl, useGetPermission, usePermission } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -34,6 +34,8 @@ export type IncomingWebhookFormProps = { webhookData?: Serialized<IIncomingInteg
 const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
+	const permission = useGetPermission('message-impersonate');
+	const canFilterByRole = usePermission('view-full-other-user-info');
 
 	const {
 		control,
@@ -205,10 +207,10 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Post_as') }) }}
 									render={({ field }) => (
-										<TextInput
+										<UserAutoComplete
 											id={usernameField}
 											{...field}
-											endAddon={<Icon name='user' size='x20' />}
+											conditions={canFilterByRole && permission?.roles ? { roles: { $in: permission.roles } } : undefined}
 											aria-describedby={`${usernameField}-hint-1 ${usernameField}-hint-2 ${usernameField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.username)}

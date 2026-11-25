@@ -102,6 +102,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 			],
 			getRoles: () => Roles.state.records,
 			subscribeToRoles: (callback) => Roles.use.subscribe(callback),
+			getPermission: (permissionId: string) => Permissions.state.get(permissionId),
 		}),
 		[auth, userId],
 	);
