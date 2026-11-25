@@ -71,6 +71,11 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   [hosted-muc R18](hosted-muc.md): it never carries ABAC attributes and ABAC enforcement
   never locks it, so an invitation creates it, and its members write to it, while
   enforcement is on.
+- **R14** An invitation whose room JID, in any spelling, is on our own domain or MUC domain
+  is dropped: it creates no user record and no channel, and adds no one to any room. Such a
+  JID names a room this server hosts, whose members only Rocket.Chat decides
+  ([hosted-muc](hosted-muc.md)), or no room at all. Only a channel that mirrors a remote room
+  gains members through an invitation.
 - **R2** The invitee is then joined into the remote room with their own session: occupant
   JID `<username>@<domain>/rocketchat`, nick `<username>`
   ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).
@@ -160,6 +165,18 @@ the winner created (R12).
 - Unescaping XEP-0106 localparts (`team\20room`) for the displayed name.
 
 ## Known defects
+
+### D1 An invitation naming a room on our own domains adds the invitee to it
+
+R14 does not hold. An invitation naming a room this server hosts, sent by anyone on an
+accepted server, makes the invitee a member. They can then read the room's history, even in
+a private group nobody added them to. If they were banned, the ban is lifted and the inviter
+is recorded as lifting it. A JID on our MUC domain that names no room gets a mirrored
+channel. Where: `MucService.handlePossibleInvite` emits every invitation whatever its room's
+domain, and `XMPPServerService.onMucInvite` adds the invitee to whichever room has that JID.
+Tests: `remote-muc.spec.ts`, "does not add the invitee to a private hosted room", "keeps a
+member banned from a hosted room out", "mirrors no room for a JID on our MUC domain that no
+room has".
 
 Defects that show in remote rooms but are owned elsewhere:
 

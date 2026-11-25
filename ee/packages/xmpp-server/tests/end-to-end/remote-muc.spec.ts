@@ -10,6 +10,8 @@ import { isGroupchat, isOccupantPresence, replacedId } from './helper/predicates
 import {
 	assertDomainAllowed,
 	anonymousOccupantUsername,
+	banFromRoom,
+	createHostedRoom,
 	createLocalUser,
 	deleteRoomOnCleanup,
 	expectStoredOnce,
@@ -58,8 +60,12 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 		const roomJid = await alice.createRoom(localpart, { membersOnly: true, archive, disclosesJids, nick });
 		rc.cleanup.add(() => alice.destroyRoom(roomJid));
 		forgetRemoteUserOnCleanup(rc, anonymousOccupantUsername(nick, roomJid));
+		return { roomJid, shadowName: shadowNameOf(roomJid) };
+	}
+
+	function shadowNameOf(roomJid: string): string {
 		const hash = createHash('sha256').update(roomJid).digest('hex').slice(0, 8);
-		return { roomJid, shadowName: `${roomJid.replace(/[^0-9a-zA-Z-_.]/g, '_')}-${hash}` };
+		return `${roomJid.replace(/[^0-9a-zA-Z-_.]/g, '_')}-${hash}`;
 	}
 
 	async function inviteFromXmpp(roomJid: string, user: LocalUser): Promise<void> {
@@ -309,6 +315,48 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			const text = `no id ${uniqueSuffix()}`;
 			await alice.sendGroupchat(roomJid, text, { id: null });
 			await expectStoredOnce(members[0], shadow, text);
+		});
+	});
+
+	describe('when a remote user invites into a room on our own domains', () => {
+		let owner: LocalUser;
+		let outsider: LocalUser;
+		let banned: LocalUser;
+		let hosted: IRoom;
+		let unhostedRoomJid: string;
+
+		before(async () => {
+			[owner, outsider, banned] = [await createLocalUser(rc, 'ho'), await createLocalUser(rc, 'hx'), await createLocalUser(rc, 'hb')];
+			// Has no part in any of the rooms it names
+			const mallory = await registerXmppUser(rc, 'mallory');
+			hosted = await createHostedRoom(rc, owner, { type: 'p', name: `xe2e-hosted-${uniqueSuffix()}`, members: [banned.username] });
+			assert.ok(hosted.xmppFederation?.role === 'host-muc', `expected a host-muc room, got ${hosted.xmppFederation?.role}`);
+			await banFromRoom(owner, hosted, banned._id);
+			unhostedRoomJid = `xe2e-unhosted-${uniqueSuffix()}@${rc.mucDomain}`;
+
+			await mallory.directInvite(hosted.xmppFederation.muc, outsider.jid);
+			await mallory.directInvite(hosted.xmppFederation.muc, banned.jid);
+			await mallory.directInvite(unhostedRoomJid, outsider.jid);
+
+			// Handling a legitimate invitation sent after them means the service has read the ones before
+			const { roomJid, shadowName } = await openRoom({ archive: false });
+			await inviteFromXmpp(roomJid, outsider);
+			await waitForShadowRoom(shadowName, roomJid, outsider);
+		});
+
+		// Known defect: ../../docs/specs/remote-muc.md#d1-an-invitation-naming-a-room-on-our-own-domains-adds-the-invitee-to-it
+		it.skip('does not add the invitee to a private hosted room (D1)', async () => {
+			assert.ok(!(await listMemberUsernames(owner, hosted)).includes(outsider.username));
+		});
+
+		// Known defect: ../../docs/specs/remote-muc.md#d1-an-invitation-naming-a-room-on-our-own-domains-adds-the-invitee-to-it
+		it.skip('keeps a member banned from a hosted room out (D1)', async () => {
+			assert.ok(!(await listMemberUsernames(owner, hosted)).includes(banned.username));
+		});
+
+		// Known defect: ../../docs/specs/remote-muc.md#d1-an-invitation-naming-a-room-on-our-own-domains-adds-the-invitee-to-it
+		it.skip('mirrors no room for a JID on our MUC domain that no room has (D1)', async () => {
+			assert.equal(await findRoomByName(outsider.config, shadowNameOf(unhostedRoomJid)), undefined);
 		});
 	});
 });
