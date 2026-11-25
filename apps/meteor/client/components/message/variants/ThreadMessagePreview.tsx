@@ -44,7 +44,7 @@ export type ThreadMessagePreviewProps = {
 const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps) => {
 	const parentMessage = useParentMessage(message.tmid);
 	const uid = useUserId();
-	const threadMainMessage = Messages.use((state) => state.get(message.tmid));
+	const threadMainMessage = Messages.use((state) => state.get(message.tmid)) ?? parentMessage.data;
 
 	const translated = useShowTranslated(message);
 	const { t } = useTranslation();
