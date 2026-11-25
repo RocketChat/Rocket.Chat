@@ -121,6 +121,36 @@ const placeBox = (box: HTMLElement, list: HTMLElement, scroller: HTMLElement, re
 	box.style.height = `${height}px`;
 };
 
+type AvailableGroup = { group: string; box: HTMLElement };
+
+// The groups a dragged row can go into are outlined as soon as they render, so the places to aim at are visible before hovering.
+const trackAvailableGroups = (list: HTMLElement, accepts: (group: string) => boolean) => {
+	const seen = new Set<string>();
+	const available: AvailableGroup[] = [];
+
+	const sync = () => {
+		for (const element of list.querySelectorAll<HTMLElement>('[data-drag-group]')) {
+			const group = element.dataset.dragGroup;
+			if (!group || seen.has(group)) {
+				continue;
+			}
+			seen.add(group);
+			if (!accepts(group)) {
+				continue;
+			}
+			const box = document.createElement('div');
+			box.className = 'rcx-item-drop-box rcx-item-drop-box--available';
+			box.hidden = true;
+			document.body.append(box);
+			available.push({ group, box });
+		}
+		return available;
+	};
+
+	sync();
+	return sync;
+};
+
 // Flashes the row once it shows up away from where it was, so the eye finds where it landed.
 const flashWhenLanded = (list: HTMLElement, key: string, fromTop: number | undefined) => {
 	const deadline = performance.now() + LANDING_TIMEOUT_MS;
@@ -205,7 +235,8 @@ export const useItemListDrag = ({
 				let preview: HTMLElement | undefined;
 				let indicator: HTMLElement | undefined;
 				let shield: HTMLElement | undefined;
-				let available: { group: string; box: HTMLElement }[] = [];
+				let available: AvailableGroup[] = [];
+				let syncAvailable: (() => AvailableGroup[]) | undefined;
 				let target: ItemListDropTarget | undefined;
 				let frame = 0;
 				let holdTimer: ReturnType<typeof setTimeout> | undefined;
@@ -216,6 +247,7 @@ export const useItemListDrag = ({
 					}
 
 					shield?.classList.toggle('rcx-item-drag-shield--no-drop', !target);
+					syncAvailable?.();
 
 					for (const { group, box } of available) {
 						placeBox(box, list, scroller, target?.position === 'inside' && target.group === group ? undefined : groupRect(list, group));
@@ -280,22 +312,6 @@ export const useItemListDrag = ({
 					frame = requestAnimationFrame(autoScroll);
 				};
 
-				// The groups a dragged row can go into are outlined from the start, so the places to aim at are visible before hovering.
-				const markAvailableGroups = () => {
-					const groups = new Set(
-						Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (element) => element.dataset.dragGroup!),
-					);
-					available = Array.from(groups)
-						.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')
-						.map((group) => {
-							const box = document.createElement('div');
-							box.className = 'rcx-item-drop-box rcx-item-drop-box--available';
-							box.hidden = true;
-							document.body.append(box);
-							return { group, box };
-						});
-				};
-
 				const movePreview = () => {
 					// The copy trails the pointer instead of sitting under it, so the row or group being aimed at stays visible.
 					if (preview) {
@@ -329,7 +345,11 @@ export const useItemListDrag = ({
 					document.body.append(shield);
 
 					if (dragSource.kind === 'item') {
-						markAvailableGroups();
+						syncAvailable = trackAvailableGroups(
+							list,
+							(group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside',
+						);
+						available = syncAvailable();
 					}
 
 					setSource(dragSource);
@@ -454,7 +474,8 @@ export const useItemListDrag = ({
 						sourceElement: HTMLElement;
 						scroller: HTMLElement;
 						indicator: HTMLElement;
-						available: { group: string; box: HTMLElement }[];
+						available: AvailableGroup[];
+						syncAvailable: () => AvailableGroup[];
 						target: ItemListDropTarget | undefined;
 				  }
 				| undefined;
@@ -516,18 +537,20 @@ export const useItemListDrag = ({
 				indicator.hidden = true;
 				document.body.append(indicator);
 
-				const groups = new Set(Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (el) => el.dataset.dragGroup!));
-				const available = Array.from(groups)
-					.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')
-					.map((group) => {
-						const box = document.createElement('div');
-						box.className = 'rcx-item-drop-box rcx-item-drop-box--available';
-						box.hidden = true;
-						document.body.append(box);
-						return { group, box };
-					});
+				const syncAvailable = trackAvailableGroups(
+					list,
+					(group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside',
+				);
 
-				nativeDrag = { source: dragSource, sourceElement, scroller, indicator, available, target: undefined };
+				nativeDrag = {
+					source: dragSource,
+					sourceElement,
+					scroller,
+					indicator,
+					available: syncAvailable(),
+					syncAvailable,
+					target: undefined,
+				};
 				// The drag still ends when its row has been scrolled out of the list.
 				sourceElement.addEventListener('dragend', handleDragEnd);
 				setSource(dragSource);
@@ -539,6 +562,7 @@ export const useItemListDrag = ({
 				}
 
 				const { source, scroller, indicator, available } = nativeDrag;
+				nativeDrag.syncAvailable();
 
 				const hovered = document
 					.elementsFromPoint(x, y)
