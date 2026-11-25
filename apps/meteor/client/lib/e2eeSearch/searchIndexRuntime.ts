@@ -129,7 +129,7 @@ export const DELETION_RECORDS_KEPT_MS = 30 * 24 * 60 * 60 * 1000;
 export const REINDEX_AFTER_MS = DELETION_RECORDS_KEPT_MS - 5 * 24 * 60 * 60 * 1000;
 
 type SearchIndexRuntimeOptions = {
-	session: Pick<SearchIndexSession, 'getActiveBackend' | 'subscribe'> & Partial<Pick<SearchIndexSession, 'wipeClosed'>>;
+	session: Pick<SearchIndexSession, 'getActiveBackend' | 'subscribe'>;
 	writer: Pick<SearchIndexWriter, 'remove' | 'flush'>;
 	syncMessages: (params: SyncMessagesParams) => Promise<SyncMessagesPage>;
 	/** The client's E2E decrypt path, which also queues the decrypted message for the writer. */
@@ -192,12 +192,6 @@ export type SearchIndexRuntime = {
 	onRoomRemoved(rid: string): Promise<void>;
 	/** Resolves when the removal of the left rooms after the last open, and a restart after a loss, are done. Specs use it. */
 	whenSettled(): Promise<void>;
-	/**
-	 * Empties the open index, after the user reset the own E2E key: the old messages are not readable with the new key,
-	 * and the index must not keep them. The crawler stops until the next login. While E2EE is locked no index is open,
-	 * and the index of the logged-in user is deleted closed. Resolves `false` when nothing was wiped.
-	 */
-	wipe(): Promise<boolean>;
 	dispose(): void;
 };
 
@@ -442,20 +436,6 @@ export const createSearchIndexRuntime = ({
 			} catch (error) {
 				onError(error);
 			}
-		},
-		async wipe() {
-			const current = backend;
-			if (!current) return (await session.wipeClosed?.()) ?? false;
-
-			const stopping = scheduler?.stop();
-			setScheduler(undefined);
-			await stopping;
-			// Sends the queued documents first, so the wipe also takes them.
-			await writer.flush();
-			// Another index opened during the waits: the wipe was for the index that closed, not for this one.
-			if (backend !== current) return false;
-			await current.wipe();
-			return true;
 		},
 		dispose() {
 			unsubscribe();

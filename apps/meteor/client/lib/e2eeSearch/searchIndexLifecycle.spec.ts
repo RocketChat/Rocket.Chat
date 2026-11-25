@@ -102,52 +102,6 @@ describe('search index lifecycle', () => {
 		expect(await searchIds('quokka')).toEqual(['m1']);
 	});
 
-	it('wipes the open index when the user resets the own E2E key', async () => {
-		const { wipe, index, searchIds, runtime, backend } = await setup();
-		await index(message('m1', 'r1', 'narwhal reset'));
-
-		await expect(runtime.wipe()).resolves.toBe(true);
-
-		expect(wipe).toHaveBeenCalledTimes(1);
-		// The wipe closes the index, like the desktop app: the next login opens an empty one.
-		await expect(backend.stats()).rejects.toThrow('not open');
-		await backend.open({ userId: 'u1' });
-		expect(await searchIds('narwhal')).toEqual([]);
-	});
-
-	it('sends a document that was queued before the key reset to no index', async () => {
-		const { writer, runtime, searchIds, backend } = await setup();
-		writer.index(message('m1', 'r1', 'queued walrus'));
-
-		await runtime.wipe();
-		await writer.flush();
-		await backend.open({ userId: 'u1' });
-
-		expect(await searchIds('walrus')).toEqual([]);
-	});
-
-	// A user who forgot the E2E password resets the key while E2EE is locked, so no index is open. The new key
-	// cannot open the old index, and no file of it must stay: the backend deletes the index of the logged-in user.
-	it('deletes the closed index of the user when the key is reset while E2EE is locked', async () => {
-		const { wipe, runtime, setState, index, searchIds, backend } = await setup();
-		await index(message('m1', 'r1', 'locked narwhal'));
-		setState('DISABLED');
-
-		await expect(runtime.wipe()).resolves.toBe(true);
-
-		expect(wipe).toHaveBeenCalledTimes(1);
-		expect(wipe).toHaveBeenCalledWith({ userId: 'u1' });
-		await backend.open({ userId: 'u1' });
-		expect(await searchIds('narwhal')).toEqual([]);
-	});
-
-	it('reports that nothing was wiped when no index is open and no user is logged in', async () => {
-		const { wipe, runtime } = await setup(undefined, { userId: '' });
-
-		await expect(runtime.wipe()).resolves.toBe(false);
-		expect(wipe).not.toHaveBeenCalled();
-	});
-
 	it('removes the rows of a room when its subscription is removed', async () => {
 		const { removeRoom, index, searchIds, runtime, subscriptions } = await setup([
 			{ rid: 'r1', encrypted: true },

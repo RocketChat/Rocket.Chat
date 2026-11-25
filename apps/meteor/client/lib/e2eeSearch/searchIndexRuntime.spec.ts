@@ -143,12 +143,6 @@ describe('createSearchIndexRuntime', () => {
 		expect(listener).toHaveBeenCalled();
 		expect(runtime.getProgress()).toBeUndefined();
 		expect(scheduler.subscribe.mock.results[0].value).toHaveBeenCalledTimes(1);
-
-		session.set(createFakeSearchIndexBackend());
-		await runtime.wipe();
-
-		expect(runtime.getProgress()).toBeUndefined();
-		expect(schedulers[1].scheduler.subscribe.mock.results[0].value).toHaveBeenCalledTimes(1);
 	});
 
 	it('catches up every room after a reconnect, and retries pending messages when a room key arrives', () => {

@@ -72,11 +72,6 @@ export type SearchIndexSession = {
 	 * more, or opens the index when it became allowed while E2EE is ready.
 	 */
 	recheck(): void;
-	/**
-	 * Deletes the index of the logged-in user while no index is open (E2EE is locked), after the user reset the own E2E
-	 * key: the new key cannot open the old index. Resolves `false` when there is no user or no backend.
-	 */
-	wipeClosed(): Promise<boolean>;
 	/** Resolves when the open or wipe that runs now (if any) has settled. */
 	whenSettled(): Promise<void>;
 	dispose(): void;
@@ -367,18 +362,6 @@ export const createSearchIndexSession = (
 			}
 			const userId = source.getUserId();
 			void serialize(() => wipeIfNotAllowed(userId));
-		},
-		wipeClosed: () => {
-			const userId = source.getUserId();
-			const backend = getBackend();
-			if (!userId || !backend) return Promise.resolve(false);
-
-			// An open that resolves after this point does not activate the backend.
-			stop();
-			return serialize(async () => {
-				await backend.wipe({ userId });
-				return true;
-			});
 		},
 		whenSettled: () => pending,
 		dispose: () => {
