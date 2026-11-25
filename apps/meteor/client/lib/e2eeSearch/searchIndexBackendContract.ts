@@ -118,17 +118,19 @@ export const describeSearchIndexBackendContract = (
 			expect(first.snippet).not.toContain('<mark>');
 		});
 
-		it('filters by room, sender and date range', async () => {
+		it('filters by room, sender, sender username and date range', async () => {
 			const backend = await openBackend();
 			await backend.upsert([
 				doc({ id: 'm1', body: 'needle', rid: 'r1', uid: 'u1', ts: 100 }),
 				doc({ id: 'm2', body: 'needle', rid: 'r2', uid: 'u1', ts: 200 }),
-				doc({ id: 'm3', body: 'needle', rid: 'r1', uid: 'u2', ts: 300 }),
+				doc({ id: 'm3', body: 'needle', rid: 'r1', uid: 'u2', username: 'Bob', ts: 300 }),
 			]);
 
 			await expect(ids(backend, { text: 'needle', rid: 'r1', order: 'recent' })).resolves.toEqual(['m3', 'm1']);
 			await expect(ids(backend, { text: 'needle', uid: 'u1', order: 'recent' })).resolves.toEqual(['m2', 'm1']);
 			await expect(ids(backend, { text: 'needle', from: 150, to: 250 })).resolves.toEqual(['m2']);
+			await expect(ids(backend, { text: 'needle', username: 'bob' })).resolves.toEqual(['m3']);
+			await expect(ids(backend, { text: '', rid: 'r1', username: 'bob' })).resolves.toEqual(['m3']);
 		});
 
 		it('orders recent hits newest first and caps the limit', async () => {

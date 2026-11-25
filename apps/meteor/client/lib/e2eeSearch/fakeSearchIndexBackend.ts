@@ -59,7 +59,7 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 			assertOpen();
 			const tokens = queryTokens(query.text);
 			// An empty text with filters lists the newest messages of the filters. No filter at all finds nothing.
-			const filtered = query.rid !== undefined || query.uid !== undefined || query.from !== undefined || query.to !== undefined;
+			const filtered = query.rid !== undefined || query.uid !== undefined || query.username !== undefined || query.from !== undefined || query.to !== undefined;
 			const filtersOnly = query.text.trim() === '' && filtered;
 			if (tokens.length === 0 && !filtersOnly) return [];
 
@@ -70,6 +70,7 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 					(doc) =>
 						(query.rid === undefined || doc.rid === query.rid) &&
 						(query.uid === undefined || doc.uid === query.uid) &&
+						(query.username === undefined || doc.username.toLowerCase() === query.username.toLowerCase()) &&
 						doc.ts >= from &&
 						doc.ts <= to &&
 						tokens.every((token) => doc.words.some((word) => word.startsWith(token))),
