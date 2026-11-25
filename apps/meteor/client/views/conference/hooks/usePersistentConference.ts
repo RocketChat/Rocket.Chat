@@ -38,7 +38,6 @@ export const usePersistentConference = (link: VideoConferenceInfo, segment: stri
 	return {
 		title: 'title' in link && link.title ? link.title : '',
 		canStart: link.canStart === true,
-		/** Ringing is offered in a direct room, to someone who may ring. */
 		canRing: link.chatAccess.type === 'd' && canRingUsers,
 		capabilities: link.capabilities,
 		starting,
