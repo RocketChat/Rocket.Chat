@@ -24,7 +24,7 @@ const RoomsTab = ({ form: { control }, actions, setSelectedRoom }: RoomsTabProps
 			<Field>
 				<FieldLabel>{t('Channel_name')}</FieldLabel>
 				<FieldRow>
-					<Stack direction='row' align='center' grow gap={8}>
+					<Stack direction='row' align='center' grow gap='x8'>
 						<RoomAutoComplete
 							scope='admin'
 							setSelectedRoom={setSelectedRoom}

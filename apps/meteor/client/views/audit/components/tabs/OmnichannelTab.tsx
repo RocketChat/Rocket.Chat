@@ -48,7 +48,7 @@ const OmnichannelTab = ({ form: { control }, actions }: OmnichannelTabProps) => 
 				<Field>
 					<FieldLabel>{t('Agent')}</FieldLabel>
 					<FieldRow>
-						<Stack direction='row' align='center' grow gap={8}>
+						<Stack direction='row' align='center' grow gap='x8'>
 							<AutoCompleteAgent
 								error={(() => {
 									if (agentFieldState.error?.type === 'required') {

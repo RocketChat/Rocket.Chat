@@ -33,7 +33,7 @@ const DirectTab = ({ form: { control }, actions }: DirectTabProps) => {
 			<Field>
 				<FieldLabel>{t('Users')}</FieldLabel>
 				<FieldRow>
-					<Stack direction='row' align='center' grow gap={8}>
+					<Stack direction='row' align='center' grow gap='x8'>
 						<UserAutoCompleteMultiple
 							value={usersField.value}
 							error={usersFieldState.error?.message}

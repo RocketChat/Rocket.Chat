@@ -33,7 +33,7 @@ const UsersTab = ({ form: { control }, actions }: UsersTabProps) => {
 			<Field>
 				<FieldLabel>{t('Users')}</FieldLabel>
 				<FieldRow>
-					<Stack direction='row' align='center' grow gap={8}>
+					<Stack direction='row' align='center' grow gap='x8'>
 						<UserAutoCompleteMultiple
 							error={usersFieldState.error?.message}
 							value={usersField.value}
