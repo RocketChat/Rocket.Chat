@@ -70,6 +70,11 @@ export const syncUserContacts = async (
 				summary.fatal = true;
 				return summary;
 			}
+
+			// The throttle holds every folder of this mailbox, so the rest wait for the next run.
+			if (isExchangeError(outcome.error) && outcome.error.code === 'mailbox-rate-limited') {
+				return summary;
+			}
 		}
 
 		if (complete) {
