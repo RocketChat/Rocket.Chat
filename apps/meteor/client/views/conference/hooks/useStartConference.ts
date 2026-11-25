@@ -1,8 +1,8 @@
-import type { CallPreferences } from '@rocket.chat/ui-conference';
-import { useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
 import { useRoomSubscriptionQuery } from './useRoomSubscriptionQuery';
+import { useStartConferenceMutation } from './useStartConferenceMutation';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
@@ -13,15 +13,11 @@ import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
  * click only opens this window; what it shows is the preflight, and confirming is what starts the call.
  *
  * It reads what the preflight needs from the room rather than from a conference: the name to offer, whether this
- * is a direct call, and what the provider can be told about devices.
+ * is a direct call, and what the provider can be told about devices. The call it started is reported to
+ * `onStarted`.
  */
-export const useStartConference = (rid: string) => {
-	const router = useRouter();
-	const queryClient = useQueryClient();
+export const useStartConference = (rid: string, { onStarted }: { onStarted: (callId: string) => void }) => {
 	const getCapabilities = useEndpoint('GET', '/v1/video-conference.capabilities');
-	const startConference = useEndpoint('POST', '/v1/video-conference.start');
-	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
-	const cancelConference = useEndpoint('POST', '/v1/video-conference.cancel');
 
 	// The same permission the start endpoint checks before it honours `allowRinging`. Without it the request is
 	// accepted and the ringing quietly dropped, so a screen that offered the choice would be promising a call
@@ -43,46 +39,7 @@ export const useStartConference = (rid: string) => {
 
 	const isDirect = subscription?.t === 'd';
 
-	const {
-		mutate: start,
-		isPending: starting,
-		error: startError,
-	} = useMutation({
-		mutationFn: async ({ state, name, ring }: { state: CallPreferences; name?: string; ring?: boolean }) => {
-			// `allowRinging` is a request, not an instruction: the server decides from the room whether ringing is
-			// the right way to announce this call at all, and this only says whether the caller wants it where it is.
-			const { data } = await startConference({ roomId: rid, title: name, allowRinging: ring ?? true });
-
-			try {
-				const joined = await joinConference({ callId: data.callId, state });
-
-				return { callId: data.callId, joined };
-			} catch (error) {
-				// The call exists by now — a message in the room, a phone ringing somewhere — and the window is about
-				// to show an error page with no way back to it. Cancelling is what ends the ring and closes what was
-				// just opened. Only a direct call can be cancelled (`VideoConf.cancel` refuses anything else), and a
-				// group conference nobody entered is collected by the empty-call sweep instead.
-				if (isDirect) {
-					try {
-						await cancelConference({ callId: data.callId });
-					} catch {
-						// Nothing better to do with it: what the user has to hear is why the join failed.
-					}
-				}
-
-				throw error;
-			}
-		},
-		onSuccess: ({ callId, joined }) => {
-			// Handing the join on through the cache is what stops the conference page asking the same questions
-			// again the moment it opens: the user has answered them, and is already in the call.
-			queryClient.setQueryData(videoConferenceQueryKeys.join(callId), joined);
-
-			// Replaces this screen in history, so reloading the window — or reaching it again from anywhere else —
-			// lands on the conference rather than starting a second one.
-			router.navigate({ name: 'conference', params: { id: callId } }, { replace: true });
-		},
-	});
+	const { start, starting, error: startError } = useStartConferenceMutation({ rid, isDirect, onStarted });
 
 	const loading = isRoomPending || isCapabilitiesPending;
 
@@ -111,8 +68,7 @@ export const useStartConference = (rid: string) => {
 		error: startError ?? roomError ?? capabilitiesError ?? (noSubscription ? new Error('conference-room-unavailable') : null),
 		/**
 		 * Whether the call is being created. This screen stays mounted while it happens — creating the conference
-		 * and joining it are two requests, and navigating away is the last thing `start` does — so the button that
-		 * asked for it is what has to say so.
+		 * and joining it are two requests — so the button that asked for it is what has to say so.
 		 */
 		starting,
 		start,
