@@ -547,8 +547,9 @@ at the same time, and asking the database rather than reading first is what keep
 state their connections contradict.
 
 Nothing is inferred. Pexip retries an event it could not deliver every second and queues the rest, so a
-departure that happened while the workspace was down still arrives, late, with its real time. A Pexip call is
-not `embedded`, so the heartbeat sweep never touched it anyway. What isn't covered is an event Pexip gives up
+departure that happened while the workspace was down still arrives, late, with its real time. The call window
+doesn't send heartbeats for such a call: a Pexip call is not `embedded`, so the sweep never read them, and
+nothing else does. What isn't covered is an event Pexip gives up
 on, and a workspace without the event sink configured or on Infinity older than v33: nobody connects with a
 tag there, so nobody is ever shown as in the call.
 

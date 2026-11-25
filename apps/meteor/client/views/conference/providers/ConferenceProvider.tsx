@@ -85,7 +85,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		);
 	}, [setModal, leaveNow]);
 
-	useConferencePresenceLease(callId, conference.joined);
+	// A provider that reports who is connected decides presence alone, so there is no lease for this window to renew.
+	useConferencePresenceLease(callId, conference.joined && !call.capabilities.providerPresence);
 	useConferenceSubscription(room.rid);
 
 	// Who is reading, and what the workspace and their preferences have already settled. Read once here rather
