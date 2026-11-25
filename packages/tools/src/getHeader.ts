@@ -11,17 +11,17 @@ export const getHeader = <T extends string | string[] = string>(headers: HeaderL
 		return (headers.get(key) ?? '') as T;
 	}
 
-	if (headers[key] !== undefined) {
+	if (Object.hasOwn(headers, key) && headers[key] !== undefined) {
 		return headers[key] as T;
 	}
 
 	const lowerKey = key.toLowerCase();
-	if (headers[lowerKey] !== undefined) {
+	if (Object.hasOwn(headers, lowerKey) && headers[lowerKey] !== undefined) {
 		return headers[lowerKey] as T;
 	}
 
-	const matchedKey = Object.keys(headers).find((k) => k.toLowerCase() === lowerKey);
-	if (matchedKey && headers[matchedKey] !== undefined) {
+	const matchedKey = Object.keys(headers).find((k) => k.toLowerCase() === lowerKey && headers[k] !== undefined);
+	if (matchedKey !== undefined) {
 		return headers[matchedKey] as T;
 	}
 

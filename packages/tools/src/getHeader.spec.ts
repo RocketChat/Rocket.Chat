@@ -84,6 +84,22 @@ describe('getHeader', () => {
 
 			expect(getHeader<string[]>(headers, 'x-forwarded-for')).toStrictEqual(['10.0.0.1', '10.0.0.2']);
 		});
+
+		it('does not return inherited Object.prototype properties', () => {
+			expect(getHeader({}, 'CONSTRUCTOR')).toBe('');
+			expect(getHeader({}, 'constructor')).toBe('');
+			expect(getHeader({}, 'toString')).toBe('');
+			expect(getHeader({ Constructor: 'custom-value' }, 'CONSTRUCTOR')).toBe('custom-value');
+		});
+
+		it('skips undefined entries to find defined header with different casing', () => {
+			const headers = {
+				'X-Foo': undefined,
+				'X-FOO': 'present',
+			};
+
+			expect(getHeader(headers, 'x-foo')).toBe('present');
+		});
 	});
 
 	describe('Headers support', () => {
