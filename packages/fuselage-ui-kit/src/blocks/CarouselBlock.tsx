@@ -27,9 +27,11 @@ const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps
 			return;
 		}
 
+		const isRtl = getComputedStyle(element).direction === 'rtl';
+		const scrollOffset = isRtl ? -element.scrollLeft : element.scrollLeft;
 		setEdges({
-			start: element.scrollLeft <= 0,
-			end: element.scrollLeft + element.clientWidth >= element.scrollWidth - 1,
+			start: scrollOffset < 1,
+			end: scrollOffset + element.clientWidth >= element.scrollWidth - 1,
 		});
 	}, []);
 
@@ -42,8 +44,10 @@ const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps
 
 	const scrollBy = (direction: -1 | 1) => {
 		const element = scroller.current;
+		if (!element) return;
 
-		element?.scrollBy({ left: direction * element.clientWidth * 0.8, behavior: 'smooth' });
+		const rtlSign = getComputedStyle(element).direction === 'rtl' ? -1 : 1;
+		element.scrollBy({ left: direction * rtlSign * element.clientWidth * 0.8, behavior: 'smooth' });
 	};
 
 	const cards = (Array.isArray(block.elements) ? block.elements : []).filter(isCard);
