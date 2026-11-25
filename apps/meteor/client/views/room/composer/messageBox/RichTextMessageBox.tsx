@@ -78,6 +78,8 @@ const RichTextMessageBox = ({
 	previewUrls,
 	threadExists,
 }: MessageBoxProps): ReactElement => {
+	'use no memo';
+
 	const chat = useChat();
 	const room = useRoom();
 	const { t } = useTranslation();
@@ -211,6 +213,9 @@ const RichTextMessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
+	const popupOptions = useComposerPopupOptions();
+	const popup = useComposerBoxPopup(popupOptions);
+
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
@@ -279,7 +284,7 @@ const RichTextMessageBox = ({
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
 	const federationMatrixEnabled = useIsFederationEnabled();
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.useStore.subscribe(onStoreChange), []);
 	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
 		if (!room.t) {
 			return false;
@@ -440,9 +445,6 @@ const RichTextMessageBox = ({
 	const handleMouseMove = useStableCallback((event: MouseEvent<HTMLDivElement>) => setLinkModifier(isCmdOrCtrlPressed(event)));
 
 	const handleMouseLeave = useStableCallback(() => setLinkModifier(false));
-
-	const popupOptions = useComposerPopupOptions();
-	const popup = useComposerBoxPopup(popupOptions);
 
 	const keyDownHandlerCallbackRef = useCallback(
 		(node: HTMLDivElement) => {

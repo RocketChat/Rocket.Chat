@@ -37,7 +37,7 @@ const AudioAttachment = ({
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 
-	const { play, toggle, seek, cyclePlaybackRate, retry, isActive, playing, currentTime, duration, playbackRate, loading, error } =
+	const { play, toggle, seek, cyclePlaybackRate, retry, activeTrackId, playing, currentTime, duration, playbackRate, loading, error } =
 		useMediaPlayer();
 
 	const track = useMemo<PersistentAudioTrack>(
@@ -55,7 +55,7 @@ const AudioAttachment = ({
 		[source?.mid, source?.rid, source?.username, source?.name, url, src, type, title, size],
 	);
 
-	const active = isActive(track.id);
+	const active = activeTrackId === track.id;
 	const [previewDuration, setPreviewDuration] = useState(0);
 	const waveform = useAudioWaveform(src, size);
 	const [inactiveSeek, setInactiveSeek] = useState<{ trackId: string; time: number }>();

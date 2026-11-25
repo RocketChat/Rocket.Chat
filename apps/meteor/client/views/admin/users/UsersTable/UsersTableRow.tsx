@@ -55,7 +55,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 		}
 	}, [active, lastLogin, t, type, federated]);
 
-	const roleNames = Roles.use((state) => {
+	const roleNames = Roles.useStore((state) => {
 		return roles
 			?.map((roleId) => state.get(roleId)?.name)
 			.filter((roleName): roleName is string => !!roleName)

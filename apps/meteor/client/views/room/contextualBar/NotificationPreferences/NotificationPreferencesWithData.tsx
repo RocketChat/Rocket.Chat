@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEndpointMutation } from '@rocket.chat/ui-client';
 import { useCustomSound, useToastMessageDispatch, useRoomToolbox, useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NotificationPreferences from './NotificationPreferences';
@@ -55,7 +55,7 @@ const NotificationPreferencesWithData = () => {
 		},
 	});
 
-	const { desktopSound } = methods.watch();
+	const desktopSound: string = useWatch({ control: methods.control, name: 'desktopSound' });
 
 	const handlePlaySound = (): void => {
 		customSound.play(desktopSound === 'default' ? newMessageNotificationPreference : desktopSound);

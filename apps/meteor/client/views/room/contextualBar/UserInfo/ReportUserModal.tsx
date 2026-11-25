@@ -2,7 +2,7 @@ import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, Fie
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useId } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 export type ReportUserModalProps = {
@@ -17,15 +17,12 @@ type ReportUserModalsFields = {
 };
 
 const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUserModalProps) => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<ReportUserModalsFields>({
+	const { register, handleSubmit, control } = useForm<ReportUserModalsFields>({
 		defaultValues: {
 			reasonForReport: '',
 		},
 	});
+	const { errors } = useFormState({ control });
 
 	const { t } = useTranslation();
 

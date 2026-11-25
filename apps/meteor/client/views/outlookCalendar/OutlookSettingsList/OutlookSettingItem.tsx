@@ -10,14 +10,14 @@ export type OutlookSettingItemProps = {
 	handleEnable: (value: boolean) => void;
 };
 
+const hovered = css`
+	&:hover {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
+
 const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
 	const { t } = useTranslation();
-
-	const hovered = css`
-		&:hover {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 
 	return (
 		<Box

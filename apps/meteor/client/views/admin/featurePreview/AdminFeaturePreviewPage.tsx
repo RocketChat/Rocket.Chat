@@ -24,7 +24,7 @@ import {
 import { useToastMessageDispatch, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import ContentColumn from '../../../components/ContentColumn';
@@ -38,16 +38,11 @@ const AdminFeaturePreviewPage = () => {
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features } = useDefaultSettingFeaturePreviewList();
 
-	const {
-		watch,
-		formState: { isDirty },
-		setValue,
-		handleSubmit,
-		reset,
-	} = useForm({
+	const { control, setValue, handleSubmit, reset } = useForm({
 		defaultValues: { featuresPreview: features },
 	});
-	const { featuresPreview } = watch();
+	const { isDirty } = useFormState({ control });
+	const featuresPreview = useWatch({ control, name: 'featuresPreview' });
 	const dispatch = useSettingsDispatch();
 
 	const handleSave = async () => {

@@ -26,7 +26,7 @@ export const useUnFollowMessageAction = (
 	});
 
 	const { tmid, _id } = message;
-	const parentMessage = Messages.use((state) => state.find((record) => record._id === tmid || record._id === _id));
+	const parentMessage = Messages.useStore((state) => state.find((record) => record._id === tmid || record._id === _id));
 
 	if (!message || !threadsEnabled || isOmnichannelRoom(room)) {
 		return null;

@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useWatch, useFormState } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
@@ -105,15 +105,17 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 		},
 	});
 
-	const {
-		control,
-		handleSubmit,
-		setValue,
-		watch,
-		formState: { errors, isSubmitting },
-	} = methods;
+	const { control, handleSubmit, setValue } = methods;
+	const { errors, isSubmitting } = useFormState({ control });
 
-	const { isPrivate, broadcast, readOnly, encrypted, isAbacManaged, members = [], attributes } = watch();
+	const watched = useWatch({ control });
+	const isPrivate = watched.isPrivate ?? false;
+	const broadcast = watched.broadcast ?? false;
+	const readOnly = watched.readOnly ?? false;
+	const encrypted = watched.encrypted ?? false;
+	const isAbacManaged = watched.isAbacManaged ?? false;
+	const members = useWatch({ control, name: 'members' }) ?? [];
+	const attributes = useWatch({ control, name: 'attributes' });
 
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });
 
@@ -133,7 +135,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 		}
 
 		setValue('readOnly', broadcast);
-	}, [watch, setValue, broadcast, isPrivate, e2eEnforcedForPrivate]);
+	}, [setValue, broadcast, isPrivate, e2eEnforcedForPrivate]);
 
 	const readOnlyDisabled = broadcast || !canSetReadOnly;
 	const canChangeEncrypted = isPrivate && e2eEnabled && !e2eEnforcedForPrivate;

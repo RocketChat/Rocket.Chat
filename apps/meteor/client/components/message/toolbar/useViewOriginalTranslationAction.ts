@@ -26,7 +26,7 @@ export const useViewOriginalTranslationAction = (
 		[message, language],
 	);
 
-	const updateMessages = Messages.use((state) => state.update);
+	const updateMessages = Messages.useStore((state) => state.update);
 
 	if (!autoTranslateEnabled || !canAutoTranslate || !user) {
 		return null;

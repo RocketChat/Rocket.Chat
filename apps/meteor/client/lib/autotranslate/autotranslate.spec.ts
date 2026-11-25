@@ -7,7 +7,7 @@ import { Messages, Subscriptions, Users } from '../../stores';
 import { sdk } from '../SDKClient';
 import { hasPermission } from '../authorization';
 import { settings } from '../settings';
-import { userIdStore } from '../user';
+import { useUserIdStore } from '../user';
 
 jest.mock('../SDKClient', () => ({
 	sdk: {
@@ -45,7 +45,7 @@ const flushPromises = async () => {
 
 const signInAs = ({ language }: { language?: string } = {}) => {
 	Users.state.store(createFakeUser({ _id: USER_ID, username: USERNAME, language }));
-	userIdStore.setState(USER_ID);
+	useUserIdStore.setState(USER_ID);
 };
 
 const mockAutoTranslateEndpoints = ({
@@ -72,7 +72,7 @@ describe('AutoTranslate', () => {
 		Messages.state.replaceAll([]);
 		Subscriptions.state.replaceAll([]);
 		Users.state.replaceAll([]);
-		userIdStore.setState(undefined);
+		useUserIdStore.setState(undefined);
 
 		mem.clear(AutoTranslate.findSubscriptionByRid);
 
@@ -221,7 +221,7 @@ describe('AutoTranslate', () => {
 		const enableAutoTranslate = () => {
 			asMock(settings.peek).mockReturnValue(true);
 			asMock(hasPermission).mockReturnValue(true);
-			userIdStore.setState(USER_ID);
+			useUserIdStore.setState(USER_ID);
 		};
 
 		it('should load provider metadata and supported languages when enabled, signed in and permitted', async () => {
@@ -251,7 +251,7 @@ describe('AutoTranslate', () => {
 		it('should not request providers when the setting is disabled', () => {
 			asMock(settings.peek).mockReturnValue(false);
 			asMock(hasPermission).mockReturnValue(true);
-			userIdStore.setState(USER_ID);
+			useUserIdStore.setState(USER_ID);
 
 			AutoTranslate.init();
 
@@ -261,7 +261,7 @@ describe('AutoTranslate', () => {
 		it('should not request providers when there is no signed-in user', () => {
 			asMock(settings.peek).mockReturnValue(true);
 			asMock(hasPermission).mockReturnValue(true);
-			userIdStore.setState(undefined);
+			useUserIdStore.setState(undefined);
 
 			AutoTranslate.init();
 
@@ -271,7 +271,7 @@ describe('AutoTranslate', () => {
 		it('should not request providers when the user lacks the auto-translate permission', () => {
 			asMock(settings.peek).mockReturnValue(true);
 			asMock(hasPermission).mockReturnValue(false);
-			userIdStore.setState(USER_ID);
+			useUserIdStore.setState(USER_ID);
 
 			AutoTranslate.init();
 
@@ -298,7 +298,7 @@ describe('AutoTranslate', () => {
 			signInAs();
 			asMock(settings.peek).mockReturnValue(false);
 			asMock(hasPermission).mockReturnValue(false);
-			userIdStore.setState(USER_ID);
+			useUserIdStore.setState(USER_ID);
 		});
 
 		const storeMessage = (overrides: Partial<ITranslatedMessage> = {}) => {

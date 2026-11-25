@@ -36,6 +36,8 @@ export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
 	actionDefault: (actionId: string) => void;
 } => {
+	'use no memo';
+
 	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
 	const router = useRouter();

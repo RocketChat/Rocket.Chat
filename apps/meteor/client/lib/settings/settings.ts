@@ -5,7 +5,7 @@ import { PublicSettings } from '../../stores';
 type SettingCallback = (key: string, value: SettingValue) => void;
 
 class Settings {
-	private readonly store = PublicSettings.use;
+	private readonly store = PublicSettings.useStore;
 
 	/** Get a setting value non-reactively */
 	peek<TValue = any>(_id: string): TValue | undefined {

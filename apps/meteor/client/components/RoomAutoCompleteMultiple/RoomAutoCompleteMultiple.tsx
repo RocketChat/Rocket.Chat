@@ -4,7 +4,7 @@ import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import { memo, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const generateQuery = (
 	term = '',
@@ -71,4 +71,4 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 	);
 };
 
-export default memo(RoomAutoCompleteMultiple);
+export default RoomAutoCompleteMultiple;

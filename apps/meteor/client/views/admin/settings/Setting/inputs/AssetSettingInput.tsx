@@ -13,6 +13,30 @@ export type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'o
 	fileConstraints?: { extensions: string[] };
 };
 
+const settingsFilePreview = css`
+	display: flex;
+	align-items: center;
+
+	& .preview {
+		overflow: hidden;
+		width: 100px;
+		height: 40px;
+		margin-right: 0.75rem;
+		border-width: 1px;
+		border-color: ${Palette.stroke['stroke-light']};
+		border-radius: 4px;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: contain;
+
+		&.no-file {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+`;
+
 function AssetSettingInput({ _id, label, value, hint, asset, required, disabled, fileConstraints }: AssetSettingInputProps) {
 	const { t } = useTranslation();
 	const labelId = useId();
@@ -53,30 +77,6 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
-
-	const settingsFilePreview = css`
-		display: flex;
-		align-items: center;
-
-		& .preview {
-			overflow: hidden;
-			width: 100px;
-			height: 40px;
-			margin-right: 0.75rem;
-			border-width: 1px;
-			border-color: ${Palette.stroke['stroke-light']};
-			border-radius: 4px;
-			background-repeat: no-repeat;
-			background-position: center center;
-			background-size: contain;
-
-			&.no-file {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-		}
-	`;
 
 	return (
 		<Field>

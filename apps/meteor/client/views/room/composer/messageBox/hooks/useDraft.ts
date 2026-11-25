@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threadExists = true) => {
 	const storageKey = `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
@@ -16,7 +16,7 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 		[storageKey],
 	);
 
-	const initialValueRef = useRef(serverDraft || localStorage.getItem(storageKey) || '');
+	const [initialValue] = useState(() => serverDraft || localStorage.getItem(storageKey) || '');
 	const draftRef = useRef<string | null>(null);
 	const threadExistsRef = useRef(threadExists);
 	const serverValueRef = useRef(serverDraft ?? '');
@@ -75,7 +75,7 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 	const discardDraft = useCallback(() => flushDraft(''), [flushDraft]);
 
 	return {
-		initialValue: initialValueRef.current,
+		initialValue,
 		persistLocal,
 		flushDraft,
 		discardDraft,
