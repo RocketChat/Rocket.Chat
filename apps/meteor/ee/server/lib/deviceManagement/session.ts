@@ -53,7 +53,7 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
-		const dateFormat = settings.get('Message_TimeAndDateFormat');
+		const dateFormat = settings.get<string>('Message_TimeAndDateFormat');
 
 		const {
 			name,
@@ -73,7 +73,7 @@ export const listenSessionLogin = () => {
 			}`,
 			ipInfo: clientAddress,
 			userAgent: '',
-			date: moment().format(String(dateFormat)),
+			date: moment().format(dateFormat),
 		};
 
 		switch (device.type) {

@@ -454,7 +454,11 @@ export class E2ERoom extends Emitter {
 			}
 			throw error;
 		}
-		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
+		if (!e2e.publicKey) {
+			span.error('No public key found');
+			return true;
+		}
+		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey);
 		if (myKey) {
 			await sdk.rest.post('/v1/e2e.updateGroupKey', {
 				rid: this.roomId,
@@ -513,9 +517,8 @@ export class E2ERoom extends Emitter {
 		try {
 			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
-			const users = (await sdk.rest.get('/v1/e2e.getUsersOfRoomWithoutKey', { rid: this.roomId })).users.filter(
-				(user) => user?.e2e?.public_key,
-			);
+			const { users: roomUsers } = await sdk.rest.get('/v1/e2e.getUsersOfRoomWithoutKey', { rid: this.roomId });
+			const users = roomUsers.flatMap((user) => (user.e2e?.public_key ? [{ _id: user._id, publicKey: user.e2e.public_key }] : []));
 
 			if (!users.length) {
 				span.info('No users to encrypt the key for');
@@ -531,13 +534,13 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key);
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.publicKey);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(user.publicKey, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;
@@ -593,9 +596,13 @@ export class E2ERoom extends Emitter {
 			return span.set('error', error).error('Error importing user key');
 		}
 
+		if (this.sessionKeyExportedString === undefined) {
+			return span.error('No group key to encrypt');
+		}
+
 		// Encrypt session key for this user with his/her public key
 		try {
-			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.decode(this.sessionKeyExportedString!));
+			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.decode(this.sessionKeyExportedString));
 			const encryptedUserKeyToString = PrefixedBase64.encode([this.keyID, encryptedUserKey]);
 			span.info('Group key encrypted for participant');
 			return encryptedUserKeyToString;

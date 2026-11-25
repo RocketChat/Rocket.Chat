@@ -114,7 +114,9 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 		<>
 			<EngagementDashboardCardFilter>
 				<DownloadDataButton
-					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${data?.end ? subDays(new Date(data.end), 1).toISOString() : ''}`}
+					attachmentName={
+						data ? `ActiveUsersSection_start_${data.start.toISOString()}_end_${subDays(new Date(data.end), 1).toISOString()}` : ''
+					}
 					headers={['Date', 'DAU', 'WAU', 'MAU']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => {

@@ -9,4 +9,5 @@ export { default as ContextualbarHeader, type ContextualbarHeaderProps } from '.
 export { default as ContextualbarIcon, type ContextualbarIconProps } from './ContextualbarIcon';
 export { default as ContextualbarSection, type ContextualbarSectionProps } from './ContextualbarSection';
 export { default as ContextualbarSkeleton, type ContextualbarSkeletonProps } from './ContextualbarSkeleton';
+export { default as ContextualbarSkeletonContent, type ContextualbarSkeletonContentProps } from './ContextualbarSkeletonContent';
 export { default as ContextualbarTitle, type ContextualbarTitleProps } from './ContextualbarTitle';

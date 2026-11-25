@@ -26,10 +26,13 @@ const playerValue = (track: PersistentAudioTrack): ContextType<typeof MediaPlaye
 	currentTime: 2,
 	duration: 10,
 	playbackRate: 1,
+	loading: false,
+	error: false,
 	play: noop,
 	toggle: noop,
 	seek: noop,
 	cyclePlaybackRate: noop,
+	retry: noop,
 	close: noop,
 	isActive: () => true,
 });

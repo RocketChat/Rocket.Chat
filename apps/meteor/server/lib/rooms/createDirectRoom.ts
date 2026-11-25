@@ -110,12 +110,12 @@ async function upsertMembersDirectSubscriptions(
 
 	for (const member of membersWithPreferences) {
 		const subscriptionStatus: Partial<ISubscription> =
-			roomExtraData.federated && options.creator !== member._id && creatorUser
+			roomExtraData.federated && options.creator !== member._id && creatorUser?.username
 				? {
 						status: 'INVITED',
 						inviter: {
 							_id: creatorUser._id,
-							username: creatorUser.username!,
+							username: creatorUser.username,
 							name: creatorUser.name,
 						},
 						open: true,
