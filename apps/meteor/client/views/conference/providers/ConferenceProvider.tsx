@@ -24,6 +24,12 @@ import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
+export type ConferenceProviderProps = {
+	callId: string;
+	initialInfo?: VideoConferenceInfo;
+	children: ReactNode;
+};
+
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
 /**
@@ -42,15 +48,7 @@ const failureFor = (error: unknown): ConferenceFailure | undefined =>
  * workspace — the reads, the five things that can be done to a call, the effects that keep a participant
  * counted as present, the parts of the window only the product can build, and the provider of a call that runs in here.
  */
-const ConferenceProvider = ({
-	callId,
-	initialInfo,
-	children,
-}: {
-	callId: string;
-	initialInfo?: VideoConferenceInfo;
-	children: ReactNode;
-}) => {
+const ConferenceProvider = ({ callId, initialInfo, children }: ConferenceProviderProps) => {
 	const { call, room, conference } = useConferenceEmbedded(callId, { initialInfo });
 	const queryClient = useQueryClient();
 
