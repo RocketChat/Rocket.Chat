@@ -19,7 +19,7 @@ describe('[withLabelId] spread completeness', () => {
 		const onBlur = jest.fn();
 		const ref = createRef<HTMLInputElement>();
 
-		const { container } = render(
+		render(
 			<Field>
 				<FieldLabel>Name</FieldLabel>
 				<Input
@@ -35,7 +35,7 @@ describe('[withLabelId] spread completeness', () => {
 			</Field>,
 		);
 
-		const input = container.querySelector('input') as HTMLInputElement;
+		const input = screen.getByPlaceholderText('Type');
 		expect(ref.current).toBe(input);
 		expect(input.id).not.toBe('');
 		expect(screen.getByText('Name', { selector: 'label' })).toHaveAttribute('for', input.id);
