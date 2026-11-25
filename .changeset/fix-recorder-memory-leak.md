@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix memory leak in VideoMessageRecorder and AudioMessageRecorder by clearing recording interval properly on unmount
+Fixes audio and video recording timers continuing to run after the recorder closes, and clears video recording status when the room or thread changes.

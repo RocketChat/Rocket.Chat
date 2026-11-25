@@ -45,9 +45,17 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	});
 
 	const handleUnmount = useStableCallback(async () => {
-		if (state === 'recording' && recordingIdRef.current === currentRecordingId) {
-			await stopRecording();
+		if (state !== 'recording') {
+			return;
 		}
+
+		if (recordingIdRef.current !== currentRecordingId) {
+			chat?.action.stop('recording');
+			chat?.composer?.setRecordingMode(false);
+			return;
+		}
+
+		await stopRecording();
 	});
 
 	const handleRecord = useStableCallback(async () => {
@@ -84,7 +92,9 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 			setRecordingRoomId(rid);
 		} catch (error) {
 			console.log(error);
-			chat?.composer?.setRecordingMode(false);
+			if (isMountedRef.current && recordingIdRef.current === currentRecordingId) {
+				chat?.composer?.setRecordingMode(false);
+			}
 		}
 	});
 

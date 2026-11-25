@@ -111,8 +111,11 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			if (recordingIntervalRef.current) {
 				clearInterval(recordingIntervalRef.current);
 			}
+			recordingIntervalRef.current = null;
 			VideoRecorder.stop();
 			UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+			setRecordingState('idle');
+			setTime('00:00');
 		};
 	}, [dispatchToastMessage, handleCancel, t, rid, tmid]);
 
