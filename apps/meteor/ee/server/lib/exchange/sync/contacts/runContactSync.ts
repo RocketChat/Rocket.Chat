@@ -1,6 +1,7 @@
 import {
 	MAILBOX_CONCURRENCY,
 	acquireSyncLease,
+	createThrottledStreak,
 	forEachWithConcurrency,
 	getExchangeProvider,
 	isExchangeError,
@@ -69,6 +70,7 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 		const dueSince = new Date(Date.now() - intervalDays * DAY_MS + DAY_MS / 2);
 
 		const candidates = iterateMailboxCandidates();
+		const throttledTooOften = createThrottledStreak();
 
 		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
 			if (summary.aborted) {
@@ -109,7 +111,7 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 				summary.pruned += outcome.pruned;
 				summary.failed += outcome.failed;
 
-				if (outcome.fatal) {
+				if (outcome.fatal || throttledTooOften(outcome.error)) {
 					summary.aborted = true;
 
 					await candidates.return(undefined);

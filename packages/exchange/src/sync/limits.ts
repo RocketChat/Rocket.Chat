@@ -4,6 +4,9 @@
  */
 export const MAILBOX_CONCURRENCY = 5;
 
+/** At this many throttled mailboxes in a row, a run stops. */
+export const MAX_THROTTLED_MAILBOXES_IN_A_ROW = 10;
+
 /** Photos above this are skipped rather than stored. */
 export const MAX_CONTACT_PHOTO_BYTES = 500 * 1024;
 
