@@ -1,30 +1,18 @@
 import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
-import get from 'lodash.get';
 import mem from 'mem';
 
-const placeholderFields = {
-	'contact.name': {
-		from: 'visitor',
-		dataKey: 'name',
-	},
-	'contact.email': {
-		from: 'visitor',
-		dataKey: 'visitorEmails[0].address',
-	},
-	'contact.phone': {
-		from: 'visitor',
-		dataKey: 'phone[0].phoneNumber',
-	},
-	'agent.name': {
-		from: 'agent',
-		dataKey: 'name',
-	},
-	'agent.email': {
-		from: 'agent',
-		dataKey: 'emails[0].address',
-	},
+type PlaceholderField =
+	| { from: 'visitor'; get: (visitor: ILivechatVisitor | null) => string | undefined }
+	| { from: 'agent'; get: (agent: Pick<IUser, 'name' | 'emails'> | null) => string | undefined };
+
+const placeholderFields: Record<string, PlaceholderField> = {
+	'contact.name': { from: 'visitor', get: (visitor) => visitor?.name },
+	'contact.email': { from: 'visitor', get: (visitor) => visitor?.visitorEmails?.[0]?.address },
+	'contact.phone': { from: 'visitor', get: (visitor) => visitor?.phone?.[0]?.phoneNumber },
+	'agent.name': { from: 'agent', get: (agent) => agent?.name },
+	'agent.email': { from: 'agent', get: (agent) => agent?.emails?.[0]?.address },
 };
 
 export class BeforeSaveCannedResponse {
@@ -78,12 +66,10 @@ export class BeforeSaveCannedResponse {
 			return this.getUser(agentId);
 		};
 
-		message.msg = await Object.keys(placeholderFields).reduce(async (messageText, field) => {
-			const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
-
-			const from = placeholderConfig.from === 'agent' ? await getAgent(agentId) : await this.getVisitor(room.v._id);
-
-			const data = get(from, placeholderConfig.dataKey, '');
+		message.msg = await Object.entries(placeholderFields).reduce(async (messageText, [field, placeholder]) => {
+			const data =
+				(placeholder.from === 'agent' ? placeholder.get(await getAgent(agentId)) : placeholder.get(await this.getVisitor(room.v._id))) ??
+				'';
 
 			return (await messageText).replace(new RegExp(`{{${field}}}`, 'g'), data);
 		}, Promise.resolve(message.msg));

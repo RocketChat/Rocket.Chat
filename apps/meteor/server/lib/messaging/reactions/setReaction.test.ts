@@ -1,8 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const emojiList: Record<string, any> = {};
@@ -31,21 +31,34 @@ const hasPermissionAsyncMock = sinon.stub();
 const i18nMock = { t: sinon.stub() };
 const callbacksRunMock = sinon.stub();
 
-const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().load('./setReaction.ts', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': { Message: { beforeReacted: sinon.stub() }, ClientSafeError },
-	'../../callbacks': { callbacks: { run: callbacksRunMock } },
-	'../../i18n': { i18n: i18nMock },
-	'../../authorization': { canAccessRoomAsync: canAccessRoomAsyncMock },
-	'../../authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
-	'../emoji': { emoji: { list: emojiList } },
-	'../../messages/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
-	'../../notifyListener': {
-		notifyOnMessageChange: notifyOnMessageChangeMock,
-	},
+let removeUserReaction: any;
+let executeSetReaction: any;
+let setReaction: any;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { Message: { beforeReacted: sinon.stub() }, ClientSafeError } });
+	mock.module('../../callbacks', { exports: { callbacks: { run: callbacksRunMock } } });
+	mock.module('../../i18n', { exports: { i18n: i18nMock } });
+	mock.module('../../authorization', { exports: { canAccessRoomAsync: canAccessRoomAsyncMock } });
+	mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } });
+	mock.module('../emoji', { exports: { emoji: { list: emojiList } } });
+	mock.module('../../messages/isTheLastMessage', { exports: { isTheLastMessage: isTheLastMessageMock } });
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnMessageChange: notifyOnMessageChangeMock,
+		},
+	});
+	({ removeUserReaction, executeSetReaction, setReaction } = await import('./setReaction'));
 });
 
 describe('Reactions', () => {
+	before(() => {
+		mockModel('EmojiCustom', modelsMock.EmojiCustom);
+		mockModel('Users', modelsMock.Users);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Rooms', modelsMock.Rooms);
+	});
+
 	describe('removeUserReaction', () => {
 		it('should return the message unmodified when no reactions exist', () => {
 			const message = {};

@@ -1,9 +1,7 @@
-import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -22,15 +20,12 @@ export const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModal
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { isDirty, isSubmitting },
-	} = useForm<StatusVisibilityFormValues>({
+	const { control, handleSubmit } = useForm<StatusVisibilityFormValues>({
 		defaultValues: {
 			statusVisibilityDenied: user?.settings?.preferences?.statusVisibilityDenied ?? [],
 		},
 	});
+	const { isDirty, isSubmitting } = useFormState({ control });
 
 	const handleSave = async ({ statusVisibilityDenied }: StatusVisibilityFormValues) => {
 		try {
@@ -50,7 +45,7 @@ export const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModal
 			onCancel={onClose}
 			confirmText={t('Save')}
 			confirmDisabled={!isDirty || isSubmitting}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSave)} {...props} />}
+			onSubmit={handleSubmit(handleSave)}
 		>
 			<FieldGroup>
 				<Field>

@@ -16,7 +16,7 @@ export const useRolesByUser = (rid: IRoom['_id'], enabled: boolean): MessageList
 	const { data: roomRoles } = useRoomRolesQuery(rid, { enabled });
 	const { data: userRoles } = useUserRolesQuery({ enabled });
 	// roles without a description are not shown, matching what the role endpoints return
-	const describedRoles = Roles.use(useShallow((state) => state.filter((record) => !!record.description)));
+	const describedRoles = Roles.useStore(useShallow((state) => state.filter((record) => !!record.description)));
 
 	return useMemo(() => {
 		if (!enabled) {

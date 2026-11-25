@@ -1,4 +1,4 @@
-import { Box, Select } from '@rocket.chat/fuselage';
+import { Select } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -46,12 +46,10 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				selected={tab}
 				onSelect={(tab) => onSelectTab?.(tab)}
 			/>
-			<PageScrollableContent padding={0}>
-				<Box margin={24}>
-					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
-						(tab === 'messages' && <MessagesTab timezone={timezoneId} />) ||
-						(tab === 'channels' && <ChannelsTab />)}
-				</Box>
+			<PageScrollableContent paddingInline='x24' paddingBlock='x40'>
+				{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
+					(tab === 'messages' && <MessagesTab timezone={timezoneId} />) ||
+					(tab === 'channels' && <ChannelsTab />)}
 			</PageScrollableContent>
 		</Page>
 	);

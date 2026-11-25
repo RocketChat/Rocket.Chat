@@ -1,8 +1,7 @@
-import { Box } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -22,16 +21,10 @@ type TwoFactorTotpFormData = {
 const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps) => {
 	const { t } = useTranslation();
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-		setValue,
-		clearErrors,
-		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorTotpFormData>({
+	const { control, handleSubmit, setError, setValue, clearErrors } = useForm<TwoFactorTotpFormData>({
 		defaultValues: { code: '' },
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		if (invalidAttempt) {
@@ -56,7 +49,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
+			onSubmit={onSubmit}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Enter_TOTP_password')}

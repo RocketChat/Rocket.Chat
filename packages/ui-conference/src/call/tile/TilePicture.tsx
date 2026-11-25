@@ -3,9 +3,9 @@ import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 
-import { useStreamHasLiveVideo } from '../hooks/useStreamHasLiveVideo';
-import { backdropTint } from '../lib/speakingRing';
-import type { TileParticipant } from '../lib/stageTiles';
+import { useStreamHasLiveVideo } from '../hooks/useStreamHasLiveVideo.js';
+import { backdropTint } from '../lib/speakingRing.js';
+import type { TileParticipant } from '../lib/stageTiles.js';
 
 const avatarBackdropStyles = css`
 	position: absolute;

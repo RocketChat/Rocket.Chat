@@ -8,21 +8,21 @@ import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } 
 import { sdk } from '../SDKClient';
 import { hasPermission } from '../authorization';
 import { settings } from '../settings';
-import { getUserId, userIdStore } from '../user';
+import { getUserId, useUserIdStore } from '../user';
 
 let userLanguage = 'en';
 let username = '';
 
 const refreshUserCache = () => {
-	const uid = userIdStore.getState();
-	const user = uid ? Users.use.getState().get(uid) : undefined;
+	const uid = useUserIdStore.getState();
+	const user = uid ? Users.useStore.getState().get(uid) : undefined;
 	if (!user) return;
 	userLanguage = user.language || 'en';
 	username = user.username || '';
 };
 refreshUserCache();
-userIdStore.subscribe(refreshUserCache);
-Users.use.subscribe(refreshUserCache);
+useUserIdStore.subscribe(refreshUserCache);
+Users.useStore.subscribe(refreshUserCache);
 
 export const AutoTranslate = {
 	initialized: false,
@@ -56,7 +56,7 @@ export const AutoTranslate = {
 		}
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
-				if (attachment.text && attachment.translations && attachment.translations[language]) {
+				if (attachment.text && attachment.translations?.[language]) {
 					attachment.translations.original = attachment.text;
 
 					if (autoTranslateShowInverse) {
@@ -66,7 +66,7 @@ export const AutoTranslate = {
 					}
 				}
 
-				if (attachment.description && attachment.translations && attachment.translations[language]) {
+				if (attachment.description && attachment.translations?.[language]) {
 					attachment.translations.original = attachment.description;
 
 					if (autoTranslateShowInverse) {
@@ -108,7 +108,7 @@ export const AutoTranslate = {
 		const unsubs: Array<() => void> = [];
 		const tryLoad = async () => {
 			if (loaded) return;
-			if (!settings.peek('AutoTranslate_Enabled') || !userIdStore.getState() || !hasPermission('auto-translate')) {
+			if (!settings.peek('AutoTranslate_Enabled') || !useUserIdStore.getState() || !hasPermission('auto-translate')) {
 				return;
 			}
 			loaded = true;
@@ -116,13 +116,13 @@ export const AutoTranslate = {
 			await loadProviders();
 		};
 
-		unsubs.push(userIdStore.subscribe(() => void tryLoad()));
+		unsubs.push(useUserIdStore.subscribe(() => void tryLoad()));
 		unsubs.push(settings.observe('AutoTranslate_Enabled', () => void tryLoad()));
 		unsubs.push(PermissionsCachedStore.useReady.subscribe(() => void tryLoad()));
 
 		void tryLoad();
 
-		Subscriptions.use.subscribe(() => {
+		Subscriptions.useStore.subscribe(() => {
 			mem.clear(this.findSubscriptionByRid);
 		});
 
@@ -138,8 +138,7 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 			const language = AutoTranslate.getLanguage(message.rid);
 			if (
-				subscription &&
-				subscription.autoTranslate === true &&
+				subscription?.autoTranslate === true &&
 				message.msg &&
 				(!message.translations ||
 					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))

@@ -1,7 +1,14 @@
 {
 	"name": "@rocket.chat/ui-setup-wizard",
-	"version": "0.0.1",
+	"version": "1.0.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -51,9 +58,9 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/fuselage-hooks": "*",
-		"@rocket.chat/layout": "*",
+		"@rocket.chat/fuselage": "2.0.0-rc.0",
+		"@rocket.chat/fuselage-hooks": "0.44.1-rc.0",
+		"@rocket.chat/layout": "2.0.0-rc.0",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@tanstack/react-query": "~5.65.1",

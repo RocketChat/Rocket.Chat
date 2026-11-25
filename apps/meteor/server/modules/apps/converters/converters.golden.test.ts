@@ -1,7 +1,6 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
 import { AppContactsConverter } from './contacts';
 import { AppDepartmentsConverter } from './departments';
@@ -479,15 +478,17 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 	});
 
 	describe('AppUploadsConverter', () => {
-		// The uploads codec derives `url` via the server-side `getURL`, which transitively imports
-		// `server/settings` — a module with a top-level await that esbuild cannot emit as CJS. `@global`
-		// reaches it through the codec; its key resolves from the converter's directory, hence one level
-		// less than the codec's own import path.
-		const { AppUploadsConverter } = proxyquire.noCallThru().load('./uploads', {
-			'../../../../server/lib/utils/getURL': { 'getURL': (path: string) => `http://siteurl.test${path}`, '@global': true },
-		});
+		let converter: any;
 
-		const converter = new AppUploadsConverter(stubOrch);
+		// The uploads codec derives `url` via the server-side `getURL`, which transitively imports
+		// `server/settings` — a module with a top-level await that esbuild cannot emit as CJS.
+		before(async () => {
+			mock.module('../../../lib/utils/getURL', {
+				exports: { getURL: (path: string) => `http://siteurl.test${path}` },
+			});
+			const { AppUploadsConverter } = await import('./uploads');
+			converter = new AppUploadsConverter(stubOrch);
+		});
 
 		it('convertToApp maps an upload and resolves room/user/visitor via converters', async () => {
 			const upload = {

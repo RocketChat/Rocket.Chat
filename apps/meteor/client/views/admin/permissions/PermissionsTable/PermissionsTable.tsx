@@ -20,6 +20,39 @@ export type PermissionsTableProps = {
 	paginationData: ReturnType<typeof usePagination>;
 };
 
+const tableCustomStyle = css`
+	// Makes the first column of the table sticky
+	tr > th {
+		&:first-child {
+			position: sticky;
+			left: 0;
+			background-color: ${Palette.surface['surface-light']};
+			z-index: 12;
+		}
+	}
+	tr > td {
+		&:first-child {
+			position: sticky;
+			left: 0;
+			box-shadow: -1px 0 0 ${Palette.stroke['stroke-light']} inset;
+			background-color: ${Palette.surface['surface-light']};
+			z-index: 11;
+		}
+	}
+
+	tr:hover {
+		td {
+			&:first-child {
+				background-color: ${Palette.surface['surface-hover']};
+			}
+		}
+		td > :nth-child(2) {
+			visibility: visible;
+			opacity: 1;
+		}
+	}
+`;
+
 const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationData }: PermissionsTableProps) => {
 	const { t } = useTranslation();
 
@@ -51,38 +84,6 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 		setCurrent(0);
 	}, [debouncedText, setFilter, setCurrent]);
 
-	const tableCustomStyle = css`
-		// Makes the first column of the table sticky
-		tr > th {
-			&:first-child {
-				position: sticky;
-				left: 0;
-				background-color: ${Palette.surface['surface-light']};
-				z-index: 12;
-			}
-		}
-		tr > td {
-			&:first-child {
-				position: sticky;
-				left: 0;
-				box-shadow: -1px 0 0 ${Palette.stroke['stroke-light']} inset;
-				background-color: ${Palette.surface['surface-light']};
-				z-index: 11;
-			}
-		}
-
-		tr:hover {
-			td {
-				&:first-child {
-					background-color: ${Palette.surface['surface-hover']};
-				}
-			}
-			td > :nth-child(2) {
-				visibility: visible;
-				opacity: 1;
-			}
-		}
-	`;
 	const tableCustomClassName = useStyle(tableCustomStyle);
 
 	return (

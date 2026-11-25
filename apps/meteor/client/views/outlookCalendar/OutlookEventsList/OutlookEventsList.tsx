@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber, Callout, Stack } from '@rocket.chat/fuselage';
 import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -10,10 +10,18 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
+import {
+	getCalendarSyncIntervalHours,
+	getCalendarSyncWindowDays,
+	DEFAULT_INTERVAL_HOURS,
+	DEFAULT_WINDOW_DAYS,
+} from '../../../../ee/lib/exchange/calendarSyncSchedule';
+import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useItemListNavigation } from '../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
@@ -26,11 +34,16 @@ export type OutlookEventsListProps = {
 };
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
+	const openExternalLink = useExternalLink();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
-	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
+	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
+	const syncIntervalHours = getCalendarSyncIntervalHours(useSetting('Exchange_Calendar_Sync_Interval', DEFAULT_INTERVAL_HOURS));
+	const syncWindowDays = getCalendarSyncWindowDays(useSetting('Exchange_Calendar_Sync_Window_Days', DEFAULT_WINDOW_DAYS));
+
+	const hasOutlookMethods = isServerManaged || !(isError && error instanceof NotOnDesktopError);
 
 	const syncOutlookCalendar = useMutationOutlookCalendarSync();
 
@@ -64,10 +77,10 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 							<StatesSubtitle>{getErrorMessage(calendarListResult.error)}</StatesSubtitle>
 						</States>
 					)}
-					{!calendarListResult.isPending && total === 0 && (
+					{calendarListResult.isSuccess && total === 0 && (
 						<States>
 							<StatesIcon name='calendar' />
-							<StatesTitle>{t('No_history')}</StatesTitle>
+							<StatesTitle>{t('No_events')}</StatesTitle>
 						</States>
 					)}
 					{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
@@ -87,22 +100,46 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 				</Box>
 			</ContextualbarContent>
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
-					{outlookUrl && (
-						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
-							{t('Open_Outlook')}
-						</Button>
-					)}
-				</ButtonGroup>
-				{hasOutlookMethods && (
-					<Box marginBlockStart={8}>
+				{isServerManaged ? (
+					<Stack gap='x8'>
+						<Callout>
+							{t('Outlook_calendar_sync_schedule', {
+								interval: t('Outlook_calendar_sync_interval_hours', { count: syncIntervalHours }),
+								window: t('Outlook_calendar_sync_window_days', { count: syncWindowDays }),
+							})}
+						</Callout>
 						<ButtonGroup stretch>
-							<Button variant='primary' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
-								{authEnabled ? t('Sync') : t('Log_in_to_sync')}
+							<Button onClick={changeRoute}>{t('Settings')}</Button>
+							<Button icon='refresh' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
+								{t('Sync')}
 							</Button>
 						</ButtonGroup>
-					</Box>
+						{outlookUrl && (
+							<Button icon='new-window' onClick={() => openExternalLink(outlookUrl)}>
+								{t('Open_Outlook')}
+							</Button>
+						)}
+					</Stack>
+				) : (
+					<>
+						<ButtonGroup stretch>
+							{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
+							{outlookUrl && (
+								<Button icon='new-window' onClick={() => openExternalLink(outlookUrl)}>
+									{t('Open_Outlook')}
+								</Button>
+							)}
+						</ButtonGroup>
+						{hasOutlookMethods && (
+							<Box marginBlockStart={8}>
+								<ButtonGroup stretch>
+									<Button variant='primary' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
+										{authEnabled ? t('Sync') : t('Log_in_to_sync')}
+									</Button>
+								</ButtonGroup>
+							</Box>
+						)}
+					</>
 				)}
 			</ContextualbarFooter>
 		</ContextualbarDialog>

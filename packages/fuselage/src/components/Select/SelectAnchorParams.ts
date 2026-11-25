@@ -4,6 +4,7 @@ export type SelectAnchorParams = {
 	ref: Ref<HTMLInputElement>;
 	children: ReactNode;
 	disabled: boolean;
+	autoFocus?: boolean;
 	onClick: MouseEventHandler;
 	onBlur: FocusEventHandler;
 	onKeyUp: KeyboardEventHandler;

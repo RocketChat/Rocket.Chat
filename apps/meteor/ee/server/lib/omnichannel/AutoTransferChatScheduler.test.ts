@@ -1,9 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 chai.use(chaiDateTime);
@@ -58,23 +58,27 @@ const settingsGet = sinon.stub();
 const routingConfigMock = sinon.stub();
 const getNextAgent = sinon.stub();
 
-const mocks = {
-	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'../../../../server/database/utils': { client: { db: sinon.stub() } },
-	'../../../../server/lib/omnichannel/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
-	'../../../../server/lib/omnichannel/Helper': { forwardRoomToAgent },
-	'../../../../server/lib/omnichannel/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
-	'../../../../server/settings': { settings: { get: settingsGet } },
-	'./logger': { schedulerLogger: mockLogger },
-	'@rocket.chat/models': {
-		LivechatRooms: mockLivechatRooms,
-		Users: mockUsers,
-	},
-};
+let AutoTransferChatSchedulerClass: any;
 
-const { AutoTransferChatSchedulerClass } = proxyquire.noCallThru().load('./AutoTransferChatScheduler', mocks);
+before(async () => {
+	mock.module('@rocket.chat/agenda', { exports: { Agenda: MockAgendaClass } });
+	mock.module('../../../../server/database/utils', { exports: { client: { db: sinon.stub() } } });
+	mock.module('../../../../server/lib/omnichannel/RoutingManager', {
+		exports: { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
+	});
+	mock.module('../../../../server/lib/omnichannel/Helper', { exports: { forwardRoomToAgent } });
+	mock.module('../../../../server/lib/omnichannel/rooms', { exports: { returnRoomAsInquiry: returnRoomAsInquiryMock } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('./logger', { exports: { schedulerLogger: mockLogger } });
+	({ AutoTransferChatSchedulerClass } = await import('./AutoTransferChatScheduler'));
+});
 
 describe('AutoTransferChats', () => {
+	before(() => {
+		mockModel('LivechatRooms', mockLivechatRooms);
+		mockModel('Users', mockUsers);
+	});
+
 	describe('getSchedulerUser', () => {
 		it('should return rocket.cat user', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();

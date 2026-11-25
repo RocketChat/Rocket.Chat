@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	Field,
 	FieldLabel,
@@ -14,9 +13,10 @@ import {
 	ModalTitle,
 	NumberInput,
 	RadioButton,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
@@ -38,21 +38,17 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 
 	const appId = useRouteParameter('id');
 
-	const {
-		control,
-		watch,
-		getValues,
-		formState: { isValid },
-	} = useForm<FormDataType>({
+	const { control, getValues } = useForm<FormDataType>({
 		defaultValues: {
 			type: 'json',
 			count: 'max',
 			customExportAmount: 100,
 		},
 	});
+	const { isValid } = useFormState({ control });
 
-	const type = watch('type');
-	const count = watch('count');
+	const type = useWatch({ control, name: 'type' });
+	const count = useWatch({ control, name: 'count' });
 
 	const getFileUrl = ({
 		severity,
@@ -101,101 +97,79 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-					<Label>{t('Format')}</Label>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='JSONField'>{t('JSON')}</FieldLabel>
-							<Controller
-								name='type'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='json'
-										{...field}
-										onChange={() => onChange('json')}
-										aria-describedby='JSONField'
-										checked={value === 'json'}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='plainTextField'>{t('CSV')}</FieldLabel>
-							<Controller
-								name='type'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='csv'
-										{...field}
-										onChange={() => onChange('csv')}
-										aria-describedby='plainTextField'
-										checked={value === 'csv'}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Field>
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-					<Label>{t('Export_most_recent_logs')}</Label>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='maxLogsExport'>{t('Max_logs_export')}</FieldLabel>
-							<Controller
-								name='count'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='max'
-										{...field}
-										onChange={() => onChange('max')}
-										aria-describedby='maxLogsExport'
-										checked={value === 'max'}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='customMaxLogs'>{t('Limit_number_of_logs')}</FieldLabel>
-							<Controller
-								name='count'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='custom'
-										{...field}
-										onChange={() => onChange('custom')}
-										aria-describedby='customMaxLogs'
-										checked={value === 'custom'}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<Controller
-							name='customExportAmount'
-							control={control}
-							rules={{ required: count === 'custom', min: 1, max: 2000 }}
-							render={({ field }) => (
-								<NumberInput
-									id='limit'
-									min={1}
-									max={2000}
-									required={count === 'custom'}
-									disabled={count !== 'custom'}
-									placeholder='100'
-									{...field}
-									aria-describedby='limitNumber'
+				<Stack gap='x24'>
+					<Stack is='fieldset'>
+						<Label is='legend'>{t('Format')}</Label>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='json'>{t('JSON')}</FieldLabel>
+								<Controller
+									name='type'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton id='json' {...field} onChange={() => onChange('json')} checked={value === 'json'} />
+									)}
 								/>
-							)}
-						/>
-					</Field>
-				</Box>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='csv'>{t('CSV')}</FieldLabel>
+								<Controller
+									name='type'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton id='csv' {...field} onChange={() => onChange('csv')} checked={value === 'csv'} />
+									)}
+								/>
+							</FieldRow>
+						</Field>
+					</Stack>
+					<Stack is='fieldset'>
+						<Label is='legend'>{t('Export_most_recent_logs')}</Label>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='max'>{t('Max_logs_export')}</FieldLabel>
+								<Controller
+									name='count'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton id='max' {...field} onChange={() => onChange('max')} checked={value === 'max'} />
+									)}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='custom'>{t('Limit_number_of_logs')}</FieldLabel>
+								<Controller
+									name='count'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton id='custom' {...field} onChange={() => onChange('custom')} checked={value === 'custom'} />
+									)}
+								/>
+							</FieldRow>
+							<Controller
+								name='customExportAmount'
+								control={control}
+								rules={{ required: count === 'custom', min: 1, max: 2000 }}
+								render={({ field }) => (
+									<NumberInput
+										id='limit'
+										min={1}
+										max={2000}
+										required={count === 'custom'}
+										disabled={count !== 'custom'}
+										placeholder='100'
+										{...field}
+										aria-label={t('Limit_number_of_logs')}
+									/>
+								)}
+							/>
+						</Field>
+					</Stack>
+				</Stack>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>

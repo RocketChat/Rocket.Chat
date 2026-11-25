@@ -4,8 +4,8 @@ import i18next from 'i18next';
 import { toHaveNoViolations } from 'jest-axe';
 import { initReactI18next } from 'react-i18next';
 
-import ResizeObserverMock from './ResizeObserverMock';
-import en from '../.i18n/en.i18n.json';
+import ResizeObserverMock from './ResizeObserverMock.js';
+import en from '../.i18n/en.i18n.json' with { type: 'json' };
 
 beforeAll(async () => {
 	return i18next.use(initReactI18next).init({

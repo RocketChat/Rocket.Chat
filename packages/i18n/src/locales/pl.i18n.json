@@ -1881,6 +1881,7 @@
   "Example_payload": "Przykładowy payload",
   "Example_s": "Przykład: <code>{{value}}</code>",
   "except_pinned": "(z wyjątkiem tych, które są przypięte)",
+  "Exchange_Graph_Client_Secret": "Tajny klucz klienta",
   "Exclude_Botnames": "Wyklucz boty",
   "Exclude_Botnames_Description": "Nie propaguj wiadomości z botów, których nazwa pasuje do wyrażenia regularnego powyżej. Jeśli pozostanie puste, wszystkie wiadomości z botów będą propagowane.",
   "Exclude_pinned": "Wyklucz podpięte wiadomości",

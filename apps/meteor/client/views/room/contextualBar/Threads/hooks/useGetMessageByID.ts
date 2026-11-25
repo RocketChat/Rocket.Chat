@@ -11,7 +11,7 @@ export const MESSAGE_NOT_FOUND = 'Message not found';
 
 export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
-	const storeMessage = Messages.use((state) => state.store);
+	const storeMessage = Messages.useStore((state) => state.store);
 
 	return useCallback(
 		async (mid: IMessage['_id']) => {
@@ -25,7 +25,7 @@ export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 				return message;
 			} catch (error) {
 				if (typeof error === 'object' && error !== null && 'success' in error) {
-					throw new Error(MESSAGE_NOT_FOUND);
+					throw new Error(MESSAGE_NOT_FOUND, { cause: error });
 				}
 
 				throw error;

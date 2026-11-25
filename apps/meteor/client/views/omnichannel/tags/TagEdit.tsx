@@ -6,15 +6,15 @@ import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveTag } from './useRemoveTag';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type TagEditPayload = {
@@ -39,17 +39,14 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 
 	const { _id, name, description } = tagData || {};
 
-	const {
-		control,
-		formState: { isDirty, errors },
-		handleSubmit,
-	} = useForm<TagEditPayload>({
+	const { control, handleSubmit } = useForm<TagEditPayload>({
 		values: {
 			name: name || '',
 			description: description || '',
 			departments: currentDepartments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
 		},
 	});
+	const { isDirty, errors } = useFormState({ control });
 
 	const handleSave = useFormSubmitWithDirtyCheck(
 		async ({ name, description, departments }: TagEditPayload) => {

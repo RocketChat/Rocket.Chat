@@ -1,8 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -57,28 +57,35 @@ const getBufferMock = sinon.stub();
 
 const tStub = sinon.stub();
 
-const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
+let sendTranscript: any;
+
+before(async () => {
 	// mocked so the spec doesn't depend on whichever broker a previously-run spec installed
-	'@rocket.chat/core-services': {
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
-		ClientSafeError,
-	},
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/logger': { Logger: mockLogger },
-	'../callbacks': {
-		callbacks: {
-			run: sinon.stub(),
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			Message: { saveSystemMessage: sinon.stub().resolves() },
+			Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
+			ClientSafeError,
 		},
-	},
-	'../i18n': { i18n: { t: tStub } },
-	'../notifications/email/api': { send: mailerMock },
-	'../../settings': { settings: { get: settingsMock } },
-	'../utils/lib/getTimezone': { getTimezone: getTimezoneMock },
-	'../media/file-upload': { FileUpload: { getBuffer: getBufferMock } },
+	});
+	mock.module('@rocket.chat/logger', { exports: { Logger: mockLogger } });
+	mock.module('../callbacks', { exports: { callbacks: { run: sinon.stub() } } });
+	mock.module('../i18n', { exports: { i18n: { t: tStub } } });
+	mock.module('../notifications/email/api', { exports: { send: mailerMock } });
+	mock.module('../../settings', { exports: { settings: { get: settingsMock } } });
+	mock.module('../utils/lib/getTimezone', { exports: { getTimezone: getTimezoneMock } });
+	mock.module('../media/file-upload', { exports: { FileUpload: { getBuffer: getBufferMock } } });
+	({ sendTranscript } = await import('./sendTranscript'));
 });
 
 describe('Send transcript', () => {
+	before(() => {
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Users', modelsMock.Users);
+		mockModel('Uploads', modelsMock.Uploads);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatRooms.findOneById.reset();
 		modelsMock.Messages.findLivechatClosingMessage.reset();
@@ -120,7 +127,7 @@ describe('Send transcript', () => {
 			getTimezoneMock.returns('UTC');
 		});
 
-		for (const fileId of [{ $gt: '' }, { $ne: null }, { $regex: '.*' }, null, 42]) {
+		[{ $gt: '' }, { $ne: null }, { $regex: '.*' }, null, 42].forEach((fileId) => {
 			it(`should skip stored non-string file ID ${JSON.stringify(fileId)} without querying uploads`, async () => {
 				modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([createMessage(fileId)]);
 
@@ -132,9 +139,9 @@ describe('Send transcript', () => {
 				expect(mailerMock.firstCall.args[0].html).to.include('This_attachment_is_not_supported');
 				expect(mailerMock.firstCall.args[0].html).not.to.include('base64,');
 			});
-		}
+		});
 
-		for (const rid of ['private-room-id', undefined]) {
+		['private-room-id', undefined].forEach((rid) => {
 			it(`should not read or email an upload with room ID ${rid}`, async () => {
 				uploads.push({ _id: 'private-file-id', rid });
 				modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([createMessage('private-file-id')]);
@@ -146,7 +153,7 @@ describe('Send transcript', () => {
 				expect(mailerMock.firstCall.args[0].html).to.include('This_attachment_is_not_supported');
 				expect(mailerMock.firstCall.args[0].html).not.to.include('base64,');
 			});
-		}
+		});
 
 		it('should include visitor and agent images from the room before and after an agent transfer', async () => {
 			const visitorUpload = { _id: 'visitor-file-id', rid: room._id, visitorToken: params.token };

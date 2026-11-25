@@ -10,6 +10,8 @@ import type {
 	ILivechatAgentStatus,
 	IMeteorLoginToken,
 	IRoom,
+	PasswordTokenRecord,
+	EmailVerificationTokenRecord,
 } from '@rocket.chat/core-typings';
 import type {
 	Document,
@@ -125,6 +127,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
 	findOneWithoutLDAPByUsernameIgnoringCase<
 		T extends Document = IUser,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -149,6 +157,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findActiveLDAPUsersExceptIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userIds: IUser['_id'][],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
@@ -275,7 +288,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		values: Record<string, unknown>,
 		clear?: string[],
 		extraFilter?: Filter<IUser>,
-	): Promise<IUser | null>;
+	): Promise<Pick<
+		IUser,
+		'_id' | 'username' | 'name' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles' | 'xmppFederation'
+	> | null>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
 
@@ -296,6 +312,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeBusinessHoursFromAllUsers(): any;
 
 	resetTOTPById(userId: any): any;
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken): Promise<UpdateResult>;
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	removeLoginTokensOlderThan(date: Date): Promise<UpdateResult>;
 
 	unsetLoginTokens(userId: any): any;
 
@@ -460,6 +485,16 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		emailAddress: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByServiceId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		serviceName: string,
+		serviceId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -481,8 +516,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		userId: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
@@ -556,6 +591,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
 	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
+	setServiceDataById(userId: IUser['_id'], serviceName: string, serviceData: Record<string, unknown>): Promise<UpdateResult>;
 	setUsername(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult>;
 	setEmail(userId: string, email: string, verified?: boolean, options?: UpdateOptions): Promise<UpdateResult>;
 	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;
@@ -572,6 +608,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
+	setPasswordHash(_id: IUser['_id'], passwordHash: string): Promise<UpdateResult>;
+
+	setPasswordResetToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
+
+	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord): Promise<UpdateResult>;
+
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
 		requirePasswordChange: boolean,
@@ -633,6 +675,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<DocumentWithProjection<T, O> | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
+	addEmailVerificationToken(_id: IUser['_id'], tokenRecord: EmailVerificationTokenRecord): Promise<UpdateResult>;
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string): Promise<UpdateResult>;
 	findOneByEmailVerificationToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		token: string,

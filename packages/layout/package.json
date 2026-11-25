@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/layout",
-	"version": "1.0.0-rc.1",
+	"version": "2.0.0-rc.0",
 	"description": "Shared Application Layout Components",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
@@ -16,14 +16,20 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "dist/esm/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"build-storybook": "storybook build",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
@@ -56,7 +62,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "1.0.0-rc.1",
+		"@rocket.chat/fuselage": "2.0.0-rc.0",
 		"react": ">=19",
 		"react-dom": ">=19",
 		"react-i18next": "*"

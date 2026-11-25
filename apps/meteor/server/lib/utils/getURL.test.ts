@@ -1,15 +1,17 @@
-import { after, before, describe, it } from 'node:test';
+import { after, before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
 const settingsValues: Record<string, string> = {
 	Site_Url: 'https://open.rocket.chat/chat/',
 	CDN_PREFIX: 'https://cdn.rocket.chat',
 };
 
-const { getWorkspaceURL } = proxyquire.noCallThru().load('./getURL', {
-	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+let getWorkspaceURL: typeof import('./getURL').getWorkspaceURL;
+
+before(async () => {
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingsValues[key] } } });
+	({ getWorkspaceURL } = await import('./getURL'));
 });
 
 const runtimeGlobal = globalThis as typeof globalThis & { __meteor_runtime_config__?: { ROOT_URL_PATH_PREFIX?: string } };

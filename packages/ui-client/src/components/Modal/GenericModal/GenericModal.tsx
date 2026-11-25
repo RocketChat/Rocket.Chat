@@ -100,7 +100,7 @@ const GenericModal = ({
 	confirmLoading,
 	cancelDisabled,
 	tagline,
-	wrapperFunction,
+	onSubmit,
 	annotation,
 	...props
 }: GenericModalProps) => {
@@ -140,7 +140,7 @@ const GenericModal = ({
 	}, [handleDismiss]);
 
 	return (
-		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
+		<Modal aria-labelledby={`${genericModalId}-title`} onSubmit={onSubmit} {...props}>
 			<ModalHeader>
 				{renderIcon(icon, variant)}
 				<ModalHeaderText>
@@ -159,12 +159,12 @@ const GenericModal = ({
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
-					{wrapperFunction && (
+					{onSubmit && (
 						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
-					{!wrapperFunction && onConfirm && (
+					{!onSubmit && onConfirm && (
 						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>

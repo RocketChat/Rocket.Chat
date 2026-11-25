@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
@@ -47,12 +47,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 	const getBannedUsers = useEndpoint('GET', '/v1/rooms.bannedUsers');
 	const unbanUser = useEndpoint('POST', '/v1/rooms.unbanUser');
 
-	const {
-		handleSubmit,
-		control,
-		getValues,
-		formState: { isDirty, isSubmitting, errors },
-	} = useForm({ defaultValues: { users: [] } });
+	const { handleSubmit, control, getValues } = useForm({ defaultValues: { users: [] } });
+	const { isDirty, isSubmitting, errors } = useFormState({ control });
 
 	const handleSave = useStableCallback(async ({ users, unbanConfirmed }: { users: string[]; unbanConfirmed?: boolean }) => {
 		if (unbanConfirmed) {

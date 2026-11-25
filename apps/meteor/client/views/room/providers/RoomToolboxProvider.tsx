@@ -24,48 +24,6 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 
 	const router = useRouter();
 
-	const openTab = useStableCallback((actionId: string, context?: string) => {
-		if (actionId === tab?.id && context === undefined) {
-			return closeTab();
-		}
-
-		const routeName = router.getRouteName();
-
-		if (!routeName) {
-			throw new Error('Route name is not defined');
-		}
-
-		const { layout } = router.getSearchParameters();
-
-		router.navigate({
-			name: routeName,
-			params: {
-				...router.getRouteParameters(),
-				tab: actionId,
-				context: context ?? '',
-			},
-			search: layout ? { layout } : undefined,
-		});
-	});
-
-	const closeTab = useStableCallback(() => {
-		const routeName = router.getRouteName();
-
-		if (!routeName) {
-			throw new Error('Route name is not defined');
-		}
-
-		router.navigate({
-			name: routeName,
-			params: {
-				...router.getRouteParameters(),
-				tab: '',
-				context: '',
-			},
-			search: (({ msg: _, ...rest }) => rest)(router.getSearchParameters()),
-		});
-	});
-
 	const context = useRouteParameter('context');
 
 	const coreRoomActions = useCoreRoomActions();
@@ -100,6 +58,48 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 
 		return actions.find((action) => action.id === tabActionId);
 	}, [coreRoomRoutes, actions, tabActionId]);
+
+	const closeTab = useStableCallback(() => {
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
+				tab: '',
+				context: '',
+			},
+			search: (({ msg: _, ...rest }) => rest)(router.getSearchParameters()),
+		});
+	});
+
+	const openTab = useStableCallback((actionId: string, context?: string) => {
+		if (actionId === tab?.id && context === undefined) {
+			return closeTab();
+		}
+
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		const { layout } = router.getSearchParameters();
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
+				tab: actionId,
+				context: context ?? '',
+			},
+			search: layout ? { layout } : undefined,
+		});
+	});
 
 	const contextValue = useMemo(
 		(): RoomToolboxContextValue => ({

@@ -1,8 +1,10 @@
 import type { AppliedFilter } from '@rocket.chat/ai-search';
-import { serializeSearchQuery } from '@rocket.chat/ai-search';
+import { formatAppliedFilter } from '@rocket.chat/ai-search';
 import { Box, Chip, Icon, Text } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+
+import { useDiscussionFilterLabels } from './hooks/useDiscussionFilterLabels';
 
 export type SearchResultsHeaderProps = {
 	query: string;
@@ -11,6 +13,7 @@ export type SearchResultsHeaderProps = {
 
 const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): ReactElement => {
 	const { t } = useTranslation();
+	const labeledFilters = useDiscussionFilterLabels(filters);
 
 	return (
 		<Box display='flex' flexDirection='column' marginBlockEnd={40} gap={8}>
@@ -33,10 +36,10 @@ const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): Reac
 			<Text color='hint' fontScale='c1'>
 				{t('Intelligent_Search_scope_all_rooms')}
 			</Text>
-			{filters.length > 0 && (
+			{labeledFilters.length > 0 && (
 				<Box display='flex' flexWrap='wrap' gap='x8' marginBlockStart='x12'>
-					{filters.map((filter) => (
-						<Chip key={filter.id}>{serializeSearchQuery({ text: '', filters: [filter] })}</Chip>
+					{labeledFilters.map((filter) => (
+						<Chip key={filter.id}>{formatAppliedFilter(filter)}</Chip>
 					))}
 				</Box>
 			)}

@@ -3,7 +3,7 @@ import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement } from 'react';
 import { forwardRef } from 'react';
 
-import { getButtonVariant } from './getButtonVariant';
+import { getButtonVariant } from './getButtonVariant.js';
 
 export type ActionButtonProps = {
 	label: string;

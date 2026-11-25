@@ -1222,6 +1222,7 @@
   "Everyone_can_access_this_channel": "អ្នកគ្រប់គ្នាអាចចូលដំណើរការឆានែលនេះបាន",
   "Example_s": "ឧទាហរណ៍: <code>{{value}}</code>",
   "except_pinned": "(លើកលែងតែអ្នកដែលត្រូវបានគេភ្ជាប់)",
+  "Exchange_Graph_Client_Secret": "Client សម្ងាត់",
   "Exclude_Botnames": "មិនរាប់បញ្ចូល Bots",
   "Exclude_Botnames_Description": "កុំផ្សព្វផ្សាយសារពីកម្មវិធីដែលឈ្មោះរបស់វាត្រូវនឹងកន្សោមធម្មតាខាងលើ។ ប្រសិនបើទុកទទេសារទាំងអស់ពី bot នឹងត្រូវបានផ្សព្វផ្សាយ។",
   "Exclude_pinned": "មិនរាប់បញ្ចូលសារដែលបានបញ្ចូល",

@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useButtonPattern } from './useButtonPattern';
+import { renderHook } from './testing.js';
+import { useButtonPattern } from './useButtonPattern.js';
 
 it('should return the button props', () => {
 	const fakeAction = () => console.log('fake action dispatched!');

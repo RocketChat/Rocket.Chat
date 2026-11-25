@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingGetMock = sinon.stub();
@@ -11,17 +11,22 @@ const usersModelMock = {
 
 const departmentsMock = { findOneById: sinon.stub() };
 
-const mocks = {
-	'./QueueInactivityMonitor': { stop: sinon.stub() },
-	'../../../../server/lib/omnichannel/settings': { getInquirySortMechanismSetting: sinon.stub() },
-	'../../../../lib/livechat/inquiries': { getOmniChatSortQuery: sinon.stub() },
-	'../../../../server/settings': { settings: { get: settingGetMock } },
-	'@rocket.chat/models': { Users: usersModelMock, LivechatDepartment: departmentsMock },
-};
+let isAgentWithinChatLimits: any;
 
-const { isAgentWithinChatLimits } = proxyquire.noCallThru().load('./Helper.ts', mocks);
+before(async () => {
+	mock.module('./QueueInactivityMonitor', { exports: { stop: sinon.stub() } });
+	mock.module('../../../../server/lib/omnichannel/settings', { exports: { getInquirySortMechanismSetting: sinon.stub() } });
+	mock.module('../../../../lib/livechat/inquiries', { exports: { getOmniChatSortQuery: sinon.stub() } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingGetMock } } });
+	({ isAgentWithinChatLimits } = await import('./Helper'));
+});
 
 describe('isAgentWithinChatLimits', () => {
+	before(() => {
+		mockModel('Users', usersModelMock);
+		mockModel('LivechatDepartment', departmentsMock);
+	});
+
 	beforeEach(() => {
 		usersModelMock.getAgentInfo.reset();
 		departmentsMock.findOneById.reset();

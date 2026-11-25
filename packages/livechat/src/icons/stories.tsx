@@ -22,7 +22,7 @@ const iconset = Object.entries(icons).map(([filename, component]) => ({
 	name: filename.replace(/^.*\//, '').replace(/\.svg$/, ''),
 }));
 
-export const All: StoryFn<{ color: string }> = ({ color }) => (
+export const All: StoryFn<{ color: string }> = ({ color }: { color: string }) => (
 	<>
 		{iconset.map(({ component: Icon, name }, i) => (
 			<div

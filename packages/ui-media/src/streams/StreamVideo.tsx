@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-import { usePlayMediaStream } from './usePlayMediaStream';
+import { usePlayMediaStream } from './usePlayMediaStream.js';
 
 export type StreamVideoProps = {
 	stream: MediaStream | null | undefined;

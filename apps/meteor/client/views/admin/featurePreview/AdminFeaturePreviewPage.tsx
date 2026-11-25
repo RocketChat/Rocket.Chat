@@ -24,9 +24,10 @@ import {
 import { useToastMessageDispatch, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ContentColumn from '../../../components/ContentColumn';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
 import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
@@ -37,24 +38,22 @@ const AdminFeaturePreviewPage = () => {
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features } = useDefaultSettingFeaturePreviewList();
 
-	const {
-		watch,
-		formState: { isDirty },
-		setValue,
-		handleSubmit,
-		reset,
-	} = useForm({
+	const { control, setValue, handleSubmit, reset } = useForm({
 		defaultValues: { featuresPreview: features },
 	});
-	const { featuresPreview } = watch();
+	const { isDirty } = useFormState({ control });
+	const featuresPreview = useWatch({ control, name: 'featuresPreview' });
 	const dispatch = useSettingsDispatch();
 
 	const handleSave = async () => {
 		try {
+			if (!allowFeaturePreviewSetting) {
+				throw new Error('Setting Accounts_AllowFeaturePreview not found');
+			}
 			const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 
 			await dispatch([
-				{ _id: allowFeaturePreviewSetting!._id, value: allowFeaturePreviewSetting!.value },
+				{ _id: allowFeaturePreviewSetting._id, value: allowFeaturePreviewSetting.value },
 				{ _id: 'Accounts_Default_User_Preferences_featuresPreview', value: JSON.stringify(featuresToBeSaved) },
 			]);
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
@@ -81,7 +80,7 @@ const AdminFeaturePreviewPage = () => {
 		<Page>
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' width='full' alignSelf='center'>
+				<ContentColumn>
 					<Box display='flex' flexDirection='column' gap={24} paddingBlock={24}>
 						<Text fontScale='p1'>{t('Feature_preview_admin_page_description')}</Text>
 						<Callout>{t('Feature_preview_page_callout')}</Callout>
@@ -114,7 +113,7 @@ const AdminFeaturePreviewPage = () => {
 							</AccordionItem>
 						))}
 					</Accordion>
-				</Box>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty || allowFeaturePreviewSetting.changed}>
 				<ButtonGroup>

@@ -1,7 +1,7 @@
 import { Margins, Palette } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps, CSSProperties } from 'react';
 
-import { ListComponent } from './List.styles';
+import { ListComponent } from './List.styles.js';
 
 const List = ({
 	children,

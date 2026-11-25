@@ -1,0 +1,16 @@
+.rcx-grid.rcx-card-grid {
+	--rcx-card-grid-min-row-height: auto;
+
+	margin: -8px;
+}
+
+.rcx-card-grid__item {
+	display: grid;
+
+	min-height: var(--rcx-card-grid-min-row-height, auto);
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.rcx-grid__item.rcx-card-grid__item {
+	padding: 8px;
+}

@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const License = {
@@ -32,32 +32,37 @@ const Users = {
 
 const serverFetch = sinon.stub();
 
-const { AISearchService } = proxyquire.noCallThru().load('./service', {
-	'@rocket.chat/core-services': {
-		License,
-		ServiceClass: class {
-			protected name = '';
-		},
-	},
-	'../../settings': {
-		settings: cachedSettings,
-	},
-	'@rocket.chat/logger': {
-		Logger: class {
-			debug = sinon.stub();
+let AISearchService: typeof import('./service').AISearchService;
 
-			warn = sinon.stub();
+before(async () => {
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			License,
+			ServiceClass: class {
+				protected name = '';
+			},
 		},
-	},
-	'@rocket.chat/models': {
-		Messages,
-		Rooms,
-		Subscriptions,
-		Users,
-	},
-	'@rocket.chat/server-fetch': {
-		serverFetch,
-	},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: cachedSettings,
+		},
+	});
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				debug = sinon.stub();
+
+				warn = sinon.stub();
+			},
+		},
+	});
+	mock.module('@rocket.chat/server-fetch', {
+		exports: {
+			serverFetch,
+		},
+	});
+	({ AISearchService } = await import('./service'));
 });
 
 type CursorResult<T> = {
@@ -91,6 +96,13 @@ const settings: Record<string, unknown> = {
 const createService = (): InstanceType<typeof AISearchService> => new AISearchService();
 
 describe('AISearchService', () => {
+	before(() => {
+		mockModel('Messages', Messages);
+		mockModel('Rooms', Rooms);
+		mockModel('Subscriptions', Subscriptions);
+		mockModel('Users', Users);
+	});
+
 	beforeEach(() => {
 		License.hasModule.reset();
 		cachedSettings.get.reset();
@@ -216,9 +228,27 @@ describe('AISearchService', () => {
 			).to.be.true;
 			expect(
 				Subscriptions.findByUserIdAndRoomIds.calledWith('user-id', ['blocked', 'allowed'], {
-					projection: { rid: 1, status: 1 },
+					projection: { rid: 1, status: 1, name: 1, fname: 1 },
 				}),
 			).to.be.true;
+		});
+
+		it('labels direct message results with the other participant from the user subscription', async () => {
+			Rooms.findByIds.returns(cursor([{ _id: 'allowed', t: 'd' }]));
+			Subscriptions.findByUserIdAndRoomIds.returns(cursor([{ rid: 'allowed', name: 'jane.doe', fname: 'Jane Doe' }]));
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'dm-msg' }, text: 'dm pipeline text', score: 0.39 }],
+				}),
+				text: async () => '',
+			});
+
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+
+			expect(results).to.have.lengthOf(1);
+			expect(results[0].room).to.deep.equal({ _id: 'allowed', t: 'd', name: 'jane.doe', fname: 'Jane Doe' });
 		});
 
 		it('uses explicit searchType keyword when requested', async () => {

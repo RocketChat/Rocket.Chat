@@ -7,7 +7,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
-} from '@rocket.chat/rest-typings/src/v1/Ajv';
+} from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import {
@@ -606,6 +606,6 @@ const abacEndpoints = API.v1
 export type AbacEndpoints = ExtractRoutesFromAPI<typeof abacEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends AbacEndpoints {}
 }

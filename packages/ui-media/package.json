@@ -1,7 +1,14 @@
 {
 	"name": "@rocket.chat/ui-media",
-	"version": "1.0.0-rc.1",
+	"version": "2.0.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -24,6 +31,7 @@
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-client": "workspace:^",
@@ -47,9 +55,9 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "1.0.0-rc.1",
-		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
-		"@rocket.chat/icons": "0.52.0-rc.0",
+		"@rocket.chat/fuselage": "2.0.0-rc.0",
+		"@rocket.chat/fuselage-hooks": "0.44.1-rc.0",
+		"@rocket.chat/icons": "0.53.0-rc.0",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@tanstack/react-query": "~5.65.1",

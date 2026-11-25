@@ -1,7 +1,14 @@
 {
 	"name": "@rocket.chat/ui-account",
-	"version": "1.0.0-rc.1",
+	"version": "2.0.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -55,9 +62,9 @@
 	"peerDependencies": {
 		"@react-aria/visually-hidden": "*",
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "1.0.0-rc.1",
-		"@rocket.chat/fuselage-forms": "2.0.0-rc.1",
-		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
+		"@rocket.chat/fuselage": "2.0.0-rc.0",
+		"@rocket.chat/fuselage-forms": "3.0.0-rc.0",
+		"@rocket.chat/fuselage-hooks": "0.44.1-rc.0",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",

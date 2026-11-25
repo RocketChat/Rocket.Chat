@@ -94,10 +94,7 @@ export const LivechatEnterprise = {
 			{ projection: { _id: 1, username: 1 } },
 		).toArray();
 
-		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
-			monitorId,
-			username: username!,
-		}));
+		const monitors = validUserMonitors.flatMap(({ _id: monitorId, username }) => (username ? [{ monitorId, username }] : []));
 
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
@@ -149,7 +146,7 @@ export const LivechatEnterprise = {
 
 	async removeSLA(executedBy: string, _id: string) {
 		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
-		if (!removedResult || removedResult.deletedCount !== 1) {
+		if (removedResult?.deletedCount !== 1) {
 			throw new Error(`SLA with id ${_id} not found`);
 		}
 

@@ -5,8 +5,8 @@ import { useId } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import AgreeTermsField from '../../../common/AgreeTermsField';
-import { Steps } from '../RegisterOfflineForm';
+import AgreeTermsField from '../../../common/AgreeTermsField.js';
+import { Steps } from '../RegisterOfflineForm.js';
 
 type CopyStepProps = {
 	termsHref: string;

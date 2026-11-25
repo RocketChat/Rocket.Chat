@@ -1,4 +1,4 @@
-import { Message, Room } from '@rocket.chat/core-services';
+import { ClientSafeError, Message, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
@@ -12,7 +12,13 @@ export const saveRoomTopic = async (
 ) => {
 	const room = await Rooms.findOneById(rid);
 
-	await Room.beforeTopicChange(room!);
+	if (!room) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			function: 'RocketChat.saveRoomTopic',
+		});
+	}
+
+	await Room.beforeTopicChange(room);
 
 	const update = await Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {

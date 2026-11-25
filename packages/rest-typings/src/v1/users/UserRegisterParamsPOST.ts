@@ -26,6 +26,7 @@ const UserRegisterParamsPostSchema = {
 		},
 		pass: {
 			type: 'string',
+			maxLength: 256,
 		},
 		secret: {
 			type: 'string',

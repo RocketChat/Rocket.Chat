@@ -16,6 +16,14 @@ export type ItemProps = {
 	 */
 	inset?: ItemInset;
 	/**
+	 * Adds space above and below the slots, for rows that read as separate entries, such as messages in a panel's list.
+	 */
+	insetBlock?: ItemInset;
+	/**
+	 * Draws a rule along the row's bottom edge, for lists whose rows need a line between them.
+	 */
+	divided?: boolean;
+	/**
 	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
 	 */
 	align?: 'center' | 'start';
@@ -50,6 +58,31 @@ export type ItemProps = {
 	 * Declares that the row reacts to the pointer, without waiting for the browser to find a link, button or option.
 	 */
 	interactive?: boolean;
+	/**
+	 * Shows the grab cursor on the whole row, for rows dragged without an `ItemDragHandle`.
+	 */
+	grabbable?: boolean;
+	/**
+	 * Dims the row while a copy of it is being dragged.
+	 */
+	dragging?: boolean;
+	/**
+	 * Draws the line where a dragged row would land, on this row's top (`before`) or bottom (`after`) edge.
+	 */
+	dropIndicator?: 'before' | 'after';
+	/**
+	 * Marks the row as a place a dragged row goes into, such as a folder: `available` while a drag that could land on it is
+	 * under way, `active` while the pointer is over it.
+	 */
+	dropTarget?: 'available' | 'active';
+	/**
+	 * Marks the row as hovered by a drag that cannot land on it.
+	 */
+	dropDisabled?: boolean;
+	/**
+	 * Flashes the row once, where a dragged or keyboard-moved row has just landed.
+	 */
+	dropped?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
@@ -61,6 +94,8 @@ const skipRegistration = () => () => undefined;
 const Item = ({
 	is: Tag = 'div',
 	inset = 'none',
+	insetBlock = 'none',
+	divided,
 	align = 'center',
 	hoverable,
 	selected,
@@ -71,6 +106,12 @@ const Item = ({
 	variant,
 	multiline,
 	interactive,
+	grabbable,
+	dragging,
+	dropIndicator,
+	dropTarget,
+	dropDisabled,
+	dropped,
 	className,
 	onClick,
 	children,
@@ -112,6 +153,8 @@ const Item = ({
 				className={cx(
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
+						[`inset-block-${insetBlock}`]: insetBlock !== 'none',
+						'divided': !!divided,
 						[`align-${align}`]: align !== 'center',
 						'hoverable': !!hoverable,
 						'clickable': !!onClick,
@@ -124,6 +167,12 @@ const Item = ({
 						'focus-visible': !!focusVisible,
 						'disabled': !!disabled,
 						'danger': variant === 'danger',
+						'grabbable': !!grabbable,
+						'dragging': !!dragging,
+						'drop': dropIndicator ?? false,
+						'drop-target': dropTarget ?? false,
+						'drop-disabled': !!dropDisabled,
+						'dropped': !!dropped,
 					}),
 					className,
 				)}

@@ -24,6 +24,8 @@ it('keeps the overflow menu at its own size next to the buttons', () => {
 	]);
 
 	const [, overflow] = screen.getAllByRole('button');
+	// The slot is a plain layout box with no role to query by
+	// oxlint-disable-next-line testing-library/no-node-access
 	const slot = overflow.parentElement as HTMLElement;
 
 	expect(getComputedStyle(slot).flexGrow).not.toBe('1');

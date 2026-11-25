@@ -66,7 +66,11 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	if (isPending) {
 		return <Skeleton width='full' />;
 	}
-	return <ButtonGroup stretch>{actions}</ButtonGroup>;
+	return (
+		<ButtonGroup stretch wrap>
+			{actions}
+		</ButtonGroup>
+	);
 };
 
 export default UserInfoActions;

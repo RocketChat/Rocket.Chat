@@ -16,7 +16,7 @@ const upsert = jest.spyOn(SubscriptionsCachedStore, 'upsertSubscription').mockRe
 const render = (roomId: string | undefined) => {
 	const streamRef: StreamControllerRef<'notify-user'> = {};
 
-	const result = renderHook(() => useConferenceSubscription(roomId), {
+	const view = renderHook(() => useConferenceSubscription(roomId), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withStream('notify-user', streamRef)
@@ -24,7 +24,7 @@ const render = (roomId: string | undefined) => {
 			.build(),
 	});
 
-	return { ...result, streamRef };
+	return { ...view, streamRef };
 };
 
 beforeEach(() => {

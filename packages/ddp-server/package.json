@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-server",
-	"version": "0.0.1",
+	"version": "0.0.2-rc.0",
 	"private": true,
 	"description": "Meteor-free DDP server: protocol codec, sessions, method and publication dispatch, and the Streamer adapter",
 	"keywords": [

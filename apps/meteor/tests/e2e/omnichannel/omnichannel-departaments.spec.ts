@@ -164,7 +164,7 @@ test.describe('OC - Manage Departments', () => {
 				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 
 				await poOmnichannelDepartments.archiveDepartmentByName(department.name);
-				await poOmnichannelDepartments.tabArchivedDepartments.click();
+				await poOmnichannelDepartments.openArchivedTab();
 				await poOmnichannelDepartments.search(department.name);
 				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});

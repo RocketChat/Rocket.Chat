@@ -14,6 +14,30 @@ import { useAISearchResults } from './hooks/useAISearchResults';
 import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
+const getSearchCalloutFlags = ({
+	hasIntelligentSearchLicense,
+	aiSearchFeatureEnabled,
+	intelligentSearchEnabled,
+	canUseAISearch,
+	meta,
+	searchError,
+}: {
+	hasIntelligentSearchLicense: ReturnType<typeof useHasLicenseModule>['data'];
+	aiSearchFeatureEnabled: boolean;
+	intelligentSearchEnabled: boolean;
+	canUseAISearch: boolean;
+	meta: ReturnType<typeof useAISearchResults>['meta'];
+	searchError: ReturnType<typeof useAISearchResults>['error'];
+}) => {
+	const showUpsell = hasIntelligentSearchLicense === false;
+	const showFeatureDisabled = Boolean(hasIntelligentSearchLicense && !aiSearchFeatureEnabled);
+	const showSearchDisabled = canUseAISearch && !intelligentSearchEnabled;
+	const showNotConfigured = Boolean(canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured);
+	const showCallouts = showUpsell || showFeatureDisabled || showSearchDisabled || showNotConfigured || !!searchError;
+
+	return { showUpsell, showFeatureDisabled, showSearchDisabled, showNotConfigured, showCallouts };
+};
+
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
 	useDocumentTitle(t('Intelligent_Search'));
@@ -43,11 +67,14 @@ const SearchPage = (): ReactElement => {
 		[intelligent],
 	);
 
-	const showUpsell = hasIntelligentSearchLicense === false;
-	const showFeatureDisabled = Boolean(hasIntelligentSearchLicense && !aiSearchFeatureEnabled);
-	const showSearchDisabled = canUseAISearch && !intelligentSearchEnabled;
-	const showNotConfigured = Boolean(canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured);
-	const showCallouts = showUpsell || showFeatureDisabled || showSearchDisabled || showNotConfigured || !!searchError;
+	const { showUpsell, showFeatureDisabled, showSearchDisabled, showNotConfigured, showCallouts } = getSearchCalloutFlags({
+		hasIntelligentSearchLicense,
+		aiSearchFeatureEnabled,
+		intelligentSearchEnabled,
+		canUseAISearch,
+		meta,
+		searchError,
+	});
 
 	const canGenerateAnswer = Boolean(meta?.answerGenerationConfigured && !isPlaceholderData && debouncedQuery && intelligent.length > 0);
 	const answerResult = useAISearchAnswer(debouncedQuery, answerMessages, canGenerateAnswer);

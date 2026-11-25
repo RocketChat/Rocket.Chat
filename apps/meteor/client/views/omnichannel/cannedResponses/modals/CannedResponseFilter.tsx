@@ -50,7 +50,7 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 				<Field>
 					<FieldLabel htmlFor={sharingField}>{t('Sharing')}</FieldLabel>
 					<FieldRow>
-						<Select id={sharingField} value={sharing} onChange={(value) => setSharing(value as SharingValues)} options={sharingList} />
+						<Select id={sharingField} value={sharing} onChange={(value) => setSharing(value)} options={sharingList} />
 					</FieldRow>
 				</Field>
 			</Box>

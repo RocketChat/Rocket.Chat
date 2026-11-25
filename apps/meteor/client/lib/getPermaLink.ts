@@ -12,18 +12,10 @@ const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> =
 	}
 };
 
-export const getPermaLink = async (msgId: string): Promise<string> => {
-	if (!msgId) {
-		throw new Error('invalid-parameter');
-	}
+export const getPermaLinkFromMessage = async (message: Pick<IMessage, '_id' | 'rid'>): Promise<string> => {
+	const { Rooms, Subscriptions } = await import('../stores');
 
-	const { Messages, Rooms, Subscriptions } = await import('../stores');
-
-	const msg = Messages.state.get(msgId) || (await getMessage(msgId));
-	if (!msg) {
-		throw new Error('message-not-found');
-	}
-	const roomData = Rooms.state.get(msg.rid);
+	const roomData = Rooms.state.get(message.rid);
 
 	if (!roomData) {
 		throw new Error('room-not-found');
@@ -34,5 +26,20 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 	const { roomCoordinator } = await import('./rooms/roomCoordinator');
 
 	const roomURL = roomCoordinator.getURL(roomData.t, { ...(subData || roomData), tab: '' });
-	return `${roomURL}?msg=${msgId}`;
+	return `${roomURL}?msg=${message._id}`;
+};
+
+export const getPermaLink = async (msgId: string): Promise<string> => {
+	if (!msgId) {
+		throw new Error('invalid-parameter');
+	}
+
+	const { Messages } = await import('../stores');
+
+	const msg = Messages.state.get(msgId) || (await getMessage(msgId));
+	if (!msg) {
+		throw new Error('message-not-found');
+	}
+
+	return getPermaLinkFromMessage(msg);
 };

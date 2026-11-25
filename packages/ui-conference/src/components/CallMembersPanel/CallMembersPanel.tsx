@@ -4,16 +4,17 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import VoiceActivity from '../../call/VoiceActivity';
-import { ConferenceContext, useConference } from '../../context/ConferenceContext';
-import type { CallParticipantEntry } from '../../lib/callParticipants';
-import { composeCallParticipants } from '../../lib/callParticipants';
-import { hasConferenceChatAccess } from '../../lib/chatAccess';
-import type { PluginParticipant } from '../../lib/providerPlugin';
-import AddParticipantsModal from '../AddParticipantsModal/AddParticipantsModal';
-import CallMemberItem from '../CallMemberItem/CallMemberItem';
-import CallPanelHeader from '../CallPanelHeader';
-import CallParticipantItem from '../CallParticipantItem/CallParticipantItem';
+import CallMemberPins from '../../call/CallMemberPins.js';
+import VoiceActivity from '../../call/VoiceActivity.js';
+import { ConferenceContext, useConference } from '../../context/ConferenceContext.js';
+import type { CallParticipantEntry } from '../../lib/callParticipants.js';
+import { composeCallParticipants } from '../../lib/callParticipants.js';
+import { hasConferenceChatAccess } from '../../lib/chatAccess.js';
+import type { PluginParticipant } from '../../lib/providerPlugin.js';
+import AddParticipantsModal from '../AddParticipantsModal/AddParticipantsModal.js';
+import CallMemberItem from '../CallMemberItem/CallMemberItem.js';
+import CallPanelHeader from '../CallPanelHeader.js';
+import CallParticipantItem from '../CallParticipantItem/CallParticipantItem.js';
 
 /** What a call running in this window knows about its members, by user id. */
 export type MembersInCall = {
@@ -105,6 +106,7 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 					handRaised={inCall?.raisedHands.has(member._id)}
 					muted={inCall?.mutedMembers.has(member._id)}
 					onMute={inCall?.muteMember}
+					pinControls={inCall && <CallMemberPins memberId={member._id} />}
 					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>

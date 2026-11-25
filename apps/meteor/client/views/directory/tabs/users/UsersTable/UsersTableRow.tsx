@@ -29,7 +29,7 @@ const UsersTableRow = ({
 			<GenericTableCell>
 				<FlexContainer>
 					<Box>
-						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
+						<FlexItem>{username && <UserAvatar size='x40' username={username} etag={avatarETag} />}</FlexItem>
 						<Box withTruncatedText marginInline={8}>
 							<Box display='flex'>
 								<Text fontScale='p2m' truncate>

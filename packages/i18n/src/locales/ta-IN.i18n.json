@@ -996,6 +996,7 @@
   "Everyone_can_access_this_channel": "அனைவரும் இந்த சேனலை அணுகலாம்",
   "Example_s": "உதாரணம்: <code>{{value}}</code>",
   "except_pinned": "(பின்னிணைக்கப்பட்டவை தவிர)",
+  "Exchange_Graph_Client_Secret": "கிளையன்ட் சீக்ரெட்",
   "Exclude_Botnames": "போட்களை நீக்கவும்",
   "Exclude_Botnames_Description": "மேலேயுள்ள வழக்கமான வெளிப்பாட்டை பொருந்தும் பெயர்களைப் போடாதே. காலியாக இருந்தால், போட்களின் அனைத்து செய்திகளும் பிரச்சாரம் செய்யப்படும்.",
   "Exclude_pinned": "பின் செய்திகளை விலக்கவும்",

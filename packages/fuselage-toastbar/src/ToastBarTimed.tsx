@@ -1,13 +1,14 @@
 import { ToastBar } from '@rocket.chat/fuselage';
 import { useCountdown } from 'react-timing-hooks';
 
-import type { ToastBarPayload } from './ToastBarContext';
-import { useToastBarDismiss } from './ToastBarContext';
+import type { ToastBarPayload } from './ToastBarContext.js';
+import { useToastBarDismiss } from './ToastBarContext.js';
 
 const ToastBarTimed = ({ time, type, id, message, title }: ToastBarPayload) => {
 	const dismissToastMessage = useToastBarDismiss();
 
-	const [, { isPaused, pause, resume }] = useCountdown(time, 0, {
+	// useCountdown maps pause() to stop() by default, so isPaused never turns true
+	const [, { isStopped, pause, resume }] = useCountdown(time, 0, {
 		onEnd: () => dismissToastMessage(id),
 		startOnMount: true,
 	});
@@ -20,7 +21,7 @@ const ToastBarTimed = ({ time, type, id, message, title }: ToastBarPayload) => {
 			onClose={dismissToastMessage}
 			id={id}
 			time={time}
-			isPaused={isPaused}
+			isPaused={isStopped}
 		>
 			{title}
 			{message instanceof Error ? String(message) : message}

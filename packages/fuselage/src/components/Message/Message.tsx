@@ -2,6 +2,7 @@ import type { AllHTMLAttributes, RefAttributes } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
 import Item from '../Item/Item';
+import type { ItemInset } from '../Item/types';
 
 export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 	RefAttributes<HTMLDivElement> & {
@@ -14,6 +15,14 @@ export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 		isSelected?: boolean;
 		isEditing?: boolean;
 		isPending?: boolean;
+		/**
+		 * Adds space above and below the message, for a list of separate messages such as a panel's threads or discussions.
+		 */
+		insetBlock?: ItemInset;
+		/**
+		 * Draws a rule under the message, for a list of separate messages that needs a line between them.
+		 */
+		divided?: boolean;
 	};
 
 function Message({ className, clickable, hoverable = true, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {

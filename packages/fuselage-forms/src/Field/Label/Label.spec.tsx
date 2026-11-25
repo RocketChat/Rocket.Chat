@@ -1,8 +1,8 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { createRef } from 'react';
 
-import { HiddenLabel, LabelFor, ReferencedLabel } from '.';
-import { Field } from '..';
+import { HiddenLabel, LabelFor, ReferencedLabel } from './index.js';
+import { Field } from '../index.js';
 
 it.each([
 	['HiddenLabel', HiddenLabel],
@@ -11,11 +11,11 @@ it.each([
 ])('%s should forward the caller ref to the rendered element', (_name, Label) => {
 	const ref = createRef<HTMLElement>();
 
-	const { getByText } = render(
+	render(
 		<Field>
 			<Label ref={ref}>Test Field</Label>
 		</Field>,
 	);
 
-	expect(ref.current).toBe(getByText('Test Field'));
+	expect(ref.current).toBe(screen.getByText('Test Field'));
 });

@@ -30,13 +30,13 @@ export const useReplyInDMAction = (
 	);
 
 	const shouldFindRoom = useMemo(() => !!user && !canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
-	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
+	const dmRoom = Rooms.useStore(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
 		(record: ISubscription) => record.rid === dmRoom?._id || record.u._id === user?._id,
 		[dmRoom, user?._id],
 	);
-	const dmSubs = Subscriptions.use(useShallow((state) => state.find(subsPredicate)));
+	const dmSubs = Subscriptions.useStore(useShallow((state) => state.find(subsPredicate)));
 
 	const tooltip = useMemo(() => {
 		if (encrypted) {

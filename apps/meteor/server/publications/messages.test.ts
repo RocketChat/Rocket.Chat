@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const messagesMock = {
@@ -15,32 +15,37 @@ const messagesMock = {
 const canAccessRoomIdAsyncStub = sinon.stub().resolves(true);
 const getChannelHistoryStub = sinon.stub();
 
-const {
-	extractTimestampFromCursor,
-	mountCursorQuery,
-	mountCursorFromMessage,
-	mountNextCursor,
-	mountPreviousCursor,
-	handleWithoutPagination,
-	handleCursorPagination,
-	getMessageHistory,
-} = proxyquire.noCallThru().load('./messages', {
-	'../lib/authorization/canAccessRoom': {
-		canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
-	},
-	'../meteor-methods/messages/getChannelHistory': {
-		getChannelHistory: getChannelHistoryStub,
-	},
-	'meteor/meteor': {
-		'Meteor': {
-			methods: sinon.stub(),
+let extractTimestampFromCursor: any;
+let mountCursorQuery: any;
+let mountCursorFromMessage: any;
+let mountNextCursor: any;
+let mountPreviousCursor: any;
+let handleWithoutPagination: any;
+let handleCursorPagination: any;
+let getMessageHistory: any;
+
+before(async () => {
+	mock.module('../lib/authorization/canAccessRoom', {
+		exports: {
+			canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
 		},
-		'@global': true,
-	},
-	'@rocket.chat/core-services': { ClientSafeError },
-	'@rocket.chat/models': {
-		Messages: messagesMock,
-	},
+	});
+	mock.module('../meteor-methods/messages/getChannelHistory', {
+		exports: {
+			getChannelHistory: getChannelHistoryStub,
+		},
+	});
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+	({
+		extractTimestampFromCursor,
+		mountCursorQuery,
+		mountCursorFromMessage,
+		mountNextCursor,
+		mountPreviousCursor,
+		handleWithoutPagination,
+		handleCursorPagination,
+		getMessageHistory,
+	} = await import('./messages'));
 });
 
 describe('extractTimestampFromCursor', () => {
@@ -186,6 +191,10 @@ describe('mountPreviousCursor', () => {
 });
 
 describe('handleWithoutPagination', () => {
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
+
 	afterEach(() => {
 		messagesMock.findForUpdates.reset();
 		messagesMock.trashFindDeletedAfter.reset();
@@ -253,6 +262,10 @@ describe('handleWithoutPagination', () => {
 });
 
 describe('handleCursorPagination', () => {
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
+
 	it('should return updated messages and cursor when type is UPDATED', async () => {
 		const rid = 'roomId';
 		const count = 10;
@@ -296,6 +309,10 @@ describe('handleCursorPagination', () => {
 describe('getMessageHistory', () => {
 	const rid = 'roomId';
 	const fromId = 'userId';
+
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
 
 	const catchError = async (promise: Promise<unknown>): Promise<any> => {
 		try {

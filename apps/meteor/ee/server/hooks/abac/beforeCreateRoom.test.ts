@@ -1,8 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import * as coreServices from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 type RoomToCreate = Omit<IRoom, '_id' | '_updatedAt'>;
@@ -16,20 +16,27 @@ const validateCreationAttributesMock = sinon.stub();
 
 let guard: Guard;
 
-p.noCallThru().load('./beforeCreateRoom.ts', {
-	'@rocket.chat/core-services': { Abac: { validateCreationAttributes: validateCreationAttributesMock } },
-	'@rocket.chat/license': { License: licenseMock },
-	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },
-	'../../../../server/lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
-	'../../../../server/lib/callbacks': { callbacks: { priority: { HIGH: 1 } } },
-	'../../../../server/lib/callbacks/beforeCreateRoomCallback': {
-		beforeCreateRoomCallback: {
-			add: (fn: Guard) => {
-				guard = fn;
+before(async () => {
+	mock.module('@rocket.chat/core-services', {
+		exports: { ...coreServices, Abac: { validateCreationAttributes: validateCreationAttributesMock } },
+	});
+	mock.module('@rocket.chat/license', { exports: { License: licenseMock } });
+	mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
+		exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
+	});
+	mock.module('../../../../server/lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } });
+	mock.module('../../../../server/lib/callbacks', { exports: { callbacks: { priority: { HIGH: 1 } } } });
+	mock.module('../../../../server/lib/callbacks/beforeCreateRoomCallback', {
+		exports: {
+			beforeCreateRoomCallback: {
+				add: (fn: Guard) => {
+					guard = fn;
+				},
 			},
 		},
-	},
-	'../../../../server/settings': { settings: settingsMock },
+	});
+	mock.module('../../../../server/settings', { exports: { settings: settingsMock } });
+	await import('./beforeCreateRoom');
 });
 
 const owner = { _id: 'owner', username: 'owner', name: 'Owner' } as IUser;

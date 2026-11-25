@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 import { useLayoutEffect, useRef } from 'react';
 
-import { flipOffset } from '../lib/tileFlip';
+import { flipOffset } from '../lib/tileFlip.js';
 
 /**
  * Animates the grid's cells from where they were to where they are whenever the column count changes, instead of

@@ -1,7 +1,7 @@
-import { after, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const checkUsernameAvailability = sinon.stub();
@@ -22,57 +22,47 @@ const models = {
 		findOneByEmailAddress: sinon.stub(),
 		setAvatarData: sinon.stub(),
 		removeById: sinon.stub(),
+		setPasswordHash: sinon.stub(),
 	},
 	Roles: {
 		countUsersInRole: sinon.stub(),
 	},
 };
-const setPasswordAsync = sinon.stub();
 const settingsGet = sinon.stub();
 const avatarStore = {
 	deleteByName: sinon.stub(),
 	insert: sinon.stub(),
 };
 
-const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().load('./initialData', {
-	'meteor/accounts-base': {
-		Accounts: {
-			setPasswordAsync,
-		},
-	},
-	'meteor/meteor': {
-		Meteor: {},
-	},
-	'../lib/media/file-upload': {
-		FileUpload: { getStore: () => avatarStore },
-	},
-	'../lib/privateAssets': {
-		readPrivateAsset: sinon.stub().resolves(Buffer.from('png')),
-	},
-	'../lib/rooms/addUserToDefaultChannels': {},
-	'../lib/users/checkUsernameAvailability': {
-		checkUsernameAvailability,
-	},
-	'../settings': {
-		settings: { get: settingsGet },
-	},
-	'@rocket.chat/tools': {
-		validateEmail,
-	},
-	'../lib/roles/addUserRoles': {
-		addUserRolesAsync,
-	},
-	'@rocket.chat/models': models,
+let insertAdminUserFromEnv: any;
+let insertInitialData: any;
+
+before(async () => {
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword: async (password: string) => `hashed=${password}` } });
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
+	mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore: () => avatarStore } } });
+	mock.module('../lib/privateAssets', { exports: { readPrivateAsset: sinon.stub().resolves(Buffer.from('png')) } });
+	mock.module('../lib/rooms/addUserToDefaultChannels', { exports: {} });
+	mock.module('../lib/users/checkUsernameAvailability', { exports: { checkUsernameAvailability } });
+	mock.module('../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('@rocket.chat/tools', { exports: { validateEmail } });
+	mock.module('../lib/roles/addUserRoles', { exports: { addUserRolesAsync } });
+	({ insertAdminUserFromEnv, insertInitialData } = await import('./initialData'));
 });
 
 describe('insertAdminUserFromEnv', () => {
+	before(() => {
+		mockModel('Users', models.Users);
+		mockModel('Roles', models.Roles);
+	});
+
 	beforeEach(() => {
 		checkUsernameAvailability.reset();
 		validateEmail.reset();
 		addUserRolesAsync.reset();
 		models.Users.create.reset();
 		models.Users.findOneByEmailAddress.reset();
-		setPasswordAsync.reset();
+		models.Users.setPasswordHash.reset();
 		settingsGet.reset();
 		process.env.ADMIN_PASS = 'pass';
 		models.Roles.countUsersInRole.reset();
@@ -102,7 +92,7 @@ describe('insertAdminUserFromEnv', () => {
 		expect(validateEmail.called).to.be.true;
 		expect(validateEmail.calledWith('email')).to.be.true;
 		expect(models.Users.create.called).to.be.true;
-		expect(setPasswordAsync.called).to.be.true;
+		sinon.assert.calledOnceWithExactly(models.Users.setPasswordHash, 'newuserid', 'hashed=pass');
 		expect(result).to.be.undefined;
 	});
 	it('should override the admins name when process.env.ADMIN_NAME is set', async () => {
@@ -218,7 +208,7 @@ describe('insertAdminUserFromEnv', () => {
 		await insertAdminUserFromEnv();
 
 		expect(addUserRolesAsync.called).to.be.true;
-		expect(setPasswordAsync.called).to.be.true;
+		expect(models.Users.setPasswordHash.called).to.be.true;
 		expect(models.Users.create.calledWith(sinon.match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] })))
 			.to.be.true;
 	});
@@ -249,8 +239,15 @@ describe('insertAdminUserFromEnv', () => {
 });
 
 describe('initial data startup', () => {
-	const runStartup = insertInitialData;
+	const runStartup = () => insertInitialData();
 	const { TEST_MODE } = process.env;
+
+	before(() => {
+		mockModel('Settings', models.Settings);
+		mockModel('Rooms', models.Rooms);
+		mockModel('Users', models.Users);
+		mockModel('Roles', models.Roles);
+	});
 
 	beforeEach(() => {
 		delete process.env.TEST_MODE;

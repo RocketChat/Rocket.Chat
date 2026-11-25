@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -38,16 +38,26 @@ const queueManager = {
 	verifyInquiry: sinon.stub(),
 };
 
-const { runVerifyContactChannel } = proxyquire.noCallThru().load('./verifyContactChannel', {
-	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
-	'../../../server/lib/omnichannel/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
-	'../../../server/lib/omnichannel/QueueManager': { QueueManager: queueManager },
-	'../../../server/database/utils': { client: clientMock },
-	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
-	'@rocket.chat/models': modelsMock,
+let runVerifyContactChannel: typeof import('./verifyContactChannel').runVerifyContactChannel;
+
+before(async () => {
+	mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: mergeContactsStub } });
+	mock.module('../../../server/lib/omnichannel/contacts/verifyContactChannel', {
+		exports: { verifyContactChannel: { patch: sinon.stub() } },
+	});
+	mock.module('../../../server/lib/omnichannel/QueueManager', { exports: { QueueManager: queueManager } });
+	mock.module('../../../server/database/utils', { exports: { client: clientMock } });
+	mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } });
+	({ runVerifyContactChannel } = await import('./verifyContactChannel'));
 });
 
 describe('verifyContactChannel', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('LivechatInquiry', modelsMock.LivechatInquiry);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.getUpdater.reset();
 		modelsMock.LivechatContacts.setVerifiedUpdateQuery.reset();

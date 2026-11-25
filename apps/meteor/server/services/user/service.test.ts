@@ -1,16 +1,19 @@
-import { afterEach, before, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
-import { registerModel, BaseRaw } from '@rocket.chat/models';
+import { BaseRaw } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const maxTokens = {
 	getMaxLoginTokens: () => 2,
 };
 
-const { UserService } = proxyquire.noCallThru().load('./service', {
-	'../../lib/getMaxLoginTokens': maxTokens,
+let UserService: typeof import('./service').UserService;
+
+before(async () => {
+	mock.module('../../lib/getMaxLoginTokens', { exports: { default: maxTokens } });
+	({ UserService } = await import('./service'));
 });
 
 class UsersModel extends BaseRaw<any> {
@@ -27,7 +30,7 @@ const usersModel = new UsersModel({ collection: () => ({}) } as unknown as any, 
 
 describe('User service', () => {
 	before(() => {
-		registerModel('IUsersModel', usersModel);
+		mockModel('Users', usersModel);
 	});
 
 	afterEach(() => sinon.restore());

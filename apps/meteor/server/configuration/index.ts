@@ -1,4 +1,3 @@
-import { configureAccounts } from './accounts_meld';
 import { configureCAS } from './cas';
 import { configureAssets } from './configureAssets';
 import { configureBoilerplate } from './configureBoilerplate';
@@ -14,19 +13,19 @@ import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureServer(settings: ICachedSettings) {
+	configureBoilerplate(settings);
+	configureSMTP(settings);
+	configurePassport(settings);
+
 	await Promise.all([
 		configureLogLevel(settings),
-		configureAccounts(),
 		configureCAS(settings),
 		configureOAuth(settings),
 		configureAssets(settings),
 		configureCORS(settings),
 		configureCDN(settings),
 		configurePushNotifications(settings),
-		configureBoilerplate(settings),
 		configureDirectReply(settings),
-		configureSMTP(settings),
 		configureIRC(settings),
-		configurePassport(settings),
 	]);
 }

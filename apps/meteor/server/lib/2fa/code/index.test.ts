@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsMock = sinon.stub();
@@ -35,20 +35,19 @@ class DisabledCheckMock {
 	}
 }
 
-const { checkCodeForUser } = proxyquire.noCallThru().load('./index', {
-	'./TOTPCheck': { TOTPCheck: TOTPCheckMock },
-	'./EmailCheck': { EmailCheck: DisabledCheckMock },
-	'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
-	'../../shared/getModifiedHttpHeaders': { normalizeHeaders: (headers: unknown) => headers },
-	'../../../settings': { settings: { get: settingsMock } },
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: async () => null,
-			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
-		},
-	},
-	'meteor/accounts-base': { Accounts: { _getLoginToken: getLoginTokenStub } },
-});
+const loadTwoFactor = (TOTPCheck: typeof TOTPCheckMock, settingsGet: sinon.SinonStub, getLoginToken: () => unknown) => {
+	mock.module('./TOTPCheck', { exports: { TOTPCheck } });
+	mock.module('./EmailCheck', { exports: { EmailCheck: DisabledCheckMock } });
+	mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback: class extends DisabledCheckMock {} } });
+	mock.module('../../shared/getModifiedHttpHeaders', { exports: { normalizeHeaders: (headers: unknown) => headers } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { _getLoginToken: getLoginToken } } });
+	delete require.cache[require.resolve('./index')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const twoFactor = require('./index');
+	mock.restoreAll();
+	return twoFactor;
+};
 
 const HASHED_TOKEN = 'hashed-login-token';
 
@@ -64,7 +63,12 @@ const connection = {
 } as any;
 
 describe('checkCodeForUser - bypassTwoFactor token resolution (SUP-1064)', () => {
+	let checkCodeForUser: any;
 	let testMode: string | undefined;
+
+	before(() => {
+		({ checkCodeForUser } = loadTwoFactor(TOTPCheckMock, settingsMock, getLoginTokenStub));
+	});
 
 	beforeEach(() => {
 		// TEST_MODE short-circuits the whole check; remove it so the token resolution path runs.
@@ -136,20 +140,7 @@ describe('checkCodeForUser - remembered two-factor authorization', () => {
 		}
 	}
 
-	const twoFactor = proxyquire.noCallThru().load('./index', {
-		'./TOTPCheck': { TOTPCheck: EnabledTOTPCheck },
-		'./EmailCheck': { EmailCheck: DisabledCheckMock },
-		'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
-		'../../shared/getModifiedHttpHeaders': { normalizeHeaders: (headers: unknown) => headers },
-		'../../../settings': { settings: { get: settingsGet } },
-		'@rocket.chat/models': {
-			Users: {
-				findOneById: async () => null,
-				setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: setTwoFactorAuthorization,
-			},
-		},
-		'meteor/accounts-base': { Accounts: { _getLoginToken: () => TOKEN } },
-	});
+	let twoFactor: any;
 
 	const browserConnection = {
 		id: 'connection-id',
@@ -173,6 +164,13 @@ describe('checkCodeForUser - remembered two-factor authorization', () => {
 	});
 
 	let testMode: string | undefined;
+
+	before(() => {
+		twoFactor = loadTwoFactor(EnabledTOTPCheck, settingsGet, () => TOKEN);
+		mockModel('Users', {
+			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: setTwoFactorAuthorization,
+		});
+	});
 
 	beforeEach(() => {
 		testMode = process.env.TEST_MODE;

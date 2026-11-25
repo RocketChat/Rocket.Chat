@@ -1,9 +1,9 @@
-import { Box, Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -32,16 +32,10 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-		setValue,
-		clearErrors,
-		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorEmailFormData>({
+	const { control, handleSubmit, setError, setValue, clearErrors } = useForm<TwoFactorEmailFormData>({
 		defaultValues: { code: '' },
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		if (invalidAttempt) {
@@ -87,7 +81,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
+			onSubmit={onSubmit}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Enter_authentication_code')}

@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import { MessageDivider } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
@@ -10,6 +10,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
@@ -18,6 +19,7 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ListViewport from '../../../components/ListViewport';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -56,11 +58,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 			<ContextualbarContent flush>
-				{queryResult.isLoading && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
+				{queryResult.isLoading && <ContextualbarSkeletonContent />}
 				{queryResult.isSuccess && (
 					<>
 						{queryResult.data.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
@@ -68,16 +66,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
-									<Box
-										is='section'
-										ref={messageListRef}
-										display='flex'
-										flexDirection='column'
-										flexGrow={1}
-										flexShrink={1}
-										flexBasis='auto'
-										height='full'
-									>
+									<ListViewport ref={messageListRef}>
 										<VirtualizedScrollbars>
 											<Virtuoso
 												totalCount={queryResult.data.length}
@@ -116,7 +105,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 												}}
 											/>
 										</VirtualizedScrollbars>
-									</Box>
+									</ListViewport>
 								</MessageListProvider>
 							</MessageListErrorBoundary>
 						)}

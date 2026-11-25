@@ -1,8 +1,8 @@
-import { BlockContext } from './BlockContext';
-import type { BlockRenderers } from './BlockRenderers';
-import type { LayoutBlockRenderer } from './LayoutBlockRenderer';
-import type { LayoutBlock } from '../blocks/LayoutBlock';
-import type { ConditionalBlock } from '../blocks/layout/ConditionalBlock';
+import { BlockContext } from './BlockContext.js';
+import type { BlockRenderers } from './BlockRenderers.js';
+import type { LayoutBlockRenderer } from './LayoutBlockRenderer.js';
+import type { LayoutBlock } from '../blocks/LayoutBlock.js';
+import type { ConditionalBlock } from '../blocks/layout/ConditionalBlock.js';
 
 const getLayoutBlockRenderer = <T>(
 	renderers: BlockRenderers<T>,

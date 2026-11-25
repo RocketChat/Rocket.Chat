@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import AdminInfoForm from './AdminInfoForm';
+import AdminInfoForm from './AdminInfoForm.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

@@ -987,6 +987,7 @@
   "Everyone_can_access_this_channel": "Vsakdo lahko dostopa do tega kanala",
   "Example_s": "Primer: <code>{{value}}</code>",
   "except_pinned": "(razen tistih, ki so pripeti)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Izključi bote",
   "Exclude_Botnames_Description": "Ne pošiljajte sporočil iz botov, katerih ime se ujema z zgornjim regularnim izrazom. Če pustite prazno, bodo vsa sporočila iz botov razširjena.",
   "Exclude_pinned": "Izključi prepovedana sporočila",

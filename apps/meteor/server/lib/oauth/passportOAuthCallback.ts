@@ -1,23 +1,17 @@
 import crypto from 'crypto';
 
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LoginCodes } from '@rocket.chat/models';
-import type { Request, Response } from 'express';
-import { Accounts } from 'meteor/accounts-base';
+import type { NextFunction, Request, Response } from 'express';
 
 import { doesUserRequire2FA } from './twoFactorAuth';
+import { issueLoginToken } from '../auth/issueLoginToken';
 
 const logger = new Logger('OAuth');
 
 type LaunchStyle = 'popup' | 'redirect' | undefined;
-
-const createLoginToken = async (userId: string) => {
-	const stampedToken = Accounts._generateStampedLoginToken();
-	await Accounts._insertLoginToken(userId, stampedToken);
-
-	return stampedToken.token;
-};
 
 const sendPopupMessage = (res: Response, payload: unknown) => {
 	const nonce = crypto.randomBytes(16).toString('base64');
@@ -25,10 +19,14 @@ const sendPopupMessage = (res: Response, payload: unknown) => {
 
 	res.send(`
 		<script nonce="${nonce}">
-			window.opener.postMessage(
-				${JSON.stringify(payload)},
-				window.location.origin
-			);
+			const message = ${JSON.stringify(payload)};
+			if (window.opener && !window.opener.closed) {
+				window.opener.postMessage(message, window.location.origin);
+			} else {
+				const channel = new BroadcastChannel('oauth-popup');
+				channel.postMessage(message);
+				channel.close();
+			}
 			window.close();
 		</script>
 	`);
@@ -46,7 +44,7 @@ const handlePopupStyleOAuth = async (res: Response, oAuthUser: IUser, loginClien
 		return;
 	}
 
-	const token = await createLoginToken(oAuthUser._id);
+	const { token } = await issueLoginToken(oAuthUser._id);
 
 	if (loginClient) {
 		sendPopupMessage(res, {
@@ -105,4 +103,21 @@ export const passportOAuthCallback =
 				logger.error({ msg: 'Error destroying OAuth session', err });
 			}
 		});
+	};
+
+export const passportOAuthErrorCallback =
+	(siteUrl: string, launchStyle: LaunchStyle = 'redirect') =>
+	(err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+		logger.error({ msg: 'OAuth login failed', err });
+
+		const oauthError = isClientSafeError(err) && err.error === 'error-invalid-username' ? err.error : 'error-oauth-login-failed';
+
+		if (launchStyle === 'popup') {
+			sendPopupMessage(res, { oauthPopupCommand: 'login-error', oauthError });
+			return;
+		}
+
+		const redirectUrl = new URL(`${siteUrl}/home`);
+		redirectUrl.searchParams.set('oauthError', oauthError);
+		res.redirect(redirectUrl.toString());
 	};

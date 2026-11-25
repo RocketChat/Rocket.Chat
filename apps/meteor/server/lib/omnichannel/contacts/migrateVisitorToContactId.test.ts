@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -17,24 +17,37 @@ const modelsMock = {
 const createContactFromVisitor = sinon.stub();
 const mergeVisitorIntoContact = sinon.stub();
 
-const { migrateVisitorToContactId } = proxyquire.noCallThru().load('./migrateVisitorToContactId', {
-	'./createContactFromVisitor': {
-		createContactFromVisitor,
-	},
-	'./ContactMerger': {
-		ContactMerger: {
-			mergeVisitorIntoContact,
+let migrateVisitorToContactId: any;
+
+before(async () => {
+	mock.module('./createContactFromVisitor', {
+		exports: {
+			createContactFromVisitor,
 		},
-	},
-	'@rocket.chat/models': modelsMock,
-	'../logger': {
-		livechatContactsLogger: {
-			debug: sinon.stub(),
+	});
+	mock.module('./ContactMerger', {
+		exports: {
+			ContactMerger: {
+				mergeVisitorIntoContact,
+			},
 		},
-	},
+	});
+	mock.module('../logger', {
+		exports: {
+			livechatContactsLogger: {
+				debug: sinon.stub(),
+			},
+		},
+	});
+	({ migrateVisitorToContactId } = await import('./migrateVisitorToContactId'));
 });
 
 describe('migrateVisitorToContactId', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.reset();
 		modelsMock.LivechatRooms.setContactByVisitorAssociation.reset();

@@ -1,12 +1,12 @@
-import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useLoginWithSamlToken, useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
-import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
 const SAMLLoginRoute = () => {
 	const router = useRouter();
+	const loginWithSamlToken = useLoginWithSamlToken();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [inviteToken] = useSamlInviteToken();
 	const loginClient = useSearchParameter('loginClient');
@@ -52,7 +52,7 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-	}, [dispatchToastMessage, inviteToken, loginClient, router]);
+	}, [dispatchToastMessage, inviteToken, loginClient, loginWithSamlToken, router]);
 
 	return null;
 };

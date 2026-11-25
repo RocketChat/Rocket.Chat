@@ -1,10 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { CheckBox, Label } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadMessageList from './ThreadMessageList';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
@@ -15,6 +16,8 @@ import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { DateListProvider } from '../../../providers/DateListProvider';
+import ThreadChatSection from '../layout/ThreadChatSection';
+import ThreadComposerOption from '../layout/ThreadComposerOption';
 
 export type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
@@ -87,7 +90,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 
 	const subscription = useRoomSubscription();
 	const sendToChannelID = useId();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 
@@ -96,16 +99,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 		<ContextualbarContent flush {...boxProps} {...fileUploadTriggerProps}>
 			<DateListProvider>
 				<DropTargetOverlay {...fileUploadOverlayProps} />
-				<Box
-					is='section'
-					position='relative'
-					display='flex'
-					flexDirection='column'
-					flexGrow={1}
-					flexShrink={1}
-					flexBasis='auto'
-					height='full'
-				>
+				<ThreadChatSection>
 					<MessageListErrorBoundary>
 						<ThreadMessageList
 							mainMessage={mainMessage}
@@ -125,24 +119,18 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 							onNavigateToNextMessage={handleNavigateToNextMessage}
 							tshow={sendToChannel}
 						>
-							<Box paddingBlock={8}>
-								<Field>
-									<FieldRow>
-										<Box display='flex' alignItems='center' minWidth={0} gap={8}>
-											<CheckBox
-												id={sendToChannelID}
-												checked={sendToChannel}
-												onChange={() => setSendToChannel((checked) => !checked)}
-												name='alsoSendThreadToChannel'
-											/>
-											<FieldLabel htmlFor={sendToChannelID}>{t('Also_send_to_channel')}</FieldLabel>
-										</Box>
-									</FieldRow>
-								</Field>
-							</Box>
+							<ThreadComposerOption>
+								<CheckBox
+									id={sendToChannelID}
+									checked={sendToChannel}
+									onChange={() => setSendToChannel((checked) => !checked)}
+									name='alsoSendThreadToChannel'
+								/>
+								<Label htmlFor={sendToChannelID}>{t('Also_send_to_channel')}</Label>
+							</ThreadComposerOption>
 						</ComposerContainer>
 					</RoomComposer>
-				</Box>
+				</ThreadChatSection>
 			</DateListProvider>
 		</ContextualbarContent>
 	);

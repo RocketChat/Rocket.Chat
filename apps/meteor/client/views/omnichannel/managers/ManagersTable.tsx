@@ -9,15 +9,17 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 	links,
 	GenericError,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
@@ -25,35 +27,45 @@ import FilterByText from '../../../components/FilterByText';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const ManagersTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
-
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, sortBy, sortDirection, itemsPerPage, current],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const queryKey = omnichannelQueryKeys.managers(query);
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: omnichannelQueryKeys.managers(query),
-		queryFn: async () => getManagers(query),
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getManagers({ ...query, ...page }),
+		},
+		itemsKey: 'users',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
 

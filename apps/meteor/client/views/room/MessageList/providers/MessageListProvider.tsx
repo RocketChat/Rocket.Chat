@@ -1,17 +1,21 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import type { Options } from '@rocket.chat/message-parser';
 import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { createMessageNormalizer } from '../../../../lib/createMessageNormalizer';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription, useUserIsSubscribed } from '../../contexts/RoomContext';
+import { useAutoLinkDomains } from '../hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 import { useRolesByUser } from '../hooks/useRolesByUser';
@@ -36,12 +40,13 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const uid = user?._id;
 	const username = user?.username;
 	const subscription = useRoomSubscription();
+	const subscribed = useUserIsSubscribed();
+	const isBroadcast = subscribed && Boolean(room.broadcast);
 
 	const { isMobile } = useLayout();
 
 	const federationReadReceipts = useSetting('Federation_Service_EDU_Process_Receipt', false);
 
-	const autoLinkDomains = useSetting('Message_CustomDomain_AutoLink', '');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && (!isRoomFederated(room) || federationReadReceipts);
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 	const apiEmbedEnabled = useSetting('API_Embed', false);
@@ -56,13 +61,22 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const highlights = useUserPreference<string[]>('highlights');
 
 	const autoTranslate = useAutoTranslate(subscription);
+	const autoLinkDomains = useAutoLinkDomains();
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
-	const katex = useMemo(
-		() =>
-			katexEnabled ? { dollarSyntaxEnabled: katexDollarSyntaxEnabled, parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled } : undefined,
-		[katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
+	const parseOptions = useMemo<Options>(
+		() => ({
+			colors: showColors,
+			emoticons: true,
+			customDomains: autoLinkDomains,
+			...(katexEnabled && {
+				katex: { dollarSyntax: katexDollarSyntaxEnabled, parenthesisSyntax: katexParenthesisSyntaxEnabled },
+			}),
+		}),
+		[showColors, autoLinkDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
 	);
+
+	const normalizeMessage = useMemo(() => createMessageNormalizer(parseOptions, autoTranslate), [parseOptions, autoTranslate]);
 
 	const parsedHighlights = useMemo(
 		() =>
@@ -91,37 +105,40 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
-			showColors,
-			useUserHasReacted: username
+			normalizeMessage,
+			userHasReacted: username
 				? (message: IMessage) =>
 						(reaction: string): boolean =>
 							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
 				: () => (): boolean => false,
-			useShowFollowing: uid
+			showFollowing: uid
 				? ({ message }: { message: IMessage }): boolean =>
 						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
 			autoTranslate,
-			useShowStarred: hasSubscription
+			showStarred: hasSubscription
 				? ({ message }: { message: IMessage }): boolean =>
 						Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
-			useMessageDateFormatter:
+			messageDateFormatter:
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
 			apiEmbedEnabled,
-			autoLinkDomains,
+			isBroadcast,
 			showRoles,
 			userRoles,
 			showRealName,
-			showUsername,
+			getAuthorUsername: ({ name, username }) => {
+				const normalizedUsername = normalizeUsername(username);
+				const nameRepeatsUsername = !name || normalizeUsername(name) === normalizedUsername;
+				return { normalizedUsername, showUsername: showUsername && showRealName && !nameRepeatsUsername };
+			},
 			jumpToMessageParam: msgParameter,
-			...(katex && { katex }),
 			highlights: parsedHighlights,
 
-			useOpenEmojiPicker: uid
+			openEmojiPicker: uid
 				? (message: IMessage) =>
 						(e: MouseEvent | KeyboardEvent): void => {
 							e.nativeEvent.stopImmediatePropagation();
@@ -139,19 +156,18 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			uid,
 			autoTranslate,
 			hasSubscription,
+			isBroadcast,
 			showRoles,
 			userRoles,
 			showRealName,
 			showUsername,
-			katex,
 			parsedHighlights,
 			reactToMessage,
-			showColors,
+			normalizeMessage,
 			msgParameter,
 			chat?.emojiPicker,
 			readReceipts,
 			apiEmbedEnabled,
-			autoLinkDomains,
 			formatDateAndTime,
 			formatTime,
 			formatDate,

@@ -1,8 +1,8 @@
 import type { DeviceMenuChoices } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import { useNoiseSuppressionSelection } from './NoiseSuppressionContext';
-import { NOISE_METHOD_LABELS } from '../call/lib/mediaChoiceLabels';
+import { useNoiseSuppressionSelection } from './NoiseSuppressionContext.js';
+import { NOISE_METHOD_LABELS } from '../call/lib/mediaChoiceLabels.js';
 
 /** The microphone menu's noise cancellation section. */
 export const useNoiseSuppressionChoices = (): DeviceMenuChoices => {

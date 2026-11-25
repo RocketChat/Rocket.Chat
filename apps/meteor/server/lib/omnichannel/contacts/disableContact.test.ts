@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -20,10 +20,12 @@ const settingsMock = {
 
 const removeGuestMock = { removeGuest: sinon.stub() };
 
-const { disableContactById } = proxyquire.noCallThru().load('./disableContact.ts', {
-	'@rocket.chat/models': modelsMock,
-	'../guests': removeGuestMock,
-	'../../../settings': { settings: settingsMock },
+let disableContactById: typeof import('./disableContact').disableContactById;
+
+before(async () => {
+	mock.module('../guests', { exports: { default: removeGuestMock } });
+	mock.module('../../../settings', { exports: { settings: settingsMock } });
+	({ disableContactById } = await import('./disableContact'));
 });
 
 describe('disableContact', () => {
@@ -37,6 +39,11 @@ describe('disableContact', () => {
 			},
 		],
 	};
+
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+	});
 
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();

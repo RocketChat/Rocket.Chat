@@ -28,6 +28,13 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 	const isRestrictedForRole = AuthorizationUtils.isPermissionRestrictedForRole(permissionId, _id);
 	const shouldDisplayConfirmation = confirmationRequiredPermissions.includes(permissionId) && grantedRoles.length === 1 && granted;
 
+	const handleConfirmChange = useStableCallback(async () => {
+		setLoading(true);
+		const result = await onChange(_id, granted);
+		setGranted(result);
+		setLoading(false);
+	});
+
 	const handleChange = useStableCallback(() => {
 		if (shouldDisplayConfirmation) {
 			const handleSubmit = () => {
@@ -43,13 +50,6 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 		}
 
 		return handleConfirmChange();
-	});
-
-	const handleConfirmChange = useStableCallback(async () => {
-		setLoading(true);
-		const result = await onChange(_id, granted);
-		setGranted(result);
-		setLoading(false);
 	});
 
 	const isDisabled = !!loading || !!isRestrictedForRole;

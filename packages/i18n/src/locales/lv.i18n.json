@@ -1008,6 +1008,7 @@
   "Everyone_can_access_this_channel": "Ikviens var piekļūt šim kanālam",
   "Example_s": "Piemērs: <code>{{value}}</code>",
   "except_pinned": "(izslēgt tos, kas ir piesprausti)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Izslēgt botus",
   "Exclude_Botnames_Description": "Neizplatīt ziņojumus no botiem, kuru nosaukums atbilst iepriekš minētajai regulārai izteiksmei. Ja atstājiet tukšu, visi ziņojumi no botiem tiks izplatīti.",
   "Exclude_pinned": "Izslēgt piespraustos ziņojumus",

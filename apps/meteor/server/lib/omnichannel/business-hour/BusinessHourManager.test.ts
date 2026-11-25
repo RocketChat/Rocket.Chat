@@ -1,8 +1,8 @@
 /* oxlint-disable @typescript-eslint/no-empty-function */
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const formatStub = sinon.stub().returns('00:00');
@@ -26,28 +26,31 @@ const LivechatBusinessHoursStub = {
 const saveBusinessHourStub = sinon.stub();
 const loggerStub = sinon.stub();
 
-const { BusinessHourManager } = proxyquire.noCallThru().load('./BusinessHourManager', {
-	'../../../settings': {},
-	'../../callbacks': {},
-	'./AbstractBusinessHour': {},
-	'moment-timezone': momentStub,
-	'@rocket.chat/models': {
-		LivechatBusinessHours: LivechatBusinessHoursStub,
-	},
-	'../logger': {
-		businessHourLogger: {
-			error: loggerStub,
-		},
-	},
+let BusinessHourManager: any;
+
+before(async () => {
+	mock.module('../../../settings', { exports: {} });
+	mock.module('../../callbacks', { exports: {} });
+	mock.module('moment-timezone', { exports: { default: momentStub } });
+	mock.module('../logger', { exports: { businessHourLogger: { error: loggerStub } } });
+	({ BusinessHourManager } = await import('./BusinessHourManager'));
 });
 
 const cronAddStub = sinon.stub();
 const cronRemoveStub = sinon.stub();
 
 describe('[OC] BusinessHourManager', () => {
+	before(() => {
+		mockModel('LivechatBusinessHours', LivechatBusinessHoursStub);
+	});
+
 	afterEach(() => sinon.restore());
 	describe('hasDaylightSavingTimeChanged()', () => {
-		const manager = new BusinessHourManager({} as any);
+		let manager: any;
+
+		before(() => {
+			manager = new BusinessHourManager({} as any);
+		});
 
 		it('should return false if the provided timezone is equal to the current one (No changes in the timezone)', () => {
 			formatStub.returns('00:00');
@@ -88,10 +91,14 @@ describe('[OC] BusinessHourManager', () => {
 			add: cronAddStub,
 			remove: cronRemoveStub,
 		};
-		const manager = new BusinessHourManager(cronStub);
-		manager.registerBusinessHourBehavior({
-			onStartBusinessHours: () => {},
-			onDisableBusinessHours: () => {},
+		let manager: any;
+
+		before(() => {
+			manager = new BusinessHourManager(cronStub);
+			manager.registerBusinessHourBehavior({
+				onStartBusinessHours: () => {},
+				onDisableBusinessHours: () => {},
+			});
 		});
 
 		afterEach(() => {

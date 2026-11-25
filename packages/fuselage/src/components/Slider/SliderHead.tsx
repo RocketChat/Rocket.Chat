@@ -13,7 +13,7 @@ type SliderHeadProps = {
 };
 export const SliderHead = ({ state, labelProps, outputProps, label, showOutput = true, multiThumb }: SliderHeadProps) => {
 	const output = (
-		<Label {...(outputProps as any)}>
+		<Label {...outputProps}>
 			{multiThumb ? (
 				<Label {...outputProps} data-testid='slider-output'>
 					{`${state.getThumbValueLabel(0)} - ${state.getThumbValueLabel(1)}`}

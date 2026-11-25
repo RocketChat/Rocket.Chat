@@ -1,9 +1,7 @@
-export class VideoConfProviderAlreadyExistsError implements Error {
+export class VideoConfProviderAlreadyExistsError extends Error {
 	public name = 'VideoConfProviderAlreadyExists';
 
-	public message: string;
-
 	constructor(name: string) {
-		this.message = `The video conference provider "${name}" was already registered by another App.`;
+		super(`The video conference provider "${name}" was already registered by another App.`);
 	}
 }

@@ -1,9 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
-import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -13,10 +11,15 @@ const modelsMock = {
 		removeByIdPinnedTimestampLimitAndUsers: sinon.stub(),
 		findThreadsByRoomIdPinnedTimestampAndUsers: sinon.stub(),
 		getLastVisibleUserMessageSentByRoomId: sinon.stub(),
+		removeFileAttachmentsByMessageIds: sinon.stub(),
+		clearFilesByMessageIds: sinon.stub(),
+		findByDiscussionIdsOrQuotingInRoomIds: sinon.stub(),
+		replaceQuotedFileAttachmentsByMessageIds: sinon.stub(),
 	},
 	Rooms: {
 		resetLastMessageById: sinon.stub(),
 		findOneDiscussionById: sinon.stub(),
+		findDiscussionsWithOriginMessageByParentRoomId: sinon.stub(),
 	},
 	Subscriptions: {
 		findUnreadThreadsByRoomId: sinon.stub(),
@@ -28,15 +31,22 @@ const modelsMock = {
 
 const broadcastMock = sinon.stub();
 const notifyOnSubscriptionChangedByIdMock = sinon.stub();
+const notifyOnMessageChangeMock = sinon.stub();
 
-const { cleanRoomHistory } = p.noCallThru().load('./cleanRoomHistory.ts', {
-	'@rocket.chat/core-services': { api: { broadcast: broadcastMock } },
-	'./deleteRoom': { deleteRoom: sinon.stub() },
-	'../media/file-upload': { FileUpload: { getStore: sinon.stub() } },
-	'../notifyListener': {
-		notifyOnRoomChangedById: sinon.stub(),
-		notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
-	},
+let cleanRoomHistory: typeof import('./cleanRoomHistory').cleanRoomHistory;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast: broadcastMock } } });
+	mock.module('./deleteRoom', { exports: { deleteRoom: sinon.stub() } });
+	mock.module('../media/file-upload', { exports: { FileUpload: { getStore: sinon.stub() } } });
+	mock.module('../notifyListener', {
+		exports: {
+			notifyOnMessageChange: notifyOnMessageChangeMock,
+			notifyOnRoomChangedById: sinon.stub(),
+			notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
+		},
+	});
+	({ cleanRoomHistory } = await import('./cleanRoomHistory'));
 });
 
 const ids = (prefix: string, count: number) => Array.from({ length: count }, (_, i) => `${prefix}${i}`);
@@ -50,11 +60,11 @@ const cursorOf = (docs: unknown[]) => ({
 
 describe('cleanRoomHistory', () => {
 	before(() => {
-		registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
-		registerModel('IRoomsModel', modelsMock.Rooms as unknown as IRoomsModel);
-		registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
-		registerModel('IReadReceiptsModel', modelsMock.ReadReceipts as unknown as IReadReceiptsModel);
-		registerModel('IReadReceiptsArchiveModel', modelsMock.ReadReceiptsArchive as unknown as IReadReceiptsModel);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Rooms', modelsMock.Rooms);
+		mockModel('Subscriptions', modelsMock.Subscriptions);
+		mockModel('ReadReceipts', modelsMock.ReadReceipts);
+		mockModel('ReadReceiptsArchive', modelsMock.ReadReceiptsArchive);
 	});
 
 	beforeEach(() => {
@@ -62,12 +72,15 @@ describe('cleanRoomHistory', () => {
 			...Object.values(modelsMock.Messages),
 			...Object.values(modelsMock.Subscriptions),
 			modelsMock.Rooms.resetLastMessageById,
+			modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId,
 			modelsMock.ReadReceipts.removeByMessageIds,
 			modelsMock.ReadReceiptsArchive.removeByMessageIds,
 			broadcastMock,
 			notifyOnSubscriptionChangedByIdMock,
+			notifyOnMessageChangeMock,
 		].forEach((stub) => stub.reset());
 
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(cursorOf([]));
 		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
 		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => ({
@@ -125,6 +138,52 @@ describe('cleanRoomHistory', () => {
 
 		expect(modelsMock.Rooms.resetLastMessageById.calledOnceWith('rid', sinon.match.any, -2000)).to.be.true;
 		expect(broadcastMock.getCalls().map((call) => call.args[2].ids)).to.deep.equal([ids('a', 1000), ids('b', 1000)]);
+	});
+
+	it('spares the messages that discussions started from, together with their files', async () => {
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(cursorOf([{ pmid: 'origin' }]));
+
+		await cleanRoomHistory({ rid: 'rid', ignoreDiscussionOrigin: true });
+
+		expect(modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.firstCall.args[6]).to.deep.equal(['origin']);
+		expect(modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.firstCall.args[7]).to.deep.equal(['origin']);
+	});
+
+	it('shows the deleted file in the quotes of a discussion whose origin file was pruned', async () => {
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(
+			cursorOf([
+				{ _id: 'pruned-discussion', pmid: 'origin' },
+				{ _id: 'kept-discussion', pmid: 'kept-origin' },
+			]),
+		);
+		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([{ _id: 'origin', files: [] }]));
+		modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.returns(cursorOf([{ _id: 'quote' }]));
+
+		await cleanRoomHistory({ rid: 'rid', ignoreDiscussion: false, filesOnly: true });
+
+		expect(modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.calledOnceWith(['pruned-discussion'], '\\?msg=(origin)$')).to.be.true;
+		expect(
+			modelsMock.Messages.replaceQuotedFileAttachmentsByMessageIds.calledOnceWith(
+				['quote'],
+				'\\?msg=(origin)$',
+				sinon.match({ type: 'removed-file' }),
+			),
+		).to.be.true;
+		expect(notifyOnMessageChangeMock.calledOnceWith({ id: 'quote' })).to.be.true;
+	});
+
+	it('shows the deleted file in the quotes of every pruned origin, in bounded batches', async () => {
+		const origins = ids('origin-', 501);
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(
+			cursorOf(origins.map((pmid) => ({ _id: `discussion-${pmid}`, pmid }))),
+		);
+		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf(origins.map((_id) => ({ _id, files: [] }))));
+		modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.returns(cursorOf([]));
+
+		await cleanRoomHistory({ rid: 'rid', ignoreDiscussion: false, filesOnly: true });
+
+		expect(modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.args.map(([drids]) => drids.length)).to.deep.equal([500, 1]);
+		expect(modelsMock.Messages.replaceQuotedFileAttachmentsByMessageIds.called).to.be.false;
 	});
 
 	it('clears pruned threads from unread lists in bounded batches', async () => {

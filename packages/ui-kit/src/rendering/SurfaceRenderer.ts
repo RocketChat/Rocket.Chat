@@ -1,22 +1,22 @@
-import { BlockContext } from './BlockContext';
-import type { BlockRenderers } from './BlockRenderers';
-import type { Conditions } from './Conditions';
-import { renderBlockElement } from './renderBlockElement';
-import { renderLayoutBlock } from './renderLayoutBlock';
-import { renderTextObject } from './renderTextObject';
-import { resolveConditionalBlocks } from './resolveConditionalBlocks';
-import type { Block } from '../blocks/Block';
-import type { BlockElement } from '../blocks/BlockElement';
-import { LayoutBlockType } from '../blocks/LayoutBlockType';
-import type { RenderableLayoutBlock } from '../blocks/RenderableLayoutBlock';
-import type { TextObject } from '../blocks/TextObject';
-import { isActionsBlockElement } from '../blocks/isActionsBlockElement';
-import { isContextBlockElement } from '../blocks/isContextBlockElement';
-import { isInputBlockElement } from '../blocks/isInputBlockElement';
-import { isSectionBlockAccessoryElement } from '../blocks/isSectionBlockAccessoryElement';
-import { isTextObject } from '../blocks/isTextObject';
-import type { Markdown } from '../blocks/text/Markdown';
-import type { PlainText } from '../blocks/text/PlainText';
+import { BlockContext } from './BlockContext.js';
+import type { BlockRenderers } from './BlockRenderers.js';
+import type { Conditions } from './Conditions.js';
+import { renderBlockElement } from './renderBlockElement.js';
+import { renderLayoutBlock } from './renderLayoutBlock.js';
+import { renderTextObject } from './renderTextObject.js';
+import { resolveConditionalBlocks } from './resolveConditionalBlocks.js';
+import type { Block } from '../blocks/Block.js';
+import type { BlockElement } from '../blocks/BlockElement.js';
+import { LayoutBlockType } from '../blocks/LayoutBlockType.js';
+import type { RenderableLayoutBlock } from '../blocks/RenderableLayoutBlock.js';
+import type { TextObject } from '../blocks/TextObject.js';
+import { isActionsBlockElement } from '../blocks/isActionsBlockElement.js';
+import { isContextBlockElement } from '../blocks/isContextBlockElement.js';
+import { isInputBlockElement } from '../blocks/isInputBlockElement.js';
+import { isSectionBlockAccessoryElement } from '../blocks/isSectionBlockAccessoryElement.js';
+import { isTextObject } from '../blocks/isTextObject.js';
+import type { Markdown } from '../blocks/text/Markdown.js';
+import type { PlainText } from '../blocks/text/PlainText.js';
 
 export abstract class SurfaceRenderer<
 	TOutputObject,

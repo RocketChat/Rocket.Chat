@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeMessage, createFakeRoom } from '../../../tests/mocks/data';
@@ -11,16 +11,20 @@ const getMentionsMock = sinon.stub();
 const replyMock = sinon.stub();
 const callbacksRunAsyncMock = sinon.stub();
 
-const { processThreads } = p.noCallThru().load('./processThreads.ts', {
-	'@rocket.chat/models': modelsMock,
-	'./notifyUsersOnMessage': { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock },
-	'./sendNotificationsOnMessage': { sendMessageNotifications: sinon.stub() },
-	'../../lib/callbacks': {
-		callbacks: { runAsync: callbacksRunAsyncMock, add: sinon.stub(), remove: sinon.stub(), priority: { LOW: 'low' } },
-	},
-	'../../lib/messaging/threads/functions': { reply: replyMock },
-	'../../lib/notifyListener': { notifyOnMessageChange: sinon.stub() },
-	'../../settings': { settings: { watch: sinon.stub() } },
+let processThreads: typeof import('./processThreads').processThreads;
+
+before(async () => {
+	mock.module('./notifyUsersOnMessage', { exports: { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock } });
+	mock.module('./sendNotificationsOnMessage', { exports: { sendMessageNotifications: sinon.stub() } });
+	mock.module('../../lib/callbacks', {
+		exports: {
+			callbacks: { runAsync: callbacksRunAsyncMock, add: sinon.stub(), remove: sinon.stub(), priority: { LOW: 'low' } },
+		},
+	});
+	mock.module('../../lib/messaging/threads/functions', { exports: { reply: replyMock } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange: sinon.stub() } });
+	mock.module('../../settings', { exports: { settings: { watch: sinon.stub() } } });
+	({ processThreads } = await import('./processThreads'));
 });
 
 describe('processThreads', () => {
@@ -30,6 +34,10 @@ describe('processThreads', () => {
 
 	const threadReply = (overrides: Record<string, unknown> = {}) =>
 		createFakeMessage({ rid: room._id, tmid: parentMessage._id, u: author, ...overrides });
+
+	before(() => {
+		mockModel('Messages', modelsMock.Messages);
+	});
 
 	beforeEach(() => {
 		callbacksRunAsyncMock.reset();

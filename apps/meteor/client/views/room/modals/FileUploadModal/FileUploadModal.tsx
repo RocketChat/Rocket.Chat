@@ -19,9 +19,8 @@ import {
 	FieldGroup,
 	FieldDescription,
 } from '@rocket.chat/fuselage-forms';
-import type { ComponentProps } from 'react';
 import { memo, useCallback, useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
@@ -41,11 +40,8 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors, isDirty, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
+	const { control, handleSubmit } = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
+	const { errors, isDirty, isSubmitting } = useFormState({ control });
 
 	const validateFileName = useCallback(
 		(fieldValue: string) => {
@@ -62,9 +58,8 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 	return (
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))} {...props} />
-			)}
+			onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))}
+			formId={fileUploadFormId}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
 				<ModalHeader>

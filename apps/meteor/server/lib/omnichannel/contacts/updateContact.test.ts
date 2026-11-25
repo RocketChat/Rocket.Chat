@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -14,35 +14,41 @@ const modelsMock = {
 	},
 };
 
-const { patchContact } = proxyquire.noCallThru().load('./patchContact.ts', {
-	'@rocket.chat/models': modelsMock,
-});
+let updateContact: any;
 
-const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
-	'./getAllowedCustomFields': {
-		getAllowedCustomFields: sinon.stub().resolves([]),
-	},
-	'./validateContactManager': {
-		validateContactManager: sinon.stub(),
-	},
-	'./validateCustomFields': {
-		validateCustomFields: sinon.stub(),
-	},
-
-	'@rocket.chat/models': modelsMock,
-
-	'./patchContact': {
-		patchContact,
-	},
-	'../../notifyListener': {
-		notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
-		notifyOnRoomChangedByContactId: sinon.stub(),
-		notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
-		notifyOnSettingChanged: sinon.stub(),
-	},
+before(async () => {
+	mock.module('./getAllowedCustomFields', {
+		exports: {
+			getAllowedCustomFields: sinon.stub().resolves([]),
+		},
+	});
+	mock.module('./validateContactManager', {
+		exports: {
+			validateContactManager: sinon.stub(),
+		},
+	});
+	mock.module('./validateCustomFields', {
+		exports: {
+			validateCustomFields: sinon.stub(),
+		},
+	});
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
+			notifyOnRoomChangedByContactId: sinon.stub(),
+			notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
+			notifyOnSettingChanged: sinon.stub(),
+		},
+	});
+	({ updateContact } = await import('./updateContact'));
 });
 
 describe('updateContact', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		modelsMock.LivechatContacts.patchContact.reset();

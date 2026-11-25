@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
+import ListViewport from '../../../../../components/ListViewport';
 import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -111,7 +112,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Text>
 					</Box>
-					<Box role='list' height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
+					<ListViewport role='list' ref={historyListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}
@@ -120,7 +121,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 								itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
 							/>
 						</VirtualizedScrollbars>
-					</Box>
+					</ListViewport>
 				</>
 			)}
 		</ContextualbarContent>

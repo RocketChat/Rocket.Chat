@@ -7,17 +7,18 @@ import ImageBox from './ImageBox';
 
 export type LoadProps = ComponentPropsWithoutRef<typeof Box> & { load: () => void };
 
+const clickable = css`
+	cursor: pointer;
+	background: ${Palette.surface['surface-tint']};
+
+	&:hover,
+	&:focus {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
+
 const Load = ({ load, ...props }: LoadProps) => {
 	const { t } = useTranslation();
-	const clickable = css`
-		cursor: pointer;
-		background: ${Palette.surface['surface-tint']};
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 	return (
 		<ImageBox className={clickable} color='hint' {...props} onClick={load}>
 			<Icon name='image' size='x64' />

@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel, IMessagesModel, IRoomsModel, IUploadsModel, IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeMessage, createFakeUser } from '../../../tests/mocks/data';
@@ -23,19 +21,24 @@ const getBuffer = sinon.stub();
 const callbacksAdd = sinon.stub();
 const slashCommandsAdd = sinon.stub();
 
-const { sendTestEmailToInbox } = proxyquire.noCallThru().load('./EmailInbox_Outgoing', {
-	'./EmailInbox': { inboxes },
-	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
-	'../../lib/callbacks': { callbacks: { add: callbacksAdd, priority: { LOW: 1 } } },
-	'../../lib/media/file-upload': { FileUpload: { getBuffer } },
-	'../../lib/messages/sendMessage': { sendMessage },
-	'../../lib/notifyListener': { notifyOnMessageChange },
-	'../../lib/utils/slashCommand': { slashCommands: { add: slashCommandsAdd } },
-	'../../settings': { settings: { get: sinon.stub() } },
-});
+let sendTestEmailToInbox: any;
+let replyByEmail: any;
+let sendEmailAttachment: any;
 
-const [, replyByEmail] = callbacksAdd.firstCall.args;
-const [{ callback: sendEmailAttachment }] = slashCommandsAdd.firstCall.args;
+before(async () => {
+	mock.module('./EmailInbox', { exports: { inboxes } });
+	mock.module('./logger', { exports: { logger: { info: sinon.stub(), error: sinon.stub() } } });
+	mock.module('../../lib/callbacks', { exports: { callbacks: { add: callbacksAdd, priority: { LOW: 1 } } } });
+	mock.module('../../lib/media/file-upload', { exports: { FileUpload: { getBuffer } } });
+	mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange } });
+	mock.module('../../lib/utils/slashCommand', { exports: { slashCommands: { add: slashCommandsAdd } } });
+	mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } });
+	({ sendTestEmailToInbox } = await import('./EmailInbox_Outgoing'));
+
+	[, replyByEmail] = callbacksAdd.firstCall.args;
+	[{ callback: sendEmailAttachment }] = slashCommandsAdd.firstCall.args;
+});
 
 const rocketCat = createFakeUser({ _id: 'rocket.cat', username: 'rocket.cat' });
 const agent = { _id: 'agent1', username: 'agent' };
@@ -64,11 +67,11 @@ const resetStubs = () => {
 
 describe('EmailInbox_Outgoing', () => {
 	before(() => {
-		registerModel('IMessagesModel', models.Messages as unknown as IMessagesModel);
-		registerModel('IUploadsModel', models.Uploads as unknown as IUploadsModel);
-		registerModel('ILivechatRoomsModel', models.LivechatRooms as unknown as ILivechatRoomsModel);
-		registerModel('IRoomsModel', models.Rooms as unknown as IRoomsModel);
-		registerModel('IUsersModel', models.Users as unknown as IUsersModel);
+		mockModel('Messages', models.Messages);
+		mockModel('Uploads', models.Uploads);
+		mockModel('LivechatRooms', models.LivechatRooms);
+		mockModel('Rooms', models.Rooms);
+		mockModel('Users', models.Users);
 	});
 
 	describe('reply by email', () => {

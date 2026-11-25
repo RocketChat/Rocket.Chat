@@ -36,7 +36,7 @@ const MessageSurface = ({ children }: MessageSurfaceProps) => (
 			</MessageHeader>
 			<MessageBody>{children}</MessageBody>
 		</MessageContainer>
-		<MessageToolbarWrapper>
+		<MessageToolbarWrapper visible>
 			<MessageToolbar>
 				<MessageToolbarItem icon='quote' />
 				<MessageToolbarItem icon='clock' />

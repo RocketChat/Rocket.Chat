@@ -1,17 +1,16 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const configureMailTransport = sinon.stub();
-const sendMail = sinon.stub().resolves();
-const Email: { customTransport?: (mail: Record<string, unknown>) => Promise<void> } = {};
 
-const { configureSMTP } = proxyquire.noCallThru().load('./configureSMTP', {
-	'meteor/email': { Email },
-	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
-	'../lib/notifications/email/transport': { configureMailTransport, sendMail },
+let configureSMTP: any;
+
+before(async () => {
+	mock.module('../lib/logger/system', { exports: { SystemLogger: { info: sinon.stub() } } });
+	mock.module('../lib/notifications/email/transport', { exports: { configureMailTransport } });
+	({ configureSMTP } = await import('./configureSMTP'));
 });
 
 const applySettings = (values: Record<string, unknown>) => {
@@ -43,16 +42,6 @@ describe('configureSMTP', () => {
 		} else {
 			process.env.MAIL_URL = originalMailUrl;
 		}
-	});
-
-	it('should send Meteor email through the app transport, without Meteor package settings', async () => {
-		sendMail.resetHistory();
-		applySettings(smtpSettings);
-
-		const mail = { to: 'someone@example.com', from: 'rocket.chat@example.com', subject: 'Reset your password', html: '<p>link</p>' };
-		await Email.customTransport?.({ packageSettings: {}, ...mail });
-
-		expect(sendMail.calledOnceWithExactly(mail)).to.be.true;
 	});
 
 	it('should leave email unsent when there is no SMTP host, even with MAIL_URL set', () => {

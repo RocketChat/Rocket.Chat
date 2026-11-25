@@ -46,30 +46,6 @@ export const useE2EERoomAction = () => {
 
 	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
-	const action = useStableCallback(async () => {
-		if (enabledOnRoom) {
-			imperativeModal.open({
-				component: BaseDisableE2EEModal,
-				props: {
-					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
-					roomType,
-					roomId,
-					canResetRoomKey,
-				},
-			});
-		} else {
-			imperativeModal.open({
-				component: EnableE2EEModal,
-				props: {
-					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
-					roomType,
-				},
-			});
-		}
-	});
-
 	const handleToogleE2E = async () => {
 		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 		if (!success) {
@@ -89,6 +65,34 @@ export const useE2EERoomAction = () => {
 			dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
 		}
 	};
+
+	const action = useStableCallback(() => {
+		if (enabledOnRoom) {
+			imperativeModal.open({
+				component: BaseDisableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: () => {
+						void handleToogleE2E();
+					},
+					roomType,
+					roomId,
+					canResetRoomKey,
+				},
+			});
+		} else {
+			imperativeModal.open({
+				component: EnableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: () => {
+						void handleToogleE2E();
+					},
+					roomType,
+				},
+			});
+		}
+	});
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !permitted) {

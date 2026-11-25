@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const user = {
@@ -22,20 +22,28 @@ const mocks = {
 	},
 };
 
-const { sendMail } = proxyquire.noCallThru().load('./sendMail', {
-	'@rocket.chat/core-services': { ClientSafeError: Error },
-	'@rocket.chat/models': { Users: mocks.Users },
-	'../../../logger/system': { SystemLogger: { debug: sinon.stub() } },
-	'../../../utils/getURL': { getWorkspaceURL: (path: string) => `https://open.rocket.chat/${path}` },
-	'../../../utils/placeholders': {
-		placeholders: { replace: (body: string, data: { unsubscribe: string }) => body.replace('[unsubscribe]', data.unsubscribe) },
-	},
-	'../../email/api': mocks.Mailer,
+let sendMail: typeof import('./sendMail').sendMail;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError: Error } });
+	mock.module('../../../logger/system', { exports: { SystemLogger: { debug: sinon.stub() } } });
+	mock.module('../../../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://open.rocket.chat/${path}` } });
+	mock.module('../../../utils/placeholders', {
+		exports: {
+			placeholders: { replace: (body: string, data: { unsubscribe: string }) => body.replace('[unsubscribe]', data.unsubscribe) },
+		},
+	});
+	mock.module('../../email/api', { exports: { default: mocks.Mailer } });
+	({ sendMail } = await import('./sendMail'));
 });
 
 const unsubscribeUrl = `https://open.rocket.chat/mailer/unsubscribe/user1/${user.createdAt.getTime()}`;
 
 describe('sendMail', () => {
+	before(() => {
+		mockModel('Users', mocks.Users);
+	});
+
 	beforeEach(() => {
 		mocks.Mailer.send.resetHistory();
 		mocks.Users.findOneByEmailAddress.resolves(user);

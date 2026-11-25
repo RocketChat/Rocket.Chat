@@ -1,16 +1,15 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import * as coreServices from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
-	'NpsVote': {},
-	'Nps': {
+	Nps: {
 		findOne: sinon.stub(),
 		save: sinon.stub(),
 	},
-	'@noCallThru': true,
 };
 
 const servicesMock = {
@@ -24,15 +23,21 @@ const servicesMock = {
 
 const getbannerforadminsMock = sinon.stub();
 
-const { NPSService } = p('./service.ts', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': servicesMock,
-	'./sendNpsResults': { 'sendNpsResults': sinon.stub(), '@noCallThru': true },
-	'../../lib/logger/system': { 'SystemLogger': { error: sinon.stub() }, '@noCallThru': true },
-	'./notification': { 'notifyAdmins': sinon.stub(), 'getBannerForAdmins': getbannerforadminsMock, '@noCallThru': true },
+let NPSService: any;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { ...coreServices, ...servicesMock } });
+	mock.module('./sendNpsResults', { exports: { sendNpsResults: sinon.stub() } });
+	mock.module('../../lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+	mock.module('./notification', { exports: { notifyAdmins: sinon.stub(), getBannerForAdmins: getbannerforadminsMock } });
+	({ NPSService } = await import('./service'));
 });
 
 describe('NPS Service', () => {
+	before(() => {
+		mockModel('Nps', modelsMock.Nps);
+	});
+
 	it('should instantiate properly', () => {
 		expect(new NPSService()).to.be.an('object');
 	});

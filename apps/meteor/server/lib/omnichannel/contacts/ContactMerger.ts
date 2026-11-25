@@ -270,13 +270,7 @@ export class ContactMerger {
 			}
 		}
 
-		const customFieldsPerName = new Map<string, CustomFieldAndValue[]>();
-		for (const customField of newCustomFields) {
-			if (!customFieldsPerName.has(customField.type)) {
-				customFieldsPerName.set(customField.type, []);
-			}
-			customFieldsPerName.get(customField.type)?.push(customField);
-		}
+		const customFieldsPerName = Map.groupBy(newCustomFields, ({ type }) => type);
 
 		for (const [key, customFields] of customFieldsPerName) {
 			const fieldName = key.replace('customFields.', '');

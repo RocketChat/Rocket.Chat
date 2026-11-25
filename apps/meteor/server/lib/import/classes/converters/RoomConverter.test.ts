@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
@@ -13,41 +13,32 @@ const modelsMock = {
 		findDirectRoomContainingAllUsernames: sinon.stub(),
 		findOneByNonValidatedName: sinon.stub(),
 	},
-	Subscriptions: {
-		archiveByRoomId: sinon.stub(),
-	},
 };
 const createDirectMessage = sinon.stub();
 const saveRoomSettings = sinon.stub();
 
-const { RoomConverter } = proxyquire.noCallThru().load('./RoomConverter', {
-	'../../../../meteor-methods/messages/createDirectMessage': {
-		createDirectMessage,
-	},
-	'../../../../meteor-methods/rooms/saveRoomSettings': {
-		saveRoomSettings,
-	},
-	'../../../notifyListener': {
-		notifyOnSubscriptionChangedByRoomId: sinon.stub(),
-	},
-	'../../../../meteor-methods/rooms/createChannel': {
-		createChannelMethod: sinon.stub(),
-	},
-	'../../../../meteor-methods/rooms/createPrivateGroup': {
-		createPrivateGroupMethod: sinon.stub(),
-	},
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+let RoomConverter: any;
+
+before(async () => {
+	mock.module('../../../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } });
+	mock.module('../../../../meteor-methods/rooms/saveRoomSettings', { exports: { saveRoomSettings } });
+	mock.module('../../../notifyListener', { exports: { notifyOnSubscriptionChangedByRoomId: sinon.stub() } });
+	mock.module('../../../../meteor-methods/rooms/createChannel', { exports: { createChannelMethod: sinon.stub() } });
+	mock.module('../../../../meteor-methods/rooms/createPrivateGroup', { exports: { createPrivateGroupMethod: sinon.stub() } });
+	({ RoomConverter } = await import('./RoomConverter'));
 });
 
 describe('Room Converter', () => {
+	before(() => {
+		mockModel('Rooms', modelsMock.Rooms);
+	});
+
 	beforeEach(() => {
 		modelsMock.Rooms.archiveById.reset();
 		modelsMock.Rooms.updateOne.reset();
 		modelsMock.Rooms.findOneById.reset();
 		modelsMock.Rooms.findDirectRoomContainingAllUsernames.reset();
 		modelsMock.Rooms.findOneByNonValidatedName.reset();
-		modelsMock.Subscriptions.archiveByRoomId.reset();
 		createDirectMessage.reset();
 		saveRoomSettings.reset();
 		settingsStub.reset();

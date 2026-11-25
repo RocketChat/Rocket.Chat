@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import RegisterOfflineForm from './RegisterOfflineForm';
+import RegisterOfflineForm from './RegisterOfflineForm.js';
 
 export default {
 	title: 'forms/RegisterOfflineForm',

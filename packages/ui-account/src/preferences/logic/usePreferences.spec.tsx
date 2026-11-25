@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import { usePreferences } from './usePreferences';
+import { usePreferences } from './usePreferences.js';
 
 const sendTestNotification = () => undefined;
 

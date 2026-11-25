@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const retrieveCredential = sinon.stub().resolves(undefined);
@@ -19,34 +19,44 @@ const samlUtilsMock = {
 const hasModule = sinon.stub().returns(true);
 
 const handler = sinon.stub();
-proxyquire.noCallThru().load('./loginHandler', {
-	'@rocket.chat/license': {
-		License: { hasModule },
-	},
-	'@rocket.chat/models': {
-		CredentialTokens: { removeById },
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			LoginCancelledError: { numericError: 403 },
-			registerLoginHandler: (_name: string, fn: any) => {
-				handler.callsFake(fn);
+before(async () => {
+	mock.module('@rocket.chat/license', {
+		exports: {
+			License: { hasModule },
+		},
+	});
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: {
+				LoginCancelledError: { numericError: 403 },
+				registerLoginHandler: (_name: string, fn: any) => {
+					handler.callsFake(fn);
+				},
 			},
 		},
-	},
-	'./lib/SAML': {
-		SAML: { retrieveCredential, insertOrUpdateSAMLUser },
-	},
-	'./lib/Utils': {
-		SAMLUtils: samlUtilsMock,
-	},
-	'../../../../server/lib/2fa/code': { getUserForCheck },
-	'../../../../server/lib/oauth/twoFactorAuth': { doesUserRequire2FA },
-	'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('') } },
-	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
+	});
+	mock.module('./lib/SAML', {
+		exports: {
+			SAML: { retrieveCredential, insertOrUpdateSAMLUser },
+		},
+	});
+	mock.module('./lib/Utils', {
+		exports: {
+			SAMLUtils: samlUtilsMock,
+		},
+	});
+	mock.module('../../../../server/lib/2fa/code', { exports: { getUserForCheck } });
+	mock.module('../../../../server/lib/oauth/twoFactorAuth', { exports: { doesUserRequire2FA } });
+	mock.module('../../../../server/lib/i18n', { exports: { i18n: { t: sinon.stub().returns('') } } });
+	mock.module('../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+	await import('./loginHandler');
 });
 
 describe('SAML loginHandler', () => {
+	before(() => {
+		mockModel('CredentialTokens', { removeById });
+	});
+
 	beforeEach(() => {
 		retrieveCredential.reset();
 		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });

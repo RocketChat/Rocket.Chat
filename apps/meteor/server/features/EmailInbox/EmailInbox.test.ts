@@ -1,11 +1,9 @@
 import { EventEmitter } from 'node:events';
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IEmailInbox } from '@rocket.chat/core-typings';
-import type { IEmailInboxModel, IEmailMessageHistoryModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 class FakeIMAPInterceptor extends EventEmitter {
@@ -41,11 +39,15 @@ const models = {
 };
 const onEmailReceived = sinon.stub();
 
-const { configureEmailInboxes, inboxes } = proxyquire.noCallThru().load('./EmailInbox', {
-	'./EmailInbox_Incoming': { onEmailReceived },
-	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
-	'../../email/IMAPInterceptor': { IMAPInterceptor: FakeIMAPInterceptor },
-	'../../settings': { settings: {} },
+let configureEmailInboxes: any;
+let inboxes: any;
+
+before(async () => {
+	mock.module('./EmailInbox_Incoming', { exports: { onEmailReceived } });
+	mock.module('./logger', { exports: { logger: { info: sinon.stub(), error: sinon.stub() } } });
+	mock.module('../../email/IMAPInterceptor', { exports: { IMAPInterceptor: FakeIMAPInterceptor } });
+	mock.module('../../settings', { exports: { settings: {} } });
+	({ configureEmailInboxes, inboxes } = await import('./EmailInbox'));
 });
 
 const createInbox = (email: string, overrides: Partial<IEmailInbox> = {}): IEmailInbox => ({
@@ -65,8 +67,8 @@ const createInbox = (email: string, overrides: Partial<IEmailInbox> = {}): IEmai
 
 describe('configureEmailInboxes', () => {
 	before(() => {
-		registerModel('IEmailInboxModel', models.EmailInbox as unknown as IEmailInboxModel);
-		registerModel('IEmailMessageHistoryModel', models.EmailMessageHistory as unknown as IEmailMessageHistoryModel);
+		mockModel('EmailInbox', models.EmailInbox);
+		mockModel('EmailMessageHistory', models.EmailMessageHistory);
 	});
 
 	beforeEach(() => {

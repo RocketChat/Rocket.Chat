@@ -3,7 +3,7 @@ import type { Box } from '@rocket.chat/fuselage';
 import { Palette } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef, ComponentType, KeyboardEvent } from 'react';
 
-const activateWithKeyboard = (event: KeyboardEvent<HTMLElement>) => {
+export const activateWithKeyboard = (event: KeyboardEvent<HTMLElement>) => {
 	if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) {
 		return;
 	}

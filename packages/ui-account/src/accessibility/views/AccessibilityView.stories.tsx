@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import AccessibilityView from './AccessibilityView';
-import type { AccessibilityPreferencesViewModel } from '../logic/useAccessibilityPreferences';
+import AccessibilityView from './AccessibilityView.js';
+import type { AccessibilityPreferencesViewModel } from '../logic/useAccessibilityPreferences.js';
 
 const createViewModel = (overrides: Partial<AccessibilityPreferencesViewModel> = {}): AccessibilityPreferencesViewModel => ({
 	values: {

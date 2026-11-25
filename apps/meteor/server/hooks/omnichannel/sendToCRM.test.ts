@@ -1,29 +1,37 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const resultObj = {
 	result: true,
 };
 
-const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } = p
-	.noCallThru()
-	.load('./sendToCRM', {
-		'../../settings': {
+let sendMessageType: typeof import('./sendToCRM').sendMessageType;
+let isOmnichannelNavigationMessage: typeof import('./sendToCRM').isOmnichannelNavigationMessage;
+let isOmnichannelClosingMessage: typeof import('./sendToCRM').isOmnichannelClosingMessage;
+let getAdditionalFieldsByType: typeof import('./sendToCRM').getAdditionalFieldsByType;
+
+before(async () => {
+	mock.module('../../settings', {
+		exports: {
 			settings: {
 				get() {
 					return resultObj.result;
 				},
 			},
 		},
-		'../../lib/utils/functions/normalizeMessageFileUpload': {
+	});
+	mock.module('../../lib/utils/functions/normalizeMessageFileUpload', {
+		exports: {
 			normalizeMessageFileUpload: sinon.stub().returnsArg(0),
 		},
-		'../../lib/omnichannel/webhooks': {},
-		'../../lib/omnichannel/guests': { getLivechatRoomGuestInfo: sinon.stub() },
 	});
+	mock.module('../../lib/omnichannel/webhooks', { exports: {} });
+	mock.module('../../lib/omnichannel/guests', { exports: { getLivechatRoomGuestInfo: sinon.stub() } });
+	({ sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } =
+		await import('./sendToCRM'));
+});
 
 describe('[OC] Send TO CRM', () => {
 	describe('isOmnichannelNavigationMessage', () => {

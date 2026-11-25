@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/lint-config",
-	"version": "0.1.0-rc.0",
+	"version": "0.1.0",
 	"description": "Rocket.Chat's JS/TS oxlint config",
 	"repository": {
 		"type": "git",
@@ -20,7 +20,8 @@
 	],
 	"scripts": {
 		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix"
+		"lint:fix": "yarn run -T oxlint --fix",
+		"testunit": "node --test"
 	},
 	"dependencies": {
 		"eslint": "~10.12.0",

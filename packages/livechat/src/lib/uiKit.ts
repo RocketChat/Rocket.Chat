@@ -1,8 +1,14 @@
-import { Livechat } from '../api';
+import { h } from 'preact';
+
 import { createRandomId } from './random';
+import { Livechat } from '../api';
+import { UiKitModal, type UiKitModalView } from '../components/uiKit/modal';
+import store from '../store';
 
 export const UIKitInteractionType = {
 	MODAL_OPEN: 'modal.open',
+	MODAL_PUSH: 'modal.push',
+	MODAL_CLEAR: 'modal.clear',
 	MODAL_CLOSE: 'modal.close',
 	MODAL_UPDATE: 'modal.update',
 	ERRORS: 'errors',
@@ -38,7 +44,120 @@ const generateTriggerId = (appId: string) => {
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...data }: Record<string, any>) => {
+type OpenView = { appId: string; view: UiKitModalView; errors?: Record<string, string> };
+
+const openViews = new Map<string, OpenView>();
+
+const MODAL_STACK_LIMIT = 3;
+
+// Open view ids, bottom to top. The last one is the view the visitor sees.
+let stack: string[] = [];
+
+let displayedViewId: string | undefined;
+
+const viewsOf = (appId: string) => stack.filter((id) => openViews.get(id)?.appId === appId);
+
+const forget = (viewIds: string[]) => {
+	for (const id of viewIds) {
+		openViews.delete(id);
+	}
+	stack = stack.filter((id) => !viewIds.includes(id));
+};
+
+// Shows the view that lies under a view that left, or no modal when none is left.
+const reveal = () => {
+	if (displayedViewId === undefined || openViews.has(displayedViewId)) {
+		return;
+	}
+	const top = stack.at(-1);
+	const next = top === undefined ? undefined : openViews.get(top);
+	if (top !== undefined && next) {
+		showModal(top, next);
+		return;
+	}
+	displayedViewId = undefined;
+	store.setState({ modal: null });
+};
+
+const closeModal = (viewId: string) => {
+	if (openViews.has(viewId)) {
+		forget([viewId]);
+		reveal();
+	}
+};
+
+const pushView = (viewId: string, openView: OpenView) => {
+	const own = viewsOf(openView.appId).filter((id) => id !== viewId);
+	if (own.length >= MODAL_STACK_LIMIT) {
+		forget([own[own.length - 1]]);
+	}
+	forget([viewId]);
+	stack.push(viewId);
+	showModal(viewId, openView);
+};
+
+// A response that arrives late changes the stored view, and the visitor sees it only if it is on top.
+const updateView = (viewId: string, openView: OpenView) => {
+	openViews.set(viewId, openView);
+	if (displayedViewId === viewId) {
+		showModal(viewId, openView);
+	}
+};
+
+const showModal = (viewId: string, openView: OpenView) => {
+	openViews.set(viewId, openView);
+	displayedViewId = viewId;
+	const { appId, view, errors } = openView;
+
+	const finish = async (type: string, payload: Record<string, unknown>) => {
+		let result: string | undefined;
+		try {
+			result = await triggerAction({
+				appId,
+				type,
+				viewId,
+				container: { type: UIKitIncomingInteractionContainerType.VIEW, id: viewId },
+				payload,
+			});
+		} catch {
+			// A failed or unanswered interaction leaves nothing to wait for, so the modal goes away.
+		}
+
+		if (
+			type === UIKitIncomingInteractionType.VIEW_CLOSED ||
+			![
+				UIKitInteractionType.ERRORS,
+				UIKitInteractionType.MODAL_UPDATE,
+				UIKitInteractionType.MODAL_OPEN,
+				UIKitInteractionType.MODAL_PUSH,
+			].includes(result ?? '')
+		) {
+			closeModal(viewId);
+		}
+	};
+
+	store.setState({
+		modal: h(UiKitModal, {
+			key: viewId,
+			appId,
+			view,
+			errors,
+			dispatchBlockAction: ({ actionId, payload }) =>
+				triggerAction({
+					appId,
+					type: UIKitIncomingInteractionType.BLOCK,
+					actionId,
+					viewId,
+					container: { type: UIKitIncomingInteractionContainerType.VIEW, id: viewId },
+					payload,
+				}),
+			onSubmit: (state) => finish(UIKitIncomingInteractionType.VIEW_SUBMIT, { view: { ...view, state } }),
+			onClose: (state) => finish(UIKitIncomingInteractionType.VIEW_CLOSED, { view: { ...view, state }, isCleared: false }),
+		}),
+	});
+};
+
+export const handlePayloadUserInteraction = (type: string, { triggerId, ...data }: Record<string, any>) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
@@ -47,10 +166,16 @@ const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...
 		return;
 	}
 
+	if (type === UIKitInteractionType.MODAL_CLEAR) {
+		forget(viewsOf(appId));
+		reveal();
+		return UIKitInteractionType.MODAL_CLEAR;
+	}
+
 	const { view } = data;
 	let { viewId } = data;
 
-	if (view && view.id) {
+	if (view?.id) {
 		viewId = view.id;
 	}
 
@@ -58,44 +183,34 @@ const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...
 		return;
 	}
 
-	if ([UIKitInteractionType.ERRORS].includes(type)) {
-		// events.emit(viewId, {
-		// 	type,
-		// 	triggerId,
-		// 	viewId,
-		// 	appId,
-		// 	...data,
-		// });
+	const openView = openViews.get(viewId);
+
+	if (type === UIKitInteractionType.ERRORS) {
+		if (openView) {
+			updateView(viewId, { ...openView, errors: data.errors });
+		}
 		return UIKitInteractionType.ERRORS;
 	}
 
-	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
-		// events.emit(viewId, {
-		// 	type,
-		// 	triggerId,
-		// 	viewId,
-		// 	appId,
-		// 	...data,
-		// });
+	if (type === UIKitInteractionType.MODAL_UPDATE) {
+		if (openView) {
+			updateView(viewId, { appId, view: { ...openView.view, ...view }, errors: undefined });
+		}
 		return UIKitInteractionType.MODAL_UPDATE;
 	}
 
-	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
-		// const instance = modal.push({
-		// 	template: 'ModalBlock',
-		// 	modifier: 'uikit',
-		// 	closeOnEscape: false,
-		// 	data: {
-		// 		triggerId,
-		// 		viewId,
-		// 		appId,
-		// 		...data,
-		// 	},
-		// });
-		// instances.set(viewId, instance);
+	if (type === UIKitInteractionType.MODAL_OPEN) {
+		forget(viewsOf(appId));
+		pushView(viewId, { appId, view });
 		return UIKitInteractionType.MODAL_OPEN;
 	}
 
+	if (type === UIKitInteractionType.MODAL_PUSH) {
+		pushView(viewId, { appId, view });
+		return UIKitInteractionType.MODAL_PUSH;
+	}
+
+	closeModal(viewId);
 	return UIKitInteractionType.MODAL_CLOSE;
 };
 

@@ -1,15 +1,19 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const findBefore = sinon.stub();
 
-const { loadRoomHistory } = proxyquire.noCallThru().load('./loadRoomHistory', {
-	'@rocket.chat/models': { Messages: { findVisibleByRoomIdBeforeTimestampNotContainingTypes: findBefore } },
-	'../../settings/cached': { settings: { get: () => [] } },
-	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
+let loadRoomHistory: any;
+
+before(async () => {
+	mock.module('../../settings/cached', { exports: { settings: { get: () => [] } } });
+	mock.module('../utils/lib/normalizeMessagesForUser', {
+		exports: { normalizeMessagesForUser: async (messages: unknown[]) => messages },
+	});
+	({ loadRoomHistory } = await import('./loadRoomHistory'));
 });
 
 const pageOf = (...timestamps: number[]) => ({
@@ -17,6 +21,10 @@ const pageOf = (...timestamps: number[]) => ({
 });
 
 describe('loadRoomHistory', () => {
+	before(() => {
+		mockModel('Messages', { findVisibleByRoomIdBeforeTimestampNotContainingTypes: findBefore });
+	});
+
 	it('should offer the neighbouring pages from the edges of the page returned', async () => {
 		findBefore.returns(pageOf(3000, 2000, 1000));
 

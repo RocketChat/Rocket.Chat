@@ -1,15 +1,11 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const hasPermissionStub = sinon.stub();
 
-const AccountsMock = {
-	_generateStampedLoginToken: sinon.stub(),
-	_insertLoginToken: sinon.stub(),
-};
+const issueLoginTokenStub = sinon.stub();
 
 const UserMock = {
 	ensureLoginTokensLimit: sinon.stub(),
@@ -30,16 +26,20 @@ class MeteorErrorMock extends Error {
 
 process.env.CREATE_TOKENS_FOR_USERS_SECRET = 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7';
 
-const { generateAccessToken } = p.noCallThru().load('./createToken.ts', {
-	'@rocket.chat/core-services': { Authorization: AuthorizationMock, ClientSafeError: MeteorErrorMock, User: UserMock },
-	'meteor/accounts-base': { Accounts: AccountsMock },
+let generateAccessToken: any;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', {
+		exports: { Authorization: AuthorizationMock, ClientSafeError: MeteorErrorMock, User: UserMock },
+	});
+	mock.module('../../lib/auth/issueLoginToken', { exports: { issueLoginToken: issueLoginTokenStub } });
+	({ generateAccessToken } = await import('./createToken'));
 });
 
 describe('generateAccessToken', () => {
 	beforeEach(() => {
 		hasPermissionStub.reset();
-		AccountsMock._generateStampedLoginToken.reset();
-		AccountsMock._insertLoginToken.reset();
+		issueLoginTokenStub.reset();
 		UserMock.ensureLoginTokensLimit.reset();
 	});
 
@@ -58,17 +58,18 @@ describe('generateAccessToken', () => {
 
 	it('should succeed if caller targets another user and has user-generate-access-token permission', async () => {
 		hasPermissionStub.resolves(true);
-		AccountsMock._generateStampedLoginToken.returns({ token: 'abc123' });
+		issueLoginTokenStub.resolves({ token: 'abc123', when: new Date() });
 		UserMock.ensureLoginTokensLimit.resolves();
 
 		const result = await generateAccessToken('targetId', 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7', { _id: 'callerId' });
 
 		expect(result).to.deep.equal({ userId: 'targetId', authToken: 'abc123' });
+		sinon.assert.calledOnceWithExactly(issueLoginTokenStub, 'targetId');
 		sinon.assert.calledOnceWithExactly(hasPermissionStub, { _id: 'callerId' }, 'user-generate-access-token');
 	});
 
 	it('should succeed without permission check when caller generates token for themselves', async () => {
-		AccountsMock._generateStampedLoginToken.returns({ token: 'abc123' });
+		issueLoginTokenStub.resolves({ token: 'abc123', when: new Date() });
 		UserMock.ensureLoginTokensLimit.resolves();
 
 		const result = await generateAccessToken('userId', 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7', { _id: 'userId' });

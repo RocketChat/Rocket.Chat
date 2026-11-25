@@ -1,9 +1,9 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
@@ -76,7 +76,7 @@ export async function insertAdminUserFromEnv() {
 
 			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
+			await Users.setPasswordHash(userId, await hashPassword(process.env.ADMIN_PASS));
 
 			await addUserRolesAsync(userId, ['admin']);
 		} else {
@@ -121,8 +121,9 @@ export const insertInitialData = async (): Promise<void> => {
 			await Rooms.createWithIdTypeAndNameIfNotExists('GENERAL', 'c', 'general', { default: true });
 		}
 
-		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount &&
+		if ((await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount) {
 			void notifyOnSettingChangedById('Initial_Channel_Created');
+		}
 	}
 
 	try {
@@ -198,8 +199,9 @@ export const insertInitialData = async (): Promise<void> => {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
 
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+			if ((await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount) {
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
+			}
 		}
 	}
 
@@ -240,13 +242,14 @@ export const insertInitialData = async (): Promise<void> => {
 
 		await Users.create(adminUser);
 
-		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
+		await Users.setPasswordHash(adminUser._id, await hashPassword(adminUser._id));
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+			if ((await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount) {
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
+			}
 		}
 
 		await addUserToDefaultChannels(adminUser as IUser, true);

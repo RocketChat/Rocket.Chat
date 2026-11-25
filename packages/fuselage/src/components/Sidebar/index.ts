@@ -7,7 +7,7 @@ export { default as SidebarLink, type SidebarLinkProps } from './SidebarLink';
 export * from './SidebarItem';
 export { SidebarCollapseGroup } from './SidebarCollapseGroup';
 export { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu';
-export { SidebarBanner, type SidebarBannerProps, type SidebarBannerVariant } from './SidebarBanner';
+export * from './SidebarBanner';
 export * from './SidebarFooter';
 export * from './SidebarMedia';
 export { SidebarButtonGroup } from './SidebarButtonGroup';

@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = { get: sinon.stub() };
@@ -19,24 +19,30 @@ class LDAPManagerStub {
 	static getLdapUsername = sinon.stub();
 }
 
-const { LDAPEEManager } = proxyquire.noCallThru().load('./EEManager', {
-	'@rocket.chat/core-services': { Abac: {}, Team: {} },
-	'@rocket.chat/license': { License: { hasModule: () => false } },
-	'@rocket.chat/models': { Users: usersStub, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
-	'../../../../server/lib/import/definitions/IConversionCallbacks': {},
-	'../../../../server/settings': { settings: settingsStub },
-	'../../../../server/lib/utils/lib/getValidRoomName': { getValidRoomName: (name: string) => Promise.resolve(name) },
-	'../../../../lib/utils/arrayUtils': { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },
-	'./Connection': { LDAPConnection: class {} },
-	'./Logger': { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub },
-	'./Manager': { LDAPManager: LDAPManagerStub },
-	'./UserConverter': { LDAPUserConverter: class {} },
-	'../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: addUserToRoomStub },
-	'../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
-	'../../../../server/lib/rooms/removeUserFromRoom': { removeUserFromRoom: removeUserFromRoomStub },
-	'../../../../server/lib/users/setUserActiveStatus': { setUserActiveStatus: setUserActiveStatusStub },
-	'../syncUserRoles': { syncUserRoles: sinon.stub() },
-	'./copyCustomFieldsLDAP': { copyCustomFieldsLDAP: sinon.stub() },
+let LDAPEEManager: typeof import('./EEManager').LDAPEEManager;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { Abac: {}, Team: {} } });
+	mock.module('@rocket.chat/license', { exports: { License: { hasModule: () => false } } });
+	mock.module('../../../../server/lib/import/definitions/IConversionCallbacks', { exports: {} });
+	mock.module('../../../../server/settings', { exports: { settings: settingsStub } });
+	mock.module('../../../../server/lib/utils/lib/getValidRoomName', {
+		exports: { getValidRoomName: (name: string) => Promise.resolve(name) },
+	});
+	mock.module('../../../../lib/utils/arrayUtils', {
+		exports: { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },
+	});
+	mock.module('./Connection', { exports: { LDAPConnection: class {} } });
+	mock.module('./Logger', { exports: { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub } });
+	mock.module('./Manager', { exports: { LDAPManager: LDAPManagerStub } });
+	mock.module('./UserConverter', { exports: { LDAPUserConverter: class {} } });
+	mock.module('../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: addUserToRoomStub } });
+	mock.module('../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } });
+	mock.module('../../../../server/lib/rooms/removeUserFromRoom', { exports: { removeUserFromRoom: removeUserFromRoomStub } });
+	mock.module('../../../../server/lib/users/setUserActiveStatus', { exports: { setUserActiveStatus: setUserActiveStatusStub } });
+	mock.module('../syncUserRoles', { exports: { syncUserRoles: sinon.stub() } });
+	mock.module('./copyCustomFieldsLDAP', { exports: { copyCustomFieldsLDAP: sinon.stub() } });
+	({ LDAPEEManager } = await import('./EEManager'));
 });
 
 const user = { _id: 'userId', username: 'john' };
@@ -64,6 +70,12 @@ const syncUserChannels = (ldapUserGroups: string[]) => {
 };
 
 describe('LDAPEEManager syncUserChannels', () => {
+	before(() => {
+		mockModel('Users', usersStub);
+		mockModel('Subscriptions', subscriptionsStub);
+		mockModel('Rooms', roomsStub);
+	});
+
 	beforeEach(() => {
 		roomsStub.findOneByNonValidatedName.reset();
 		subscriptionsStub.findOneByRoomIdAndUserId.reset();
@@ -119,6 +131,12 @@ describe('LDAPEEManager syncUserChannels', () => {
 });
 
 describe('LDAPEEManager updateExistingUsers', () => {
+	before(() => {
+		mockModel('Users', usersStub);
+		mockModel('Subscriptions', subscriptionsStub);
+		mockModel('Rooms', roomsStub);
+	});
+
 	it('should keep updating the remaining users when one of them cannot be mapped', async () => {
 		const brokenUser = { username: 'broken' };
 		const validUser = { username: 'valid' };

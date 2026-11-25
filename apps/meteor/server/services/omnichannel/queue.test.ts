@@ -1,7 +1,7 @@
-import { after, afterEach, beforeEach, describe, it } from 'node:test';
+import { after, afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import Sinon from 'sinon';
 
 const dispatchAgentDelegated = Sinon.stub();
@@ -43,34 +43,47 @@ const license = {
 	shouldPreventAction: Sinon.stub(),
 };
 
-const { OmnichannelQueue } = p.noCallThru().load('./queue', {
-	'../../lib/omnichannel/Helper': {
-		dispatchAgentDelegated,
-	},
-	'../../lib/omnichannel/RoutingManager': {
-		RoutingManager: {
-			getConfig,
-			delegateInquiry,
+let OmnichannelQueue: any;
+
+before(async () => {
+	mock.module('../../lib/omnichannel/Helper', {
+		exports: {
+			dispatchAgentDelegated,
 		},
-	},
-	'../../lib/omnichannel/settings': libSettings,
-	'../../lib/notifyListener': { notifyOnLivechatInquiryChangedByRoom: Sinon.stub() },
-	'../../settings': { settings },
-	'./logger': { queueLogger },
-	'@rocket.chat/models': models,
-	'@rocket.chat/license': { License: license },
-	'../../lib/metrics': {
-		metrics: {
-			timeToQueueProcessingByQueue: { observe: Sinon.stub() },
-			timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },
-			totalItemsProcessedByQueue: { inc: Sinon.stub() },
-			totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
-			totalItemsFailedByQueue: { inc: Sinon.stub() },
+	});
+	mock.module('../../lib/omnichannel/RoutingManager', {
+		exports: {
+			RoutingManager: {
+				getConfig,
+				delegateInquiry,
+			},
 		},
-	},
+	});
+	mock.module('../../lib/omnichannel/settings', { exports: { default: libSettings } });
+	mock.module('../../lib/notifyListener', { exports: { notifyOnLivechatInquiryChangedByRoom: Sinon.stub() } });
+	mock.module('../../settings', { exports: { settings } });
+	mock.module('./logger', { exports: { queueLogger } });
+	mock.module('@rocket.chat/license', { exports: { License: license } });
+	mock.module('../../lib/metrics', {
+		exports: {
+			metrics: {
+				timeToQueueProcessingByQueue: { observe: Sinon.stub() },
+				timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },
+				totalItemsProcessedByQueue: { inc: Sinon.stub() },
+				totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
+				totalItemsFailedByQueue: { inc: Sinon.stub() },
+			},
+		},
+	});
+	({ OmnichannelQueue } = await import('./queue'));
 });
 
 describe('Omnichannel Queue processor', () => {
+	before(() => {
+		mockModel('LivechatInquiry', models.LivechatInquiry);
+		mockModel('LivechatRooms', models.LivechatRooms);
+	});
+
 	describe('isRunning', () => {
 		it('should return the running status', () => {
 			const queue = new OmnichannelQueue();

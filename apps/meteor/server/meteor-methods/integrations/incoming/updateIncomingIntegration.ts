@@ -30,6 +30,65 @@ function validateChannels(channelString: string | undefined): string[] {
 	return channels;
 }
 
+async function saveCompiledIntegrationScript(integrationId: string, script: string): Promise<void> {
+	// isolated-vm embeds modern V8 and runs the script natively, so no
+	// transpilation is needed. Syntax is still validated at save time.
+	const { script: compiledScript, error } = validateScriptSyntax(script);
+	if (error) {
+		await Integrations.updateOne(
+			{ _id: integrationId },
+			{
+				$set: { scriptError: error },
+				$unset: { scriptCompiled: 1 as const },
+			},
+		);
+	} else {
+		await Integrations.updateOne(
+			{ _id: integrationId },
+			{
+				$set: { scriptCompiled: compiledScript },
+				$unset: { scriptError: 1 as const },
+			},
+		);
+	}
+}
+
+async function validateChannelRecords(userId: string, channels: string[]): Promise<void> {
+	for (let channel of channels) {
+		const channelType = channel[0];
+		channel = channel.slice(1);
+		let record;
+
+		switch (channelType) {
+			case '#':
+				record = await Rooms.findOne({
+					$or: [{ _id: channel }, { name: channel }],
+				});
+				break;
+			case '@':
+				record = await Users.findOne({
+					$or: [{ _id: channel }, { username: channel }],
+				});
+				break;
+		}
+
+		if (!record) {
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+				method: 'updateIncomingIntegration',
+			});
+		}
+
+		if (
+			!(await hasAllPermissionAsync(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
+		) {
+			throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
+				method: 'updateIncomingIntegration',
+			});
+		}
+	}
+}
+
 export const updateIncomingIntegration = async (
 	userId: string,
 	integrationId: string,
@@ -72,61 +131,10 @@ export const updateIncomingIntegration = async (
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
 	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-		// isolated-vm embeds modern V8 and runs the script natively, so no
-		// transpilation is needed. Syntax is still validated at save time.
-		const { script, error } = validateScriptSyntax(integration.script);
-		if (error) {
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptError: error },
-					$unset: { scriptCompiled: 1 as const },
-				},
-			);
-		} else {
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptCompiled: script },
-					$unset: { scriptError: 1 as const },
-				},
-			);
-		}
+		await saveCompiledIntegrationScript(integrationId, integration.script);
 	}
 
-	for (let channel of channels) {
-		const channelType = channel[0];
-		channel = channel.slice(1);
-		let record;
-
-		switch (channelType) {
-			case '#':
-				record = await Rooms.findOne({
-					$or: [{ _id: channel }, { name: channel }],
-				});
-				break;
-			case '@':
-				record = await Users.findOne({
-					$or: [{ _id: channel }, { username: channel }],
-				});
-				break;
-		}
-
-		if (!record) {
-			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
-				method: 'updateIncomingIntegration',
-			});
-		}
-
-		if (
-			!(await hasAllPermissionAsync(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
-			!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
-		) {
-			throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
-				method: 'updateIncomingIntegration',
-			});
-		}
-	}
+	await validateChannelRecords(userId, channels);
 
 	const username = 'username' in integration ? integration.username : currentIntegration.username;
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });

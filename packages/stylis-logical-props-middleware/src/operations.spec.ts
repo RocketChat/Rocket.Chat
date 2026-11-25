@@ -1,6 +1,6 @@
 import { compile, middleware, serialize, stringify } from 'stylis';
 
-import { createLogicalPropertiesMiddleware } from './middleware';
+import { createLogicalPropertiesMiddleware } from './middleware.js';
 
 /** Compiles `${property}: inherit` for `.a`, with only `supportedProperties` understood by the browser. */
 const renderProperty = (property: string, ...supportedProperties: string[]): string =>

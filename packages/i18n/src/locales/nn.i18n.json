@@ -2266,6 +2266,7 @@
   "Example_payload": "Eksempel på nyttelast",
   "Example_s": "Eksempel: <code>{{value}}</code>",
   "except_pinned": "(unntatt de som er festet)",
+  "Exchange_Graph_Client_Secret": "Klientshemmelighet",
   "Exclude_Botnames": "Ekskluder Bots",
   "Exclude_Botnames_Description": "Ikke propagere meldinger fra bots hvis navn samsvarer med det vanlige uttrykket ovenfor. Hvis tomt er tomt, vil alle meldinger fra bots bli spredt.",
   "Exclude_pinned": "Ekskluder pinnede meldinger",

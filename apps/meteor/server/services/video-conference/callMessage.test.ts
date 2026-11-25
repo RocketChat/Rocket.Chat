@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -13,24 +14,25 @@ import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, provi
  * of it. Where the call's chat is *not* a thread there is nothing to name, and the message stays as it was, so
  * these cases are as much about when the text is absent as when it is there.
  */
-const proxyquire = require('proxyquire');
 
 /** Flipped per case, since the answer turns on the two persistent-chat settings. */
 let settingsValues: Record<string, unknown> = {};
 
 const sendMessageStub = sinon.stub().resolves({ _id: 'msg1' });
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
-	...commonServiceStubs,
-	'@rocket.chat/models': {
-		Users: { findOneById: sinon.stub().resolves({ _id: 'creator', username: 'creator.user', name: 'Creator User' }) },
-		VideoConference: { findOneById: sinon.stub().resolves(null) },
-		Rooms: { findOneById: sinon.stub().resolves({ _id: 'room1', t: 'c', name: 'general', fname: 'general' }) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: { findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
-	},
-	'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
-	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+let VideoConfService: any;
+
+before(async () => {
+	const stubs: Record<string, Record<string, unknown>> = {
+		...commonServiceStubs,
+		'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
+		'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+	};
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
+	({ VideoConfService } = await import('./service'));
+	mock.restoreAll();
 });
 
 /** The record the service handed to `sendMessage`, which is the thing under test. */
@@ -38,6 +40,15 @@ const sentRecord = () => sendMessageStub.firstCall.args[1] as { t: string; msg: 
 
 describe('VideoConfService: the call message that names a thread', () => {
 	let service: any;
+
+	before(() => {
+		mockModel('Users', {
+			findOneById: sinon.stub().resolves({ _id: 'creator', username: 'creator.user', name: 'Creator User' }),
+		});
+		mockModel('Rooms', {
+			findOneById: sinon.stub().resolves({ _id: 'room1', t: 'c', name: 'general', fname: 'general' }),
+		});
+	});
 
 	beforeEach(() => {
 		service = new VideoConfService();

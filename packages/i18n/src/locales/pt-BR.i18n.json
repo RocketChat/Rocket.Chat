@@ -2529,6 +2529,7 @@
   "Example_payload": "Payload de exemplo",
   "Example_s": "Exemplo: <code>{{value}}</code>",
   "except_pinned": "(exceto aqueles que estão fixados)",
+  "Exchange_Graph_Client_Secret": "Secret do cliente",
   "Exclude_Botnames": "Excluir bots",
   "Exclude_Botnames_Description": "Não propague mensagens de bots cujo nome corresponde à expressão regular acima. Se deixado vazio, todas as mensagens dos bots serão propagadas.",
   "Exclude_pinned": "Excluir mensagens fixas",

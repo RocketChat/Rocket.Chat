@@ -6,14 +6,15 @@ import {
 	ContextualbarDialog,
 	useHasLicenseModule,
 } from '@rocket.chat/ui-client';
-import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, useSetModal } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
 
 const PermissionsContextBar = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const _id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
 	const router = useRoute('admin-permissions');
