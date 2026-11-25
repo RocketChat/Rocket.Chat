@@ -15,6 +15,8 @@ import { resolveElement } from '../xml/resolve';
 
 const NEGOTIATION_STEP_TIMEOUT_MS = 30000;
 
+const MAX_PENDING_NEGOTIATION_ELEMENTS = 32;
+
 export type OutboundSessionOptions = {
 	config: ResolvedXMPPServerConfig;
 	logger: Logger;
@@ -273,6 +275,10 @@ export class OutboundSession {
 	}
 
 	private dispatchStanza(stanza: Element): void {
+		if (this.closed) {
+			return;
+		}
+
 		const resolved = resolveElement(stanza, this.streamHeader);
 
 		for (const waiter of this.waiters) {
@@ -296,6 +302,12 @@ export class OutboundSession {
 		}
 
 		if (resolved.ns === NS_STREAMS || resolved.ns === NS_TLS || resolved.ns === NS_SASL || resolved.ns === NS_DIALBACK) {
+			if (this.pending.length >= MAX_PENDING_NEGOTIATION_ELEMENTS) {
+				this.logger.warn({ limit: MAX_PENDING_NEGOTIATION_ELEMENTS }, 'Too many unrequested negotiation elements');
+				void this.stream?.close({ condition: 'policy-violation' });
+				this.markClosed(new ConnectionFailedError(this.options.targetDomain, new Error('Too many unrequested negotiation elements')));
+				return;
+			}
 			this.pending.push(stanza);
 			return;
 		}

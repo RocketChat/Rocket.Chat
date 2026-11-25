@@ -223,8 +223,7 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		expect(features).not.toContain('stream:error');
 	});
 
-	// Known defect: ../../docs/specs/s2s-connectivity.md#d3-a-peer-can-exhaust-memory-by-flooding-an-outbound-stream-with-negotiation-elements
-	it.skip('closes a dialback verification stream flooded with negotiation elements (R19, D3)', async () => {
+	it('closes a dialback verification stream flooded with negotiation elements (R19)', async () => {
 		const hostileServer = net.createServer();
 		await new Promise<void>((resolve) => hostileServer.listen(0, '127.0.0.1', resolve));
 		ports.set('evil.localhost', (hostileServer.address() as net.AddressInfo).port);

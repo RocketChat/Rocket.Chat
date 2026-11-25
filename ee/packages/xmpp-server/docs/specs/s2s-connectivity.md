@@ -172,16 +172,6 @@ sessions. Test: `tests/integration/s2s.spec.ts`, "delivers every stanza already 
 the server stops"; the end-to-end harness cannot stop the service between a send and its
 delivery, so this one is an integration test.
 
-### D3 A peer can exhaust memory by flooding an outbound stream with negotiation elements
-
-Any host that reaches the listener can claim a domain it controls with a `<db:result/>`. The
-server then opens a verification stream to that domain, and the peer floods it with
-negotiation elements that no step asks for. All of them are kept, and the process runs out
-of heap (R19). No account or allowed domain is needed. Where: `OutboundSession.dispatchStanza`
-buffers them without a limit. Test: `tests/integration/inbound-addressing.spec.ts`, "closes a
-dialback verification stream flooded with negotiation elements"; ejabberd cannot be made to
-flood, so this one is an integration test.
-
 ## Open questions
 
 - **Q1** `message.error` is declared in the event map but never emitted: an error stanza
