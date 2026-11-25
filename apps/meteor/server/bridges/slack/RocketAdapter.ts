@@ -11,6 +11,7 @@ import _ from 'underscore';
 import { rocketLogger } from './logger';
 import { sleep } from '../../../lib/utils/sleep';
 import { createUser } from '../../lib/auth/createUser';
+import { triggerPostUserCreated } from '../../lib/auth/triggerPostUserCreated';
 import { callbacks } from '../../lib/callbacks';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createRoom } from '../../lib/rooms/createRoom';
@@ -374,6 +375,7 @@ export default class RocketAdapter {
 					const newUser = {
 						password: Random.id(),
 						username: rocketUserData.name,
+						skipAppsEngineEvent: true,
 					};
 
 					if (!isBot && email) {
@@ -400,6 +402,7 @@ export default class RocketAdapter {
 					}
 
 					await Users.updateOne({ _id: rocketUserData.rocketId }, { $set: userUpdate });
+					void triggerPostUserCreated(rocketUserData.rocketId);
 
 					const user = await Users.findOneById(rocketUserData.rocketId);
 

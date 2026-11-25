@@ -27,6 +27,8 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		globalRoles: roles,
 		skipNewUserRolesSetting: true,
 		performedBy,
+		// users.create triggers the apps event after its own writes
+		skipAppsEngineEvent: true,
 	};
 	if (userData.email) {
 		createUserOptions.email = userData.email;

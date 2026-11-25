@@ -60,6 +60,8 @@ export const registerUser = async (formData: {
 		password: formData.pass,
 		...(formData.name?.trim() && { name: formData.name?.trim() }),
 		reason: formData.reason,
+		// users.register triggers the apps event once the username is set
+		skipAppsEngineEvent: true,
 	};
 
 	let userId;
