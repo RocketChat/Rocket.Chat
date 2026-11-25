@@ -44,7 +44,7 @@ A visible change made in a workspace package the app consumes, such as `@rocket.
 ---
 ```
 
-The GitHub release notes are copied only from the `@rocket.chat/meteor` entry in `apps/meteor/CHANGELOG.md`. A changeset that names only the consumed package lands in that package's own changelog, and reaches the release notes as nothing more than a commit hash under "Updated dependencies".
+The GitHub release notes are copied only from the `@rocket.chat/meteor` entry in `apps/meteor/CHANGELOG.md`. A changeset that names only the consumed package lands in that package's own changelog. Its text never reaches the release notes, which show only its commit hash and the package's name and new version under "Updated dependencies".
 
 ## Bump
 
