@@ -1,4 +1,3 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Roles, Settings, Users } from '@rocket.chat/models';
@@ -6,6 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { escapeRegExp, removeEmpty } from '@rocket.chat/tools';
 
 import { getUserToActivateEmail } from './accountEmails';
+import { triggerPostUserCreated } from './triggerPostUserCreated';
 import { parseCSV } from '../../../lib/utils/parseCSV';
 import { getNewUserRoles } from '../../services/user/lib/getNewUserRoles';
 import { settings } from '../../settings';
@@ -254,10 +254,7 @@ export async function insertUser(options: InsertUserOptions, newUser: NewUser): 
 	}
 
 	if (!options.skipAppsEngineEvent) {
-		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user: createdUser, performedBy: options.performedBy }).catch((e) => {
-			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
-		});
+		void triggerPostUserCreated(_id, options.performedBy);
 	}
 
 	return _id;
