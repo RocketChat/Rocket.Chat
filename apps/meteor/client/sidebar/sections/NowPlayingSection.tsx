@@ -32,7 +32,7 @@ const NowPlayingSection = () => {
 		useMediaPlayer();
 	const goToRoom = useGoToRoom();
 	const formatMemorySize = useFormatMemorySize();
-	const waveform = useAudioWaveform(track?.url ?? '', track?.size);
+	const waveform = useAudioWaveform(track?.url ?? '', track?.size, duration);
 	const displayName = useUserDisplayName({ name: track?.name, username: track?.username });
 
 	if (!track) {
