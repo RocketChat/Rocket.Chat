@@ -23,6 +23,7 @@ tests:
     src/jid/normalize.spec.ts,
     src/service/helpers/remoteRoom.spec.ts,
     tests/integration/muc.spec.ts,
+    tests/integration/service-invites.spec.ts,
     tests/end-to-end/remote-muc.spec.ts,
   ]
 ---
@@ -71,6 +72,11 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   [hosted-muc R18](hosted-muc.md): it never carries ABAC attributes and ABAC enforcement
   never locks it, so an invitation creates it, and its members write to it, while
   enforcement is on.
+- **R14** An invitation whose room JID, in any spelling, is on our own domain or MUC domain
+  is dropped: it creates no user record and no channel, and adds no one to any room. Such a
+  JID names a room this server hosts, whose members only Rocket.Chat decides
+  ([hosted-muc](hosted-muc.md)), or no room at all. Only a channel that mirrors a remote room
+  gains members through an invitation.
 - **R2** The invitee is then joined into the remote room with their own session: occupant
   JID `<username>@<domain>/rocketchat`, nick `<username>`
   ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).
@@ -124,8 +130,9 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
 ## Design
 
 `MucService.handlePossibleInvite` parses both invitation forms for stanzas addressed to a
-local user. `XMPPServer` keeps the session map and routes any message or presence whose
-`from` is a room we hold a session for to that `RemoteMucSession`, before anything else.
+local user and drops those naming a room on our own domains (R14). `XMPPServer` keeps the
+session map and routes any message or presence whose `from` is a room we hold a session for
+to that `RemoteMucSession`, before anything else.
 The session is the client-side state machine (`joining`, `joined`, `leaving`, `closed`) and
 keeps the occupant roster by nick. When a session reports a message, `XMPPServer` looks the
 nick up in every session it holds for that room, so a moderator session's view serves the

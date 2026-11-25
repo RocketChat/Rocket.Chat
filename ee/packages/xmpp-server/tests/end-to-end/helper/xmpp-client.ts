@@ -226,6 +226,11 @@ export class XmppUser {
 		return this.send(xml('message', { to: roomJid }, xml('x', { xmlns: NS.mucUser }, xml('invite', { to: inviteeJid }))));
 	}
 
+	/** Direct invitation (XEP-0249): sent straight to the invitee, so the room never sees it. */
+	directInvite(roomJid: string, inviteeJid: string): Promise<void> {
+		return this.send(xml('message', { to: inviteeJid }, xml('x', { xmlns: NS.conference, jid: roomJid })));
+	}
+
 	sendGroupchat(roomJid: string, body: string, { id = crypto.randomUUID(), replaces }: SendOptions = {}): Promise<void> {
 		return this.send(
 			xml('message', { to: roomJid, type: 'groupchat', id: id ?? undefined }, xml('body', {}, body), ...replaceChild(replaces)),
