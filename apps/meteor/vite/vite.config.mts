@@ -21,6 +21,7 @@ import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(here, '..');
+const monorepoRoot = resolve(appRoot, '../..');
 const require = createRequire(import.meta.url);
 const swiperRoot = dirname(require.resolve('swiper/package.json'));
 
@@ -324,10 +325,9 @@ const findWorkspaceSources = (): { name: string; root: string; entry: string | u
 		return [];
 	}
 
-	const workspaceRoot = resolve(appRoot, '../..');
 	return ['packages', 'ee/packages'].flatMap((dir) =>
-		readdirSync(join(workspaceRoot, dir)).flatMap((folder) => {
-			const root = join(workspaceRoot, dir, folder);
+		readdirSync(join(monorepoRoot, dir)).flatMap((folder) => {
+			const root = join(monorepoRoot, dir, folder);
 			const manifest = join(root, 'package.json');
 			if (!existsSync(manifest) || !existsSync(join(root, 'src'))) return [];
 
@@ -442,7 +442,7 @@ export default defineConfig({
 			{ find: /^swiper\/modules\/zoom\.css$/, replacement: join(swiperRoot, 'modules/zoom.css') },
 			...workspaceSourceAliases,
 		],
-		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage', 'date-fns'],
+		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage', '@react-aria/focus', 'date-fns'],
 	},
 	define: {
 		'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),

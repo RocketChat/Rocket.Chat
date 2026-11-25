@@ -163,4 +163,85 @@ describe('useItemListDrag', () => {
 		expect(document.querySelector('.rcx-item-drag-preview')).not.toBeInTheDocument();
 		expect(result.current.source).toBeUndefined();
 	});
+
+	it('outlines a group that renders after a mouse drag started', () => {
+		const list = document.createElement('div');
+		const createRow = (key: string, group: string) => {
+			const row = document.createElement('div');
+			row.dataset.dragKey = key;
+			row.dataset.dragKind = 'item';
+			row.dataset.dragGroup = group;
+			const link = document.createElement('a');
+			link.href = `/channel/${key}`;
+			row.appendChild(link);
+			list.appendChild(row);
+			return link;
+		};
+		const link = createRow('general', 'Projects');
+		const scroller = document.createElement('div');
+		scroller.style.overflowY = 'auto';
+		scroller.appendChild(list);
+		document.body.appendChild(scroller);
+
+		const { result } = renderHook(() =>
+			useItemListDrag({ resolveTarget: (_source, hover) => ({ group: hover.group, position: 'inside' }), onDrop: jest.fn() }),
+		);
+		attachDrag(result.current.ref, list);
+
+		// jsdom has no DragEvent, DataTransfer nor hit testing.
+		jest.spyOn(document, 'elementsFromPoint').mockReturnValue([]);
+		const dragStart = new Event('dragstart', { bubbles: true, cancelable: true });
+		Object.defineProperty(dragStart, 'dataTransfer', { value: { setData: jest.fn(), setDragImage: jest.fn() } });
+		act(() => {
+			link.dispatchEvent(dragStart);
+		});
+		// oxlint-disable-next-line testing-library/no-node-access -- the drop boxes are inert overlays with no accessible query
+		expect(document.querySelectorAll('.rcx-item-drop-box--available')).toHaveLength(1);
+
+		// The virtualized list renders another group once it is scrolled into view.
+		createRow('support', 'Clients');
+		act(() => {
+			list.dispatchEvent(new Event('dragover', { bubbles: true, cancelable: true }));
+		});
+
+		// oxlint-disable-next-line testing-library/no-node-access -- the drop boxes are inert overlays with no accessible query
+		expect(document.querySelectorAll('.rcx-item-drop-box--available')).toHaveLength(2);
+	});
+
+	it('ends a mouse drag whose row was scrolled out of the list before it was released', () => {
+		const list = document.createElement('div');
+		const row = document.createElement('div');
+		row.dataset.dragKey = 'general';
+		row.dataset.dragKind = 'item';
+		row.dataset.dragGroup = 'Projects';
+		const link = document.createElement('a');
+		link.href = '/channel/general';
+		row.appendChild(link);
+		list.appendChild(row);
+		document.body.appendChild(list);
+
+		const { result } = renderHook(() =>
+			useItemListDrag({ resolveTarget: (_source, hover) => ({ group: hover.group, position: 'inside' }), onDrop: jest.fn() }),
+		);
+		attachDrag(result.current.ref, list);
+
+		// jsdom has no DragEvent nor DataTransfer.
+		const dragStart = new Event('dragstart', { bubbles: true, cancelable: true });
+		Object.defineProperty(dragStart, 'dataTransfer', { value: { setData: jest.fn(), setDragImage: jest.fn() } });
+		act(() => {
+			link.dispatchEvent(dragStart);
+		});
+		expect(result.current.source).toEqual({ key: 'general', kind: 'item', group: 'Projects' });
+		// oxlint-disable-next-line testing-library/no-node-access -- the drop boxes are inert overlays with no accessible query
+		expect(document.querySelector('.rcx-item-drop-box--available')).toBeInTheDocument();
+
+		row.remove();
+		act(() => {
+			row.dispatchEvent(new Event('dragend', { bubbles: true }));
+		});
+
+		expect(result.current.source).toBeUndefined();
+		// oxlint-disable-next-line testing-library/no-node-access -- the drop boxes are inert overlays with no accessible query
+		expect(document.querySelector('.rcx-item-drop-box--available')).not.toBeInTheDocument();
+	});
 });
