@@ -3,6 +3,7 @@ import type {
 	ILivechatVideoConference,
 	IRoom,
 	IUser,
+	IVideoConferenceProviderParticipant,
 	VideoConference,
 	VideoConferenceLeaveReason,
 	VideoConferenceStatus,
@@ -66,6 +67,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt?: Date): Promise<void>;
 
 	setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt?: Date): Promise<void>;
+	addUserProviderParticipantById(callId: string, uid: IUser['_id'], participant: IVideoConferenceProviderParticipant): Promise<void>;
+	setUserProviderParticipantLeftById(callId: string, uid: IUser['_id'], participantId: string, leftAt: Date): Promise<void>;
 	setUserLeftById(callId: string, uid: IUser['_id'], leftAt?: Date, reason?: VideoConferenceLeaveReason): Promise<void>;
 	setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt?: Date): Promise<void>;
 

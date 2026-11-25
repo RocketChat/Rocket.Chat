@@ -76,7 +76,18 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	lastSeenAt?: Date;
 	/** When they were last rung. Tells a phone ringing now from one rung and ignored. */
 	ringingAt?: Date;
+	/** Every connection the provider reported this member making, oldest first. One per window, device or reload. */
+	providerParticipants?: IVideoConferenceProviderParticipant[];
 }
+
+/** One connection a member made to the provider, as the provider reported it. */
+export type IVideoConferenceProviderParticipant = {
+	/** The provider's own id for the connection, which is what its participant list names it by. */
+	id: string;
+	connectedAt: Date;
+	/** Absent while the connection is up, or when the provider never reported it ending. */
+	leftAt?: Date;
+};
 
 /** Absent `joined` predates the flag, and entries were only written on join then — so absent reads as joined. */
 export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joined'>): boolean => user.joined !== false;

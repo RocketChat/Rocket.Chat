@@ -17,6 +17,7 @@ import type {
 	AtLeast,
 	IGroupVideoConference,
 	IVideoConference,
+	IVideoConferenceProviderParticipant,
 	IVideoConferenceUser,
 	IMessage,
 	IStats,
@@ -1850,6 +1851,25 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		} catch (err) {
 			logger.warn({ msg: 'Failed to restore a user status after a call', uid, err });
 		}
+	}
+
+	/**
+	 * Records a connection the provider reported a member making, or its end, so every window can pair the
+	 * member with each of their connections by id rather than by the name the provider shows.
+	 *
+	 * An end can be the first the server hears of a connection, so it records the connection as well.
+	 */
+	public async recordProviderParticipant(
+		callId: VideoConference['_id'],
+		uid: IUser['_id'],
+		participant: IVideoConferenceProviderParticipant,
+	): Promise<void> {
+		await VideoConferenceModel.addUserProviderParticipantById(callId, uid, participant);
+		if (participant.leftAt) {
+			await VideoConferenceModel.setUserProviderParticipantLeftById(callId, uid, participant.id, participant.leftAt);
+		}
+
+		this.notifyConferenceUpdate(callId);
 	}
 
 	/**

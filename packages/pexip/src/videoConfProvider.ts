@@ -77,6 +77,11 @@ export class PexipVideoConfProvider {
 			if (name) {
 				url.searchParams.set('name', name);
 			}
+
+			// Pexip hands the tag back with the participant in its events, which is how a participant is told
+			// apart from a namesake without leaning on the display name. Set after the escalation params so
+			// none of them can claim it.
+			url.searchParams.set('callTag', uid);
 		}
 
 		// Only an explicit `false` mutes: the caller saying nothing about a device is not the same as the caller

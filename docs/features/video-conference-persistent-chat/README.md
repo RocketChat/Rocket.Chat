@@ -924,14 +924,34 @@ That rule is not a nicety: the protocol carries no replies, so a request the pro
 a console this window cannot read, and the only sign of it is the next roster looking exactly like the last one.
 A control offered against any of the three is a button that silently does nothing, every time it is pressed.
 
-Identity is `client/views/conference/lib/callParticipants.ts`. Every control is addressed by the participant's
-`uuid` and never by a name; whether that participant *is* a known user is a separate question, answered by a
-uuid the member's own client claimed with the display name corroborating it, or — failing a claim — by exactly
-one member wearing that name. Two namesakes with nothing to separate them is a coin toss rather than a match,
-and losing it would put one person's microphone under another's face, so it resolves to an external participant
-instead. The claim is self-reported and unverifiable against the provider, which is why the name still has to
-agree: impersonation is narrowed to two users who are already indistinguishable on screen, which was accepted
-deliberately.
+Identity is `packages/ui-conference/src/lib/callParticipants.ts`. Every control is addressed by the
+participant's `uuid` and never by a name; whether that participant *is* a known user is a separate question,
+answered by the member's `providerParticipants`, or — for a member with none in the call — by being the only
+member wearing that name. Two namesakes with nothing to separate them is a coin toss rather than a match, and
+losing it would put one person's microphone under another's face, so it resolves to an external participant
+instead.
+
+`providerParticipants` comes from Pexip. The join url carries the member's user id as `callTag` (Infinity v33
+and later), and Pexip repeats it with the participant's `uuid` and connect time on `participant_connected`, and
+with the end time on `participant_disconnected`. The server keeps one entry per connection on the member —
+`{ id, connectedAt, leftAt? }` — so a reload, a second window or a second device each add one rather than
+replacing the last. A disconnect can be the first the server hears of a connection, so it records the
+connection as well. For now these entries only identify people; presence still comes from the window (see
+[Knowing who is still in the call](#knowing-who-is-still-in-the-call)). The plugin can't do any of this itself:
+its API does not expose a participant's call tag.
+
+A member connected from several places has one row, carrying the newest connection's controls — for the viewer,
+always their own window's, which the plugin reports before the event sink has been heard from. Each other
+connection the provider still has gets a row under it, named after the member and labelled "Another
+connection", with controls of its own so a connection left behind by a closed window can be hung up. A
+connection the server hasn't recorded is never added to a member who already has one by name: it is most likely
+theirs, but it could be a namesake who followed a link, so it stays external until the server says.
+
+A claim settles the pairing whatever name the provider shows, because the name typed on Pexip's own join screen
+is exactly what drifts from the member's. The tag is the plain user id and is trusted as is: anyone who can edit
+their join url and holds the pin can appear under another member's row, which was accepted deliberately. Without
+a working event sink no connection is ever recorded, and the panel falls back to names for everyone but the
+viewer.
 
 ## Settings
 

@@ -6,6 +6,7 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	IVideoConferenceProviderParticipant,
 	VideoConferenceLeaveReason,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
@@ -400,6 +401,33 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				...(!reason && { $unset: { 'users.$[user].leftReason': 1 } }),
 			},
 			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+	}
+
+	/**
+	 * Adds a connection to an existing member, doing nothing if they already have one with that id.
+	 *
+	 * The guard is in the query for the same reason as `addMemberById`: the entry carries dates, so `$addToSet`
+	 * would append a second copy as soon as one of them differed.
+	 */
+	public async addUserProviderParticipantById(
+		callId: string,
+		uid: IUser['_id'],
+		participant: IVideoConferenceProviderParticipant,
+	): Promise<void> {
+		await this.updateOne(
+			{ _id: callId, users: { $elemMatch: { '_id': uid, 'providerParticipants.id': { $ne: participant.id } } } },
+			{ $push: { 'users.$[user].providerParticipants': participant } },
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+	}
+
+	/** Records when one of a member's connections ended. */
+	public async setUserProviderParticipantLeftById(callId: string, uid: IUser['_id'], participantId: string, leftAt: Date): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{ $set: { 'users.$[user].providerParticipants.$[participant].leftAt': leftAt } },
+			{ arrayFilters: [{ 'user._id': uid }, { 'participant.id': participantId }] },
 		);
 	}
 
