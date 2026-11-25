@@ -14,8 +14,8 @@ export const createRetentionSettings = () =>
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'RetentionPolicy_Enabled',
-			alert:
-				'Watch out! Tweaking these settings without utmost care can destroy all message history. Please read <a href="https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies" target="_blank">here</a> the documentation before turning the feature ON.',
+			alert: 'RetentionPolicy_Enabled_Alert',
+			alertLink: 'https://docs.rocket.chat/docs/retention-policy',
 		});
 
 		await this.add('RetentionPolicy_Precision', '0', {
@@ -170,13 +170,6 @@ export const createRetentionSettings = () =>
 				],
 			});
 
-			await this.add('RetentionPolicy_DoNotPrunePinned', false, {
-				type: 'boolean',
-				public: true,
-				i18nLabel: 'RetentionPolicy_DoNotPrunePinned',
-				enableQuery: globalQuery,
-			});
-
 			await this.add('RetentionPolicy_FilesOnly', false, {
 				type: 'boolean',
 				public: true,
@@ -184,12 +177,20 @@ export const createRetentionSettings = () =>
 				i18nDescription: 'RetentionPolicy_FilesOnly_Description',
 				enableQuery: globalQuery,
 			});
+
+			await this.add('RetentionPolicy_DoNotPrunePinned', false, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'RetentionPolicyRoom_DeletePinned',
+				inverted: true,
+				enableQuery: globalQuery,
+			});
 			await this.add('RetentionPolicy_DoNotPruneDiscussion', true, {
 				group: 'RetentionPolicy',
 				type: 'boolean',
 				public: true,
-				i18nLabel: 'RetentionPolicy_DoNotPruneDiscussion',
-				i18nDescription: 'RetentionPolicy_DoNotPruneDiscussion_Description',
+				i18nLabel: 'RetentionPolicy_DeleteDiscussions',
+				inverted: true,
 				enableQuery: globalQuery,
 			});
 			await this.add('RetentionPolicy_DeleteDiscussionOrigin', true, {
@@ -198,13 +199,14 @@ export const createRetentionSettings = () =>
 				public: true,
 				i18nLabel: 'RetentionPolicy_DeleteDiscussionOrigin',
 				enableQuery: [{ _id: 'RetentionPolicy_DoNotPruneDiscussion', value: true }, globalQuery],
+				disabledValue: { value: true, query: { _id: 'RetentionPolicy_DoNotPruneDiscussion', value: false } },
 			});
 			await this.add('RetentionPolicy_DoNotPruneThreads', true, {
 				group: 'RetentionPolicy',
 				type: 'boolean',
 				public: true,
-				i18nLabel: 'RetentionPolicy_DoNotPruneThreads',
-				i18nDescription: 'RetentionPolicy_DoNotPruneThreads_Description',
+				i18nLabel: 'RetentionPolicyRoom_DeleteThreads',
+				inverted: true,
 				enableQuery: globalQuery,
 			});
 		});

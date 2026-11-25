@@ -3,7 +3,7 @@ import { Random } from '@rocket.chat/random';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects/home-channel';
-import { sendTargetChannelMessage } from './utils';
+import { createDiscussion, createTargetChannelAndReturnFullRoom, deleteRoom, sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -56,31 +56,31 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('prune files only not pinned', async () => {
-				await pruneMessages.labelDoNotPrunePinned.click();
-				await pruneMessages.labelFilesOnly.click();
+				await pruneMessages.checkboxDeletePinned.click();
+				await pruneMessages.selectContentOption('Only files');
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '1 file pruned' });
 				await toastMessage.dismissToast();
-				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
-				await expect(pruneMessages.labelDoNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.selectContent, 'Select is reset after success').toContainText('Messages and files');
+				await expect(pruneMessages.checkboxDeletePinned, 'Checkbox is reset after success').toBeChecked();
 			});
 
 			await test.step('prune files only again', async () => {
-				await pruneMessages.labelDoNotPrunePinned.click();
-				await pruneMessages.labelFilesOnly.click();
+				await pruneMessages.checkboxDeletePinned.click();
+				await pruneMessages.selectContentOption('Only files');
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'error', message: 'No files found to prune' });
 				await toastMessage.dismissToast('error');
-				await expect(pruneMessages.labelFilesOnly, 'Checkbox retains value after error').toBeChecked();
-				await expect(pruneMessages.labelDoNotPrunePinned, 'Checkbox retains value after error').toBeChecked();
+				await expect(pruneMessages.selectContent, 'Select retains value after error').toContainText('Only files');
+				await expect(pruneMessages.checkboxDeletePinned, 'Checkbox retains value after error').not.toBeChecked();
 			});
 
-			await test.step('uncheck files only', async () => {
-				await pruneMessages.labelFilesOnly.click();
+			await test.step('prune messages and files', async () => {
+				await pruneMessages.selectContentOption('Messages and files');
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '3 messages pruned' });
 				await toastMessage.dismissToast();
-				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.checkboxDeletePinned, 'Checkbox is reset after success').toBeChecked();
 			});
 
 			await test.step('prune remained pinned message', async () => {
@@ -113,12 +113,11 @@ test.describe('prune-messages', () => {
 			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
 			await test.step('prune files only', async () => {
-				await pruneMessages.labelFilesOnly.click();
+				await pruneMessages.selectContentOption('Only files');
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '1 file pruned' });
 				await toastMessage.dismissToast();
-				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
-				await expect(pruneMessages.labelDoNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.selectContent, 'Select is reset after success').toContainText('Messages and files');
 			});
 
 			await test.step('check message list for prune message-attachment', async () => {
@@ -162,6 +161,55 @@ test.describe('prune-messages', () => {
 					'File deleted',
 				);
 			});
+		},
+	);
+});
+
+test.describe('prune-messages with a discussion started from a file message', () => {
+	let poHomeChannel: HomeChannel;
+	let targetChannel: IRoom;
+
+	test.beforeEach(async ({ api, page }) => {
+		({ channel: targetChannel } = await createTargetChannelAndReturnFullRoom(api));
+		poHomeChannel = new HomeChannel(page);
+		await poHomeChannel.gotoChannelCleanHistory(targetChannel.name as string);
+
+		await poHomeChannel.content.sendFileMessage('any_file.txt');
+		await poHomeChannel.composer.btnSend.click();
+		await expect(poHomeChannel.content.getLastMessageByFileName('any_file.txt')).toBeVisible();
+
+		const originId = await poHomeChannel.content.lastUserMessage.getAttribute('data-id');
+		await createDiscussion(api, targetChannel._id, originId as string, Random.id());
+	});
+
+	test.afterEach(async ({ api }) => {
+		await deleteRoom(api, targetChannel._id);
+	});
+
+	test(
+		'should keep the message a discussion started from, with its file, when original discussion messages are not deleted',
+		{
+			tag: '@channel',
+			annotation: {
+				type: 'issue',
+				description: 'https://rocketchat.atlassian.net/browse/CORE-2696',
+			},
+		},
+		async ({ api }) => {
+			const {
+				content,
+				tabs: { pruneMessages },
+				toastMessage,
+			} = poHomeChannel;
+
+			await sendTargetChannelMessage(api, targetChannel.name as string, { msg: 'a message without files' });
+
+			await pruneMessages.checkboxDeleteDiscussion.click();
+			await pruneMessages.checkboxDeleteDiscussionOrigin.click();
+			await pruneMessages.prune();
+			await toastMessage.waitForDisplay({ type: 'success', message: '1 message pruned' });
+
+			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 		},
 	);
 });

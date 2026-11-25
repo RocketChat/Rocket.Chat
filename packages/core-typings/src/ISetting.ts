@@ -76,6 +76,8 @@ export interface ISettingBase extends IRocketChatRecord {
 	packageValue: SettingValue;
 	blocked: boolean;
 	enableQuery?: EnableQuery;
+	disabledValue?: { value: SettingValue; query: EnableQuery };
+	inverted?: boolean;
 	displayQuery?: EnableQuery;
 	validation?: SettingValidation;
 	sorter: number;
@@ -104,6 +106,7 @@ export interface ISettingBase extends IRocketChatRecord {
 	persistent?: boolean; // todo: remove
 	readonly?: boolean; // todo: remove
 	alert?: string; // todo: check if this is still used
+	alertLink?: string;
 	private?: boolean; // todo: remove
 }
 

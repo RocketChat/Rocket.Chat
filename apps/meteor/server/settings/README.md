@@ -45,7 +45,10 @@ settingsRegistry.addGroup('Settings_Group', function() {
 * `description` - Description of the setting
 * `public` - Boolean to set if the setting should be sent to client or not
 * `enableQuery` - Only enable this setting if the correspondent setting has the value specified
+* `disabledValue` - `{ value, query }`: the value the admin page shows while `enableQuery` disables the setting and `query` matches; the stored value does not change
 * `alert` - Shows an alert message with the given text
+* `alertLink` - the URL that a `<docsLink>` tag in the `alert` text links to
+* `inverted` - the admin page shows and saves the opposite of the stored boolean
 
 
 ### Functions
