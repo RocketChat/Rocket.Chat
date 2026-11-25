@@ -59,6 +59,7 @@ const buildLinkItem = (link: ConferenceLink, { canManage, handlers, t }: BuildVi
 	content: link.title,
 	textValue: link.title,
 	status: link.ongoing ? t('Ongoing') : undefined,
+	label: link.ongoing ? t('Conference_link_ongoing', { title: link.title }) : undefined,
 	items: [
 		link.ongoing
 			? { id: `link-${link._id}-join`, icon: 'phone' as const, content: t('Join_call'), onClick: () => handlers.onOpen(link) }

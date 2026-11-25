@@ -16,7 +16,8 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 const weekly: ConferenceLink = { _id: 'weekly-id', title: 'Weekly sync', url: 'weekly-sync', ongoing: false };
 const standup: ConferenceLink = { _id: 'standup-id', title: 'Daily standup', url: 'daily-standup', ongoing: true };
 
-const t = ((key: string) => key) as unknown as TFunction;
+const t = ((key: string, options?: { title?: string }) =>
+	key === 'Conference_link_ongoing' ? `${options?.title}, ongoing` : key) as unknown as TFunction;
 
 const buildHandlers = () => ({
 	onStart: jest.fn(),
@@ -103,7 +104,8 @@ describe('VideoCallMenu', () => {
 		expect(screen.getByRole('separator')).toBeInTheDocument();
 		const links = screen.getByRole('group', { name: 'Conference_links' });
 		expect(within(links).getByRole('menuitem', { name: 'Weekly sync' })).toBeInTheDocument();
-		expect(within(within(links).getByRole('menuitem', { name: 'Daily standup' })).getByText('Ongoing')).toBeInTheDocument();
+		// The marker is drawn beside the title, so the row's name says it too.
+		expect(within(within(links).getByRole('menuitem', { name: 'Daily standup, ongoing' })).getByText('Ongoing')).toBeInTheDocument();
 	});
 
 	it.each([
@@ -116,7 +118,7 @@ describe('VideoCallMenu', () => {
 		const handlers = showMenu();
 		await openMenu();
 
-		await userEvent.click(screen.getByRole('menuitem', { name: link.title }));
+		await userEvent.click(screen.getByRole('menuitem', { name: link.ongoing ? `${link.title}, ongoing` : link.title }));
 		await userEvent.click(await screen.findByRole('menuitem', { name: label }));
 
 		expect(handlers[handler]).toHaveBeenCalledTimes(1);

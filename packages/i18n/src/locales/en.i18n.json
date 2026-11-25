@@ -1609,6 +1609,7 @@
   "Conference_link_created": "Link created",
   "Conference_link_deleted": "Link deleted",
   "Conference_link_name": "Link name",
+  "Conference_link_ongoing": "{{title}}, ongoing",
   "Conference_link_renamed": "Link renamed",
   "Conference_links": "Conference links",
   "Conference_name": "Conference name",

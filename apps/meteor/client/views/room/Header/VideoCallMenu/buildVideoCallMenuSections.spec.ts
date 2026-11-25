@@ -118,6 +118,15 @@ it('marks only an ongoing link', () => {
 	expect(items.map(({ status }) => status)).toEqual([undefined, 'Ongoing']);
 });
 
+// The marker is drawn beside the title, outside the row's name, so the name has to say it too.
+it('names an ongoing link as ongoing', () => {
+	const t = jest.fn((key: string, options?: { title?: string }) =>
+		options?.title ? `${key}:${options.title}` : key,
+	) as unknown as TFunction;
+	const { items } = linkSection(buildInput({ t, links: [weekly, standup] }));
+	expect(items.map(({ label }) => label)).toEqual([undefined, 'Conference_link_ongoing:Daily standup']);
+});
+
 describe('link actions', () => {
 	it('offers Join call for an ongoing link and Open for the others', () => {
 		const input = buildInput({ links: [weekly, standup] });
@@ -193,7 +202,18 @@ it('uses only the feature keys', () => {
 
 	const keys = new Set((input.t as unknown as jest.Mock).mock.calls.map(([key]) => key));
 	expect(keys).toEqual(
-		new Set(['Start_conference', 'Create_link', 'Conference_links', 'Ongoing', 'Join_call', 'Open', 'Copy_link', 'Rename', 'Delete']),
+		new Set([
+			'Start_conference',
+			'Create_link',
+			'Conference_links',
+			'Ongoing',
+			'Conference_link_ongoing',
+			'Join_call',
+			'Open',
+			'Copy_link',
+			'Rename',
+			'Delete',
+		]),
 	);
 });
 

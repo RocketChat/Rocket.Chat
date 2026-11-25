@@ -2,12 +2,14 @@ import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
 
 const enStrings: Record<string, unknown> = en;
 
-// Units wiring the menu, the modals and the toasts only read these keys, so all of them must already exist.
+// The menu, the modals, the not-started page and the toasts of conference links show these strings; a missing key would
+// show its raw name instead.
 const FEATURE_KEYS = [
 	'Start_conference',
 	'Create_link',
 	'Conference_links',
 	'Conference_link_name',
+	'Conference_link_ongoing',
 	'Rename_conference_link',
 	'Rename_conference_link_description',
 	'Delete_conference_link',
@@ -21,7 +23,7 @@ const FEATURE_KEYS = [
 	'Rename',
 ];
 
-const KEYS_NAMING_THE_LINK = ['Conference_not_started_yet', 'Delete_conference_link_description'];
+const KEYS_NAMING_THE_LINK = ['Conference_link_ongoing', 'Conference_not_started_yet', 'Delete_conference_link_description'];
 
 it('defines every key of the feature in en.i18n.json with its placeholders', () => {
 	FEATURE_KEYS.forEach((key) => {
