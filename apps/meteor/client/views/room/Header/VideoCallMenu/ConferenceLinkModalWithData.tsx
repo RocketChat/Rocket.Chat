@@ -19,7 +19,7 @@ const ConferenceLinkModalWithData = ({ mode, rid, link, onClose }: ConferenceLin
 	const createLink = useEndpoint('POST', '/v1/video-conference.rooms.create');
 	const renameLink = useEndpoint('POST', '/v1/video-conference.rooms.rename');
 
-	const { mutate, isPending, error } = useMutation({
+	const { mutateAsync, isPending, error } = useMutation({
 		mutationFn: async (title: string) => {
 			if (link) {
 				await renameLink({ conferenceRoomId: link._id, title });
@@ -39,7 +39,7 @@ const ConferenceLinkModalWithData = ({ mode, rid, link, onClose }: ConferenceLin
 		<ConferenceLinkModal
 			mode={mode}
 			initialTitle={link?.title}
-			onConfirm={(title) => mutate(title)}
+			onConfirm={(title) => mutateAsync(title).catch(() => undefined)}
 			onClose={onClose}
 			isPending={isPending}
 			error={error ? t(conferenceLinkErrorKey(error)) : undefined}
