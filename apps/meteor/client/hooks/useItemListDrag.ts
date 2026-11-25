@@ -448,14 +448,16 @@ export const useItemListDrag = ({
 			// Preserves the browser's link drag: dropping on the tab bar or another window opens the room URL.
 			// Touch and group drags stay on the pointer path above.
 
-			let nativeDrag: {
-				source: ItemListDragSource;
-				sourceElement: HTMLElement;
-				scroller: HTMLElement;
-				indicator: HTMLElement;
-				available: { group: string; box: HTMLElement }[];
-				target: ItemListDropTarget | undefined;
-			} | undefined;
+			let nativeDrag:
+				| {
+						source: ItemListDragSource;
+						sourceElement: HTMLElement;
+						scroller: HTMLElement;
+						indicator: HTMLElement;
+						available: { group: string; box: HTMLElement }[];
+						target: ItemListDropTarget | undefined;
+				  }
+				| undefined;
 
 			const cleanupNativeDrag = () => {
 				if (!nativeDrag) return undefined;
@@ -513,9 +515,7 @@ export const useItemListDrag = ({
 				indicator.hidden = true;
 				document.body.append(indicator);
 
-				const groups = new Set(
-					Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (el) => el.dataset.dragGroup!),
-				);
+				const groups = new Set(Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (el) => el.dataset.dragGroup!));
 				const available = Array.from(groups)
 					.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')
 					.map((group) => {
