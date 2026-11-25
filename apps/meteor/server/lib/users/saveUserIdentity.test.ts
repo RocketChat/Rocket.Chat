@@ -13,6 +13,7 @@ const stubs = {
 	updateDirectNameAndFnameByName: sinon.stub(),
 	updateUserReferences: sinon.stub(),
 	updateHistoryReferences: sinon.stub(),
+	updateLinkReferences: sinon.stub(),
 	setUsername: sinon.stub(),
 	setRealName: sinon.stub(),
 	validateName: sinon.stub(),
@@ -65,6 +66,7 @@ describe('Users - saveUserIdentity', () => {
 		});
 		mockModel('VideoConference', { updateUserReferences: stubs.updateUserReferences });
 		mockModel('CallHistory', { updateUserReferences: stubs.updateHistoryReferences });
+		mockModel('VideoConferenceRooms', { updateUserReferences: stubs.updateLinkReferences });
 	});
 
 	beforeEach(() => {
@@ -121,6 +123,7 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.false;
 		expect(stubs.updateUserReferences.called).to.be.false;
 		expect(stubs.updateHistoryReferences.called).to.be.false;
+		expect(stubs.updateLinkReferences.called).to.be.false;
 	});
 
 	it('should update Subscriptions, VideoConference and Call History if name changes', async () => {
@@ -135,5 +138,14 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateUserReferences.called).to.be.true;
 		expect(stubs.updateHistoryReferences.called).to.be.true;
 		expect(result).to.be.true;
+	});
+
+	it("updates the user's links", async () => {
+		stubs.findOneUserById.returns({ _id: 'valid_id', name: 'oldName', username: 'oldUsername' });
+		stubs.setRealName.returns(true);
+		await saveUserIdentity({ _id: 'valid_id', name: 'name', username: 'oldUsername' });
+
+		expect(stubs.updateLinkReferences.calledOnceWith('valid_id', 'oldUsername', 'name')).to.be.true;
+		expect(stubs.updateLinkReferences.args[0]).to.deep.equal(stubs.updateUserReferences.args[0]);
 	});
 });

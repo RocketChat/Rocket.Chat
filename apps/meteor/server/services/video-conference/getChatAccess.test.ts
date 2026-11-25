@@ -141,3 +141,41 @@ describe('VideoConfService.getChatAccess', () => {
 		expect(result.canInvite).to.be.false;
 	});
 });
+
+describe('VideoConfService.getRoomChatAccess', () => {
+	let service: any;
+
+	beforeEach(() => {
+		service = new VideoConfService();
+		resetAll(RoomsMock.findOneById, findByRoomIdAndUserIdsStub, canAccessRoomIdAsyncStub, allowMemberActionStub);
+		allowMemberActionStub.callsFake(async (targetRoom: Pick<IRoom, 't'>) => targetRoom.t !== 'd');
+	});
+
+	// A conference not started yet has no members, so nobody can be left out of its chat; where the chat would
+	// live and whether that room takes new people still come from the room.
+	it('answers for a room without a conference', async () => {
+		RoomsMock.findOneById.callsFake(async () => ({ _id: 'room1', t: 'p', name: 'private-group', fname: 'Private group' }));
+
+		expect(await service.getRoomChatAccess('caller', 'room1')).to.deep.equal({
+			rid: 'room1',
+			name: 'Private group',
+			type: 'p',
+			membersWithoutAccess: [],
+			canInvite: true,
+		});
+		expect(findByRoomIdAndUserIdsStub.called).to.be.false;
+		expect(canAccessRoomIdAsyncStub.called).to.be.false;
+	});
+
+	it('reports a DM as not invitable', async () => {
+		RoomsMock.findOneById.callsFake(async () => ({ _id: 'room1', t: 'd', name: 'a.b', fname: '' }));
+
+		expect((await service.getRoomChatAccess('caller', 'room1')).canInvite).to.be.false;
+	});
+
+	it('refuses a room that does not exist', async () => {
+		RoomsMock.findOneById.callsFake(async () => null);
+
+		await expect(service.getRoomChatAccess('caller', 'room1')).to.be.rejectedWith('invalid-room');
+	});
+});

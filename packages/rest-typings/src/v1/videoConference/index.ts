@@ -26,6 +26,10 @@ export * from './VideoConfCallIdProps';
 export * from './VideoConfAddParticipantsProps';
 export * from './VideoConfShareChatProps';
 export * from './VideoConfRenameProps';
+export * from './VideoConfRoomCreateProps';
+export * from './VideoConfRoomRenameProps';
+export * from './VideoConfRoomDeleteProps';
+export * from './VideoConfRoomListProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
@@ -94,6 +98,8 @@ export type VideoConferenceEndpoints = {
 			capabilities: VideoConferenceCapabilities;
 			/** Where the chat lives, who among the members cannot read it, and how that can be resolved. */
 			chatAccess: VideoConferenceChatAccess;
+			/** Present only when the address is a link with nothing live: whether the caller may start it. */
+			canStart?: boolean;
 		};
 	};
 

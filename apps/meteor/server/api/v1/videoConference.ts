@@ -1,5 +1,6 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
-import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isVideoConfAddParticipantsProps,
@@ -119,10 +120,11 @@ const shareChatResponseSchema = oneValueResponseSchema<{ rid: string }>('rid', {
 	description: 'The room the conference chat now lives in.',
 });
 
-const infoResponseSchema = ajv.compile<VideoConference & { capabilities: VideoConferenceCapabilities }>({
+const infoResponseSchema = ajv.compile<VideoConference & { capabilities: VideoConferenceCapabilities; canStart?: boolean }>({
 	type: 'object',
 	properties: {
 		capabilities: { $ref: '#/components/schemas/VideoConferenceCapabilities' },
+		canStart: { type: 'boolean' },
 	},
 	additionalProperties: true,
 });
@@ -165,6 +167,23 @@ const providersResponseSchema = ajv.compile<{ data: { key: string; label: string
 	additionalProperties: false,
 });
 
+/** Errors of a start from a link that say more than the provider diagnosis would. */
+const conferenceLinkStartErrors = new Set(['error-invalid-conference-room', 'error-video-conf-links-not-supported']);
+
+/** Whether the user may start a conference in the room: they manage its calls and may post the call message there. */
+const canStartConferenceIn = async (user: IUser, rid: IRoom['_id']): Promise<boolean> => {
+	if (!(await hasPermissionAsync(user, 'call-management', rid))) {
+		return false;
+	}
+
+	try {
+		await canSendMessageAsync(rid, { uid: user._id, username: user.username, type: user.type ?? 'user' });
+		return true;
+	} catch {
+		return false;
+	}
+};
+
 const capabilitiesResponseSchema = ajv.compile<{ providerName: string; capabilities: VideoConferenceCapabilities }>({
 	type: 'object',
 	properties: {
@@ -188,7 +207,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
+		const { roomId, title, allowRinging: requestRinging, customUrl } = this.bodyParams;
 		const { userId } = this;
 
 		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
@@ -216,11 +235,14 @@ API.v1.post(
 
 			return API.v1.success({
 				data: {
-					...(await VideoConf.start(userId, roomId, { title, allowRinging })),
+					...(await VideoConf.start(userId, roomId, { title, allowRinging, ...(customUrl !== undefined && { customUrl }) })),
 					providerName,
 				},
 			});
 		} catch (e) {
+			if (e instanceof Error && conferenceLinkStartErrors.has(e.message)) {
+				return API.v1.failure(e.message);
+			}
 			return API.v1.failure(await VideoConf.diagnoseProvider(userId, roomId));
 		}
 	},
@@ -553,14 +575,28 @@ API.v1.get(
 	async function action() {
 		const { callId } = this.queryParams;
 
-		const call = await loadAccessibleConference(callId, this.userId);
+		const call = await VideoConf.resolve(callId);
+		const notStarted = call?.status === VideoConferenceStatus.NOT_STARTED;
+		const canAccess =
+			!!call &&
+			(notStarted ? await canAccessRoomIdAsync(call.rid, this.userId) : await Authorization.canAccessConference(call, this.userId));
 		// TODO: answer 404 when a conference is missing or is not the caller's
 		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
 		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
 		// published and clients depend on the status, so moving it belongs to the next major, with
 		// `applyBreakingChanges`.
-		if (!call) {
+		if (!call || !canAccess) {
 			return API.v1.failure('invalid-params');
+		}
+
+		if (notStarted) {
+			const [capabilities, chatAccess, canStart] = await Promise.all([
+				VideoConf.listProviderCapabilities(call.providerName),
+				VideoConf.getRoomChatAccess(this.userId, call.rid),
+				canStartConferenceIn(this.user, call.rid),
+			]);
+
+			return API.v1.success({ ...(call as VideoConference), capabilities, chatAccess, canStart });
 		}
 
 		// Membership grants no room access, so some members may not be able to read the chat. The conference UI
@@ -568,7 +604,7 @@ API.v1.get(
 		// its own round trip.
 		const [capabilities, chatAccess] = await Promise.all([
 			VideoConf.listProviderCapabilities(call.providerName),
-			VideoConf.getChatAccess(this.userId, callId),
+			VideoConf.getChatAccess(this.userId, call._id),
 		]);
 
 		return API.v1.success({

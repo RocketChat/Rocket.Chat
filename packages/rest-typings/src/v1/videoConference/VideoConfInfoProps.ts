@@ -2,7 +2,10 @@ import type { JSONSchemaType } from 'ajv';
 
 import { ajvQuery } from '../Ajv';
 
-export type VideoConfInfoProps = { callId: string };
+export type VideoConfInfoProps = {
+	/** A conference id, or the address of a persistent conference link. */
+	callId: string;
+};
 
 const videoConfInfoPropsSchema: JSONSchemaType<VideoConfInfoProps> = {
 	type: 'object',

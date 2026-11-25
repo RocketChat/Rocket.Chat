@@ -2,6 +2,7 @@ import type {
 	IRoom,
 	IStats,
 	IUser,
+	IVideoConferenceRoom,
 	IVoIPVideoConference,
 	VideoConference,
 	JoinableVideoConference,
@@ -20,9 +21,15 @@ export type VideoConferenceJoinOptions = {
 	cam?: boolean;
 };
 
+export type VideoConferenceRoomWithOngoingCall = IVideoConferenceRoom & { ongoingCallId?: VideoConference['_id'] };
+
 export interface IVideoConfService {
 	create(data: VideoConferenceCreateData, useAppUser?: boolean): Promise<VideoConferenceInstructions>;
-	start(caller: IUser['_id'], rid: string, options: { title?: string; allowRinging?: boolean }): Promise<VideoConferenceInstructions>;
+	start(
+		caller: IUser['_id'],
+		rid: string,
+		options: { title?: string; allowRinging?: boolean; customUrl?: IVideoConferenceRoom['url'] },
+	): Promise<VideoConferenceInstructions>;
 	join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
 	getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.ModalSurfaceLayout>;
 	cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
@@ -59,8 +66,15 @@ export interface IVideoConfService {
 	ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean>;
 	listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]>;
 	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
+	getRoomChatAccess(uid: IUser['_id'], rid: IRoom['_id']): Promise<VideoConferenceChatAccess>;
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
+
+	createRoom(uid: IUser['_id'], rid: IRoom['_id'], title: string): Promise<IVideoConferenceRoom>;
+	renameRoom(roomId: IVideoConferenceRoom['_id'], title: string): Promise<IVideoConferenceRoom>;
+	deleteRoom(roomId: IVideoConferenceRoom['_id']): Promise<void>;
+	listRooms(rid: IRoom['_id']): Promise<VideoConferenceRoomWithOngoingCall[]>;
+	resolve(idOrUrl: string): Promise<Omit<VideoConference, 'providerData'> | null>;
 }

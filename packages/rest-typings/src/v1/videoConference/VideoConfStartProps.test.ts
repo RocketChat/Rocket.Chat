@@ -51,6 +51,18 @@ describe('VideoConfStartProps (definition/rest/v1)', () => {
 			);
 		});
 
+		it('should accept the address of a link', () => {
+			assert.equal(isVideoConfStartProps({ roomId: 'roomId', customUrl: 'weekly' }), true);
+			assert.equal(isVideoConfStartProps({ roomId: 'roomId', title: 'ignored', allowRinging: true, customUrl: 'weekly' }), true);
+		});
+
+		it('should return false for an empty or non-string customUrl', () => {
+			assert.equal(isVideoConfStartProps({ roomId: 'roomId', customUrl: '' }), false);
+			assert.equal(isVideoConfStartProps({ roomId: 'roomId', customUrl: null }), false);
+			assert.equal(isVideoConfStartProps({ roomId: 'roomId', customUrl: {} }), false);
+			assert.equal(isVideoConfStartProps({ roomId: 'roomId', customUrl: ['weekly'] }), false);
+		});
+
 		it('should return false when extra parameters are provided to VideoConfStartProps', () => {
 			assert.equal(
 				isVideoConfStartProps({
