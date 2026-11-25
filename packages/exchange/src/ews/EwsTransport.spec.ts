@@ -173,7 +173,6 @@ describe('throttling', () => {
 });
 
 describe('close', () => {
-	/** A request that stays open until the test ends it, answered with `response` when there is one. */
 	const openRequest = (response?: EventEmitter) => {
 		const req = Object.assign(new EventEmitter(), { end: jest.fn(), destroy: jest.fn() }) as unknown as ClientRequest;
 		jest.mocked(request).mockImplementationOnce((_url, _options, onResponse) => {
