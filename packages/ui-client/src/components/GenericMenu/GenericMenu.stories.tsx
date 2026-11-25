@@ -92,6 +92,7 @@ export const WithStatusOnTrigger: Story = {
 						id: 'standup',
 						content: 'Daily standup',
 						status: 'Live',
+						label: 'Daily standup, live',
 						items: [{ id: 'standup-join', icon: 'phone', content: 'Join', onClick: action('join') }],
 					},
 				],

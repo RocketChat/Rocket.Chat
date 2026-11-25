@@ -294,6 +294,34 @@ describe('sub menus', () => {
 		error.mockRestore();
 	});
 
+	// A status drawn beside the content is not part of the item's name, so the label says it instead.
+	it('names an item by its label when it has one', async () => {
+		render(
+			<GenericMenu
+				title='Kebab'
+				sections={[
+					{
+						items: [
+							{
+								id: 'standup',
+								content: 'Daily standup',
+								status: 'Live',
+								label: 'Daily standup, live',
+								items: [{ id: 'join', content: 'Join' }],
+							},
+							{ id: 'weekly', content: 'Weekly sync', items: [{ id: 'open', content: 'Open' }] },
+						],
+					},
+				]}
+			/>,
+			{ wrapper: mockAppRoot().build() },
+		);
+		await openRoot();
+
+		expect(screen.getByRole('menuitem', { name: 'Daily standup, live' })).toBeInTheDocument();
+		expect(screen.getByRole('menuitem', { name: 'Weekly sync' })).toBeInTheDocument();
+	});
+
 	describe('keyboard', () => {
 		it('opens with ArrowRight, moves with ArrowDown and ArrowUp, closes one level with ArrowLeft and Escape', async () => {
 			renderMenu('sections');

@@ -1,3 +1,4 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 
@@ -19,6 +20,8 @@ type GenericMenuItemFields = {
 	 * string for typeahead and to announce, and cannot read one out of arbitrary JSX.
 	 */
 	textValue?: string;
+	/** What the item is announced as, for a row that shows more than its `content` says, such as a status. */
+	label?: string;
 };
 
 /** An entry of an item's sub menu, which cannot open a sub menu of its own. */
@@ -29,12 +32,23 @@ export type GenericMenuItemProps = GenericMenuItemFields & {
 	items?: GenericMenuSubItemProps[];
 };
 
-const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
+const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip, label }: GenericMenuItemProps) => (
 	<>
 		{gap && <MenuItemColumn />}
 		{icon && <MenuItemIcon name={icon} color={iconColor} />}
 		{status && <MenuItemColumn>{status}</MenuItemColumn>}
-		{content && <MenuItemContent title={tooltip}>{content}</MenuItemContent>}
+		{content && (
+			<MenuItemContent title={tooltip}>
+				{label ? (
+					<>
+						<span aria-hidden='true'>{content}</span>
+						<VisuallyHidden>{label}</VisuallyHidden>
+					</>
+				) : (
+					content
+				)}
+			</MenuItemContent>
+		)}
 		{addon && <MenuItemInput>{addon}</MenuItemInput>}
 	</>
 );
