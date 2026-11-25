@@ -1,0 +1,20 @@
+ee/packages/xmpp-server/tests/scripts/run-e2e-stack.sh
+  s_c2c19263d46868::t_3e5feeddde3f65 129,131,135-142,147-151,155,162
+  s_c2c19263d46868::t_ff66f8327d00d1 209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5464e38992c5d2d339bd3f7a4a92496df9e9390b",
+  "prompts": {},
+  "sessions": {
+    "s_c2c19263d46868": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1115e08a-0778-4e90-933d-0fbdd86d2935",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
