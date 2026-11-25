@@ -344,18 +344,15 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await waitForShadowRoom(shadowName, roomJid, outsider);
 		});
 
-		// Known defect: ../../docs/specs/remote-muc.md#d1-an-invitation-naming-a-room-on-our-own-domains-adds-the-invitee-to-it
-		it.skip('does not add the invitee to a private hosted room (D1)', async () => {
+		it('does not add the invitee to a private hosted room (R14)', async () => {
 			assert.ok(!(await listMemberUsernames(owner, hosted)).includes(outsider.username));
 		});
 
-		// Known defect: ../../docs/specs/remote-muc.md#d1-an-invitation-naming-a-room-on-our-own-domains-adds-the-invitee-to-it
-		it.skip('keeps a member banned from a hosted room out (D1)', async () => {
+		it('keeps a member banned from a hosted room out (R14)', async () => {
 			assert.ok(!(await listMemberUsernames(owner, hosted)).includes(banned.username));
 		});
 
-		// Known defect: ../../docs/specs/remote-muc.md#d1-an-invitation-naming-a-room-on-our-own-domains-adds-the-invitee-to-it
-		it.skip('mirrors no room for a JID on our MUC domain that no room has (D1)', async () => {
+		it('mirrors no room for a JID on our MUC domain that no room has (R14)', async () => {
 			assert.equal(await findRoomByName(outsider.config, shadowNameOf(unhostedRoomJid)), undefined);
 		});
 	});
