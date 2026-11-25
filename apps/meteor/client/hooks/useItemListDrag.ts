@@ -172,8 +172,6 @@ export const useItemListDrag = ({
 				return;
 			}
 
-			const preventNativeDrag = (event: DragEvent) => event.preventDefault();
-
 			let cancelActiveDrag: (() => void) | undefined;
 			let isMoving = false;
 
@@ -190,6 +188,11 @@ export const useItemListDrag = ({
 				const sourceElement = start.closest('[data-drag-key]');
 				const dragSource = sourceElement && readSource(sourceElement);
 				if (!sourceElement || !dragSource || !list.contains(sourceElement) || !stableCanDrag(dragSource)) {
+					return;
+				}
+
+				// Mouse items use native DnD so the browser can open the link when dropped on the tab bar.
+				if (event.pointerType !== 'touch' && dragSource.kind === 'item') {
 					return;
 				}
 
@@ -441,6 +444,203 @@ export const useItemListDrag = ({
 				}
 			};
 
+			// --- Native HTML5 DnD for mouse-dragged items ---
+			// Preserves the browser's link drag: dropping on the tab bar or another window opens the room URL.
+			// Touch and group drags stay on the pointer path above.
+
+			let nativeDrag: {
+				source: ItemListDragSource;
+				sourceElement: HTMLElement;
+				scroller: HTMLElement;
+				indicator: HTMLElement;
+				available: { group: string; box: HTMLElement }[];
+				target: ItemListDropTarget | undefined;
+			} | undefined;
+
+			const cleanupNativeDrag = () => {
+				if (!nativeDrag) return undefined;
+				const { source, sourceElement, indicator, available } = nativeDrag;
+				const sourceTop = sourceElement.isConnected ? sourceElement.getBoundingClientRect().top : undefined;
+				indicator.remove();
+				available.forEach(({ box }) => box.remove());
+				nativeDrag = undefined;
+				setSource(undefined);
+				return { source, sourceTop };
+			};
+
+			const handleDragStart = (event: DragEvent) => {
+				if (!event.dataTransfer) {
+					return;
+				}
+
+				const start = event.target as Element;
+				if (dragHandle === 'trailing' && !start.closest('.rcx-item__drag-handle')) {
+					event.preventDefault();
+					return;
+				}
+
+				const sourceElement = start.closest('[data-drag-key]') as HTMLElement | null;
+				const dragSource = sourceElement && readSource(sourceElement);
+				if (!sourceElement || !dragSource || !list.contains(sourceElement) || !stableCanDrag(dragSource)) {
+					event.preventDefault();
+					return;
+				}
+
+				if (dragSource.kind !== 'item') {
+					event.preventDefault();
+					return;
+				}
+
+				const anchor = (sourceElement.closest('a[href]') ?? sourceElement.querySelector('a[href]')) as HTMLAnchorElement | null;
+				if (anchor?.href) {
+					event.dataTransfer.setData('text/uri-list', anchor.href);
+					event.dataTransfer.setData('text/plain', anchor.href);
+				}
+				event.dataTransfer.effectAllowed = 'copyMove';
+
+				const dragImage = sourceElement.cloneNode(true) as HTMLElement;
+				dragImage.removeAttribute('id');
+				dragImage.classList.add('rcx-item-drag-preview');
+				dragImage.style.position = 'fixed';
+				dragImage.style.top = '-9999px';
+				dragImage.style.width = `${Math.min(sourceElement.getBoundingClientRect().width, PREVIEW_MAX_WIDTH)}px`;
+				document.body.append(dragImage);
+				event.dataTransfer.setDragImage(dragImage, PREVIEW_OFFSET, PREVIEW_OFFSET);
+				requestAnimationFrame(() => dragImage.remove());
+
+				const scroller = findScroller(sourceElement);
+				const indicator = document.createElement('div');
+				indicator.hidden = true;
+				document.body.append(indicator);
+
+				const groups = new Set(
+					Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (el) => el.dataset.dragGroup!),
+				);
+				const available = Array.from(groups)
+					.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')
+					.map((group) => {
+						const box = document.createElement('div');
+						box.className = 'rcx-item-drop-box rcx-item-drop-box--available';
+						box.hidden = true;
+						document.body.append(box);
+						return { group, box };
+					});
+
+				nativeDrag = { source: dragSource, sourceElement, scroller, indicator, available, target: undefined };
+				setSource(dragSource);
+			};
+
+			const nativeUpdateTarget = (x: number, y: number) => {
+				if (!nativeDrag) {
+					return;
+				}
+
+				const { source, scroller, indicator, available } = nativeDrag;
+
+				const hovered = document
+					.elementsFromPoint(x, y)
+					.find((el) => list.contains(el))
+					?.closest('[data-drag-group]');
+				const hover = hovered && list.contains(hovered) ? readSource(hovered) : undefined;
+
+				if (!hover) {
+					nativeDrag.target = undefined;
+				} else {
+					const rect = source.kind === 'group' ? groupRect(list, hover.group) : hovered?.getBoundingClientRect();
+					const half = rect && y > (rect.top + rect.bottom) / 2 ? 'bottom' : 'top';
+					nativeDrag.target = stableResolveTarget(source, { ...hover, half });
+				}
+
+				const { target } = nativeDrag;
+
+				for (const { group, box } of available) {
+					placeBox(box, list, scroller, target?.position === 'inside' && target.group === group ? undefined : groupRect(list, group));
+				}
+
+				if (!target) {
+					indicator.hidden = true;
+					return;
+				}
+
+				if (target.position === 'inside') {
+					indicator.className = 'rcx-item-drop-box';
+					placeBox(indicator, list, scroller, groupRect(list, target.group));
+					return;
+				}
+
+				const rect = target.key ? findRow(list, target.key)?.getBoundingClientRect() : groupRect(list, target.group);
+				if (!rect) {
+					indicator.hidden = true;
+					return;
+				}
+
+				const listRect = list.getBoundingClientRect();
+				const scrollerRect = scroller.getBoundingClientRect();
+				const lineY = target.position === 'before' ? rect.top : rect.bottom;
+				indicator.className = 'rcx-item-drop-line';
+				indicator.style.left = `${listRect.left}px`;
+				indicator.style.width = `${listRect.width}px`;
+				indicator.style.height = '';
+				indicator.style.top = `${lineY}px`;
+				indicator.hidden = lineY < scrollerRect.top || lineY > scrollerRect.bottom;
+			};
+
+			const handleDragOver = (event: DragEvent) => {
+				if (!nativeDrag) {
+					return;
+				}
+				event.preventDefault();
+				if (event.dataTransfer) {
+					event.dataTransfer.dropEffect = 'move';
+				}
+
+				nativeUpdateTarget(event.clientX, event.clientY);
+
+				const rect = nativeDrag.scroller.getBoundingClientRect();
+				const distance = getEdgeDistance(event.clientY, rect);
+				if (distance) {
+					nativeDrag.scroller.scrollTop += Math.max(-MAX_SCROLL_SPEED, Math.min(MAX_SCROLL_SPEED, distance / 2));
+				}
+			};
+
+			const handleDrop = (event: DragEvent) => {
+				if (!nativeDrag) {
+					return;
+				}
+				event.preventDefault();
+
+				const { source, target } = nativeDrag;
+				if (!target) {
+					cleanupNativeDrag();
+					return;
+				}
+				const info = cleanupNativeDrag();
+				if (info) {
+					void Promise.resolve(stableOnDrop(source, target)).then(
+						() => flashWhenLanded(list, info.source.key, info.sourceTop),
+						() => undefined,
+					);
+				}
+			};
+
+			const handleDragLeave = (event: DragEvent) => {
+				if (!nativeDrag) {
+					return;
+				}
+				if (event.relatedTarget instanceof Node && list.contains(event.relatedTarget)) {
+					return;
+				}
+				nativeDrag.target = undefined;
+				nativeDrag.indicator.hidden = true;
+				for (const { group, box } of nativeDrag.available) {
+					placeBox(box, list, nativeDrag.scroller, groupRect(list, group));
+				}
+			};
+
+			const handleDragEnd = () => {
+				cleanupNativeDrag();
+			};
+
 			const announcer = document.createElement('div');
 			announcer.className = 'rcx-item-drag-announcer';
 			announcer.setAttribute('role', 'status');
@@ -522,14 +722,23 @@ export const useItemListDrag = ({
 			};
 
 			list.addEventListener('pointerdown', handlePointerDown);
-			list.addEventListener('dragstart', preventNativeDrag);
+			list.addEventListener('dragstart', handleDragStart);
+			list.addEventListener('dragover', handleDragOver);
+			list.addEventListener('drop', handleDrop);
+			list.addEventListener('dragleave', handleDragLeave);
+			list.addEventListener('dragend', handleDragEnd);
 			list.addEventListener('keydown', handleKeyDown);
 			list.addEventListener('focusin', handleFocusIn);
 
 			return () => {
 				cancelActiveDrag?.();
+				cleanupNativeDrag();
 				list.removeEventListener('pointerdown', handlePointerDown);
-				list.removeEventListener('dragstart', preventNativeDrag);
+				list.removeEventListener('dragstart', handleDragStart);
+				list.removeEventListener('dragover', handleDragOver);
+				list.removeEventListener('drop', handleDrop);
+				list.removeEventListener('dragleave', handleDragLeave);
+				list.removeEventListener('dragend', handleDragEnd);
 				list.removeEventListener('keydown', handleKeyDown);
 				list.removeEventListener('focusin', handleFocusIn);
 				announcer.remove();
