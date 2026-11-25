@@ -83,12 +83,13 @@ class RawPeer {
 		this.socket.write(data);
 	}
 
-	/** Takes the server side of a TLS handshake on this connection, after `<proceed/>`. */
+	/** Takes the server side of a TLS handshake on this connection, after `<proceed/>`; patterns then match only the secured stream. */
 	async acceptTls(options: { cert: string; key: string }): Promise<void> {
 		this.socket.removeAllListeners('data');
 		const secure = new tls.TLSSocket(this.socket, { isServer: true, ...options });
 		await new Promise<void>((resolve, reject) => secure.once('secure', resolve).once('error', reject));
 		this.socket = secure;
+		this.clear();
 		this.listen(secure);
 	}
 
