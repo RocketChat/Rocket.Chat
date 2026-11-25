@@ -462,6 +462,7 @@ export const useItemListDrag = ({
 			const cleanupNativeDrag = () => {
 				if (!nativeDrag) return undefined;
 				const { source, sourceElement, indicator, available } = nativeDrag;
+				sourceElement.removeEventListener('dragend', handleDragEnd);
 				const sourceTop = sourceElement.isConnected ? sourceElement.getBoundingClientRect().top : undefined;
 				indicator.remove();
 				available.forEach(({ box }) => box.remove());
@@ -527,6 +528,8 @@ export const useItemListDrag = ({
 					});
 
 				nativeDrag = { source: dragSource, sourceElement, scroller, indicator, available, target: undefined };
+				// The drag still ends when its row has been scrolled out of the list.
+				sourceElement.addEventListener('dragend', handleDragEnd);
 				setSource(dragSource);
 			};
 
@@ -594,13 +597,13 @@ export const useItemListDrag = ({
 					event.dataTransfer.dropEffect = 'move';
 				}
 
-				nativeUpdateTarget(event.clientX, event.clientY);
-
 				const rect = nativeDrag.scroller.getBoundingClientRect();
 				const distance = getEdgeDistance(event.clientY, rect);
 				if (distance) {
 					nativeDrag.scroller.scrollTop += Math.max(-MAX_SCROLL_SPEED, Math.min(MAX_SCROLL_SPEED, distance / 2));
 				}
+
+				nativeUpdateTarget(event.clientX, event.clientY);
 			};
 
 			const handleDrop = (event: DragEvent) => {
@@ -609,6 +612,7 @@ export const useItemListDrag = ({
 				}
 				event.preventDefault();
 
+				nativeUpdateTarget(event.clientX, event.clientY);
 				const { source, target } = nativeDrag;
 				if (!target) {
 					cleanupNativeDrag();
