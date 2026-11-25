@@ -9,8 +9,16 @@ import type {
 	VideoConferenceLeaveReason,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
-import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	FindPaginated,
+	InsertionModel,
+	IVideoConferenceModel,
+} from '@rocket.chat/model-typings';
+import { escapeRegExp } from '@rocket.chat/tools';
+import type {
+	Document,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -22,6 +30,10 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+const LIVE_STATUSES = [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED];
+
+const liveLinkedConferenceFilter = { conferenceRoomId: { $exists: true }, status: { $in: LIVE_STATUSES } };
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
@@ -40,8 +52,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{
 				key: { status: 1, createdAt: -1 },
 				unique: false,
-				partialFilterExpression: { status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] } },
+				partialFilterExpression: { status: { $in: LIVE_STATUSES } },
 			},
+			// At most one live conference per link, which is what makes concurrent starts from a link converge.
+			{ key: { conferenceRoomId: 1 }, unique: true, partialFilterExpression: liveLinkedConferenceFilter },
+			{ key: { customUrl: 1 }, unique: false, partialFilterExpression: liveLinkedConferenceFilter },
 		];
 	}
 
@@ -117,8 +132,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		conferenceRoomId,
+		customUrl,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>> &
+		Pick<IGroupVideoConference, 'conferenceRoomId' | 'customUrl'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -128,6 +146,9 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
 			...callDetails,
+			// An `undefined` would be stored as `null`, which the unique link index treats as a link.
+			...(conferenceRoomId !== undefined && { conferenceRoomId }),
+			...(customUrl !== undefined && { customUrl }),
 		};
 
 		return (await this.insertOne(call)).insertedId;
@@ -436,10 +457,38 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public findActiveWithMembers(): FindCursor<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>> {
 		return this.find(
 			{
-				status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
+				status: { $in: LIVE_STATUSES },
 				endedAt: { $exists: false },
 			},
 			{ projection: { _id: 1, rid: 1, users: 1, providerName: 1 } },
 		);
+	}
+
+	public findOneActiveByCustomUrl<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(customUrl: NonNullable<IGroupVideoConference['customUrl']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ customUrl, status: { $in: LIVE_STATUSES } }, options);
+	}
+
+	public findOneActiveByConferenceRoomId<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(conferenceRoomId: NonNullable<IGroupVideoConference['conferenceRoomId']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ conferenceRoomId, status: { $in: LIVE_STATUSES } }, options);
+	}
+
+	public findActiveByConferenceRoomIds<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(conferenceRoomIds: NonNullable<IGroupVideoConference['conferenceRoomId']>[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ conferenceRoomId: { $in: conferenceRoomIds }, status: { $in: LIVE_STATUSES } }, options);
+	}
+
+	public findActiveCustomUrlsStartingWith<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(prefix: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ customUrl: { $regex: `^${escapeRegExp(prefix)}` }, status: { $in: LIVE_STATUSES } }, options);
 	}
 }

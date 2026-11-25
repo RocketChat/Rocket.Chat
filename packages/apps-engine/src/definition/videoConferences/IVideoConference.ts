@@ -11,6 +11,8 @@ export enum VideoConferenceStatus {
 	EXPIRED = 2,
 	ENDED = 3,
 	DECLINED = 4,
+	/** A link with no conference running. No stored conference has it. */
+	NOT_STARTED = 5,
 }
 
 export interface IVideoConference {

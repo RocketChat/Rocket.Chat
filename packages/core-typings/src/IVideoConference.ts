@@ -2,6 +2,7 @@ import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
+import type { IVideoConferenceRoom } from './IVideoConferenceRoom';
 import type { AtLeast } from './utils';
 
 export type DirectCallParams = {
@@ -31,6 +32,8 @@ export enum VideoConferenceStatus {
 	EXPIRED = 2,
 	ENDED = 3,
 	DECLINED = 4,
+	/** A link with no conference running. No stored conference has it. */
+	NOT_STARTED = 5,
 }
 
 export type DirectCallInstructions = {
@@ -145,6 +148,10 @@ export interface IGroupVideoConference extends IVideoConference {
 	type: 'videoconference';
 	anonymousUsers: number;
 	title: string;
+	/** The link it was started from. */
+	conferenceRoomId?: IVideoConferenceRoom['_id'];
+	/** The link address it was started under, which keeps reaching it until it ends. */
+	customUrl?: string;
 }
 
 export interface ILivechatVideoConference extends IVideoConference {
