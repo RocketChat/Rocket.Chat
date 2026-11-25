@@ -1,4 +1,4 @@
-import { LDAP, ClientSafeError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
@@ -381,41 +381,12 @@ export const applyCustomOAuthUserFields = (user: Partial<IUser> & { email?: stri
 	}
 };
 
-const { updateOrCreateUserFromExternalService } = Accounts;
+// only admin-created services have this setting (built-in providers reuse this class); covers the window before services reload
+export const isCustomOAuthServiceAllowed = (serviceName: string) =>
+	settings.get(`Accounts_OAuth_Custom-${capitalize(serviceName)}`) === undefined || License.hasModule('oauth-enterprise');
 
-Accounts.updateOrCreateUserFromExternalService = async function (...args) {
-	// only admin-created services have this setting (built-in providers reuse this class); covers the window before services reload
-	if (settings.get(`Accounts_OAuth_Custom-${capitalize(args[0])}`) !== undefined && !License.hasModule('oauth-enterprise')) {
-		return undefined;
-	}
-
+export const processCustomOAuthUser = async (serviceName: string, serviceData: Record<string, any>) => {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService.values()) {
-		await hook.apply(this, args as unknown as [string, Record<string, any>]);
+		await hook(serviceName, serviceData);
 	}
-
-	const [serviceName, serviceData] = args;
-
-	const user = await updateOrCreateUserFromExternalService.apply(this, args);
-
-	if (!user?.userId) {
-		return undefined;
-	}
-
-	const fullUser = await Users.findOneById(user.userId as string);
-
-	if (!fullUser) {
-		return undefined;
-	}
-
-	if (settings.get('LDAP_Update_Data_On_OAuth_Login') && fullUser.username) {
-		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
-	}
-
-	await callbacks.run('afterValidateNewOAuthUser', {
-		identity: serviceData,
-		serviceName,
-		user: fullUser,
-	});
-
-	return user;
 };

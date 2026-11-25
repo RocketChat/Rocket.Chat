@@ -41,7 +41,12 @@ const boxOnlyClassNames: Record<string, (value: unknown) => string> = {
 
 const boxOnlyClassName = (name: string, value: unknown): string | undefined => {
 	if (!value) return undefined;
-	if (name.startsWith('rcx-')) return value === true ? name : `${name}-${value}`;
+	if (name.startsWith('rcx-')) {
+		if (value === true) {
+			return name;
+		}
+		return typeof value === 'string' || typeof value === 'number' ? `${name}-${value}` : undefined;
+	}
 	return boxOnlyClassNames[name]?.(value);
 };
 

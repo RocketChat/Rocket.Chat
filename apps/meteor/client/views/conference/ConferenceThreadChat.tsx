@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
+import { ContextualbarSkeletonContent } from '@rocket.chat/ui-client';
 import { ConferenceErrorState } from '@rocket.chat/ui-conference';
 import { useEffect } from 'react';
 
 import ThreadChat from '../room/contextualBar/Threads/components/ThreadChat';
-import ThreadSkeleton from '../room/contextualBar/Threads/components/ThreadSkeleton';
 import { MESSAGE_NOT_FOUND } from '../room/contextualBar/Threads/hooks/useGetMessageByID';
 import { useThreadMainMessageQuery } from '../room/contextualBar/Threads/hooks/useThreadMainMessageQuery';
 
@@ -36,7 +36,7 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 	}, [gone, onEscape]);
 
 	if (isLoading) {
-		return <ThreadSkeleton />;
+		return <ContextualbarSkeletonContent />;
 	}
 
 	if (gone) {

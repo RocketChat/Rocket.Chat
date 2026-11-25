@@ -18,7 +18,7 @@ type NameMap = { [userId: string]: { fname: string; name: string } };
 export function getNameForDMs(members: AtLeast<IUser, '_id' | 'name' | 'username'>[]): NameMap {
 	const nameMap: NameMap = {};
 
-	const sortedMembers = members.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
+	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username || '').localeCompare(u2.name || u2.username || ''));
 
 	for (const member of sortedMembers) {
 		const otherMembers = sortedMembers.filter((m) => m._id !== member._id);

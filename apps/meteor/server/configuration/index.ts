@@ -1,4 +1,3 @@
-import { configureAccounts } from './accounts_meld';
 import { configureCAS } from './cas';
 import { configureAssets } from './configureAssets';
 import { configureBoilerplate } from './configureBoilerplate';
@@ -20,7 +19,6 @@ export async function configureServer(settings: ICachedSettings) {
 
 	await Promise.all([
 		configureLogLevel(settings),
-		configureAccounts(),
 		configureCAS(settings),
 		configureOAuth(settings),
 		configureAssets(settings),

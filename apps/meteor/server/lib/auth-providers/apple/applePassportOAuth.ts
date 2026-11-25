@@ -11,6 +11,7 @@ import type { Profile } from 'passport-apple';
 import { handleIdentityToken } from './handleIdentityToken';
 import { oAuthRouter } from '../../../configuration/configurePassport';
 import { settings } from '../../../settings';
+import { updateOrCreateUserFromExternalService } from '../../auth/updateOrCreateUserFromExternalService';
 import { SystemLogger } from '../../logger/system';
 import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../notifyListener';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';
@@ -120,7 +121,7 @@ settings.watchMultiple(
 							serviceData.name = [appleName?.firstName, appleName?.middleName, appleName?.lastName].filter(Boolean).join(' ');
 						}
 
-						const user = await Accounts.updateOrCreateUserFromExternalService(
+						const user = await updateOrCreateUserFromExternalService(
 							'apple',
 							{
 								accessToken,

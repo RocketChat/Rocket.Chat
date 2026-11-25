@@ -236,7 +236,10 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
-				if (onInvalidate) affected.push(state.records.get(_id)!);
+				const record = state.records.get(_id);
+				if (onInvalidate && record) {
+					affected.push(record);
+				}
 				records.delete(_id);
 				return { records };
 			});

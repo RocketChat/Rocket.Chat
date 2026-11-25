@@ -51,7 +51,11 @@ const MessagesPerChannelSection = () => {
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
+					attachmentName={
+						messageOriginsData
+							? `MessagesPerChannelSection_start_${messageOriginsData.start.toISOString()}_end_${messageOriginsData.end.toISOString()}`
+							: ''
+					}
 					headers={['Room Type', 'Messages']}
 					dataAvailable={!!messageOriginsData}
 					dataExtractor={(): unknown[][] | undefined => messageOriginsData?.origins.map(({ t, messages }) => [t, messages])}

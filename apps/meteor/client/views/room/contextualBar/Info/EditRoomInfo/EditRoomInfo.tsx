@@ -18,7 +18,7 @@ import {
 	FieldGroup,
 	Button,
 	ButtonGroup,
-	Box,
+	Stack,
 	TextAreaInput,
 	AccordionItem,
 	Text,
@@ -88,7 +88,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionPolicy = useRetentionPolicy(room);
 	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, useSetting(getRetentionSetting(room.t), 2592000000)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
-	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 
@@ -275,13 +275,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent padding='x24' is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
-				<Box display='flex' justifyContent='center'>
+				<Stack direction='row' justify='center'>
 					<Controller
 						control={control}
 						name='roomAvatar'
 						render={({ field: { onChange, value } }) => <RoomAvatarEditor room={room} roomAvatar={value} onChangeAvatar={onChange} />}
 					/>
-				</Box>
+				</Stack>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={roomNameField} required>

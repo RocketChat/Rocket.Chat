@@ -1,7 +1,6 @@
 import {
 	Modal,
 	Button,
-	Box,
 	Icon,
 	Label,
 	CheckBox,
@@ -14,6 +13,7 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useId, useState } from 'react';
@@ -88,28 +88,30 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box is='ul'>
-					{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
-						<Box is='li' display='flex' gap={4} key={_matrixId}>
-							{_matrixId} <Icon name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
-						</Box>
-					))}
-					{rocketChatUsers.map((_user) => (
-						<Box is='li' key={`rocket-chat-${_user}`}>
-							{_user}
-						</Box>
-					))}
-				</Box>
-				{bannedError && (
-					<Box color='danger' fontScale='c1' marginBlockStart={8}>
-						{t('User_is_banned_from_room_confirm_unban')}
-					</Box>
-				)}
-				{error && (
-					<Box color='danger' fontScale='c1' marginBlockStart={8}>
-						{error}
-					</Box>
-				)}
+				<Stack gap='x8'>
+					<ul>
+						{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
+							<li key={_matrixId}>
+								<Stack direction='row' gap='x4'>
+									{_matrixId} <Icon name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
+								</Stack>
+							</li>
+						))}
+						{rocketChatUsers.map((_user) => (
+							<li key={`rocket-chat-${_user}`}>{_user}</li>
+						))}
+					</ul>
+					{bannedError && (
+						<Text color='danger' fontScale='c1'>
+							{t('User_is_banned_from_room_confirm_unban')}
+						</Text>
+					)}
+					{error && (
+						<Text color='danger' fontScale='c1'>
+							{error}
+						</Text>
+					)}
+				</Stack>
 			</ModalContent>
 			<ModalFooter justify={bannedError ? 'space-between' : 'end'}>
 				{bannedError && (

@@ -748,7 +748,7 @@ class E2E extends Emitter {
 					const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 					quotedMessage = getQuotedMessage?.message;
 				} catch (error) {
-					console.error(`Error getting quoted message: ${error}`);
+					log.span('parseQuoteAttachment').error('Error getting quoted message', error);
 					return;
 				}
 

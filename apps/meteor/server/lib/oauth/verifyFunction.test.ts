@@ -8,7 +8,7 @@ const updateOrCreateUserFromExternalService = sinon.stub();
 let verifyFunction: any;
 
 before(async () => {
-	mock.module(require.resolve('meteor/accounts-base'), { exports: { Accounts: { updateOrCreateUserFromExternalService } } });
+	mock.module('../auth/updateOrCreateUserFromExternalService', { exports: { updateOrCreateUserFromExternalService } });
 	({ verifyFunction } = await import('./verifyFunction'));
 });
 

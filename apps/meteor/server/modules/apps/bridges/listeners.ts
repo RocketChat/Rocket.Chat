@@ -392,24 +392,30 @@ export class AppListenerBridge {
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined: {
 					const [, joiningUser, invitingUser] = args.payload;
+					if (!joiningUser) {
+						throw new Error(`${args.event} requires the joining user`);
+					}
 					return this.orch
 						.getManager()
 						.getListenerManager()
 						.executeListener(args.event, {
 							room: rm,
-							joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser)!,
+							joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
 							inviter: this.orch.getConverters().get('users').convertToApp(invitingUser),
 						});
 				}
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave: {
 					const [, leavingUser, removedBy] = args.payload;
+					if (!leavingUser) {
+						throw new Error(`${args.event} requires the leaving user`);
+					}
 					return this.orch
 						.getManager()
 						.getListenerManager()
 						.executeListener(args.event, {
 							room: rm,
-							leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser)!,
+							leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
 							removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
 						});
 				}

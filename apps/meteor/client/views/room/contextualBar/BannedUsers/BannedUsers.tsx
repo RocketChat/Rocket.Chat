@@ -1,10 +1,10 @@
-import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import BannedUsersItem from './BannedUsersItem';
+import ListViewport from '../../../../components/ListViewport';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
 export type BannedUsersProps = {
@@ -38,12 +39,8 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				<ContextualbarTitle>{t('Banned_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent flush spaced>
-				{loading && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
+			<ContextualbarContent flush spaced={!loading}>
+				{loading && <ContextualbarSkeletonContent />}
 
 				{error && <ContextualbarEmptyContent icon='warning' title={t('Banned_users_error')} subtitle={t('Please_try_again')} />}
 
@@ -52,7 +49,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				)}
 
 				{!loading && !error && bannedUsers.length > 0 && (
-					<Box width='full' height='full' role='list' aria-label={t('Banned_Users')} overflow='hidden' flexShrink={1}>
+					<ListViewport role='list' aria-label={t('Banned_Users')}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ height: '100%', width: '100%' }}
@@ -62,7 +59,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 								itemContent={(_index, user) => <BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />}
 							/>
 						</VirtualizedScrollbars>
-					</Box>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

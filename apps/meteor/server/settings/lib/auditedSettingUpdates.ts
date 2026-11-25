@@ -25,7 +25,7 @@ const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingV
 		return value;
 	}
 
-	const valueString = String(value);
+	const valueString = typeof value === 'object' ? JSON.stringify(value) : String(value);
 	const valueLength = valueString.length;
 
 	let maskedValue: string;

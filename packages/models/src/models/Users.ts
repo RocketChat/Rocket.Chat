@@ -2564,6 +2564,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByServiceId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		serviceName: string,
+		serviceId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ [`services.${serviceName}.id`]: serviceId }, options);
+	}
+
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -2996,6 +3004,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 
 		return this.updateOne({ _id }, update);
+	}
+
+	setServiceDataById(_id: IUser['_id'], serviceName: string, serviceData: Record<string, unknown>) {
+		const fields = Object.fromEntries(Object.entries(serviceData).map(([key, value]) => [`services.${serviceName}.${key}`, value]));
+
+		return this.updateOne({ _id }, { $set: fields });
 	}
 
 	setUsername(_id: IUser['_id'], username: string, options?: UpdateOptions) {
