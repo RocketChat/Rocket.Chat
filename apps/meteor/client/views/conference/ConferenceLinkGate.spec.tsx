@@ -297,6 +297,26 @@ describe('a link whose conference starts', () => {
 		expect(view.join).toHaveBeenCalledTimes(1);
 	});
 
+	// The call belongs to the address it was started from; moving the window to another address shows that one.
+	it('shows the other address, not the call, when the window moves to another address', async () => {
+		const { rerender } = renderAt(<ConferenceLinkGate segment='weekly-sync' />, {
+			answer: (callId) => {
+				if (callId === 'call-id') {
+					return liveConference;
+				}
+				return callId === 'design-review' ? notStarted(false) : notStarted(true);
+			},
+		});
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Start_call' }));
+		expect(await screen.findByText('window for call-id, loaded')).toBeInTheDocument();
+
+		rerender(<ConferenceLinkGate segment='design-review' />);
+
+		expect(await screen.findByText('Conference_not_started_yet')).toBeInTheDocument();
+		expect(screen.queryByText(/^window for/)).not.toBeInTheDocument();
+	});
+
 	it('never navigates while opening, starting and being in the call', async () => {
 		const { navigate } = renderAt(<ConferenceLinkGate segment='weekly-sync' />, {
 			answer: (callId) => (callId === 'call-id' ? liveConference : notStarted(true)),

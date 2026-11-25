@@ -23,7 +23,9 @@ export type ConferenceLinkGateProps = {
 const ConferenceLinkGate = ({ segment }: ConferenceLinkGateProps) => {
 	const { t } = useTranslation();
 	const { data: info, isPending, error, refetch } = useVideoConferenceInfo(segment, { retry: retryUnlessRefused });
-	const [startedCallId, setStartedCallId] = useState<string>();
+	// Held with the address it was started from: another address in this window has a call of its own.
+	const [started, setStarted] = useState<{ segment: string; callId: string }>();
+	const startedCallId = started?.segment === segment ? started.callId : undefined;
 
 	const callId = startedCallId ?? (info && info.status !== VideoConferenceStatus.NOT_STARTED ? info._id : undefined);
 
@@ -47,7 +49,7 @@ const ConferenceLinkGate = ({ segment }: ConferenceLinkGateProps) => {
 		return <PageLoading />;
 	}
 
-	return <PersistentConferencePage link={info} segment={segment} onStarted={setStartedCallId} />;
+	return <PersistentConferencePage link={info} segment={segment} onStarted={(startedId) => setStarted({ segment, callId: startedId })} />;
 };
 
 export default ConferenceLinkGate;
