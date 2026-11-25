@@ -12,6 +12,7 @@ import {
 	useUser,
 	useUserId,
 } from '@rocket.chat/ui-contexts';
+import type { VideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { useVideoConfWindowEnabled, useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -21,9 +22,9 @@ import { conferenceNameFor } from '../../../../lib/videoConference/conferenceNam
 import type { PersistentChatMode } from '../../../../lib/videoConference/constants';
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
-import { isRefusal } from '../../../lib/utils/isRefusal';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
 import { NEW_CONFERENCE_ID } from '../lib/callWindow';
+import { retryUnlessRefused } from '../lib/retryUnlessRefused';
 
 /**
  * Adds the viewer's display name to the provider's URL, so they arrive named rather than anonymous.
@@ -96,7 +97,11 @@ const describeCall = (
 	} as const;
 };
 
-export const useConferenceEmbedded = (callId: string) => {
+/**
+ * `initialInfo` is the conference as it was just read by whoever opened this window: the window starts from it
+ * instead of reading the conference a second time on mount.
+ */
+export const useConferenceEmbedded = (callId: string, { initialInfo }: { initialInfo?: VideoConferenceInfo } = {}) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
 	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -122,14 +127,12 @@ export const useConferenceEmbedded = (callId: string) => {
 		error: infoError,
 		refetch: refetchInfo,
 	} = useVideoConferenceInfo(callId, {
-		// A conference this user may not have, or that never existed, is an answer: say so at once rather than
-		// three attempts later. A request that never arrived is not an answer about anything, and a call window is
-		// opened once — so that one is worth another go before the window gives up on it.
-		retry: (failureCount, error) => !isRefusal(error) && failureCount < 2,
+		retry: retryUnlessRefused,
 		// The shared default holds a conference indefinitely because the room's message block is told about
 		// changes. This window is too, over `{callId}/updated` below — but a dropped socket loses that, and a
 		// window that comes back to a call it is *in* has to come back to the truth. Nothing else here would ask.
 		refetchOnReconnect: 'always',
+		...(initialInfo && { initialData: initialInfo, refetchOnMount: false }),
 	});
 
 	// Subscribing too early is permanent: `allowRead` refuses a call id that does not exist yet, and a connection
