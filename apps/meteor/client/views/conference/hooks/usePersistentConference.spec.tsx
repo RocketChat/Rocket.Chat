@@ -6,6 +6,22 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { usePersistentConference } from './usePersistentConference';
 
+let mockConnected = true;
+
+jest.mock('@rocket.chat/ui-contexts', () => ({
+	...jest.requireActual('@rocket.chat/ui-contexts'),
+	useConnectionStatus: () => ({ connected: mockConnected, status: mockConnected ? 'connected' : 'waiting' }),
+}));
+
+const readsOfLink = (invalidate: jest.SpyInstance) =>
+	invalidate.mock.calls.filter(
+		([filters]) => JSON.stringify(filters) === JSON.stringify({ queryKey: videoConferenceInfoQueryKey('weekly-sync') }),
+	).length;
+
+beforeEach(() => {
+	mockConnected = true;
+});
+
 const link = {
 	_id: 'link-id',
 	type: 'videoconference',
@@ -50,6 +66,7 @@ const renderLink = () => {
 it('reads the address again when its room announces a conference', () => {
 	const { notifyRoom, invalidate } = renderLink();
 
+	invalidate.mockClear();
 	act(() => notifyRoom.controller?.emit('room-id/videoconf', ['some-call']));
 
 	expect(invalidate).toHaveBeenCalledWith({ queryKey: videoConferenceInfoQueryKey('weekly-sync') });
@@ -58,9 +75,33 @@ it('reads the address again when its room announces a conference', () => {
 it('ignores another room', () => {
 	const { notifyRoom, invalidate } = renderLink();
 
+	invalidate.mockClear();
 	act(() => notifyRoom.controller?.emit('other-room/videoconf', ['some-call']));
 
 	expect(invalidate).not.toHaveBeenCalled();
+});
+
+// A conference started while the subscription was on its way, or while the socket was down, was announced to
+// nobody here; if its starter is alone in it, no later announcement comes either.
+it('reads the address again once it is watching its room', () => {
+	const { notifyRoom, invalidate } = renderLink();
+
+	expect(notifyRoom.controller?.has('room-id/videoconf')).toBe(true);
+	expect(readsOfLink(invalidate)).toBe(1);
+});
+
+it('watches again and reads the address again after a reconnect', () => {
+	const { notifyRoom, invalidate, rerender } = renderLink();
+
+	mockConnected = false;
+	rerender();
+	expect(notifyRoom.controller?.has('room-id/videoconf')).toBe(false);
+	expect(readsOfLink(invalidate)).toBe(1);
+
+	mockConnected = true;
+	rerender();
+	expect(notifyRoom.controller?.has('room-id/videoconf')).toBe(true);
+	expect(readsOfLink(invalidate)).toBe(2);
 });
 
 it('stops listening when unmounted', () => {

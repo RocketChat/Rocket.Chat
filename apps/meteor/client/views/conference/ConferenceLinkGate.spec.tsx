@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { ConferenceWindow } from '@rocket.chat/ui-conference';
 import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 import { QueryClient } from '@tanstack/react-query';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 
@@ -252,13 +252,15 @@ describe('a link whose conference starts', () => {
 		});
 
 		expect(await screen.findByText('Conference_not_started_yet')).toBeInTheDocument();
+		// The page's own catch-up read once it watches the room, which still answers "not started".
+		await waitFor(() => expect(readsOf('weekly-sync')).toBe(2));
 
 		live = true;
 		act(() => notifyRoom.controller?.emit('room-id/videoconf', ['call-id']));
 
 		expect(await screen.findByText('window for call-id, loaded')).toBeInTheDocument();
 		expect(screen.queryByText('Conference_not_started_yet')).not.toBeInTheDocument();
-		expect(readsOf('weekly-sync')).toBe(2);
+		expect(readsOf('weekly-sync')).toBe(3);
 	});
 
 	it('renders the call the page started, in place', async () => {
@@ -282,12 +284,14 @@ describe('a link whose conference starts', () => {
 
 		await userEvent.click(await screen.findByRole('button', { name: 'Start_call' }));
 		expect(await screen.findByText('window for call-id, loaded')).toBeInTheDocument();
+		await settle();
+		const readsBefore = view.readsOf('weekly-sync');
 
 		live = true;
 		await act(() => view.client.invalidateQueries({ queryKey: videoConferenceInfoQueryKey('weekly-sync') }));
 		await settle();
 
-		expect(view.readsOf('weekly-sync')).toBe(2);
+		expect(view.readsOf('weekly-sync')).toBe(readsBefore + 1);
 		expect(screen.getByText('window for call-id, loaded')).toBeInTheDocument();
 		expect(mockWindowMounted).toHaveBeenCalledTimes(1);
 		expect(view.join).toHaveBeenCalledTimes(1);
