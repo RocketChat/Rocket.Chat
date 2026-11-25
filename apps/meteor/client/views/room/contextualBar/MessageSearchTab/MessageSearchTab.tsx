@@ -19,7 +19,6 @@ import { Virtuoso } from 'react-virtuoso';
 import LocalMessageSearchResults from './components/LocalMessageSearchResults';
 import LocalSearchIndexRoomPrompt from './components/LocalSearchIndexRoomPrompt';
 import LocalSearchIndexStatus from './components/LocalSearchIndexStatus';
-import LocalSearchIndexStatusPanel from './layout/LocalSearchIndexStatusPanel';
 import MessageSearchForm from './components/MessageSearchForm';
 import { canLoadMoreLocalHits, useLocalMessageSearchQuery } from './hooks/useLocalMessageSearchQuery';
 import { useLocalSearchIndexBackend, useLocalSearchIndexStatus } from './hooks/useLocalSearchIndexBackend';
@@ -27,6 +26,7 @@ import { useLocalSearchIndexRoomCatchUp } from './hooks/useLocalSearchIndexChang
 import { useLocalSearchIndexExpected } from './hooks/useLocalSearchIndexExpected';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
+import LocalSearchIndexStatusPanel from './layout/LocalSearchIndexStatusPanel';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';

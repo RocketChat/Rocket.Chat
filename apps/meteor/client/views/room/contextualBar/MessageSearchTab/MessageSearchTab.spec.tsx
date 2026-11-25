@@ -471,18 +471,21 @@ describe('MessageSearchTab while the local index of this device is not open yet'
 		await waitFor(() => expect(document.querySelector('.rcx-throbber__circle')).not.toBeNull());
 	});
 
-	it.each(['failed', 'closed'] as const)('says why encrypted messages are not searched when the index is %s, and stops loading', async (status) => {
-		mockBackend = undefined;
-		mockIndexExpected = true;
-		mockIndexStatus = status;
-		renderTab();
+	it.each(['failed', 'closed'] as const)(
+		'says why encrypted messages are not searched when the index is %s, and stops loading',
+		async (status) => {
+			mockBackend = undefined;
+			mockIndexExpected = true;
+			mockIndexStatus = status;
+			renderTab();
 
-		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'secret');
+			await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'secret');
 
-		expect(screen.getByText(status === 'failed' ? 'E2E_Local_Search_Index_Failed' : 'E2E_Local_Search_Index_Closed')).toBeInTheDocument();
-		expect(await screen.findByText('No_results_found')).toBeInTheDocument();
-		expect(document.querySelector('.rcx-throbber__circle')).toBeNull();
-	});
+			expect(screen.getByText(status === 'failed' ? 'E2E_Local_Search_Index_Failed' : 'E2E_Local_Search_Index_Closed')).toBeInTheDocument();
+			expect(await screen.findByText('No_results_found')).toBeInTheDocument();
+			expect(document.querySelector('.rcx-throbber__circle')).toBeNull();
+		},
+	);
 });
 
 describe('MessageSearchTab without a local search backend', () => {
