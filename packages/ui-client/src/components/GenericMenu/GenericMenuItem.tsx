@@ -1,7 +1,7 @@
 import { MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 
-export type GenericMenuItemProps = {
+type GenericMenuItemFields = {
 	id: string;
 	icon?: ComponentProps<typeof MenuItemIcon>['name'];
 	iconColor?: ComponentProps<typeof MenuItemIcon>['color'];
@@ -19,6 +19,14 @@ export type GenericMenuItemProps = {
 	 * string for typeahead and to announce, and cannot read one out of arbitrary JSX.
 	 */
 	textValue?: string;
+};
+
+/** An entry of an item's sub menu, which cannot open a sub menu of its own. */
+export type GenericMenuSubItemProps = GenericMenuItemFields & { items?: never };
+
+export type GenericMenuItemProps = GenericMenuItemFields & {
+	/** Entries of a sub menu this item opens instead of acting on its own. */
+	items?: GenericMenuSubItemProps[];
 };
 
 const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
