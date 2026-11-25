@@ -14,8 +14,8 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { getConferenceStartRefusal } from '../../lib/videoConference/getConferenceStartRefusal';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -86,13 +86,7 @@ const videoConferenceRoomsEndpoints = API.v1
 		async function action() {
 			const { roomId, title } = this.bodyParams;
 
-			if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
-				throw new Error('error-not-allowed');
-			}
-
-			try {
-				await canSendMessageAsync(roomId, { uid: this.userId, username: this.user.username, type: this.user.type ?? 'user' });
-			} catch {
+			if (await getConferenceStartRefusal(this.user, roomId)) {
 				throw new Error('error-not-allowed');
 			}
 
