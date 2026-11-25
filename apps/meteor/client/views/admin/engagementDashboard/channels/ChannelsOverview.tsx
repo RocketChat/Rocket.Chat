@@ -45,7 +45,7 @@ const ChannelsOverview = () => {
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`Channels_start_${data?.start}_end_${data?.end}`}
+					attachmentName={data ? `Channels_start_${data.start.toISOString()}_end_${data.end.toISOString()}` : ''}
 					headers={['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined =>

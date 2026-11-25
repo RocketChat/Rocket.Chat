@@ -12,7 +12,7 @@ import NowPlayingSection from './sections/NowPlayingSection';
 
 const Sidebar = () => {
 	const { t } = useTranslation();
-	const sidebarViewMode = useUserPreference('sidebarViewMode');
+	const sidebarViewMode = useUserPreference<string>('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const {
 		isEmbedded,
@@ -25,7 +25,7 @@ const Sidebar = () => {
 			className={[
 				'rcx-sidebar--main',
 				'sidebar-region-item',
-				`rcx-sidebar--${sidebarViewMode}`,
+				sidebarViewMode && `rcx-sidebar--${sidebarViewMode}`,
 				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
 			]
 				.filter(Boolean)

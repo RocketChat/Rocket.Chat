@@ -140,13 +140,16 @@ export async function handleCursorPagination(
 }> {
 	const { query, options } = mountCursorQuery({ next, previous, count });
 
-	const response =
-		type === 'UPDATED'
-			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
-			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
-					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+	let response: IMessage[];
+	if (type === 'UPDATED') {
+		response = await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray();
+	} else {
+		const deletedCursor = Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options });
+		if (!deletedCursor) {
+			throw new Error('The messages trash collection is not available');
+		}
+		response = await deletedCursor.toArray();
+	}
 
 	const cursor = {
 		next: mountNextCursor(response, count, type, next, previous),

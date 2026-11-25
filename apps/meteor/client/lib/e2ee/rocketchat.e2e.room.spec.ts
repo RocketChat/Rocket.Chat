@@ -1,4 +1,5 @@
 import * as Aes from './crypto/aes';
+import { e2e } from './rocketchat.e2e';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { createFakeMessage, createFakeSubscription } from '../../../tests/mocks/data';
 import { Subscriptions } from '../../stores';
@@ -58,6 +59,7 @@ describe('E2ERoom.createGroupKey', () => {
 
 	it('should return true and distribute the key when it wins the race', async () => {
 		(sdk.rest.post as jest.Mock).mockResolvedValue({});
+		jest.replaceProperty(e2e, 'publicKey', '{"kty":"RSA"}');
 		jest.spyOn(E2ERoom.prototype as any, 'encryptGroupKeyForParticipant').mockResolvedValue('mykey');
 		const encryptForOthersSpy = jest.spyOn(E2ERoom.prototype as any, 'encryptKeyForOtherParticipants').mockResolvedValue(undefined);
 

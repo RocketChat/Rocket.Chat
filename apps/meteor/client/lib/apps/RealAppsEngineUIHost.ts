@@ -9,8 +9,6 @@ import { baseURI } from '../baseURI';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { getUser } from '../user';
 
-// FIXME: replace non-null assertions with proper error handling
-
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	private _baseURL: string;
 
@@ -21,7 +19,10 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	private getUserAvatarUrl(username: string) {
-		const avatarUrl = getUserAvatarURL(username)!;
+		const avatarUrl = getUserAvatarURL(username);
+		if (!avatarUrl) {
+			throw new Error(`Could not build the avatar URL for "${username}"`);
+		}
 
 		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
 			return `${this._baseURL}${avatarUrl}`;
@@ -41,29 +42,31 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members.map(({ _id, username }): IExternalComponentUserInfo => ({
-				id: _id,
-				username: username!,
-				avatarUrl: this.getUserAvatarUrl(username!),
-			}));
+			cachedMembers = members.flatMap(({ _id, username }): IExternalComponentUserInfo[] =>
+				username ? [{ id: _id, username, avatarUrl: this.getUserAvatarUrl(username) }] : [],
+			);
 		} catch (error) {
 			console.warn(error);
 		}
 
 		return {
 			id,
-			slugifiedName: slugifiedName!,
+			slugifiedName: slugifiedName ?? '',
 			members: cachedMembers,
 		};
 	}
 
 	async getClientUserInfo(): Promise<IExternalComponentUserInfo> {
-		const { username, _id } = getUser()!;
+		const user = getUser();
+		if (!user?.username) {
+			throw new Error('No logged in user with a username');
+		}
+		const { username, _id } = user;
 
 		return {
 			id: _id,
-			username: username!,
-			avatarUrl: this.getUserAvatarUrl(username!) || '',
+			username,
+			avatarUrl: this.getUserAvatarUrl(username),
 		};
 	}
 }

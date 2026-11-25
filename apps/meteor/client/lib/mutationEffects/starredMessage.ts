@@ -4,7 +4,10 @@ import { Messages } from '../../stores';
 import { getUserId } from '../user';
 
 export const toggleStarredMessage = (message: IMessage, starred: boolean) => {
-	const uid = getUserId()!;
+	const uid = getUserId();
+	if (!uid) {
+		return;
+	}
 
 	if (starred) {
 		Messages.state.update(

@@ -65,12 +65,12 @@ export const getNewUpdates = async () => {
 	try {
 		const uniqueID = await Settings.findOne('uniqueID');
 
-		if (!uniqueID) {
+		if (!uniqueID || typeof uniqueID.value !== 'string') {
 			throw new Error('uniqueID not found');
 		}
 
 		const params = {
-			uniqueId: String(uniqueID.value),
+			uniqueId: uniqueID.value,
 			installedAt: uniqueID.createdAt.toJSON(),
 			version: Info.version,
 			osType: os.type(),
