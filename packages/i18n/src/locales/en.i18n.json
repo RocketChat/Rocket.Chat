@@ -2759,6 +2759,7 @@
   "error-invalid-search-answer-sources": "Search answer sources are not available",
   "error-invalid-settings": "Invalid settings provided",
   "error-invalid-subscription": "Invalid subscription",
+  "error-invalid-title": "The link name needs at least one letter or number.",
   "error-invalid-token": "Invalid token",
   "error-invalid-triggerWords": "Invalid triggerWords",
   "error-invalid-urls": "Invalid URLs",

@@ -69,7 +69,7 @@ export const WithoutPermission: Story = {
 };
 
 export const StartDisabled: Story = {
-	args: { links: [weekly], startDisabled: true },
+	args: { links: [weekly], startDisabled: true, startDisabledReason: 'Join the room to start a call' },
 };
 
 export const LongTitle: Story = {

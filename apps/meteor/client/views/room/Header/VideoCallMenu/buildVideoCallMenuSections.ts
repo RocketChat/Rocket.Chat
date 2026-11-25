@@ -23,6 +23,8 @@ export type BuildVideoCallMenuSectionsInput = {
 	canStart: boolean;
 	canManage: boolean;
 	startDisabled: boolean;
+	/** Why starting and creating links are disabled, shown on both while they are. */
+	startDisabledReason?: string;
 	handlers: VideoCallMenuHandlers;
 	t: TFunction;
 };
@@ -31,9 +33,11 @@ const buildActionsSection = ({
 	canStart,
 	canManage,
 	startDisabled,
+	startDisabledReason,
 	handlers,
 	t,
 }: BuildVideoCallMenuSectionsInput): VideoCallMenuSection | undefined => {
+	const tooltip = startDisabled ? startDisabledReason : undefined;
 	const items: VideoCallMenuSection['items'] = [
 		...(canStart
 			? [
@@ -42,12 +46,22 @@ const buildActionsSection = ({
 						icon: 'video' as const,
 						content: t('Start_conference'),
 						disabled: startDisabled,
+						tooltip,
 						onClick: handlers.onStart,
 					},
 				]
 			: []),
 		...(canManage
-			? [{ id: 'create-link', icon: 'link' as const, content: t('Create_link'), disabled: startDisabled, onClick: handlers.onCreate }]
+			? [
+					{
+						id: 'create-link',
+						icon: 'link' as const,
+						content: t('Create_link'),
+						disabled: startDisabled,
+						tooltip,
+						onClick: handlers.onCreate,
+					},
+				]
 			: []),
 	];
 

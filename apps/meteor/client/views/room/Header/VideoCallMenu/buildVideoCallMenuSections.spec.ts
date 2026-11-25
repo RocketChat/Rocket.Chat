@@ -78,6 +78,14 @@ it('startDisabled disables Start conference and Create link and nothing else', (
 	expect(enabled.items.some(({ disabled }) => disabled)).toBe(false);
 });
 
+it('startDisabledReason explains Start conference and Create link only while they are disabled', () => {
+	const [disabled] = buildVideoCallMenuSections(buildInput({ startDisabled: true, startDisabledReason: 'Join first' }));
+	expect(disabled.items.map(({ tooltip }) => tooltip)).toEqual(['Join first', 'Join first']);
+
+	const [enabled] = buildVideoCallMenuSections(buildInput({ startDisabledReason: 'Join first' }));
+	expect(enabled.items.map(({ tooltip }) => tooltip)).toEqual([undefined, undefined]);
+});
+
 it('section 1 items call their handlers', () => {
 	const handlers = buildHandlers();
 	const [section] = buildVideoCallMenuSections(buildInput({ handlers }));
