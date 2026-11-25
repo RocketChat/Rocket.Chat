@@ -8,10 +8,7 @@ import EndToEndSettingsSection from './layout/EndToEndSettingsSection';
 import { getSearchIndexBackend } from '../../../lib/e2eeSearch/getSearchIndexBackend';
 import { isSearchIndexOptedIn, setSearchIndexOptIn, subscribeToSearchIndexOptIn } from '../../../lib/e2eeSearch/searchIndexOptIn';
 
-/**
- * The user's opt-in to the local search of encrypted messages on this device. It shows only when the app has a local
- * index (the desktop app). Turning it off wipes the index at once.
- */
+/** The user's opt-in to the local search on this device. Turning it off wipes the index at once. */
 const LocalSearchOptIn = () => {
 	const { t } = useTranslation();
 	const userId = useUserId() ?? undefined;

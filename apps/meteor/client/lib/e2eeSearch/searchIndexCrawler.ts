@@ -5,10 +5,7 @@ import type { E2EESearchRoomState, ISearchIndexBackend } from '@rocket.chat/desk
 import type { SearchIndexWriter } from './searchIndexWriter';
 import { isDecryptFailed, isDeletionPlaceholder } from './toSearchDoc';
 
-/**
- * The `chat.syncMessages` query params that the crawler sends: always one paging cursor, because a call without one has
- * no page-size limit on the server.
- */
+/** Always one paging cursor: a call without one has no page-size limit on the server. */
 export type SyncMessagesParams = { roomId: string; type: 'UPDATED' | 'DELETED'; count: number } & (
 	{ next: string; previous?: never } | { previous: string; next?: never }
 );
@@ -23,25 +20,18 @@ export type SyncMessagesPage = {
 type SearchIndexCrawlerOptions = {
 	backend: Pick<ISearchIndexBackend, 'getRoomState' | 'setRoomState'>;
 	syncMessages: (params: SyncMessagesParams) => Promise<SyncMessagesPage>;
-	/** The client's E2E decrypt path. It also queues the decrypted message for the search index writer. */
+	/** Decrypts the message and queues it for the writer. */
 	decryptMessage: (message: IMessage) => Promise<IMessage>;
 	writer: Pick<SearchIndexWriter, 'remove' | 'flush'>;
 	now?: () => number;
-	/** Messages per backfill or catch-up page. */
 	pageSize?: number;
-	/** The depth limit: the backfill indexes no message sent before it, and stops at the first page that reaches it. */
+	/** The backfill indexes no message sent before this age. */
 	maxAgeMs?: number;
-	/**
-	 * The backfill of a room stops after this many messages inside the depth limit. `undefined` sets no limit. The count
-	 * lives in memory: after a restart, the backfill counts again from its saved cursor. The catch-up has no limit.
-	 */
+	/** The backfill of a room stops after this many messages, counted in memory since this crawler was made. */
 	maxBackfillMessagesPerRoom?: number;
-	/** The most messages that the crawler keeps pending (across rooms). A new one past the limit drops the oldest. */
+	/** The most messages that the crawler keeps pending, across rooms. A new one past the limit drops the oldest. */
 	maxPending?: number;
-	/**
-	 * Whether the room has its current key. A room with a key that still fails to decrypt a message lost that message's
-	 * older key, which does not come back, so its progress is saved. Without it, every login would read that history again.
-	 */
+	/** Whether the room has its current key: a message that still fails then needs an old key that does not come back. */
 	hasRoomKey?: (rid: string) => Promise<boolean>;
 };
 
@@ -50,30 +40,21 @@ const DEFAULT_MAX_PENDING = 5000;
 /** Messages per `chat.syncMessages` page when no page size is set. */
 export const DEFAULT_PAGE_SIZE = 100;
 
-/**
- * With `waitForKey`, a page whose encrypted messages all failed to decrypt (the room key is not loaded yet) keeps the
- * checkpoint and reports `waitingForKey`: the page is read again after the key arrives, also after a restart.
- */
+/** With `waitForKey`, a page that failed to decrypt keeps the checkpoint and reports `waitingForKey`. */
 type PageOptions = { waitForKey?: boolean };
 
 export type SearchIndexCrawler = {
 	/** Indexes the next older page of the room and saves the cursor, so a restart continues from there. */
 	backfillRoomPage(rid: string, options?: PageOptions): Promise<{ done: boolean; indexed: number; waitingForKey?: true }>;
 	/**
-	 * Applies the next page of the changes since the room's `lastUpdate`: indexes new and edited messages, then removes
-	 * deleted ones. `lastUpdate` moves only after the last page, so an interrupted catch-up starts again from it. The
-	 * millisecond of `lastUpdate` is read again, so a message written in it after the last read is not skipped. Its messages
-	 * are indexed again (the upsert by `_id` changes nothing) and `indexed` does not count them.
+	 * Applies the next page of the changes since the room's `lastUpdate`. `lastUpdate` moves only after the last page, so
+	 * an interrupted catch-up starts again from it.
 	 */
 	catchUpRoomPage(rid: string, options?: PageOptions): Promise<{ done: boolean; indexed: number; removed: number; waitingForKey?: true }>;
 	/** Decrypts the pending messages of the room again, after its room key arrived. */
 	retryPendingDecrypt(rid: string): Promise<{ indexed: number }>;
-	/**
-	 * Keeps a message that the live client could not decrypt (room key missing) pending in its room, so the retry after the
-	 * key arrives indexes it. Pass the encrypted message, not the result of the failed decrypt.
-	 */
+	/** Keeps a live message that failed to decrypt for the retry of its room. Pass the encrypted message. */
 	addPendingDecrypt(message: IMessage): void;
-	/** The messages of the room that the crawler could not decrypt (room key missing), to retry when the key arrives. */
 	getPendingDecrypt(rid: string): IMessage[];
 	/** Drops what the crawler holds in memory for the room, after the room left the index. */
 	forgetRoom(rid: string): void;
@@ -81,22 +62,13 @@ export type SearchIndexCrawler = {
 
 type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newestUpdate: number; keepsPending?: boolean };
 
-/*
- * `chat.syncMessages` cursors. A server with compound cursors reads `<ms>_<_id>` as a position: it orders the messages of
- * one millisecond by `_id`, so a page boundary inside that millisecond skips nothing, and it returns compound cursors for
- * the next pages. An older server reads only the leading number (`parseInt`), so it sees `<ms>` and works as before.
- * The crawler sends a compound cursor only to start paging from a time. After that, it sends back the server's cursor.
- */
+// A compound cursor `<ms>_<_id>`. An older server reads only the leading `<ms>`.
 const COMPOUND_CURSOR_SEPARATOR = '_';
 
 /** A `previous` cursor before the messages of `ms`: no `_id` sorts before the empty one. */
 const previousCursorAt = (ms: number | string): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}`;
 
-/**
- * A `next` cursor at the start of `ms`: the messages of `ms` are read again. The catch-up starts here, because a message
- * can be written in the millisecond of `lastUpdate` after the read that set it. An older server reads `<ms>` and starts
- * after the millisecond, as before.
- */
+/** A `next` cursor at the start of `ms`: a message can be written in that millisecond after the read that set it. */
 const nextCursorFrom = (ms: number): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}`;
 
 /** A saved backfill cursor from before compound cursors is a bare `<ms>` (or a number). `<ms>_` excludes the same messages. */
@@ -108,9 +80,8 @@ const toCompoundPreviousCursor = (cursor: string | number): string => {
 const updatedAtOf = (message: IMessage): number => new Date(message._updatedAt).getTime();
 
 /**
- * Indexes the history of encrypted rooms that the client did not see live, page by page, like the Seshat crawler. The
- * room state (`lastUpdate`, `backfillCursor`, `backfillDone`) lives in the index, so the work survives a restart. The
- * state is saved only after the page is decrypted and flushed: an interrupted page is fetched again, never skipped.
+ * Indexes the history of encrypted rooms that the client did not see live, page by page. The room state is saved only
+ * after the page is decrypted and flushed: an interrupted page is fetched again, never skipped.
  */
 export const createSearchIndexCrawler = ({
 	backend,
@@ -127,7 +98,6 @@ export const createSearchIndexCrawler = ({
 	// One map for all rooms: its insertion order is the age order that the cap drops from.
 	const pendingDecrypt = new Map<string, IMessage>();
 	const catchUps = new Map<string, CatchUp>();
-	/** The messages that the backfill of each room fetched inside the depth limit since this crawler was made. */
 	const backfilled = new Map<string, number>();
 	// Progress past messages that went pending without waiting for their key stays in memory, so a restart reads them again.
 	const unsavedBackfill = new Map<string, { cursor?: string; done: boolean }>();
@@ -148,10 +118,7 @@ export const createSearchIndexCrawler = ({
 	const isInDepth = (message: IMessage, oldestSendTime: number | undefined) =>
 		oldestSendTime === undefined || new Date(message.ts).getTime() >= oldestSendTime;
 
-	/**
-	 * Decrypts the messages, so the client indexes them. Returns how many of them were indexed and `counts` accepts, and
-	 * whether every encrypted message (or some of them) failed to decrypt.
-	 */
+	/** Decrypts the messages, so the client indexes them. `indexed` counts only the messages that `counts` accepts. */
 	const decryptAll = async (
 		messages: IMessage[],
 		counts: (message: IMessage) => boolean = () => true,
@@ -183,10 +150,7 @@ export const createSearchIndexCrawler = ({
 		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted, someFailed: failed > 0 };
 	};
 
-	/**
-	 * Removes the deletion placeholders of the page from the index and from the pending set, so the text of a deleted
-	 * message is not found and a retry does not index it again. Rejects when the index rejected a remove.
-	 */
+	/** Removes the deletion placeholders of the page from the index and from the pending set. */
 	const removeDeletionPlaceholders = async (messages: IMessage[]): Promise<number> => {
 		const ids = messages.filter(isDeletionPlaceholder).map(({ _id }) => _id);
 		if (!ids.length) return 0;
@@ -195,7 +159,6 @@ export const createSearchIndexCrawler = ({
 		return ids.length;
 	};
 
-	// Once the room has its key, a message that still fails needs an old key that does not come back: the progress kept in memory is saved.
 	const saveProgressOnceKeyed = async (rid: string) => {
 		const backfill = unsavedBackfill.get(rid);
 		const lastUpdate = unsavedLastUpdate.get(rid);
@@ -319,8 +282,7 @@ export const createSearchIndexCrawler = ({
 				return { done: false, ...result };
 			}
 
-			// The deletes are read after the updates, so a delete can be newer than an update that landed between the two reads.
-			// A lastUpdate that counted the deletes would skip that update.
+			// A delete can be newer than an update that landed between the two reads: counting it would skip that update.
 			catchUps.delete(rid);
 			if (keepsPending || unsavedLastUpdate.has(rid)) {
 				unsavedLastUpdate.set(rid, newestUpdate);

@@ -2,10 +2,7 @@ import type { E2EESearchDoc, E2EESearchHit, E2EESearchRoomState, ISearchIndexBac
 
 import { WORD, clampLimit, fold, queryTokens, toFilterOnlySnippet, toSnippet, utf8Length } from './searchIndexText';
 
-/**
- * A memory-only search index with the same contract as the desktop index. Development builds use it to work on E2EE
- * search in a browser. It never writes to disk, and a reload loses it.
- */
+/** A memory-only search index with the same contract as the desktop index, for development builds. */
 export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 	let userId: string | undefined;
 	/** The user whose documents `docs` holds. It stays set after `close`, so the next user's open drops them. */

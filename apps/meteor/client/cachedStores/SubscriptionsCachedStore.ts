@@ -77,7 +77,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		};
 	}
 
-	// A removal that the live stream already applied is not in the store any more, so it has no rid and is not sent twice.
+	// Publishes the rooms of the subscriptions that a sync removed.
 	protected override handleSyncEvent(action: 'removed' | 'changed', record: SubscriptionWithRoom): void {
 		if (action === 'removed' && record.rid) subscriptionRemovals.emit('removed', { rid: record.rid });
 	}

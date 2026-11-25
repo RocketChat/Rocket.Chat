@@ -1,10 +1,7 @@
 import { searchIndexPreferencesKeyPrefix } from './searchIndexPreferences';
 import { absoluteUrl } from '../absoluteUrl';
 
-/**
- * The user's choice to keep a local search index of their encrypted messages on this device. It is stored on the
- * device only (each device decides for itself), for each user, and it is off until the user turns it on.
- */
+/** The user's choice to keep a local search index on this device. It is off until the user turns it on. */
 const storageKeyPrefix = 'E2EESearch_OptIn_v2_';
 // Scoped by workspace and user, in the format that the desktop app keeps when it clears login data.
 const storageKey = (userId: string) => `${storageKeyPrefix}${JSON.stringify([absoluteUrl(''), userId])}`;
@@ -39,10 +36,7 @@ export const setSearchIndexOptIn = (userId: string, optedIn: boolean): boolean =
 /** A change of the local storage in another tab of this server: a choice there, or a clear (logout) with `key` null. */
 const isOptInStorageEvent = (event: StorageEvent): boolean => event.key === null || event.key.startsWith(storageKeyPrefix);
 
-/**
- * Calls the listener each time the choice changes, on this page or in another tab of this server. Returns the function
- * that removes it.
- */
+/** Calls the listener each time the choice changes, also in another tab. Returns the function that removes it. */
 export const subscribeToSearchIndexOptIn = (listener: () => void): (() => void) => {
 	listeners.add(listener);
 	const handleStorage = (event: StorageEvent) => {
@@ -58,9 +52,8 @@ export const subscribeToSearchIndexOptIn = (listener: () => void): (() => void) 
 const syncTimeKeyPrefix = 'E2EESearch_SyncedAt_v2_';
 
 /**
- * The time of the last catch-up of every room of the user's index on this device. It is a time only, with nothing of
- * the messages. An unknown time makes the next open index the rooms again, which is the safe default. `namespace` is the
- * server of the index: the servers under the paths of one origin share the local storage, and each has its own index.
+ * The time of the last catch-up of every room of the user's index on this device. `namespace` is the server of the
+ * index: the servers under the paths of one origin share the local storage.
  */
 export const createSearchIndexSyncTimeStore = (namespace: string, getUserId: () => string | undefined) => {
 	const keyOf = (userId: string) => `${syncTimeKeyPrefix}${JSON.stringify([namespace, userId])}`;
@@ -93,12 +86,9 @@ const isKeptAtLogout = (key: string, value: string | null) =>
 	(key.startsWith(searchIndexPreferencesKeyPrefix) && value !== null);
 
 /**
- * Clears the local storage of this page, but keeps each user's choice that is on, the catch-up time of each index and the
- * search preferences (the chosen rooms among them). A
- * logout clears the local storage, and the sealed index stays on the device after a logout, so both must stay with it:
- * without the choice, the next login reads "off" and wipes the index, without the time, it indexes every room again, and
- * without the chosen rooms, the next open removes every room from the index.
- * The kept keys are never removed, also not for a moment: another tab that saw its choice go off would wipe the index.
+ * Clears the local storage of this page, but keeps the opt-ins that are on, the catch-up times and the search
+ * preferences: the sealed index stays on the device after a logout, and they must stay with it. The kept keys are never
+ * removed, not even for a moment: another tab that saw its opt-in go off would wipe the index.
  */
 export const clearLocalStorageKeepingSearchIndexOptIns = (): void => {
 	const removed: string[] = [];

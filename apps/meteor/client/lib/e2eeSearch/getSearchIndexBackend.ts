@@ -18,9 +18,8 @@ const isFakeBackendEnabled = (): boolean => {
 };
 
 /**
- * Returns the local search index for end-to-end encrypted messages: the desktop app's index when it has one, nothing in
- * a desktop app without one, a memory-only fake in a development build with the dev flag set, or `undefined`. Without a
- * backend, encrypted rooms keep today's behavior: they cannot be searched.
+ * Returns the local search index for end-to-end encrypted messages: the desktop app's index, or a memory-only fake in a
+ * development build with the dev flag set. `undefined` leaves encrypted rooms without search.
  */
 export const getSearchIndexBackend = (): ISearchIndexBackend | undefined => {
 	const desktopBackend = getDesktopSearchIndexBackend();

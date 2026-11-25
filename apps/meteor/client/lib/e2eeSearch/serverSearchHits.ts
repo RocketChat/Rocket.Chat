@@ -26,9 +26,8 @@ const textOf = (message: IMessage): string =>
 			'');
 
 /**
- * Turns a message that the server search found into a hit of the local search list. Only a message that is not
- * encrypted gives a hit: the server cannot read the text of an encrypted message, and the local index has it. A message
- * outside the date window of the local search gives no hit, so both sources list the same days.
+ * Turns a message that the server search found into a hit of the local search list. An encrypted message, or a message
+ * outside the date window, gives no hit.
  */
 export const toServerSearchHit = (
 	message: IMessage,
@@ -70,8 +69,8 @@ export type SearchHitSource = {
 };
 
 /**
- * Merges the hits of the local index and of the server, newest first. Each source reads only its newest page, so the list
- * stops at the oldest message of a source that can have more: an older hit of the other source could skip one of its hits.
+ * Merges the hits of the local index and of the server, newest first. The list stops at the oldest message of a source
+ * that can have more, so no hit of that source is skipped.
  */
 export const mergeSearchHits = (sources: SearchHitSource[]): SearchListHit[] => {
 	const boundary = Math.max(

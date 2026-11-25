@@ -27,11 +27,7 @@ type SyncMessagesBody = {
 	};
 };
 
-/**
- * Calls `chat.syncMessages` for the crawler. It does not use `APIClient`, because its middleware replaces an HTTP error
- * with the JSON body: the scheduler needs the status and the rate-limit headers of the `Response` to back off or to
- * remove a room. A failed call rejects with that `Response`.
- */
+/** Calls `chat.syncMessages` for the crawler. A failed call rejects with the `Response`, so the scheduler can read its headers. */
 export const createSyncMessagesFetcher =
 	({ baseUrl, getCredentials, fetch: fetchFn = (...args) => fetch(...args) }: SyncMessagesFetcherOptions) =>
 	async (params: SyncMessagesParams): Promise<SyncMessagesPage> => {
@@ -44,7 +40,6 @@ export const createSyncMessagesFetcher =
 			method: 'GET',
 			headers: { ...getCredentials() },
 		});
-		// The scheduler reads the status and the headers of the Response, as the REST client rejects with it.
 		// oxlint-disable-next-line typescript/only-throw-error
 		if (!response.ok) throw response;
 
@@ -132,15 +127,12 @@ type SearchIndexRuntimeOptions = {
 	session: Pick<SearchIndexSession, 'getActiveBackend' | 'subscribe'>;
 	writer: Pick<SearchIndexWriter, 'remove' | 'flush'>;
 	syncMessages: (params: SyncMessagesParams) => Promise<SyncMessagesPage>;
-	/** The client's E2E decrypt path, which also queues the decrypted message for the writer. */
+	/** Decrypts the message and queues it for the writer. */
 	decryptMessage: (message: IMessage) => Promise<IMessage>;
-	/** Whether a room has its current key. See the crawler option of the same name. */
+	/** Whether a room has its current key. */
 	hasRoomKey?: (rid: string) => Promise<boolean>;
 	getRooms: () => SearchIndexRoom[];
-	/**
-	 * The rooms of every subscription of the user, encrypted or not. When the index opens, the rows of the other rooms are
-	 * removed: the user left them while the index was closed.
-	 */
+	/** The rooms that the index keeps. When the index opens, the rows of every other room are removed. */
 	getSubscribedRids?: () => ReadonlySet<string>;
 	/** Resolves when the subscription list is loaded, so an empty list at startup does not remove every room. */
 	whenRoomsReady?: () => Promise<void>;
@@ -149,11 +141,7 @@ type SearchIndexRuntimeOptions = {
 	/** The pacing and the limits of the crawler, read each time the index opens. A missing value gives the default. */
 	getTuning?: () => SearchIndexTuning;
 	onError?: (error: unknown) => void;
-	/**
-	 * Keeps the time of the last catch-up of every room, for the user of the open index. When it is older than the time
-	 * that the server keeps deletion records, or unknown for an index with rows, the rooms are indexed again from the
-	 * start: a catch-up cannot see those deletions any more.
-	 */
+	/** The time of the last full catch-up. An old or unknown time makes the next open index the rooms again. */
 	syncTime?: SearchIndexSyncTime;
 	now?: () => number;
 	/** Builds the crawler and its scheduler for an open index. Specs replace it. */
@@ -169,20 +157,13 @@ export type SearchIndexRuntime = {
 	subscribe(listener: () => void): () => void;
 	/** Catches up every room, after the connection to the server came back. */
 	onReconnect(): void;
-	/**
-	 * Catches up the room before the next backfill page, so a search in it finds its edits and misses its deletes. Its
-	 * backfill also goes before the other rooms' backfill.
-	 */
+	/** Catches up the room before the next backfill page, and moves its backfill first. */
 	requestRoomCatchUp(rid: string): void;
 	/** Catches up the rooms whose activity moved, after the user's subscriptions changed. */
 	onRoomsChanged(): void;
-	/**
-	 * The client opened a room. Its backfill goes before the other rooms' backfill. A room with no live room stream also
-	 * gets a catch-up, so its edits and deletes since the last
-	 * catch-up reach the index. The client's message cache uses the same rule: it loads a room again when its stream is not live.
-	 */
+	/** Moves the room's backfill first, and catches up the room when its stream was not live. */
 	onRoomOpened(rid: string): void;
-	/** The client closed the room stream (it keeps a few rooms open). The next open of the room catches it up again. */
+	/** The client closed the room stream. The next open of the room catches it up again. */
 	onRoomClosed(rid: string): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
 	onRoomKeyReady(rid: string): void;
@@ -195,11 +176,7 @@ export type SearchIndexRuntime = {
 	dispose(): void;
 };
 
-/**
- * Runs the search index crawler while the index is open: it starts a scheduler when the session opens the index for a
- * user, and stops it when the session closes the index (logout, E2EE stopped). A new login gets a new scheduler, so
- * nothing from the last user reaches the next index.
- */
+/** Runs the search index crawler while the session has an index open, with a new scheduler for each open. */
 export const createSearchIndexRuntime = ({
 	session,
 	writer,
@@ -238,14 +215,9 @@ export const createSearchIndexRuntime = ({
 	let pruning: Promise<void> = Promise.resolve();
 	let unsubscribeScheduler: (() => void) | undefined;
 	let unsubscribeIndexEvents: (() => void) | undefined;
-	/** The scheduler that `startScheduler` started. A scheduler that waits for its first start has read nothing yet. */
 	let startedScheduler: SearchIndexScheduler | undefined;
 	let restarting: Promise<void> = Promise.resolve();
-	/**
-	 * The time when the running catch-up of every room started. It is saved when every room has caught up, also while the
-	 * history backfill goes on: the backfill is not needed for the deletions, because each room's catch-up reads them from
-	 * the `lastUpdate` of its first page.
-	 */
+	/** When the running catch-up of every room started. It becomes the sync time once every room caught up. */
 	let catchUpStartedAt: number | undefined;
 	/** False while the rooms of an out-of-date index could not be emptied: no catch-up time is saved for it then. */
 	let recordsSync = false;
@@ -283,10 +255,7 @@ export const createSearchIndexRuntime = ({
 		started.start();
 	};
 
-	/**
-	 * Empties every room of an index whose last full catch-up is older than the deletion records of the server, so the
-	 * backfill indexes them again and a message deleted in between does not stay searchable.
-	 */
+	/** Empties every room of an index too old for the server's deletion records, so a deleted message does not stay searchable. */
 	const reindexIfOutOfSync = async (opened: ISearchIndexBackend) => {
 		const syncedAt = syncTime?.read();
 		const age = syncedAt === undefined ? undefined : now() - syncedAt;
@@ -315,9 +284,8 @@ export const createSearchIndexRuntime = ({
 	};
 
 	/**
-	 * The desktop app lost rows of the open index: the user cleared it, or its worker stopped before a save. A new crawler
-	 * and scheduler read the room states again and catch up every room. The room of the last request starts over: its page
-	 * can have saved its position after the loss, with the rows of the pages before it gone.
+	 * Restarts the crawler after the desktop app lost rows of the index. The room of the last request starts over: its page
+	 * can have saved its position after the loss.
 	 */
 	const restartAfterLoss = async (lost: ISearchIndexBackend) => {
 		const stopped = scheduler;
@@ -385,7 +353,7 @@ export const createSearchIndexRuntime = ({
 	const unsubscribe = session.subscribe(sync);
 	sync();
 
-	// The rooms whose stream sends their edits and deletes live. The open of the index catches up every room.
+	// The rooms whose stream sends their edits and deletes live.
 	const liveRooms = new Set<string>();
 
 	return {

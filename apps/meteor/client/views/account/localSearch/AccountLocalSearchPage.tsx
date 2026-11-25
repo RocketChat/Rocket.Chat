@@ -12,10 +12,7 @@ import { getSearchIndexBackend } from '../../../lib/e2eeSearch/getSearchIndexBac
 import { useLocalSearchIndexBackend } from '../../room/contextualBar/MessageSearchTab/hooks/useLocalSearchIndexBackend';
 import LocalSearchOptIn from '../security/LocalSearchOptIn';
 
-/**
- * The account page of the local search of encrypted messages (experimental): the opt-in, the rooms that this device
- * indexes, and how it indexes their history. Everything here is stored on this device only.
- */
+/** The account page of the local search of encrypted messages on this device. */
 const AccountLocalSearchPage = () => {
 	const { t } = useTranslation();
 	const preferences = useE2EESearchPreferences();

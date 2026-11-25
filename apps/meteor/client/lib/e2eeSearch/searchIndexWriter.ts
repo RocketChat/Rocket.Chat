@@ -13,43 +13,30 @@ const MAX_BODY_LENGTH_PER_CALL = 2 * 1024 * 1024;
 const MAX_DELETED_IDS = 5000;
 
 type SearchIndexWriterOptions = {
-	/** The backend of the open index, or `undefined` when no index is open (before E2EE unlock, after a logout). */
+	/** The backend of the open index, or `undefined` when no index is open. */
 	getBackend: () => ISearchIndexBackend | undefined;
 	/** How long the writer collects documents before it sends them in one call. */
 	delayMs?: number;
 	onError?: (error: unknown) => void;
-	/** Reports a rejected upsert and what the writer does about it. The text names documents by id only, never their words. */
+	/** Reports a rejected upsert. The text names documents by id only, never their words. */
 	onWarn?: (message: string) => void;
-	/**
-	 * True while the user has a subscription to the room. A decrypt that ends after the user left the room (a live
-	 * message or a quoted message) must not add rows that the room removal already deleted. Without it, every room is
-	 * indexed.
-	 */
+	/** True while the room is indexed. A decrypt that ends after the user left the room adds no rows. */
 	isRoomSubscribed?: (rid: string) => boolean;
 };
 
 export type SearchIndexWriter = {
-	/**
-	 * Queues the search document of a decrypted E2EE message. A deletion placeholder (`t: 'rm'`) leaves the index, and so
-	 * does a decrypted message with no text left. Other messages are ignored.
-	 */
+	/** Queues the search document of a decrypted E2EE message. A deletion placeholder or an emptied message leaves the index. */
 	index(message: IMessage): void;
-	/**
-	 * Returns an `index` bound to the index that is open now. It drops the message when that index is not open any more
-	 * (logout, another user). Call it before an asynchronous decrypt starts, so its result never reaches the next index.
-	 */
+	/** Returns an `index` bound to the index open now. Call it before an asynchronous decrypt starts. */
 	bindToOpenIndex(): (message: IMessage) => void;
 	/**
-	 * Removes messages from the index and from the queue. The remove runs after the calls that are in flight. A deleted
-	 * message (the default) is never indexed again. Use `{ deleted: false }` when the message stays and only its document
-	 * must go (for example, its files were pruned and it is not loaded to index again). With `throwOnError`, the returned
-	 * promise rejects when the index rejected a remove, so a caller can keep its checkpoint and try again.
+	 * Removes messages from the index and from the queue. A deleted message (the default) is never indexed again. Use
+	 * `{ deleted: false }` when the message stays and only its document must go.
 	 */
 	remove(ids: string[], options?: { deleted?: boolean; throwOnError?: boolean }): Promise<void>;
 	/**
-	 * Sends the queued documents now, after the calls that are in flight. With `throwOnError`, the returned promise rejects
-	 * when the open index rejected a document since the last such flush, also one that a timed flush sent, so a caller can
-	 * keep its checkpoint and try again. A document that an earlier index rejected does not reject it.
+	 * Sends the queued documents now. With `throwOnError`, rejects when the open index rejected a document since the last
+	 * such flush, so a caller can keep its checkpoint.
 	 */
 	flush(options?: { throwOnError?: boolean }): Promise<void>;
 	/** Calls the listener after the index took documents or removed them. Returns the function that removes it. */
@@ -81,9 +68,8 @@ const toCalls = (docs: E2EESearchDoc[]): E2EESearchDoc[][] => {
 };
 
 /**
- * Collects the search documents of decrypted messages and sends them to the open local index in batches. The queue
- * belongs to the index that was open when it started: when that index closes (logout) or another user's index opens,
- * the queued documents are dropped, so one user's words never reach another user's index.
+ * Sends the search documents of decrypted messages to the open local index in batches. One user's words never reach
+ * another user's index.
  */
 export const createSearchIndexWriter = ({
 	getBackend,
@@ -154,10 +140,7 @@ export const createSearchIndexWriter = ({
 		});
 	};
 
-	/**
-	 * Sends the documents. A rejected call is split in halves and each half is sent again, down to single documents. A
-	 * rejected document is sent once more with its body cut to half, and reported if the index rejects it again.
-	 */
+	/** Sends the documents. A rejected call is split until the rejected document is found, which gets one retry with a shorter body. */
 	const upsert = async (backend: ISearchIndexBackend, docs: E2EESearchDoc[]): Promise<void> => {
 		if (getBackend() !== backend) return;
 		try {

@@ -236,8 +236,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		// The client has no message stream for a room that is not open. Its last message is how a new message of that room
-		// reaches the local search index as it arrives.
+		// A room that is not open has no message stream: its last message is how a new message reaches the search index.
 		const indexDecrypted = e2e.bindSearchIndex();
 		const message = await this.decryptMessage(lastMessage);
 		indexDecrypted(message);

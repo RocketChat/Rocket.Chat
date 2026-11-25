@@ -6,9 +6,8 @@ const WRAP_KEY_LABEL = 'Rocket.Chat E2EE search index wrap key v1';
 const textEncoder = new TextEncoder();
 
 /**
- * Derives the 32-byte key that seals the local search index from the user's E2EE private key (HKDF-SHA-256 over the
- * private exponent, with a fixed label and the user ID). The same key and user always give the same bytes, so the
- * index opens again after a logout. The private key itself never leaves this function.
+ * Derives the 32-byte key that seals the local search index from the user's E2EE private key. The same key and user
+ * always give the same bytes. The private key itself never leaves this function.
  */
 export const deriveSearchIndexWrapKey = async (privateKey: CryptoKey, userId: string): Promise<Uint8Array> => {
 	const { d } = await crypto.subtle.exportKey('jwk', privateKey);
@@ -42,11 +41,7 @@ export type SearchIndexSessionSource = {
 
 type SearchIndexSessionOptions = {
 	getBackend: () => ISearchIndexBackend | undefined;
-	/**
-	 * Whether the local search of encrypted messages is allowed (the user's opt-in on this device), read at each login
-	 * and at each `recheck`. When it is not, the session wipes the index of the user without opening it, and does not use
-	 * it.
-	 */
+	/** Whether the user opted in on this device. When not, the session wipes the index of the user and does not open it. */
 	isAllowed?: () => boolean;
 	onError?: (error: unknown) => void;
 };
@@ -60,17 +55,11 @@ export type SearchIndexSession = {
 	getStatus(): SearchIndexStatus;
 	/** Calls the listener each time `getStatus` changes. Returns the function that removes it. */
 	subscribeToStatus(listener: () => void): () => void;
-	/**
-	 * Whether the active index is encrypted on disk, as its `open` reported. `false` when the desktop app keeps the index in
-	 * memory only (Linux with no key store). `undefined` while no index is active.
-	 */
+	/** Whether the active index is encrypted on disk, as its `open` reported. `undefined` while no index is active. */
 	isEncryptedAtRest(): boolean | undefined;
 	/** Calls the listener each time `getActiveBackend` changes. Returns the function that removes it. */
 	subscribe(listener: () => void): () => void;
-	/**
-	 * Reads `isAllowed` again now, without a new login: wipes and stops using the open index when it is not allowed any
-	 * more, or opens the index when it became allowed while E2EE is ready.
-	 */
+	/** Reads `isAllowed` again: wipes the open index when it went off, or opens the index when it came on. */
 	recheck(): void;
 	/** Resolves when the open or wipe that runs now (if any) has settled. */
 	whenSettled(): Promise<void>;
@@ -134,10 +123,8 @@ const createSessionBackend = (backend: ISearchIndexBackend) => {
 type ActiveIndex = ReturnType<typeof createSessionBackend> & { raw: ISearchIndexBackend; encryptedAtRest: boolean };
 
 /**
- * Opens the local search index for the logged-in user when E2EE is unlocked, with the wrap key derived from the
- * private key, or wipes it when the workspace does not allow the local search, and stops using it when E2EE stops
- * (logout, E2EE disabled, key error), with a close when the desktop app offers one. Each open gets its own backend
- * object, which rejects every call after the session stops using it. Opens, closes and wipes run one after the other.
+ * Opens the local search index for the logged-in user while E2EE is unlocked, or wipes it when the user did not opt in.
+ * Work of an ended session never reaches the next index.
  */
 export const createSearchIndexSession = (
 	source: SearchIndexSessionSource,
@@ -206,8 +193,7 @@ export const createSearchIndexSession = (
 
 		openedFor = userId;
 		try {
-			// No index and no key file of this user stays on the device while the local search is off, and none is created
-			// for it.
+			// No index and no key file of this user stays on the device while the local search is off.
 			if (!isAllowed()) {
 				await backend.wipe({ userId });
 				if (run !== generation) return;
@@ -236,7 +222,7 @@ export const createSearchIndexSession = (
 			}
 
 			if (!isAllowed()) {
-				// The admin turned the local search off: no index of this user stays on the device.
+				// The opt-in went off while the open ran.
 				openedFor = undefined;
 				setStatus('closed');
 				await backend.wipe();
@@ -255,10 +241,7 @@ export const createSearchIndexSession = (
 		}
 	};
 
-	/**
-	 * Wipes the closed index of the user when the local search is not allowed, also while E2EE stays locked. A wipe queued
-	 * for one user does nothing after another user logged in.
-	 */
+	/** Wipes the closed index of the user when not opted in. A wipe queued for one user does nothing after another user logged in. */
 	const wipeIfNotAllowed = async (userId: string | undefined) => {
 		if (!userId || source.getUserId() !== userId || active || wipedFor === userId || isAllowed()) return;
 
@@ -313,8 +296,7 @@ export const createSearchIndexSession = (
 			return;
 		}
 
-		// E2EE started but is locked (keys loading, password needed). Unlike `DISABLED`, which also comes before the first
-		// settings arrive, these states come after the settings loaded, so `isAllowed` is reliable here.
+		// E2EE is locked. Unlike `DISABLED`, these states come after the settings loaded, so `isAllowed` is reliable here.
 		started = true;
 		const userId = source.getUserId();
 		void serialize(() => wipeIfNotAllowed(userId));

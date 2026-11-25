@@ -1,8 +1,4 @@
-/**
- * The user's choices for the local search of encrypted messages on this device: the rooms to index and how the app
- * indexes their history. They are stored on the device only, in the local storage of the workspace, for each workspace
- * and user, like the index itself. The server never receives them.
- */
+/** The user's choices for the local search on this device. The server never receives them. */
 export type SearchIndexPreferences = {
 	/** The encrypted rooms that the user chose to index. No other room is indexed. */
 	rooms: string[];
@@ -76,10 +72,7 @@ const readRaw = (key: string): string | null => {
 	}
 };
 
-/**
- * The preferences of the user for the workspace `namespace`. The same stored value returns the same object, so React can
- * read it with `useSyncExternalStore`.
- */
+/** The preferences of the user for the workspace `namespace`. The same stored value returns the same object. */
 export const getSearchIndexPreferences = (namespace: string, userId: string | undefined): SearchIndexPreferences => {
 	if (!userId) return DEFAULT_SEARCH_INDEX_PREFERENCES;
 	const key = keyOf(namespace, userId);
@@ -116,10 +109,7 @@ export const addSearchIndexRoom = (namespace: string, userId: string, rid: strin
 export const removeSearchIndexRoom = (namespace: string, userId: string, rid: string): boolean =>
 	updateSearchIndexPreferences(namespace, userId, (current) => ({ ...current, rooms: current.rooms.filter((room) => room !== rid) }));
 
-/**
- * Calls the listener each time the preferences change, on this page or in another tab of this workspace. Returns the
- * function that removes it.
- */
+/** Calls the listener each time the preferences change, also in another tab. Returns the function that removes it. */
 export const subscribeToSearchIndexPreferences = (listener: () => void): (() => void) => {
 	listeners.add(listener);
 	const handleStorage = (event: StorageEvent) => {

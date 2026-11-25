@@ -18,10 +18,7 @@ const isSearchIndexBackend = (bridge: unknown): bridge is ISearchIndexBackend =>
 	bridge !== null &&
 	backendMethods.every((method) => typeof (bridge as Record<string, unknown>)[method] === 'function');
 
-/**
- * Returns the desktop app's local search index for end-to-end encrypted messages, or `undefined` when this desktop
- * version offers no complete one. Without a backend, encrypted rooms keep today's behavior: they cannot be searched.
- */
+/** Returns the desktop app's local search index, or `undefined` when this desktop version offers no complete one. */
 export const getDesktopSearchIndexBackend = (): ISearchIndexBackend | undefined => {
 	const bridge = typeof window === 'undefined' ? undefined : window.RocketChatDesktop?.e2eeSearch;
 	if (!isSearchIndexBackend(bridge)) return undefined;

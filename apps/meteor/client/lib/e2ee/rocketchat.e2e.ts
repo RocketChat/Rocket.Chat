@@ -86,10 +86,7 @@ class E2E extends Emitter {
 
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null = null;
 
-	/**
-	 * Moves on each start and stop of the client. A key load that began under an older value belongs to a session that
-	 * ended (logout or another user), so it stops at its next step and writes no key to memory or storage.
-	 */
+	/** Moves on each start and stop of the client, so a key load of an ended session writes no key to memory or storage. */
 	private startGeneration = 0;
 
 	private state: E2EEState;
@@ -642,8 +639,7 @@ class E2E extends Emitter {
 
 	private pendingSubscriptionKeysRequest: Promise<void> | undefined;
 
-	// Asks the server to queue this user for the keys of every encrypted room where the user has no key.
-	// The server checks all the rooms in one call, so concurrent callers share the request in flight.
+	// The server checks every room in one call, so concurrent callers share the request in flight.
 	requestSubscriptionKeys(): Promise<void> {
 		if (this.pendingSubscriptionKeysRequest) {
 			return this.pendingSubscriptionKeysRequest;
@@ -784,8 +780,8 @@ class E2E extends Emitter {
 	}
 
 	/**
-	 * Returns a function that queues a decrypted message for the local search index that is open now. It drops the message
-	 * when a logout or another user's login ended this session first. Call it before the decrypt starts.
+	 * Returns a function that queues a decrypted message for the search index open now, unless this session ended first.
+	 * Call it before the decrypt starts.
 	 */
 	bindSearchIndex(): (message: IMessage) => void {
 		const generation = this.startGeneration;
@@ -795,15 +791,12 @@ class E2E extends Emitter {
 		};
 	}
 
-	/**
-	 * `quoteDepth` is how many levels of quoted message links the decrypt follows. A quote deeper than the quote chain limit
-	 * is never shown, and each level is a request, so a chain of messages that quote each other stops there.
-	 */
+	/** `quoteDepth` is how many levels of quoted message links the decrypt follows. Each level is a request. */
 	async decryptMessage(
 		message: IMessage | IE2EEMessage,
 		{ quoteDepth = getQuoteChainLimit() }: { quoteDepth?: number } = {},
 	): Promise<IMessage> {
-		// A deleted message that stays as a placeholder arrives as an update: its old text leaves the local search index.
+		// A deletion placeholder arrives as an update: its old text leaves the search index.
 		if (isDeletionPlaceholder(message)) {
 			e2eSearchIndexWriter.index(message);
 			return message;
@@ -825,14 +818,13 @@ class E2E extends Emitter {
 
 		const decryptedMessageWithQuote = quoteDepth > 0 ? await this.parseQuoteAttachment(decryptedMessage, quoteDepth) : decryptedMessage;
 
-		// A logout or another user's login ended the session that started this decrypt: its words stay out of the index.
+		// The session that started this decrypt ended: its words stay out of the index.
 		if (this.isStale(generation)) {
 			return decryptedMessageWithQuote;
 		}
 
 		indexDecrypted(decryptedMessageWithQuote);
-		// The room key is missing: the retry after E2E_ROOM_READY indexes the message. Only the crawler kept it before.
-		// Only a room that the user chose is indexed, so only its messages wait for the key and use the pending slots.
+		// The room key is missing: the retry after E2E_ROOM_READY indexes the message, for a chosen room only.
 		if (isDecryptFailed(decryptedMessageWithQuote) && getChosenRids().has(message.rid)) e2eSearchIndexRuntime.onDecryptFailed(message);
 
 		return decryptedMessageWithQuote;
@@ -1077,8 +1069,8 @@ const getE2EUserId = () => {
 };
 
 /**
- * The local search index of decrypted E2EE messages: open while E2EE is unlocked, unused after a logout. It is used only
- * when the user opted in on this device. Otherwise it is wiped.
+ * The local search index of decrypted E2EE messages, used only when the user opted in on this device. See
+ * [the feature doc](../../../../../docs/features/e2ee-local-search.md).
  */
 export const e2eSearchIndexSession = createSearchIndexSession(
 	{
@@ -1125,10 +1117,7 @@ roomMessageDeletes.on('deleteMessageBulk', (event) => {
 	});
 });
 
-/**
- * Indexes the history of the encrypted rooms (catch-up and backfill) while the local search index is open, one request
- * at a time with a pause between two requests, also while the user is active.
- */
+/** Indexes the history of the chosen encrypted rooms while the local search index is open. */
 export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	session: e2eSearchIndexSession,
 	syncTime: createSearchIndexSyncTimeStore(e2eSearchIndexNamespace, getE2EUserId),
@@ -1144,8 +1133,6 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 		const chosen = getChosenRids();
 		return toSearchIndexRooms(Subscriptions.state.records.values()).filter(({ rid }) => chosen.has(rid));
 	},
-	// The rooms that the index keeps. At open, the index removes the rows of every other room: a room that the user left or
-	// that the user stopped indexing in another tab.
 	getSubscribedRids: () => {
 		const chosen = getChosenRids();
 		return new Set(Array.from(Subscriptions.state.records.values(), (sub) => sub.rid).filter((rid) => chosen.has(rid)));
@@ -1167,7 +1154,6 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 /** Adds the room to the rooms that this device indexes, and starts its backfill. Returns false when it was not saved. */
 export const startIndexingSearchRoom = (rid: string): boolean => {
 	const userId = getE2EUserId();
-	// The save calls the preferences listener below, which adds the room to the scheduler's room list.
 	if (!userId || !addSearchIndexRoom(e2eSearchIndexNamespace, userId, rid)) return false;
 	e2eSearchIndexRuntime.requestRoomCatchUp(rid);
 	return true;
@@ -1182,12 +1168,10 @@ export const stopIndexingSearchRoom = async (rid: string): Promise<void> => {
 	await e2eSearchIndexRuntime.onRoomRemoved(rid);
 };
 
-// Each change of the chosen rooms, on this page or in another tab, reads the room list again: a chosen room starts its
-// backfill. A room removed in another tab leaves the index at the next open.
+// A room chosen on this page or in another tab starts its backfill.
 subscribeToSearchIndexPreferences(() => e2eSearchIndexRuntime.onRoomsChanged());
 
-// A sync after a reload reports the rooms that the user left while this client was closed. Rooms that the user left
-// before the index opened are removed at open.
+// The rooms that the user left while this client was closed.
 subscriptionRemovals.on('removed', ({ rid }) => {
 	void e2eSearchIndexRuntime.onRoomRemoved(rid);
 });
@@ -1196,14 +1180,12 @@ e2e.on('E2E_ROOM_READY', (rid: string) => {
 	e2eSearchIndexRuntime.onRoomKeyReady(rid);
 });
 
-// A new message moves its room's last activity. The catch-up indexes what the room's last message does not carry: a
-// burst of messages, an edit or a delete of an older message, a thread reply.
+// New activity in a room asks for its catch-up.
 Subscriptions.use.subscribe(() => {
 	e2eSearchIndexRuntime.onRoomsChanged();
 });
 
-// An edit or a delete does not move the room's activity. The client keeps a few rooms open with a live stream and loads a
-// room again when it opens with none; the index catches up the room at the same point.
+// An edit or a delete does not move the room's activity, so opening a room catches it up.
 RoomManager.on('opened', (rid) => {
 	e2eSearchIndexRuntime.onRoomOpened(rid);
 });

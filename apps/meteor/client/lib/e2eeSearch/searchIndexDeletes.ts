@@ -6,7 +6,7 @@ import { toSearchDoc } from './toSearchDoc';
 /** The fields of a `notify-room` `<rid>/deleteMessageBulk` event that the search index uses. */
 export type DeleteMessageBulkEvent = {
 	rid: string;
-	/** The deleted (or changed) messages. Every server path that sends the event today (prune, retention, moderation) sets it. */
+	/** The deleted (or changed) messages. */
 	ids?: string[];
 	/** Only the files of the messages were removed. The messages stay. */
 	filesOnly?: boolean;
@@ -20,11 +20,7 @@ type Dependencies = {
 	findMessage: (id: string) => IMessage | undefined;
 };
 
-/**
- * Applies a bulk delete to the local search index. Deleted messages leave the index. When only the files were pruned,
- * a loaded message is indexed again without its file names. A message that is not loaded, or that has no text left,
- * leaves the index until a sync brings it back.
- */
+/** Applies a bulk delete to the local search index. A message that kept its text but lost its files is indexed again. */
 export const applyDeleteMessageBulkToSearchIndex = async (
 	{ ids = [], filesOnly }: DeleteMessageBulkEvent,
 	{ writer, findMessage }: Dependencies,

@@ -21,17 +21,13 @@ type LocalSearchQueryOptions = {
 	utcOffset?: number;
 };
 
-/**
- * The start of a day in the user's time zone. `utcOffset` is in hours and is positive east of UTC, so a user at UTC-3
- * starts the day at 03:00 UTC. The server message search adds the offset with the other sign.
- */
+/** The start of a day in the user's time zone. `utcOffset` is in hours, positive east of UTC. */
 const startOfDay = ([day, month, year]: DateParts, utcOffset: number, addDays = 0) =>
 	Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + addDays) - utcOffset * 60 * 60 * 1000;
 
 /**
- * Reads the filters of the server message search (`from:`, `before:`, `after:`, `on:`) from a local search text, with
- * the same words and date format (day-month-year) as the server, with the days of the user's time zone. The last
- * `before:` and the last `after:` win, and an `on:` replaces both.
+ * Reads the filters of the server message search (`from:`, `before:`, `after:`, `on:`) from a local search text, in the
+ * user's time zone. The last `before:` and the last `after:` win, and an `on:` replaces both.
  */
 export const parseLocalSearchQuery = (searchText: string, { utcOffset = 0 }: LocalSearchQueryOptions = {}): LocalSearchQuery => {
 	const usernames: string[] = [];

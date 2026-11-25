@@ -102,19 +102,13 @@ export type E2EESearchStats = { docs: number; bytes: number; rooms: number };
 export type E2EESearchOpenResult = {
 	schemaVersion: number;
 	encryptedAtRest: boolean;
-	/**
-	 * True when the open had no wrap key and the server holds an E2EE key for the user (or cannot tell): the desktop app
-	 * opened no index and wrote nothing. Each index call fails until an open with the wrap key (after E2EE unlock).
-	 */
+	/** The desktop app opened no index, because it needs the wrap key. Each index call fails until an open with it. */
 	locked?: true;
 };
 
 export type E2EESearchScope = {
 	userId: string;
-	/**
-	 * 32 bytes derived from the user's E2EE private key, never the private key itself. With it, the index opens only for
-	 * the same key, so it survives a logout and no server can open it for another user.
-	 */
+	/** 32 bytes derived from the user's E2EE private key, never the private key itself. */
 	wrapKey?: Uint8Array;
 };
 
@@ -124,29 +118,17 @@ export interface ISearchIndexBackend {
 	upsert(docs: E2EESearchDoc[]): Promise<void>;
 	remove(ids: string[]): Promise<void>;
 	removeRoom(rid: string): Promise<void>;
-	/**
-	 * The rooms that have rows in the index, sorted. The web client removes the rooms that the user left while the index was
-	 * closed.
-	 */
+	/** The rooms that have rows in the index, sorted. */
 	listRooms(): Promise<string[]>;
 	search(query: E2EESearchQuery): Promise<E2EESearchHit[]>;
 	getRoomState(rid: string): Promise<E2EESearchRoomState | undefined>;
 	setRoomState(rid: string, state: E2EESearchRoomState): Promise<void>;
 	stats(): Promise<E2EESearchStats>;
-	/**
-	 * Deletes the open index. With a scope and no open index (E2EE locked), deletes the index of that user, whom the
-	 * desktop app checks against the login session.
-	 */
+	/** Deletes the open index. With a scope and no open index, deletes the index of that user. */
 	wipe(scope?: { userId: string }): Promise<void>;
-	/**
-	 * Closes the open index and keeps it on disk, so the same user opens it again at the next login. Desktop versions
-	 * without it close the index themselves at logout.
-	 */
+	/** Closes the open index and keeps it on disk for the next login. Desktop versions without it close the index at logout. */
 	close?(): Promise<void>;
-	/**
-	 * Calls the listener when the desktop app lost rows of the open index: the user cleared it, or the index process
-	 * stopped before it saved. The web client then reads the room states again. Desktop versions without it send no event.
-	 */
+	/** Calls the listener when the index changed outside this page or lost rows. Desktop versions without it send no event. */
 	onIndexEvent?(listener: (event: E2EESearchIndexEvent) => void): () => void;
 }
 

@@ -11,9 +11,8 @@ const ENTITIES: Record<string, string> = {
 const decodeEntities = (text: string): string => text.replace(/&(?:amp|lt|gt|quot|#39);/g, (entity) => ENTITIES[entity]);
 
 /**
- * Splits a search hit snippet (escaped message text with `<mark>` tags) into text parts. Only `<mark>` and `</mark>`
- * become highlights. Every other tag stays text, so the page renders the parts as text and never parses the snippet as
- * HTML. The snippet is text written by other users.
+ * Splits a search hit snippet into text parts. Only `<mark>` and `</mark>` become highlights: the snippet is text
+ * written by other users, and the page never parses it as HTML.
  */
 export const parseSearchSnippet = (snippet: string): SearchSnippetPart[] => {
 	const parts: SearchSnippetPart[] = [];
@@ -39,10 +38,7 @@ export const parseSearchSnippet = (snippet: string): SearchSnippetPart[] => {
 	return parts;
 };
 
-/**
- * Splits the snippet parts into lines. The indexed body puts the message text and each file name on their own line
- * (`toSearchDoc`), and a hit shows them on separate lines, as the server search result does. Empty lines are dropped.
- */
+/** Splits the snippet parts into lines, without the empty ones. */
 export const parseSearchSnippetLines = (snippet: string): SearchSnippetPart[][] => {
 	const lines: SearchSnippetPart[][] = [[]];
 

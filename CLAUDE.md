@@ -77,6 +77,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
   - [client-boot.md](docs/features/client-boot.md) — the path to the first screen, and why components on it must not suspend
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
+  - [e2ee-local-search.md](docs/features/e2ee-local-search.md) — local search of end-to-end encrypted messages: index session, writer, history crawler and pacing, deletes, query merge with the server search, opt-in, desktop bridge contract
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it

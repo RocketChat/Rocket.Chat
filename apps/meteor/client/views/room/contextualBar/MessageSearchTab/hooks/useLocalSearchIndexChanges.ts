@@ -6,10 +6,7 @@ import { e2eSearchIndexRuntime, e2eSearchIndexWriter } from '../../../../../lib/
 export const useLocalSearchIndexVersion = (): number =>
 	useSyncExternalStore(e2eSearchIndexWriter.subscribe, e2eSearchIndexWriter.getVersion);
 
-/**
- * Catches up the room in the local search index while its search is open, so the search finds its edits and no longer
- * finds the messages deleted while the room was not open.
- */
+/** Catches up the room in the local search index while its search is open. */
 export const useLocalSearchIndexRoomCatchUp = (rid: string, enabled: boolean): void => {
 	useEffect(() => {
 		if (enabled) e2eSearchIndexRuntime.requestRoomCatchUp(rid);

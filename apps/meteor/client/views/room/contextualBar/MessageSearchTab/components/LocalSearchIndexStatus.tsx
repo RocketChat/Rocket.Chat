@@ -20,9 +20,7 @@ type LocalSearchIndexStatusProps = {
 };
 
 /**
- * The state of the local search index of decrypted E2EE messages, above the local search results. The search covers one
- * room, so the progress line tells how far back the index holds the history of this room, until its backfill is done.
- * After that, a note tells that the search of this room covers its encrypted messages. It shows only its title until the
+ * The state of the local search index for this room, above the local search results. It shows only its title until the
  * user expands it, as it stays above every search of the room.
  */
 const LocalSearchIndexStatus = ({ backend, rid }: LocalSearchIndexStatusProps) => {

@@ -39,8 +39,7 @@ const toEpochMs = (value: unknown): number | undefined => {
 };
 
 const attachmentTexts = (attachment: MessageAttachment): string[] => {
-	// The client adds a quote attachment at decrypt time with the text of another message.
-	// That text is indexed under its own message, so the quoting message does not repeat it.
+	// A quote carries the text of another message, which has its own document.
 	if (isQuoteAttachment(attachment) || isRemovedFileAttachment(attachment)) {
 		return [];
 	}
@@ -54,16 +53,10 @@ const attachmentTexts = (attachment: MessageAttachment): string[] => {
 const fileTitle = (attachment: MessageAttachment): string | undefined =>
 	isFileAttachment(attachment) && typeof attachment.title === 'string' ? attachment.title : undefined;
 
-/**
- * True when the E2EE decrypt could not read the message (the room key is missing or wrong). The decrypt still sets
- * `e2e` to `done`, so this flag is the only sign that `msg` is a placeholder and the file names are the stored ones.
- */
+/** True when the E2EE decrypt could not read the message. `e2e` is still `done`, but `msg` is a placeholder. */
 export const isDecryptFailed = (message: IMessage): boolean => (message as IMessage & { decryptFailed?: true }).decryptFailed === true;
 
-/**
- * True for a message that was deleted while the server shows deleted messages (`Message_ShowDeletedStatus`): the server
- * keeps its record as a "message deleted" placeholder (`t: 'rm'`), so the change arrives as an update, not as a delete.
- */
+/** True for a "message deleted" placeholder, which arrives as an update, not as a delete. */
 export const isDeletionPlaceholder = (message: IMessage): boolean => message.t === 'rm';
 
 /**
@@ -93,8 +86,7 @@ export const toSearchDoc = (message: IMessage): E2EESearchDoc | undefined => {
 		}
 	};
 
-	// A hit shows the start of the body, or some words around the match: the text that people wrote comes first, and
-	// the file names come last, so a long file name does not push a caption out of the hit.
+	// The file names come last, so a long file name does not push a caption out of the hit.
 	add(message.msg);
 	const textParts = parts.length;
 	attachments.flatMap(attachmentTexts).forEach(add);

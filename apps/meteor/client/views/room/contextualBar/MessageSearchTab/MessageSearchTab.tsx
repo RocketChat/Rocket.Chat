@@ -60,8 +60,7 @@ const MessageSearchTab = () => {
 	const indexExpected = useLocalSearchIndexExpected();
 	const indexStatus = useLocalSearchIndexStatus();
 	const localBackend = room.encrypted ? indexBackend : undefined;
-	// An encrypted room that this device searches locally: the index finds the encrypted messages, and the server search
-	// finds the messages that are not encrypted. Both lists show as one.
+	// The local index finds the encrypted messages, and the server search finds the others.
 	const localSearch = !!localBackend || (!!room.encrypted && indexExpected);
 	// The device indexes only the rooms that the user chose. Another encrypted room asks the user first.
 	const roomChosen = useE2EESearchPreferences().rooms.includes(room._id);

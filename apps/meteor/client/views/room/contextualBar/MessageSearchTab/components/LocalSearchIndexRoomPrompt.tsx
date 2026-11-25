@@ -5,10 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { startIndexingSearchRoom } from '../../../../../lib/e2ee/rocketchat.e2e';
 import LocalSearchIndexStatusPanel from '../layout/LocalSearchIndexStatusPanel';
 
-/**
- * Shown in the search of an encrypted room that this device does not index. The user decides which rooms the device
- * indexes: nothing of this room is indexed until the user starts it here or in the account page.
- */
+/** Shown in the search of an encrypted room that this device does not index. */
 const LocalSearchIndexRoomPrompt = ({ rid }: { rid: string }) => {
 	const { t } = useTranslation();
 	const router = useRouter();

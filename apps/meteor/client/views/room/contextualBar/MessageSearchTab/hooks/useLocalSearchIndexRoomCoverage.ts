@@ -8,8 +8,8 @@ import { useLocalSearchIndexProgress } from './useLocalSearchIndexProgress';
 export type LocalSearchIndexRoomCoverage = { done: true } | { done: false; since?: number };
 
 /**
- * Reads the coverage from the room state. The backfill cursor (`<ms>_<id>`) holds the last update of the oldest message
- * that the backfill read. A message is never sent after its last update, so the index holds every message sent since then.
+ * Reads the coverage from the backfill cursor. A message is never sent after its last update, so the index holds every
+ * message sent since the cursor time.
  */
 export const toRoomCoverage = (state: E2EESearchRoomState | undefined): LocalSearchIndexRoomCoverage => {
 	if (state?.backfillDone) return { done: true };

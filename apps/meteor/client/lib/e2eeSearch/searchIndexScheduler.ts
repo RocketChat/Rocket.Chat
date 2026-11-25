@@ -31,10 +31,7 @@ type SearchIndexSchedulerOptions = {
 	backoffMaxMs?: number;
 	random?: () => number;
 	now?: () => number;
-	/**
-	 * How often an idle scheduler reads the room list again: it catches up the rooms with new activity, and starts
-	 * indexing the rooms that the user joined or joined again.
-	 */
+	/** How often an idle scheduler reads the room list again. */
 	refreshMs?: number;
 	onError?: (error: unknown) => void;
 };
@@ -49,25 +46,15 @@ export type SearchIndexScheduler = {
 	stop(): Promise<string | undefined>;
 	/** Catches up the rooms again (every room when none is given), for example after a reconnect. */
 	requestCatchUp(rids?: string[]): void;
-	/**
-	 * Reads the room list again after it changed. A room with new activity gets a catch-up, also while a backfill runs:
-	 * these catch-ups take turns with the backfill pages, so a busy room does not stop the backfill.
-	 */
+	/** Reads the room list again after it changed. A room with new activity gets a catch-up, also while a backfill runs. */
 	noteRoomActivity(): void;
-	/**
-	 * The user opened the room or its search. Its backfill gets most of the pages until its history is done: after every
-	 * OPENED_ROOM_PAGES_PER_TURN pages of opened rooms, one page goes to another room, so the other rooms never stop. The
-	 * room that the user opened last goes first.
-	 */
+	/** The user opened the room or its search. Its backfill gets most of the pages until its history is done. */
 	focusRoom(rid: string): void;
 	/** Indexes the messages of the room that waited for its room key. */
 	retryPendingDecrypt(rid: string): void;
 	/** Keeps a live message that failed to decrypt (room key missing) for the retry of its room. */
 	addPendingDecrypt(message: IMessage): void;
-	/**
-	 * Stops indexing the room and removes its rows from the index, after the request in flight (if any) has written its
-	 * page, so no page of the room lands after the remove.
-	 */
+	/** Stops indexing the room and removes its rows, after the request in flight, so no page of the room lands after the remove. */
 	removeRoom(rid: string): Promise<void>;
 	getProgress(): SearchIndexProgress;
 	/** True when no room waits for a catch-up: every room caught up since the last start, reconnect or catch-up request. */
@@ -82,7 +69,6 @@ const DEFAULT_RATE_LIMIT_WINDOW_MS = 60_000;
 /** The crawler uses at most this part of it, so the client's own `chat.syncMessages` calls keep their share. */
 const RATE_LIMIT_SHARE = 0.5;
 export const DEFAULT_PAUSE_MS = DEFAULT_RATE_LIMIT_WINDOW_MS / (DEFAULT_RATE_LIMIT_CALLS * RATE_LIMIT_SHARE);
-/** The first wait after a rate limit or a server error. It doubles after each new failure, up to the maximum. */
 export const DEFAULT_BACKOFF_BASE_MS = 10_000;
 export const DEFAULT_BACKOFF_MAX_MS = 10 * 60_000;
 export const DEFAULT_REFRESH_MS = 5 * 60_000;
@@ -96,7 +82,6 @@ const NOT_ALLOWED = 'error-not-allowed';
 const OPENED_ROOM_PAGES_PER_TURN = 3;
 const MAX_OWED_PAUSES = 2;
 
-/** An HTTP error as `fetch` reports it: the `Response`. */
 type HttpErrorResponse = {
 	status: number;
 	headers?: { get(name: string): string | null };
@@ -106,9 +91,8 @@ type HttpErrorResponse = {
 type Failure = { kind: 'retry'; retryAfterMs?: number; limited: boolean } | { kind: 'room-gone' } | { kind: 'skip-room' };
 
 /**
- * `waitForKey: false` indexes a page whose messages all failed to decrypt, instead of waiting for the room key.
- * `fromActivity` marks a catch-up that new room activity asked for. `activityMark` is the room's activity mark when the
- * job was picked: a finished catch-up clears only that mark, so activity during the catch-up asks for another one.
+ * `waitForKey: false` indexes a page that failed to decrypt instead of waiting for the room key. A finished catch-up
+ * clears only its `activityMark`, so activity during the catch-up asks for another one.
  */
 type Job = { kind: 'catch-up' | 'backfill'; rid: string; waitForKey?: boolean; fromActivity?: boolean; activityMark?: number };
 
@@ -157,12 +141,7 @@ const classify = async (error: unknown, now: number): Promise<Failure> => {
 	return { kind: 'skip-room' };
 };
 
-/**
- * Drives the search index crawler in the background: catch-up first, then the history backfill one page per room in
- * turn, the most recently active rooms first. It sends one request at a time, also while the user is active, and waits
- * between two requests. It backs off on rate limits and server errors, and removes a room the user can no longer read
- * from the index.
- */
+/** Drives the search index crawler in the background, one request at a time with a pause between two requests. */
 export const createSearchIndexScheduler = ({
 	crawler,
 	backend,
@@ -178,9 +157,7 @@ export const createSearchIndexScheduler = ({
 	let started = false;
 	let generation = 0;
 	let loop: Promise<void> = Promise.resolve();
-	/** The crawler call that runs now, if any. */
 	let inFlight: Promise<unknown> = Promise.resolve();
-	/** The room of the last crawler call. */
 	let lastRequestRoom: string | undefined;
 
 	const track = <T>(rid: string, call: Promise<T>): Promise<T> => {
@@ -204,11 +181,9 @@ export const createSearchIndexScheduler = ({
 	const waitingForKey = new Set<string>();
 	/** Rooms that waited for their key until nothing else was left: they do not wait again. */
 	const noKeyWait = new Set<string>();
-	/** The last activity of each room that the scheduler saw, so new activity gets a catch-up. */
 	const seenActivity = new Map<string, number>();
 	/** Removed rooms that were then absent from the room list: when one comes back, the user joined it again. */
 	const absentAfterRemoval = new Set<string>();
-	/** Rooms whose activity moved while the scheduler ran, with a mark that grows on each new activity. */
 	const activityPending = new Map<string, number>();
 	let activityMarks = 0;
 	/** True after a catch-up that activity asked for: the next turn goes to a backfill page, if one waits. */
@@ -216,14 +191,12 @@ export const createSearchIndexScheduler = ({
 	let visitedThisPass = new Set<string>();
 	/** The rooms that the user opened, the last one first. */
 	let focusOrder: string[] = [];
-	/** Backfill pages in a row that went to opened rooms. After OPENED_ROOM_PAGES_PER_TURN of them, one page goes to another room. */
 	let openedRoomPagesInARow = 0;
 
 	const listeners = new Set<() => void>();
 	let wakeUp: (() => void) | undefined;
 	let cancelSleep: (() => void) | undefined;
-	// The catch-up of the room that the user opened skips up to MAX_OWED_PAUSES pauses. The next full pause repays them, so the
-	// average pace and the rate limit stay the same.
+	// Pauses that the opened room's catch-up skipped. The next full pause repays them, so the rate limit holds.
 	let owedPauses = 0;
 	let pauseCanBeCut = false;
 	let pauseCut = false;
@@ -299,7 +272,6 @@ export const createSearchIndexScheduler = ({
 		}
 	};
 
-	/** Reads the room list again: rooms with new activity get a catch-up, and a room that the user joined again re-enters. */
 	const refreshRooms = (markActivity: (rid: string) => void = (rid) => catchUpPending.add(rid)) => {
 		const listed = getRooms();
 		const present = new Set(listed.map(({ rid }) => rid));
@@ -347,7 +319,7 @@ export const createSearchIndexScheduler = ({
 		}
 
 		if (backfill.length) {
-			// Opened rooms go first, but they never block the other rooms: those get one page after each run of opened-room pages.
+			// Opened rooms go first, but they never block the other rooms.
 			const focused = focusOrder.find((rid) => backfill.some((room) => room.rid === rid));
 			const others = backfill.filter(({ rid }) => !focusOrder.includes(rid));
 			if (focused && (openedRoomPagesInARow < OPENED_ROOM_PAGES_PER_TURN || !others.length)) {
@@ -366,15 +338,13 @@ export const createSearchIndexScheduler = ({
 			return { kind: 'backfill', rid: next.rid };
 		}
 
-		// Catches up the rooms whose backfill finished, for the messages sent while it ran.
 		if (catchUpAfterBackfill.size) {
 			catchUpAfterBackfill.forEach((rid) => catchUpPending.add(rid));
 			catchUpAfterBackfill.clear();
 			return pickJob();
 		}
 
-		// Only rooms that wait for their key are left. The key may never come (a key of the room's history is lost), so
-		// their pages are indexed as they are, and the messages that do not decrypt stay pending.
+		// Only rooms that wait for their key are left. The key may never come, so their pages are indexed as they are.
 		const waiting = rooms().find(({ rid }) => waitingForKey.has(rid) && !skippedRooms.has(rid));
 		if (waiting) {
 			waitingForKey.delete(waiting.rid);
@@ -429,7 +399,7 @@ export const createSearchIndexScheduler = ({
 		}
 	};
 
-	/** Runs the job and returns how long to wait before the next request. */
+	/** Returns how long to wait before the next request. */
 	const attempt = async (run: number, job: Job): Promise<number> => {
 		try {
 			await track(job.rid, runJob(job));
