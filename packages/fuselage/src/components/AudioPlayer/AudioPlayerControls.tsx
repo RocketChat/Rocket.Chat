@@ -3,7 +3,15 @@ import type { MouseEvent } from 'react';
 import { Box, Button, IconButton } from '../..';
 import { Slider } from '../Slider';
 
-const getMaskTime = (durationTime: number) => new Date(durationTime * 1000).toISOString().slice(durationTime > 60 * 60 ? 11 : 14, 19);
+const getMaskTime = (durationTime: number) => {
+	const totalSeconds = Math.floor(durationTime);
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const seconds = totalSeconds % 60;
+	const pad = (value: number) => String(value).padStart(2, '0');
+
+	return hours > 0 ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+};
 
 export type AudioPlayerControlsProps = {
 	isPlaying: boolean;
