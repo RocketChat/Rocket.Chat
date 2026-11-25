@@ -30,7 +30,7 @@ const DataVisualizationBlock = ({ className, block }: DataVisualizationBlockProp
 	}
 
 	return (
-		<Box className={className} display='flex' flexDirection='column' gap='x8'>
+		<Box className={className} display='flex' flexDirection='column' gap='x8' maxWidth={622}>
 			<Box fontScale='h4' color='default'>
 				{block.title}
 			</Box>
