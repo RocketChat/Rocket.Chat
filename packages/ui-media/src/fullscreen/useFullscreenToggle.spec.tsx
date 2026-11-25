@@ -158,4 +158,44 @@ describe('useFullscreenToggle', () => {
 			message: 'Switching to fullscreen was not allowed, please check your browser settings.',
 		});
 	});
+
+	describe('with an element on targetRef', () => {
+		const attach = (targetRef: (node: HTMLElement) => unknown) => {
+			const element = document.createElement('div');
+			Object.defineProperty(element, 'requestFullscreen', { value: jest.fn().mockResolvedValue(undefined) });
+			act(() => {
+				targetRef(element);
+			});
+			return element;
+		};
+
+		it('shows that element fullscreen instead of the document', async () => {
+			const { result } = renderHook(() => useFullscreenToggle(), { wrapper: createWrapper() });
+			const element = attach(result.current.targetRef);
+
+			await act(async () => {
+				await result.current.toggleFullscreen();
+			});
+
+			expect(element.requestFullscreen).toHaveBeenCalledTimes(1);
+			expect(document.documentElement.requestFullscreen).not.toHaveBeenCalled();
+		});
+
+		it('is fullscreen only while that element is', () => {
+			const { result } = renderHook(() => useFullscreenToggle(), { wrapper: createWrapper() });
+			const element = attach(result.current.targetRef);
+
+			act(() => {
+				setFullscreenElement(document.body);
+				document.dispatchEvent(new Event('fullscreenchange'));
+			});
+			expect(result.current.fullscreen).toBe(false);
+
+			act(() => {
+				setFullscreenElement(element);
+				document.dispatchEvent(new Event('fullscreenchange'));
+			});
+			expect(result.current.fullscreen).toBe(true);
+		});
+	});
 });

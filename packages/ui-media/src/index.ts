@@ -11,11 +11,19 @@ export { usePlayMediaStream } from './streams/usePlayMediaStream.js';
 export { default as StreamVideo } from './streams/StreamVideo.js';
 export type { StreamVideoProps } from './streams/StreamVideo.js';
 export { useAudioLevel } from './streams/useAudioLevel.js';
+export { default as ZoomableScreen } from './streams/ZoomableScreen.js';
+export type { ZoomableScreenProps } from './streams/ZoomableScreen.js';
+export { useScreenZoom } from './streams/useScreenZoom.js';
+export type { ScreenZoom, ScreenZoomChange } from './streams/screenZoom.js';
 export { useFullscreenToggle } from './fullscreen/useFullscreenToggle.js';
 export { default as ActionButton } from './components/ActionButton.js';
 export type { ActionButtonProps } from './components/ActionButton.js';
 export { default as ToggleButton } from './components/ToggleButton.js';
 export type { ToggleButtonProps } from './components/ToggleButton.js';
+export { default as ScreenZoomButtons } from './components/ScreenZoomButtons.js';
+export type { ScreenZoomButtonsProps } from './components/ScreenZoomButtons.js';
+export { default as FullscreenButton } from './components/FullscreenButton.js';
+export type { FullscreenButtonProps } from './components/FullscreenButton.js';
 export { default as DeviceMenuButton } from './components/DeviceMenuButton.js';
 export {
 	useDevicePermissionPrompt2,
