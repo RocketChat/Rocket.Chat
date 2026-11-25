@@ -4,12 +4,11 @@ import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
-import { wrapExceptions } from '@rocket.chat/tools';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
-import { processOnChange, serviceConfigCallbacks } from './userReactivity';
+import { processOnChange } from './userReactivity';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isOutgoingIntegration } from '../../lib/integrations/lib/definition';
 import { triggerHandler } from '../../lib/integrations/lib/triggerHandler';
@@ -64,21 +63,6 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
-			if (clientAction === 'removed') {
-				serviceConfigCallbacks.forEach((callbacks) => {
-					wrapExceptions(() => callbacks.removed?.(id)).suppress();
-				});
-				return;
-			}
-
-			if (data) {
-				serviceConfigCallbacks.forEach((callbacks) => {
-					wrapExceptions(() => callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data)).suppress();
-				});
-			}
-		});
-
 		this.onEvent('watch.users', async (data) => {
 			invalidatePublicationUserCache(data.id);
 
@@ -96,7 +80,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 			switch (data.clientAction) {
 				case 'updated':
-				case 'inserted':
+				case 'inserted': {
 					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(data.id, {
 						projection: {
 							status: 1,
@@ -112,6 +96,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					onlineAgents.remove(data.id);
 
 					break;
+				}
 				case 'removed':
 					onlineAgents.remove(data.id);
 					break;

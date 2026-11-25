@@ -1,12 +1,10 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, FieldRow, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type PriorityFormData = { name: string; reset: boolean };
 

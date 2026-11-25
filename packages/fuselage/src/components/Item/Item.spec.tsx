@@ -181,13 +181,16 @@ describe('Item', () => {
 			</Item>,
 		);
 
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the invariant covers every id in the tree, which no query can enumerate
 		const ids = Array.from(container.querySelectorAll('[id]')).map((element) => element.id);
 		expect(new Set(ids).size).toBe(ids.length);
 
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the invariant covers every id reference in the tree, which no query can enumerate
 		container.querySelectorAll('[aria-describedby], [aria-labelledby]').forEach((element) => {
 			const refs = `${element.getAttribute('aria-describedby') ?? ''} ${element.getAttribute('aria-labelledby') ?? ''}`
 				.split(' ')
 				.filter(Boolean);
+			// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- resolves a raw id reference, which no query can look up
 			refs.forEach((id) => expect(container.querySelector(`[id="${CSS.escape(id)}"]`)).not.toBeNull());
 		});
 	});
@@ -369,6 +372,7 @@ describe('ItemActions', () => {
 
 		const actions = screen.getByTestId('actions');
 		expect(actions).toHaveClass('rcx-item__actions--reveal-hover');
+		// oxlint-disable-next-line testing-library/no-node-access -- the inner wrapper has no role, label or text of its own
 		expect(actions.firstElementChild).toHaveClass('rcx-item__actions-inner');
 	});
 
@@ -474,15 +478,18 @@ describe('ItemSkeleton', () => {
 	it('adds a description line and stays hidden from assistive technology', () => {
 		const { container } = render(<ItemSkeleton mediaSize='x36' description />);
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the skeleton root is a plain div with no role, label or text
 		const item = container.firstElementChild;
 		expect(item).toHaveClass('rcx-item');
 		expect(item).toHaveAttribute('aria-hidden', 'true');
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the skeleton bars have no role, label or text
 		expect(container.querySelectorAll('.rcx-skeleton')).toHaveLength(3);
 	});
 
 	it('shows one text line by default', () => {
 		const { container } = render(<ItemSkeleton />);
 
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the skeleton bars have no role, label or text
 		expect(container.querySelectorAll('.rcx-skeleton')).toHaveLength(2);
 	});
 });

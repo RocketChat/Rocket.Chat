@@ -1,7 +1,7 @@
 import { useAudioLevel } from '@rocket.chat/ui-media';
 import { useCallback, useEffect, useRef } from 'react';
 
-import { AUTO_LOWER_AFTER_MS, AUTO_LOWER_SPEAKING_THRESHOLD, SPEAKING_GAP_TOLERANCE_MS } from '../lib/autoLowerHand';
+import { AUTO_LOWER_AFTER_MS, AUTO_LOWER_SPEAKING_THRESHOLD, SPEAKING_GAP_TOLERANCE_MS } from '../lib/autoLowerHand.js';
 
 /**
  * Drops the reader's raised hand once they have been speaking for a while: they have the floor. A pause longer than a

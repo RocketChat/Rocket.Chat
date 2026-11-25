@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import List from './List';
-import ListItem from './ListItem';
+import List from './List.js';
+import ListItem from './ListItem.js';
 
 export default {
 	title: 'components/List',

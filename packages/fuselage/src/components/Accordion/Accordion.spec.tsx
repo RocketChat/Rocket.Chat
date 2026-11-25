@@ -1,7 +1,9 @@
 import { composeStories } from '@storybook/react';
-import { fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import Accordion from './Accordion';
 import * as stories from './Accordion.stories';
 import AccordionItem from './AccordionItem';
 import { render } from '../../testing';
@@ -15,44 +17,58 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
+it('forwards aria and data attributes to the root', () => {
+	const { container } = render(
+		<Accordion aria-label='Settings' data-qa='accordion'>
+			<AccordionItem title='Title'>Content</AccordionItem>
+		</Accordion>,
+	);
+
+	expect(container.querySelector('.rcx-accordion')).toHaveAttribute('aria-label', 'Settings');
+	expect(container.querySelector('.rcx-accordion')).toHaveAttribute('data-qa', 'accordion');
+});
+
 describe('[AccordionItem expanded]', () => {
 	it('collapses when expanded changes to false', () => {
-		const { getByRole, rerender } = render(
+		const { rerender } = render(
 			<AccordionItem title='Title' expanded>
 				Content
 			</AccordionItem>,
 		);
-		expect(getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+		expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
 
 		rerender(
 			<AccordionItem title='Title' expanded={false}>
 				Content
 			</AccordionItem>,
 		);
-		expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+		expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
 	});
 
-	it('reports the next state through onToggle without changing a controlled item', () => {
+	it('reports the next state through onToggle without changing a controlled item', async () => {
+		const user = userEvent.setup();
 		const onToggle = jest.fn();
-		const { getByRole } = render(
+		render(
 			<AccordionItem title='Title' expanded={false} onToggle={onToggle}>
 				Content
 			</AccordionItem>,
 		);
 
-		fireEvent.click(getByRole('button'));
+		await user.click(screen.getByRole('button'));
 
 		expect(onToggle).toHaveBeenCalledWith(true);
-		expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+		expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
 	});
 
-	it('toggles an uncontrolled item with Enter and Space', () => {
-		const { getByRole } = render(<AccordionItem title='Title'>Content</AccordionItem>);
+	it('toggles an uncontrolled item with Enter and Space', async () => {
+		const user = userEvent.setup();
+		render(<AccordionItem title='Title'>Content</AccordionItem>);
 
-		fireEvent.keyDown(getByRole('button'), { key: 'Enter' });
-		expect(getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+		await user.tab();
+		await user.keyboard('{Enter}');
+		expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
 
-		fireEvent.keyDown(getByRole('button'), { key: ' ' });
-		expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+		await user.keyboard(' ');
+		expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
 	});
 });

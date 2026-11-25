@@ -171,8 +171,10 @@ const SecurityLogsTable = () => {
 					<GenericTableBody>
 						{data.events.map((item) => {
 							const setting = item.data.find((item) => item.key === 'id')?.value;
-							const previous = item.data.find((item) => item.key === 'previous')?.value || t('Empty');
-							const current = item.data.find((item) => item.key === 'current')?.value || t('Empty');
+							const previousValue = item.data.find((item) => item.key === 'previous')?.value ?? t('Empty');
+							const currentValue = item.data.find((item) => item.key === 'current')?.value ?? t('Empty');
+							const previous = typeof previousValue === 'object' ? JSON.stringify(previousValue) : String(previousValue);
+							const current = typeof currentValue === 'object' ? JSON.stringify(currentValue) : String(currentValue);
 							return (
 								<GenericTableRow
 									key={item._id}
@@ -184,8 +186,8 @@ const SecurityLogsTable = () => {
 											actor: item.actor,
 											timestamp: item.ts,
 											setting,
-											changedFrom: String(previous),
-											changedTo: String(current),
+											changedFrom: previous,
+											changedTo: current,
 										})
 									}
 								>
@@ -205,8 +207,8 @@ const SecurityLogsTable = () => {
 									<GenericTableCell truncate title={setting && String(setting)}>
 										{setting && String(setting)}
 									</GenericTableCell>
-									<GenericTableCell truncate>{String(previous)}</GenericTableCell>
-									<GenericTableCell truncate>{String(current)}</GenericTableCell>
+									<GenericTableCell truncate>{previous}</GenericTableCell>
+									<GenericTableCell truncate>{current}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

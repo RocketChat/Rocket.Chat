@@ -33,8 +33,14 @@ export type MediaPlayerContextValue = {
 	currentTime: number;
 	duration: number;
 	playbackRate: number;
-	/** Loads (only if a different track) and plays the given track in the shared element. */
-	play: (track: PersistentAudioTrack) => void;
+	/** The active track is fetching data and can't play yet. */
+	loading: boolean;
+	/** The active track failed to load. */
+	error: boolean;
+	/** Reloads the active track after an error and plays it. */
+	retry: () => void;
+	/** Loads (only if a different track, starting at `startTime` seconds) and plays the given track in the shared element. */
+	play: (track: PersistentAudioTrack, startTime?: number) => void;
 	/** Toggles play/pause for the active track. No-op when no track is active. */
 	toggle: () => void;
 	/** Seeks the active track to `time` seconds. */
@@ -55,6 +61,9 @@ export const MediaPlayerContext = createContext<MediaPlayerContextValue>({
 	currentTime: 0,
 	duration: 0,
 	playbackRate: 1,
+	loading: false,
+	error: false,
+	retry: noop,
 	play: noop,
 	toggle: noop,
 	seek: noop,

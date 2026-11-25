@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import TaggedRocketChatLogo from './TaggedRocketChatLogo';
+import TaggedRocketChatLogo from './TaggedRocketChatLogo.js';
 
 it('renders the Rocket.Chat logo', () => {
 	render(<TaggedRocketChatLogo />);

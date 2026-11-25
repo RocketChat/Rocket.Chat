@@ -133,6 +133,7 @@ export class MockedAppRootBuilder {
 		connected: true,
 		status: 'connected',
 		retryCount: 0,
+		sessionId: undefined,
 		disconnect: () => {
 			throw new Error('not implemented');
 		},
@@ -279,6 +280,7 @@ export class MockedAppRootBuilder {
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
 		loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
+		loginWithSamlToken: async () => Promise.reject(new Error('loginWithSamlToken not implemented')),
 		loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
 		queryLoginServices: {
 			getCurrentValue: () => this.authServices,
@@ -932,12 +934,14 @@ export class MockedAppRootBuilder {
 																			value={{
 																				generateTriggerId: () => '',
 																				emitInteraction: () => Promise.reject(new Error('not implemented')),
+																				suggestOptions: () => Promise.reject(new Error('not implemented')),
 																				getInteractionPayloadByViewId: () => undefined,
 																				handleServerInteraction: () => undefined,
 																				off: () => undefined,
 																				on: () => undefined,
 																				openView: () => undefined,
 																				disposeView: () => undefined,
+																				clearModals: () => undefined,
 																				notifyBusy: () => undefined,
 																				notifyIdle: () => undefined,
 																			}}

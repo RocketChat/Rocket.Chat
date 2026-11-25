@@ -1,7 +1,7 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react';
 
-import CallReactions from './CallReactions';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CallReactions from './CallReactions.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** A call to rise over: 20rem tall unless a story asks for more room. */
 const withCallSurface: Decorator = (Story, { parameters }) => (

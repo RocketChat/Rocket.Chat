@@ -1222,7 +1222,7 @@ API.v1.get(
 	async function action() {
 		const user = await Users.findOneById(this.userId);
 		if (user?.settings) {
-			const { preferences = {} } = user?.settings;
+			const { preferences = {} } = user.settings;
 			preferences.language = user?.language;
 
 			return API.v1.success({
@@ -2389,6 +2389,6 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends UsersEndpoints {}
 }

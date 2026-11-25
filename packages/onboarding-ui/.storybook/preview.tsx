@@ -5,7 +5,7 @@ import { parameters, decorators, useThemeMode } from '@rocket.chat/storybook-con
 import type { Decorator, Preview } from '@storybook/react-webpack5';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import en from '../.i18n/en.i18n.json';
+import en from '../.i18n/en.i18n.json' with { type: 'json' };
 
 type NestedTranslations = { [key: string]: string | NestedTranslations };
 

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { useFeaturePreviewPreferences } from './useFeaturePreviewPreferences';
+import { useFeaturePreviewPreferences } from './useFeaturePreviewPreferences.js';
 
 type SetPreferencesParams = { data: { featuresPreview: { name: string; value: boolean }[] } };
 

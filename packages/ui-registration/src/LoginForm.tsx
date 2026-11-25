@@ -13,15 +13,15 @@ import {
 } from '@rocket.chat/fuselage';
 import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
+import { useLoginWithPassword, useRouter, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import EmailConfirmationForm from './EmailConfirmationForm';
-import LoginServices from './LoginServices';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import EmailConfirmationForm from './EmailConfirmationForm.js';
+import LoginServices from './LoginServices.js';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -47,6 +47,14 @@ const LOGIN_SUBMIT_ERRORS = {
 	'error-invalid-email': {
 		type: 'danger',
 		i18n: 'registration.page.login.errors.invalidEmail',
+	},
+	'error-invalid-username': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.invalidUsername',
+	},
+	'error-oauth-login-failed': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.serviceLoginFailed',
 	},
 } as const;
 
@@ -85,6 +93,18 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 	const { t } = useTranslation();
 	const formLabelId = useId();
 	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrorState>(undefined);
+	const router = useRouter();
+	const oauthError = useSearchParameter('oauthError');
+
+	useEffect(() => {
+		if (!oauthError) {
+			return;
+		}
+
+		setErrorOnSubmit([oauthError]);
+		const { oauthError: _, ...search } = router.getSearchParameters();
+		router.navigate({ pathname: router.getLocationPathname(), search }, { replace: true });
+	}, [oauthError, router, setErrorOnSubmit]);
 	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset', true);
 	const login = useLoginWithPassword();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin', true);
@@ -129,7 +149,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 	}, [errorOnSubmit]);
 
 	const renderErrorOnSubmit = ([error, message]: Exclude<LoginErrorState, undefined>) => {
-		if (error in LOGIN_SUBMIT_ERRORS) {
+		if (Object.hasOwn(LOGIN_SUBMIT_ERRORS, error)) {
 			const { type, i18n } = LOGIN_SUBMIT_ERRORS[error as Exclude<LoginErrors, string>];
 			return (
 				<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
@@ -168,6 +188,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 		>
 			<FormHeader>
 				<FormTitle id={formLabelId}>{t('registration.component.login')}</FormTitle>
+				{!showFormLogin && errorOnSubmit && renderErrorOnSubmit(errorOnSubmit)}
 			</FormHeader>
 			{showFormLogin && (
 				<>

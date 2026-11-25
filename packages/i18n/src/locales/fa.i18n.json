@@ -1250,6 +1250,7 @@
   "Everyone_can_access_this_channel": "همه به این کانال دسترسی دارند",
   "Example_s": "به عنوان مثال: <code>{{value}}</code>",
   "except_pinned": "(به استثنای مواردی که بسته شده اند)",
+  "Exchange_Graph_Client_Secret": "رمز مشتری",
   "Exclude_Botnames": "انحصار رباتها",
   "Exclude_Botnames_Description": "پیام های رباتهایی که نام آنها با عبارات منظم بالا مطابقت ندارد، ارسال نکنید. اگر خالی بماند، تمام پیامهای رباتها پخش خواهد شد.",
   "Exclude_pinned": "پیام های پین شده را حذف کنید",

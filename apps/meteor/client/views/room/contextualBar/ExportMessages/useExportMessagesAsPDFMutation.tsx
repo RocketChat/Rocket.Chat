@@ -111,7 +111,7 @@ export const useExportMessagesAsPDFMutation = () => {
 			withVariationSelectors: true,
 			builder: renderEmojiToDataURL,
 		});
-	}, []);
+	}, [absoluteUrl]);
 
 	return useMutation({
 		mutationFn: async (messageIds: IMessage['_id'][]) => {
@@ -164,7 +164,7 @@ export const useExportMessagesAsPDFMutation = () => {
 
 			const instance = pdf();
 
-			await new Promise<void>((resolve, reject) => {
+			await new Promise<void>((resolve) => {
 				const callback = async () => {
 					const link = document.createElement('a');
 					link.href = URL.createObjectURL(await instance.toBlob());
@@ -179,8 +179,6 @@ export const useExportMessagesAsPDFMutation = () => {
 				try {
 					instance.on('change', callback);
 					instance.updateContainer(jsx);
-				} catch (error) {
-					reject(error);
 				} finally {
 					instance.removeListener('change', callback);
 				}

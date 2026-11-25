@@ -110,7 +110,7 @@ export class AppsRestApi {
 
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!err.hasOwnProperty('response')) {
+			if (!Object.hasOwn(err, 'response')) {
 				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
@@ -142,7 +142,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
-					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 					const { action, appId, appVersion } = this.queryParams;
 
 					return API.v1.success({
@@ -216,7 +216,7 @@ export class AppsRestApi {
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
 
-					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 
 					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
 						return API.v1.failure({ error: 'Invalid purchase type' });
@@ -1041,8 +1041,8 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const workspaceIdSetting = await Settings.findOneById('Cloud_Workspace_Id');
-					if (!workspaceIdSetting) {
+					const workspaceId = await Settings.getValueById<string>('Cloud_Workspace_Id');
+					if (!workspaceId) {
 						return API.v1.failure('No workspace id found');
 					}
 
@@ -1052,7 +1052,7 @@ export class AppsRestApi {
 						const request = await orchestrator
 							.getMarketplaceClient()
 							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
-							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, {
+							.fetch(`v1/workspaces/${workspaceId}/apps/${this.urlParams.id}`, {
 								headers,
 								ignoreSsrfValidation: true,
 							});
@@ -1192,7 +1192,7 @@ export class AppsRestApi {
 
 					const updated = [];
 
-					for await (const s of this.bodyParams.settings) {
+					for (const s of this.bodyParams.settings) {
 						if (settings[s.id] && settings[s.id].value !== s.value) {
 							await manager.getSettingsManager().updateAppSetting(this.urlParams.id, s);
 							// Updating?

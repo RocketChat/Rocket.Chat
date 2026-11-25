@@ -1,5 +1,19 @@
 # @rocket.chat/ui-livekit
 
+## 2.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7c8513c458dbeb4e5694c92dec6fd687656ef2d, 42f9f7efa463480e5168ff054a66f9c086bbf809, 10e0083ef0f1d9fee35c51400c0a450cd42ac5d0, f1db1bd6e06acaa868f77270356b4be393105a58, 0270870289ea9e3449f658ad7bff80d1525e9937, a0177a4b9570b49735fca52783757ab62a59bb35, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/ui-client@37.0.0-rc.0
+  - @rocket.chat/ui-conference@4.0.0-rc.0
+  - @rocket.chat/ui-contexts@37.0.0-rc.0
+  - @rocket.chat/ui-media@2.0.0-rc.0
+  - @rocket.chat/ui-video-conf@37.0.0-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.1-rc.0
+
+  </details>
+
 ## 1.0.0
 
 ### Minor Changes

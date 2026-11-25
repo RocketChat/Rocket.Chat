@@ -1,4 +1,6 @@
+import type { Serialized } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
+import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallPreferences, ConferenceChatAccess } from '@rocket.chat/ui-conference';
 import {
@@ -57,6 +59,42 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
  */
 const chatLivesInAThread = (isPersistentChatEnabled: boolean, isCallWindowEnabled: boolean, chatMode: PersistentChatMode): boolean =>
 	isPersistentChatEnabled && isCallWindowEnabled && chatMode === 'thread';
+
+const describeCall = (
+	info: Serialized<OperationResult<'GET', '/v1/video-conference.info'>> | undefined,
+	members: ReturnType<typeof mapVideoConfUserFromApi>[],
+	currentName: string,
+	uid: string | undefined,
+) => {
+	return {
+		// Who is associated with the call and where each of them stands — the call window uses it to tell
+		// "still ringing" from "nobody is coming".
+		members,
+		/** Only a direct call rang a particular person, so only there does ringing again mean anything. */
+		canRing: info?.type === 'direct',
+		/** Whether the conference has ended and can no longer be joined. */
+		ended: info ? 'endedAt' in info && !!info.endedAt : false,
+		/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
+		name: currentName,
+		/** When the conference was created — serves as the timer's start point. */
+		createdAt: info?.createdAt ? new Date(info.createdAt) : undefined,
+		/**
+		 * Naming a call is the creator's to do, and only a group call has a name of its own — a direct call is
+		 * named after the other person, per viewer.
+		 */
+		canRename: info?.type === 'videoconference' && info.createdBy._id === uid,
+		/** Which devices the provider can actually be told about, which is all the preflight offers. */
+		capabilities: info?.capabilities ?? {},
+		/**
+		 * A direct call this user placed whose other side has not been asked to answer yet — entering the call
+		 * is what calls them, so the preflight says so rather than pretending they are already ringing.
+		 */
+		placing:
+			info?.type === 'direct' &&
+			info.createdBy._id === uid &&
+			members.some((member) => member._id !== uid && isUnaskedConferenceMember(member)),
+	} as const;
+};
 
 export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
@@ -223,34 +261,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	const ownMember = members.find((member) => member._id === uid);
 
 	return {
-		call: {
-			// Who is associated with the call and where each of them stands — the call window uses it to tell
-			// "still ringing" from "nobody is coming".
-			members,
-			/** Only a direct call rang a particular person, so only there does ringing again mean anything. */
-			canRing: info?.type === 'direct',
-			/** Whether the conference has ended and can no longer be joined. */
-			ended: info ? 'endedAt' in info && !!info.endedAt : false,
-			/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
-			name: currentName,
-			/** When the conference was created — serves as the timer's start point. */
-			createdAt: info?.createdAt ? new Date(info.createdAt) : undefined,
-			/**
-			 * Naming a call is the creator's to do, and only a group call has a name of its own — a direct call is
-			 * named after the other person, per viewer.
-			 */
-			canRename: info?.type === 'videoconference' && info.createdBy._id === uid,
-			/** Which devices the provider can actually be told about, which is all the preflight offers. */
-			capabilities: info?.capabilities ?? {},
-			/**
-			 * A direct call this user placed whose other side has not been asked to answer yet — entering the call
-			 * is what calls them, so the preflight says so rather than pretending they are already ringing.
-			 */
-			placing:
-				info?.type === 'direct' &&
-				info.createdBy._id === uid &&
-				members.some((member) => member._id !== uid && isUnaskedConferenceMember(member)),
-		} as const,
+		call: describeCall(info, members, currentName, uid),
 		room: {
 			rid: info?.discussionRid || info?.rid,
 			tmid: !info?.discussionRid && isThreadedChat ? info?.messages.started : undefined,

@@ -1,5 +1,33 @@
 # @rocket.chat/core-services
 
+## 1.1.0-rc.0
+
+### Minor Changes
+
+- ([#41943](https://github.com/RocketChat/Rocket.Chat/pull/41943)) Adds a server-to-server Outlook integration: administrators configure one Exchange connection, through Microsoft Graph or on-premises EWS, instead of each user signing in from the desktop app. Calendars sync on the server and reach web, mobile and desktop alike, with contact sync following on the same connection.
+
+### Patch Changes
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Rejects incoming federated events over the Matrix limits (more than 20 `prev_events`, more than 10 `auth_events`, or larger than 64 KiB) before validating them, so oversized events are cheap to refuse and no longer produce unbounded log lines
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes rooms joined from a federated invite showing up as a DM named after the inviter instead of under the room's name, when the inviting homeserver (such as tuwunel) sends the invite without `unsigned` data
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes messages sent to a federated room failing for good with "Unable to process event, we don't have complete state yet" after joining it, when the remote server delivered the join while the room's history was still being fetched
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes federated events, such as a remote user joining, being permanently rejected when they arrive before the events that authorize them; the missing events are now fetched from the sending server and the event is processed once they are stored
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 183bca8af1fc26ab280120fef087f72f92982302, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4, 1cb836204af9f9e59b64db1dba9df53836e927a0, 46cba6391140d334aecbe764a0fc3341feb27ce9, 17b9f5a0a07f83c42e4b198c38a6bf2fc9d5589e, be88a0ba4a3a72f9a606f054d5c2d051650140ee, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b096d6a2fbdabccbabc62b03d662c45f68d2e076, 25a232e58bd49fa2cbad86f13a8e935c0a703170, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, c5122522318b69d930199043b89ce2aadcbf51ae, 42f9f7efa463480e5168ff054a66f9c086bbf809, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/models@3.1.0-rc.0
+  - @rocket.chat/icons@0.53.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/media-signaling@1.5.0-rc.0
+  - @rocket.chat/message-parser@0.33.1-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+  - @rocket.chat/http-router@7.9.26-rc.0
+
+  </details>
+
 ## 1.0.0
 
 ### Major Changes

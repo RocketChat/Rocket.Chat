@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted: see [ADR-0011](../adr/0011-fuselage-components-take-no-styling-props.md). The decision below is the target state: until step 5 (9.0.0), component prop types still include `BoxProps`, and CI enforces only what the scanner sees (see "Not covered by the scan" below). Measured on `develop` at `36b596b453`.
+Accepted: see [ADR-0011](../adr/0011-fuselage-components-take-no-styling-props.md). The decision below is the target state: until step 5 removes them from a component family (per family, before its Tamagui migration, as the ADR-0011 amendment sets out), that family's prop types still include `BoxProps`, and CI enforces only what the scanner sees (see "Not covered by the scan" below). Measured on `develop` at `36b596b453`.
 
 ## Decision
 
@@ -132,7 +132,7 @@ Each step is its own pull request, revertible on its own.
    Every pull request runs the pixel A/B against `develop`. `gap` and a wrapping `Box` can change layout at the edges (wrapping, collapsing margins).
 
 4. **Fuselage's own compositions:** the 45 inside sites and the 11 `Margins`/`Scrollable` ones (for example `Button` passing `marginInlineEnd` to its `Icon`).
-5. **Breaking change (9.0.0):**
+5. **Breaking change** (originally planned for 9.0.0; superseded by the [ADR-0011 amendment](../adr/0011-fuselage-components-take-no-styling-props.md): the removal ships per component family as a minor changeset on the package's current release line, before that family's Tamagui migration):
    - remove `BoxProps` from component prop types, and stop forwarding styling props to the inner `Box`;
    - remove `Margins` and `BoxTransforms`.
 

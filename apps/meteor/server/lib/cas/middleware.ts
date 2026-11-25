@@ -23,6 +23,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
 		callback();
+		return;
 	}
 
 	// get ticket and validate.
@@ -44,7 +45,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 				logger.error({ msg: 'error when trying to validate', err });
 			} else if (status) {
 				logger.info({ msg: 'Validated user', username });
-				const userInfo: Partial<ICredentialToken['userInfo']> = { username: username as string };
+				const userInfo: Partial<ICredentialToken['userInfo']> = { username };
 
 				// CAS 2.0 attributes handling
 				if (details?.attributes) {

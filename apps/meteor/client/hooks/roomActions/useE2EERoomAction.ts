@@ -46,13 +46,15 @@ export const useE2EERoomAction = () => {
 
 	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
-	const action = useStableCallback(async () => {
+	const action = useStableCallback(() => {
 		if (enabledOnRoom) {
 			imperativeModal.open({
 				component: BaseDisableE2EEModal,
 				props: {
 					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
+					onConfirm: () => {
+						void handleToogleE2E();
+					},
 					roomType,
 					roomId,
 					canResetRoomKey,
@@ -63,7 +65,9 @@ export const useE2EERoomAction = () => {
 				component: EnableE2EEModal,
 				props: {
 					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
+					onConfirm: () => {
+						void handleToogleE2E();
+					},
 					roomType,
 				},
 			});

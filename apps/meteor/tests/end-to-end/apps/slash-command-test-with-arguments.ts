@@ -34,7 +34,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.end(done);
 		});
 		it('should have sent the message correctly', (_t, done) => {
-			const searchText = `Slashcommand \'test-with-arguments\' successfully executed with arguments: "${params}"`;
+			const searchText = `Slashcommand 'test-with-arguments' successfully executed with arguments: "${params}"`;
 			void request
 				.get(api('chat.search'))
 				.query({

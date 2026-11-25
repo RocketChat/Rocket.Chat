@@ -1,5 +1,5 @@
-import { renderHook, act } from './testing';
-import { useSessionStorage } from './useStorage';
+import { renderHook, act } from './testing.js';
+import { useSessionStorage } from './useStorage.js';
 
 it('returns a default value', () => {
 	const { result } = renderHook(() => useSessionStorage('value-key', 'value-default'));

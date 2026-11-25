@@ -1,7 +1,11 @@
+import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import * as banners from '../banners';
 import { e2e } from './rocketchat.e2e';
+import type { E2ERoom } from './rocketchat.e2e.room';
+import { createFakeSubscription } from '../../../tests/mocks/data';
 import { dispatchToastMessage } from '../toast';
 
 jest.mock('@rocket.chat/ui-client', () => ({
@@ -67,5 +71,36 @@ describe('E2E password modal', () => {
 		expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'E2E_encryption_enabled' });
 		expect(imperativeModal.close).toHaveBeenCalledTimes(1);
 		expect(banners.closeById).toHaveBeenCalledWith('e2e');
+	});
+});
+
+describe('E2E.decryptSubscription', () => {
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it('should wait for the room keys before decrypting the last message', async () => {
+		const e2eRoom = Object.assign(new Emitter(), { isReady: () => false, decryptSubscription: jest.fn() });
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue(e2eRoom as unknown as E2ERoom);
+
+		await e2e.decryptSubscription(createFakeSubscription({ rid: 'room-1' }) as SubscriptionWithRoom);
+
+		expect(e2eRoom.decryptSubscription).not.toHaveBeenCalled();
+
+		e2eRoom.emit('READY');
+
+		expect(e2eRoom.decryptSubscription).toHaveBeenCalled();
+	});
+});
+
+describe('E2E.startClient', () => {
+	afterEach(() => {
+		Reflect.deleteProperty(window, 'isSecureContext');
+	});
+
+	it('should refuse to start on a page that is not served over HTTPS', async () => {
+		Object.defineProperty(window, 'isSecureContext', { value: false, configurable: true });
+
+		await expect(e2e.startClient('user-1')).rejects.toThrow('secure contexts');
 	});
 });

@@ -1,7 +1,6 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
 
 import type { PermissionsPayload } from './api.helpers';
@@ -13,23 +12,28 @@ const userPermissions: { [k: string]: string[] } = {
 	'4r3fsadfasf4': [],
 };
 
-const mocks = {
-	'../lib/authorization/hasPermission': {
-		hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
-			return permissions.every((permission) => userPermissions[userId].includes(permission));
-		},
-		hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
-			return permissions.some((permission) => userPermissions[userId].includes(permission));
-		},
-	},
-	'../lib/deprecationWarningLogger': {
-		apiDeprecationLogger: {
-			endpoint: Sinon.stub(),
-		},
-	},
-};
+let checkPermissionsForInvocation: any;
 
-const { checkPermissionsForInvocation } = mock.noCallThru().load('./api.helpers', mocks);
+before(async () => {
+	mock.module('../lib/authorization/hasPermission', {
+		exports: {
+			hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
+				return permissions.every((permission) => userPermissions[userId].includes(permission));
+			},
+			hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
+				return permissions.some((permission) => userPermissions[userId].includes(permission));
+			},
+		},
+	});
+	mock.module('../lib/deprecationWarningLogger', {
+		exports: {
+			apiDeprecationLogger: {
+				endpoint: Sinon.stub(),
+			},
+		},
+	});
+	({ checkPermissionsForInvocation } = await import('./api.helpers'));
+});
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {

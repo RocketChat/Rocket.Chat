@@ -28,9 +28,13 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
 
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
+	// Not every browser honors a seek made before the metadata is loaded, so such a seek waits for it.
+	const pendingStartTimeRef = useRef(0);
 
 	// Reuse the message player's signed-URL recovery on the shared element.
 	const { mediaRef } = useReloadOnError(track?.url ?? '', 'audio');
@@ -39,7 +43,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	}, []);
 	const setAudioRef = useMergedRefsV2(audioCallback, mediaRef);
 
-	const play = useStableCallback((next: PersistentAudioTrack) => {
+	const play = useStableCallback((next: PersistentAudioTrack, startTime = 0) => {
 		const audio = audioRef.current;
 		if (!audio) {
 			return;
@@ -47,8 +51,10 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 		if (trackRef.current?.id !== next.id) {
 			setTrack(next);
-			setCurrentTime(0);
+			setCurrentTime(startTime);
 			setDuration(0);
+			pendingStartTimeRef.current = startTime;
+			setError(false);
 			audio.src = next.url;
 			audio.load();
 		}
@@ -72,6 +78,11 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const seek = useStableCallback((time: number) => {
 		const audio = audioRef.current;
 		if (!audio) {
+			return;
+		}
+		if (audio.readyState === HTMLMediaElement.HAVE_NOTHING) {
+			pendingStartTimeRef.current = Math.max(0, time);
+			setCurrentTime(pendingStartTimeRef.current);
 			return;
 		}
 		audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
@@ -99,13 +110,42 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		setPlaying(false);
 		setCurrentTime(0);
 		setDuration(0);
+		setLoading(false);
+		setError(false);
+	});
+
+	const retry = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (!audio || !trackRef.current) {
+			return;
+		}
+		setError(false);
+		// A retry before metadata loads sees 0, so it keeps the position an earlier retry or seek saved.
+		pendingStartTimeRef.current = audio.currentTime || pendingStartTimeRef.current;
+		audio.load();
+		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
 	});
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 
 	const value = useMemo<MediaPlayerContextValue>(
-		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
-		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		() => ({
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			isActive,
+		}),
+		[track, playing, currentTime, duration, playbackRate, loading, error, retry, play, toggle, seek, cyclePlaybackRate, close, isActive],
 	);
 
 	return (
@@ -118,8 +158,25 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onPlay={() => setPlaying(true)}
 				onPause={() => setPlaying(false)}
 				onEnded={() => close()}
+				onWaiting={() => setLoading(true)}
+				onCanPlay={() => setLoading(false)}
+				onPlaying={() => setLoading(false)}
+				onError={() => {
+					// An error arriving after close() belongs to no track.
+					if (trackRef.current) {
+						setLoading(false);
+						setError(true);
+					}
+				}}
 				onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-				onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+				onLoadedMetadata={(e) => {
+					setError(false);
+					setDuration(e.currentTarget.duration || 0);
+					if (pendingStartTimeRef.current > 0) {
+						e.currentTarget.currentTime = pendingStartTimeRef.current;
+						pendingStartTimeRef.current = 0;
+					}
+				}}
 				onDurationChange={(e) => setDuration(e.currentTarget.duration || 0)}
 				onRateChange={(e) => setPlaybackRate(e.currentTarget.playbackRate)}
 			>

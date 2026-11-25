@@ -748,7 +748,7 @@ class E2E extends Emitter {
 					const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 					quotedMessage = getQuotedMessage?.message;
 				} catch (error) {
-					console.error(`Error getting quoted message: ${error}`);
+					log.span('parseQuoteAttachment').error('Error getting quoted message', error);
 					return;
 				}
 
@@ -806,7 +806,7 @@ class E2E extends Emitter {
 		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
 
 		const sampleIds: string[] = [];
-		for await (const roomId of randomRoomIds) {
+		for (const roomId of randomRoomIds) {
 			const e2eroom = await this.getInstanceByRoomId(roomId);
 			if (!e2eroom?.hasSessionKey()) {
 				continue;

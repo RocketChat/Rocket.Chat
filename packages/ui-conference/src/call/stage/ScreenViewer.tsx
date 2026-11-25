@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 import type { ReactNode } from 'react';
 
-import { mainStreamStyles, ownBadgeStyles } from './stageStyles';
+import { mainStreamStyles, ownBadgeStyles } from './stageStyles.js';
 
 export type ScreenViewerProps = {
 	stream: MediaStream;

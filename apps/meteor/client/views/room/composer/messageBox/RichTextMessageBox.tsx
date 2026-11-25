@@ -4,7 +4,7 @@ import { useContentBoxSize, useMediaQuery, useStableCallback } from '@rocket.cha
 import type { Options } from '@rocket.chat/message-parser';
 import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
-import { useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useState, useSyncExternalStore, useMemo } from 'react';
@@ -81,6 +81,7 @@ const RichTextMessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
@@ -403,10 +404,10 @@ const RichTextMessageBox = ({
 
 		const files = extractImageFilesFromClipboard(event, format);
 
-		if (files.length) {
-			event.preventDefault();
+		if (isEditing) {
+			dispatchToastMessage({ type: 'error', message: t('Files_cannot_be_attached_while_editing') });
+		} else {
 			handleUploadFiles?.(files);
-			return;
 		}
 
 		const pastedText = extractPastedPlainText(event);
@@ -443,14 +444,17 @@ const RichTextMessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useCallback((node: HTMLDivElement) => {
-		const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-		node.addEventListener('keydown', eventHandler);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: HTMLDivElement) => {
+			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+			node.addEventListener('keydown', eventHandler);
 
-		return () => {
-			node.removeEventListener('keydown', eventHandler);
-		};
-	}, []);
+			return () => {
+				node.removeEventListener('keydown', eventHandler);
+			};
+		},
+		[keyboardEventHandler],
+	);
 
 	const beforeInputHandlerCallbackRef = useCallback(
 		(node: HTMLDivElement) => {

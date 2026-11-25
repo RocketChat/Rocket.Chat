@@ -1,9 +1,20 @@
-import { AudioPlayerControls, Box, IconButton } from '@rocket.chat/fuselage';
+import {
+	AudioPlayerControls,
+	IconButton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemLink,
+	ItemMedia,
+	ItemTitle,
+} from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import SidebarCard from './SidebarCard';
+import { useAudioWaveform } from '../../components/message/content/attachments/file/hooks/useAudioWaveform';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
@@ -17,14 +28,18 @@ import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
  */
 const NowPlayingSection = () => {
 	const { t } = useTranslation();
-	const { track, playing, currentTime, duration, playbackRate, toggle, seek, cyclePlaybackRate, close } = useMediaPlayer();
+	const { track, playing, currentTime, duration, playbackRate, loading, error, toggle, seek, cyclePlaybackRate, retry, close } =
+		useMediaPlayer();
 	const goToRoom = useGoToRoom();
 	const formatMemorySize = useFormatMemorySize();
+	const waveform = useAudioWaveform(track?.url ?? '', track?.size);
 	const displayName = useUserDisplayName({ name: track?.name, username: track?.username });
 
 	if (!track) {
 		return null;
 	}
+
+	const title = displayName || t('Audio');
 
 	const openConversation = async () => {
 		if (!track.rid) {
@@ -37,43 +52,41 @@ const NowPlayingSection = () => {
 	};
 
 	return (
-		<SidebarCard>
-			<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd='x8' style={{ gap: 8 }}>
-				<Box
-					display='flex'
-					alignItems='center'
-					minWidth={0}
-					flexGrow={1}
-					role='button'
-					tabIndex={0}
-					onClick={() => void openConversation()}
-					onKeyDown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							e.preventDefault();
-							void openConversation();
-						}
-					}}
-					title={t('Jump_to_message')}
-					style={{ gap: 8, cursor: track.rid ? 'pointer' : 'default' }}
-				>
-					{track.username && <UserAvatar username={track.username} size='x24' />}
-					<Box minWidth={0}>
-						<Box fontScale='p2b' color='default' withTruncatedText>
-							{displayName || t('Audio')}
-						</Box>
-						<Box fontScale='micro' color='hint' withTruncatedText>
-							{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}
-						</Box>
-					</Box>
-				</Box>
-				<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
-			</Box>
-
+		<SidebarCard
+			header={
+				<Item multiline align='start'>
+					{track.username && (
+						<ItemMedia>
+							<UserAvatar username={track.username} size='x32' />
+						</ItemMedia>
+					)}
+					<ItemContent>
+						<ItemTitle>
+							{track.rid ? (
+								<ItemLink is='button' onClick={() => void openConversation()} title={t('Jump_to_message')}>
+									{title}
+								</ItemLink>
+							) : (
+								title
+							)}
+						</ItemTitle>
+						<ItemDescription>{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}</ItemDescription>
+					</ItemContent>
+					<ItemActions>
+						<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
+					</ItemActions>
+				</Item>
+			}
+		>
 			<AudioPlayerControls
 				isPlaying={playing}
 				currentTime={currentTime}
 				durationTime={duration}
 				playbackSpeed={playbackRate}
+				waveform={waveform}
+				loading={loading}
+				error={error}
+				onRetry={retry}
 				onTogglePlay={toggle}
 				onSeek={seek}
 				onChangePlaybackSpeed={cyclePlaybackRate}

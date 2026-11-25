@@ -29,7 +29,11 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				break;
 
 			case 'd':
-				(room.uids?.length ?? 0) > 2 ? openTab('user-info-group', username) : openTab('user-info', username);
+				if ((room.uids?.length ?? 0) > 2) {
+					openTab('user-info-group', username);
+				} else {
+					openTab('user-info', username);
+				}
 				break;
 
 			default:

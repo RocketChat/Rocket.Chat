@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
+import * as coreServices from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('Message Broadcast Tests', () => {
@@ -56,6 +56,17 @@ describe('Message Broadcast Tests', () => {
 		},
 	});
 
+	const loadNotifyListener = (coreServicesExports: Record<string, unknown>) => {
+		mock.module('@rocket.chat/core-services', { exports: coreServicesExports });
+		mock.module('@rocket.chat/logger', { exports: { Logger: class { error = logErrorStub; } } });
+		mock.module('mem', { exports: { default: memStub } });
+		delete require.cache[require.resolve('./notifyListener')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const notifyListener = require('./notifyListener');
+		mock.restoreAll();
+		return notifyListener;
+	};
+
 	beforeEach(() => {
 		getSettingValueByIdStub = sinon.stub();
 		usersFindOneStub = sinon.stub();
@@ -68,19 +79,12 @@ describe('Message Broadcast Tests', () => {
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
 		const models = modelsStubs();
+		mockModel('Rooms', models.Rooms);
 		mockModel('Messages', models.Messages);
 		mockModel('Users', models.Users);
 		mockModel('Settings', models.Settings);
 
-		const proxyMock = proxyquire.noPreserveCache().load('./notifyListener', {
-			'@rocket.chat/core-services': coreStubs(),
-			'@rocket.chat/logger': {
-				Logger: class {
-					error = logErrorStub;
-				},
-			},
-			'mem': memStub,
-		});
+		const proxyMock = loadNotifyListener({ ...coreServices, ...coreStubs() });
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
@@ -243,6 +247,13 @@ describe('Message Broadcast Tests', () => {
 				expectedResult: undefined,
 			},
 			{
+				description: 'should return only the public identity of the message author',
+				message: { ...sampleMessage, u: { ...sampleMessage.u, statusText: 'busy' } },
+				hideSystemMessages: [],
+				useRealName: false,
+				expectedResult: sampleMessage,
+			},
+			{
 				description: 'should return the message if no system messages are muted',
 				message: sampleMessage,
 				hideSystemMessages: [],
@@ -330,10 +341,7 @@ describe('Message Broadcast Tests', () => {
 
 	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = () => {
-			const proxyMock = proxyquire.noCallThru().load('./notifyListener', {
-				'@rocket.chat/core-services': coreStubs(),
-				'mem': memStub,
-			});
+			const proxyMock = loadNotifyListener(coreStubs());
 			notifyOnMessageChange = proxyMock.notifyOnMessageChange;
 		};
 

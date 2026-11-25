@@ -25,6 +25,6 @@ export const registerEEBroker = async (): Promise<void> => {
 		api.setBroker(startBroker());
 		await api.start();
 	} else {
-		require('./presence');
+		await import('./presence');
 	}
 };

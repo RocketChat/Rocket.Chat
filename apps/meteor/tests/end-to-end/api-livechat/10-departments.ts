@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../data/livechat/department';
+import { archiveDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment, getDepartmentById } from '../../data/livechat/department';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -19,6 +19,7 @@ import {
 import { createMonitor, createUnit } from '../../data/livechat/units';
 import { restorePermissionToRoles, updateEESetting, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -1012,5 +1013,45 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(200);
 			expect(res.body).to.have.property('success', true);
 		});
+	});
+});
+
+describe('LIVECHAT - Departments without department permissions', () => {
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+	let archivedDepartment: ILivechatDepartment;
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Omnichannel_enable_department_removal', true);
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+		archivedDepartment = await createDepartment();
+		await archiveDepartment(archivedDepartment._id);
+	});
+
+	after(async () => {
+		await deleteDepartment(archivedDepartment._id);
+		await updateSetting('Omnichannel_enable_department_removal', false);
+		await deleteUser(user);
+	});
+
+	const readRoutes = ['livechat/department/isDepartmentCreationAvailable', 'livechat/departments/archived'] as const;
+
+	readRoutes.forEach((route) => {
+		it(`should refuse ${route}`, async () => {
+			await request.get(api(route)).set(userCredentials).expect(403);
+		});
+	});
+
+	it('should refuse livechat/department/:_id/unarchive and keep the department archived', async () => {
+		await request
+			.post(api(`livechat/department/${archivedDepartment._id}/unarchive`))
+			.set(userCredentials)
+			.expect(403);
+
+		expect(await getDepartmentById(archivedDepartment._id)).to.have.property('archived', true);
 	});
 });

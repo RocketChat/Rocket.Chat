@@ -77,7 +77,9 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		},
 		size: 2,
 		isMember,
-		reload: refetch,
+		reload: () => {
+			void refetch();
+		},
 	});
 
 	const menu = useMemo(() => {

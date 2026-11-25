@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Divider, Tag } from '@rocket.chat/fuselage';
+import { Divider, Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { InfoPanelField, InfoPanelLabel } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -28,44 +28,34 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 
 	return (
 		<>
-			<Box marginBlock={32}>
-				<Divider />
-			</Box>
+			<Divider />
 			<InfoPanelField>
-				<Box display='flex' marginBlockEnd={16}>
-					<Tag medium>
-						<Box display='flex' alignItems='center'>
-							<RoomIcon room={room} />
-							<Box marginInlineStart='x4'>{t('ABAC_Managed')}</Box>
-						</Box>
+				<Stack align='start' gap='x16'>
+					<Tag medium icon={<RoomIcon room={room} />}>
+						{t('ABAC_Managed')}
 					</Tag>
-				</Box>
-
-				{t('ABAC_Managed_description')}
+					{t('ABAC_Managed_description')}
+				</Stack>
 
 				<InfoPanelLabel id='room-attributes-list-label'>{t('ABAC_Room_Attributes')}</InfoPanelLabel>
-				<Box is='ul' aria-labelledby='room-attributes-list-label'>
+				<ul aria-labelledby='room-attributes-list-label'>
 					{room.abacAttributes.map((attribute) => (
-						<Box is='li' key={attribute.key} marginBlock={16}>
-							<Box is='span' id={`room-attribute-${attribute.key}-label`}>
-								{attribute.key}
-							</Box>
-							<Box
-								is='ul'
-								display='flex'
-								marginBlockStart={8}
-								alignItems='center'
-								aria-labelledby={`room-attribute-${attribute.key}-label`}
-							>
-								{attribute.values.map((value) => (
-									<Box is='li' marginInlineEnd={4} key={value}>
-										<Tag medium>{value}</Tag>
-									</Box>
-								))}
-							</Box>
-						</Box>
+						<InfoPanelField is='li' key={attribute.key}>
+							<Stack gap='x8'>
+								<Text is='span' id={`room-attribute-${attribute.key}-label`}>
+									{attribute.key}
+								</Text>
+								<Stack is='ul' direction='row' wrap align='center' gap='x4' aria-labelledby={`room-attribute-${attribute.key}-label`}>
+									{attribute.values.map((value) => (
+										<Stack is='li' key={value}>
+											<Tag medium>{value}</Tag>
+										</Stack>
+									))}
+								</Stack>
+							</Stack>
+						</InfoPanelField>
 					))}
-				</Box>
+				</ul>
 			</InfoPanelField>
 		</>
 	);

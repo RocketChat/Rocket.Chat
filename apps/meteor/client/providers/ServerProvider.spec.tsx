@@ -1,16 +1,17 @@
-import { useConnectionStatus, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useConnectionSessionId, useConnectionStatus, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { act, render, renderHook } from '@testing-library/react';
 
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import ServerProvider from './ServerProvider';
 import { sdk } from '../lib/SDKClient';
 import { getDdpSdk } from '../lib/sdk/ddpSdk';
-import { type ConnectionStatus, getConnectionStatus } from '../meteor/connection';
+import { type ConnectionStatus, getConnectionSessionId, getConnectionStatus } from '../meteor/connection';
 
 jest.mock('../../rocketchat.info', () => ({ Info: {} }));
 
 jest.mock('../meteor/connection', () => ({
 	getConnectionStatus: jest.fn(() => ({ status: 'connected', connected: true, retryCount: 0 })),
+	getConnectionSessionId: jest.fn(() => 'session-id'),
 	disconnect: jest.fn(),
 	reconnect: jest.fn(),
 }));
@@ -268,4 +269,36 @@ it('reports a server stop after readiness and removes the stop listener on clean
 	expect(removeStopListener).toHaveBeenCalledTimes(1);
 	expect(stop).toHaveBeenCalledTimes(1);
 	unmount();
+});
+
+it('provides the session id the server assigns once the handshake completes', () => {
+	const sessionIds = jest.fn();
+
+	const SessionConsumer = () => {
+		sessionIds(useConnectionSessionId());
+		return null;
+	};
+
+	render(
+		<ConnectionStatusProvider>
+			<SessionConsumer />
+		</ConnectionStatusProvider>,
+	);
+
+	const emit = (event: string) => {
+		const listeners = jest
+			.mocked(getDdpSdk().connection.on)
+			.mock.calls.filter(([name]) => name === event)
+			.map(([, listener]) => listener);
+		act(() => listeners.forEach((listener) => listener()));
+	};
+
+	jest.mocked(getConnectionStatus).mockReturnValue({ status: 'waiting', connected: false, retryCount: 1, retryTime: 1_000 });
+	emit('connection');
+	jest.mocked(getConnectionStatus).mockReturnValue({ status: 'connected', connected: true, retryCount: 0 });
+	emit('connection');
+	jest.mocked(getConnectionSessionId).mockReturnValue('next-session-id');
+	emit('connected');
+
+	expect(sessionIds).toHaveBeenLastCalledWith('next-session-id');
 });

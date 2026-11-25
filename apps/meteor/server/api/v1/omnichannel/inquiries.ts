@@ -144,7 +144,7 @@ const livechatInquiriesEndpoints = API.v1.post(
 			return API.v1.success({ result });
 		} catch (error) {
 			if (isClientSafeError(error) && typeof error.error === 'string') {
-				return API.v1.failure(error.error as string);
+				return API.v1.failure(error.error);
 			}
 
 			return API.v1.failure('error-returning-inquiry');
@@ -155,6 +155,6 @@ const livechatInquiriesEndpoints = API.v1.post(
 type LivechatInquiriesEndpoints = ExtractRoutesFromAPI<typeof livechatInquiriesEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends LivechatInquiriesEndpoints {}
 }

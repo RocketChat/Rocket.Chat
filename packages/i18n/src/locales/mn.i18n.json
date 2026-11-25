@@ -992,6 +992,7 @@
   "Everyone_can_access_this_channel": "Хүн бүр энэ сувагт хандаж болно",
   "Example_s": "Жишээ нь: <code>{{value}}</code>",
   "except_pinned": "(хаалтлагдсанаас бусад)",
+  "Exchange_Graph_Client_Secret": "Үйлчлүүлэгчийн нууц",
   "Exclude_Botnames": "Бот хасах",
   "Exclude_Botnames_Description": "Дээрх ердийн илэрхийлэлтэй ижил нэртэй bot-уудаас мэдээллийг бүү тараа. Хэрэв хоосон орхивол бүх bots-аас ирсэн бүх мэдээг цацах болно.",
   "Exclude_pinned": "Тэмдэглэсэн зурвасуудыг хасна уу",

@@ -2,18 +2,40 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UploadBridge } from '@rocket.chat/apps/dist/server/bridges/UploadBridge';
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import { Messages } from '@rocket.chat/models';
 
 import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
 import { FileUpload } from '../../../lib/media/file-upload';
 import { sendFileMessage } from '../../../meteor-methods/messages/sendFileMessage';
 import { sendFileLivechatMessage } from '../../../meteor-methods/omnichannel/sendFileLivechatMessage';
+import { settings } from '../../../settings';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
-	if (details.visitorToken) {
-		const { userId, ...result } = details;
+	const { threadId, ...rest } = details;
+	if (rest.visitorToken) {
+		const { userId, ...result } = rest;
 		return result;
 	}
-	return details;
+	return rest;
+};
+
+const assertValidThread = async ({ threadId, rid, visitorToken }: IUploadDetails): Promise<void> => {
+	if (!threadId) {
+		return;
+	}
+	if (visitorToken) {
+		throw new Error('Uploads by a Livechat visitor cannot target a thread');
+	}
+	if (!settings.get<boolean>('Threads_enabled')) {
+		throw new Error('Threads are disabled');
+	}
+	const parent = await Messages.findOneById(threadId, { projection: { rid: 1 } });
+	if (!parent) {
+		throw new Error(`Thread parent message "${threadId}" not found`);
+	}
+	if (parent.rid !== rid) {
+		throw new Error(`Thread parent message "${threadId}" is not in room "${rid}"`);
+	}
 };
 export class AppUploadBridge extends UploadBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -49,16 +71,22 @@ export class AppUploadBridge extends UploadBridge {
 			throw new Error('Missing user to perform the upload operation');
 		}
 
+		await assertValidThread(details);
+
 		const fileStore = FileUpload.getStore('Uploads');
 
-		details.type = determineFileType(buffer, details.name);
+		details.type = await determineFileType(buffer, details.name);
 
 		const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
 		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
 		if (details.visitorToken) {
 			await sendFileLivechatMessage({ roomId: details.rid, visitorToken: details.visitorToken, file: uploadedFile });
 		} else {
-			await sendFileMessage(details.userId, { roomId: details.rid, file: uploadedFile });
+			await sendFileMessage(details.userId, {
+				roomId: details.rid,
+				file: uploadedFile,
+				...(details.threadId && { msgData: { tmid: details.threadId } }),
+			});
 		}
 		return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
 	}

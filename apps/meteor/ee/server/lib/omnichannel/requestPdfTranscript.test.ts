@@ -1,21 +1,25 @@
-import { after, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const workOnPdfStub = sinon.stub();
 const queueWorkStub = sinon.stub();
 
-const { requestPdfTranscript } = proxyquire.noCallThru().load('./requestPdfTranscript.ts', {
-	'@rocket.chat/core-services': {
-		OmnichannelTranscript: {
-			workOnPdf: workOnPdfStub,
+let requestPdfTranscript: any;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			OmnichannelTranscript: {
+				workOnPdf: workOnPdfStub,
+			},
+			QueueWorker: {
+				queueWork: queueWorkStub,
+			},
 		},
-		QueueWorker: {
-			queueWork: queueWorkStub,
-		},
-	},
+	});
+	({ requestPdfTranscript } = await import('./requestPdfTranscript'));
 });
 
 describe('requestPdfTranscript', () => {

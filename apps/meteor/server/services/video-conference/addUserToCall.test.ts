@@ -1,4 +1,4 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
@@ -28,7 +28,6 @@ import {
  * call's message and is read in our own call window's chat panel, so it follows the window rather than the
  * provider — an iframed Jitsi call in our window threads exactly like a call we run ourselves.
  */
-const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;
 
@@ -56,21 +55,30 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', username
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
-	...commonServiceStubs,
-	'@rocket.chat/core-services': {
-		api: { broadcast: broadcastStub },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
+let VideoConfService: any;
+
+before(async () => {
+	const stubs: Record<string, Record<string, unknown>> = {
+		...commonServiceStubs,
+		'@rocket.chat/core-services': {
+			api: { broadcast: broadcastStub },
+			ServiceClassInternal: class {
+				onEvent() {
+					/* no-op */
+				}
+			},
+			Message: { saveSystemMessage: sinon.stub().resolves() },
+			Room: { addUserToRoom: sinon.stub().resolves() },
+			Presence: PresenceMock,
 		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-		Presence: PresenceMock,
-	},
-	'../../lib/messaging/threads/functions': { follow: followStub },
-	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+		'../../lib/messaging/threads/functions': { follow: followStub },
+		'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
+	};
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
+	({ VideoConfService } = await import('./service'));
+	mock.restoreAll();
 });
 
 describe('VideoConfService.addUserToCall provider gating', () => {

@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Tag, Text } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Stack, Tag, Text } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
@@ -47,31 +47,35 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 				/>
 			) : (
 				<ContextualbarScrollableContent>
-					<Text is='h4' fontScale='h4' color='titles-labels'>
-						{t('ABAC_Room_Attributes')}
-					</Text>
-					<Box fontScale='p2' color='hint' marginBlockStart={8}>
-						{t('ABAC_Room_attributes_description')}
-					</Box>
-					{rows.map(({ key, values }) => (
-						<Box key={key} is='section' aria-label={key} marginBlockStart={24}>
-							<Box fontScale='p1' color='default' marginBlockEnd={8}>
-								{key}
-							</Box>
-							<Box
-								display='flex'
-								flexWrap='wrap'
-								gap={4}
-								paddingInlineEnd={values.length ? 4 : undefined}
-								paddingBlockEnd={values.length ? 4 : undefined}
-							>
-								{values.length === 0 && <Tag variant='danger'>{t('ABAC_Not_set')}</Tag>}
-								{values.map((value) => (
-									<Tag key={value}>{value}</Tag>
-								))}
-							</Box>
-						</Box>
-					))}
+					<Stack gap='x40'>
+						<Stack gap='x24'>
+							<Text is='h4' fontScale='h4' color='titles-labels'>
+								{t('ABAC_Room_Attributes')}
+							</Text>
+							<Text fontScale='p2' color='hint'>
+								{t('ABAC_Room_attributes_description')}
+							</Text>
+						</Stack>
+						{rows.map(({ key, values }) => (
+							<Stack is='section' key={key} aria-label={key} gap='x8'>
+								<Text fontScale='p1' color='default'>
+									{key}
+								</Text>
+								<Stack is='ul' direction='row' wrap gap='x4'>
+									{values.length === 0 && (
+										<Stack is='li'>
+											<Tag variant='danger'>{t('ABAC_Not_set')}</Tag>
+										</Stack>
+									)}
+									{values.map((value) => (
+										<Stack is='li' key={value}>
+											<Tag>{value}</Tag>
+										</Stack>
+									))}
+								</Stack>
+							</Stack>
+						))}
+					</Stack>
 				</ContextualbarScrollableContent>
 			)}
 			<ContextualbarFooter>

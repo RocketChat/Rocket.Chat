@@ -82,7 +82,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
-	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
@@ -343,12 +343,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	return (
 		<FormProvider {...methods}>
-			<Modal
-				aria-labelledby={`${createChannelFormId}-title`}
-				wrapperFunction={(props: ComponentProps<typeof Box>) => (
-					<Box is='form' id={createChannelFormId} onSubmit={handleStepSubmit} {...props} />
-				)}
-			>
+			<Modal aria-labelledby={`${createChannelFormId}-title`} onSubmit={handleStepSubmit} formId={createChannelFormId}>
 				<ModalHeader>
 					<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
 					<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />

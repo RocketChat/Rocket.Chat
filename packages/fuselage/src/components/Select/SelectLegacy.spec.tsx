@@ -1,3 +1,4 @@
+import nameToCharacterMapping from '@rocket.chat/icons';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentType } from 'react';
@@ -33,6 +34,14 @@ describe.each<[string, ComponentType<any>, string]>([
 		const control = screen.getByRole(role, { name: 'Fruit' });
 		expect(control).toHaveAccessibleDescription('Required field');
 		expect(control).toHaveAttribute('aria-invalid', 'true');
+	});
+
+	it('should focus its control on mount only when asked to', () => {
+		const { rerender } = render(<Component placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		expect(screen.getByRole(role)).not.toHaveFocus();
+
+		rerender(<Component key='focused' autoFocus placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		expect(screen.getByRole(role)).toHaveFocus();
 	});
 
 	it('should focus its control when the label pointing to its id is clicked', async () => {
@@ -73,8 +82,8 @@ describe('[SelectLegacy Component] keyboard', () => {
 
 	it('should stay open after Space opens it', async () => {
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-		const { container } = render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
-		const isOpen = () => container.querySelector('.rcx-icon--name-chevron-up') !== null;
+		render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
+		const isOpen = () => screen.queryByText(nameToCharacterMapping['chevron-up']) !== null;
 
 		screen.getByRole('button').focus();
 		await user.keyboard('[Space>]');

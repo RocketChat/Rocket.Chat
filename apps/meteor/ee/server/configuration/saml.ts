@@ -54,7 +54,7 @@ await License.onLicense('saml-enterprise', () => {
 		const customFieldsList: Record<string, any> = {};
 
 		for (const spCustomFieldName in customMap) {
-			if (!customMap.hasOwnProperty(spCustomFieldName)) {
+			if (!Object.hasOwn(customMap, spCustomFieldName)) {
 				continue;
 			}
 

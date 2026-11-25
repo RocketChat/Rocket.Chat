@@ -186,7 +186,9 @@ export async function setUserAvatar(
 	})();
 
 	const fileStore = FileUpload.getStore('Avatars');
-	user.username && (await fileStore.deleteByName(user.username, { session }));
+	if (user.username) {
+		await fileStore.deleteByName(user.username, { session });
+	}
 
 	const file = {
 		userId: user._id,

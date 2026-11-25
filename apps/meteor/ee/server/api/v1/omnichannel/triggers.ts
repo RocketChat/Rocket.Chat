@@ -1,7 +1,6 @@
 import { isExternalServiceTrigger } from '@rocket.chat/core-typings';
 import { LivechatTrigger } from '@rocket.chat/models';
-import { isLivechatTriggerWebhookCallParams } from '@rocket.chat/rest-typings';
-import { isLivechatTriggerWebhookTestParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
+import { isLivechatTriggerWebhookCallParams, isLivechatTriggerWebhookTestParams } from '@rocket.chat/rest-typings';
 
 import { callTriggerExternalService } from './lib/triggers';
 import { API } from '../../../../../server/api';

@@ -1,5 +1,31 @@
 # @rocket.chat/model-typings
 
+## 3.1.0-rc.0
+
+### Minor Changes
+
+- ([#41943](https://github.com/RocketChat/Rocket.Chat/pull/41943)) Adds a server-to-server Outlook integration: administrators configure one Exchange connection, through Microsoft Graph or on-premises EWS, instead of each user signing in from the desktop app. Calendars sync on the server and reach web, mobile and desktop alike, with contact sync following on the same connection.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Keeps the UiKit modals, contextual bars and banners an app opens for a logged-in user on the server, so when the user submits or closes one the app receives the view as it sent it, with the values the user filled in.
+  A submit with no record of the view (expired, or never recorded) is refused, and a close with no record never reaches the app. Views opened for a Livechat visitor are not recorded: the app receives the visitor's copy.
+  For a view opened for a logged-in user, `private_metadata` stays on the server and never reaches the browser. A visitor's view keeps it.
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+### Patch Changes
+
+- ([#43166](https://github.com/RocketChat/Rocket.Chat/pull/43166)) Fixes the ABAC user attribute sync updating accounts that are not linked to LDAP
+
+- ([#43635](https://github.com/RocketChat/Rocket.Chat/pull/43635)) Fixes messages and thread replies from an ignored user marking the room or thread as unread and counting as mentions
+
+- ([#43534](https://github.com/RocketChat/Rocket.Chat/pull/43534)) Adds the "Delete original discussion messages" retention policy setting. When it is off and "Do not prune discussion messages" is on, the prune keeps the message that starts each discussion, and its files. This applies to discussions that start after the update. When the prune deletes the file of a discussion's first message, quotes of that message in the discussion now show "File deleted".
+
+- ([#43732](https://github.com/RocketChat/Rocket.Chat/pull/43732)) Fixes the presence service crashing in microservices deployments when a user who belongs to many rooms connects or disconnects. Apps that listen to `IPostUserStatusChanged` again receive only the user's identity, roles and status fields, as before 8.6.0.
+
+- <details><summary>Updated dependencies [46cba6391140d334aecbe764a0fc3341feb27ce9, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/core-typings@9.1.0-rc.0
+
+  </details>
+
 ## 3.0.0
 
 ### Major Changes
