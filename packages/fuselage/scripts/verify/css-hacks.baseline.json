@@ -9,8 +9,8 @@
 		"displayContents": 0
 	},
 	"AudioPlayer/AudioPlayer.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 7,
+		"nested": 6,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
