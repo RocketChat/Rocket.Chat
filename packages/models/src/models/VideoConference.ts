@@ -54,7 +54,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				unique: false,
 				partialFilterExpression: { status: { $in: LIVE_STATUSES } },
 			},
-			// At most one live conference per link, which is what makes concurrent starts from a link converge.
+			// At most one live conference per link.
 			{ key: { conferenceRoomId: 1 }, unique: true, partialFilterExpression: liveLinkedConferenceFilter },
 			{ key: { customUrl: 1 }, unique: false, partialFilterExpression: liveLinkedConferenceFilter },
 		];
@@ -468,7 +468,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		T extends Document = VideoConference,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
 	>(customUrl: NonNullable<IGroupVideoConference['customUrl']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
-		return this.findOne<T, O>({ customUrl, status: { $in: LIVE_STATUSES } }, options);
+		return this.findOne<T, O>({ customUrl, ...liveLinkedConferenceFilter }, options);
 	}
 
 	public findOneActiveByConferenceRoomId<
@@ -489,6 +489,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		T extends Document = VideoConference,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
 	>(prefix: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
-		return this.find<T, O>({ customUrl: { $regex: `^${escapeRegExp(prefix)}` }, status: { $in: LIVE_STATUSES } }, options);
+		return this.find<T, O>({ customUrl: { $regex: `^${escapeRegExp(prefix)}` }, ...liveLinkedConferenceFilter }, options);
 	}
 }

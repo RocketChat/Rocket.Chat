@@ -263,12 +263,16 @@ describe('VideoConferenceRaw live conferences of a link', () => {
 		expect(indexes[5]).toEqual({ key: { customUrl: 1 }, unique: false, partialFilterExpression: live });
 	});
 
-	it('findOneActiveByCustomUrl names the live statuses', async () => {
+	// The `{ customUrl: 1 }` index is partial on linked conferences, so the query must name that too.
+	it('findOneActiveByCustomUrl names the live statuses and linked conferences', async () => {
 		const { model, findOne } = setupFinders();
 
 		await model.findOneActiveByCustomUrl('weekly', { projection: { _id: 1 } });
 
-		expect(findOne).toHaveBeenCalledWith({ customUrl: 'weekly', status: LIVE }, { projection: { _id: 1 } });
+		expect(findOne).toHaveBeenCalledWith(
+			{ customUrl: 'weekly', conferenceRoomId: { $exists: true }, status: LIVE },
+			{ projection: { _id: 1 } },
+		);
 	});
 
 	it('findOneActiveByConferenceRoomId names the live statuses', async () => {
@@ -297,6 +301,8 @@ describe('VideoConferenceRaw live conferences of a link', () => {
 
 		const [filter] = find.mock.calls[0];
 		expect(filter.status).toEqual(LIVE);
+		// The `{ customUrl: 1 }` index is partial on linked conferences, so the query must name that too.
+		expect(filter.conferenceRoomId).toEqual({ $exists: true });
 		const pattern = new RegExp(filter.customUrl.$regex);
 		expect(pattern.test('a.b+-2')).toBe(true);
 		expect(pattern.test('axbb')).toBe(false);
