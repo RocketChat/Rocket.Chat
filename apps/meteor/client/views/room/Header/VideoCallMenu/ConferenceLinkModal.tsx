@@ -1,7 +1,7 @@
 import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { GenericModal, useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 import { useId } from 'react';
-import { useForm, useFormState } from 'react-hook-form';
+import { useForm, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 export type ConferenceLinkModalProps = {
@@ -23,9 +23,13 @@ const ConferenceLinkModal = ({ mode, initialTitle, onConfirm, onClose, isPending
 	const { register, handleSubmit, control } = useForm<ConferenceLinkModalFields>({
 		defaultValues: { title: initialTitle ?? '' },
 	});
-	const { errors, isDirty } = useFormState({ control });
+	const { errors, isSubmitting } = useFormState({ control });
+	const title = useWatch({ control, name: 'title' });
 
-	const handleConfirm = useFormSubmitWithDirtyCheck(({ title }: ConferenceLinkModalFields) => onConfirm(title.trim()), { isDirty });
+	// Spaces around the title are dropped on confirm, so they alone are no change.
+	const handleConfirm = useFormSubmitWithDirtyCheck(({ title }: ConferenceLinkModalFields) => onConfirm(title.trim()), {
+		isDirty: title.trim() !== (initialTitle ?? '').trim(),
+	});
 
 	const titleId = useId();
 	const hintId = `${titleId}-hint`;
@@ -38,7 +42,7 @@ const ConferenceLinkModal = ({ mode, initialTitle, onConfirm, onClose, isPending
 			onSubmit={handleSubmit(handleConfirm)}
 			title={isRename ? t('Rename_conference_link') : t('Create_link')}
 			confirmText={isRename ? t('Rename') : t('Create')}
-			confirmLoading={isPending}
+			confirmLoading={isPending || isSubmitting}
 			onCancel={onClose}
 			onClose={onClose}
 		>

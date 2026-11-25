@@ -87,6 +87,16 @@ describe('ConferenceLinkModal', () => {
 			expect(onConfirm).not.toHaveBeenCalled();
 		});
 
+		it('treats a title changed only by spaces around it as unchanged', async () => {
+			const { onConfirm, dispatchToastMessage } = renderModal({ mode: 'rename', initialTitle: 'Weekly sync' });
+
+			await userEvent.type(getInput(), '  ');
+			await userEvent.click(screen.getByRole('button', { name: 'Rename' }));
+
+			await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'info', message: 'No_changes_to_save' }));
+			expect(onConfirm).not.toHaveBeenCalled();
+		});
+
 		it('confirms a changed title', async () => {
 			const { onConfirm, dispatchToastMessage } = renderModal({ mode: 'rename', initialTitle: 'Weekly sync' });
 
@@ -177,6 +187,20 @@ describe('ConferenceLinkModal', () => {
 		it('does not show loading when not pending', () => {
 			renderModal();
 			expect(screen.getByRole('button', { name: 'Create' })).not.toHaveClass('rcx-button--loading');
+		});
+
+		// A caller that forgets `isPending` still gets the loading state while its confirmation is running.
+		it('shows the confirm button loading while the confirmation runs', async () => {
+			const confirmation = Promise.withResolvers<void>();
+			const onConfirm = jest.fn(() => confirmation.promise);
+			render(<ConferenceLinkModal mode='create' onConfirm={onConfirm} onClose={jest.fn()} />, { wrapper: mockAppRoot().build() });
+
+			await userEvent.type(getInput(), 'Weekly sync');
+			await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+
+			await waitFor(() => expect(screen.getByRole('button', { name: 'Create' })).toHaveClass('rcx-button--loading'));
+			confirmation.resolve();
+			await waitFor(() => expect(screen.getByRole('button', { name: 'Create' })).not.toHaveClass('rcx-button--loading'));
 		});
 
 		it('still closes while pending', async () => {
