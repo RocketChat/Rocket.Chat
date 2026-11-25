@@ -1,7 +1,7 @@
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
-import { useSetupWizardContext } from '../contexts/SetupWizardContext';
+import { useSetupWizardContext } from '../contexts/SetupWizardContext.js';
 
 const setIntervalTime = (interval?: number): number => (interval ? interval * 1000 : 0);
 

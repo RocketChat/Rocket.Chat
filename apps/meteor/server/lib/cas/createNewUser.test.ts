@@ -1,20 +1,22 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
 
-const insertUserDoc = sandbox.stub();
+const insertUser = sandbox.stub();
 const createRoom = sandbox.stub();
 const Users = { findOneById: sandbox.stub() };
 const Rooms = { findOneByNameAndType: sandbox.stub() };
 
-const { createNewUser } = p.noCallThru().load('./createNewUser.ts', {
-	'meteor/accounts-base': { Accounts: { insertUserDoc } },
-	'../rooms/createRoom': { createRoom },
+let createNewUser: any;
+
+before(async () => {
+	mock.module('../auth/insertUser', { exports: { insertUser } });
+	mock.module('../rooms/createRoom', { exports: { createRoom } });
+	({ createNewUser } = await import('./createNewUser'));
 });
 
 const created = { _id: 'new-user-id', username: 'alice' };
@@ -27,7 +29,7 @@ describe('createNewUser (CAS)', () => {
 
 	beforeEach(() => {
 		sandbox.reset();
-		insertUserDoc.resolves('new-user-id');
+		insertUser.resolves('new-user-id');
 		Users.findOneById.resolves(created);
 		Rooms.findOneByNameAndType.resolves(null);
 	});
@@ -41,7 +43,7 @@ describe('createNewUser (CAS)', () => {
 			}),
 		).to.equal(created);
 
-		expect(insertUserDoc.firstCall.args[1]).to.deep.equal({
+		expect(insertUser.firstCall.args[1]).to.deep.equal({
 			username: 'alice',
 			name: 'Alice Liddell',
 			active: true,
@@ -60,9 +62,9 @@ describe('createNewUser (CAS)', () => {
 	it('should take the username from the mapped attribute and keep the CAS username as the link', async () => {
 		await createNewUser('alice.cas', { attributes: { username: 'alice' }, casVersion: 2, flagEmailAsVerified: true });
 
-		expect(insertUserDoc.firstCall.args[1]).to.include({ username: 'alice' });
-		expect(insertUserDoc.firstCall.args[1].services.cas.external_id).to.equal('alice.cas');
-		expect(insertUserDoc.firstCall.args[1].emails).to.deep.equal([]);
+		expect(insertUser.firstCall.args[1]).to.include({ username: 'alice' });
+		expect(insertUser.firstCall.args[1].services.cas.external_id).to.equal('alice.cas');
+		expect(insertUser.firstCall.args[1].emails).to.deep.equal([]);
 	});
 
 	it('should create the missing channels named in the rooms attribute with the new user', async () => {

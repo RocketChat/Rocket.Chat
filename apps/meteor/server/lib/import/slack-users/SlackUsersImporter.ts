@@ -2,13 +2,13 @@ import fs from 'node:fs';
 
 import type { IImport, IImportUser } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-import { parse } from 'csv-parse/lib/sync';
 
 import { Importer, ProgressStep } from '..';
 import { RocketChatFile } from '../../media/file';
 import { notifyOnSettingChanged } from '../../notifyListener';
 import type { ConverterOptions } from '../classes/ImportDataConverter';
 import type { ImporterProgress } from '../classes/ImporterProgress';
+import { parse } from '../csvParser';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 
 export class SlackUsersImporter extends Importer {

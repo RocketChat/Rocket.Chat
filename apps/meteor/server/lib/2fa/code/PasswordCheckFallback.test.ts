@@ -1,15 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
 const checkPassword = sinon.stub();
 
-const { PasswordCheckFallback } = proxyquire.noCallThru().load('./PasswordCheckFallback', {
-	'../../compareUserPassword': { compareUserPassword: checkPassword },
-	'../../../settings': { settings: { get: settingsGet } },
+let PasswordCheckFallback: any;
+
+before(async () => {
+	mock.module('../../compareUserPassword', { exports: { compareUserPassword: checkPassword } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	({ PasswordCheckFallback } = await import('./PasswordCheckFallback'));
 });
 
 const userWithPassword = { _id: 'user-id', services: { password: { bcrypt: 'hashed' } } };

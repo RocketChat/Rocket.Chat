@@ -1,11 +1,10 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { UpdaterImpl } from '@rocket.chat/models';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { set, unset } from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const session = { id: 'session' };
@@ -31,20 +30,24 @@ const saveCustomFields = sinon.stub();
 const saveUserIdentity = sinon.stub();
 const setEmail = sinon.stub();
 
-const loadSaveUser = () =>
-	proxyquire.noCallThru().load('./saveUser', {
-		'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
-		'@rocket.chat/core-services': {
+const loadSaveUser = () => {
+	mock.module('@rocket.chat/apps', {
+		exports: { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
+	});
+	mock.module('@rocket.chat/core-services', {
+		exports: {
 			ClientSafeError,
 			Presence: { setStatus },
 			StatusVisibility: { isPresenceDisabledFor, invalidate, refresh },
 		},
-		'./saveNewUser': { saveNewUser },
-		'./sendUserEmail': { sendPasswordEmail },
-		'./setPasswordUpdater': { setPasswordUpdater },
-		'./validateUserData': { validateUserData },
-		'./validateUserEditing': { validateUserEditing },
-		'../../../database/utils': {
+	});
+	mock.module('./saveNewUser', { exports: { saveNewUser } });
+	mock.module('./sendUserEmail', { exports: { sendPasswordEmail } });
+	mock.module('./setPasswordUpdater', { exports: { setPasswordUpdater } });
+	mock.module('./validateUserData', { exports: { validateUserData } });
+	mock.module('./validateUserEditing', { exports: { validateUserEditing } });
+	mock.module('../../../database/utils', {
+		exports: {
 			wrapInSessionTransaction:
 				(curried: (s: unknown) => (...args: unknown[]) => unknown) =>
 				(...args: unknown[]) =>
@@ -54,19 +57,32 @@ const loadSaveUser = () =>
 				await cb();
 			},
 		},
-		'../../auth/generatePassword': { generatePassword },
-		'../../auth/passwordPolicy': { passwordPolicy: { validate: passwordPolicyValidate } },
-		'../../authorization/hasPermission': { hasPermissionAsync },
-		'../../callbacks': { callbacks: { run: callbacksRun } },
-		'../../notifyListener': { notifyOnUserChange },
-		'../../shouldBreakInVersion': { shouldBreakInVersion },
-		'../../statusVisibility/resolveUsers': { resolveUsersByUsernames },
-		'../saveCustomFields': { saveCustomFields },
-		'../saveUserIdentity': { saveUserIdentity },
-		'../setEmail': { setEmail },
 	});
+	mock.module('../../auth/generatePassword', { exports: { generatePassword } });
+	mock.module('../../auth/passwordPolicy', { exports: { passwordPolicy: { validate: passwordPolicyValidate } } });
+	mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync } });
+	mock.module('../../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../../notifyListener', { exports: { notifyOnUserChange } });
+	mock.module('../../shouldBreakInVersion', { exports: { shouldBreakInVersion } });
+	mock.module('../../statusVisibility/resolveUsers', { exports: { resolveUsersByUsernames } });
+	mock.module('../saveCustomFields', { exports: { saveCustomFields } });
+	mock.module('../saveUserIdentity', { exports: { saveUserIdentity } });
+	mock.module('../setEmail', { exports: { setEmail } });
+	try {
+		delete require.cache[require.resolve('./saveUser')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		return require('./saveUser');
+	} finally {
+		mock.restoreAll();
+	}
+};
 
-const { saveUser, isUpdateUserData } = loadSaveUser();
+let saveUser: any;
+let isUpdateUserData: any;
+
+before(() => {
+	({ saveUser, isUpdateUserData } = loadSaveUser());
+});
 
 describe('saveUser', () => {
 	let Users: Record<string, sinon.SinonStub>;

@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { DeviceMenuChoices } from '@rocket.chat/ui-media';
 import { DeviceMenu, deviceMenuSelection, useDeviceSelection } from '@rocket.chat/ui-media';
 
-import PreflightDeviceMenuButton from './PreflightDeviceMenuButton';
+import PreflightDeviceMenuButton from './PreflightDeviceMenuButton.js';
 
 export type PreflightDeviceMenuProps = {
 	kind: MediaDeviceKind;

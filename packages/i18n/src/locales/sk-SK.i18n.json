@@ -1006,6 +1006,7 @@
   "Everyone_can_access_this_channel": "K tomuto kanálu pristupuje každý",
   "Example_s": "Príklad: <code>{{value}}</code>",
   "except_pinned": "(okrem tých, ktoré sú pripnuté)",
+  "Exchange_Graph_Client_Secret": "Klientska Tajnosť",
   "Exclude_Botnames": "Vylúčiť roboty",
   "Exclude_Botnames_Description": "Nezverejňujte správy od robotov, ktorých meno zodpovedá vyššie uvedenému regulárnemu výrazu. Ak zostane prázdna, všetky správy z robotov sa rozmnožia.",
   "Exclude_pinned": "Vylúčte pripnuté správy",

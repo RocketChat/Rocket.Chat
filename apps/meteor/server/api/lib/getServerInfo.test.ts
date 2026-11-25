@@ -1,7 +1,6 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const hasAllPermissionAsyncMock = sinon.stub();
@@ -11,25 +10,30 @@ const getCachedSupportedVersionsTokenMock = sinon.stub();
 describe.skip('#getServerInfo()', () => {
 	let getServerInfo: any;
 
-	before(() => {
-		const { getServerInfo: importedGetServerInfo } = proxyquire.noCallThru().load('./getServerInfo', {
-			'../../../rocketchat.info': {
+	before(async () => {
+		mock.module('../../../rocketchat.info', {
+			exports: {
 				Info: {
 					version: '3.0.1',
 				},
 			},
-			'../../lib/authorization/hasPermission': {
+		});
+		mock.module('../../lib/authorization/hasPermission', {
+			exports: {
 				hasPermissionAsync: hasAllPermissionAsyncMock,
 			},
-			'../../lib/cloud/supportedVersionsToken/supportedVersionsToken': {
+		});
+		mock.module('../../lib/cloud/supportedVersionsToken/supportedVersionsToken', {
+			exports: {
 				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
 			},
-			'../../settings': {
+		});
+		mock.module('../../settings', {
+			exports: {
 				settings: new Map(),
 			},
 		});
-
-		getServerInfo = importedGetServerInfo;
+		({ getServerInfo } = await import('./getServerInfo'));
 	});
 
 	beforeEach(() => {

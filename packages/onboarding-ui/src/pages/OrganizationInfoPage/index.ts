@@ -1,1 +1,1 @@
-export { default, type OrganizationInfoPageProps } from './OrganizationInfoPage';
+export { default, type OrganizationInfoPageProps } from './OrganizationInfoPage.js';

@@ -9,7 +9,7 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerHint,
 	RichTextComposerInput,
-} from '.';
+} from './index.js';
 
 export default {
 	component: RichTextComposerInput,

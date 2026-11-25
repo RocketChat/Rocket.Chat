@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const findOneById = sinon.stub();
@@ -12,16 +11,23 @@ const isLiveKitLicensed = sinon.stub();
 const createLiveKitAccessToken = sinon.stub();
 const settingsGet = sinon.stub();
 
-const { getCallConfig } = proxyquire.noCallThru().load('./callConfig', {
-	'@rocket.chat/core-services': { Authorization: { canAccessConference } },
-	'@rocket.chat/logger': {
-		Logger: class {
-			error = sinon.stub();
+let getCallConfig: typeof import('./callConfig').getCallConfig;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { Authorization: { canAccessConference } } });
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = sinon.stub();
+			},
 		},
-	},
-	'./config': { isLiveKitFullyConfigured, isLiveKitLicensed, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
-	'./token': { createLiveKitAccessToken },
-	'../../../../server/settings': { settings: { get: settingsGet } },
+	});
+	mock.module('./config', {
+		exports: { isLiveKitFullyConfigured, isLiveKitLicensed, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
+	});
+	mock.module('./token', { exports: { createLiveKitAccessToken } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: settingsGet } } });
+	({ getCallConfig } = await import('./callConfig'));
 });
 
 const user = { _id: 'uid', name: 'Real Name', username: 'user.name' };

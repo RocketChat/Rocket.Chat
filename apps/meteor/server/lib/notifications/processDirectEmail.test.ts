@@ -1,10 +1,9 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAuthorization } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { canAccessRoomAsync } from '../authorization/canAccessRoom';
@@ -35,12 +34,17 @@ class AuthorizationDouble extends ServiceClass implements Pick<IAuthorization, '
 
 const authorization = new AuthorizationDouble();
 
-const { processDirectEmail } = proxyquire.noCallThru().load('./processDirectEmail', {
-	'../../hooks/rooms/beforeSendMessageToRoom': { beforeSendMessageToRoom },
-	'../../settings': { settings: { get: (id: string) => settingValues[id] } },
-	'../authorization': { canAccessRoomAsync },
-	'../messages/sendMessage': { sendMessage },
-	'../metrics': { metrics: { messagesSent: { inc: sandbox.stub() }, messagesSentTotal: { inc: sandbox.stub() } } },
+let processDirectEmail: any;
+
+before(async () => {
+	mock.module('../../hooks/rooms/beforeSendMessageToRoom', { exports: { beforeSendMessageToRoom } });
+	mock.module('../../settings', { exports: { settings: { get: (id: string) => settingValues[id] } } });
+	mock.module('../authorization', { exports: { canAccessRoomAsync } });
+	mock.module('../messages/sendMessage', { exports: { sendMessage } });
+	mock.module('../metrics', {
+		exports: { metrics: { messagesSent: { inc: sandbox.stub() }, messagesSentTotal: { inc: sandbox.stub() } } },
+	});
+	({ processDirectEmail } = await import('./processDirectEmail'));
 });
 
 const mid = 'message-id';
@@ -169,7 +173,7 @@ describe('processDirectEmail', () => {
 		['the room refuses new messages', () => beforeSendMessageToRoom.rejects(new Error('error-room-archived')), replyEmail],
 	];
 
-	for (const [condition, arrange, email] of dropped) {
+	dropped.forEach(([condition, arrange, email]) => {
 		it(`should drop the reply when ${condition}`, async () => {
 			arrange();
 
@@ -177,5 +181,5 @@ describe('processDirectEmail', () => {
 
 			expect(sendMessage.called).to.be.false;
 		});
-	}
+	});
 });

@@ -1215,6 +1215,7 @@
   "Everyone_can_access_this_channel": "Bu kanala herkes erişebilir",
   "Example_s": "Örnek: <code>{{value}}</code>",
   "except_pinned": "(tutturulmuş olanlar hariç)",
+  "Exchange_Graph_Client_Secret": "İstemci Gizli Kodu",
   "Exclude_Botnames": "Botları Dışarıda Bırak",
   "Exclude_Botnames_Description": "Adı, yukarıdaki normal ifadeyle eşleşen bot'tan iletemezsiniz. Eğer boş bırakılırsa, botlardan gelen tüm mesajlar iletilir.",
   "Exclude_pinned": "Sabitlenmiş iletileri dışında tut",

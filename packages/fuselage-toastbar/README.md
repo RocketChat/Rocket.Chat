@@ -19,7 +19,7 @@ npm install @rocket.chat/fuselage-toastbar @rocket.chat/fuselage @rocket.chat/st
 
 `@rocket.chat/fuselage`, `@rocket.chat/styled`, `react` and `react-dom` are peer dependencies. `@rocket.chat/fuselage` has its own peer dependencies and stylesheet; see its README.
 
-The package ships CommonJS and ES module builds with TypeScript declarations.
+The package ships ES modules only, with TypeScript declarations.
 
 ## Usage
 

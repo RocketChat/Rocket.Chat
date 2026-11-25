@@ -1119,6 +1119,7 @@
   "Everyone_can_access_this_channel": "Svatko može pristupiti ovom kanalu",
   "Example_s": "Primjer: <code>{{value}}</code>",
   "except_pinned": "(osim onih koje su zabodene)",
+  "Exchange_Graph_Client_Secret": "Klijent tajna",
   "Exclude_Botnames": "Isključi botove",
   "Exclude_Botnames_Description": "Ne dijeli poruke botova čije ime odgovara regularnoj ekspresiji. Ako je prazno sve će poruke biti proslijeđene.",
   "Exclude_pinned": "Izuzmite prikvačene poruke",

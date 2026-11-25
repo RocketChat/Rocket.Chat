@@ -3,7 +3,6 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IImportRecord, IImportRecordType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
@@ -17,19 +16,21 @@ const modelsMock = {
 	},
 };
 
-const { RecordConverter } = proxyquire.noCallThru().load('./RecordConverter', {
-	'meteor/meteor': sinon.stub(),
+let TestConverter: any;
+
+before(async () => {
+	const { RecordConverter } = await import('./RecordConverter');
+
+	TestConverter = class extends RecordConverter<IImportRecord> {
+		constructor(workInMemory = true) {
+			super({ workInMemory });
+		}
+
+		protected override getDataType(): IImportRecordType {
+			return 'user';
+		}
+	};
 });
-
-class TestConverter extends RecordConverter<IImportRecord> {
-	constructor(workInMemory = true) {
-		super({ workInMemory });
-	}
-
-	protected getDataType(): IImportRecordType {
-		return 'user';
-	}
-}
 
 describe('Record Converter', () => {
 	before(() => {

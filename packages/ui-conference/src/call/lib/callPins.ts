@@ -1,4 +1,4 @@
-import type { ScreenShare } from './screenShares';
+import type { ScreenShare } from './screenShares.js';
 
 export type CallPin = { kind: 'person' | 'screen'; id: string };
 

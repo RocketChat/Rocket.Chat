@@ -1,17 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMemo, useRef } from 'react';
 
-import GridCell from './GridCell';
-import MainTile from './MainTile';
-import OverflowTile from './OverflowTile';
-import ScreenShareThumb from './ScreenShareThumb';
-import { gridMeasureStyles, gridStyles } from './stageStyles';
-import { useTileFlip } from '../hooks/useTileFlip';
-import { useTileGridLayout } from '../hooks/useTileGridLayout';
-import type { ScreenShare } from '../lib/screenShares';
-import type { StageTile } from '../lib/stageTiles';
-import { MAX_VISIBLE_TILES, absorbLonelyTile, gridCellKeys, gridColumnStartFor, splitByPriority } from '../lib/stageTiles';
-import { gridBox } from '../lib/tileGrid';
+import GridCell from './GridCell.js';
+import MainTile from './MainTile.js';
+import OverflowTile from './OverflowTile.js';
+import ScreenShareThumb from './ScreenShareThumb.js';
+import { gridMeasureStyles, gridStyles } from './stageStyles.js';
+import { useTileFlip } from '../hooks/useTileFlip.js';
+import { useTileGridLayout } from '../hooks/useTileGridLayout.js';
+import type { ScreenShare } from '../lib/screenShares.js';
+import type { StageTile } from '../lib/stageTiles.js';
+import { MAX_VISIBLE_TILES, absorbLonelyTile, gridCellKeys, gridColumnStartFor, splitByPriority } from '../lib/stageTiles.js';
+import { gridBox } from '../lib/tileGrid.js';
 
 export type GridLayoutProps = {
 	tiles: StageTile[];

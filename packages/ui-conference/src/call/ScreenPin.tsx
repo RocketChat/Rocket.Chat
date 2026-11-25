@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
-import type { PinToggleProps } from './PinToggle';
-import PinToggle from './PinToggle';
-import { useCallPins } from './context';
-import type { ScreenShare } from './lib/screenShares';
+import type { PinToggleProps } from './PinToggle.js';
+import PinToggle from './PinToggle.js';
+import { useCallPins } from './context.js';
+import type { ScreenShare } from './lib/screenShares.js';
 
 export type ScreenPinProps = Pick<PinToggleProps, 'icon'> & {
 	share: ScreenShare;

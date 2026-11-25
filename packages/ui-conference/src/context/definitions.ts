@@ -2,8 +2,8 @@ import type { IRoom, IUser, IVideoConferenceUser, VideoConferenceCapabilities, V
 import type { Badge } from '@rocket.chat/fuselage';
 import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
-import type { PreviewVideoProviderProps } from '../call/previewVideo';
-import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
+import type { PreviewVideoProviderProps } from '../call/previewVideo.js';
+import type { CallPreferences } from '../hooks/useCallDevicesInitialState.js';
 
 /**
  * A member of the call, as this window holds them: who they are, and where they stand with the call.

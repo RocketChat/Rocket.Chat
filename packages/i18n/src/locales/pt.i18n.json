@@ -1202,6 +1202,7 @@
   "Everyone_can_access_this_channel": "Todos podem aceder a este canal",
   "Example_s": "Exemplo: <code>{{value}}</code>",
   "except_pinned": "(Excepto aqueles que estão fixos)",
+  "Exchange_Graph_Client_Secret": "Segredo",
   "Exclude_Botnames": "Excluir bots",
   "Exclude_Botnames_Description": "Não propague mensagens de bots cujo nome corresponde à expressão regular acima. Se deixado vazio, todas as mensagens dos bots serão propagadas.",
   "Exclude_pinned": "Excluir mensagens fixas",

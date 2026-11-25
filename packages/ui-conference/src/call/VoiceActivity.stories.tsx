@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import VoiceActivity from './VoiceActivity';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import VoiceActivity from './VoiceActivity.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** Three bars that rise and fall with how loudly someone is talking; handed a level, it measures nothing itself. */
 const meta = {

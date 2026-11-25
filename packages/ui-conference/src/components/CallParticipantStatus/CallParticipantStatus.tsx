@@ -2,7 +2,7 @@ import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import type { PluginParticipant } from '../../lib/providerPlugin';
+import type { PluginParticipant } from '../../lib/providerPlugin.js';
 
 export type CallParticipantStatusProps = {
 	participant: PluginParticipant;

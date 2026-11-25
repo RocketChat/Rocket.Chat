@@ -1,10 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 chai.use(chaiDateTime);
@@ -53,14 +52,15 @@ const mockLogger = {
 	}),
 };
 
-const mocks = {
-	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'../../../../server/database/utils': { client: { db: sinon.stub() } },
-	'../../../../server/lib/omnichannel/closeRoom': { closeRoom: mockLivechatCloseRoom },
-	'./logger': { schedulerLogger: mockLogger },
-};
+let AutoCloseOnHoldSchedulerClass: any;
 
-const { AutoCloseOnHoldSchedulerClass } = proxyquire.noCallThru().load('./AutoCloseOnHoldScheduler', mocks);
+before(async () => {
+	mock.module('@rocket.chat/agenda', { exports: { Agenda: MockAgendaClass } });
+	mock.module('../../../../server/database/utils', { exports: { client: { db: sinon.stub() } } });
+	mock.module('../../../../server/lib/omnichannel/closeRoom', { exports: { closeRoom: mockLivechatCloseRoom } });
+	mock.module('./logger', { exports: { schedulerLogger: mockLogger } });
+	({ AutoCloseOnHoldSchedulerClass } = await import('./AutoCloseOnHoldScheduler'));
+});
 
 describe('AutoCloseOnHoldScheduler', () => {
 	before(() => {

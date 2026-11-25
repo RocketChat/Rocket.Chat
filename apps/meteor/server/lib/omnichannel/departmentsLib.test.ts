@@ -1,9 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -20,22 +19,29 @@ const isDepartmentCreationAvailable = sinon.stub();
 const updateDepartmentAgents = sinon.stub();
 const notifyOnLivechatDepartmentAgentChangedByDepartmentId = sinon.stub();
 
-const { saveDepartment } = proxyquire.noCallThru().load('./departmentsLib', {
-	'@rocket.chat/apps': {
-		Apps: { self: { triggerEvent } },
-		AppEvents: { IPostLivechatDepartmentDisabled: 'IPostLivechatDepartmentDisabled' },
-	},
-	'@rocket.chat/core-services': { ClientSafeError },
-	'@rocket.chat/omni-core': { isDepartmentCreationAvailable },
-	'./Helper': { updateDepartmentAgents },
-	'./hooks': { afterDepartmentArchived: sinon.stub(), afterDepartmentUnarchived: sinon.stub() },
-	'./logger': { livechatLogger: { debug: sinon.stub() } },
-	'../../settings': { settings: { get: sinon.stub() } },
-	'../callbacks': { callbacks: { run: callbacksRun } },
-	'../notifyListener': {
-		notifyOnLivechatDepartmentAgentChangedByDepartmentId,
-		notifyOnLivechatDepartmentAgentChanged: sinon.stub(),
-	},
+let saveDepartment: any;
+
+before(async () => {
+	mock.module('@rocket.chat/apps', {
+		exports: {
+			Apps: { self: { triggerEvent } },
+			AppEvents: { IPostLivechatDepartmentDisabled: 'IPostLivechatDepartmentDisabled' },
+		},
+	});
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+	mock.module('@rocket.chat/omni-core', { exports: { isDepartmentCreationAvailable } });
+	mock.module('./Helper', { exports: { updateDepartmentAgents } });
+	mock.module('./hooks', { exports: { afterDepartmentArchived: sinon.stub(), afterDepartmentUnarchived: sinon.stub() } });
+	mock.module('./logger', { exports: { livechatLogger: { debug: sinon.stub() } } });
+	mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } });
+	mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../notifyListener', {
+		exports: {
+			notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+			notifyOnLivechatDepartmentAgentChanged: sinon.stub(),
+		},
+	});
+	({ saveDepartment } = await import('./departmentsLib'));
 });
 
 describe('saveDepartment', () => {

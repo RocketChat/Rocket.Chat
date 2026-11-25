@@ -1,10 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -45,19 +44,24 @@ const AppEvents = {
 	IPostRoomCreate: 'IPostRoomCreate',
 };
 
-const { createRoom } = p.noCallThru().load('./createRoom.ts', {
-	'@rocket.chat/apps': { Apps: { self: { triggerEvent: selfTriggerEvent }, triggerEvent: appsTriggerEvent }, AppEvents },
-	'@rocket.chat/core-services': { FederationMatrix, Message, Room, Team, ClientSafeError, XMPPServer },
-	'./createDirectRoom': { createDirectRoom },
-	'./filterUsersAllowedInRoom': { filterUsersAllowedInRoom },
-	'../callbacks': { callbacks },
-	'../callbacks/afterCreateRoomCallback': { afterCreateRoomCallback },
-	'../callbacks/beforeAddUserToRoom': { beforeAddUserToRoom },
-	'../callbacks/beforeCreateRoomCallback': { beforeCreateRoomCallback, prepareCreateRoomCallback },
-	'../getSubscriptionAutotranslateDefaultConfig': { getSubscriptionAutotranslateDefaultConfig },
-	'../notifyListener': { notifyOnRoomChanged, notifyOnSubscriptionChangedById },
-	'../roles/syncRoomRolePriority': { syncRoomRolePriorityForUserAndRoom },
-	'../utils/lib/getValidRoomName': { getValidRoomName },
+let createRoom: any;
+
+before(async () => {
+	mock.module('@rocket.chat/apps', {
+		exports: { Apps: { self: { triggerEvent: selfTriggerEvent }, triggerEvent: appsTriggerEvent }, AppEvents },
+	});
+	mock.module('@rocket.chat/core-services', { exports: { FederationMatrix, Message, Room, Team, ClientSafeError, XMPPServer } });
+	mock.module('./createDirectRoom', { exports: { createDirectRoom } });
+	mock.module('./filterUsersAllowedInRoom', { exports: { filterUsersAllowedInRoom } });
+	mock.module('../callbacks', { exports: { callbacks } });
+	mock.module('../callbacks/afterCreateRoomCallback', { exports: { afterCreateRoomCallback } });
+	mock.module('../callbacks/beforeAddUserToRoom', { exports: { beforeAddUserToRoom } });
+	mock.module('../callbacks/beforeCreateRoomCallback', { exports: { beforeCreateRoomCallback, prepareCreateRoomCallback } });
+	mock.module('../getSubscriptionAutotranslateDefaultConfig', { exports: { getSubscriptionAutotranslateDefaultConfig } });
+	mock.module('../notifyListener', { exports: { notifyOnRoomChanged, notifyOnSubscriptionChangedById } });
+	mock.module('../roles/syncRoomRolePriority', { exports: { syncRoomRolePriorityForUserAndRoom } });
+	mock.module('../utils/lib/getValidRoomName', { exports: { getValidRoomName } });
+	({ createRoom } = await import('./createRoom'));
 });
 
 const owner = { _id: 'owner1', username: 'owner', name: 'Owner' };

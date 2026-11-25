@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useStreamHasLiveVideo } from './useStreamHasLiveVideo';
+import { useStreamHasLiveVideo } from './useStreamHasLiveVideo.js';
 
 class FakeTrack extends EventTarget {
 	kind = 'video';

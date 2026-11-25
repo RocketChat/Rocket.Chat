@@ -58,7 +58,6 @@ function setup() {
 	const originalAccountOperation = jest.fn();
 	const accounts = {
 		addAutopublishFields: jest.fn(),
-		validateNewUser: jest.fn<void, [(user: IUser & { email?: string }) => boolean]>(),
 		updateOrCreateUserFromExternalService: originalAccountOperation as typeof Accounts.updateOrCreateUserFromExternalService,
 	};
 	const users = {
@@ -87,6 +86,7 @@ function setup() {
 	const ldapLogin = jest.fn().mockResolvedValue(undefined);
 	const hasModule = jest.fn().mockReturnValue(false);
 	let Strategy!: typeof CustomOAuthStrategy;
+	let applyCustomOAuthUserFields!: typeof import('./customOAuth').applyCustomOAuthUserFields;
 	let oauth!: typeof OAuth2;
 
 	jest.isolateModules(() => {
@@ -103,13 +103,14 @@ function setup() {
 		jest.doMock('@rocket.chat/license', () => ({ License: { hasModule } }));
 		jest.doMock('../../users/saveUserIdentity', () => ({ saveUserIdentity: saveIdentity }));
 		// Each test gets fresh service registrations and exactly one Accounts wrapper.
-		Strategy = jest.requireActual<typeof import('./customOAuth')>('./customOAuth').CustomOAuthStrategy;
+		({ CustomOAuthStrategy: Strategy, applyCustomOAuthUserFields } = jest.requireActual<typeof import('./customOAuth')>('./customOAuth'));
 		oauth = jest.requireActual<typeof import('oauth')>('oauth').OAuth2;
 	});
 
 	return {
 		createStrategy: (config: Partial<Config> = {}, name = 'test') => new Strategy(name, makeConfig(config), jest.fn()),
 		accounts,
+		applyCustomOAuthUserFields,
 		originalAccountOperation,
 		users,
 		updater,
@@ -669,15 +670,14 @@ describe('CustomOAuthStrategy', () => {
 		});
 	});
 
-	describe('new-user validation', () => {
+	describe('new-user field mapping', () => {
 		it('copies configured identity fields from the matching service', () => {
 			env.createStrategy({ usernameField: 'login', emailField: 'mail', nameField: 'displayName' }, 'github');
 			env.createStrategy({}, 'gitlab');
 			const user: IUser & { email?: string } = makeUser({
 				services: { github: { id: 'id', username: 'mapped', email: 'mapped@example.com', name: 'Mapped name' } },
 			});
-			const validate = env.accounts.validateNewUser.mock.calls[0][0];
-			expect(validate(user)).toBe(true);
+			env.applyCustomOAuthUserFields(user);
 			expect(user).toMatchObject({ username: 'mapped', email: 'mapped@example.com', name: 'Mapped name' });
 		});
 
@@ -687,7 +687,7 @@ describe('CustomOAuthStrategy', () => {
 				env.createStrategy({ usernameField: 'login', emailField: 'mail', nameField: 'displayName' }, 'github');
 				const user = makeUser({ services });
 				const before = structuredClone(user);
-				expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+				env.applyCustomOAuthUserFields(user);
 				expect(user).toEqual(before);
 			},
 		);
@@ -695,16 +695,14 @@ describe('CustomOAuthStrategy', () => {
 		it('rejects a mapped username that fails the username validation setting', () => {
 			env.createStrategy({ usernameField: 'login' }, 'github');
 			const user = makeUser({ services: { github: { id: 'id', username: 'alice@example.com' } } });
-			expect(() => env.accounts.validateNewUser.mock.calls[0][0](user)).toThrow(
-				expect.objectContaining({ error: 'error-invalid-username' }),
-			);
+			expect(() => env.applyCustomOAuthUserFields(user)).toThrow(expect.objectContaining({ error: 'error-invalid-username' }));
 		});
 
 		it('accepts a mapped username that the username validation setting allows', () => {
 			env.settingValues.set('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.@]+');
 			env.createStrategy({ usernameField: 'login' }, 'github');
 			const user = makeUser({ services: { github: { id: 'id', username: 'alice@example.com' } } });
-			expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+			env.applyCustomOAuthUserFields(user);
 			expect(user.username).toBe('alice@example.com');
 		});
 
@@ -714,7 +712,7 @@ describe('CustomOAuthStrategy', () => {
 				services: { github: { id: 'id', username: 'different', email: 'different@example.com', name: 'Different' } },
 			});
 			const before = structuredClone(user);
-			expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
+			env.applyCustomOAuthUserFields(user);
 			expect(user).toEqual(before);
 		});
 	});

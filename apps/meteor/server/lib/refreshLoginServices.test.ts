@@ -1,6 +1,6 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
-import p from 'proxyquire';
+import { mockModel } from '@rocket.chat/models/testing';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -9,14 +9,20 @@ const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const updateOAuthServices = sandbox.stub().resolves();
 const updateCasServices = sandbox.stub().resolves();
 
-const { refreshLoginServices } = p.noCallThru().load('./refreshLoginServices.ts', {
-	'@rocket.chat/models': { LoginServiceConfiguration },
-	'./notifyListener': { notifyOnLoginServiceConfigurationChanged },
-	'./oauth/updateOAuthServices': { updateOAuthServices },
-	'./cas/updateCasService': { updateCasServices },
+let refreshLoginServices: any;
+
+before(async () => {
+	mock.module('./notifyListener', { exports: { notifyOnLoginServiceConfigurationChanged } });
+	mock.module('./oauth/updateOAuthServices', { exports: { updateOAuthServices } });
+	mock.module('./cas/updateCasService', { exports: { updateCasServices } });
+	({ refreshLoginServices } = await import('./refreshLoginServices'));
 });
 
 describe('refreshLoginServices', () => {
+	before(() => {
+		mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
+	});
+
 	it('should tell connected clients about every login service it removes before rebuilding them', async () => {
 		await refreshLoginServices();
 

@@ -1,8 +1,8 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import { useSetupWizardContext } from '../contexts/SetupWizardContext';
-import { useCloudConfirmationPoll } from '../hooks/useCloudConfirmationPoll';
+import { useSetupWizardContext } from '../contexts/SetupWizardContext.js';
+import { useCloudConfirmationPoll } from '../hooks/useCloudConfirmationPoll.js';
 
 const CloudAccountConfirmation = () => {
 	const { i18n } = useTranslation();

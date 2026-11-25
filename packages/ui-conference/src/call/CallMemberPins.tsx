@@ -1,6 +1,6 @@
-import ParticipantPin from './ParticipantPin';
-import ScreenPin from './ScreenPin';
-import { useCallPins, useCallState } from './context';
+import ParticipantPin from './ParticipantPin.js';
+import ScreenPin from './ScreenPin.js';
+import { useCallPins, useCallState } from './context.js';
 
 export type CallMemberPinsProps = {
 	memberId: string;

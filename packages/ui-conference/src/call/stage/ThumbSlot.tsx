@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-import type { SpotlightOrientation } from '../lib/stageTiles';
-import { STRIP_SCREEN_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles';
+import type { SpotlightOrientation } from '../lib/stageTiles.js';
+import { STRIP_SCREEN_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles.js';
 
 export type ThumbSlotProps = {
 	orientation: SpotlightOrientation;

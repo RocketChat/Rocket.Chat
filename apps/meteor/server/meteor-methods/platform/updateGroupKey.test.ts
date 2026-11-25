@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const models = {
@@ -16,13 +15,17 @@ const models = {
 	},
 };
 
-const { updateGroupKey } = proxyquire.noCallThru().load('./updateGroupKey.ts', {
-	'../../lib/notifyListener': {
-		notifyOnSubscriptionChanged: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
-		notifyOnSubscriptionChangedById: sinon.stub(),
-	},
-	'meteor/meteor': { Meteor: { methods: sinon.stub() } },
+let updateGroupKey: any;
+
+before(async () => {
+	mock.module('../../lib/notifyListener', {
+		exports: {
+			notifyOnSubscriptionChanged: sinon.stub(),
+			notifyOnRoomChangedById: sinon.stub(),
+			notifyOnSubscriptionChangedById: sinon.stub(),
+		},
+	});
+	({ updateGroupKey } = await import('./updateGroupKey'));
 });
 
 describe('updateGroupKey', () => {

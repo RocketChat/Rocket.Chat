@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const License = {
@@ -35,30 +34,43 @@ const serverFetch = sinon.stub();
 
 const getHiddenMessageIds = sinon.stub();
 
-const { AISearchService } = proxyquire.noCallThru().load('./service', {
-	'@rocket.chat/core-services': {
-		License,
-		ServiceClass: class {
-			protected name = '';
-		},
-	},
-	'../../settings': {
-		settings: cachedSettings,
-	},
-	'@rocket.chat/logger': {
-		Logger: class {
-			debug = sinon.stub();
+let AISearchService: typeof import('./service').AISearchService;
 
-			warn = sinon.stub();
+before(async () => {
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			License,
+			ServiceClass: class {
+				protected name = '';
+			},
 		},
-	},
-	'@rocket.chat/server-fetch': {
-		serverFetch,
-	},
-	'../../lib/messages/historyVisibility': {
-		getHiddenMessageIds,
-		historyCheckedMessageProjection: { _id: 1, rid: 1, ts: 1, tmid: 1, tshow: 1, replies: 1 },
-	},
+	});
+	mock.module('../../settings', {
+		exports: {
+			settings: cachedSettings,
+		},
+	});
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				debug = sinon.stub();
+
+				warn = sinon.stub();
+			},
+		},
+	});
+	mock.module('@rocket.chat/server-fetch', {
+		exports: {
+			serverFetch,
+		},
+	});
+	mock.module('../../lib/messages/historyVisibility', {
+		exports: {
+			getHiddenMessageIds,
+			historyCheckedMessageProjection: { _id: 1, rid: 1, ts: 1, tmid: 1, tshow: 1, replies: 1 },
+		},
+	});
+	({ AISearchService } = await import('./service'));
 });
 
 type CursorResult<T> = {

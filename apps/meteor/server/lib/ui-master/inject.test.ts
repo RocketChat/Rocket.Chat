@@ -1,23 +1,23 @@
-import { beforeEach, describe, it } from 'node:test';
+import { beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import type { NextHandleFunction } from 'connect';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const rawModHtml = sinon.stub();
 const rawBody = sinon.stub();
 const connectHandlersUse = sinon.stub();
 
-const loadInject = () =>
-	p
-		.noCallThru()
-		.noPreserveCache()
-		.load('./inject.ts', {
-			'meteor/meteorhacks:inject-initial': { Inject: { rawModHtml, rawBody } },
-			'meteor/webapp': { WebApp: { connectHandlers: { use: connectHandlersUse } } },
-			'../utils/getURL': { getURL: (path: string) => `/${path}` },
-		});
+const loadInject = (): typeof import('./inject') => {
+	mock.module(require.resolve('meteor/meteorhacks:inject-initial'), { exports: { Inject: { rawModHtml, rawBody } } });
+	mock.module(require.resolve('meteor/webapp'), { exports: { WebApp: { connectHandlers: { use: connectHandlersUse } } } });
+	mock.module('../utils/getURL', { exports: { getURL: (path: string) => `/${path}` } });
+	delete require.cache[require.resolve('./inject')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const inject = require('./inject');
+	mock.restoreAll();
+	return inject;
+};
 
 const nextTick = () => new Promise((resolve) => setImmediate(resolve));
 

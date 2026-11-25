@@ -1,6 +1,6 @@
-import MessageFooterCallout from './MessageFooterCallout';
-import MessageFooterCalloutAction from './MessageFooterCalloutAction';
-import MessageFooterCalloutContent from './MessageFooterCalloutContent';
-import MessageFooterCalloutDivider from './MessageFooterCalloutDivider';
+import MessageFooterCallout from './MessageFooterCallout.js';
+import MessageFooterCalloutAction from './MessageFooterCalloutAction.js';
+import MessageFooterCalloutContent from './MessageFooterCalloutContent.js';
+import MessageFooterCalloutDivider from './MessageFooterCalloutDivider.js';
 
 export { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutDivider, MessageFooterCalloutContent };

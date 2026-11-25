@@ -4,7 +4,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { TotpActionsWrapper } from './TotpForm.styles';
+import { TotpActionsWrapper } from './TotpForm.styles.js';
 
 export type TotpFormPayload = {
 	totpCode: string;

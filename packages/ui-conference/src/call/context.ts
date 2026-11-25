@@ -1,6 +1,6 @@
 import { createRequiredContext } from '@rocket.chat/ui-media';
 
-import type { CallPinsValue } from './hooks/useCallPinsState';
+import type { CallPinsValue } from './hooks/useCallPinsState.js';
 
 /** The reader, as the call running in this window has them. Each stream is present only while it is live. */
 export type CallSelf = {
