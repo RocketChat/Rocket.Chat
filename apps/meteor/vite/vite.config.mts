@@ -442,7 +442,7 @@ export default defineConfig({
 			{ find: /^swiper\/modules\/zoom\.css$/, replacement: join(swiperRoot, 'modules/zoom.css') },
 			...workspaceSourceAliases,
 		],
-		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage', '@react-aria/focus'],
+		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage', '@react-aria/focus', 'date-fns'],
 	},
 	define: {
 		'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
