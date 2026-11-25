@@ -69,6 +69,9 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt?: Date): Promise<void>;
 	addUserProviderParticipantById(callId: string, uid: IUser['_id'], participant: IVideoConferenceProviderParticipant): Promise<void>;
 	setUserProviderParticipantLeftById(callId: string, uid: IUser['_id'], participantId: string, leftAt: Date): Promise<void>;
+	setUserJoinedIfConnectedById(callId: string, uid: IUser['_id'], joinedAt: Date): Promise<boolean>;
+	setUserLeftIfDisconnectedById(callId: string, uid: IUser['_id'], leftAt: Date, connectedAt: Date): Promise<boolean>;
+	unsetUserRingingById(callId: string, uid: IUser['_id']): Promise<void>;
 	setUserLeftById(callId: string, uid: IUser['_id'], leftAt?: Date, reason?: VideoConferenceLeaveReason): Promise<void>;
 	setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt?: Date): Promise<void>;
 

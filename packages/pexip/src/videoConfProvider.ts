@@ -15,6 +15,7 @@ export class PexipVideoConfProvider {
 		cam: false,
 		title: true,
 		persistentChat: true,
+		providerPresence: true,
 	};
 
 	constructor(public readonly pexip: Pexip) {

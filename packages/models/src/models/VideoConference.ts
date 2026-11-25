@@ -422,6 +422,70 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	/**
+	 * Marks a member as being in the call, if they have a connection still up and are not already marked.
+	 *
+	 * The condition is in the query so that a connection and a disconnection of the same member, reported at
+	 * the same time, settle on the state the connections describe whichever write lands last.
+	 */
+	public async setUserJoinedIfConnectedById(callId: string, uid: IUser['_id'], joinedAt: Date): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{
+				_id: callId,
+				endedAt: { $exists: false },
+				users: {
+					$elemMatch: {
+						_id: uid,
+						providerParticipants: { $elemMatch: { leftAt: { $exists: false } } },
+						$or: [{ joined: { $ne: true } }, { leftAt: { $exists: true } }],
+					},
+				},
+			},
+			{
+				$set: { 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt },
+				$unset: { 'users.$[user].leftAt': 1, 'users.$[user].leftReason': 1, 'users.$[user].ringingAt': 1 },
+			},
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+
+		return modifiedCount > 0;
+	}
+
+	/**
+	 * Marks a member as having left, if none of their connections is still up and they are not already marked.
+	 *
+	 * A connection that ended was one they were in the call on, even when its start was never seen being
+	 * recorded, so this also marks them as having joined — from `connectedAt`, unless they joined earlier.
+	 */
+	public async setUserLeftIfDisconnectedById(callId: string, uid: IUser['_id'], leftAt: Date, connectedAt: Date): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{
+				_id: callId,
+				endedAt: { $exists: false },
+				users: {
+					$elemMatch: {
+						_id: uid,
+						leftAt: { $exists: false },
+						providerParticipants: { $not: { $elemMatch: { leftAt: { $exists: false } } } },
+					},
+				},
+			},
+			{
+				$set: { 'users.$[user].leftAt': leftAt, 'users.$[user].joined': true },
+				$min: { 'users.$[user].joinedAt': connectedAt },
+				$unset: { 'users.$[user].leftReason': 1 },
+			},
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+
+		return modifiedCount > 0;
+	}
+
+	/** Stops showing a member as being rung, without saying anything about whether they are in the call. */
+	public async unsetUserRingingById(callId: string, uid: IUser['_id']): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { 'users.$[user].ringingAt': 1 } }, { arrayFilters: [{ 'user._id': uid }] });
+	}
+
 	/** Records when one of a member's connections ended. */
 	public async setUserProviderParticipantLeftById(callId: string, uid: IUser['_id'], participantId: string, leftAt: Date): Promise<void> {
 		await this.updateOne(

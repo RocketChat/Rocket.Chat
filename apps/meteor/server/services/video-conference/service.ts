@@ -548,6 +548,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
 	}
 
+	/** Whether the provider's own report of who is connected is what decides who is in the call. */
+	private hasProviderPresence(providerName: string): boolean {
+		return videoConfProviders.getProviderCapabilities(providerName)?.providerPresence === true;
+	}
+
 	private supportsPersistentChat(providerName: string): boolean {
 		return videoConfProviders.getProviderCapabilities(providerName)?.persistentChat === true;
 	}
@@ -1489,7 +1494,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// (it no-ops for an existing member), the second marks them present. Running both also closes the race
 		// where two joins land between the read above and the write.
 		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts });
-		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
+		if (this.hasProviderPresence(call.providerName)) {
+			// Joining is still answering, so the ring stops. Being in the call waits for the provider to say so.
+			await VideoConferenceModel.unsetUserRingingById(call._id, _id);
+		} else {
+			await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
+		}
 		this.notifyConferenceUpdate(call._id);
 		// And the room, as every other change to the roster does, so the call's message block keeps its count.
 		this.notifyVideoConfUpdate(call.rid, call._id);
@@ -1794,6 +1804,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		// The provider reports the departure itself, from the connection that actually ended: a window closing
+		// says nothing about the member's other windows and devices. Only the leaver's own popups are ours to close.
+		if (this.hasProviderPresence(call.providerName)) {
+			if (this.runsInOurCallWindow(call.providerName)) {
+				this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+			}
+			return;
+		}
+
 		const leftAt = new Date();
 		await VideoConferenceModel.setUserLeftById(callId, uid, leftAt);
 		this.notifyVideoConfUpdate(call.rid, callId);
@@ -1857,7 +1876,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * Records a connection the provider reported a member making, or its end, so every window can pair the
 	 * member with each of their connections by id rather than by the name the provider shows.
 	 *
-	 * An end can be the first the server hears of a connection, so it records the connection as well.
+	 * For a provider that reports presence, this is also what puts the member in the call and takes them out:
+	 * in while any of their connections is up, out once the last one ends. An end can be the first the server
+	 * hears of a connection, so it records the connection as well.
+	 *
+	 * The last member leaving does not end the call: guests and phones the conference has no member for can
+	 * still be in it. The provider reports the call ending as well, and that is what ends it.
 	 */
 	public async recordProviderParticipant(
 		callId: VideoConference['_id'],
@@ -1870,6 +1894,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		this.notifyConferenceUpdate(callId);
+
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, providerName: 1 } });
+		if (!call || !this.hasProviderPresence(call.providerName)) {
+			return;
+		}
+
+		// Each write only happens if the member's connections, as they stand when it lands, call for it. Asking
+		// whether it happened, rather than reading the member first, keeps two events for one member from racing.
+		const changed = participant.leftAt
+			? await VideoConferenceModel.setUserLeftIfDisconnectedById(callId, uid, participant.leftAt, participant.connectedAt)
+			: await VideoConferenceModel.setUserJoinedIfConnectedById(callId, uid, participant.connectedAt);
+		if (!changed) {
+			return;
+		}
+
+		this.notifyConferenceUpdate(callId);
+		this.notifyVideoConfUpdate(call.rid, callId);
 	}
 
 	/**

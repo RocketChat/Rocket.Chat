@@ -510,7 +510,9 @@ after an admin toggled it and end a call still running in Jitsi. The cost is tha
 URL provider stays outside the sweep, waiting on the 24-hour TTL cron; closing that needs the call to carry how
 it was opened rather than the sweep guessing from a setting that can have changed since.
 
-This is deliberately **provider-agnostic**, and deliberately the *only* source of presence: the renewing window is
+This is deliberately **provider-agnostic**, and deliberately the *only* source of presence — for a provider that
+can't report presence itself (see [When the provider reports presence](#when-the-provider-reports-presence) for one
+that can): the renewing window is
 ours whether the call renders inside it or is handed to an iframe, so it needs no cooperation from Pexip, Jitsi,
 LiveKit or anyone else. Who is in a call is answered in one place, by evidence we own — a second source that could
 disagree with the roster is how a call ends up counted as occupied by one half of the code and empty by the other.
@@ -520,6 +522,35 @@ iframe and leave the tab open and you stay listed until the window closes; a win
 throttled hard enough to miss `PRESENCE_LEASE_MS` of renewals reads as gone until it renews again. Both are the
 cost of a single source of truth, and the lease is long enough — three minutes against a thirty-second heartbeat —
 that the second needs five missed renewals in a row.
+
+### When the provider reports presence
+
+A provider whose capabilities say `providerPresence` — Pexip, through its event sink — reports every connection
+itself, with the user id it was given as `callTag` and the times it connected and disconnected. For such a call
+that report is the **only** source of presence, and everything above about leaving and leases does not apply:
+
+- **Joining** from Rocket.Chat (`video-conference.join`) makes the user a member and counts as answering: the
+  ring stops and a direct call starts. It does not put them in the call. That waits for the provider.
+- **A connection** puts the member in the call from its `connect_time`, unless they already are.
+- **A disconnection** takes them out at its `end_time`, but only once none of their connections is still up: a
+  second window or device keeps them in the call. A disconnection is also proof they were in it, so a member
+  whose connection was never seen arriving is marked as having joined too.
+- **The call window leaving** (`pagehide`, the opener's watch, the plugin's `disconnected`) changes nothing in the
+  roster. It says nothing about the member's other windows and devices. It still closes the leaver's own popups.
+- **The call ends** when the provider reports it ending (`conference_ended`), not when the last member leaves:
+  guests and telephones that have no member can still be in it. A Pexip conference's name is always the call's
+  `_id`, which is what lets that event find it.
+
+Both presence writes are conditional updates (`setUserJoinedIfConnectedById`, `setUserLeftIfDisconnectedById`)
+that read the member's connections as they stand when the write lands. Two events for one member can be handled
+at the same time, and asking the database rather than reading first is what keeps them from settling on a
+state their connections contradict.
+
+Nothing is inferred. Pexip retries an event it could not deliver every second and queues the rest, so a
+departure that happened while the workspace was down still arrives, late, with its real time. A Pexip call is
+not `embedded`, so the heartbeat sweep never touched it anyway. What isn't covered is an event Pexip gives up
+on, and a workspace without the event sink configured or on Infinity older than v33: nobody connects with a
+tag there, so nobody is ever shown as in the call.
 
 ### The window that opened the call watches it
 
@@ -936,9 +967,9 @@ and later), and Pexip repeats it with the participant's `uuid` and connect time 
 with the end time on `participant_disconnected`. The server keeps one entry per connection on the member —
 `{ id, connectedAt, leftAt? }` — so a reload, a second window or a second device each add one rather than
 replacing the last. A disconnect can be the first the server hears of a connection, so it records the
-connection as well. For now these entries only identify people; presence still comes from the window (see
-[Knowing who is still in the call](#knowing-who-is-still-in-the-call)). The plugin can't do any of this itself:
-its API does not expose a participant's call tag.
+connection as well. These entries are also what decides whether the member is in the call (see
+[When the provider reports presence](#when-the-provider-reports-presence)). The plugin can't do any of this
+itself: its API does not expose a participant's call tag.
 
 A member connected from several places has one row, carrying the newest connection's controls — for the viewer,
 always their own window's, which the plugin reports before the event sink has been heard from. Each other
