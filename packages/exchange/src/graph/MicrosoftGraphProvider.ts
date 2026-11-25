@@ -25,7 +25,8 @@ const GRAPH_API_VERSION = 'v1.0';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
-const MASTER_FETCH_BATCH_SIZE = 5;
+/** Outlook takes at most four requests at once from one app on one mailbox. */
+const MASTER_FETCH_BATCH_SIZE = 4;
 
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
