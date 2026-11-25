@@ -41,7 +41,9 @@ const CallParticipantItem = ({ member, ...props }: CallParticipantItemProps) => 
 					<ItemTitle>{name}</ItemTitle>
 					<CallParticipantStatus participant={participant} />
 				</ItemRow>
-				<ItemDescription>{t(member ? 'Another_connection' : 'External_participant')}</ItemDescription>
+				<ItemDescription>
+					{[participant.isHost && t('Host'), t(member ? 'Another_connection' : 'External_participant')].filter(Boolean).join(' · ')}
+				</ItemDescription>
 			</ItemContent>
 			<ItemActions>
 				<CallParticipantControls name={name} {...props} />

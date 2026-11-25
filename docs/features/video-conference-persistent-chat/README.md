@@ -373,6 +373,12 @@ The entry accumulates rather than replaces — `joined` never goes back to false
 after the person changes their mind — so the fields are read in order of what happened *last*. Being in the call
 beats everything; having left beats an earlier decline, since they did answer.
 
+A row the provider has as a host says **Host** on its second line, ahead of any status — "Host · External
+participant" for a room system or dial-in that hosts. It is the provider's `isHost` for the connection that row
+carries, so it appears only where a plugin sends a roster, and follows a promotion or demotion as soon as the
+next roster arrives. The viewer's own row says **You** on the same line, first — "You · Host" for a viewer who
+hosts — so they can find themselves in a long list.
+
 Members who can't read the chat carry an icon beside their name — beside, because it qualifies who that person
 is in the call, and a second line pushed every row apart for something most members never have. It is the one
 thing about a member the other participants can act on (from the notice above the call). Anyone not currently in the call can be **rung individually**,

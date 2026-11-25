@@ -77,7 +77,12 @@ const CallMemberItem = ({
 	const status = getConferenceMemberStatus(member);
 
 	const ringing = useIsRinging(member);
-	const description = status !== 'joined' && (ringing ? 'Ringing' : statusLabel[status]);
+	const statusText = status !== 'joined' && (ringing ? 'Ringing' : statusLabel[status]);
+	// Who this is to the reader, then the provider's word on who runs the call for whichever of their connections
+	// this row carries, then where they stand.
+	const description = [member._id === ownUserId && t('You'), controls?.participant.isHost && t('Host'), statusText && t(statusText)]
+		.filter(Boolean)
+		.join(' · ');
 
 	const canRing = status !== 'joined' && !ringing;
 	const isLive = status === 'joined' && !muted;
@@ -96,7 +101,9 @@ const CallMemberItem = ({
 						{nameOrUsername} {displayUsername && <ItemDescription inline>{displayUsername}</ItemDescription>}
 					</ItemTitle>
 				</ItemRow>
-				{description && <ItemDescription>{t(description)}</ItemDescription>}
+				{/* Rendered even when empty: Fuselage spaces a row's slots wider once it has a second line, and the
+				    rows of one list have to line up whichever of them has something to say. */}
+				<ItemDescription>{description}</ItemDescription>
 			</ItemContent>
 			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
 				<ItemActions>
