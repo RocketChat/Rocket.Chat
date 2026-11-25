@@ -1,4 +1,7 @@
+import fs from 'node:fs';
 import net from 'node:net';
+import path from 'node:path';
+import tls from 'node:tls';
 
 import { Emitter } from '@rocket.chat/emitter';
 import type Element from 'ltx/lib/Element';
@@ -9,6 +12,7 @@ import type { Logger } from '../../src/logger';
 import { S2SManager } from '../../src/s2s/S2SManager';
 import { generateDialbackKey } from '../../src/s2s/dialback';
 import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
+import { xml } from '../../src/xml/build';
 
 jest.setTimeout(30000);
 
@@ -22,6 +26,8 @@ const silentLogger: Logger = {
 	error: () => undefined,
 	child: () => silentLogger,
 };
+
+const fixture = (name: string) => fs.readFileSync(path.join(__dirname, '..', 'fixtures', name), 'utf8');
 
 const secretOf = (domain: string) => `secret-of-${domain}`;
 
@@ -39,7 +45,11 @@ async function waitUntil(condition: () => boolean, timeoutMs = 5000): Promise<vo
 class RawPeer {
 	private buffer = '';
 
-	private constructor(private readonly socket: net.Socket) {
+	private constructor(private socket: net.Socket) {
+		this.listen(socket);
+	}
+
+	private listen(socket: net.Socket): void {
 		socket.setEncoding('utf8');
 		socket.on('data', (chunk: string) => {
 			this.buffer += chunk;
@@ -71,6 +81,20 @@ class RawPeer {
 
 	write(data: string): void {
 		this.socket.write(data);
+	}
+
+	/** Takes the server side of a TLS handshake on this connection, after `<proceed/>`. */
+	async acceptTls(options: { cert: string; key: string }): Promise<void> {
+		this.socket.removeAllListeners('data');
+		const secure = new tls.TLSSocket(this.socket, { isServer: true, ...options });
+		await new Promise<void>((resolve, reject) => secure.once('secure', resolve).once('error', reject));
+		this.socket = secure;
+		this.listen(secure);
+	}
+
+	/** Forgets what was received so far, so a pattern matches only what arrives next. */
+	clear(): void {
+		this.buffer = '';
 	}
 
 	async waitFor(pattern: RegExp, timeoutMs = 10_000): Promise<RegExpMatchArray> {
@@ -222,32 +246,201 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		const [features] = await peer.waitFor(/<stream:features>[\s\S]*<\/stream:features>/);
 		expect(features).not.toContain('stream:error');
 	});
+});
 
-	it('closes a dialback verification stream flooded with negotiation elements (R19)', async () => {
-		const hostileServer = net.createServer();
+describe('Negotiation elements an outbound stream holds (s2s-connectivity R19)', () => {
+	const LIMIT = 32;
+	const OVERFLOW_WARNING = 'Too many unrequested negotiation elements';
+
+	const ports = new Map<string, number>();
+	const resolver: XmppDnsResolver = async (domain) => {
+		const port = ports.get(domain);
+		if (!port) {
+			throw new Error(`No test route for domain ${domain}`);
+		}
+		return [{ host: '127.0.0.1', port }];
+	};
+
+	const warnings: string[] = [];
+	const recordingLogger: Logger = {
+		...silentLogger,
+		warn: (_obj, msg) => {
+			if (msg) {
+				warnings.push(msg);
+			}
+		},
+		child: () => recordingLogger,
+	};
+
+	const events = new Emitter<XMPPServerEventMap>();
+	const peers: RawPeer[] = [];
+	let manager: S2SManager;
+	let hostileServer: net.Server;
+	let hostilePort: number;
+
+	/** Elements in the dialback namespace that no step of ours asked for. */
+	const unrequested = (count: number) => '<db:result/>'.repeat(count);
+
+	/** What the hostile server says when b.localhost connects to it: a header and empty features, so dialback follows. */
+	const hostileHeader = (id: string) =>
+		`<?xml version='1.0'?><stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' xmlns:db='jabber:server:dialback' from='evil.localhost' to='b.localhost' id='${id}' version='1.0'><stream:features/>`;
+
+	/** A peer claims evil.localhost on b.localhost; resolves once b.localhost asked the hostile server to verify the key. */
+	const claimHostileDomain = async () => {
+		const verifyConnection = RawPeer.accept(hostileServer);
+		const { peer } = await RawPeer.open(ports.get('b.localhost') as number, 'evil.localhost', 'b.localhost');
+		peers.push(peer);
+		peer.write(`<db:result from='evil.localhost' to='b.localhost'>${'0'.repeat(64)}</db:result>`);
+
+		const authoritative = await verifyConnection;
+		peers.push(authoritative);
+		await authoritative.waitFor(/<stream:stream[^>]*>/);
+		authoritative.write(hostileHeader('verify'));
+		const [, id] = await authoritative.waitFor(/<db:verify[^>]*\sid=["']([^"']+)["']/);
+		const validAnswer = `<db:verify from='evil.localhost' to='b.localhost' id='${id}' type='valid'/>`;
+		return { peer, authoritative, validAnswer };
+	};
+
+	/** The type of the db:result b.localhost echoed to the claiming peer. */
+	const verdictFor = async (peer: RawPeer) => (await peer.waitFor(/<db:result[^>]*type=["'](\w+)["']/))[1];
+
+	beforeAll(async () => {
+		hostileServer = net.createServer();
 		await new Promise<void>((resolve) => hostileServer.listen(0, '127.0.0.1', resolve));
-		ports.set('evil.localhost', (hostileServer.address() as net.AddressInfo).port);
+		hostilePort = (hostileServer.address() as net.AddressInfo).port;
+
+		manager = new S2SManager({
+			config: resolveConfig({
+				domain: 'b.localhost',
+				port: 0,
+				bindAddress: '127.0.0.1',
+				requireTls: false,
+				tls: { cert: fixture('b.localhost.cert.pem'), key: fixture('b.localhost.key.pem') },
+				dialbackSecret: secretOf('b.localhost'),
+				logger: recordingLogger,
+			}),
+			logger: recordingLogger,
+			resolver,
+			events,
+			onStanza: () => undefined,
+		});
+		await manager.startListener();
+		ports.set('b.localhost', manager.listeningPort as number);
+	});
+
+	beforeEach(() => {
+		ports.set('evil.localhost', hostilePort);
+	});
+
+	afterEach(() => {
+		peers.splice(0).forEach((peer) => peer.destroy());
+		warnings.length = 0;
+	});
+
+	afterAll(async () => {
+		await manager.stopAll();
+		hostileServer.close();
+	});
+
+	it('completes a verification with as many unrequested elements held as the limit allows', async () => {
+		const { peer, authoritative, validAnswer } = await claimHostileDomain();
+		authoritative.write(unrequested(LIMIT));
+		authoritative.write(validAnswer);
+		expect(await verdictFor(peer)).toBe('valid');
+	});
+
+	it('closes a verification stream with policy-violation on the first element past the limit, and gives the error verdict', async () => {
+		const { peer, authoritative } = await claimHostileDomain();
+		authoritative.write(unrequested(LIMIT + 1));
+		expect(await authoritative.streamError()).toBe('policy-violation');
+		expect(await verdictFor(peer)).toBe('error');
+	});
+
+	it('does not count elements outside the stream, TLS, SASL and dialback namespaces', async () => {
+		const { peer, authoritative, validAnswer } = await claimHostileDomain();
+		authoritative.write('<message/>'.repeat(LIMIT * 3));
+		authoritative.write(validAnswer);
+		expect(await verdictFor(peer)).toBe('valid');
+	});
+
+	it('gives the error verdict when the limit is crossed in the same read as a valid answer', async () => {
+		const { peer, authoritative, validAnswer } = await claimHostileDomain();
+		authoritative.write(validAnswer + unrequested(LIMIT + 1));
+		expect(await verdictFor(peer)).toBe('error');
+	});
+
+	it('stops handling elements once the limit closed the stream', async () => {
+		const { authoritative } = await claimHostileDomain();
+		authoritative.write(unrequested(LIMIT * 30));
+		expect(await authoritative.streamError()).toBe('policy-violation');
+		expect(warnings.filter((warning) => warning === OVERFLOW_WARNING)).toHaveLength(1);
+	});
+
+	/** Sends a message to evil.localhost and resolves with the connection b.localhost opens for it, its header already received. */
+	const outboundToHostile = async (): Promise<RawPeer> => {
+		const connection = RawPeer.accept(hostileServer);
+		manager
+			.sendStanza(xml('message', { from: 'alice@b.localhost', to: 'mallory@evil.localhost' }, xml('body', {}, 'x')))
+			.catch(() => undefined);
+		const remote = await connection;
+		peers.push(remote);
+		await remote.waitFor(/<stream:stream[^>]*>/);
+		return remote;
+	};
+
+	it('does not report a connection whose peer crosses the limit right after accepting dialback', async () => {
+		const established: string[] = [];
+		const off = events.on('connection.established', ({ domain, direction }) => established.push(`${direction}:${domain}`));
 
 		try {
-			const verifyConnection = RawPeer.accept(hostileServer);
-			const { peer } = await RawPeer.open(ports.get('b.localhost') as number, 'evil.localhost', 'b.localhost');
-			peers.push(peer);
-			peer.write(`<db:result from='evil.localhost' to='b.localhost'>${'0'.repeat(64)}</db:result>`);
-
-			const authoritative = await verifyConnection;
-			peers.push(authoritative);
-			await authoritative.waitFor(/<stream:stream[^>]*>/);
-			authoritative.write(
-				`<?xml version='1.0'?><stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' xmlns:db='jabber:server:dialback' from='evil.localhost' to='b.localhost' id='flood' version='1.0'><stream:features/>`,
-			);
-			await authoritative.waitFor(/<db:verify/);
-			authoritative.write('<db:result/>'.repeat(1000));
-
-			expect(await authoritative.streamError()).toBe('policy-violation');
-			await peer.waitFor(/<db:result[^>]*type=["']error["']/);
-		} finally {
+			const remote = await outboundToHostile();
+			remote.write(hostileHeader('outbound'));
+			await remote.waitFor(/<db:result[^>]*>[^<]+<\/db:result>/);
+			// Later attempts find no route, so the queued message is rejected instead of reconnecting to a server nobody answers on
 			ports.delete('evil.localhost');
-			hostileServer.close();
+			remote.write(`<db:result from='evil.localhost' to='b.localhost' type='valid'/>${unrequested(LIMIT + 1)}`);
+
+			expect(await remote.streamError()).toBe('policy-violation');
+			await new Promise((resolve) => setTimeout(resolve, 200));
+			expect(established).not.toContain('outbound:evil.localhost');
+		} finally {
+			off();
+		}
+	});
+
+	it('does not report a connection whose peer crosses the limit right after accepting SASL EXTERNAL', async () => {
+		const established: string[] = [];
+		const off = events.on('connection.established', ({ domain, direction }) => established.push(`${direction}:${domain}`));
+		const streamHeader = (id: string, features: string) =>
+			`<stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' xmlns:db='jabber:server:dialback' from='evil.localhost' to='b.localhost' id='${id}' version='1.0'><stream:features>${features}</stream:features>`;
+
+		try {
+			const remote = await outboundToHostile();
+			remote.write(`<?xml version='1.0'?>${streamHeader('plain', "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>")}`);
+			await remote.waitFor(/<starttls/);
+			remote.write("<proceed xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+			await remote.acceptTls({ cert: fixture('a.localhost.cert.pem'), key: fixture('a.localhost.key.pem') });
+
+			await remote.waitFor(/<stream:stream[^>]*>/);
+			remote.write(
+				streamHeader('secure', "<mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>EXTERNAL</mechanism></mechanisms>"),
+			);
+			await remote.waitFor(/<auth[^>]*mechanism=["']EXTERNAL["']/);
+			remote.clear();
+			remote.write("<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>");
+
+			await remote.waitFor(/<stream:stream[^>]*>/);
+			ports.delete('evil.localhost');
+			// The features follow the header in a later read, so they answer a step that is already waiting
+			remote.write(streamHeader('authenticated', '').replace('<stream:features></stream:features>', ''));
+			await new Promise((resolve) => setTimeout(resolve, 100));
+			remote.write(`<stream:features/>${unrequested(LIMIT + 1)}`);
+
+			expect(await remote.streamError()).toBe('policy-violation');
+			await new Promise((resolve) => setTimeout(resolve, 200));
+			expect(established).not.toContain('outbound:evil.localhost');
+		} finally {
+			off();
 		}
 	});
 });
