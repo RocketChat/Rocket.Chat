@@ -404,10 +404,15 @@ const RichTextMessageBox = ({
 
 		const files = extractImageFilesFromClipboard(event, format);
 
-		if (isEditing) {
-			dispatchToastMessage({ type: 'error', message: t('Files_cannot_be_attached_while_editing') });
-		} else {
-			handleUploadFiles?.(files);
+		if (files.length) {
+			event.preventDefault();
+
+			if (isEditing) {
+				dispatchToastMessage({ type: 'error', message: t('Files_cannot_be_attached_while_editing') });
+			} else {
+				handleUploadFiles?.(files);
+			}
+			return;
 		}
 
 		const pastedText = extractPastedPlainText(event);
