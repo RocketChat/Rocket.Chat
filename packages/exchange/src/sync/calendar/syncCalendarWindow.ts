@@ -6,13 +6,11 @@ import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
-import { isExchangeError } from '../../errors';
+import { FATAL_CODES, isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubText } from '../../scrub';
 
 export const MAX_EVENT_PAGES = 50;
-
-const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 
 export type CalendarSyncOutcome = {
 	upserted: number;

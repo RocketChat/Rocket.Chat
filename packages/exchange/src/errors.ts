@@ -19,8 +19,10 @@ export type ExchangeErrorCode =
 	| 'ntlm-unavailable'
 	/** A configured host is not one of Microsoft's own endpoints, so no credential is sent to it. */
 	| 'endpoint-not-recognized'
-	/** Rate limited and out of retries. */
+	/** Rate limited beyond one mailbox (the EWS service account, or the Graph app or tenant) and out of retries. */
 	| 'rate-limited'
+	/** Graph throttled this one mailbox and retries ran out. Other mailboxes are not affected. */
+	| 'mailbox-rate-limited'
 	/** Another sync of the same mailbox is running, on this instance or another. Exchange was never asked. */
 	| 'sync-in-progress'
 	/** The server answered, but not in a shape we understand. */

@@ -274,6 +274,18 @@ describe('MicrosoftGraphProvider', () => {
 			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({ code });
 		});
 
+		it.each([
+			['without a throttle scope', 'mailbox-rate-limited', undefined],
+			['scoped to the app in the tenant', 'rate-limited', 'Tenant_Application/ReadWrite/app-id/tenant-id'],
+			['scoped to the tenant', 'rate-limited', 'Tenant/Read/app-id/tenant-id'],
+			['scoped to the app', 'rate-limited', 'Application/Read/app-id/tenant-id'],
+		])('reports a 429 %s as %s once the retries run out', async (_label, code, scope) => {
+			const headers: Record<string, string | undefined> = { 'retry-after': '120', 'x-ms-throttle-scope': scope };
+			mockTokenThen({ ...graphResponse({ error: {} }, 429), headers: { get: (name: string) => headers[name] ?? null } });
+
+			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({ code });
+		});
+
 		it('maps 410 to unexpected-response outside a delta query, which has no sync state to reset', async () => {
 			mockTokenThen(graphResponse({ error: {} }, 410));
 

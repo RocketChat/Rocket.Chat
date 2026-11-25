@@ -15,6 +15,8 @@ import { sleep } from '../sleep';
  *   validation is the exception: it must never be looped on.
  * - A total budget bounds the call. Waiting less than the server asked only prolongs the throttling, so a
  *   wait that does not fit ends the attempt rather than being shortened.
+ * - A request that reads one mailbox reports running out on a 429 as that mailbox's, unless
+ *   `x-ms-throttle-scope` names the app or the tenant. Outlook throttles each app and mailbox pair apart.
  */
 
 const MAX_RETRIES = 5;
@@ -22,6 +24,11 @@ const DEFAULT_RETRY_AFTER_SECONDS = 60;
 const BACKOFF_BASE_MS = 1000;
 const RETRY_BUDGET_MS = 90000;
 const SSRF_REJECTION = 'error-ssrf-validation-failed';
+
+const THROTTLE_SCOPES = new Set(['Tenant', 'Application', 'Tenant_Application']);
+
+const isThrottledBeyondMailbox = (response: Response): boolean =>
+	THROTTLE_SCOPES.has(response.headers.get('x-ms-throttle-scope')?.split('/')[0] ?? '');
 
 const parseRetryAfterSeconds = (header: string | null): number | undefined => {
 	if (!header) {
@@ -46,7 +53,11 @@ const waitMsFor = (response: Response, attempt: number): number => {
 export async function fetchGraphWithRetry(
 	url: string,
 	options: ExtendedFetchOptions,
-	{ maxRetries = MAX_RETRIES, budgetMs = RETRY_BUDGET_MS }: { maxRetries?: number; budgetMs?: number } = {},
+	{
+		maxRetries = MAX_RETRIES,
+		budgetMs = RETRY_BUDGET_MS,
+		perMailbox = false,
+	}: { maxRetries?: number; budgetMs?: number; perMailbox?: boolean } = {},
 ): Promise<Response> {
 	const deadline = Date.now() + budgetMs;
 	let lastResponse: Response | undefined;
@@ -106,7 +117,9 @@ export async function fetchGraphWithRetry(
 	}
 
 	if (lastResponse?.status === 429) {
-		throw new ExchangeError('rate-limited', 'Exchange rate limit exceeded and retries exhausted', {
+		const code = perMailbox && !isThrottledBeyondMailbox(lastResponse) ? 'mailbox-rate-limited' : 'rate-limited';
+
+		throw new ExchangeError(code, 'Exchange rate limit exceeded and retries exhausted', {
 			detail: outOfBudget
 				? `the wait the server asked for does not fit the ${Math.round(budgetMs / 1000)}s retry budget`
 				: `gave up after ${maxRetries} retries`,

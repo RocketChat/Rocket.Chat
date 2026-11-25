@@ -327,6 +327,7 @@ describe('syncCalendarWindow', () => {
 			['host-not-allowed', true],
 			['authentication-failed', true],
 			['rate-limited', true],
+			['mailbox-rate-limited', false],
 			['mailbox-not-found', false],
 			['unexpected-response', false],
 		])('marks %s as fatal=%s, which is what stops the whole run', async (code, fatal) => {

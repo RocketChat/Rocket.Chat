@@ -546,14 +546,18 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	private async authorizedFetch(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'>): Promise<Response> {
 		const token = await this.tokenClient.getAccessToken();
 
-		return fetchGraphWithRetry(url, {
-			...init,
-			headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
-			timeout: REQUEST_TIMEOUT_MS,
-			// SSRF validation stays on: a cursor is a URL that Graph handed back.
-			ignoreSsrfValidation: false,
-			allowList: this.tokenClient.allowList,
-		});
+		return fetchGraphWithRetry(
+			url,
+			{
+				...init,
+				headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
+				timeout: REQUEST_TIMEOUT_MS,
+				// SSRF validation stays on: a cursor is a URL that Graph handed back.
+				ignoreSsrfValidation: false,
+				allowList: this.tokenClient.allowList,
+			},
+			{ perMailbox: true },
+		);
 	}
 
 	private async toError(response: Response, url: string, delta: boolean): Promise<ExchangeError> {
