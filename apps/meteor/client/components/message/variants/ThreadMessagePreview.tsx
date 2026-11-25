@@ -8,16 +8,18 @@ import {
 	ThreadMessageContainer,
 	ThreadMessageOrigin,
 	ThreadMessageBody,
-	ThreadMessageUnfollow,
+	ThreadMessageFollowIndicator,
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Messages } from '../../../stores';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -29,9 +31,9 @@ import { useParentMessage } from '../../../views/room/MessageList/hooks/useParen
 import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import Emoji from '../../Emoji';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
-import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 
 export type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
@@ -41,6 +43,8 @@ export type ThreadMessagePreviewProps = {
 
 const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps) => {
 	const parentMessage = useParentMessage(message.tmid);
+	const uid = useUserId();
+	const threadMainMessage = Messages.useStore((state) => state.get(message.tmid));
 
 	const translated = useShowTranslated(message);
 	const { t } = useTranslation();
@@ -112,7 +116,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							{messageType?.text(t, message)}
 							{parentMessage.isLoading && <Skeleton />}
 						</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						<ThreadMessageFollowIndicator following={Boolean(uid && threadMainMessage?.replies?.includes(uid))} />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
