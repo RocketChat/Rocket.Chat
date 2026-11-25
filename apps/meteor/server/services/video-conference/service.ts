@@ -233,6 +233,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return withRinging.type === 'direct' ? this.getTypeForNewVideoConference(rid, false) : withRinging;
 	}
 
+	public async getRoom(roomId: IVideoConferenceRoom['_id']): Promise<IVideoConferenceRoom | null> {
+		return VideoConferenceRooms.findOneById(roomId);
+	}
+
 	public async createRoom(uid: IUser['_id'], rid: IRoom['_id'], title: string): Promise<IVideoConferenceRoom> {
 		const providerName = await this.getValidatedProvider();
 		if (!this.isEmbeddedProvider(providerName)) {

@@ -72,6 +72,7 @@ export interface IVideoConfService {
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 
+	getRoom(roomId: IVideoConferenceRoom['_id']): Promise<IVideoConferenceRoom | null>;
 	createRoom(uid: IUser['_id'], rid: IRoom['_id'], title: string): Promise<IVideoConferenceRoom>;
 	renameRoom(roomId: IVideoConferenceRoom['_id'], title: string): Promise<IVideoConferenceRoom>;
 	deleteRoom(roomId: IVideoConferenceRoom['_id']): Promise<void>;

@@ -9,7 +9,7 @@ import { buildLink, createService } from './testHarness';
 let links: IVideoConferenceRoom[];
 let live: { _id: string; conferenceRoomId: string }[];
 
-const VideoConferenceRoomsMock = { findByRoomId: sinon.stub() };
+const VideoConferenceRoomsMock = { findByRoomId: sinon.stub(), findOneById: sinon.stub() };
 const VideoConferenceModelMock = { findActiveByConferenceRoomIds: sinon.stub(), findOneActiveByConferenceRoomId: sinon.stub() };
 
 const VideoConfService = createService({
@@ -53,5 +53,23 @@ describe('VideoConfService.listRooms', () => {
 		links = [];
 
 		expect(await service.listRooms('room1')).to.deep.equal([]);
+	});
+});
+
+describe('VideoConfService.getRoom', () => {
+	let service: any;
+
+	beforeEach(() => {
+		service = new VideoConfService();
+		VideoConferenceRoomsMock.findOneById.reset();
+	});
+
+	it('answers the link by its id, or null', async () => {
+		const link = buildLink();
+		VideoConferenceRoomsMock.findOneById.withArgs('link1').resolves(link);
+		VideoConferenceRoomsMock.findOneById.resolves(null);
+
+		expect(await service.getRoom('link1')).to.equal(link);
+		expect(await service.getRoom('unknown')).to.be.null;
 	});
 });

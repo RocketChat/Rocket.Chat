@@ -1,7 +1,6 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConferenceRoomWithOngoingCall } from '@rocket.chat/core-services';
 import type { IUser, IVideoConferenceRoom } from '@rocket.chat/core-typings';
-import { VideoConferenceRooms } from '@rocket.chat/models';
 import {
 	ajv,
 	isVideoConfRoomCreateProps,
@@ -14,7 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { canManageConferenceRoom } from '../../lib/videoConference/canManageConferenceRoom';
 import { getConferenceStartRefusal } from '../../lib/videoConference/getConferenceStartRefusal';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -62,14 +61,13 @@ const errorResponses = {
 	403: validateForbiddenErrorResponse,
 };
 
-/** Managing a link takes managing the calls of its room. */
 const assertCanManageLink = async (user: IUser, conferenceRoomId: IVideoConferenceRoom['_id']): Promise<void> => {
-	const link = await VideoConferenceRooms.findOneById<Pick<IVideoConferenceRoom, 'rid'>>(conferenceRoomId, { projection: { rid: 1 } });
+	const link = await VideoConf.getRoom(conferenceRoomId);
 	if (!link) {
 		throw new Error('error-invalid-conference-room');
 	}
 
-	if (!(await hasPermissionAsync(user, 'call-management', link.rid))) {
+	if (!(await canManageConferenceRoom(user, link.rid))) {
 		throw new Error('error-not-allowed');
 	}
 };
