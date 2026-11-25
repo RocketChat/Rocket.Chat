@@ -107,9 +107,11 @@ export const getRoomCategory = (
 	{
 		groups,
 		hasIncomingCalls,
+		stickyUnreadRid,
 	}: {
 		groups: Map<string, Set<SubscriptionWithRoom>>;
 		hasIncomingCalls: (room: SubscriptionWithRoom['rid']) => boolean;
+		stickyUnreadRid?: SubscriptionWithRoom['rid'];
 	},
 ): string | false => {
 	if (room.archived) {
@@ -120,7 +122,7 @@ export const getRoomCategory = (
 		return 'Incoming_Calls';
 	}
 
-	if (isUnreadRoom(room) && groups.has('Unread')) {
+	if ((isUnreadRoom(room) || room.rid === stickyUnreadRid) && groups.has('Unread')) {
 		return 'Unread';
 	}
 

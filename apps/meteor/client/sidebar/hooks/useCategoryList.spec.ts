@@ -1,4 +1,6 @@
-import { SIDEBAR_DYNAMIC_GROUP_KEYS, mergeWithSectionsOrder, withDynamicFirst } from './useCategoryList';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+
+import { SIDEBAR_DYNAMIC_GROUP_KEYS, getRoomCategory, mergeWithSectionsOrder, withDynamicFirst } from './useCategoryList';
 
 const STATIC_KEYS = ['Favorites', 'Teams', 'Discussions', 'Channels', 'Direct_Messages', 'Conversations'] as const;
 const DYNAMIC_KEYS = [...SIDEBAR_DYNAMIC_GROUP_KEYS];
@@ -61,5 +63,29 @@ describe('withDynamicFirst', () => {
 		expect(result.indexOf('Unread')).toBeLessThan(result.indexOf('Favorites'));
 		expect(result.indexOf('Unread')).toBeLessThan(result.indexOf('Channels'));
 		expect(result.indexOf('Favorites')).toBeLessThan(result.indexOf('Channels'));
+	});
+});
+
+describe('getRoomCategory', () => {
+	const readFavorite = { rid: 'a', t: 'c', f: true, unread: 0, alert: false } as unknown as SubscriptionWithRoom;
+	const groupsOf = (...keys: string[]) => new Map(keys.map((key) => [key, new Set<SubscriptionWithRoom>()]));
+	const noCalls = () => false;
+
+	it('lists the sticky room in Unread although it is read', () => {
+		expect(
+			getRoomCategory(readFavorite, { groups: groupsOf('Unread', 'Favorites'), hasIncomingCalls: noCalls, stickyUnreadRid: 'a' }),
+		).toBe('Unread');
+	});
+
+	it('lists the sticky room in its own group when there is no Unread group', () => {
+		expect(getRoomCategory(readFavorite, { groups: groupsOf('Favorites'), hasIncomingCalls: noCalls, stickyUnreadRid: 'a' })).toBe(
+			'Favorites',
+		);
+	});
+
+	it('lists a read room that is not sticky in its own group', () => {
+		expect(
+			getRoomCategory(readFavorite, { groups: groupsOf('Unread', 'Favorites'), hasIncomingCalls: noCalls, stickyUnreadRid: 'b' }),
+		).toBe('Favorites');
 	});
 });
