@@ -38,6 +38,8 @@ type ConferencePreflightProps = {
 	action: 'start' | 'join';
 	isDirect: boolean;
 	canName: boolean;
+	/** Shows the name it will start with when `canName` is false, without letting it be changed. */
+	nameReadOnly?: boolean;
 	defaultName?: string;
 	participants?: ComponentProps<typeof CallParticipants>;
 	capabilities: VideoConferenceCapabilities;
@@ -61,6 +63,7 @@ const ConferencePreflight = ({
 	action,
 	isDirect,
 	canName,
+	nameReadOnly = false,
 	defaultName,
 	participants,
 	capabilities,
@@ -201,13 +204,14 @@ const ConferencePreflight = ({
 						{heading}
 					</Box>
 
-					{canName && (
+					{(canName || nameReadOnly) && (
 						<Box width='100%' marginBlockStart={16}>
 							<Field>
 								<FieldLabel>{t('Call_name')}</FieldLabel>
 								<FieldRow>
 									<TextInput
 										value={title}
+										readOnly={!canName}
 										placeholder={defaultName ?? name}
 										onChange={(event) => setTitle((event.target as HTMLInputElement).value)}
 									/>

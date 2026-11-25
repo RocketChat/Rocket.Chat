@@ -140,3 +140,17 @@ export const MobileLandscapeCameraOn: Story = {
 	...onPhone('phoneLandscape'),
 	beforeEach: storeCallPreferences({ cam: true }),
 };
+
+/**
+ * Starting a conference whose name is already decided, as a conference link's is: the name is shown so the
+ * reader knows which conference they are starting, and it cannot be changed here.
+ */
+export const NameReadOnly: Story = {
+	args: { isDirect: false, canName: false, nameReadOnly: true, name: 'Weekly sync' },
+};
+
+/** The same on a phone held upright. */
+export const MobilePortraitNameReadOnly: Story = {
+	...onPhone('phonePortrait'),
+	args: { isDirect: false, canName: false, nameReadOnly: true, name: 'Weekly sync' },
+};
