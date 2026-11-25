@@ -64,9 +64,8 @@ class MessageBoxActions {
 	}
 
 	getById(id: MessageBoxAction['id']) {
-		return Object.values(this.actions)
-			.flat()
-			.filter((action) => action.id === id);
+		const groups: MessageBoxAction[][] = Object.values(this.actions);
+		return groups.flat().filter((action) => action.id === id);
 	}
 }
 

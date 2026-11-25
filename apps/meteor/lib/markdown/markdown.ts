@@ -77,4 +77,4 @@ export const createMarkdownMessageRenderer =
 		return parsers.original(message, options);
 	};
 
-export const createMarkdownNotificationRenderer = () => (message: any) => parsers.filtered(message);
+export const createMarkdownNotificationRenderer = () => (message: string) => parsers.filtered(message);

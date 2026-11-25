@@ -21,7 +21,7 @@ export const useCannedResponseFilterOptions = (): string[][] => {
 		const fetchData = async (): Promise<void> => {
 			const { departments } = await getDepartments({ text: '' });
 
-			const newOptions = departments.map((department: any) => [department._id, department.name]);
+			const newOptions = departments.map((department) => [department._id, department.name]);
 
 			setOptions(defaultOptions.concat(newOptions));
 		};

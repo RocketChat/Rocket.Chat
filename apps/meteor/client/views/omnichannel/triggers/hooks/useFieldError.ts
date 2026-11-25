@@ -9,5 +9,8 @@ type UseFieldErrorProps<TFieldValues extends FieldValues> = {
 export const useFieldError = <TFieldValues extends FieldValues>({ control, name }: UseFieldErrorProps<TFieldValues>) => {
 	const names = Array.isArray(name) ? name : [name];
 	const { errors } = useFormState<TFieldValues>({ control, name });
-	return names.map<FieldError | undefined>((name) => get(errors, name));
+	return names.map((name): FieldError | undefined => {
+		const error: FieldError | undefined = get(errors, name);
+		return error;
+	});
 };

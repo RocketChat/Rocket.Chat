@@ -3,6 +3,8 @@ import { PersistenceBridge } from '@rocket.chat/apps/dist/server/bridges/Persist
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import type { InsertOneResult } from 'mongodb';
 
+type PersistenceRecord = { data: object };
+
 export class AppPersistenceBridge extends PersistenceBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
@@ -46,7 +48,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	protected async readById(id: string, appId: string): Promise<object> {
 		this.orch.debugLog(`The App ${appId} is reading their data in their persistence with the id: "${id}"`);
 
-		const record = await this.orch.getPersistenceModel().findOneById(id);
+		const record: PersistenceRecord = await this.orch.getPersistenceModel().findOneById(id);
 
 		return record?.data;
 	}
@@ -56,7 +58,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 
 		const records = await this.orch
 			.getPersistenceModel()
-			.find({
+			.find<PersistenceRecord>({
 				appId,
 				associations: { $all: associations },
 			})
@@ -68,7 +70,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	protected async remove(id: string, appId: string): Promise<object | undefined> {
 		this.orch.debugLog(`The App ${appId} is removing one of their records by the id: "${id}"`);
 
-		const record = await this.orch.getPersistenceModel().findOne({ _id: id, appId });
+		const record = await this.orch.getPersistenceModel().findOne<PersistenceRecord>({ _id: id, appId });
 
 		if (!record) {
 			return undefined;
@@ -92,7 +94,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			},
 		};
 
-		const records = await this.orch.getPersistenceModel().find(query).toArray();
+		const records = await this.orch.getPersistenceModel().find<PersistenceRecord>(query).toArray();
 
 		if (!records?.length) {
 			return undefined;
@@ -130,9 +132,11 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			associations,
 		};
 
+		/* oxlint-disable typescript/no-unsafe-return -- the persistence model is typed IBaseModel<any>, so update() resolves to an untyped Document */
 		return this.orch
 			.getPersistenceModel()
 			.update(query, { $set: { data } }, { upsert })
 			.then(({ upsertedId }: any) => upsertedId || '');
+		/* oxlint-enable typescript/no-unsafe-return */
 	}
 }

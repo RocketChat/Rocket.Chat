@@ -52,7 +52,8 @@ export const handleResponse = async <T>(promise: Promise<Response>) => {
 				throw new Error(request.statusText);
 			}
 
-			return request.json();
+			const body: T = await request.json();
+			return body;
 		})(),
 	);
 };

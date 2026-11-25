@@ -121,9 +121,9 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 				encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
 				rs.contentType,
 			);
-			ws.on('end', () =>
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
-			);
+			ws.on('end', () => {
+				void RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+			});
 			rs.readStream.pipe(ws);
 		}
 	}

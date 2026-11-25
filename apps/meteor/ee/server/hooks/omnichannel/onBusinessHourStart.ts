@@ -6,7 +6,7 @@ import { MultipleBusinessHoursBehavior } from '../../lib/omnichannel/business-ho
 
 callbacks.add(
 	'on-business-hour-start',
-	(options: any = {}) => {
+	(options) => {
 		const { BusinessHourBehaviorClass } = options;
 		if (!BusinessHourBehaviorClass) {
 			return options;

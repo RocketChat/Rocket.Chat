@@ -11,7 +11,7 @@ import type {
 } from '@rocket.chat/apps-engine/definition/livechat';
 import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, ILivechatVisitor, IMessage } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
@@ -62,7 +62,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const appMessage = await this.orch.getConverters().get('messages').convertAppMessage(message);
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
 
-		const msg = await sendMessage({
+		const msg: IMessage = await sendMessage({
 			guest: guest as ILivechatVisitor,
 			message: livechatMessage as ILivechatMessage,
 			agent: undefined,

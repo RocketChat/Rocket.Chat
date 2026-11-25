@@ -52,7 +52,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 	}
 
 	if (request.status === 200) {
-		const response = await request.json();
+		const response: AppCategory[] = await request.json();
 		fetchMarketplaceCategoriesSchema.parse(response);
 		return response;
 	}

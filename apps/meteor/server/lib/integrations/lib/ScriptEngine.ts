@@ -198,7 +198,13 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			return request;
 		}
 
-		return this.executeOutgoingScript(integration, 'prepare_outgoing_request', { request }, historyId);
+		const preparedRequest: ProcessedOutgoingRequest = await this.executeOutgoingScript(
+			integration,
+			'prepare_outgoing_request',
+			{ request },
+			historyId,
+		);
+		return preparedRequest;
 	}
 
 	public async processOutgoingResponse({
@@ -223,7 +229,12 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			},
 		};
 
-		const scriptResult = await this.executeOutgoingScript(integration, 'process_outgoing_response', sandbox, historyId);
+		const scriptResult: { content?: string } | false | undefined = await this.executeOutgoingScript(
+			integration,
+			'process_outgoing_response',
+			sandbox,
+			historyId,
+		);
 
 		if (scriptResult === false) {
 			return scriptResult;

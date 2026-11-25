@@ -12,7 +12,8 @@ export const templateVarHandler = function (variable: string, object: Record<str
 			logger?.debug({ msg: 'User does not have attribute', attribute: variable });
 			return;
 		}
-		return object[variable];
+		const attribute: string | undefined = object[variable];
+		return attribute;
 	}
 	logger?.debug('template found. replacing values');
 	while (match != null) {

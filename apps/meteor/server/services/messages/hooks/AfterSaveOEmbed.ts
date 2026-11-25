@@ -294,7 +294,8 @@ const getUrlMetaWithCache = async function (
 
 	if (cache) {
 		log.debug({ msg: 'Found OEmbed metadata in cache for URL', url });
-		return cache.data;
+		const cachedData: OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined = cache.data;
+		return cachedData;
 	}
 
 	const data = await getUrlMeta(url, withFragment);

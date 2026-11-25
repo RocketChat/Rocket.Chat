@@ -21,7 +21,11 @@ const CardView = ({ block, surfaceRenderer }: CardViewProps) => {
 	const body = renderText(block.body);
 	const subtext = renderText(block.subtext);
 	const actions = Array.isArray(block.actions)
-		? block.actions.map((action) => ({ ...action, appId: action.appId ?? block.appId, blockId: action.blockId ?? block.blockId }))
+		? block.actions.map((action: UiKit.ActionableElement) => ({
+				...action,
+				appId: action.appId ?? block.appId,
+				blockId: action.blockId ?? block.blockId,
+			}))
 		: [];
 
 	return (

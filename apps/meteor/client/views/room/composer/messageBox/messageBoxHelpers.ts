@@ -8,7 +8,7 @@ import { isMacOS } from '../../../../lib/utils/isMacOS';
 
 export const emptySubscribe = () => () => undefined;
 export const getEmptyFalse = () => false;
-const a: any[] = [];
+const a: FormattingButton[] = [];
 export const getEmptyArray = () => a;
 
 export const isCmdOrCtrlPressed = (event: { metaKey: boolean; ctrlKey: boolean }) => {

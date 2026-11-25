@@ -120,12 +120,12 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			blocks: 'blocks',
 			type: 't',
 			files: async (message: MessageData) => convertMessageFiles(message.files, attachments),
-			room: async (message: MessageData) => {
+			room: async (message: MessageData): Promise<unknown> => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
 				return result;
 			},
-			editor: async (message: MessageData) => {
+			editor: async (message: MessageData): Promise<unknown> => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -140,7 +140,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				delete message.attachments;
 				return result;
 			},
-			sender: async (message: MessageData) => {
+			sender: async (message: MessageData): Promise<unknown> => {
 				if (!message.u?._id) {
 					return undefined;
 				}
@@ -363,7 +363,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				delete attachment.ts;
 				return result;
 			},
-			fileId: (attachment: MessageData) => {
+			fileId: (attachment: MessageData): unknown => {
 				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
 				if (!attachment.fileId && attachment.type === 'file' && mainFile?._id && attachments.length === 1) {
 					return mainFile._id;
