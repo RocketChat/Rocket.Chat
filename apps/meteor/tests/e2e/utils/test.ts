@@ -7,10 +7,12 @@ import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 
-import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
+import { BASE_URL, BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
+const PATH_E2E_IMPACT = path.join(process.cwd(), '.e2e-impact');
+const SERVER_COVERAGE_URL = `${BASE_URL}/__coverage__/functions`;
 
 export type AnyObj = { [key: string]: any };
 
@@ -24,6 +26,11 @@ export type BaseTest = {
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
 	makeAxeBuilder: () => AxeBuilder;
+	serverCoverage: void;
+};
+
+type WorkerFixtures = {
+	serverCoverageBaseline: void;
 };
 declare global {
 	interface Window {
@@ -36,7 +43,7 @@ let apiContext: APIRequestContext;
 
 const cacheFromCredentials = new Map<string, string>();
 
-export const test = baseTest.extend<BaseTest>({
+export const test = baseTest.extend<BaseTest, WorkerFixtures>({
 	context: async ({ context }, use, testInfo) => {
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
@@ -121,6 +128,38 @@ export const test = baseTest.extend<BaseTest>({
 			},
 		});
 	},
+	// Server code that runs before any spec, such as startup, belongs to no spec
+	serverCoverageBaseline: [
+		async ({ playwright }, use) => {
+			if (process.env.E2E_COVERAGE) {
+				const request = await playwright.request.newContext();
+				await request.get(SERVER_COVERAGE_URL).catch(() => undefined);
+				await request.dispose();
+			}
+			await use();
+		},
+		{ scope: 'worker', auto: true },
+	],
+
+	// Keeps the server files each test ran attributable to its spec, so CI can select specs by the server code they run
+	serverCoverage: [
+		async ({ request }, use, testInfo) => {
+			await use();
+
+			if (!process.env.E2E_COVERAGE) {
+				return;
+			}
+			const response = await request.get(SERVER_COVERAGE_URL).catch(() => undefined);
+			if (!response?.ok()) {
+				return;
+			}
+			const spec = encodeURIComponent(path.relative(testInfo.project.testDir, testInfo.file));
+			await fs.promises.mkdir(PATH_E2E_IMPACT, { recursive: true });
+			await fs.promises.writeFile(path.join(PATH_E2E_IMPACT, `server_coverage_${spec}_${randomUUID()}.json`), await response.text());
+		},
+		{ auto: true },
+	],
+
 	makeAxeBuilder: async ({ page }, use) => {
 		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive'];
 

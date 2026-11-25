@@ -23,6 +23,24 @@ We can also provide some env vars to `test:e2e` script:
 - `BASE_URL=<any_url>` Run the tests to the given url
 - `PWDEBUG=1` Control the test execution
 
+## Which specs run in CI
+A pull request into `develop` runs only the UI specs that can see its changes. The `🎯 E2E Impact Selection` job summary shows the list and the reason for it. Other events run all specs.
+
+The selection uses a map that each merge queue run builds. The map records which client and server files each spec ran a function in. Each run adds its links to the map, and the map starts again each ISO week.
+
+- Each spec that ran a function in a changed file runs.
+- Each changed or new spec runs.
+- Specs that the map does not know, and specs that open a page with `browser.newPage` or `browser.newContext`, always run.
+- A change in a package counts as a change to each app file that imports a changed export. If the livechat widget imports a changed export, the specs that open the widget also run.
+- All specs run when the pull request changes a microservice, a package that only a microservice imports, a config file or an e2e support file.
+- All specs also run when the pull request changes a file in which no spec ran a function.
+- No UI spec runs when the pull request changes only docs, changesets, stories, lint or format configs, or tests outside `tests/e2e`.
+- A change to a `.ts` file that leaves its JavaScript the same does not count. The typecheck covers it.
+
+The API suites (`tests/end-to-end/api`, `tests/end-to-end/apps` and `tests/end-to-end/api-livechat`) use the same map and the same rules. They do not run when the pull request changes only client code. All API test files run when the pull request changes a file in `tests/data` or another test helper.
+
+To run all specs, add the `e2e-full` label and push a commit. The label alone does not start a new run.
+
 ## Page Objects
 - Any locator name must start with of one the following prefixes: `btn`, `link`, `input`, `select`, `checkbox`, `text`
 
