@@ -106,6 +106,10 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
 - **R18** Stopping the server ends each outbound stream with the closing
   `</stream:stream>` (RFC 6120 §4.4), after everything already written to it, so a stanza
   whose send resolved is not lost to the stop.
+- **R19** An outbound stream holds at most 32 stream, TLS, SASL or dialback elements that no
+  negotiation step has taken yet. One more MUST close the stream with `policy-violation`,
+  which fails the connection or, for a dialback verification, gives the `error` verdict of
+  R5. The limit is a Rocket.Chat choice, not a protocol rule.
 
 **Routing of authenticated stanzas**
 
@@ -167,6 +171,16 @@ although their send resolved (R18). Where: `S2SManager.stopAll` calls `destroy()
 sessions. Test: `tests/integration/s2s.spec.ts`, "delivers every stanza already sent when
 the server stops"; the end-to-end harness cannot stop the service between a send and its
 delivery, so this one is an integration test.
+
+### D3 A peer can exhaust memory by flooding an outbound stream with negotiation elements
+
+Any host that reaches the listener can claim a domain it controls with a `<db:result/>`. The
+server then opens a verification stream to that domain, and the peer floods it with
+negotiation elements that no step asks for. All of them are kept, and the process runs out
+of heap (R19). No account or allowed domain is needed. Where: `OutboundSession.dispatchStanza`
+buffers them without a limit. Test: `tests/integration/inbound-addressing.spec.ts`, "closes a
+dialback verification stream flooded with negotiation elements"; ejabberd cannot be made to
+flood, so this one is an integration test.
 
 ## Open questions
 

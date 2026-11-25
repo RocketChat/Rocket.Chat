@@ -54,6 +54,11 @@ class RawPeer {
 		return new RawPeer(socket);
 	}
 
+	/** The next connection the server under test opens to `server`. */
+	static accept(server: net.Server): Promise<RawPeer> {
+		return new Promise((resolve) => server.once('connection', (socket: net.Socket) => resolve(new RawPeer(socket))));
+	}
+
 	static async open(port: number, from: string, to: string): Promise<{ peer: RawPeer; streamId: string }> {
 		const peer = await RawPeer.connect(port);
 		peer.write(
@@ -216,5 +221,34 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		);
 		const [features] = await peer.waitFor(/<stream:features>[\s\S]*<\/stream:features>/);
 		expect(features).not.toContain('stream:error');
+	});
+
+	// Known defect: ../../docs/specs/s2s-connectivity.md#d3-a-peer-can-exhaust-memory-by-flooding-an-outbound-stream-with-negotiation-elements
+	it.skip('closes a dialback verification stream flooded with negotiation elements (R19, D3)', async () => {
+		const hostileServer = net.createServer();
+		await new Promise<void>((resolve) => hostileServer.listen(0, '127.0.0.1', resolve));
+		ports.set('evil.localhost', (hostileServer.address() as net.AddressInfo).port);
+
+		try {
+			const verifyConnection = RawPeer.accept(hostileServer);
+			const { peer } = await RawPeer.open(ports.get('b.localhost') as number, 'evil.localhost', 'b.localhost');
+			peers.push(peer);
+			peer.write(`<db:result from='evil.localhost' to='b.localhost'>${'0'.repeat(64)}</db:result>`);
+
+			const authoritative = await verifyConnection;
+			peers.push(authoritative);
+			await authoritative.waitFor(/<stream:stream[^>]*>/);
+			authoritative.write(
+				`<?xml version='1.0'?><stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' xmlns:db='jabber:server:dialback' from='evil.localhost' to='b.localhost' id='flood' version='1.0'><stream:features/>`,
+			);
+			await authoritative.waitFor(/<db:verify/);
+			authoritative.write('<db:result/>'.repeat(1000));
+
+			expect(await authoritative.streamError()).toBe('policy-violation');
+			await peer.waitFor(/<db:result[^>]*type=["']error["']/);
+		} finally {
+			ports.delete('evil.localhost');
+			hostileServer.close();
+		}
 	});
 });
