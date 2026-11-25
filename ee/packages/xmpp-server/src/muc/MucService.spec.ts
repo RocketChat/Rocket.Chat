@@ -86,6 +86,7 @@ describe('MucService.handlePossibleInvite', () => {
 		['our MUC domain', 'team@conference.rc.tld'],
 		['our MUC domain in another spelling', 'Team@Conference.RC.TLD'],
 		['our MUC domain with no room hosted there', 'nobody-hosts-this@conference.rc.tld'],
+		['our MUC domain with a resource', 'team@conference.rc.tld/nick'],
 	])('when the room JID is on %s', (_, roomJid) => {
 		it('consumes a direct invitation without emitting it (remote-muc R14)', () => {
 			const { muc, invites } = setup();
@@ -106,6 +107,19 @@ describe('MucService.handlePossibleInvite', () => {
 			expect(muc.handlePossibleInvite(mediated, 'bob@rc.tld')).toBe(true);
 			expect(invites).toEqual([]);
 		});
+	});
+
+	it.each([
+		['ends with our MUC domain', 'team@conference.rc.tld.remote.tld'],
+		['ends with our domain', 'team@conference.notrc.tld'],
+		['has our MUC domain as its localpart', 'conference.rc.tld@remote.tld'],
+	])('emits an invitation into a remote room whose JID %s (remote-muc R1, R14)', (_, roomJid) => {
+		const { muc, invites } = setup();
+		const direct = p(`<message from='alice@remote.tld/phone' to='bob@rc.tld'><x xmlns='jabber:x:conference' jid='${roomJid}'/></message>`);
+
+		muc.handlePossibleInvite(direct, 'bob@rc.tld');
+
+		expect(invites).toEqual([expect.objectContaining({ roomJid })]);
 	});
 
 	it('emits the room in its normalized spelling when the invitation carries no inviter (remote-muc R1)', () => {

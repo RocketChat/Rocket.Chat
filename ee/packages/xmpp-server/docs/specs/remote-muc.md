@@ -23,6 +23,7 @@ tests:
     src/jid/normalize.spec.ts,
     src/service/helpers/remoteRoom.spec.ts,
     tests/integration/muc.spec.ts,
+    tests/integration/service-invites.spec.ts,
     tests/end-to-end/remote-muc.spec.ts,
   ]
 ---
