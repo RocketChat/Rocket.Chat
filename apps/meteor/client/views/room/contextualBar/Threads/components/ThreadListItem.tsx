@@ -5,11 +5,8 @@ import { useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadListMessage from './ThreadListMessage';
-import { clickableItem } from '../../../../../lib/clickableItem';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
 import { useDecryptedMessage } from '../hooks/useDecryptedMessage';
-
-const ClickableThreadListMessage = clickableItem(ThreadListMessage);
 
 export type ThreadListItemProps = {
 	thread: IThreadMainMessage;
@@ -43,7 +40,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, ign
 	);
 
 	return (
-		<ClickableThreadListMessage
+		<ThreadListMessage
 			_id={thread._id}
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}
