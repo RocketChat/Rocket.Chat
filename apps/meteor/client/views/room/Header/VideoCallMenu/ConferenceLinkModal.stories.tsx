@@ -31,7 +31,7 @@ export const Rename: Story = {
 
 export const RequiredError: Story = {
 	play: async ({ canvasElement }) => {
-		await userEvent.click(within(canvasElement).getByRole('button', { name: /create/i }));
+		await userEvent.click(await within(canvasElement).findByRole('button', { name: /create/i }));
 	},
 };
 

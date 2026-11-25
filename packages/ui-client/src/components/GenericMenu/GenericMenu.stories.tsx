@@ -9,7 +9,7 @@ const PHONE_VIEWPORTS = {
 } as const;
 
 const openMenu = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-	await userEvent.click(within(canvasElement).getByRole('button', { name: 'Options' }));
+	await userEvent.click(await within(canvasElement).findByRole('button', { name: 'Options' }));
 };
 
 const openSubMenu =

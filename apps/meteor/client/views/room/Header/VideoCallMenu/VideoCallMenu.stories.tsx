@@ -35,7 +35,7 @@ const VideoCallMenuStory = ({ disabled, ...input }: VideoCallMenuStoryArgs) => {
 };
 
 const openMenu = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-	await userEvent.click(within(canvasElement).getByRole('button'));
+	await userEvent.click(await within(canvasElement).findByRole('button'));
 };
 
 const meta = {
