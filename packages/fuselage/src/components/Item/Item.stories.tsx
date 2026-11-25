@@ -61,7 +61,8 @@ export default {
 					'- The row height follows its content: the taller of the media and the text lines. Size the avatar to set it.\n' +
 					'- Use `inset` to align rows with their container gutter.\n' +
 					'- Collapsing a group belongs to the component that owns it. `ItemGroupHeader` only shows text.\n' +
-					'- For sub-items, wrap the parent row and a nested `ItemGroup` in one `li`. The nested group indents one level, and `ItemDisclosure` leads the parent row to show and hide it.',
+					'- For sub-items, wrap the parent row and a nested `ItemGroup` in one `li`. The nested group indents one level, and `ItemDisclosure` leads the parent row to show and hide it.\n' +
+					'- Use sub-items only for children that belong to their parent, such as the rooms of a team or the threads of a room. Group unrelated rows under an `ItemGroupTitle` instead.',
 			},
 		},
 		layout: 'padded',
@@ -1430,9 +1431,16 @@ export const SubItems: StoryObj<typeof RoomTree> = {
 		docs: {
 			description: {
 				story:
-					'A parent row leads with `ItemDisclosure`; its sub-items sit in a nested `ItemGroup` in the same `li`. ' +
-					'Rows without sub-items in the same group keep the disclosure column, so media stay aligned. ' +
-					'A closed parent adds its hidden unread to its own badge. Pass `density="extended"` to the top group for 36px avatars.',
+					'A parent row leads with `ItemDisclosure`; its sub-items sit in a nested `ItemGroup` in the same `li`.\n\n' +
+					'**Rules**\n' +
+					'- The chevron toggles and the title opens the parent. Never make the whole row toggle when the parent has a destination of its own.\n' +
+					'- A parent with no destination has no `ItemDisclosure`: its `ItemLink is="button"` toggles, with `aria-expanded` and `aria-controls`.\n' +
+					"- Label the disclosure with the name of the sub-list (`Engineering rooms`), not the action, and point `aria-controls` at the nested group's `id`.\n" +
+					'- Rows without sub-items keep the disclosure column, so media stay aligned. Add no spacers.\n' +
+					'- Set `density` once, on the top group: `compact` for 20px media, `extended` for 36px avatars with 28px sub-item avatars. Never mix densities in one tree.\n' +
+					"- A closed parent adds its children's unread to its own badge, at the highest level among them. Only the selected row gets the selected surface.\n" +
+					"- Opening a parent's room leaves its sub-list as it is; selecting a child by URL or search opens its ancestors.\n" +
+					"- Don't render a collapsed sub-list. Indent only by nesting an `ItemGroup`, never with margins or wrappers.",
 			},
 		},
 	},
@@ -1444,8 +1452,13 @@ export const SubItemsDepth: Story = {
 		docs: {
 			description: {
 				story:
-					'Each nested group indents one more step and draws its own guide from the parent disclosure. ' +
-					'Level 1 steps past the disclosure; deeper levels step less, and levels past 4 keep the level-4 indent.',
+					'Each nested group indents one more step and draws its own guide from the parent disclosure.\n\n' +
+					'**Rules**\n' +
+					'- Depth comes from nesting. Never pass a depth or an indent.\n' +
+					'- Indents are fixed per depth: `compact` 20, 32, 44, 56px; `extended` 32, 48, 64, 80px. Levels past 4 keep the level-4 indent.\n' +
+					"- Level 1 steps past the disclosure, so child titles line up with the parent's; deeper levels step less.\n" +
+					'- Keep the sidebar to one or two levels. Open deeper content in the room.\n' +
+					'- Use `guide` wherever more than one level can be open at once. The guide assumes rows without `inset`.',
 			},
 		},
 	},
@@ -1460,6 +1473,13 @@ export const SubItemsDepth: Story = {
 };
 
 export const SubItemsLoading: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'While sub-items load, render `ItemSkeleton` rows inside the nested group and set `aria-busy` on it.',
+			},
+		},
+	},
 	render: () => (
 		<SidebarSurface>
 			<ItemGroup is='ul' aria-label='Rooms'>
