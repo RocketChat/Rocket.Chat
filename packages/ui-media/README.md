@@ -12,7 +12,7 @@ Code that both call UIs need about the browser's media: devices, capture permiss
 
 ## Working on it
 
-Components that translate text or read the app's contexts need its providers; the others need nothing around them. In tests, pass `mockAppRoot().build()` from `@rocket.chat/mock-providers` as the wrapper. The package's Storybook already wraps every story in it.
+Components that translate text or read the app's contexts need its providers: in tests, pass `mockAppRoot().build()` from `@rocket.chat/mock-providers` as the wrapper, and the package's Storybook already wraps every story in them. A component that reads a context of this package also needs that context's provider, which `mockAppRoot()` does not supply; reading the context outside it throws, and the component's spec shows the setup. The other components need nothing around them.
 
 The web client compiles it from source, so an edit reloads in the browser while `yarn dev` runs in `apps/meteor`. Other packages' tests and Storybook import the compiled `dist/`: run its `dev` or `build` script first.
 
