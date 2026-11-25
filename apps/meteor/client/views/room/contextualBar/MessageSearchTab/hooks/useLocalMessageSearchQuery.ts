@@ -20,7 +20,7 @@ const indexIdOf = (backend: ISearchIndexBackend): number => {
 	return id;
 };
 
-// Looks only at data that the client already has, so a `from:` filter sends no request that names the author.
+// Looks only at data that the client already has, so a `from:` filter needs no user lookup request.
 const findLoadedUid = (rid: string, username: string) =>
 	Users.state.find((user) => user.username?.toLowerCase() === username)?._id ??
 	Messages.state.find((message) => message.rid === rid && message.u?.username?.toLowerCase() === username)?.u._id;

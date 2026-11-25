@@ -27,10 +27,17 @@ const textOf = (message: IMessage): string =>
 
 /**
  * Turns a message that the server search found into a hit of the local search list. Only a message that is not
- * encrypted gives a hit: the server cannot read the text of an encrypted message, and the local index has it.
+ * encrypted gives a hit: the server cannot read the text of an encrypted message, and the local index has it. A message
+ * outside the date window of the local search gives no hit, so both sources list the same days.
  */
-export const toServerSearchHit = (message: IMessage, searchText: string): SearchListHit | undefined => {
+export const toServerSearchHit = (
+	message: IMessage,
+	searchText: string,
+	{ from, to }: { from?: number; to?: number } = {},
+): SearchListHit | undefined => {
 	if (message.t) return undefined;
+	const ts = new Date(message.ts).getTime();
+	if ((from !== undefined && ts < from) || (to !== undefined && ts > to)) return undefined;
 	const text = textOf(message).slice(0, MAX_SNIPPET_LENGTH);
 	if (!text.trim() || !message.u?._id) return undefined;
 
@@ -49,7 +56,7 @@ export const toServerSearchHit = (message: IMessage, searchText: string): Search
 		...(message.tmid && { tmid: message.tmid }),
 		uid: message.u._id,
 		username: message.u.username ?? '',
-		ts: new Date(message.ts).getTime(),
+		ts,
 		snippet,
 	};
 };

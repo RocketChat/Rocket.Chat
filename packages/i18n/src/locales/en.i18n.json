@@ -2405,6 +2405,7 @@
   "E2E_Local_Search_Room_Not_Chosen_Title": "This room is not indexed",
   "E2E_Local_Search_Room_Not_Indexed_Yet": "Older messages of this room are not indexed yet. Results include only the messages that this device loaded so far.",
   "E2E_Local_Search_Room_Waiting": "Waiting to start",
+  "E2E_Local_Search_Server_Hint": "Encrypted messages are searched on this device. The search text also goes to the server, which finds the messages that are not encrypted.",
   "E2E_message_encrypted_placeholder": "This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.",
   "E2E_password_request_text": "To access your encrypted channels and direct messages, enter your encryption password. This is not stored on the server, so you’ll need to use it on every device.",
   "E2E_password_reveal_text": "Create secure private rooms and direct messages with end-to-end encryption. This password won’t be stored on the server. You can use it on all your devices.",

@@ -13,7 +13,7 @@ describe('parseLocalSearchQuery', () => {
 		});
 	});
 
-	it('starts the day at midnight in the time zone of the user, like the server message search', () => {
+	it('starts the day at midnight in the time zone of the user', () => {
 		expect(parseLocalSearchQuery('on:26.10.2026', { utcOffset: -3 })).toEqual({
 			text: '',
 			usernames: [],

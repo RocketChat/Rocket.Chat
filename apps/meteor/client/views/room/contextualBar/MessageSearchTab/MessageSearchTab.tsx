@@ -11,7 +11,7 @@ import {
 	VirtualizedScrollbars,
 	ContextualbarEmptyContent,
 } from '@rocket.chat/ui-client';
-import { useRoomToolbox, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useRoomToolbox, useUserPreference, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useState, memo, Fragment, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -31,6 +31,7 @@ import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useE2EESearchPreferences } from '../../../../hooks/useE2EESearchPreferences';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { parseLocalSearchQuery } from '../../../../lib/e2eeSearch/parseLocalSearchQuery';
 import { mergeSearchHits, toServerSearchHit } from '../../../../lib/e2eeSearch/serverSearchHits';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
@@ -49,6 +50,7 @@ const MessageSearchTab = () => {
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
+	const utcOffset = useUser()?.utcOffset;
 
 	const providerQuery = useMessageSearchProviderQuery();
 
@@ -76,13 +78,14 @@ const MessageSearchTab = () => {
 		enabled: !localSearch || !!searchText.trim(),
 	});
 	const serverDocs = localSearch && searchText.trim() && isSuccess ? messageSearchData : [];
+	const dateWindow = localSearch ? parseLocalSearchQuery(searchText, { utcOffset }) : undefined;
 	const canLoadMoreServer = serverDocs.length >= limit && !isServerPlaceholder;
 	const localHits = localQuery.data ?? [];
 	const hits = localSearch
 		? mergeSearchHits([
 				{ hits: localHits.map((hit) => ({ ...hit, encrypted: true })), mayHaveMore: canLoadMoreLocal, oldestTs: localHits.at(-1)?.ts },
 				{
-					hits: serverDocs.flatMap((message) => toServerSearchHit(message, searchText) ?? []),
+					hits: serverDocs.flatMap((message) => toServerSearchHit(message, searchText, dateWindow) ?? []),
 					mayHaveMore: canLoadMoreServer,
 					oldestTs: serverDocs.length ? Math.min(...serverDocs.map(({ ts }) => new Date(ts).getTime())) : undefined,
 				},

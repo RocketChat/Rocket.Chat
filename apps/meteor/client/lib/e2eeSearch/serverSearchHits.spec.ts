@@ -16,6 +16,13 @@ const serverMessage = (fields: Partial<IMessage> = {}): IMessage =>
 const hit = (id: string, ts: number): E2EESearchHit => ({ id, rid: 'r1', uid: 'u1', username: 'alice', ts, snippet: id });
 
 describe('toServerSearchHit', () => {
+	it('gives no hit for a message outside the date window', () => {
+		const window = { from: 500, to: 1500 };
+		expect(toServerSearchHit(serverMessage({ ts: new Date(1000) }), 'plain', window)).toMatchObject({ id: 'm1' });
+		expect(toServerSearchHit(serverMessage({ ts: new Date(499) }), 'plain', window)).toBeUndefined();
+		expect(toServerSearchHit(serverMessage({ ts: new Date(1501) }), 'plain', window)).toBeUndefined();
+	});
+
 	it('escapes the text and highlights the searched words, not the filters', () => {
 		expect(toServerSearchHit(serverMessage({ msg: 'Ship <b>it</b> on Friday' }), 'ship from:alice friday')).toEqual({
 			id: 'm1',

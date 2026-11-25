@@ -211,6 +211,32 @@ describe('MessageSearchTab local search', () => {
 		expect(screen.queryByText('Encrypted_content_cannot_be_searched')).not.toBeInTheDocument();
 	});
 
+	it('says that the search text also goes to the server', () => {
+		renderTab();
+
+		expect(screen.getByText('E2E_Local_Search_Server_Hint')).toBeInTheDocument();
+	});
+
+	it('lists only the server messages of the local day window of a date filter', async () => {
+		const serverSearch = jest.fn(() => ({
+			message: {
+				docs: [
+					// 14 May at 22:00 for a user at UTC-3.
+					{ _id: 'eve', rid: 'r1', ts: new Date(Date.UTC(2025, 4, 15, 1)), msg: 'eve note', u: { _id: 'u-bob', username: 'bob' } },
+					{ _id: 'noon', rid: 'r1', ts: new Date(Date.UTC(2025, 4, 15, 12)), msg: 'noon note', u: { _id: 'u-bob', username: 'bob' } },
+				] as never[],
+			},
+		}));
+		render(<MessageSearchTab />, {
+			wrapper: mockAppRoot().withUser(self).withSetting('PageSize', 10).withMethod('rocketchatSearch.search', serverSearch).build(),
+		});
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'note on:15-05-2025');
+
+		expect(await screen.findByRole('button', { name: /noon note/ })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: /eve note/ })).not.toBeInTheDocument();
+	});
+
 	it('loads more hits as the list reaches its end, also past the first page of the setting PageSize', async () => {
 		await mockBackend?.upsert(
 			Array.from({ length: 25 }, (_, i) => message(`page${i}`, 'u-bob', new Date(2026, 0, 1, 12, i), `paged ${i}`)),

@@ -66,6 +66,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess, localS
 					{!localSearch && provider.description && (
 						<FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />
 					)}
+					{localSearch && <FieldHint>{t('E2E_Local_Search_Server_Hint')}</FieldHint>}
 				</Field>
 				{globalSearchEnabled && !localSearch && (
 					<Field>

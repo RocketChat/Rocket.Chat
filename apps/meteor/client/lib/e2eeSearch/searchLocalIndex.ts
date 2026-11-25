@@ -26,7 +26,7 @@ type LocalSearchParams = {
 const clampLimit = (limit: number) => Math.min(Math.max(1, limit), MAX_LOCAL_SEARCH_LIMIT);
 
 /**
- * Searches the local index of decrypted messages in one room, newest first. The query never goes to the server. Hits of
+ * Searches the local index of decrypted messages in one room, newest first, with no request to the server. Hits of
  * other rooms are dropped, so a result list shows only the room that the user searches. The text can carry the
  * `from:`, `before:`, `after:` and `on:` filters of the server search, also with no words. The index returns at most
  * 100 hits for each call, so the search reads more pages, each one older than the last, until it has `limit` hits.
@@ -52,8 +52,8 @@ export const searchLocalIndex = async (
 	}
 
 	const byAuthor = uids.size > 0 || unresolved.size > 0;
-	// One author goes to the index as a filter: by user id, or by username when the client does not know the id, so the
-	// username never goes to the server. More authors need a filter on the hits, so each page asks for the most hits.
+	// One author goes to the index as a filter: by user id, or by username when the client does not know the id, so no
+	// user lookup is needed. More authors need a filter on the hits, so each page asks for the most hits.
 	const singleUid = byAuthor && uids.size === 1 && unresolved.size === 0 ? [...uids][0] : undefined;
 	const singleUsername = byAuthor && uids.size === 0 && unresolved.size === 1 ? [...unresolved][0] : undefined;
 	const filtersHits = byAuthor && !singleUid && !singleUsername;
