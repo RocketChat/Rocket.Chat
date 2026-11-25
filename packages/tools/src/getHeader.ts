@@ -11,5 +11,19 @@ export const getHeader = <T extends string | string[] = string>(headers: HeaderL
 		return (headers.get(key) ?? '') as T;
 	}
 
-	return (headers[key] ?? '') as T;
+	if (headers[key] !== undefined) {
+		return headers[key] as T;
+	}
+
+	const lowerKey = key.toLowerCase();
+	if (headers[lowerKey] !== undefined) {
+		return headers[lowerKey] as T;
+	}
+
+	const matchedKey = Object.keys(headers).find((k) => k.toLowerCase() === lowerKey);
+	if (matchedKey && headers[matchedKey] !== undefined) {
+		return headers[matchedKey] as T;
+	}
+
+	return '' as T;
 };
