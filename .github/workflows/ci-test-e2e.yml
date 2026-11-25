@@ -46,7 +46,7 @@ on:
         required: false
         type: string
       specs:
-        description: 'Space-separated spec paths (relative to apps/meteor) to restrict the UI suite to; empty runs every spec'
+        description: 'Space-separated spec paths (relative to apps/meteor) to restrict the suite to; empty runs every spec'
         default: ''
         required: false
         type: string
@@ -228,10 +228,17 @@ jobs:
         env:
           WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
+          E2E_SPECS: ${{ inputs.specs }}
         run: |
           set -o xtrace
 
-          npm run testapi || s=$?
+          read -r -a specs <<< "$E2E_SPECS"
+          if [[ ${#specs[@]} -gt 0 ]]; then
+            npm run .testapi -- "${specs[@]}" || s=$?
+          else
+            npm run testapi || s=$?
+          fi
 
           docker compose -f ../../docker-compose-ci.yml stop
 
@@ -244,10 +251,17 @@ jobs:
         env:
           WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
+          E2E_SPECS: ${{ inputs.specs }}
         run: |
           set -o xtrace
 
-          npm run testapi:livechat || s=$?
+          read -r -a specs <<< "$E2E_SPECS"
+          if [[ ${#specs[@]} -gt 0 ]]; then
+            npm run .testapi -- "${specs[@]}" || s=$?
+          else
+            npm run testapi:livechat || s=$?
+          fi
 
           docker compose -f ../../docker-compose-ci.yml stop
 
@@ -297,16 +311,27 @@ jobs:
           ls -la "$COVERAGE_DIR" || true
 
       - name: Build e2e impact map fragment
-        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        id: impact-fragment
+        if: inputs.coverage == matrix.mongodb-version
         working-directory: ./apps/meteor
-        run: node tests/e2e/impact/impact.mts build "/tmp/e2e-impact-map-${{ matrix.shard }}.json" .nyc_output
+        run: |
+          inputs=()
+          for dir in .nyc_output .e2e-impact; do
+            if [[ -d "$dir" ]]; then
+              inputs+=("$dir")
+            fi
+          done
+          if [[ ${#inputs[@]} -gt 0 ]]; then
+            node tests/e2e/impact/impact.mts build "/tmp/e2e-impact-map-${{ inputs.type }}-${{ matrix.shard }}.json" "${inputs[@]}"
+            echo "built=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Store e2e impact map fragment
-        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        if: steps.impact-fragment.outputs.built == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: e2e-impact-map-fragment-${{ matrix.shard }}
-          path: /tmp/e2e-impact-map-${{ matrix.shard }}.json
+          name: e2e-impact-map-fragment-${{ inputs.type }}-${{ matrix.shard }}
+          path: /tmp/e2e-impact-map-${{ inputs.type }}-${{ matrix.shard }}.json
           retention-days: 5
 
       - name: Store playwright test trace

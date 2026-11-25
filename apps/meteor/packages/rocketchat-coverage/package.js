@@ -6,6 +6,7 @@ Package.describe({
 
 Package.onUse(function (api) {
 	api.use('ecmascript');
+	api.use('webapp', 'server');
 	api.use('isobuild:compiler-plugin@1.0.0');
 
 	api.mainModule('plugin/compile-version.js', 'server');
