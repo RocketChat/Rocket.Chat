@@ -1,8 +1,9 @@
 import { getUserDisplayNames } from '@rocket.chat/core-typings';
-import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle, Icon } from '@rocket.chat/fuselage';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemRow, ItemTitle, Icon } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceViewer } from '../../context/ConferenceContext';
+import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
 import type { ConferenceMember } from '../../context/definitions';
 import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
 import CallParticipantControls from '../CallParticipantControls/CallParticipantControls';
@@ -26,16 +27,19 @@ const CallParticipantItem = ({ member, ...props }: CallParticipantItemProps) => 
 	const { participant } = props;
 	const { t } = useTranslation();
 	const { useRealName } = useConferenceViewer();
+	const { renderMemberStatus } = useConferenceSlots();
 
 	const [memberName] = member ? getUserDisplayNames(member.name, member.username, useRealName) : [];
 	const name = memberName || participant.displayName || t('External_participant');
 
 	return (
 		<Item role='listitem' inset='lg'>
+			{/* Sized and spaced like a member's avatar and presence, so every name in the panel starts in one column. */}
 			<ItemMedia>
 				{/* No avatar to show, and a blank circle would read as one still loading. */}
-				<Icon name='user-rounded' size='x20' color='hint' />
+				<Icon name='user-rounded' size={ITEM_MEDIA_SIZE.medium} color='hint' />
 			</ItemMedia>
+			{renderMemberStatus && <ItemIcon />}
 			<ItemContent>
 				<ItemRow>
 					<ItemTitle>{name}</ItemTitle>
