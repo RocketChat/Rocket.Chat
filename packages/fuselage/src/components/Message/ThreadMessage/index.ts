@@ -5,4 +5,4 @@ export { default as ThreadMessageEmoji, type ThreadMessageEmojiProps } from './T
 export { default as ThreadMessageIconThread } from './ThreadMessageIconThread';
 export { default as ThreadMessageOrigin, type ThreadMessageOriginProps } from './ThreadMessageOrigin';
 export { default as ThreadMessageRow, type ThreadMessageRowProps } from './ThreadMessageRow';
-export { default as ThreadMessageUnfollow } from './ThreadMessageUnfollow';
+export { default as ThreadMessageFollowIndicator, type ThreadMessageFollowIndicatorProps } from './ThreadMessageFollowIndicator';

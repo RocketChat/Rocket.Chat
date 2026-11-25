@@ -4,10 +4,10 @@ import ThreadMessage from './ThreadMessage';
 import ThreadMessageBody from './ThreadMessageBody';
 import ThreadMessageContainer from './ThreadMessageContainer';
 import ThreadMessageEmoji from './ThreadMessageEmoji';
+import ThreadMessageFollowIndicator from './ThreadMessageFollowIndicator';
 import ThreadMessageIconThread from './ThreadMessageIconThread';
 import ThreadMessageOrigin from './ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessageRow';
-import ThreadMessageUnfollow from './ThreadMessageUnfollow';
 import { Avatar } from '../../Avatar';
 import { Box } from '../../Box';
 import MessageLeftContainer from '../MessageLeftContainer';
@@ -78,7 +78,7 @@ export const Default: Story = {
 							dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Consectetur adipiscing elit, sed do
 							eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 						</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						<ThreadMessageFollowIndicator />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>
@@ -112,7 +112,7 @@ export const WithEmoji: Story = {
 							dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Consectetur adipiscing elit, sed do
 							eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 						</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						<ThreadMessageFollowIndicator />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>
@@ -141,7 +141,7 @@ export const WithSystemMessage: Story = {
 					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin system>system message</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						<ThreadMessageFollowIndicator />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>

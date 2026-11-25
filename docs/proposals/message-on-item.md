@@ -31,7 +31,7 @@ The Fuselage `Message` row renders on the `Item` primitives. `Item` owns the row
 | `MessageSystemTimestamp`             | `ItemMeta`                                |
 | `ThreadMessage`                      | `Item inset='lg'` (no longer a `Message`) |
 | `ThreadMessageRow`                   | `ItemRow`                                 |
-| `ThreadMessageUnfollow`              | wrapped in `ItemActions reveal='hover'`   |
+| `ThreadMessageFollowIndicator`              | wrapped in `ItemActions reveal='hover'`   |
 | `MessageBody`, blocks, content parts | unchanged, free content                   |
 | `MessageToolbar*`                    | unchanged, overlay                        |
 

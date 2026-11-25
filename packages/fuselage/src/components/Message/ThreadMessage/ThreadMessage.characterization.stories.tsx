@@ -9,7 +9,7 @@ import ThreadMessageEmoji from './ThreadMessageEmoji';
 import ThreadMessageIconThread from './ThreadMessageIconThread';
 import ThreadMessageOrigin from './ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessageRow';
-import ThreadMessageUnfollow from './ThreadMessageUnfollow';
+import ThreadMessageFollowIndicator from './ThreadMessageFollowIndicator';
 import { ariaSnapshot, classContract, computed, expectComputed, expectForwards, forcePseudo, isJsdom } from '../../../testing/g0';
 import MessageLeftContainer from '../MessageLeftContainer';
 
@@ -80,7 +80,7 @@ const everyVariation = (
 				</MessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageOrigin>Origin</ThreadMessageOrigin>
-					<ThreadMessageUnfollow />
+					<ThreadMessageFollowIndicator />
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
 			<ThreadMessageRow>
@@ -160,7 +160,7 @@ export const PreviewType: Story = {
 					</MessageLeftContainer>
 					<ThreadMessageContainer id='container'>
 						<ThreadMessageOrigin id='origin'>{longText}</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						<ThreadMessageFollowIndicator />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow id='second-row'>
@@ -257,7 +257,7 @@ export const UnfollowRevealsOnRowHover: Story = {
 					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin>Origin</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						<ThreadMessageFollowIndicator />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			</ThreadMessage>
