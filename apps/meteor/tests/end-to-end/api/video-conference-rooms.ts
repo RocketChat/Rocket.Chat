@@ -252,6 +252,7 @@ const countLiveConferencesOfLink = (conferenceRoomId: string) =>
 	});
 
 	describe('access', () => {
+		// The stranger holds call-management through the default user role; only room access keeps them out.
 		it('A5 refuses a non-member', async () => {
 			const link = await createdLink(groupId, `${run} Private`);
 
@@ -259,6 +260,9 @@ const countLiveConferencesOfLink = (conferenceRoomId: string) =>
 			await renameLink(link._id, `${run} Stranger`, strangerCredentials).expect(403);
 			await deleteLink(link._id, strangerCredentials).expect(403);
 			await listLinks(groupId, strangerCredentials).expect(403);
+
+			const list = await listLinks(groupId).expect(200);
+			expect(list.body.rooms.find(({ _id }: IVideoConferenceRoom) => _id === link._id)).to.include({ title: link.title, url: link.url });
 		});
 
 		it('A27 refuses a caller without credentials', async () => {
@@ -462,19 +466,19 @@ const countLiveConferencesOfLink = (conferenceRoomId: string) =>
 	describe('housekeeping', () => {
 		it("A23 follows a username change on the creator's links", async () => {
 			const creator = await createUser();
-			const room = (await createRoom({ type: 'p', name: `pcl-creator-${run}`, credentials: await login(creator.username, password) })).body
-				.group;
+			const creatorCredentials = await login(creator.username, password);
+			// The creator's own private group: the admin is not a member, so every room request uses the creator.
+			const room = (await createRoom({ type: 'p', name: `pcl-creator-${run}`, credentials: creatorCredentials })).body.group;
 			try {
-				const creatorCredentials = await login(creator.username, password);
 				const link = (await createLink(room._id, `${run} Mine`, creatorCredentials).expect(200)).body.room;
 
 				const username = `${creator.username}.renamed`;
 				await request.post(api('users.update')).set(credentials).send({ userId: creator._id, data: { username } }).expect(200);
 
-				const list = await listLinks(room._id).expect(200);
+				const list = await listLinks(room._id, creatorCredentials).expect(200);
 				expect(list.body.rooms.find(({ _id }: IVideoConferenceRoom) => _id === link._id).createdBy).to.include({ username });
 			} finally {
-				await deleteRoom({ type: 'p', roomId: room._id });
+				await request.post(api('groups.delete')).set(creatorCredentials).send({ roomId: room._id }).expect(200);
 				await deleteUser(creator);
 			}
 		});
