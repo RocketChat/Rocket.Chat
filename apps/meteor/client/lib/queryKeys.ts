@@ -36,7 +36,8 @@ export const roomsQueryKeys = {
 			: ([...roomsQueryKeys.room(rid), 'members', roomType, type, filter] as const),
 	bannedUsers: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'banned-users'] as const,
 	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
-	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
+	images: (rid: IRoom['_id'], options?: { startingFromId?: string; direction?: 'older' | 'newer' }) =>
+		[...roomsQueryKeys.room(rid), 'images', options] as const,
 	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
 	adminList: (...args: [query?: PaginatedRequest]) => [...roomsQueryKeys.all, 'admin-list', ...args] as const,
 	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,

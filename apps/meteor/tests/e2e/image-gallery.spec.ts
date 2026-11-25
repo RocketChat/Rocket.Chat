@@ -119,6 +119,28 @@ test.describe.serial('Image Gallery', async () => {
 			await expect(poHomeChannel.content.nextSlideButton).toBeDisabled();
 			await (await poHomeChannel.content.getGalleryButtonByName('close')).click();
 		});
+
+		test('expect to move to both older and newer images when opening an image in the middle', async () => {
+			const middleIndex = 2;
+			const middleMessage = poHomeChannel.content.getMessageByText(imageNames[middleIndex]);
+			await middleMessage.scrollIntoViewIfNeeded();
+			await middleMessage.locator('img.gallery-item').click();
+
+			await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[middleIndex]}$`));
+
+			for (let i = middleIndex + 1; i < imageNames.length; i++) {
+				await poHomeChannel.content.nextSlideButton.click();
+				await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[i]}$`));
+			}
+			await expect(poHomeChannel.content.nextSlideButton).toBeDisabled();
+
+			for (let i = imageNames.length - 2; i >= 0; i--) {
+				await poHomeChannel.content.previousSlideButton.click();
+				await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[i]}$`));
+			}
+			await expect(poHomeChannel.content.previousSlideButton).toBeDisabled();
+			await (await poHomeChannel.content.getGalleryButtonByName('close')).click();
+		});
 	});
 
 	test.describe('When sending an image as a link', () => {
