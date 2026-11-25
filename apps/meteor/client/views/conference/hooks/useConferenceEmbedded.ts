@@ -98,8 +98,8 @@ const describeCall = (
 };
 
 /**
- * `initialInfo` is the conference as it was just read by whoever opened this window: the window starts from it
- * instead of reading the conference a second time on mount.
+ * `initialInfo` is the conference as it was just read: the hook starts from it instead of reading the conference
+ * again on mount.
  */
 export const useConferenceEmbedded = (callId: string, { initialInfo }: { initialInfo?: VideoConferenceInfo } = {}) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');

@@ -44,13 +44,12 @@ export const useStartConferenceMutation = ({ rid, customUrl, isDirect, onStarted
 
 				return { callId: data.callId, joined };
 			} catch (error) {
-				// The call exists by now and the window is about to show an error page with no way back to it.
-				// Cancelling ends the ring of a direct call; a group conference cannot be cancelled and nobody entered it.
+				// Only a direct call is cancelled when its starter could not join it.
 				if (isDirect) {
 					try {
 						await cancelConference({ callId: data.callId });
 					} catch {
-						// Nothing better to do with it: what the user has to hear is why the join failed.
+						// The join's failure is the error worth reporting.
 					}
 				}
 

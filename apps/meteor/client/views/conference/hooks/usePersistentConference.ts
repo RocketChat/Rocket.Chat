@@ -17,7 +17,6 @@ export const usePersistentConference = (link: VideoConferenceInfo, segment: stri
 	const subscribeToNotifyRoom = useStream('notify-room');
 	const canRingUsers = usePermission('videoconf-ring-users');
 
-	// A link always starts a group conference, which is never cancelled.
 	const { start, starting, error, reset } = useStartConferenceMutation({ rid: link.rid, customUrl: segment, isDirect: false, onStarted });
 
 	useEffect(
@@ -31,7 +30,7 @@ export const usePersistentConference = (link: VideoConferenceInfo, segment: stri
 	return {
 		title: 'title' in link && link.title ? link.title : '',
 		canStart: link.canStart === true,
-		/** Ringing is offered where the room rings rather than announces, to someone the workspace lets ring. */
+		/** Ringing is offered in a direct room, to someone who may ring. */
 		canRing: link.chatAccess.type === 'd' && canRingUsers,
 		capabilities: link.capabilities,
 		starting,
