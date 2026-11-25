@@ -77,7 +77,7 @@ export class Server {
 			const result = await fn.apply(session, packet.params);
 			return this.sendResult(session, packet, result);
 		} catch (err: unknown) {
-			return this.sendResult(session, packet, null, handleInternalException(err, 'Method call error'));
+			return this.sendResult(session, packet, undefined, handleInternalException(err, 'Method call error'));
 		}
 	}
 

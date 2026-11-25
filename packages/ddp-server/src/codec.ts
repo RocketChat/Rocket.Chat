@@ -34,8 +34,7 @@ export const encodeResult = (id: string, result?: any, error?: Error | ClientSaf
 	serialize({
 		[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
 		id,
-		...(result && { result }),
-		...(error && { error: serializeError(error) }),
+		...(error ? { error: serializeError(error) } : result !== undefined && { result }),
 	});
 
 export const encodeUpdated = (id: string): string => serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.UPDATED, [DDP_EVENTS.METHODS]: [id] });
