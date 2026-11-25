@@ -16,6 +16,12 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 		options?: Omit<FindOptions<IUpload>, 'sort'>,
 	): FindPaginated<FindCursor<WithId<IUpload>>>;
 
+	findConfirmedImagesByRoomIdUploadedAfter(
+		rid: IRoom['_id'],
+		uploadedAt: Date,
+		options?: Omit<FindOptions<IUpload>, 'sort'>,
+	): FindPaginated<FindCursor<WithId<IUpload>>>;
+
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;
 
 	setFederationInfo(fileId: IUpload['_id'], info: Required<IUpload>['federation']): Promise<UpdateResult>;

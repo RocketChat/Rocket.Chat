@@ -4044,6 +4044,74 @@ describe('[Rooms]', () => {
 
 			await deleteRoom({ type: 'p', roomId });
 		});
+		describe('with direction "newer"', () => {
+			let roomId: IRoom['_id'];
+			let fileIds: string[];
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+				const upload = async () => {
+					const { title_link } = await uploadFile({ roomId, file: fs.createReadStream(path.join(process.cwd(), imgURL)) });
+					return getIdFromImgPath(title_link);
+				};
+				fileIds = [await upload(), await upload(), await upload()];
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should return the images uploaded after startingFromId, oldest first, without the starting image', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: fileIds[0], direction: 'newer' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect((res.body.files as IUpload[]).map(({ _id }) => _id)).to.deep.equal([fileIds[1], fileIds[2]]);
+						expect(res.body).to.have.property('total', 2);
+					});
+			});
+
+			it('should paginate relative to startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: fileIds[0], direction: 'newer', offset: 1, count: 1 })
+					.expect(200)
+					.expect((res) => {
+						expect((res.body.files as IUpload[]).map(({ _id }) => _id)).to.deep.equal([fileIds[2]]);
+						expect(res.body).to.have.property('total', 2);
+					});
+			});
+
+			it('should return an empty list when startingFromId is the newest image', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: fileIds[2], direction: 'newer' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('files').and.to.have.lengthOf(0);
+						expect(res.body).to.have.property('total', 0);
+					});
+			});
+
+			it('should return an empty list when startingFromId is not given', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, direction: 'newer' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('files').and.to.have.lengthOf(0);
+					});
+			});
+
+			it('should reject an unknown direction', async () => {
+				await request.get(api('rooms.images')).set(credentials).query({ roomId, direction: 'sideways' }).expect(400);
+			});
+		});
 	});
 
 	describe('/rooms.muteUser', () => {

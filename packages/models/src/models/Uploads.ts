@@ -74,7 +74,25 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 			},
 			{
 				...options,
-				sort: { uploadedAt: -1 },
+				sort: { uploadedAt: -1, _id: -1 },
+			},
+		);
+	}
+
+	findConfirmedImagesByRoomIdUploadedAfter(
+		rid: IRoom['_id'],
+		uploadedAt: Date,
+		options: Omit<FindOptions<IUpload>, 'sort'> = {},
+	): FindPaginated<FindCursor<WithId<IUpload>>> {
+		return this.findPaginated(
+			{
+				...this.confirmedUploadsInRoomQuery(rid),
+				typeGroup: 'image',
+				uploadedAt: { $gt: uploadedAt },
+			},
+			{
+				...options,
+				sort: { uploadedAt: 1, _id: 1 },
 			},
 		);
 	}
