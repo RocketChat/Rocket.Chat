@@ -14,6 +14,7 @@ import {
 import { E2ERoom } from './rocketchat.e2e.room';
 import { Rooms, Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
+import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
 import { setSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { addSearchIndexRoom, getSearchIndexPreferences } from '../e2eeSearch/searchIndexPreferences';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
@@ -122,6 +123,24 @@ describe('E2E client and the local search index', () => {
 		await e2eSearchIndexWriter.flush();
 
 		expect(bridge.upsert).not.toHaveBeenCalled();
+
+		await e2e.stopClient();
+	});
+
+	it('sends the deletes of a chosen room to the index, and none of another room', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		roomMessageDeletes.emit('deleteMessage', { _id: 'gone-r2', rid: 'r2' });
+		roomMessageDeletes.emit('deleteMessageBulk', { rid: 'r2', ids: ['gone-bulk-r2'] });
+		roomMessageDeletes.emit('deleteMessage', { _id: 'gone-r1', rid: 'r1' });
+		await e2eSearchIndexWriter.flush();
+
+		await waitFor(() => expect(bridge.remove).toHaveBeenCalled());
+		expect(bridge.remove.mock.calls).toEqual([[['gone-r1']]]);
 
 		await e2e.stopClient();
 	});

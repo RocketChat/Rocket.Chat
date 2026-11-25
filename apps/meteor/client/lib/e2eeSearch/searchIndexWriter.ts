@@ -223,14 +223,14 @@ export const createSearchIndexWriter = ({
 
 		if (isDeletionPlaceholder(message)) {
 			// A room shows its placeholders again on each load: one remove per message is enough.
-			if (message._id && !deletedIds.has(message._id)) void remove([message._id]);
+			if (message._id && isRoomSubscribed(message.rid) && !deletedIds.has(message._id)) void remove([message._id]);
 			return;
 		}
 
 		const doc = toSearchDoc(message);
 		if (!doc) {
 			// An edit left the message with no text: the document of its old text goes.
-			if (message._id && isDecryptedE2EEMessage(message)) void remove([message._id], { deleted: false });
+			if (message._id && isRoomSubscribed(message.rid) && isDecryptedE2EEMessage(message)) void remove([message._id], { deleted: false });
 			return;
 		}
 		if (deletedIds.has(doc.id) || !isRoomSubscribed(doc.rid)) return;

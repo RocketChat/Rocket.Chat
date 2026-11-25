@@ -221,7 +221,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 					({ tmid: _, ...record }) => record,
 				);
 
-				roomMessageDeletes.emit('deleteMessage', { _id: msg._id });
+				roomMessageDeletes.emit('deleteMessage', { _id: msg._id, rid: record.rid });
 			}),
 			sdk.stream('notify-room', [`${record.rid}/deleteMessageBulk`], async (params) => {
 				const query = createDeleteQuery(params);

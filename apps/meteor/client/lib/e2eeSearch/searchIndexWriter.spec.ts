@@ -406,6 +406,17 @@ describe('createSearchIndexWriter remove', () => {
 		expect(backend.upsert).toHaveBeenCalledTimes(1);
 	});
 
+	it('sends no remove for a deletion placeholder or an emptied message of a room that the device does not index', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY, isRoomSubscribed: (rid) => rid === 'room1' });
+
+		writer.index(message('m1', { rid: 'other', t: 'rm', msg: '', e2e: undefined }));
+		writer.index(message('m2', { rid: 'other', msg: '' }));
+		await writer.flush();
+
+		expect(backend.remove).not.toHaveBeenCalled();
+	});
+
 	it('drops a queued document of a message that becomes a deletion placeholder before the flush', async () => {
 		const backend = createBackend();
 		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });

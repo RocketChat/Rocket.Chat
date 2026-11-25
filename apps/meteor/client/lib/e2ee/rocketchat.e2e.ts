@@ -1112,11 +1112,13 @@ export const e2eSearchIndexWriter = createSearchIndexWriter({
 		getSearchPreferences().rooms.includes(rid) && Subscriptions.state.find((record) => record.rid === rid) !== undefined,
 });
 
-roomMessageDeletes.on('deleteMessage', ({ _id }) => {
+roomMessageDeletes.on('deleteMessage', ({ _id, rid }) => {
+	if (!getChosenRids().has(rid)) return;
 	void e2eSearchIndexWriter.remove([_id]);
 });
 
 roomMessageDeletes.on('deleteMessageBulk', (event) => {
+	if (!getChosenRids().has(event.rid)) return;
 	void applyDeleteMessageBulkToSearchIndex(event, {
 		writer: e2eSearchIndexWriter,
 		findMessage: (id) => Messages.state.get(id),

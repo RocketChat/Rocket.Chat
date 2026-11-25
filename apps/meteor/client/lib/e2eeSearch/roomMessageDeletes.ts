@@ -7,6 +7,6 @@ import type { DeleteMessageBulkEvent } from './searchIndexDeletes';
  * room manager does not import the E2EE client.
  */
 export const roomMessageDeletes = new Emitter<{
-	deleteMessage: { _id: string };
+	deleteMessage: { _id: string; rid: string };
 	deleteMessageBulk: DeleteMessageBulkEvent;
 }>();
