@@ -50,10 +50,10 @@ describe('validateSettingRules', () => {
 			validation: JSON.stringify([{ type: 'cron' }]),
 		});
 
-		for (const value of ['0 0 * * *', '*/5 1-5 * * 1,3']) {
+		for (const value of ['0 0 * * *', '*/5 1-5 * * 1,3', '0 2 * * MON-FRI', '0 0 1 JAN *', '0 */30 * * * *']) {
 			expect(() => validateSettingRules([{ _id: 'Cron_Setting', value }])).to.not.throw();
 		}
-		for (const value of ['', 'invalid', '60 * * * *', '* * * * * *']) {
+		for (const value of ['', 'invalid', '60 * * * *', '60 * * * * *', '0 0 * * 7']) {
 			expect(() => validateSettingRules([{ _id: 'Cron_Setting', value }])).to.throw('Cron_Setting_Invalid');
 		}
 	});

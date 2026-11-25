@@ -81,7 +81,7 @@ const evaluateSettingValidationRule = (
 ): boolean => {
 	if (rule.type === 'cron') {
 		const value = get(settingId);
-		return typeof value === 'string' && isValidCron(value);
+		return typeof value === 'string' && isValidCron(value, { seconds: true, alias: true });
 	}
 
 	const references: Record<string, unknown> = {};
