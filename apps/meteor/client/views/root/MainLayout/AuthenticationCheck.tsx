@@ -1,7 +1,7 @@
 import { useConnectionStatus, useSearchParameter, useSession, useSessionDispatch, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/ui-registration';
 import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
@@ -78,10 +78,13 @@ const AuthenticationCheck = ({ children, guest, loadingElement }: Authentication
 	 * remembering to clear the stored token on its way out: deleting your own account does not, and left the
 	 * skeleton up for good.
 	 */
-	const hasSeenUser = useRef(false);
-	if (user) {
-		hasSeenUser.current = true;
-	}
+	const [hasSeenUser, setHasSeenUser] = useState(false);
+
+	useEffect(() => {
+		if (user) {
+			setHasSeenUser(true);
+		}
+	}, [user]);
 
 	/**
 	 * A window that opens with a session already stored — a call popout, or any plain reload — has no user until
@@ -102,7 +105,7 @@ const AuthenticationCheck = ({ children, guest, loadingElement }: Authentication
 	 */
 	const loginToken = useStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
-	const isResumingSession = !user && !hasSeenUser.current && !forceLogin && !unreachable && !!loginToken;
+	const isResumingSession = !user && !hasSeenUser && !forceLogin && !unreachable && !!loginToken;
 
 	if (isResumingSession) {
 		return <>{loadingElement}</>;

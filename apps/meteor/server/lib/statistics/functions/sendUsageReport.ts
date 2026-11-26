@@ -27,7 +27,7 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 			ignoreSsrfValidation: true,
 		});
 
-		const { statsToken } = await response.json();
+		const { statsToken }: Pick<IStats, 'statsToken'> = await response.json();
 
 		if (statsToken != null) {
 			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });

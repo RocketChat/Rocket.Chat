@@ -8,7 +8,7 @@ export const cachedFunction = <F extends (...args: any[]) => any>(fn: F) => {
 			return cache.get(cacheKey) as ReturnType<F>;
 		}
 
-		const result = fn(...args);
+		const result: ReturnType<F> = fn(...args);
 
 		cache.set(cacheKey, result);
 

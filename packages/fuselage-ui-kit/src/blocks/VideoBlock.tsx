@@ -7,8 +7,6 @@ import { isTextObject } from '../utils/isTextObject';
 
 export type VideoBlockProps = BlockProps<UiKit.VideoBlock>;
 
-const maxWidth = 480;
-
 // The frame keeps its origin so players can run; a page from the workspace's own origin could then reach out of the sandbox.
 const isPlayableUrl = (url: string) => {
 	try {
@@ -30,7 +28,7 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 	const title = isTextObject(block.title) ? surfaceRenderer.renderTextObject(block.title, 0, UiKit.BlockContext.NONE) : null;
 
 	return (
-		<Box className={className} maxWidth={maxWidth} display='flex' flexDirection='column'>
+		<Box className={className} display='flex' flexDirection='column'>
 			<Box
 				position='relative'
 				width='full'

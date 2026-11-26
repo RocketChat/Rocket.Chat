@@ -88,7 +88,7 @@ export abstract class AbstractBusinessHourType {
 			);
 			return businessHourData._id;
 		}
-		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
+		const { insertedId }: { insertedId: string } = await this.BusinessHourRepository.insertOne(businessHourData);
 		return insertedId;
 	}
 
@@ -138,7 +138,7 @@ export abstract class AbstractBusinessHourType {
 		return moment.tz(timezone).format('Z');
 	}
 
-	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: any, format: string): string {
+	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: moment.Moment, format: string): string {
 		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm')
 			.add(moment().utcOffset() / 60, 'hours')
 			.format(format);

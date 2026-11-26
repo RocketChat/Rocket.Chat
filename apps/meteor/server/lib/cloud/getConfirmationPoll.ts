@@ -21,7 +21,8 @@ export async function getConfirmationPoll(deviceCode: string): Promise<CloudConf
 				throw new Error((await response.json()).error);
 			}
 
-			return await response.json();
+			const poll: CloudConfirmationPollData = await response.json();
+			return poll;
 		} catch (err) {
 			throw new Error(`Failed to retrieve registration confirmation poll data: ${response.statusText}`, { cause: err });
 		}

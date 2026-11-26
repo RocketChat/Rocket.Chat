@@ -10,7 +10,7 @@ import { notifyOnSettingChangedById } from '../lib/notifyListener';
 const logger = new Logger('FingerPrint');
 
 const generateFingerprint = function () {
-	const siteUrl = settings.get('Site_Url');
+	const siteUrl = settings.get<string>('Site_Url');
 	const dbConnectionString = process.env.MONGO_URL;
 
 	const fingerprint = `${siteUrl}${dbConnectionString}`;

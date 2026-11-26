@@ -122,5 +122,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 	metrics.messagesSent.inc();
 	metrics.messagesSentTotal.inc();
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- passes through the any-typed result of the legacy sendMessage from a Promise<void> function
 	return result;
 };

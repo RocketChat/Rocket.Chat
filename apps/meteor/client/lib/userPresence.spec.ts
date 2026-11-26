@@ -28,7 +28,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 }));
 
 jest.mock('../stores', () => ({
-	Users: { use: (selector: (state: { store: unknown }) => unknown) => selector({ store: storeUser }) },
+	Users: { useStore: (selector: (state: { store: unknown }) => unknown) => selector({ store: storeUser }) },
 }));
 
 describe('UserPresence', () => {

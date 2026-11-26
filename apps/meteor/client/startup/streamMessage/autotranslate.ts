@@ -25,4 +25,4 @@ const applyAutoTranslateStreamHandler = () => {
 applyAutoTranslateStreamHandler();
 settings.observe('AutoTranslate_Enabled', applyAutoTranslateStreamHandler);
 PermissionsCachedStore.useReady.subscribe(applyAutoTranslateStreamHandler);
-Users.use.subscribe(applyAutoTranslateStreamHandler);
+Users.useStore.subscribe(applyAutoTranslateStreamHandler);

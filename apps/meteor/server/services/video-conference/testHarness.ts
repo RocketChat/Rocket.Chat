@@ -140,7 +140,7 @@ export const createService = ({
 	}
 	delete require.cache[require.resolve('./service')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
-	const { VideoConfService } = require('./service');
+	const { VideoConfService } = require('./service') as typeof import('./service');
 	mock.restoreAll();
 
 	const doubles: Partial<Record<ModelName, object>> = {

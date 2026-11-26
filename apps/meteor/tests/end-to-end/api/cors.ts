@@ -13,7 +13,10 @@ const getHash = () =>
 		.then((res) => {
 			const hashMatch = res.text.match(/meteor_runtime_config\.js\?hash=([^"']+)/);
 			expect(hashMatch).to.not.be.null;
-			const hash = hashMatch![1];
+			if (!hashMatch) {
+				throw new Error('meteor_runtime_config.js hash not found in page');
+			}
+			const hash = hashMatch[1];
 			return hash;
 		});
 

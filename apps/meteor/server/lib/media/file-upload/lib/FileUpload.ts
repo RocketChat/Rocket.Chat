@@ -62,7 +62,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				onCheck: FileUpload.validateFileUpload,
 			}),
 			getPath(file: IUpload) {
-				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
+				return `${settings.get<string>('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 		};
@@ -76,7 +76,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 			}),
 			getPath(file: IUpload) {
 				const avatarFile = (file.rid && `room-${file.rid}`) || (file.contactId && `contact-${file._id}`) || file.userId;
-				return `${settings.get('uniqueID')}/avatars/${avatarFile}`;
+				return `${settings.get<string>('uniqueID')}/avatars/${avatarFile}`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload,
@@ -87,7 +87,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 		return {
 			collection: UserDataFiles,
 			getPath(file: IUpload) {
-				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}/${file._id}`;
+				return `${settings.get<string>('uniqueID')}/uploads/userData/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 		};
@@ -568,7 +568,7 @@ export const FileUpload = {
 	},
 
 	getStore(modelName: string) {
-		const storageType = settings.get('FileUpload_Storage_Type');
+		const storageType = settings.get<string>('FileUpload_Storage_Type');
 		const handlerName = `${storageType}:${modelName}`;
 
 		return this.getStoreByName(handlerName);

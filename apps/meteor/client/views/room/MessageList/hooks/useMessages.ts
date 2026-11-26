@@ -36,5 +36,5 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 		[rid, hideSysMessages, showThreadsInMainChannel],
 	);
 
-	return Messages.use(useShallow((state) => state.filter(predicate).sort((a, b) => a.ts.getTime() - b.ts.getTime())));
+	return Messages.useStore(useShallow((state) => state.filter(predicate).sort((a, b) => a.ts.getTime() - b.ts.getTime())));
 };

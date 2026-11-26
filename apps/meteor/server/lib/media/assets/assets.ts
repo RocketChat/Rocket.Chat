@@ -306,7 +306,10 @@ class RocketChatAssetsClass {
 		});
 	}
 
-	public async processAsset(settingKey: string, settingValue: any): Promise<Record<string, any> | undefined> {
+	public async processAsset(
+		settingKey: string,
+		settingValue: Pick<IRocketChatAsset, 'url' | 'defaultUrl'> | undefined,
+	): Promise<Record<string, any> | undefined> {
 		if (settingKey.indexOf('Assets_') !== 0) {
 			return;
 		}

@@ -12,7 +12,7 @@ import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui
 import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AbacAttributesFormData } from '../../../../components/ABAC/AbacRoomCreation';
@@ -50,11 +50,8 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 		defaultValues: { attributes: getInitialAttributeRows(roomAttributes, requiredKeys) },
 		mode: 'onChange',
 	});
-	const {
-		control,
-		handleSubmit,
-		formState: { isValid },
-	} = methods;
+	const { control, handleSubmit } = methods;
+	const { isValid } = useFormState({ control });
 
 	const attributes = useWatch({ control, name: 'attributes' });
 	const draft = toAttributeMap(attributes);

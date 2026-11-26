@@ -9,7 +9,7 @@ import './GoogleStorage';
 import './GridFS';
 
 const configStore = _.debounce(() => {
-	const store = settings.get('FileUpload_Storage_Type');
+	const store = settings.get<string>('FileUpload_Storage_Type');
 
 	if (store) {
 		SystemLogger.info({

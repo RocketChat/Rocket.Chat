@@ -1,4 +1,12 @@
-import type { IAppMessagesConverter, IAppServerOrchestrator, IAppsMessage, IAppsMesssageRaw } from '@rocket.chat/apps';
+import type {
+	IAppMessagesConverter,
+	IAppRoomsConverter,
+	IAppServerOrchestrator,
+	IAppsMessage,
+	IAppsMesssageRaw,
+	IAppUsersConverter,
+} from '@rocket.chat/apps';
+import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
@@ -15,8 +23,20 @@ import { convertMessageFiles } from './convertMessageFiles';
 // loosely-typed records to preserve that behaviour verbatim.
 type MessageData = Record<string, any>;
 
+type AppMessageAttachment = IMessageAttachment &
+	Partial<
+		Record<'imageDimensions' | 'imagePreview' | 'imageType' | 'imageSize' | 'audioType' | 'audioSize' | 'videoType' | 'videoSize', unknown>
+	> & { _unmappedProperties_?: Record<string, unknown> };
+
 export class AppMessagesConverter implements IAppMessagesConverter {
-	private mem = new WeakMap<object, Map<string, any>>();
+	private mem = new WeakMap<
+		object,
+		{
+			room: IAppRoomsConverter['convertById'];
+			convertUserById: IAppUsersConverter['convertById'];
+			convertUserToApp: IAppUsersConverter['convertToApp'];
+		}
+	>();
 
 	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
@@ -83,19 +103,11 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			return undefined;
 		}
 
-		const cache =
-			this.mem.get(cacheObj as object) ??
-			new Map<string, any>([
-				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
-				[
-					'user.convertById',
-					cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
-				],
-				[
-					'user.convertToApp',
-					cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
-				],
-			]);
+		const cache = this.mem.get(cacheObj as object) ?? {
+			room: cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms'))),
+			convertUserById: cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
+			convertUserToApp: cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
+		};
 
 		this.mem.set(cacheObj as object, cache);
 
@@ -120,12 +132,12 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			blocks: 'blocks',
 			type: 't',
 			files: async (message: MessageData) => convertMessageFiles(message.files, attachments),
-			room: async (message: MessageData) => {
-				const result = await cache.get('room')(message.rid);
+			room: async (message: MessageData): Promise<unknown> => {
+				const result = await cache.room(message.rid);
 				delete message.rid;
 				return result;
 			},
-			editor: async (message: MessageData) => {
+			editor: async (message: MessageData): Promise<unknown> => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -133,14 +145,14 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 					return undefined;
 				}
 
-				return cache.get('user.convertById')(editedBy._id);
+				return cache.convertUserById(editedBy._id);
 			},
 			attachments: async (message: MessageData) => {
 				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
 				delete message.attachments;
 				return result;
 			},
-			sender: async (message: MessageData) => {
+			sender: async (message: MessageData): Promise<unknown> => {
 				if (!message.u?._id) {
 					return undefined;
 				}
@@ -149,9 +161,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				const sender = message.u;
 
 				// When the message contains token, means the message is from the visitor(omnichannel)
-				const user = await (isMessageFromVisitor(msgObj)
-					? cache.get('user.convertToApp')(sender)
-					: cache.get('user.convertById')(sender._id));
+				const user = await (isMessageFromVisitor(msgObj) ? cache.convertUserToApp(sender) : cache.convertUserById(sender._id));
 
 				delete message.u;
 
@@ -160,7 +170,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
-				return user || cache.get('user.convertToApp')(sender);
+				return user || cache.convertUserToApp(sender);
 			},
 		} as const;
 
@@ -273,7 +283,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 		return newMessage;
 	}
 
-	_convertAppAttachments(attachments: any) {
+	_convertAppAttachments(attachments: AppMessageAttachment[] | undefined) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -363,7 +373,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				delete attachment.ts;
 				return result;
 			},
-			fileId: (attachment: MessageData) => {
+			fileId: (attachment: MessageData): unknown => {
 				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
 				if (!attachment.fileId && attachment.type === 'file' && mainFile?._id && attachments.length === 1) {
 					return mainFile._id;

@@ -1007,7 +1007,7 @@ describe('LIVECHAT - Queue', () => {
 		before(async () => {
 			// Force agent B to take another room on the same department
 			const { room: room2, visitor } = await startANewLivechatRoomAndTakeIt({
-				departmentId: forwardingDept!._id,
+				departmentId: forwardingDept._id,
 				agent: forwardUserB.credentials,
 			});
 			visitor2 = visitor;

@@ -25,7 +25,7 @@ Under **Admin → Settings → Federation → XMPP Server (Native)**. The sectio
 | `XMPP_Server_TLS_Key` | TLS Private Key (PEM) | empty | PEM private key |
 | `XMPP_Server_MUC_Subdomain` | MUC Subdomain | `conference` | Subdomain of the MUC service (`conference.chat.example.com`) |
 | `XMPP_Server_Domain_Allow_List` | Domain Allow List | empty | Comma-separated remote domains allowed to federate; empty allows all. Matched exactly, see below |
-| `XMPP_Server_Presence_Enabled` | Exchange Presence | on | Toggle presence exchange (both directions). See [Presence](#presence) for what works today |
+| `XMPP_Server_Presence_Enabled` | Exchange Presence | on | Toggle presence exchange (both directions) |
 
 A hidden setting, `XMPP_Server_Message_Id_Secret`, is generated once at first start. Inbound
 message ids are derived from it, and corrections depend on those ids staying stable
@@ -225,7 +225,7 @@ up:
 - **Presence**: send a subscription request to a Rocket.Chat user you already share a DM
   with; it is accepted automatically, and a request back is sent. Requests from anyone else
   are declined. With **Exchange Presence** off, requests get no answer at all. See
-  [Presence](#presence) for what is exchanged after that.
+  [the presence spec](specs/presence.md) for what is exchanged after that.
 - **Join a Rocket.Chat-hosted room**: join `<room>@conference.chat.example.com` as a regular
   MUC. Public channels admit anyone; private groups require an invitation (a join without one
   is refused with `registration-required`). `disco#items` on `chat.example.com` lists the
@@ -241,12 +241,6 @@ up:
 
 Gaps an administrator or user will notice today. Each is recorded in its spec, as a known
 defect or as out of scope; the spec has the details.
-
-### Presence
-
-Presence works one way only. A contact's XMPP presence sets their Rocket.Chat status, but
-Rocket.Chat status changes do not reach XMPP contacts
-([presence D2](specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts)).
 
 ### Hosted rooms
 
@@ -305,10 +299,10 @@ node --import tsx --test --test-force-exit --test-name-pattern='stores a message
 
 ### The Openfire stack
 
-`docker-compose.test.yml` runs Rocket.Chat in microservices mode (with the authorization,
-presence and XMPP server services) and Openfire 5.1 in its default configuration, already
-federating with each other. `yarn test:e2e:stack` builds the images from the working tree,
-starts the stack, runs the suite against it and tears it down:
+`docker-compose.test.yml` runs Rocket.Chat in microservices mode (with the account,
+authorization, presence, DDP streamer and XMPP server services) and Openfire 5.1 in its
+default configuration, already federating with each other. `yarn test:e2e:stack` builds the images
+from the working tree, starts the stack, runs the suite against it and tears it down:
 
 ```sh
 echo 'ENTERPRISE_LICENSE=<license with the federation module>' > ee/packages/xmpp-server/.env
@@ -330,8 +324,9 @@ yarn workspace @rocket.chat/xmpp-server test:e2e:stack
 | Reached at | `http://localhost:3000`, the test admin (`rocketchat.internal.admin.test`, same password) | `xmpp://localhost:5222`; admin console `http://localhost:9090` (`admin` / `admin`) |
 | Host port variable | `XMPP_STACK_RC_PORT` | `XMPP_STACK_OPENFIRE_C2S_PORT`, `XMPP_STACK_OPENFIRE_ADMIN_PORT` |
 
-The service's `/stats` is on `XMPP_STACK_SERVICE_PORT` (3039). The license is validated
-against `XMPP_STACK_ROOT_URL`, `http://rc.host` by default.
+The service's `/stats` is on `XMPP_STACK_SERVICE_PORT` (3039), and the DDP streamer on
+`XMPP_STACK_DDP_PORT` (4000). The license is validated against `XMPP_STACK_ROOT_URL`,
+`http://rc.host` by default.
 
 Inside the stack each server's domain and `conference.` subdomain are network aliases, with
 no SRV records, so both sides reach each other on 5269. The `certs` container issues a private

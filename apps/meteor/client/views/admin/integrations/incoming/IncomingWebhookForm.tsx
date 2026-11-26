@@ -21,7 +21,7 @@ import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
@@ -35,12 +35,12 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 
-	const {
-		control,
-		watch,
-		formState: { errors },
-	} = useFormContext<EditIncomingWebhookFormData>();
-	const { alias, emoji, avatar } = watch();
+	const { control } = useFormContext<EditIncomingWebhookFormData>();
+	const { errors } = useFormState({ control });
+	const watched = useWatch({ control });
+	const alias = watched.alias ?? '';
+	const emoji = watched.emoji ?? '';
+	const avatar = watched.avatar ?? '';
 
 	const url = absoluteUrl(`hooks/${webhookData?._id}/${webhookData?.token}`);
 

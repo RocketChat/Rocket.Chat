@@ -31,8 +31,8 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 
-	const trackRef = useRef<PersistentAudioTrack | null>(null);
-	trackRef.current = track;
+	const activeTrackId = track?.id ?? null;
+
 	// Not every browser honors a seek made before the metadata is loaded, so such a seek waits for it.
 	const pendingStartTimeRef = useRef(0);
 
@@ -49,7 +49,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			return;
 		}
 
-		if (trackRef.current?.id !== next.id) {
+		if (track?.id !== next.id) {
 			setTrack(next);
 			setCurrentTime(startTime);
 			setDuration(0);
@@ -65,7 +65,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const toggle = useStableCallback(() => {
 		const audio = audioRef.current;
-		if (!audio || !trackRef.current) {
+		if (!audio || !track) {
 			return;
 		}
 		if (audio.paused) {
@@ -116,7 +116,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const retry = useStableCallback(() => {
 		const audio = audioRef.current;
-		if (!audio || !trackRef.current) {
+		if (!audio || !track) {
 			return;
 		}
 		setError(false);
@@ -125,8 +125,6 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		audio.load();
 		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
 	});
-
-	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 
 	const value = useMemo<MediaPlayerContextValue>(
 		() => ({
@@ -143,9 +141,24 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			seek,
 			cyclePlaybackRate,
 			close,
-			isActive,
+			activeTrackId,
 		}),
-		[track, playing, currentTime, duration, playbackRate, loading, error, retry, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		[
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			activeTrackId,
+		],
 	);
 
 	return (
@@ -163,7 +176,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onPlaying={() => setLoading(false)}
 				onError={() => {
 					// An error arriving after close() belongs to no track.
-					if (trackRef.current) {
+					if (track) {
 						setLoading(false);
 						setError(true);
 					}

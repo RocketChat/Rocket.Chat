@@ -60,8 +60,10 @@ const ContextMessage = ({
 
 	const displayName = useUserDisplayName({ name, username });
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- reported messages arrive serialized from the REST API, while the message components below take IMessage
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- reported messages arrive serialized from the REST API, while the message components below take IMessage
 	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
 
 	return (

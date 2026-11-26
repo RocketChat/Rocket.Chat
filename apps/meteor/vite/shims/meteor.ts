@@ -9,14 +9,14 @@ function inert() {
 	return undefined;
 }
 
-const unavailable = (name: string): any => {
+const unavailable = (name: string): typeof inert => {
 	const warn = () => {
 		if (warned.has(name)) return;
 		warned.add(name);
 		console.warn(`[vite] ${name} is not available outside the Meteor build`, new Error().stack);
 	};
 
-	const proxy: any = new Proxy(inert, {
+	const proxy: typeof inert = new Proxy(inert, {
 		get: (_target, prop) => {
 			if (prop === Symbol.toPrimitive) return () => '';
 			if (prop === 'then') return undefined;

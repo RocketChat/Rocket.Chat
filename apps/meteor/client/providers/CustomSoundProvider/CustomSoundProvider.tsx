@@ -42,6 +42,14 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		initialData: defaultSounds,
 	});
 
+	const stop = useStableCallback((soundId: ICustomSound['_id']) => {
+		const current = audioRefs.current?.find(({ id }) => id === soundId);
+		if (current) {
+			current.load();
+			audioRefs.current = audioRefs.current.filter(({ id }) => id !== soundId);
+		}
+	});
+
 	const play = useStableCallback((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
 		stop(soundId);
 
@@ -68,14 +76,6 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		const current = audioRefs.current?.find(({ id }) => id === soundId);
 		if (current) {
 			current.pause();
-			audioRefs.current = audioRefs.current.filter(({ id }) => id !== soundId);
-		}
-	});
-
-	const stop = useStableCallback((soundId: ICustomSound['_id']) => {
-		const current = audioRefs.current?.find(({ id }) => id === soundId);
-		if (current) {
-			current.load();
 			audioRefs.current = audioRefs.current.filter(({ id }) => id !== soundId);
 		}
 	});

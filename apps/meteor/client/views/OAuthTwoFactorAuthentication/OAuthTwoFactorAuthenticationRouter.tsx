@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import TwoFactorModal from '../../components/TwoFactorModal/TwoFactorModal';
 
 const throwErrorOnInvalidMethod = (method: never): never => {
-	throw new Error(`Invalid Two Factor method: ${method}`);
+	throw new Error(`Invalid Two Factor method: ${String(method)}`);
 };
 
 const OAuthTwoFactorAuthenticationRouter = () => {

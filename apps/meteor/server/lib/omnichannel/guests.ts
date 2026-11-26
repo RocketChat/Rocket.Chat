@@ -17,7 +17,6 @@ import UAParser from 'ua-parser-js';
 import { parseAgentCustomFields } from './Helper';
 import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
-import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { i18n } from '../i18n';
 import { FileUpload } from '../media/file-upload';
@@ -50,7 +49,9 @@ export async function saveGuest(
 			if (!Object.hasOwn(livechatData, field._id)) {
 				continue;
 			}
-			const value = trim(livechatData[field._id]);
+			const rawValue = livechatData[field._id];
+			// oxlint-disable-next-line typescript/no-base-to-string -- TODO: reject non-string values on the next major; clients still send arrays (['VIP'] is saved as 'VIP')
+			const value = rawValue ? String(rawValue).trim() : '';
 			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 				const regexp = new RegExp(field.regexp);
 				if (!regexp.test(value)) {

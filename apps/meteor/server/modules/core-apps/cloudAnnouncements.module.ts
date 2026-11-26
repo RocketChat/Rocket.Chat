@@ -38,7 +38,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 	}
 
 	protected getCloudUrl() {
-		return settings.get('Cloud_Url');
+		return settings.get<string>('Cloud_Url');
 	}
 
 	blockAction(payload: UiKitCoreAppBlockActionPayload): Promise<UiKit.ServerInteraction | undefined> {

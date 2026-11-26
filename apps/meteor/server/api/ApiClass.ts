@@ -530,10 +530,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			throw new ClientSafeError('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes.join(',')}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes.join(',')}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {
@@ -542,7 +542,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					options: rateLimiterOptions,
 				};
 				const rateLimitRule = {
-					IPAddr: (input: any) => input,
+					IPAddr: (input: string) => input,
 					route,
 				};
 				rateLimiterDictionary[route].rateLimiter.addRule(
@@ -776,7 +776,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					Object.assign(_options, extraOptions);
 				}
 				// Add a try/catch for each endpoint
-				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
+				const originalAction: (this: unknown) => Promise<unknown> = (
+					operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>
+				).action;
 
 				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
 					throw new ClientSafeError('error-deprecated', `The endpoint ${route} should be removed`);
@@ -814,7 +816,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new ClientSafeError('error-invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new ClientSafeError('error-invalid-params', validatorFunc.errors?.map((error) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -1003,7 +1005,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					});
 
 					try {
-						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
+						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async (): Promise<{ id: string; token: string }> =>
+							Meteor.callAsync('login', args),
+						);
 						const user = await Users.findOne(
 							{
 								_id: auth.id,
@@ -1108,9 +1112,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				async get() {
 					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
+					// oxlint-disable-next-line typescript/no-unsafe-return -- logout's result does not match the endpoint's declared response
 					return logout.call(this as any) as any;
 				},
 				async post() {
+					// oxlint-disable-next-line typescript/no-unsafe-return -- logout's result does not match the endpoint's declared response
 					return logout.call(this as any) as any;
 				},
 			},

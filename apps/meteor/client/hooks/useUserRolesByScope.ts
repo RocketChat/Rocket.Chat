@@ -36,8 +36,8 @@ export const useUserRolesByScope = (
 	const belongsTo = (roleIds: IRole['_id'][] | undefined) => (record: IRole) => !!record.description && !!roleIds?.includes(record._id);
 	const label = ({ description }: IRole) => description;
 
-	const workspaceRoles = Roles.use(useShallow((state) => state.filter(belongsTo(userRoleIds)).map(label)));
-	const roomRoles = Roles.use(useShallow((state) => state.filter(belongsTo(roomRoleIds)).map(label)));
+	const workspaceRoles = Roles.useStore(useShallow((state) => state.filter(belongsTo(userRoleIds)).map(label)));
+	const roomRoles = Roles.useStore(useShallow((state) => state.filter(belongsTo(roomRoleIds)).map(label)));
 
 	return { workspaceRoles, roomRoles };
 };

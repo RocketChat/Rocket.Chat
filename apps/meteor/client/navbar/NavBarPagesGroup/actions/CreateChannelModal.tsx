@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useId, useEffect, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useForm, Controller, FormProvider, useWatch, useFormState } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
@@ -125,15 +125,13 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 		},
 	});
 
-	const {
-		formState: { errors, isSubmitting },
-		handleSubmit,
-		control,
-		setValue,
-		watch,
-	} = methods;
+	const { handleSubmit, control, setValue } = methods;
+	const { errors, isSubmitting } = useFormState({ control });
 
-	const { isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes } = watch();
+	const [isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes] = useWatch({
+		control,
+		name: ['isPrivate', 'broadcast', 'readOnly', 'federated', 'xmppFederated', 'encrypted', 'isAbacManaged', 'members', 'attributes'],
+	});
 
 	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated || xmppFederated);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });

@@ -1,10 +1,11 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { updateRoomSLA } from './sla';
 
 export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string; roomId: string; sla?: string }): Promise<void> {
 	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { status: 1 } });
-	if (inquiry?.status !== 'queued') {
+	if (inquiry?.status !== LivechatInquiryStatus.QUEUED) {
 		throw new Error('error-invalid-inquiry');
 	}
 

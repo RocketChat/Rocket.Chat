@@ -28,12 +28,12 @@ describe('getMessagePreview', () => {
 			expect(mockNormalizeMessagePreview).not.toHaveBeenCalled();
 		});
 
-		it('should escape HTML in the draft content', () => {
+		it('should not escape HTML in draft content since React handles escaping', () => {
 			const room = createFakeSubscription({ draft: '<img src=x onerror=alert(1)>' });
 
 			const result = getMessagePreview(room, undefined, mockT);
 
-			expect(result).toBe('Draft: &lt;img src=x onerror=alert(1)&gt;');
+			expect(result).toBe('Draft: <img src=x onerror=alert(1)>');
 			expect(mockNormalizeMessagePreview).not.toHaveBeenCalled();
 		});
 

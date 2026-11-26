@@ -80,7 +80,8 @@ export const startLicense = async () => {
 			return;
 		}
 
-		const existingData = wrapExceptions(() => JSON.parse(settings.get<string>('Enterprise_License_Data'))).catch(() => ({})) ?? {};
+		const existingData =
+			wrapExceptions(() => JSON.parse(settings.get<string>('Enterprise_License_Data')) as Record<string, unknown>).catch(() => ({})) ?? {};
 
 		const date = new Date();
 

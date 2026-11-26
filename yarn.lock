@@ -6268,6 +6268,139 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@oxc-transform-react/binding-android-arm-eabi@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-android-arm-eabi@npm:0.158.0"
+  conditions: os=android & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-android-arm64@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-android-arm64@npm:0.158.0"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-darwin-arm64@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-darwin-arm64@npm:0.158.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-darwin-x64@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-darwin-x64@npm:0.158.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-freebsd-x64@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-freebsd-x64@npm:0.158.0"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-arm-gnueabihf@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-arm-gnueabihf@npm:0.158.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-arm-musleabihf@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-arm-musleabihf@npm:0.158.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-arm64-gnu@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-arm64-gnu@npm:0.158.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-arm64-musl@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-arm64-musl@npm:0.158.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-ppc64-gnu@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-ppc64-gnu@npm:0.158.0"
+  conditions: os=linux & cpu=ppc64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-riscv64-gnu@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-riscv64-gnu@npm:0.158.0"
+  conditions: os=linux & cpu=riscv64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-riscv64-musl@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-riscv64-musl@npm:0.158.0"
+  conditions: os=linux & cpu=riscv64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-s390x-gnu@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-s390x-gnu@npm:0.158.0"
+  conditions: os=linux & cpu=s390x & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-x64-gnu@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-x64-gnu@npm:0.158.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-linux-x64-musl@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-linux-x64-musl@npm:0.158.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-openharmony-arm64@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-openharmony-arm64@npm:0.158.0"
+  conditions: os=openharmony & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-win32-arm64-msvc@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-win32-arm64-msvc@npm:0.158.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-win32-ia32-msvc@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-win32-ia32-msvc@npm:0.158.0"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@oxc-transform-react/binding-win32-x64-msvc@npm:0.158.0":
+  version: 0.158.0
+  resolution: "@oxc-transform-react/binding-win32-x64-msvc@npm:0.158.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@oxlint-tsgolint/darwin-arm64@npm:7.0.2004":
   version: 7.0.2004
   resolution: "@oxlint-tsgolint/darwin-arm64@npm:7.0.2004"
@@ -10140,6 +10273,7 @@ __metadata:
     outdent: "npm:~0.8.0"
     overlayscrollbars: "npm:~2.17.1"
     overlayscrollbars-react: "npm:^0.5.6"
+    oxc-transform-react: "npm:~0.158.0"
     passport: "npm:^0.7.0"
     passport-apple: "npm:^2.0.2"
     passport-github2: "npm:^0.1.12"
@@ -29273,6 +29407,72 @@ __metadata:
     "@oxc-resolver/binding-win32-x64-msvc":
       optional: true
   checksum: 10/44abfb2aeec290f78f13d554aafddbd643efa600b94c05168fabb1264dc2d59663eb8130854a10c18393956d30e6638d1915cbeec52f99fa451afd138a8e402a
+  languageName: node
+  linkType: hard
+
+"oxc-transform-react@npm:~0.158.0":
+  version: 0.158.0
+  resolution: "oxc-transform-react@npm:0.158.0"
+  dependencies:
+    "@oxc-transform-react/binding-android-arm-eabi": "npm:0.158.0"
+    "@oxc-transform-react/binding-android-arm64": "npm:0.158.0"
+    "@oxc-transform-react/binding-darwin-arm64": "npm:0.158.0"
+    "@oxc-transform-react/binding-darwin-x64": "npm:0.158.0"
+    "@oxc-transform-react/binding-freebsd-x64": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-arm-gnueabihf": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-arm-musleabihf": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-arm64-gnu": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-arm64-musl": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-ppc64-gnu": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-riscv64-gnu": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-riscv64-musl": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-s390x-gnu": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-x64-gnu": "npm:0.158.0"
+    "@oxc-transform-react/binding-linux-x64-musl": "npm:0.158.0"
+    "@oxc-transform-react/binding-openharmony-arm64": "npm:0.158.0"
+    "@oxc-transform-react/binding-win32-arm64-msvc": "npm:0.158.0"
+    "@oxc-transform-react/binding-win32-ia32-msvc": "npm:0.158.0"
+    "@oxc-transform-react/binding-win32-x64-msvc": "npm:0.158.0"
+  dependenciesMeta:
+    "@oxc-transform-react/binding-android-arm-eabi":
+      optional: true
+    "@oxc-transform-react/binding-android-arm64":
+      optional: true
+    "@oxc-transform-react/binding-darwin-arm64":
+      optional: true
+    "@oxc-transform-react/binding-darwin-x64":
+      optional: true
+    "@oxc-transform-react/binding-freebsd-x64":
+      optional: true
+    "@oxc-transform-react/binding-linux-arm-gnueabihf":
+      optional: true
+    "@oxc-transform-react/binding-linux-arm-musleabihf":
+      optional: true
+    "@oxc-transform-react/binding-linux-arm64-gnu":
+      optional: true
+    "@oxc-transform-react/binding-linux-arm64-musl":
+      optional: true
+    "@oxc-transform-react/binding-linux-ppc64-gnu":
+      optional: true
+    "@oxc-transform-react/binding-linux-riscv64-gnu":
+      optional: true
+    "@oxc-transform-react/binding-linux-riscv64-musl":
+      optional: true
+    "@oxc-transform-react/binding-linux-s390x-gnu":
+      optional: true
+    "@oxc-transform-react/binding-linux-x64-gnu":
+      optional: true
+    "@oxc-transform-react/binding-linux-x64-musl":
+      optional: true
+    "@oxc-transform-react/binding-openharmony-arm64":
+      optional: true
+    "@oxc-transform-react/binding-win32-arm64-msvc":
+      optional: true
+    "@oxc-transform-react/binding-win32-ia32-msvc":
+      optional: true
+    "@oxc-transform-react/binding-win32-x64-msvc":
+      optional: true
+  checksum: 10/faeeb01af49a4b85d828532cf0746836b4819d2893d390f04462786c7396e540040a2f2ce36d7b55b48e57274bb5f729beedb2a51fb968861c384821f6bf677e
   languageName: node
   linkType: hard
 

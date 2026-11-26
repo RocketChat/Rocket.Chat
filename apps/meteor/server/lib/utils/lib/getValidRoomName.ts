@@ -33,7 +33,7 @@ export const getValidRoomName = async (displayName: string, rid = '', options: {
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_Channel_Names_Validation')}$`);
+		nameValidation = new RegExp(`^${settings.get<string>('UTF8_Channel_Names_Validation')}$`);
 	} catch (error) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}

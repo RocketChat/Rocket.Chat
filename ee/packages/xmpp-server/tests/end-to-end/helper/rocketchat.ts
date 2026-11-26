@@ -133,6 +133,14 @@ export async function connectSession(rc: RocketChat, user: LocalUser): Promise<v
 	const session = new DDPListener(config.ddpUrl, user.config);
 	rc.cleanup.add(() => session.disconnect());
 	await session.connect();
+	await retry(
+		`${user.username} online`,
+		async () => {
+			const status = (await findUser(rc, user.username))?.status;
+			assert.equal(status, 'online', `${user.username} is ${status}: is XMPP_E2E_RC_DDP_URL the server that tracks presence?`);
+		},
+		federationPolling,
+	);
 }
 
 export const findUser = (rc: RocketChat, username: string) => findUserByUsername(username, rc.admin);

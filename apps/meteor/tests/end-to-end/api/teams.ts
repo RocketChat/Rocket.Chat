@@ -725,9 +725,9 @@ describe('/teams.list', () => {
 
 	let testUser1: TestUser<IUser>;
 	let testUser1Credentials: Credentials;
-	let testTeamAdmin: TestUser<IUser>;
-	let testTeam1: IRoom;
-	let testTeamMemberOnly: IRoom;
+	let testTeamAdmin: ITeam;
+	let testTeam1: ITeam;
+	let testTeamMemberOnly: ITeam;
 	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
@@ -783,9 +783,9 @@ describe('/teams.list', () => {
 	after(() =>
 		Promise.all([
 			deleteTeam(credentials, teamName),
-			deleteTeam(testUser1Credentials, testTeam1.name!),
-			deleteTeam(credentials, testTeamAdmin.name!),
-			deleteTeam(credentials, testTeamMemberOnly.name!),
+			deleteTeam(testUser1Credentials, testTeam1.name),
+			deleteTeam(credentials, testTeamAdmin.name),
+			deleteTeam(credentials, testTeamMemberOnly.name),
 		]),
 	);
 

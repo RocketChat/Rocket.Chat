@@ -4,7 +4,7 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useRef } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
@@ -22,12 +22,9 @@ const NavBarSearch = () => {
 	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
 
 	const methods = useForm({ defaultValues: { filterText: '' } });
-	const {
-		formState: { isDirty },
-		register,
-		resetField,
-		setFocus,
-	} = methods;
+	const { register, resetField, setFocus, control } = methods;
+	const filterText: string = useWatch({ control, name: 'filterText' });
+	const isDirty = filterText !== '';
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
@@ -36,7 +33,7 @@ const NavBarSearch = () => {
 
 	const state = useOverlayTriggerState({});
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
-	delete triggerProps.onPress;
+	const { onPress: _, ...cleanTriggerProps } = triggerProps;
 
 	const { activeId, handleKeyDown, handleInput, contextValue } = useSearchActiveOption(state, overlayProps.id);
 	const handleFocus = useSearchFocus(state);
@@ -78,7 +75,7 @@ const NavBarSearch = () => {
 			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} marginInline={8} position='relative'>
 				<TextInput
 					{...rest}
-					{...triggerProps}
+					{...cleanTriggerProps}
 					onFocus={handleFocus}
 					onKeyDown={handleKeyDown}
 					onInput={handleInput}

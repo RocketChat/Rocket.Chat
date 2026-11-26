@@ -4,6 +4,7 @@ import Block from '../Block';
 import { cx } from './helpers';
 import type { Parser } from './helpers';
 
+// oxlint-disable-next-line typescript/no-unsafe-return -- Array.isArray narrows a readonly array to any[]
 const toList = <T,>(value: readonly T[] | undefined): readonly T[] => (Array.isArray(value) ? value : []);
 
 export const TableBlock = ({ appId, blockId, rows, column_settings: columnSettings, parser }: uikit.TableBlock & { parser: Parser }) => {

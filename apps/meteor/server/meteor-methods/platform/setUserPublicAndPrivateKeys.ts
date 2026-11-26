@@ -3,8 +3,8 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 
-const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
-	return result.private_key && result.public_key;
+const isKeysResult = (result: { public_key?: string; private_key?: string }): result is { public_key: string; private_key: string } => {
+	return Boolean(result.private_key && result.public_key);
 };
 
 export const setUserPublicAndPrivateKeysMethod = async (

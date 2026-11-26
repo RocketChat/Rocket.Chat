@@ -22,6 +22,7 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom, getRoomInfo } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, getUserByUsername, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
@@ -528,7 +529,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		describe('Audit messages by user and ABAC-managed rooms', () => {
-			let auditUser: IUser;
+			let auditUser: TestUser<IUser>;
 			let auditUserCreds: Credentials;
 			let auditRoom: IRoom;
 			const auditAttrKey = `audit_attr_${Date.now()}`;
@@ -551,7 +552,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await addAbacAttributesToUserDirectly(connection, auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
 				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
 
-				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username!] });
+				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username] });
 				auditRoom = roomRes.body.group as IRoom;
 
 				await request
@@ -582,7 +583,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						startDate: startDate.toISOString(),
 						endDate: endDate.toISOString(),
 						rid: '',
-						users: [auditUser.username!],
+						users: [auditUser.username],
 						visitor: '',
 						agent: '',
 					})
@@ -611,7 +612,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						startDate: startDate.toISOString(),
 						endDate: endDate.toISOString(),
 						rid: '',
-						users: [auditUser.username!],
+						users: [auditUser.username],
 						visitor: '',
 						agent: '',
 					})
@@ -646,7 +647,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						startDate: startDate.toISOString(),
 						endDate: endDate.toISOString(),
 						rid: '',
-						users: [auditUser.username!],
+						users: [auditUser.username],
 						visitor: '',
 						agent: '',
 					})
@@ -3905,7 +3906,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await request
 				.post('/api/v1/groups.invite')
 				.set(credentials)
-				.send({ roomId: room._id, usernames: [newUser.username!] })
+				.send({ roomId: room._id, usernames: [newUser.username] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);

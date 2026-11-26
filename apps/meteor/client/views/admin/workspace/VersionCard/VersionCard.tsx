@@ -223,5 +223,6 @@ const decodeBase64 = (b64: string): SupportedVersions | undefined => {
 		return;
 	}
 
-	return JSON.parse(atob(bodyEncoded));
+	const versions: SupportedVersions = JSON.parse(atob(bodyEncoded));
+	return versions;
 };

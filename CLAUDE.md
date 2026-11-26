@@ -29,6 +29,10 @@ endpoints, methods, publications, stream events, search, exports, notifications,
 copied or quoted into others. Full rules:
 [docs/features/restricted-message-history.md](docs/features/restricted-message-history.md#adding-a-path-that-returns-messages).
 
+Changes never introduce lint warnings. When a warning can't be avoided, disable the rule on
+that line with `// oxlint-disable-next-line <rule> -- <reason>`, where the reason says why the
+code can't comply.
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.
