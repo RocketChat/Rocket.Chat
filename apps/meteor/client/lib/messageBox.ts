@@ -62,11 +62,6 @@ class MessageBoxActions {
 
 		return this.actions.get(group)?.filter((action) => !action.condition || action.condition());
 	}
-
-	getById(id: MessageBoxAction['id']) {
-		const groups: MessageBoxAction[][] = Object.values(this.actions);
-		return groups.flat().filter((action) => action.id === id);
-	}
 }
 
 export const messageBox = {
