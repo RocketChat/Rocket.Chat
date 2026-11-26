@@ -29,6 +29,21 @@ on top of `videoconference-enterprise`. The provider is registered only while th
 as soon as a license without it is applied, no restart needed. `video-conference.callConfig` checks it too, since a call
 started while it was licensed outlives the license: from then on nobody can join or rejoin it.
 
+## Conference links
+
+A room's [conference links](../video-conference.md#conference-links) exist only with this provider. A link is
+created, and a conference started from one, only while the active provider runs its calls inside Rocket.Chat: a
+start from a link after the workspace has moved to another provider is refused, and omnichannel rooms have no
+links.
+
+The call window serves a link's address itself. It shows the call running from the link, the start preflight
+with the link's title (which cannot be changed there), or the not-started page, and never moves the browser to
+another address: starting from the preflight puts the call in the same window at the same address, and a reload
+comes back to the same conference.
+
+With this provider the room header's video call button is a menu. At phone width the button stays on the header
+and opens the same menu, whose sub menus and dialogs fit the screen.
+
 ## Settings
 
 Under **Video Conference → LiveKit** (the `video-conference-native` module):
@@ -158,5 +173,6 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
-- No e2e coverage for the native flow yet.
+- End-to-end coverage reaches conference links (create, copy, open, start, join, rename, delete, phone width) with
+  placeholder LiveKit settings; nothing covers the call's media.
 - Background blur ships in a follow-up.
