@@ -104,36 +104,26 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 
 	// update emoji
 	if (emojiData.newFile) {
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 
 		await EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 	} else if (emojiData.name !== emojiData.previousName) {
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		const rs = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(
 			encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
 		);
 
 		if (rs) {
-			// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-			// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 			const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 				encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
-				rs.contentType,
+				rs.contentType ?? 'application/octet-stream',
 			);
-			// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 			ws.on('end', () => {
-				// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 				void RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 			});
-			// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 			rs.readStream.pipe(ws);
 		}
 	}

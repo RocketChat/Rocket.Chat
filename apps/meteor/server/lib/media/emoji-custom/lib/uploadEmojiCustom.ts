@@ -62,16 +62,13 @@ export async function uploadEmojiCustomWithBuffer(
 	}
 
 	const rs = RocketChatFile.bufferToStream(fileBuffer);
-	// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 	await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 
 	return new Promise((resolve) => {
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 			encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
 			contentType,
 		);
-		// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileEmojiCustomInstance is exported untyped from emoji-custom.js
 		ws.on('end', async () => {
 			const etag = Random.hexString(6);
 			await EmojiCustom.setETagByName(emojiData.name, etag);

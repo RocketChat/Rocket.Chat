@@ -12,7 +12,6 @@ export const deleteCustomSound = async (_id: string): Promise<void> => {
 		});
 	}
 
-	// oxlint-disable-next-line typescript/no-unsafe-call -- RocketChatFileCustomSoundsInstance is exported untyped from custom-sounds.js
 	await RocketChatFileCustomSoundsInstance.deleteFile(`${sound._id}.${sound.extension}`);
 	await CustomSounds.removeById(_id);
 
