@@ -1,7 +1,7 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import ConferencePanelToggles from './ConferencePanelToggles.js';
 import ConferenceWindowGate from './ConferenceWindowGate.js';
@@ -15,13 +15,13 @@ import EmbeddedCallMembersPanel from '../call/EmbeddedCallMembersPanel.js';
 import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel.js';
 import CallBar from '../components/CallBar.js';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel.js';
-import CallMessagePreviews from '../components/CallMessagePreviews/CallMessagePreviews.js';
 import CallPanel from '../components/CallPanel.js';
-import CallStageNotices from '../components/CallStageNotices.js';
+import CallStageNoticesHost from '../components/CallStageNoticesHost.js';
 import CallTopBar from '../components/CallTopBar.js';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice.js';
 import ConferenceIframe from '../components/ConferenceIframe.js';
 import { useCallSounds } from '../context/CallSoundsContext.js';
+import { CallStageNoticesContext } from '../context/CallStageNoticesContext.js';
 import { ChatPanelContext } from '../context/ChatPanelContext.js';
 import type { ConferencePanel } from '../context/ConferenceContext.js';
 import { useConference } from '../context/ConferenceContext.js';
@@ -66,11 +66,9 @@ const ConferenceWindow = () => {
 	// wide — past `md` — and far too short to dock a panel beside the call.
 	const sheetPanel = !breakpoints.includes('md') || tooShortToSplit;
 
-	const showMessagePreviews = session.joined && !chatVisible && !(sheetPanel && activePanel);
-
-	// Where the keyboard's focus is left when the preview it was on goes: beside the chat those previews came from.
-	const chatButtonRef = useRef<HTMLButtonElement>(null);
-	const focusChatButton = () => chatButtonRef.current?.focus();
+	const previewMessages = session.joined && !chatVisible && !(sheetPanel && activePanel);
+	const messagePreviews = sheetPanel ? 'compact' : 'regular';
+	const [stageNoticesHost, setStageNoticesHost] = useState<HTMLElement | null>(null);
 
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);
 
@@ -94,8 +92,12 @@ const ConferenceWindow = () => {
 			activePanel={activePanel}
 			presentCount={present.length}
 			unread={room.unread}
-			chatButtonRef={chatButtonRef}
+			messagePreviews={previewMessages ? messagePreviews : undefined}
 			onToggle={togglePanel}
+			onOpenMessage={(mid) => {
+				setActivePanel('chat');
+				room.jumpToMessage(mid);
+			}}
 		/>
 	);
 
@@ -103,71 +105,63 @@ const ConferenceWindow = () => {
 
 	return (
 		<ConferenceWindowGate present={present}>
-			<CallScope>
-				<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: 'black' }}>
-					{room.chatAccess && !bannerDismissed && <ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />}
+			<CallStageNoticesContext.Provider value={stageNoticesHost}>
+				<CallScope>
+					<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: 'black' }}>
+						{room.chatAccess && !bannerDismissed && (
+							<ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />
+						)}
 
-					{embeddedCall ? (
-						<CallTopBar
-							host={
-								<Box display='flex' flexGrow={1} minWidth={0} alignItems='center'>
-									<CallHeader name={call.name} />
-								</Box>
-							}
-						>
-							{/* Before the toggles, so the queue grows into the bar's own space rather than pushing them. */}
-							<CallTopBarStatus />
-							{panelToggles}
-						</CallTopBar>
-					) : (
-						<CallTopBar startAt={call.createdAt} name={call.name}>
-							{panelToggles}
-						</CallTopBar>
-					)}
+						{embeddedCall ? (
+							<CallTopBar
+								host={
+									<Box display='flex' flexGrow={1} minWidth={0} alignItems='center'>
+										<CallHeader name={call.name} />
+									</Box>
+								}
+							>
+								{/* Before the toggles, so the queue grows into the bar's own space rather than pushing them. */}
+								<CallTopBarStatus />
+								{panelToggles}
+							</CallTopBar>
+						) : (
+							<CallTopBar startAt={call.createdAt} name={call.name}>
+								{panelToggles}
+							</CallTopBar>
+						)}
 
-					<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
-						<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
-							{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
-							<CallStageNotices>
-								{showMessagePreviews && (
-									<CallMessagePreviews
-										compact={sheetPanel}
-										onOpen={(mid) => {
-											setActivePanel('chat');
-											room.jumpToMessage(mid);
-											focusChatButton();
-										}}
-										onFocusLeave={focusChatButton}
-									/>
-								)}
-							</CallStageNotices>
-						</Box>
+						<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
+							<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
+								{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
+								<CallStageNoticesHost ref={setStageNoticesHost} />
+							</Box>
 
-						<CallPanel visible={!!activePanel} sheet={sheetPanel}>
-							{activePanel === 'members' &&
-								(embeddedCall ? (
-									<EmbeddedCallMembersPanel onClose={() => togglePanel('members')} />
-								) : (
-									<CallMembersPanel onClose={() => togglePanel('members')} />
-								))}
-							{/* The call's chat is the product's room — its provider, its message list, its composer — so it
+							<CallPanel visible={!!activePanel} sheet={sheetPanel}>
+								{activePanel === 'members' &&
+									(embeddedCall ? (
+										<EmbeddedCallMembersPanel onClose={() => togglePanel('members')} />
+									) : (
+										<CallMembersPanel onClose={() => togglePanel('members')} />
+									))}
+								{/* The call's chat is the product's room — its provider, its message list, its composer — so it
 							    arrives built. What this window owns is the panel it sits in, which is why closing it is
 							    handed down rather than handed in. */}
-							{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
-							{activePanel === 'diagnostics' && embeddedCall && <CallDiagnosticsPanel onClose={() => togglePanel('diagnostics')} />}
-						</CallPanel>
-					</Box>
+								{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
+								{activePanel === 'diagnostics' && embeddedCall && <CallDiagnosticsPanel onClose={() => togglePanel('diagnostics')} />}
+							</CallPanel>
+						</Box>
 
-					{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
-					{embeddedCall && (
-						<CallBar
-							centre={
-								<CallControls layout={stageLayout} onLayoutChange={setStageLayout} onOpenDiagnostics={() => togglePanel('diagnostics')} />
-							}
-						/>
-					)}
-				</Box>
-			</CallScope>
+						{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
+						{embeddedCall && (
+							<CallBar
+								centre={
+									<CallControls layout={stageLayout} onLayoutChange={setStageLayout} onOpenDiagnostics={() => togglePanel('diagnostics')} />
+								}
+							/>
+						)}
+					</Box>
+				</CallScope>
+			</CallStageNoticesContext.Provider>
 		</ConferenceWindowGate>
 	);
 };

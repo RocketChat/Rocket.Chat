@@ -216,6 +216,33 @@ describe('a call that runs in this window', () => {
 		expect(set).toHaveBeenCalledWith('chat');
 		expect(jumpToMessage).toHaveBeenCalledWith('message-id');
 	});
+
+	it('clears the previews when the chat is opened', async () => {
+		let sent = false;
+
+		renderNative({
+			room: {
+				...buildConferenceContext().room,
+				rid: 'room-id',
+				onNewMessage: (listener) => {
+					if (!sent) {
+						sent = true;
+						listener({ _id: 'message-id', username: 'ada', text: 'Can everyone see my screen?' });
+					}
+					return () => undefined;
+				},
+			},
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: /Can everyone see my screen\?/ }));
+
+		expect(screen.getByRole('button', { name: 'Chat' })).toHaveFocus();
+		expect(screen.queryByRole('button', { name: /Can everyone see my screen\?/ })).not.toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Chat' }));
+
+		expect(screen.queryByRole('button', { name: /Can everyone see my screen\?/ })).not.toBeInTheDocument();
+	});
 });
 
 // Starting a call joins on the start screen, so this window opens joined while the call it belongs to is still being

@@ -4,7 +4,6 @@ import { action } from 'storybook/actions';
 import CallMessagePreviews from './CallMessagePreviews.js';
 import type { ConferenceRoom } from '../../context/definitions.js';
 import { CallSurface, conferenceAppRoot, onPhone, withConference, withConferenceWindow } from '../../fixtures/storyFixtures.js';
-import CallStageNotices from '../CallStageNotices.js';
 
 const conversation = [
 	{ afterMs: 500, username: 'ada', name: 'Ada Lovelace', text: 'Can everyone see my screen?' },
@@ -35,10 +34,8 @@ const replayConversation: ConferenceRoom['onNewMessage'] = (listener) => {
 
 const withCallSurface: Decorator = (Story) => (
 	<CallSurface height='24rem'>
-		<div style={{ position: 'relative', flexGrow: 1 }}>
-			<CallStageNotices>
-				<Story />
-			</CallStageNotices>
+		<div style={{ alignSelf: 'flex-end', width: 'min(20rem, 100%)', padding: 12 }}>
+			<Story />
 		</div>
 	</CallSurface>
 );
