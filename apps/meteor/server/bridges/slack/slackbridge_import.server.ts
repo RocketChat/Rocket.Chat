@@ -19,54 +19,67 @@ async function SlackBridgeImport({ command, message, userId }: SlashCommandCallb
 	}
 	const channel = room.name;
 
-	const notify = (msg: string) => {
-		const now = new Date();
-		msgStream.emit(message.rid, {
-			_id: Random.id(),
-			rid: message.rid,
-			u: { _id: 'rocket.cat', username: 'rocket.cat' },
-			ts: now,
-			_updatedAt: now,
-			msg,
-		});
-	};
-	const notifyError = (error: unknown) =>
-		notify(
-			i18n.t('SlackBridge_error', {
-				channelName: channel,
-				errorMessage: error instanceof Error ? error.message : String(error),
-				interpolation: { escapeValue: false },
-				lng: user.language,
-			}),
-		);
-
-	notify(
-		i18n.t('SlackBridge_start', {
+	msgStream.emit(message.rid, {
+		_id: Random.id(),
+		rid: message.rid,
+		u: { _id: 'rocket.cat', username: 'rocket.cat' },
+		ts: new Date(),
+		_updatedAt: new Date(),
+		msg: i18n.t('SlackBridge_start', {
 			username: user.username,
 			channelName: channel,
 			interpolation: { escapeValue: false },
 			lng: user.language,
 		}),
-	);
+	});
 
 	try {
 		for (const slack of SlackBridge.slackAdapters) {
 			await slack.importMessages(message.rid, (error) => {
 				if (error) {
-					notifyError(error);
+					msgStream.emit(message.rid, {
+						_id: Random.id(),
+						rid: message.rid,
+						u: { _id: 'rocket.cat', username: 'rocket.cat' },
+						ts: new Date(),
+						_updatedAt: new Date(),
+						msg: i18n.t('SlackBridge_error', {
+							channelName: channel,
+							errorMessage: error.message,
+							interpolation: { escapeValue: false },
+							lng: user.language,
+						}),
+					});
 				} else {
-					notify(
-						i18n.t('SlackBridge_finish', {
+					msgStream.emit(message.rid, {
+						_id: Random.id(),
+						rid: message.rid,
+						u: { _id: 'rocket.cat', username: 'rocket.cat' },
+						ts: new Date(),
+						_updatedAt: new Date(),
+						msg: i18n.t('SlackBridge_finish', {
 							channelName: channel,
 							interpolation: { escapeValue: false },
 							lng: user.language,
 						}),
-					);
+					});
 				}
 			});
 		}
 	} catch (error) {
-		notifyError(error);
+		msgStream.emit(message.rid, {
+			_id: Random.id(),
+			rid: message.rid,
+			u: { _id: 'rocket.cat', username: 'rocket.cat' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+			msg: i18n.t('SlackBridge_error', {
+				channelName: channel,
+				errorMessage: error instanceof Error ? error.message : String(error),
+				interpolation: { escapeValue: false },
+				lng: user.language,
+			}),
+		});
 		throw error;
 	}
 }

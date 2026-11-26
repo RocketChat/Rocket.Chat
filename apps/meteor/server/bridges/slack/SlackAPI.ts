@@ -205,7 +205,8 @@ export class SlackAPI {
 			},
 			params: options,
 		});
-		return request.json() as Promise<ConversationsHistoryResponse>;
+		const response = (await request.json()) as ConversationsHistoryResponse;
+		return response;
 	}
 
 	async getPins(channelId: string) {

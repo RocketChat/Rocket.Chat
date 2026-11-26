@@ -10,36 +10,50 @@ import { settings } from '../../settings';
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
  */
 class SlackBridgeClass {
-	isEnabled = false;
+	isEnabled: boolean;
 
-	isLegacyRTM = true;
+	isLegacyRTM: boolean;
 
-	slackAdapters: SlackAdapter[] = [];
+	slackAdapters: SlackAdapter[];
 
 	rocket: RocketAdapter;
 
-	reactionsMap = new Map<string, IUser>(); // Sync object between rocket and slack
+	reactionsMap: Map<string, IUser>;
 
-	connected = false;
+	connected: boolean;
 
-	// Settings that we cache versus looking up at runtime
-	apiTokens = '';
+	apiTokens: string;
 
-	botTokens = '';
+	botTokens: string;
 
-	appTokens = '';
+	appTokens: string;
 
-	signingSecrets = '';
+	signingSecrets: string;
 
-	aliasFormat = '';
+	aliasFormat: string;
 
-	excludeBotnames = '';
+	excludeBotnames: string;
 
-	isReactionsEnabled = true;
+	isReactionsEnabled: boolean;
 
 	constructor() {
+		this.isEnabled = false;
+		this.isLegacyRTM = true;
+		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);
+		this.reactionsMap = new Map(); // Sync object between rocket and slack
+
+		this.connected = false;
 		this.rocket.clearSlackAdapters();
+
+		// Settings that we cache versus looking up at runtime
+		this.apiTokens = '';
+		this.botTokens = '';
+		this.appTokens = '';
+		this.signingSecrets = '';
+		this.aliasFormat = '';
+		this.excludeBotnames = '';
+		this.isReactionsEnabled = true;
 
 		this.processSettings();
 	}
@@ -54,6 +68,7 @@ class SlackBridgeClass {
 
 				tokenList.forEach((apiToken) => {
 					const slack = new SlackAdapter(this);
+					slack.setRocket(this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
@@ -78,6 +93,7 @@ class SlackBridgeClass {
 
 				appCredentials.forEach((appCredential) => {
 					const slack = new SlackAdapter(this);
+					slack.setRocket(this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
@@ -106,7 +122,7 @@ class SlackBridgeClass {
 
 	debouncedReconnectIfEnabled = debounce(() => {
 		if (this.isEnabled) {
-			void this.reconnect();
+			this.reconnect();
 		}
 	}, 500);
 
@@ -194,7 +210,7 @@ class SlackBridgeClass {
 				if (this.isEnabled) {
 					this.debouncedReconnectIfEnabled();
 				} else {
-					void this.disconnect();
+					this.disconnect();
 				}
 			}
 			classLogger.debug({ msg: 'Setting: SlackBridge_Enabled', value });
