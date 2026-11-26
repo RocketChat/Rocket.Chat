@@ -39,6 +39,9 @@ public package, the script packs the tarball as the release does, and fails when
 `fixWorkspaceVersionsBeforePublish.ts` also stops the publish when a public package has a `patch:`
 range in `dependencies` or `peerDependencies`.
 
+A package that moves into the monorepo from another repository gets a changeset in the migration pull
+request. Its first publish from the monorepo is then a new version, and never collides with npm.
+
 ## Trusted publishing (OIDC)
 
 Publishing authenticates via [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/)
