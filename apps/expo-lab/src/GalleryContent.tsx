@@ -47,6 +47,46 @@ class Probe extends Component<{ children: ReactNode }, { error?: string }> {
 	}
 }
 
+
+type FiberLike = { type?: unknown; memoizedProps?: Record<string, unknown> | null; child?: FiberLike | null; sibling?: FiberLike | null };
+
+const pressKeys = ['onPress', 'onPressIn', 'onClick', 'onResponderRelease', 'onStartShouldSetResponder'];
+
+const fiberName = (fiber: FiberLike) => {
+	const type = fiber.type as { displayName?: string; name?: string } | string | undefined;
+	return typeof type === 'string' ? type : (type?.displayName ?? type?.name ?? '?');
+};
+
+// Dev probe: lists the fibers under it that carry a press prop, which is how a missing handler on the frame shows without touch input
+class PressProbe extends Component<{ label: string; children: ReactNode }, { found?: string }> {
+	state: { found?: string } = {};
+
+	componentDidMount() {
+		const root = (this as unknown as { _reactInternals?: FiberLike })._reactInternals;
+		const hits: string[] = [];
+		const walk = (fiber: FiberLike | null | undefined) => {
+			for (let f = fiber; f; f = f.sibling) {
+				const keys = pressKeys.filter((k) => typeof f.memoizedProps?.[k] === 'function');
+				if (keys.length) hits.push(`${fiberName(f)}[${keys.join(',')}]`);
+				walk(f.child);
+			}
+		};
+		walk(root?.child);
+		this.setState({ found: hits.length ? hits.join(' > ') : 'NO press prop on any fiber' });
+	}
+
+	render() {
+		return (
+			<View>
+				{this.props.children}
+				<RNText style={{ fontSize: 10, color: this.state.found?.startsWith('NO') ? 'crimson' : '#060' }}>
+					{this.props.label}: {this.state.found ?? '...'}
+				</RNText>
+			</View>
+		);
+	}
+}
+
 // Natively these throw on a DOM tag and the dev overlay covers the screen; EXPO_PUBLIC_GALLERY_PROBE=1 renders them anyway
 const skipThrowing = Platform.OS !== 'web' && process.env.EXPO_PUBLIC_GALLERY_PROBE !== '1';
 
@@ -90,6 +130,40 @@ export function Content() {
 				<Button variant='danger' onPress={() => setButton((n) => n + 1)}>
 					Danger
 				</Button>
+			</Cell>
+			<Cell name='Press attach probe (dev)'>
+				<View style={{ gap: 6 }}>
+					<PressProbe label='control View, no onPress'>
+						<View style={{ height: 8 }} />
+					</PressProbe>
+					<PressProbe label='Button'>
+						<Button onPress={() => undefined}>Button</Button>
+					</PressProbe>
+					<PressProbe label='Chip'>
+						<Chip onPress={() => undefined}>Chip</Chip>
+					</PressProbe>
+					<PressProbe label='Item'>
+						<Item onPress={() => undefined}>
+							<ItemContent>
+								<ItemTitle>Item</ItemTitle>
+							</ItemContent>
+						</Item>
+					</PressProbe>
+					<PressProbe label='SidebarItem'>
+						<SidebarItem onPress={() => undefined}>
+							<SidebarItemContent>
+								<SidebarItemTitle>SidebarItem</SidebarItemTitle>
+							</SidebarItemContent>
+						</SidebarItem>
+					</PressProbe>
+					<PressProbe label='Message onPress'>
+						<Message onClick={() => undefined}>
+							<MessageContainer>
+								<MessageBody>Message</MessageBody>
+							</MessageContainer>
+						</Message>
+					</PressProbe>
+				</View>
 			</Cell>
 			<Cell name='Badge primary / secondary / danger'>
 				<Badge variant='primary'>3</Badge>
