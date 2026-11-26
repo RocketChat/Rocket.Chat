@@ -24,6 +24,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			// TODO: drop the annotation when this endpoint moves to API.v1.post(); legacy addRoute types these fields as any once the return value depends on them
 			const { customFields, id, token, name, email, department, phone, username, connectionData }: ILivechatVisitorDTO =
 				this.bodyParams.visitor;
 
