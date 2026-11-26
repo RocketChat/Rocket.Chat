@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import type { RoomItem } from './src/api';
 import { fuselageUi, mockStart } from './src/chatConfig';
 import { mockRooms } from './src/mockData';
-import { login, type Session } from './src/session';
+import { login, useRestoreSession, type Session } from './src/session';
+import { clearSession } from './src/sessionStore';
 
 export default function App() {
 	const [session, setSession] = useState<Session>();
@@ -14,7 +16,16 @@ export default function App() {
 		if (mockStart) login('https://mock.invalid', { kind: 'token', userId: 'mock', token: 'mock' }, () => Promise.reject(new Error('no code'))).then(setSession);
 	}, []);
 
+	const restoration = useRestoreSession();
+	useEffect(() => {
+		if (restoration.state.status === 'restored') setSession(restoration.state.session);
+	}, [restoration.state]);
+
 	const logout = () => {
+		// Best effort: the stored session goes first, so a failing server call cannot leave it behind.
+		clearSession();
+		restoration.skip();
+		session?.sdk.rest.post('/v1/logout').catch(() => undefined);
 		session?.sdk.connection.close();
 		setRoom(undefined);
 		setSession(undefined);
@@ -25,6 +36,35 @@ export default function App() {
 		const { ComposerLab } = require('./src/ComposerLab') as typeof import('./src/ComposerLab');
 		const { FuselageArea, FuselageProvider } = require('./src/FuselageField') as typeof import('./src/FuselageField');
 		return <ComposerLab fuselage={{ Provider: FuselageProvider, Area: FuselageArea }} />;
+	}
+
+	if (process.env.EXPO_PUBLIC_SESSION_LAB === '1') {
+		const { SessionLab } = require('./src/SessionLab') as typeof import('./src/SessionLab');
+		return <SessionLab />;
+	}
+
+	const { status } = restoration.state;
+	if (!session && (status === 'restoring' || status === 'restored' || status === 'offline')) {
+		return (
+			<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
+				{status === 'offline' ? (
+					<>
+						<Text style={{ fontSize: 16 }}>Could not reach the server</Text>
+						<Pressable onPress={restoration.retry} style={{ padding: 12, borderWidth: 1, borderColor: '#999', borderRadius: 6 }}>
+							<Text>Retry</Text>
+						</Pressable>
+						<Pressable onPress={restoration.skip}>
+							<Text style={{ color: '#555' }}>Sign in instead</Text>
+						</Pressable>
+					</>
+				) : (
+					<>
+						<ActivityIndicator />
+						<Text>Restoring session</Text>
+					</>
+				)}
+			</View>
+		);
 	}
 
 	const props = { session, room, onSession: setSession, onOpen: setRoom, onBack: () => setRoom(undefined), onLogout: logout };

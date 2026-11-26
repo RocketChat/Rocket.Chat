@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 
 import { isHttpError } from './api';
+import { getLastServerUrl } from './sessionStore';
 import { login, type Credentials, type Session } from './session';
 import type { CodeRequest } from './twoFactor';
 
@@ -11,7 +12,7 @@ export const codeLabels: Record<string, string> = {
 
 // The login form's state and actions, shared by the plain and the Fuselage screens
 export function useLogin(onSession: (session: Session) => void) {
-	const [serverUrl, setServerUrl] = useState('https://open.rocket.chat');
+	const [serverUrl, setServerUrl] = useState(getLastServerUrl() ?? 'https://open.rocket.chat');
 	const [useToken, setUseToken] = useState(false);
 	const [username, setUsername] = useState('');
 	const [secret, setSecret] = useState('');

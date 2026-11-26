@@ -10444,6 +10444,7 @@ __metadata:
     expo: "npm:~58.0.23"
     expo-dev-client: "npm:~58.0.18"
     expo-font: "npm:~58.0.12"
+    expo-secure-store: "npm:~58.0.3"
     expo-status-bar: "npm:~58.0.4"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -25931,6 +25932,15 @@ __metadata:
     "@expo/modules-macros-win32-x64":
       optional: true
   checksum: 10/b37ef13bb58e747441be58f3d263a1e9b0b54aecc70b16af96612821e1de790627a999d2df64f4ac584b03c1435f827c5d7eb541439186a2461f26d8b01d8ad7
+  languageName: node
+  linkType: hard
+
+"expo-secure-store@npm:~58.0.3":
+  version: 58.0.3
+  resolution: "expo-secure-store@npm:58.0.3"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/da42d8ea76f5254b3f8079f698a92e1e698b122a3683a0f847d7b400faeb00c3dea029e316213ade81871c1e774d85f5af5e99b4637347bd20d770a4c0bd7651
   languageName: node
   linkType: hard
 
