@@ -1,3 +1,5 @@
+import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
+
 import { mock } from './chatConfig';
 import { mockAvatar, mockMessages, mockRooms } from './mockData';
 import type { Session } from './session';
@@ -6,7 +8,20 @@ export type RoomType = 'c' | 'p' | 'd' | 'l';
 
 export type RoomItem = { rid: string; t: RoomType; name: string; title: string; unread: number; sortKey: string };
 
-export type ChatMessage = { _id: string; rid: string; msg: string; ts: string; u: { _id: string; username?: string; name?: string } };
+// JSON turns every Date into an ISO string
+type Serialized<T> = T extends Date ? string : T extends object ? { [K in keyof T]: Serialized<T[K]> } : T;
+
+// What channels.history, groups.history and im.history return per message; the optional fields are what the web room message reads
+export type ChatMessage = Serialized<
+	Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u' | '_updatedAt'> &
+		Partial<
+			Pick<
+				IMessage,
+				'md' | 'attachments' | 'reactions' | 'mentions' | 'channels' | 'urls' | 'tmid' | 'tcount' | 'tlm' | 't' | 'groupable' | 'emoji' | 'alias' | 'avatar'
+			> &
+				Pick<IEditedMessage, 'editedAt' | 'editedBy'>
+		>
+>;
 
 type Subscription = { rid: string; t: RoomType; name: string; fname?: string; open: boolean; unread: number; lr?: string; _updatedAt: string };
 
