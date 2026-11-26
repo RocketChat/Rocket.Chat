@@ -3,6 +3,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useEffect, useState } from 'react';
 
 import { Image } from './ImageBlock.styles';
+import { useSurfaceType } from '../hooks/useSurfaceType';
 import type { BlockProps } from '../utils/BlockProps';
 
 const fetchImageState = (img: HTMLImageElement) => {
@@ -16,6 +17,9 @@ const fetchImageState = (img: HTMLImageElement) => {
 export type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
 
 const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
+	const surface = useSurfaceType();
+	const alignment = surface === 'banner' || surface === 'message' ? 'flex-start' : 'center';
+
 	const [{ loading, naturalWidth, naturalHeight }, setState] = useState(() => {
 		const img = document.createElement('img');
 		img.src = block.imageUrl;
@@ -43,7 +47,7 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 	}, [block.imageUrl]);
 
 	return (
-		<Box className={className} display='flex' flexDirection='column' flexWrap='nowrap'>
+		<Box className={className} display='flex' flexDirection='column' flexWrap='nowrap' alignItems={alignment}>
 			<Box overflow='hidden' width='full'>
 				{block.title && (
 					<Box fontScale='c1' color='hint' withTruncatedText marginBlockEnd={4}>

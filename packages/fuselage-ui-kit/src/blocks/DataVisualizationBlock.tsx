@@ -21,6 +21,7 @@ const loadChart = () =>
 let DataVisualizationChart = lazy(loadChart);
 
 const chartHeight = 280;
+const chartMaxWidth = 622;
 
 const DataVisualizationBlock = ({ className, block }: DataVisualizationBlockProps) => {
 	const model = useMemo(() => toChartModel(block.chart), [block.chart]);
@@ -30,7 +31,7 @@ const DataVisualizationBlock = ({ className, block }: DataVisualizationBlockProp
 	}
 
 	return (
-		<Box className={className} display='flex' flexDirection='column' gap='x8' maxWidth={622}>
+		<Box className={className} display='flex' flexDirection='column' gap='x8' maxWidth={chartMaxWidth}>
 			<Box fontScale='h4' color='default'>
 				{block.title}
 			</Box>
