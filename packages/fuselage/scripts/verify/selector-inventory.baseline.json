@@ -103,11 +103,11 @@
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
 	],
+	"rcx-message-divider": [
+		"packages/fuselage/src/components/Divider/Divider.styles.scss: .rcx-message-divider.rcx-divider--labelled {"
+	],
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
-	],
-	"rcx-sidebar-item": [
-		"packages/fuselage/src/components/Item/Item.styles.scss: .rcx-sidebar-item .rcx-item__row > .rcx-item__actions {"
 	],
 	"rcx-option": [
 		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
