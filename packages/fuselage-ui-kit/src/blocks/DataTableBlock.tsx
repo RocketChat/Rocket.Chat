@@ -108,7 +108,7 @@ const DataTableBlock = ({ className, block, context, surfaceRenderer }: DataTabl
 
 	return (
 		<Box className={className} display='flex' flexDirection='column' gap='x8'>
-			<Box maxWidth='x320'>
+			<Box>
 				<SearchInput
 					aria-label={t('Filter')}
 					placeholder={t('Filter')}
@@ -171,17 +171,16 @@ const DataTableBlock = ({ className, block, context, surfaceRenderer }: DataTabl
 						total: visibleRows.length,
 					})}
 				</Box>
-				{/* The chevron icons are drawn the other way round from their names, as the carousel buttons also account for. */}
 				<IconButton
 					size='small'
-					icon='chevron-right'
+					icon='chevron-left'
 					title={t('UIKit_Data_table_previous_page')}
 					disabled={page === 0}
 					onClick={() => setRequestedPage(page - 1)}
 				/>
 				<IconButton
 					size='small'
-					icon='chevron-left'
+					icon='chevron-right'
 					title={t('UIKit_Data_table_next_page')}
 					disabled={page >= pageCount - 1}
 					onClick={() => setRequestedPage(page + 1)}

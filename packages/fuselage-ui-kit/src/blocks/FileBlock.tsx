@@ -25,7 +25,6 @@ const FileBlock = ({ block }: FileBlockProps) => {
 			alignItems='center'
 			gap='x8'
 			padding='x12'
-			maxWidth='345px'
 			borderWidth='default'
 			borderRadius='medium'
 			borderColor='extra-light'

@@ -16,7 +16,7 @@ const isCard = (value: unknown): value is UiKit.CardBlock =>
 // The carousel follows the carousel pattern: the previous and next buttons are ordinary tab stops, and the row
 // scrolls natively, so Tab into a card brings it into view.
 const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps) => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const scroller = useRef<HTMLDivElement>(null);
 	const [edges, setEdges] = useState({ start: true, end: true });
 
@@ -27,23 +27,28 @@ const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps
 			return;
 		}
 
+		const isRtl = getComputedStyle(element).direction === 'rtl';
+		const scrollOffset = isRtl ? -element.scrollLeft : element.scrollLeft;
 		setEdges({
-			start: element.scrollLeft <= 0,
-			end: element.scrollLeft + element.clientWidth >= element.scrollWidth - 1,
+			start: scrollOffset < 1,
+			end: scrollOffset + element.clientWidth >= element.scrollWidth - 1,
 		});
 	}, []);
 
+	// A language change can flip the layout direction, which moves the edges without a scroll event.
 	useEffect(() => {
 		updateEdges();
 		window.addEventListener('resize', updateEdges);
 
 		return () => window.removeEventListener('resize', updateEdges);
-	}, [block.elements, updateEdges]);
+	}, [block.elements, i18n.language, updateEdges]);
 
 	const scrollBy = (direction: -1 | 1) => {
 		const element = scroller.current;
+		if (!element) return;
 
-		element?.scrollBy({ left: direction * element.clientWidth * 0.8, behavior: 'smooth' });
+		const rtlSign = getComputedStyle(element).direction === 'rtl' ? -1 : 1;
+		element.scrollBy({ left: direction * rtlSign * element.clientWidth * 0.8, behavior: 'smooth' });
 	};
 
 	const cards = (Array.isArray(block.elements) ? block.elements : []).filter(isCard);

@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Box, Callout, Skeleton } from '@rocket.chat/fuselage';
+import { Badge, Box, Callout, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -53,7 +53,7 @@ const getPendingUsersCounter = ({ isLoading, isSuccess, data }: ReturnType<typeo
 	}
 
 	if (isSuccess) {
-		return `(${data})`;
+		return <Badge>{data}</Badge>;
 	}
 };
 
