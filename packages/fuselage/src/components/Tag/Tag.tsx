@@ -6,6 +6,7 @@ import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 import type { WebLinkRef, WebSpanOrLinkProps } from '../../types/WebAttributes';
 import { BoxTransforms } from '../Box/BoxTransforms';
+import { PressTarget } from '../PressTarget';
 
 export type TagProps = WebSpanOrLinkProps<TagContract>;
 
@@ -360,19 +361,45 @@ const Tag = (props: TagProps) => {
 
 	if (href) {
 		return (
+			<PressTarget press={props}>
+				<TagFrame
+					paint={paint}
+					shape={pill ? 'pill' : 'regular'}
+					fontScale={fontScale}
+					className={classes}
+					render={
+						<a
+							{...ariaAndDataAttributes(props)}
+							{...pickWebPressHandlers(props)}
+							href={href}
+							target={props.target}
+							rel={props.rel}
+							ref={props.ref as WebLinkRef}
+							id={props.id}
+							title={props.title}
+							role={props.role}
+							tabIndex={props.tabIndex}
+						/>
+					}
+				>
+					{content}
+				</TagFrame>
+			</PressTarget>
+		);
+	}
+
+	return (
+		<PressTarget press={props}>
 			<TagFrame
 				paint={paint}
 				shape={pill ? 'pill' : 'regular'}
 				fontScale={fontScale}
 				className={classes}
 				render={
-					<a
+					<span
 						{...ariaAndDataAttributes(props)}
 						{...pickWebPressHandlers(props)}
-						href={href}
-						target={props.target}
-						rel={props.rel}
-						ref={props.ref as WebLinkRef}
+						ref={props.ref}
 						id={props.id}
 						title={props.title}
 						role={props.role}
@@ -382,29 +409,7 @@ const Tag = (props: TagProps) => {
 			>
 				{content}
 			</TagFrame>
-		);
-	}
-
-	return (
-		<TagFrame
-			paint={paint}
-			shape={pill ? 'pill' : 'regular'}
-			fontScale={fontScale}
-			className={classes}
-			render={
-				<span
-					{...ariaAndDataAttributes(props)}
-					{...pickWebPressHandlers(props)}
-					ref={props.ref}
-					id={props.id}
-					title={props.title}
-					role={props.role}
-					tabIndex={props.tabIndex}
-				/>
-			}
-		>
-			{content}
-		</TagFrame>
+		</PressTarget>
 	);
 };
 
