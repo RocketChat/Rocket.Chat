@@ -17,7 +17,15 @@ const placeholders = [
 	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mPoijpBFcQwatCoQaMGjRo0atCoQQNvEACAacMuIF4C+wAAAABJRU5ErkJggg==',
 ];
 
-export const mockAvatar = (name: string) => placeholders[[...name].reduce((sum, c) => sum + c.charCodeAt(0), 0) % placeholders.length];
+// Two names use the public default (SVG) avatars so the SVG path shows in mock mode
+const publicDefaults: Record<string, string> = {
+	general: 'https://open.rocket.chat/avatar/rocket.cat',
+	'ada.lovelace': 'https://open.rocket.chat/avatar/ggazzo',
+};
+
+export const mockAvatar = (name: string) =>
+	publicDefaults[name] ??
+	placeholders[[...name].reduce((sum, c) => sum + c.charCodeAt(0), 0) % placeholders.length];
 
 const at = (minutesAgo: number) => new Date(Date.now() - minutesAgo * 60_000).toISOString();
 

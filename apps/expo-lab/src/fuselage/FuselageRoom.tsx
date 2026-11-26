@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text as RNText, View } from 'react-native';
 import {
-	Avatar,
 	Button,
 	Message,
 	MessageBody,
@@ -14,6 +13,7 @@ import {
 	TextInput,
 } from '@rocket.chat/fuselage';
 
+import { AppAvatar } from '../AppAvatar';
 import { userAvatarUrl, type RoomItem } from '../api';
 import type { Session } from '../session';
 import { useRoom } from '../useRoom';
@@ -48,7 +48,7 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 					renderItem={({ item }) => (
 						<Message>
 							<MessageLeftContainer>
-								<Avatar size='x36' url={userAvatarUrl(session, item.u.username ?? item.u._id)} />
+								<AppAvatar url={userAvatarUrl(session, item.u.username ?? item.u._id)} />
 							</MessageLeftContainer>
 							<MessageContainer>
 								<MessageHeader>

@@ -35,6 +35,7 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 
+import { AppAvatar } from './AppAvatar';
 import { mockAvatar } from './mockData';
 
 // A frame that throws must not blank the screen: the error is the finding for that component
@@ -113,7 +114,7 @@ function Cell({ name, children, presses, throws }: { name: string; children: Rea
 	);
 }
 
-// The server serves its default avatars as SVG, which a React Native Image cannot draw; the PNG is a remote bitmap
+// The server serves its default avatars as SVG (drawn by AppAvatar); the PNG is a remote bitmap
 const avatarUrl = 'https://open.rocket.chat/avatar/rocket.cat';
 const pngUrl = 'https://open.rocket.chat/images/logo/android-chrome-192x192.png';
 
@@ -187,7 +188,8 @@ export function Content() {
 				<Avatar url={mockAvatar('rocket.cat')} size='x36' />
 				<Avatar url={mockAvatar('rocket.cat')} size='x24' rounded />
 				<Avatar url={pngUrl} size='x36' />
-				<Avatar url={avatarUrl} size='x36' />
+				<AppAvatar url={avatarUrl} />
+				<AppAvatar url='https://open.rocket.chat/avatar/ggazzo' size='x24' rounded />
 			</Cell>
 			<Cell name='Icon'>
 				<Icon name='bell' size='x24' />

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { FlatList, Text as RNText, View } from 'react-native';
 import {
-	Avatar,
 	Button,
 	SidebarItem,
 	SidebarItemAvatarWrapper,
@@ -12,6 +11,7 @@ import {
 	Tag,
 } from '@rocket.chat/fuselage';
 
+import { AppAvatar } from '../AppAvatar';
 import { roomAvatarUrl, type RoomItem } from '../api';
 import type { Session } from '../session';
 import { useRooms } from '../useRooms';
@@ -42,7 +42,7 @@ export function FuselageRooms({ session, onOpen, onLogout }: Props) {
 				renderItem={({ item }) => (
 					<SidebarItem highlighted={item.unread > 0} onPress={() => onOpen(item)}>
 						<SidebarItemAvatarWrapper>
-							<Avatar size='x36' url={roomAvatarUrl(session, item)} />
+							<AppAvatar url={roomAvatarUrl(session, item)} />
 						</SidebarItemAvatarWrapper>
 						<SidebarItemIcon icon={roomIcon[item.t]} highlighted={item.unread > 0} />
 						<SidebarItemContent>
