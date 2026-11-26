@@ -2,7 +2,7 @@
 
 Sandbox Expo app to try Tamagui, the Rocket.Chat SDK packages and `@rocket.chat/fuselage` in React Native.
 
-`App.tsx` is a chat prototype on the SDK packages (no Fuselage): log in to a server you type, list rooms, open a room, see live messages, send. Files: `src/session.ts` (login, `DDPSDK`), `src/twoFactor.ts`, `src/api.ts` (rooms, history, send), `src/Login.tsx`, `src/Rooms.tsx`, `src/Room.tsx`. The session lives in memory only.
+`App.tsx` is a chat prototype on the SDK packages (no Fuselage): log in to a server you type, list rooms, open a room, see live messages, send. Files: `src/session.ts` (login, `DDPSDK`), `src/twoFactor.ts`, `src/api.ts` (rooms, history, send), `src/Login.tsx`, `src/Rooms.tsx`, `src/Room.tsx`. The session is kept in the Keychain between launches (see Session persistence).
 The SDK packages are consumed from their `dist/`; build them first: `yarn workspaces foreach -Rpt --from @rocket.chat/ddp-client run build`.
 
 ## Running
@@ -245,9 +245,9 @@ Not done: highlight of `searchText`, `onTaskChecked`, `useRealName` and `ownUser
 
 The signed-in session survives app restarts, so you do not log in every time.
 
-**What is stored.** One Keychain item (`rc-expo-lab.session`) holding `{"v":1,"serverUrl","userId","authToken"}`, the resume credentials the server issues at login. A personal access token login stores the same pair. The password, a 2FA code and a typed token are never stored. A second item (`rc-expo-lab.last-server`) holds only the server URL, so the login prefills it after sign out.
+**What is stored.** One Keychain item (`rc-expo-lab.session`) holding `{"v":2,"serverUrl","userId","authToken","kind"}`. After a password login `authToken` is the resume token the server issued and `kind` is `password`. After a personal access token (PAT) login `authToken` is the PAT you typed, as typed, and `kind` is `token`: a PAT is a long-lived credential, and it is stored in the Keychain. The password and a 2FA code are never stored. A `v:1` item (written before `kind` existed, so it could hold either) is read as `kind: unknown` and treated like a PAT. A second item (`rc-expo-lab.last-server`) holds only the server URL, so the login prefills it after sign out.
 
-**Where.** `expo-secure-store` (iOS Keychain), `keychainAccessible: WHEN_UNLOCKED_THIS_DEVICE_ONLY`: readable only while the device is unlocked, never synced to iCloud, not migrated to another device. On read the shape is validated (`v` 1, non-empty strings, `https` URL, or `http` for localhost only); anything else is deleted.
+**Where.** `expo-secure-store` (iOS Keychain), `keychainAccessible: WHEN_UNLOCKED_THIS_DEVICE_ONLY`: readable only while the device is unlocked, never synced to iCloud, not migrated to another device. On read the shape is validated (`v` 1 or 2, non-empty strings, a valid `kind` for v2, an anchored `https://host[:port][/path]` URL, or `http` for `localhost`, `127.0.0.1` or `[::1]` only; no userinfo, `?`, `#` or backslash); anything else is deleted. `login()` applies the same URL check (after lowercasing the scheme) and throws before creating an SDK, so it never saves a session the next launch would delete.
 
 **Start-up** (`useRestoreSession` in `src/session.ts`, storage in `src/sessionStore.ts`, shared by the Fuselage and plain UIs):
 
@@ -259,7 +259,7 @@ The signed-in session survives app restarts, so you do not log in every time.
 | `offline` | network error, timeout, any other failure | session kept, "Could not reach the server" with Retry (back to `restoring`) or "Sign in instead" |
 | `none` | nothing stored | login |
 
-Sign out deletes the stored session first, then calls `POST /v1/logout` (best effort) and closes the DDP connection. Logs say only "session saved", "session restored", "session rejected (401)"; token values are never logged.
+Sign out (`signOut` in `src/session.ts`) deletes the stored session first and closes the DDP connection. For `kind: password` it also calls `POST /v1/logout` (best effort), revoking the resume token it issued. For `token` and `unknown` it never calls `/v1/logout`: that endpoint removes the token from the user's login tokens, which is where PATs live, so it would permanently revoke a PAT shared with other integrations. To revoke a PAT, do it on the server. If deleting from the Keychain fails, the in-memory session is still cleared and an alert says "Could not clear the saved session". Signing in over a stored `password` session best-effort revokes the old token first (3 s timeout, never blocks the login); a `token` or `unknown` one is left alone. Logs say only "session saved", "session restored", "session rejected (401)"; token values are never logged.
 
 Deviation from the first design: the offline state is a small gate screen in `App.tsx` (message, Retry) rather than a message inside each login screen, so the two UIs share it without duplicating it.
 
@@ -270,10 +270,14 @@ Deviation from the first design: the offline state is a small gate screen in `Ap
 - `EXPO_PUBLIC_CHAT_MOCK`: never reads or writes the store.
 - `EXPO_PUBLIC_SESSION_LAB=1`: `src/SessionLab.tsx` runs the store and the restore state machine against fake values and an unrelated key (`rc-expo-lab.lab-session`), cleaning up after itself. Screenshots: `docs/session/` (`session-lab-keychain.jpg` with the module, `session-lab-fallback.jpg` with it missing; the one FAIL there is the "available" probe, expected).
 
-**Clearing it.** Sign out, delete the app, or `xcrun simctl uninstall <udid> chat.rocket.expolab`.
+**Clearing it.** Sign out is the only reliable clear (and for a PAT, revoke it server-side if needed). On a physical iPhone iOS keeps Keychain items after the app is deleted, so a reinstall can find the old session. The simulator behaves differently: `xcrun simctl uninstall <udid> chat.rocket.expolab` removes it.
 
 **Known limits.**
-- The simulator Keychain persists across launches but not after uninstall.
+- Restore and login close the SDK on failure, timeout or a late success; a resume that never settles keeps its socket attempt until it fails.
 - Tokens expire server-side; an expired one lands in `rejected` and you log in again.
 - No biometric gate yet before restoring.
 - Restore against a real server, the 401 path and the 2FA-then-save path have not been exercised without a real login.
+- A 403 from a proxy in front of the server is treated as a refusal: the local copy is deleted without the token being revoked.
+- The login body (password, 2FA code) is resent by iOS on 307/308 redirects. Android was not assessed; OkHttp keeps custom headers (`X-Auth-Token`) on cross-host redirects.
+- Recommended change in `packages/ddp-client` (not made here): `Connection.ts` line 110 sets `ssl` with the case-sensitive `url.startsWith('https') || url.startsWith('wss')`, and lines 111-114 strip only lowercase schemes; line 192 then falls back to `ws://` for anything not `ssl`. `Https://host` therefore becomes plaintext `ws://https://host`... The constructor should parse the scheme case-insensitively and throw on an unknown scheme instead of falling back to `ws://`. The app lowercases the scheme and validates it itself in the meantime.
+- Lab results: `docs/session/session-lab-hardened.jpg` (53 cases, fake values, no network).
