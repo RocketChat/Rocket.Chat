@@ -41,7 +41,6 @@ const CategoryMenu = ({
 	const moveRoomCategory = useMoveRoomCategory();
 	const { toggleShowUnreads, toggleKeepUnreadsOnTop } = useToggleUnreads();
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
-	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 
 	const onCreateSuccess = async (rid: string, name?: string) => {
 		if (!category) {
@@ -113,9 +112,9 @@ const CategoryMenu = ({
 			icon: 'flag',
 			content: t('Always_display'),
 			onClick: handleToggleShowUnreads,
-			addon: <ToggleSwitch disabled={disableAlwaysDisplay} checked={!disableAlwaysDisplay && showUnreads} onChange={() => undefined} />,
-			disabled: disableAlwaysDisplay,
-			tooltip: disableAlwaysDisplay ? t('Disabled_by_unread_group_see_display_options') : undefined,
+			addon: <ToggleSwitch disabled={sidebarShowUnread} checked={!sidebarShowUnread && showUnreads} onChange={() => undefined} />,
+			disabled: sidebarShowUnread,
+			tooltip: sidebarShowUnread ? t('Disabled_by_unread_group_see_display_options') : undefined,
 		},
 		{
 			id: 'keep-unreads-on-top',

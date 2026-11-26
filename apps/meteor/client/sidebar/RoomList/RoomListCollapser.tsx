@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import CategoryMenu from '../categories/CategoryMenu';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -26,6 +27,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const preventPropagation = usePreventPropagation();
 
 	const title = group.translateTitle ? t(group.title) : group.title;
+	const hasMenu = isEnterprise && !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(group.key);
 
 	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
@@ -50,7 +52,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 				) : undefined
 			}
 			menu={
-				isEnterprise ? (
+				hasMenu ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu
