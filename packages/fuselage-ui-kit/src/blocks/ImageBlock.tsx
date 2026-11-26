@@ -23,7 +23,7 @@ const capDimensions = (w: number, h: number) => {
 		return { width: w, height: h };
 	}
 
-	return { width: Math.round(w * maxImageHeight / h), height: maxImageHeight };
+	return { width: Math.round((w * maxImageHeight) / h), height: maxImageHeight };
 };
 
 const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
