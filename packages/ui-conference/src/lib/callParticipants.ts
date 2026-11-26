@@ -159,7 +159,7 @@ export const resolveParticipant = <TMember extends ResolvableMember>(
  * pairing the two with {@link resolveParticipant}.
  *
  * Neither list overrules the other: ours decides which group a member is in, the provider's decides what a row
- * can do, and anyone waiting in the lobby is lifted ahead of both. A member connected from several places gets
+ * can do, and anyone waiting in the lobby is lifted out of both. A member connected from several places gets
  * the newest connection on their row — the viewer's own window first, for the viewer — and the rest under it.
  */
 export const composeCallParticipants = (

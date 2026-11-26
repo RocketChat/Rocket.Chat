@@ -960,8 +960,8 @@ gave. Where the two disagree, both are simply shown — someone we still record 
 keeps their row with nothing to press on it, and someone whose join we have not heard about yet is listed as not
 in the call with the controls that do work.
 
-The lobby is the exception: anyone the provider has waiting is lifted into a group of their own ahead of the
-rest, because being let in is the only thing anyone can do about them, and a member sitting under "in the call"
+The lobby is the exception: anyone the provider has waiting is lifted into a group of their own, listed between
+"in the call" and "not in the call" — connected, but not in the call yet — because being let in is the only thing anyone can do about them, and a member sitting under "in the call"
 would be offered a ring instead of the admit they need.
 
 **A control is offered only when three things agree**: the provider announced the feature in `ready`, the viewer

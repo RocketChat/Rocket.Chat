@@ -55,11 +55,11 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 		[members, provider?.participants, self],
 	);
 
-	// The lobby first, because everyone in it is waiting on somebody in this panel to let them in.
+	// The lobby sits between the two: its people are connected, but not yet in the call.
 	const groups = (
 		[
-			{ title: 'Waiting_to_join', entries: waiting },
 			{ title: 'In_call', entries: present },
+			{ title: 'Waiting_to_join', entries: waiting },
 			{ title: 'Not_in_the_call', entries: absent },
 		] satisfies { title: TranslationKey; entries: CallParticipantEntry[] }[]
 	).filter(({ entries }) => entries.length > 0);

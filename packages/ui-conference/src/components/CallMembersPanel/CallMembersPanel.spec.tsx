@@ -169,8 +169,7 @@ describe('CallMembersPanel', () => {
 		expect(group('In call').getByRole('listitem')).toHaveTextContent('You · Host');
 	});
 
-	// Ahead of both other groups, because everyone in it is waiting on somebody looking at this panel. The
-	// viewer has to control the conference for the door to be theirs to open — the provider says nothing about
+	// The viewer has to control the conference for the door to be theirs to open — the provider says nothing about
 	// controlling someone who is not in the call yet, so it cannot come from the waiting participant.
 	it('puts whoever is in the lobby in a group of their own, with the two answers they need', async () => {
 		renderPanel(
@@ -189,5 +188,26 @@ describe('CallMembersPanel', () => {
 
 		await userEvent.click(lobby.getByRole('button', { name: 'Reject' }));
 		expect(actions.disconnect).toHaveBeenCalledWith('p-ada');
+	});
+
+	// Somebody in the lobby is connected but not yet in the call, which is where the group sits.
+	it('lists the lobby between those in the call and those who are not', () => {
+		const alan = buildConferenceMember({ _id: 'alan', username: 'alan', name: 'Alan Turing' });
+
+		renderPanel(
+			buildProvider({
+				participants: [
+					buildParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' }),
+					buildParticipant({ uuid: 'p-alan', displayName: 'Alan Turing', isWaiting: true }),
+				],
+			}),
+			[ada, alan, grace],
+		);
+
+		expect(screen.getAllByRole('list').map((list) => list.getAttribute('aria-label'))).toEqual([
+			'In call',
+			'Waiting to join',
+			'Not in the call',
+		]);
 	});
 });
