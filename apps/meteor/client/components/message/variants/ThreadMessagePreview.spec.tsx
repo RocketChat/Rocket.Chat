@@ -95,15 +95,17 @@ describe('a thread the member cannot open', () => {
 		});
 
 		expect(screen.getByText('Thread_not_available')).toBeInTheDocument();
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the follow bell is an icon with no role, label or text of its own
 		expect(container.querySelector('.rcx-icon--name-bell-off')).toBeNull();
 		unmount();
 
 		mockParentMessage = { isSuccess: true, isLoading: false, isError: false, data: parentMessage };
-		const readable = render(<ThreadMessagePreview message={message} sequential={false} showUserAvatar />, {
+		const { container: readableContainer } = render(<ThreadMessagePreview message={message} sequential={false} showUserAvatar />, {
 			wrapper: mockAppRoot().build(),
 		});
 
-		expect(readable.container.querySelector('.rcx-icon--name-bell-off')).not.toBeNull();
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the follow bell is an icon with no role, label or text of its own
+		expect(readableContainer.querySelector('.rcx-icon--name-bell-off')).not.toBeNull();
 	});
 
 	it('does not open the thread when its header is clicked', async () => {
