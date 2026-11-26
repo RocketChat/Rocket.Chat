@@ -142,8 +142,8 @@ export const WithExternalParticipant: Story = {
 };
 
 /**
- * The lobby, ahead of everyone else because they are all waiting on somebody looking at this panel. Letting
- * them in is a button rather than a menu item — it is the only thing anyone wants to do here.
+ * The lobby, between those in the call and those who are not: connected, but not in it yet. Letting them in is
+ * a button rather than a menu item — it is the only thing anyone wants to do here.
  */
 export const WithLobby: Story = {
 	decorators: [

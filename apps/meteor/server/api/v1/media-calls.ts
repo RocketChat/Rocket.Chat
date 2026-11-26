@@ -1,8 +1,8 @@
-import { MediaCall } from '@rocket.chat/core-services';
+import { MediaCall, VideoConf } from '@rocket.chat/core-services';
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { CallAnswer, CallFeature, ServerMediaCallSignal } from '@rocket.chat/media-signaling';
 import { callFeatureList, callAnswerList } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
+import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import {
 	ajv,
 	validateNotFoundErrorResponse,
@@ -12,6 +12,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
 
+import { notifyOnUserChange } from '../../lib/notifyListener';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -96,6 +97,76 @@ type MediaCallsAnswerEndpoints = ExtractRoutesFromAPI<typeof mediaCallsAnswerEnd
 declare module '@rocket.chat/rest-typings' {
 	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsAnswerEndpoints {}
+}
+
+type MediaCallsEscalate = {
+	callId: string;
+};
+
+const MediaCallsEscalateSchema: JSONSchemaType<MediaCallsEscalate> = {
+	type: 'object',
+	properties: {
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['callId'],
+	additionalProperties: false,
+};
+
+export const isMediaCallsEscalateProps = ajv.compile<MediaCallsEscalate>(MediaCallsEscalateSchema);
+
+const mediaCallsEscalateEndpoints = API.v1.post(
+	'media-calls.escalate',
+	{
+		response: {
+			200: ajv.compile<{
+				providerName: string;
+				url: string;
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					providerName: {
+						type: 'string',
+						description: 'The name of the conference provider.',
+					},
+					url: {
+						type: 'string',
+						description: 'The url of the conference.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['providerName', 'url', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+		body: isMediaCallsEscalateProps,
+		authRequired: true,
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+
+		const url = await MediaCall.escalateCall(this.userId, { callId });
+
+		return API.v1.success({
+			providerName: 'core.pexip',
+			url,
+		});
+	},
+);
+
+type MediaCallsEscalateEndpoints = ExtractRoutesFromAPI<typeof mediaCallsEscalateEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsEscalateEndpoints {}
 }
 
 type MediaCallsStateSignalsParams = {
@@ -274,4 +345,215 @@ type MediaCallsInfoEndpoints = ExtractRoutesFromAPI<typeof mediaCallsInfoEndpoin
 declare module '@rocket.chat/rest-typings' {
 	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsInfoEndpoints {}
+}
+
+type MediaCallsConferenceParams = {
+	callId: string;
+};
+
+const MediaCallsConferenceSchema: JSONSchemaType<MediaCallsConferenceParams> = {
+	type: 'object',
+	properties: {
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['callId'],
+	additionalProperties: false,
+};
+
+export const isMediaCallsConferenceProps = ajv.compile<MediaCallsConferenceParams>(MediaCallsConferenceSchema);
+
+/** The conference a voice call was escalated into, without joining it; still answers after the voice call has ended. */
+const mediaCallsConferenceEndpoints = API.v1.get(
+	'media-calls.conference',
+	{
+		response: {
+			200: ajv.compile<{
+				conferenceId: string;
+				providerName: string;
+				url: string;
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					conferenceId: {
+						type: 'string',
+						description: 'The id of the conference the call was escalated into.',
+					},
+					providerName: {
+						type: 'string',
+						description: 'The name of the conference provider.',
+					},
+					url: {
+						type: 'string',
+						description: 'The url of the conference.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['conferenceId', 'providerName', 'url', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+		query: isMediaCallsConferenceProps,
+		authRequired: true,
+	},
+	async function action() {
+		const { callId } = this.queryParams;
+
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'uids'>>(callId, { projection: { uids: 1 } });
+		if (!call?.uids.includes(this.userId)) {
+			return API.v1.notFound();
+		}
+
+		const conference = await VideoConferenceModel.findOneByMediaCallId(callId, { projection: { providerName: 1 } });
+		if (!conference) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({
+			conferenceId: conference._id,
+			providerName: conference.providerName,
+			url: await VideoConf.makePersistentChatUrlForConference(conference._id),
+		});
+	},
+);
+
+type MediaCallsConferenceEndpoints = ExtractRoutesFromAPI<typeof mediaCallsConferenceEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsConferenceEndpoints {}
+}
+
+const mediaCallsDevicesEndpoints = API.v1.get(
+	'media-calls.devices',
+	{
+		response: {
+			200: ajv.compile<{
+				devices: { id: string; name: string; appId: string }[];
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					devices: {
+						type: 'array',
+						description: 'The external devices (e.g. desk phones) the user can place/receive calls on.',
+						items: {
+							type: 'object',
+							additionalProperties: false,
+							properties: {
+								id: { type: 'string' },
+								name: { type: 'string' },
+								appId: { type: 'string' },
+							},
+							required: ['id', 'name', 'appId'],
+						},
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['devices', 'success'],
+			}),
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+	},
+	async function action() {
+		const devices = await MediaCall.getUserMediaDevices(this.userId);
+
+		return API.v1.success({ devices });
+	},
+);
+
+type MediaCallsDevicesEndpoints = ExtractRoutesFromAPI<typeof mediaCallsDevicesEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsDevicesEndpoints {}
+}
+
+type MediaCallsSelectDevice = {
+	/** The device to take calls on. Omitted means taking them in Rocket.Chat. */
+	deviceId?: string;
+};
+
+const MediaCallsSelectDeviceSchema: JSONSchemaType<MediaCallsSelectDevice> = {
+	type: 'object',
+	properties: {
+		deviceId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+	required: [],
+};
+
+export const isMediaCallsSelectDeviceProps = ajv.compile<MediaCallsSelectDevice>(MediaCallsSelectDeviceSchema);
+
+const mediaCallsSelectDeviceEndpoints = API.v1.post(
+	'media-calls.selectDevice',
+	{
+		body: isMediaCallsSelectDeviceProps,
+		response: {
+			200: ajv.compile<{ device: { id: string; appId: string; name?: string } | null }>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					device: {
+						type: 'object',
+						nullable: true,
+						additionalProperties: false,
+						properties: {
+							id: { type: 'string' },
+							appId: { type: 'string' },
+							name: { type: 'string', nullable: true },
+						},
+						required: ['id', 'appId'],
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['device', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+	},
+	async function action() {
+		const device = await MediaCall.selectUserMediaDevice(this.userId, this.bodyParams.deviceId ?? null);
+
+		// The choice is read back from the user document, so the client only learns about it if the
+		// write is announced on the user's own data stream.
+		// Both halves are always sent: the client applies them as a single mongo update filter, and it
+		// rejects one whose `$set` is missing — so clearing the device needs an empty diff beside the unset.
+		void notifyOnUserChange({
+			clientAction: 'updated',
+			id: this.userId,
+			diff: device ? { mediaCallDevice: device } : {},
+			unset: device ? {} : { mediaCallDevice: 1 },
+		});
+
+		return API.v1.success({ device });
+	},
+);
+
+type MediaCallsSelectDeviceEndpoints = ExtractRoutesFromAPI<typeof mediaCallsSelectDeviceEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsSelectDeviceEndpoints {}
 }

@@ -1,7 +1,7 @@
 import { Box, Button, ItemGroup, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VoiceActivity from '../../call/VoiceActivity';
@@ -41,29 +41,25 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 	const { members } = call;
 	const { rid, chatAccess } = room;
 
-	// The plugin says which participant this window joined as — the one pairing a shared display name cannot
-	// settle on its own. No other row can be claimed this way.
-	const claimants = useMemo(() => {
-		const participantUuid = provider?.self?.participantUuid;
-
-		if (!participantUuid || !viewer.uid) {
-			return members;
-		}
-
-		return members.map((member) => (member._id === viewer.uid ? { ...member, providerParticipantId: participantUuid } : member));
-	}, [members, provider?.self?.participantUuid, viewer.uid]);
+	// The plugin says which participant this window joined as, which is known here before the server has heard it
+	// from the provider.
+	const participantUuid = provider?.self?.participantUuid;
+	const self = useMemo(
+		() => (participantUuid && viewer.uid ? { uid: viewer.uid, participantUuid } : undefined),
+		[participantUuid, viewer.uid],
+	);
 
 	// Ours decides which group a row is in, the provider's decides what it can do: composed, not derived.
 	const { waiting, present, absent } = useMemo(
-		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
-		[claimants, provider?.participants],
+		() => composeCallParticipants(members, provider?.participants ?? NO_PARTICIPANTS, self),
+		[members, provider?.participants, self],
 	);
 
-	// The lobby first, because everyone in it is waiting on somebody in this panel to let them in.
+	// The lobby sits between the two: its people are connected, but not yet in the call.
 	const groups = (
 		[
-			{ title: 'Waiting_to_join', entries: waiting },
 			{ title: 'In_call', entries: present },
+			{ title: 'Waiting_to_join', entries: waiting },
 			{ title: 'Not_in_the_call', entries: absent },
 		] satisfies { title: TranslationKey; entries: CallParticipantEntry[] }[]
 	).filter(({ entries }) => entries.length > 0);
@@ -80,34 +76,43 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 			.finally(() => setRingingMembers((current) => current.filter((id) => id !== memberId)));
 	};
 
-	const renderEntry = ({ key, member, participant }: CallParticipantEntry) => {
-		const controls =
-			provider && participant
-				? {
-						participant,
-						features: provider.features,
-						actions: provider.actions,
-						self: provider.self,
-						// The provider is the only thing that can name the viewer's own row across the two lists.
-						isSelf: provider.self?.participantUuid === participant.uuid,
-					}
-				: undefined;
+	const controlsFor = (participant: PluginParticipant | undefined) =>
+		provider && participant
+			? {
+					participant,
+					features: provider.features,
+					actions: provider.actions,
+					self: provider.self,
+					// The provider is the only thing that can name the viewer's own row across the two lists.
+					isSelf: provider.self?.participantUuid === participant.uuid,
+				}
+			: undefined;
+
+	const renderEntry = ({ key, member, participant, otherConnections = [] }: CallParticipantEntry) => {
+		const controls = controlsFor(participant);
 
 		if (member) {
 			return (
-				<CallMemberItem
-					key={key}
-					member={member}
-					hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)}
-					// Until the server's answer comes back, this is what says the ask is already on its way.
-					ringing={ringingMembers.includes(member._id)}
-					controls={controls}
-					handRaised={inCall?.raisedHands.has(member._id)}
-					muted={inCall?.mutedMembers.has(member._id)}
-					onMute={inCall?.muteMember}
-					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
-					onRing={ringMember}
-				/>
+				<Fragment key={key}>
+					<CallMemberItem
+						member={member}
+						hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)}
+						// Until the server's answer comes back, this is what says the ask is already on its way.
+						ringing={ringingMembers.includes(member._id)}
+						controls={controls}
+						handRaised={inCall?.raisedHands.has(member._id)}
+						muted={inCall?.mutedMembers.has(member._id)}
+						onMute={inCall?.muteMember}
+						activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
+						onRing={ringMember}
+					/>
+					{/* Each has its own controls, so a connection left behind by a closed window can be hung up. */}
+					{otherConnections.map((connection) => {
+						const connectionControls = controlsFor(connection);
+
+						return connectionControls && <CallParticipantItem key={connection.uuid} member={member} {...connectionControls} />;
+					})}
+				</Fragment>
 			);
 		}
 

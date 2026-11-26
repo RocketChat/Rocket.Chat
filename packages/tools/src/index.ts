@@ -7,6 +7,7 @@ export * from './escapeHTML';
 export * from './escapeRegExp';
 export * from './getHeader';
 export * from './getLoginExpiration';
+export * from './startOfDayAt';
 export * from './getObjectKeys';
 export * from './isAbsoluteURL';
 export * from './isBareJid';

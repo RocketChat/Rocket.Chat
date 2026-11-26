@@ -3,12 +3,13 @@ import type {
 	ILivechatVideoConference,
 	IRoom,
 	IUser,
+	IVideoConferenceProviderParticipant,
 	VideoConference,
 	VideoConferenceLeaveReason,
 	VideoConferenceStatus,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
+import type { AggregationCursor, FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions, WithId } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -16,7 +17,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number },
-	): FindPaginated<FindCursor<VideoConference>>;
+	): FindPaginated<AggregationCursor<VideoConference>>;
 
 	findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>>;
 
@@ -31,7 +32,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	createGroup({
 		providerName,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string>;
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string>;
 
 	createLivechat({
 		providerName,
@@ -44,7 +46,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		options?: UpdateOptions,
 	): Promise<UpdateResult>;
 
-	setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void>;
+	setDataById(callId: string, data: Partial<Omit<VideoConference, '_id' | 'sipAlias'>>): Promise<void>;
 
 	setEndedById(callId: string, endedBy?: { _id: string; name: string; username: string }, endedAt?: Date): Promise<void>;
 
@@ -65,6 +67,12 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt?: Date): Promise<void>;
 
 	setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt?: Date): Promise<void>;
+	addUserProviderParticipantById(callId: string, uid: IUser['_id'], participant: IVideoConferenceProviderParticipant): Promise<void>;
+	setUserProviderParticipantLeftById(callId: string, uid: IUser['_id'], participantId: string, leftAt: Date): Promise<void>;
+	setUserProviderParticipantWaitingById(callId: string, uid: IUser['_id'], participantId: string, waiting: boolean): Promise<boolean>;
+	setUserJoinedIfConnectedById(callId: string, uid: IUser['_id'], joinedAt: Date): Promise<boolean>;
+	setUserLeftIfDisconnectedById(callId: string, uid: IUser['_id'], leftAt: Date, connectedAt: Date): Promise<boolean>;
+	unsetUserRingingById(callId: string, uid: IUser['_id']): Promise<void>;
 	setUserLeftById(callId: string, uid: IUser['_id'], leftAt?: Date, reason?: VideoConferenceLeaveReason): Promise<void>;
 	setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt?: Date): Promise<void>;
 
@@ -96,4 +104,28 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
+
+	findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null>;
+
+	setSipAliasById(callId: string, sipAlias: string): Promise<void>;
+
+	unsetSipAliasById(callId: string): Promise<void>;
+
+	addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null>;
+
+	findOneByProviderNameAndSipAlias<T extends VideoConference>(
+		providerName: string,
+		sipAlias: string,
+		options?: FindOptions<T>,
+	): Promise<T | null>;
+
+	addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult>;
+
+	increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null>;
+
+	increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null>;
 }

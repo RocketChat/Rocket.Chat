@@ -46,11 +46,16 @@ type CallMemberItemProps = {
 	onRing: (memberId: string) => void;
 };
 
-/** Only shown for members who aren't in the call — for those, presence in the call is the whole story. */
-const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
+/**
+ * Only shown for members who aren't in the call — for those, presence in the call is the whole story. Someone
+ * nobody has asked anything gets no label: there is nothing to say about them, and on a provider that reports
+ * presence that is also what someone still connecting looks like.
+ */
+const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string | undefined> = {
 	left: 'Left',
 	declined: 'Declined',
-	invited: 'Waiting_for_answer',
+	unanswered: 'Not_answered',
+	invited: undefined,
 };
 
 const CallMemberItem = ({
@@ -72,6 +77,12 @@ const CallMemberItem = ({
 	const status = getConferenceMemberStatus(member);
 
 	const ringing = useIsRinging(member);
+	const statusText = status !== 'joined' && (ringing ? 'Ringing' : statusLabel[status]);
+	// Who this is to the reader, then the provider's word on who runs the call for whichever of their connections
+	// this row carries, then where they stand.
+	const description = [member._id === ownUserId && t('You'), controls?.participant.isHost && t('Host'), statusText && t(statusText)]
+		.filter(Boolean)
+		.join(' · ');
 
 	const canRing = status !== 'joined' && !ringing;
 	const isLive = status === 'joined' && !muted;
@@ -83,14 +94,25 @@ const CallMemberItem = ({
 			<ItemMedia>
 				<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
-			{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
 			<ItemContent>
 				<ItemRow>
+					{/* On the name's line rather than centred on the row, which a second line would put between the two. */}
+					{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
 					<ItemTitle>
 						{nameOrUsername} {displayUsername && <ItemDescription inline>{displayUsername}</ItemDescription>}
 					</ItemTitle>
 				</ItemRow>
-				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
+				{/* Rendered even when empty: Fuselage spaces a row's slots wider once it has a second line, and the
+				    rows of one list have to line up whichever of them has something to say. Under the name rather than
+				    the presence dot, which takes an empty slot of the dot's width. */}
+				{description && renderMemberStatus ? (
+					<ItemRow>
+						<ItemIcon />
+						<ItemDescription>{description}</ItemDescription>
+					</ItemRow>
+				) : (
+					<ItemDescription>{description}</ItemDescription>
+				)}
 			</ItemContent>
 			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
 				<ItemActions>

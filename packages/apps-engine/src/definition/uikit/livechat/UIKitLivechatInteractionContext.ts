@@ -1,5 +1,6 @@
 import type { IUIKitBaseIncomingInteraction } from '../UIKitIncomingInteractionTypes';
-import { UIKitInteractionResponder } from '../UIKitInteractionResponder';
+import type { UIKitInteractionResponder } from '../UIKitInteractionResponder';
+import { UIKitInteractionResponderImpl } from '../UIKitInteractionResponder';
 import type { IUIKitLivechatBaseIncomingInteraction, IUIKitLivechatBlockIncomingInteraction } from './UIKitLivechatIncomingInteractionType';
 
 export abstract class UIKitLivechatInteractionContext {
@@ -12,7 +13,7 @@ export abstract class UIKitLivechatInteractionContext {
 
 		this.baseContext = { appId, actionId, room, visitor, triggerId };
 
-		this.responder = new UIKitInteractionResponder(this.baseContext as any as IUIKitBaseIncomingInteraction);
+		this.responder = new UIKitInteractionResponderImpl(this.baseContext as unknown as IUIKitBaseIncomingInteraction);
 	}
 
 	public getInteractionResponder() {

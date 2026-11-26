@@ -23,23 +23,22 @@ import { AppInterface, AppMethod } from '@rocket.chat/apps-engine/definition/met
 import type { IRoom, IRoomUserJoinedContext, IRoomUserLeaveContext } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
-import type { IUIKitResponse, IUIKitSurface, UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
-import { isUIKitIncomingInteractionActionButtonMessageBox } from '@rocket.chat/apps-engine/definition/uikit/IUIKitIncomingInteractionActionButton';
-import type {
-	IUIKitLivechatBlockIncomingInteraction,
-	IUIKitLivechatIncomingInteraction,
-} from '@rocket.chat/apps-engine/definition/uikit/livechat';
+import type { IUIKitResponse, IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat';
 import type { IFileUploadInternalContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { isEventResult, makeHostEventResult } from '../eventResult';
-import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
+import { isIUIKitActionButtonMediaCallWidgetIncomingInteraction } from '../experimental/MediaCallActionButtons';
+import type { MediaCallDeviceWithApp, MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
 import { getMediaCallCreatePatch } from '../mediaCalls';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
+import { UIKitIncomingInteractionType, type UIKitIncomingInteraction } from '../uikit/IUIKitIncomingInteraction';
+import { isUIKitIncomingInteractionActionButtonMessageBox } from '../uikit/UIKitIncomingInteractionActionButton';
+import type { IUIKitLivechatIncomingInteraction } from '../uikit/livechat/IUIKitLivechatIncomingInteraction';
 
 export interface IListenerExecutor {
 	[AppInterface.IPreMessageSentPrevent]: {
@@ -250,7 +249,7 @@ export interface IListenerExecutor {
 	// Media calls
 	[AppInterface.IMediaCallHandler]: {
 		args: [MediaCallEvent];
-		result: PreMediaCallCreatedOutcome | void;
+		result: PreMediaCallCreatedOutcome | MediaCallDeviceWithApp[] | void;
 	};
 }
 
@@ -1038,6 +1037,20 @@ export class AppListenerManager {
 						.catch(handleError(method));
 				}
 
+				if (isIUIKitActionButtonMediaCallWidgetIncomingInteraction(data)) {
+					return app
+						.call(method, {
+							appId,
+							actionId,
+							buttonContext: 'mediaCallWidgetAction',
+							room: data.room,
+							triggerId,
+							user,
+							callId: data.payload.callId,
+						})
+						.catch(handleError(method));
+				}
+
 				return app
 					.call(method, {
 						appId,
@@ -1295,12 +1308,44 @@ export class AppListenerManager {
 	}
 
 	// Media calls
-	private async executeMediaCallEvent(event: MediaCallEvent): Promise<PreMediaCallCreatedOutcome | void> {
+	private async executeMediaCallEvent(event: MediaCallEvent): Promise<PreMediaCallCreatedOutcome | MediaCallDeviceWithApp[] | void> {
 		if (event.method === AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED) {
 			return this.executePreMediaCallCreated(event.context);
 		}
 
+		if (event.method === AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES) {
+			return this.executeGetMediaCallDevices(event);
+		}
+
 		void this.executePostMediaCallEvent(event);
+	}
+
+	private async executeGetMediaCallDevices(
+		event: Extract<MediaCallEvent, { method: AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES }>,
+	): Promise<MediaCallDeviceWithApp[]> {
+		const devices: MediaCallDeviceWithApp[] = [];
+
+		for (const appId of this.listeners.get(AppInterface.IMediaCallHandler)) {
+			const app = this.manager.getOneById(appId);
+
+			const result = await app.call(event.method, event.context).catch((error) => {
+				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+					return undefined;
+				}
+
+				console.error(`App ${appId} failed to handle ${event.method}`, error);
+				return undefined;
+			});
+
+			if (Array.isArray(result)) {
+				for (const device of result) {
+					// Tag each device with its owning app so the host can route control back to it.
+					devices.push({ ...device, appId });
+				}
+			}
+		}
+
+		return devices;
 	}
 
 	private async executePreMediaCallCreated(data: IPreMediaCallCreatedContext): Promise<PreMediaCallCreatedOutcome> {
@@ -1348,7 +1393,10 @@ export class AppListenerManager {
 	}
 
 	private async executePostMediaCallEvent(
-		event: Exclude<MediaCallEvent, { method: AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED }>,
+		event: Exclude<
+			MediaCallEvent,
+			{ method: AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED } | { method: AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES }
+		>,
 	): Promise<void> {
 		const dispatched: Promise<void>[] = [];
 

@@ -1,4 +1,4 @@
-import { type IMediaStreamWrapper, type CallFeature } from '@rocket.chat/media-signaling';
+import { callControlFeatureList, type IMediaStreamWrapper, type CallFeature } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
@@ -10,15 +10,19 @@ export type MediaCallStreams = {
 	localScreen?: IMediaStreamWrapper;
 };
 
-type MediaCallViewContextValue = {
+export type MediaCallViewContextValue = {
 	sessionState: SessionState;
 	allowedFeatures: readonly CallFeature[];
 	targetPeer?: PeerInfo;
+	isRequestingVideoCall: boolean;
+	onRequestVideoCall: () => void;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
 	onHold: () => void;
 	onDeviceChange: (device: Device) => void;
 	onForward: () => void;
+	onSwapCalls: () => void;
+	onCompleteTransfer: () => void;
 	onTone: (tone: string) => void;
 	onEndCall: () => void;
 	onCall: () => Promise<void>;
@@ -46,18 +50,25 @@ export const defaultSessionState: SessionState = {
 	remoteHeld: false,
 	callId: undefined,
 	startedAt: undefined,
-	supportedFeatures: ['audio', 'transfer', 'hold'],
+	escalated: false,
+	supportedFeatures: ['audio', 'transfer', 'hold', 'dialpad', ...callControlFeatureList],
 	confirmed: false,
+	hasAlternateCall: false,
+	canCompleteTransfer: false,
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
 	allowedFeatures: [],
 	targetPeer: undefined,
+	isRequestingVideoCall: false,
+	onRequestVideoCall: () => undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
 	onDeviceChange: () => undefined,
 	onForward: () => undefined,
+	onSwapCalls: () => undefined,
+	onCompleteTransfer: () => undefined,
 	onTone: () => undefined,
 	onEndCall: () => undefined,
 	onCall: () => Promise.resolve(undefined),

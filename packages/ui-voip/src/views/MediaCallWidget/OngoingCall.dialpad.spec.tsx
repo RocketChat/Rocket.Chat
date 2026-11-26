@@ -1,3 +1,4 @@
+import { callControlFeatureList } from '@rocket.chat/media-signaling';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
@@ -13,11 +14,12 @@ const internalPeer = { type: 'user', displayName: 'John Doe', userId: 'u1', user
 
 type RenderOptions = {
 	peerInfo: PeerInfo;
+	dialpad?: boolean;
 	inline?: boolean;
 	localScreenActive?: boolean;
 };
 
-const renderView = (Component: ComponentType, { peerInfo, inline = false, localScreenActive = false }: RenderOptions) => {
+const renderView = (Component: ComponentType, { peerInfo, dialpad = true, inline = false, localScreenActive = false }: RenderOptions) => {
 	const sessionState = {
 		state: 'ongoing',
 		connectionState: 'CONNECTED',
@@ -29,8 +31,10 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		remoteMuted: false,
 		remoteHeld: false,
 		confirmed: false,
+		hasAlternateCall: false,
+		canCompleteTransfer: false,
 		callId: 'call-1',
-		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer'],
+		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer', ...(dialpad ? ['dialpad'] : []), ...callControlFeatureList],
 	} as SessionState;
 
 	const streams = localScreenActive ? { localScreen: { active: true, stream: null } } : {};
@@ -43,6 +47,8 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		onHold: jest.fn(),
 		onDeviceChange: jest.fn(),
 		onForward: jest.fn(),
+		onSwapCalls: jest.fn(),
+		onCompleteTransfer: jest.fn(),
 		onTone: jest.fn(),
 		onEndCall: jest.fn(),
 		onCall: jest.fn(),
@@ -75,12 +81,10 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 };
 
 describe('Ongoing call dialpad (DMV-16)', () => {
-	it('renders the collapsible dialpad toggle for any floating ongoing call (internal included)', () => {
-		renderView(OngoingCall, { peerInfo: internalPeer, inline: false });
+	it('does not render the dialpad toggle when the call has no dialpad feature', () => {
+		renderView(OngoingCall, { peerInfo: internalPeer, dialpad: false, inline: false });
 
-		// floating: toggle present for every call, keypad collapsed by default
-		expect(screen.getByRole('button', { name: 'Dialpad' })).toBeInTheDocument();
-		expect(screen.queryByRole('button', { name: '#' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Dialpad' })).not.toBeInTheDocument();
 	});
 
 	it('renders the collapsible dialpad toggle for external (SIP) calls when floating', () => {
@@ -98,8 +102,8 @@ describe('Ongoing call dialpad (DMV-16)', () => {
 		expect(screen.getByRole('button', { name: '#' })).toBeInTheDocument();
 	});
 
-	it('does not render the inline dialpad for internal (non-SIP) calls', () => {
-		renderView(OngoingCall, { peerInfo: internalPeer, inline: true });
+	it('does not render the inline dialpad when the call has no dialpad feature', () => {
+		renderView(OngoingCall, { peerInfo: internalPeer, dialpad: false, inline: true });
 
 		expect(screen.queryByRole('button', { name: 'Dialpad' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('button', { name: '#' })).not.toBeInTheDocument();

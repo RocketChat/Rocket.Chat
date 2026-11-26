@@ -1,6 +1,6 @@
 import type { IRocketChatDesktop, IVideoCallWindow } from '@rocket.chat/desktop-api';
 
-import { closeCallWindow } from './callWindow';
+import { closeCallWindow, setCloseRequestHandler } from './callWindow';
 
 // A hash, because that is the one navigation the test DOM performs: it shows where the fallback went.
 jest.mock('../../../lib/absoluteUrl', () => ({ _relativeToSiteRootUrl: (path: string) => `#${path}` }));
@@ -56,5 +56,31 @@ describe('closeCallWindow', () => {
 		jest.runAllTimers();
 
 		expect(window.location.hash).toBe('#/home');
+	});
+});
+
+describe('setCloseRequestHandler', () => {
+	afterEach(() => {
+		delete window.RocketChatDesktop;
+	});
+
+	it('hands the handler to the desktop app call window', () => {
+		const videoCall = { ...bridge(), setCloseRequestHandler: jest.fn() };
+		window.RocketChatDesktop = { videoCall } as unknown as IRocketChatDesktop;
+		const handler = () => true;
+
+		setCloseRequestHandler(handler);
+
+		expect(videoCall.setCloseRequestHandler).toHaveBeenCalledWith(handler);
+	});
+
+	it('does nothing in a desktop app that predates it, or in a browser', () => {
+		window.RocketChatDesktop = { videoCall: bridge() } as unknown as IRocketChatDesktop;
+
+		expect(() => setCloseRequestHandler(() => true)).not.toThrow();
+
+		delete window.RocketChatDesktop;
+
+		expect(() => setCloseRequestHandler(() => true)).not.toThrow();
 	});
 });

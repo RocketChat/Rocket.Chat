@@ -6,11 +6,13 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	IVideoConferenceProviderParticipant,
 	VideoConferenceLeaveReason,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	AggregationCursor,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -19,9 +21,20 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
+	FindOptions,
+	WithId,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+/**
+ * Whether a status means the call can take no more participants — the point at which its SIP alias is released.
+ *
+ * `undefined` is "the status is not changing", which is not the same as "it is not finished": a partial update
+ * that names no status must leave the alias exactly where it is.
+ */
+const isFinishedStatus = (status?: VideoConference['status']): boolean =>
+	status !== undefined && [VideoConferenceStatus.EXPIRED, VideoConferenceStatus.ENDED, VideoConferenceStatus.DECLINED].includes(status);
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
@@ -42,27 +55,61 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				unique: false,
 				partialFilterExpression: { status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] } },
 			},
+			// Unique only among the conferences that have an alias. The space is short enough to reuse, so an
+			// alias is released when a call ends — and without the partial filter every aliasless conference
+			// would collide with every other one on a missing field.
+			{ key: { mediaCallIds: 1 }, unique: true, sparse: true },
+			{ key: { providerName: 1, sipAlias: 1 }, unique: true, partialFilterExpression: { sipAlias: { $exists: true } } },
 		];
 	}
 
 	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): FindPaginated<FindCursor<VideoConference>> {
+	): FindPaginated<AggregationCursor<VideoConference>> {
 		// Matches conferences started in this room (`rid`) and those whose discussion *is* this room
 		// (`discussionRid`), so a discussion resolves the conference it belongs to — its members may have no
 		// access to the parent room the conference originated in.
-		return this.findPaginated<VideoConference>(
-			{ $or: [{ rid }, { discussionRid: rid }] },
+		const matchFilter = { $or: [{ rid }, { discussionRid: rid }] };
+
+		// An aggregation rather than a find, because the list names each conference after its discussion and
+		// shows that room's last message — two fields that live on the room, not on the conference.
+		//
+		// The paging stages come *before* the lookup on purpose. `$match`/`$sort`/`$skip`/`$limit` are pushed
+		// into the query layer, so both `{ rid, createdAt }` and `{ discussionRid, createdAt }` still serve the
+		// `$or` as an index-ordered merge — exactly as the find did — and the lookup then runs over one page
+		// rather than the room's whole call history.
+		const pipeline: object[] = [
+			{ $match: matchFilter },
+			{ $sort: { createdAt: -1 } },
+			...(offset ? [{ $skip: offset }] : []),
+			...(count ? [{ $limit: count }] : []),
 			{
-				sort: { createdAt: -1 },
-				skip: offset,
-				limit: count,
-				projection: {
-					providerData: 0,
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'discussionRid',
+					foreignField: '_id',
+					as: 'discussionRoom',
+					pipeline: [{ $project: { fname: 1, name: 1, lastMessage: 1 } }],
 				},
 			},
-		);
+			{
+				$addFields: {
+					// `fname` is the display name and `name` the slug; a room has at least one. `$first` because
+					// the lookup answers with an array, which holds one room or none.
+					discussionTitle: {
+						$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+					},
+					discussionLastMessage: { $first: '$discussionRoom.lastMessage' },
+				},
+			},
+			{ $project: { providerData: 0, discussionRoom: 0 } },
+		];
+
+		return {
+			cursor: this.col.aggregate<VideoConference>(pipeline),
+			totalCount: this.col.countDocuments(matchFilter),
+		};
 	}
 
 	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {
@@ -117,8 +164,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		mediaCallIds,
+		sipAlias,
+		discussionRid,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>> &
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -127,6 +178,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			anonymousUsers: 0,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			// Spread conditionally rather than assigned: the driver writes an explicit `undefined` as `null`,
+			// which satisfies the alias index's `$exists` filter — so every conference created without one would
+			// collide with the last.
+			...(sipAlias ? { sipAlias } : {}),
+			...(discussionRid ? { discussionRid } : {}),
+			...(mediaCallIds?.length && { mediaCallIds }),
 			...callDetails,
 		};
 
@@ -171,12 +228,17 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				endedBy,
 				endedAt: endedAt || new Date(),
 			},
+			// The call is over: hand its SIP alias back so the number can be given out again.
+			$unset: {
+				sipAlias: true,
+			},
 		});
 	}
 
-	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void> {
+	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id' | 'sipAlias'>>): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: data,
+			...(isFinishedStatus(data.status) && { $unset: { sipAlias: true } }),
 		});
 	}
 
@@ -193,6 +255,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				status,
 			},
+			...(isFinishedStatus(status) && { $unset: { sipAlias: true } }),
 		});
 	}
 
@@ -341,6 +404,123 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	/**
+	 * Adds a connection to an existing member, doing nothing if they already have one with that id.
+	 *
+	 * The guard is in the query for the same reason as `addMemberById`: the entry carries dates, so `$addToSet`
+	 * would append a second copy as soon as one of them differed.
+	 */
+	public async addUserProviderParticipantById(
+		callId: string,
+		uid: IUser['_id'],
+		participant: IVideoConferenceProviderParticipant,
+	): Promise<void> {
+		await this.updateOne(
+			{ _id: callId, users: { $elemMatch: { '_id': uid, 'providerParticipants.id': { $ne: participant.id } } } },
+			{ $push: { 'users.$[user].providerParticipants': participant } },
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+	}
+
+	/**
+	 * Marks a member as being in the call, if they have a connection still up and are not already marked.
+	 *
+	 * The condition is in the query so that a connection and a disconnection of the same member, reported at
+	 * the same time, settle on the state the connections describe whichever write lands last.
+	 */
+	public async setUserJoinedIfConnectedById(callId: string, uid: IUser['_id'], joinedAt: Date): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{
+				_id: callId,
+				endedAt: { $exists: false },
+				users: {
+					$elemMatch: {
+						_id: uid,
+						providerParticipants: { $elemMatch: { leftAt: { $exists: false } } },
+						$or: [{ joined: { $ne: true } }, { leftAt: { $exists: true } }],
+					},
+				},
+			},
+			{
+				$set: { 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt },
+				$unset: { 'users.$[user].leftAt': 1, 'users.$[user].leftReason': 1, 'users.$[user].ringingAt': 1 },
+			},
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+
+		return modifiedCount > 0;
+	}
+
+	/**
+	 * Marks a member as having left, if none of their connections is still up and they are not already marked.
+	 *
+	 * A connection that ended was one they were in the call on, even when its start was never seen being
+	 * recorded, so this also marks them as having joined — from `connectedAt`, unless they joined earlier.
+	 */
+	public async setUserLeftIfDisconnectedById(callId: string, uid: IUser['_id'], leftAt: Date, connectedAt: Date): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{
+				_id: callId,
+				endedAt: { $exists: false },
+				users: {
+					$elemMatch: {
+						_id: uid,
+						leftAt: { $exists: false },
+						providerParticipants: { $not: { $elemMatch: { leftAt: { $exists: false } } } },
+					},
+				},
+			},
+			{
+				$set: { 'users.$[user].leftAt': leftAt, 'users.$[user].joined': true },
+				$min: { 'users.$[user].joinedAt': connectedAt },
+				$unset: { 'users.$[user].leftReason': 1 },
+			},
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+
+		return modifiedCount > 0;
+	}
+
+	/** Stops showing a member as being rung, without saying anything about whether they are in the call. */
+	public async unsetUserRingingById(callId: string, uid: IUser['_id']): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { 'users.$[user].ringingAt': 1 } }, { arrayFilters: [{ 'user._id': uid }] });
+	}
+
+	/** Records when one of a member's connections ended. */
+	public async setUserProviderParticipantLeftById(callId: string, uid: IUser['_id'], participantId: string, leftAt: Date): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{ $set: { 'users.$[user].providerParticipants.$[participant].leftAt': leftAt } },
+			{ arrayFilters: [{ 'user._id': uid }, { 'participant.id': participantId }] },
+		);
+	}
+
+	/** Records whether one of a member's connections is waiting in the lobby, answering whether that changed anything. */
+	public async setUserProviderParticipantWaitingById(
+		callId: string,
+		uid: IUser['_id'],
+		participantId: string,
+		waiting: boolean,
+	): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{
+				_id: callId,
+				users: {
+					$elemMatch: {
+						_id: uid,
+						providerParticipants: { $elemMatch: { id: participantId, waiting: waiting ? { $ne: true } : true } },
+					},
+				},
+			},
+			waiting
+				? { $set: { 'users.$[user].providerParticipants.$[participant].waiting': true } }
+				: { $unset: { 'users.$[user].providerParticipants.$[participant].waiting': 1 } },
+			{ arrayFilters: [{ 'user._id': uid }, { 'participant.id': participantId }] },
+		);
+
+		return modifiedCount > 0;
+	}
+
 	/** Records that an existing member dismissed the call, mutating their entry in place. */
 	public async setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt = new Date()): Promise<void> {
 		await this.updateOne(
@@ -440,6 +620,103 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				endedAt: { $exists: false },
 			},
 			{ projection: { _id: 1, rid: 1, users: 1, providerName: 1 } },
+		);
+	}
+
+	public async findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				mediaCallIds: callId,
+			},
+			options || {},
+		);
+	}
+
+	public async addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null> {
+		return this.findOneAndUpdate(
+			{
+				providerName,
+				sipAlias,
+				status: VideoConferenceStatus.STARTED,
+				mediaCallIds: { $not: { $eq: mediaCallId } },
+			},
+			{
+				$addToSet: {
+					mediaCallIds: mediaCallId,
+				},
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult> {
+		return this.updateOneById(conferenceId, {
+			$addToSet: {
+				mediaCallIds: mediaCallId,
+			},
+		});
+	}
+
+	public async setSipAliasById(callId: string, sipAlias: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { sipAlias } });
+	}
+
+	public async unsetSipAliasById(callId: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { sipAlias: true } });
+	}
+
+	/** Scoped by provider because the alias is only unique within one — the index is on the pair. */
+	public async findOneByProviderNameAndSipAlias<T extends VideoConference>(
+		providerName: string,
+		sipAlias: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				providerName,
+				sipAlias,
+			},
+			options || {},
+		);
+	}
+
+	/**
+	 * Counts one more endpoint dialled in over SIP, addressed by the alias it dialled.
+	 *
+	 * By alias rather than by id because the alias is all a SIP participant event carries. Returns the updated
+	 * conference, which is how the caller tells a real call from an alias nothing answers to any more.
+	 */
+	public async increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				sipAlias,
+			},
+			{
+				$inc: { sipParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				_id: conferenceId,
+			},
+			{
+				$inc: { webrtcParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
 		);
 	}
 }

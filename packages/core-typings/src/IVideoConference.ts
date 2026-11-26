@@ -76,7 +76,20 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	lastSeenAt?: Date;
 	/** When they were last rung. Tells a phone ringing now from one rung and ignored. */
 	ringingAt?: Date;
+	/** Every connection the provider reported this member making, oldest first. One per window, device or reload. */
+	providerParticipants?: IVideoConferenceProviderParticipant[];
 }
+
+/** One connection a member made to the provider, as the provider reported it. */
+export type IVideoConferenceProviderParticipant = {
+	/** The provider's own id for the connection, which is what its participant list names it by. */
+	id: string;
+	connectedAt: Date;
+	/** Absent while the connection is up, or when the provider never reported it ending. */
+	leftAt?: Date;
+	/** In the provider's lobby, waiting for a host to let them in. Absent once they are admitted. */
+	waiting?: true;
+};
 
 /** Absent `joined` predates the flag, and entries were only written on join then — so absent reads as joined. */
 export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joined'>): boolean => user.joined !== false;
@@ -135,6 +148,26 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
+
+	mediaCallIds?: string[];
+	/**
+	 * A short numeric address a SIP endpoint can dial to reach this conference, given out while
+	 * `Pexip_Integration_SIP_AddAlias` is on.
+	 *
+	 * Unique among the conferences that currently hold one, not across all of history: the space is only eight
+	 * digits, so an alias is released when the call reaches a terminal status and handed out again later.
+	 * Nothing may treat it as a stable identifier for a call that has ended.
+	 */
+	sipAlias?: string;
+
+	/** Endpoints that have dialled in over SIP, counted from the provider's participant events. */
+	sipParticipantCount?: number;
+
+	/** Participants that have connected over WebRTC, counted from the provider's participant events. */
+	webrtcParticipantCount?: number;
+
+	discussionTitle?: string;
+	discussionLastMessage?: IMessage;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

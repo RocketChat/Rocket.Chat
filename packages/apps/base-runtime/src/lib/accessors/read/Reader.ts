@@ -4,6 +4,7 @@ import type {
 	IEnvironmentRead,
 	IExperimentalRead,
 	ILivechatRead,
+	IMediaCallRead,
 	IMessageRead,
 	INotifier,
 	IPersistenceRead,
@@ -36,6 +37,7 @@ export class Reader implements IRead {
 		private role: IRoleRead,
 		private experimental: IExperimentalRead,
 		private callHistory: ICallHistoryRead,
+		private mediaCall: IMediaCallRead,
 	) {}
 
 	public getEnvironmentReader(): IEnvironmentRead {
@@ -100,5 +102,9 @@ export class Reader implements IRead {
 
 	public getCallHistoryReader(): ICallHistoryRead {
 		return this.callHistory;
+	}
+
+	public getMediaCallReader(): IMediaCallRead {
+		return this.mediaCall;
 	}
 }

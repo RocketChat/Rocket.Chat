@@ -1,7 +1,11 @@
 import type { IVideoConferenceUser } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 
-export type ConferenceMemberStatus = 'joined' | 'left' | 'declined' | 'invited';
+/**
+ * `unanswered` is a member who was rung and did nothing. `invited` is one nobody has asked anything yet — which,
+ * for a provider that reports presence, is also someone who has joined and is still connecting.
+ */
+export type ConferenceMemberStatus = 'joined' | 'left' | 'declined' | 'unanswered' | 'invited';
 
 type MemberState = Pick<IVideoConferenceUser, 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'>;
 
@@ -18,5 +22,9 @@ export const getConferenceMemberStatus = (member: MemberState): ConferenceMember
 		return 'left';
 	}
 
-	return member.declined ? 'declined' : 'invited';
+	if (member.declined) {
+		return 'declined';
+	}
+
+	return member.ringingAt ? 'unanswered' : 'invited';
 };

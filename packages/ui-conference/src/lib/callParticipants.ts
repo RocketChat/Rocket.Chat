@@ -12,6 +12,14 @@ export type CallParticipantEntry = {
 	key: string;
 	member?: ConferenceMember;
 	participant?: PluginParticipant;
+	/** The member's other connections, newest first, where they are in the call from more than one place. */
+	otherConnections?: PluginParticipant[];
+};
+
+/** The viewer's own connection, which their window knows before the server has heard it from the provider. */
+export type CallParticipantSelf = {
+	uid: ConferenceMember['_id'];
+	participantUuid: PluginParticipant['uuid'];
 };
 
 /** The people panel's three groups, in the order it shows them. */
@@ -106,30 +114,39 @@ export const matchesConferenceMember = (displayName: string, member: Pick<Confer
 };
 
 /**
- * A member as the matching reads them: the two names to compare against, and the provider participant this
- * member's own window reported joining as — self-reported and unverifiable, which is why the name still has to
- * agree with it.
+ * A member as the matching reads them: the provider participants they are known to be, and the two names to fall
+ * back on when they are known to be none.
  */
-type ResolvableMember = Pick<ConferenceMember, 'username' | 'name' | 'providerParticipantId'>;
+type ResolvableMember = Pick<ConferenceMember, '_id' | 'username' | 'name' | 'providerParticipants'>;
 
-const claims = (member: ResolvableMember, participant: PluginParticipant): boolean =>
-	!!member.providerParticipantId && member.providerParticipantId === participant.uuid;
+/** When the member made this connection, or `undefined` for one only the viewer's own window knows about. */
+const connectedAt = (member: ResolvableMember, participant: PluginParticipant, self?: CallParticipantSelf): number | undefined => {
+	if (self?.uid === member._id && self.participantUuid === participant.uuid) {
+		return Infinity;
+	}
+
+	return member.providerParticipants?.find(({ id }) => id === participant.uuid)?.connectedAt.getTime();
+};
+
+const claims = (member: ResolvableMember, participant: PluginParticipant, self?: CallParticipantSelf): boolean =>
+	connectedAt(member, participant, self) !== undefined;
 
 /**
  * Which of these members the provider is describing, or none of them.
  *
- * A claim the name contradicts is nobody rather than an invitation to go looking, and a name two members wear
- * is a coin toss rather than a weak match — losing either puts someone's microphone under another person's
- * face.
+ * A claim settles it whatever name the provider shows, since names are what differ between the two sides. A
+ * name two members wear is a coin toss rather than a weak match — losing it puts someone's microphone under
+ * another person's face.
  */
 export const resolveParticipant = <TMember extends ResolvableMember>(
 	participant: PluginParticipant,
 	candidates: TMember[],
+	self?: CallParticipantSelf,
 ): TMember | undefined => {
-	const claimant = candidates.find((member) => claims(member, participant));
+	const claimant = candidates.find((member) => claims(member, participant, self));
 
 	if (claimant) {
-		return matchesConferenceMember(participant.displayName, claimant) ? claimant : undefined;
+		return claimant;
 	}
 
 	const named = candidates.filter((member) => matchesConferenceMember(participant.displayName, member));
@@ -142,41 +159,58 @@ export const resolveParticipant = <TMember extends ResolvableMember>(
  * pairing the two with {@link resolveParticipant}.
  *
  * Neither list overrules the other: ours decides which group a member is in, the provider's decides what a row
- * can do, and anyone waiting in the lobby is lifted ahead of both.
+ * can do, and anyone waiting in the lobby is lifted out of both. A member connected from several places gets
+ * the newest connection on their row — the viewer's own window first, for the viewer — and the rest under it.
  */
-export const composeCallParticipants = (members: ConferenceMember[], participants: PluginParticipant[]): CallParticipantGroups => {
-	// Whoever is still to be spoken for. A member answers for one participant, so settling one of two people
-	// sharing a name is also what leaves the other unambiguous.
+export const composeCallParticipants = (
+	members: ConferenceMember[],
+	participants: PluginParticipant[],
+	self?: CallParticipantSelf,
+): CallParticipantGroups => {
+	// Members nothing has been paired with yet. A name answers for one participant only, and only for a member
+	// known to be no other: settling one of two people sharing a name is what leaves the other unambiguous.
 	const unspokenFor = [...members];
-	const participantByMember = new Map<ConferenceMember, PluginParticipant>();
+	const participantsByMember = new Map<ConferenceMember, PluginParticipant[]>();
 
 	const settle = (participant: PluginParticipant, member: ConferenceMember) => {
-		unspokenFor.splice(unspokenFor.indexOf(member), 1);
-		participantByMember.set(member, participant);
+		if (unspokenFor.includes(member)) {
+			unspokenFor.splice(unspokenFor.indexOf(member), 1);
+		}
+
+		participantsByMember.set(member, [...(participantsByMember.get(member) ?? []), participant]);
 	};
 
 	// Claims are read before names, so which of two members sharing a name a claim settles does not depend on the
-	// order the provider happened to list the call in. A participant somebody claims is settled here either way,
-	// since a claim the name contradicts is not left for the names below to have a second go at.
-	const isClaimed = (participant: PluginParticipant) => members.some((member) => claims(member, participant));
-	const claimsFirst = [...participants.filter(isClaimed), ...participants.filter((participant) => !isClaimed(participant))];
+	// order the provider happened to list the call in. A member may claim any number of connections.
+	const isClaimed = (participant: PluginParticipant) => members.some((member) => claims(member, participant, self));
 
-	for (const participant of claimsFirst) {
-		const member = resolveParticipant(participant, unspokenFor);
+	for (const participant of participants.filter(isClaimed)) {
+		const member = resolveParticipant(participant, members, self);
 
 		if (member) {
 			settle(participant, member);
 		}
 	}
 
-	const spokenFor = new Set(participantByMember.values());
+	for (const participant of participants.filter((participant) => !isClaimed(participant))) {
+		const member = resolveParticipant(participant, unspokenFor, self);
+
+		if (member) {
+			settle(participant, member);
+		}
+	}
+
+	const spokenFor = new Set([...participantsByMember.values()].flat());
 	const external = participants.filter((participant) => !spokenFor.has(participant));
 
 	const groups: CallParticipantGroups = { waiting: [], present: [], absent: [] };
 
 	for (const member of members) {
-		const participant = participantByMember.get(member);
-		const entry = { key: member._id, member, participant };
+		// Newest first. A connection paired by name has no recorded time, but it is then the member's only one.
+		const [participant, ...otherConnections] = (participantsByMember.get(member) ?? []).sort(
+			(a, b) => (connectedAt(member, b, self) ?? 0) - (connectedAt(member, a, self) ?? 0),
+		);
+		const entry = { key: member._id, member, participant, ...(otherConnections.length > 0 && { otherConnections }) };
 
 		if (participant?.isWaiting) {
 			groups.waiting.push(entry);

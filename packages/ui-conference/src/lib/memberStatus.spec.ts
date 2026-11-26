@@ -7,8 +7,16 @@ describe('getConferenceMemberStatus', () => {
 		expect(getConferenceMemberStatus({ joined: true })).toBe('joined');
 	});
 
-	it('reports a member who was added and has not answered as invited', () => {
+	it('reports a member nobody has asked anything as invited', () => {
 		expect(getConferenceMemberStatus({ joined: false })).toBe('invited');
+	});
+
+	it('reports a member who was rung and has not answered as unanswered', () => {
+		expect(getConferenceMemberStatus({ joined: false, ringingAt: at })).toBe('unanswered');
+	});
+
+	it('reports a member who declined as declined, even though they were rung', () => {
+		expect(getConferenceMemberStatus({ joined: false, ringingAt: at, declined: true })).toBe('declined');
 	});
 
 	it('reports a member who dismissed the call as declined', () => {

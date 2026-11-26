@@ -1,9 +1,17 @@
 import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
 import { ConferenceContext, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
-import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
+import {
+	useEndpoint,
+	usePermission,
+	useSetting,
+	useUserId,
+	useUserPreference,
+	useUserSubscription,
+	useSetModal,
+} from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
@@ -12,6 +20,7 @@ import { embeddedCallProviders } from '../../../lib/videoConference/embeddedCall
 import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
+import ConferenceDisconnectedModal from '../ConferenceDisconnectedModal';
 import ConferencePageError from '../ConferencePageError';
 import ConferenceUnauthorizedPage from '../ConferenceUnauthorizedPage';
 import ConferenceUserPicker from '../components/ConferenceUserPicker';
@@ -19,8 +28,11 @@ import { useConferenceEmbedded } from '../hooks/useConferenceEmbedded';
 import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease';
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
+import { useLastHostHandover } from '../hooks/useLastHostHandover';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { useLobbyRefresh } from '../hooks/useLobbyRefresh';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
+import { PEXIP_PROVIDER_NAME } from '../lib/callWindow';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
@@ -43,7 +55,10 @@ const failureFor = (error: unknown): ConferenceFailure | undefined =>
  */
 const ConferenceProvider = ({ callId, children }: { callId: string; children: ReactNode }) => {
 	const { call, room, conference } = useConferenceEmbedded(callId);
+
+	const isPexip = conference.providerName === PEXIP_PROVIDER_NAME;
 	const queryClient = useQueryClient();
+	const setModal = useSetModal();
 
 	const ring = useEndpoint('POST', '/v1/video-conference.ring');
 	const shareChatEndpoint = useEndpoint('POST', '/v1/video-conference.share-chat');
@@ -57,7 +72,22 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 
 	const { leaveNow } = useLeaveConferenceOnClose(callId, conference.departure);
 
-	useConferencePresenceLease(callId, conference.joined);
+	// The call is treated as over, and the reader is given a few seconds to say it was the network rather than
+	// them. Leaving is what the countdown arrives at on its own, so nothing is lost by saying nothing.
+	const handleDropped = useCallback(() => {
+		setModal(
+			<ConferenceDisconnectedModal
+				onCancel={() => setModal(null)}
+				onClose={() => {
+					setModal(null);
+					leaveNow();
+				}}
+			/>,
+		);
+	}, [setModal, leaveNow]);
+
+	// A provider that reports who is connected decides presence alone, so there is no lease for this window to renew.
+	useConferencePresenceLease(callId, conference.joined && !call.capabilities.providerPresence);
 	useConferenceSubscription(room.rid);
 
 	// Who is reading, and what the workspace and their preferences have already settled. Read once here rather
@@ -70,6 +100,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// `video-conference.ring` refuses without it, so a caller who lacks it is offered nothing to press rather
 	// than a button that can only fail.
 	const canRingUsers = usePermission('videoconf-ring-users');
+	// Scoped to the room, so its owners and moderators are granted it there whatever their global roles.
+	const canShareScreen = usePermission('videoconf-share-screen', room.rid);
 
 	// What the chat button's mark says, worked out here because which unread rules a room honours — and whether
 	// its reader asked not to be told about it at all — is the product's business rather than the window's.
@@ -89,6 +121,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	const hasUnread =
 		!chatVisible && ((showUnread && unreadCount.total > 0) || (Boolean(subscription?.alert) && !subscription?.hideUnreadStatus));
 
+	// The handover reads the plugin's roster and the plugin asks for the handover, so one of the two is wired late.
+	const selectNewHostRef = useRef<() => void>(undefined);
+
 	// Keeps the provider's own controls and this window's panels saying the same thing, and hands back who the
 	// provider has in the call and what may be asked of them — which is what the people panel renders from.
 	// Inert for a provider that speaks none of it.
@@ -97,12 +132,17 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		chatVisible,
 		participantsVisible: activePanel === 'members',
 		hasUnread,
+		screenShareAllowed: canShareScreen,
 		onToggleChat: (active) => setActivePanel(active ? 'chat' : undefined),
 		onToggleParticipants: (active) => setActivePanel(active ? 'members' : undefined),
 		// The same thing hanging up does for a provider that runs the call in here: report the departure and
 		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
 		onLeave: leaveNow,
+		onDropped: handleDropped,
+		onSelectNewHost: () => selectNewHostRef.current?.(),
 	});
+	selectNewHostRef.current = useLastHostHandover(provider);
+	useLobbyRefresh(call.members, provider);
 
 	// A provider that runs the call in here wraps the window from before the join, so joining connects it rather than
 	// mounting anything. Without one registered, a join with no URL has nothing to show.
@@ -130,14 +170,16 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			ringMember: async (memberId) => {
 				await ring({ callId, userId: memberId });
 			},
-			shareChat: async (mode) => {
-				await shareChatEndpoint({ callId, mode });
+			shareChat: async (mode, users) => {
+				// Named nobody, the server works out which members cannot read the chat. Named people, it brings
+				// those people into the conversation whether or not anyone was locked out.
+				await shareChatEndpoint({ callId, mode, ...(users?.length ? { users } : {}) });
 				// The server broadcasts the change to every participant, but the one who asked for it should not
 				// wait for the round trip to see their own notice go away.
 				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
 			},
-			addParticipants: async (users, ringThem) => {
-				const { added } = await addParticipantsEndpoint({ callId, users, ring: ringThem });
+			addParticipants: async (users, ringThem, dialOut) => {
+				const { added, dial } = await addParticipantsEndpoint({ callId, users, ring: ringThem, dialOut });
 
 				// Read the call again rather than waiting to be told about our own doing: the window is watching the
 				// conference for changes other people make, and leaning on that for a change made *here* left the
@@ -146,7 +188,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 					void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
 				}
 
-				return { added: added.length };
+				return { added: added.length, dial };
 			},
 		}),
 		[addParticipantsEndpoint, callId, conference, leaveNow, queryClient, ring, shareChatEndpoint],
@@ -190,6 +232,13 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				loading: conference.loading,
 				error: failureFor(conference.error),
 				retry: conference.retry,
+				// Pexip cannot be told which camera or microphone to use, so there is nothing to ask before the
+				// call — only a button between the reader and the one they already said yes to.
+				autoJoin: isPexip,
+				// Pexip's chat is what this window is opened for, so it sits on the side the reader reads from.
+				panelDock: isPexip ? 'start' : 'end',
+				providerOwnsChatToggle: provider.features.has('chat'),
+				providerOwnsMembersToggle: provider.features.has('participants'),
 			},
 			actions,
 			slots: {
@@ -216,6 +265,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			canRingUsers,
 			displayAvatars,
 			embedded,
+			isPexip,
 			panel,
 			provider,
 			renderMemberStatus,

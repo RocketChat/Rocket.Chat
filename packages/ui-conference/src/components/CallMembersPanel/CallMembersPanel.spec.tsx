@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import CallMembersPanel from './CallMembersPanel';
 import { ConferenceContext } from '../../context/ConferenceContext';
 import type { ConferenceMember } from '../../context/definitions';
-import { buildConferenceContext } from '../../fixtures/storyFixtures';
+import { buildConferenceContext, JOHN_DOE_ID } from '../../fixtures/storyFixtures';
 import { buildConferenceMember } from '../../fixtures/testFixtures';
 import type { PluginFeature, PluginParticipant, ProviderPluginControls } from '../../lib/providerPlugin';
 import { PLUGIN_FEATURES } from '../../lib/providerPlugin';
@@ -19,6 +19,9 @@ const actions = {
 	spotlight: jest.fn(),
 	raiseHand: jest.fn(),
 	setRole: jest.fn(),
+	dialOut: jest.fn(),
+	refreshRoster: jest.fn(),
+	leave: jest.fn(),
 };
 
 const buildParticipant = (overrides: Partial<PluginParticipant> & Pick<PluginParticipant, 'uuid'>): PluginParticipant => ({
@@ -63,12 +66,14 @@ const appRoot = mockAppRoot().withJohnDoe().withTranslations('en', 'core', {
 	Admit: 'Admit',
 	Call_actions_for_participant: 'Call actions for {{name}}',
 	External_participant: 'External participant',
+	Host: 'Host',
 	In_call: 'In call',
 	Members: 'Members',
 	Not_in_the_call: 'Not in the call',
 	People: 'People',
 	Reject: 'Reject',
 	Waiting_to_join: 'Waiting to join',
+	You: 'You',
 });
 
 const renderPanel = (provider?: ProviderPluginControls, members: ConferenceMember[] = [ada, grace]) => {
@@ -127,8 +132,44 @@ describe('CallMembersPanel', () => {
 		expect(inCall.getByRole('button', { name: 'Call actions for Someone Else' })).toBeInTheDocument();
 	});
 
-	// Ahead of both other groups, because everyone in it is waiting on somebody looking at this panel. The
-	// viewer has to control the conference for the door to be theirs to open — the provider says nothing about
+	// Who runs the call is the provider's to say, per connection — a member and a room system alike.
+	it('marks the members and participants the provider has as hosts, and nobody else', () => {
+		renderPanel(
+			buildProvider({
+				participants: [
+					buildParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace', isHost: true }),
+					buildParticipant({ uuid: 'p-room', displayName: 'Meeting Room 3', isHost: true }),
+					buildParticipant({ uuid: 'p-guest', displayName: 'Someone Else' }),
+				],
+			}),
+		);
+
+		const rows = group('In call').getAllByRole('listitem');
+		const row = (name: string) => rows.find((item) => item.textContent?.includes(name));
+
+		expect(row('ada')).toHaveTextContent('Host');
+		expect(row('Meeting Room 3')).toHaveTextContent('Host · External participant');
+		expect(row('Someone Else')).not.toHaveTextContent('Host');
+	});
+
+	it("says which row is the viewer's own, and only that one", () => {
+		renderPanel(undefined, [ada, buildConferenceMember({ _id: JOHN_DOE_ID, username: 'viewer', name: 'The Viewer' })]);
+
+		const rows = group('In call').getAllByRole('listitem');
+
+		expect(rows.find((item) => item.textContent?.includes('viewer'))).toHaveTextContent('You');
+		expect(rows.find((item) => item.textContent?.includes('ada'))).not.toHaveTextContent('You');
+	});
+
+	it('puts the viewer ahead of their being a host, on the same line', () => {
+		renderPanel(buildProvider({ participants: [buildParticipant({ uuid: 'p-viewer', displayName: 'viewer', isHost: true })] }), [
+			buildConferenceMember({ _id: JOHN_DOE_ID, username: 'viewer', name: 'The Viewer' }),
+		]);
+
+		expect(group('In call').getByRole('listitem')).toHaveTextContent('You · Host');
+	});
+
+	// The viewer has to control the conference for the door to be theirs to open — the provider says nothing about
 	// controlling someone who is not in the call yet, so it cannot come from the waiting participant.
 	it('puts whoever is in the lobby in a group of their own, with the two answers they need', async () => {
 		renderPanel(
@@ -147,5 +188,26 @@ describe('CallMembersPanel', () => {
 
 		await userEvent.click(lobby.getByRole('button', { name: 'Reject' }));
 		expect(actions.disconnect).toHaveBeenCalledWith('p-ada');
+	});
+
+	// Somebody in the lobby is connected but not yet in the call, which is where the group sits.
+	it('lists the lobby between those in the call and those who are not', () => {
+		const alan = buildConferenceMember({ _id: 'alan', username: 'alan', name: 'Alan Turing' });
+
+		renderPanel(
+			buildProvider({
+				participants: [
+					buildParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' }),
+					buildParticipant({ uuid: 'p-alan', displayName: 'Alan Turing', isWaiting: true }),
+				],
+			}),
+			[ada, alan, grace],
+		);
+
+		expect(screen.getAllByRole('list').map((list) => list.getAttribute('aria-label'))).toEqual([
+			'In call',
+			'Waiting to join',
+			'Not in the call',
+		]);
 	});
 });

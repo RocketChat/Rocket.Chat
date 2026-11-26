@@ -120,9 +120,9 @@ this avoids. The screen says as much before it happens ("Alice will be notified 
 button is the call itself rather than a join.
 
 Without the call window there is no preflight to wait for, so nothing changes: the caller's own client rings the
-callee from the room, on the 1:1 handshake it always used. A server-originated `ring` — which the server has
-always broadcast for group calls — is ignored by the client then, exactly as it was before this work, so a group
-call does not start ringing a whole channel.
+callee from the room, on the 1:1 handshake it always used. The room-wide `ring` the server has always broadcast for
+group calls is ignored by the client, exactly as it was before this work, so a group call does not start ringing a
+whole channel. The targeted `ring-member` is not: it names the people being rung, so it is handled either way.
 
 ### How the call window is opened
 
@@ -359,13 +359,25 @@ For the rest, one status from `getConferenceMemberStatus`:
 | Status | Meaning |
 |---|---|
 | **Ringing** | rung within the last 15s, and hasn't answered yet |
-| **Waiting for answer** | rung longer ago than that, and never answered |
+| **Not answered** | rung longer ago than that, and never answered |
 | **Declined** | dismissed the ring |
 | **Left** | joined and left since |
+| *(nothing)* | never asked anything: added without a ring, or answered and still connecting |
+
+The last row is deliberately silent. Joining clears `ringingAt`, and on a provider that reports presence the
+member is only in the call once the provider says they connected, so for those few seconds they look exactly
+like someone nobody has asked yet. No label is true of both; "waiting for answer" was true of neither. A join
+that never connects stays silent too, instead of claiming to wait for something.
 
 The entry accumulates rather than replaces — `joined` never goes back to false, and a decline stays recorded
 after the person changes their mind — so the fields are read in order of what happened *last*. Being in the call
 beats everything; having left beats an earlier decline, since they did answer.
+
+A row the provider has as a host says **Host** on its second line, ahead of any status — "Host · External
+participant" for a room system or dial-in that hosts. It is the provider's `isHost` for the connection that row
+carries, so it appears only where a plugin sends a roster, and follows a promotion or demotion as soon as the
+next roster arrives. The viewer's own row says **You** on the same line, first — "You · Host" for a viewer who
+hosts — so they can find themselves in a long list.
 
 Members who can't read the chat carry an icon beside their name — beside, because it qualifies who that person
 is in the call, and a second line pushed every row apart for something most members never have. It is the one
@@ -408,7 +420,7 @@ Adding someone to a conference makes them a **member of the conference**. It put
 `POST /v1/video-conference.add-participants` takes `{ callId, users, ring }` — no `keepHistory`, no room choice — and calls `addMembers`:
 
 - Each user who isn't already associated with the call gets a `users[]` entry with `joined: false`. Users who already have an entry are skipped, so an existing member's `joinedAt` (or `declined`) is never overwritten.
-- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
+- Everyone actually added is **rung** (`notifyUser(…, 'ring-member', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
 - They also get a desktop notification, because the ring only reaches a client that is on screen and is one-shot. It deliberately carries **no room name**, which is what stops its click from navigating: the room behind the call may be one they can't open. Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
 
 Nothing about the conference's rooms changes, so `discussionRid` is untouched and no discussion is created.
@@ -510,7 +522,9 @@ after an admin toggled it and end a call still running in Jitsi. The cost is tha
 URL provider stays outside the sweep, waiting on the 24-hour TTL cron; closing that needs the call to carry how
 it was opened rather than the sweep guessing from a setting that can have changed since.
 
-This is deliberately **provider-agnostic**, and deliberately the *only* source of presence: the renewing window is
+This is deliberately **provider-agnostic**, and deliberately the *only* source of presence — for a provider that
+can't report presence itself (see [When the provider reports presence](#when-the-provider-reports-presence) for one
+that can): the renewing window is
 ours whether the call renders inside it or is handed to an iframe, so it needs no cooperation from Pexip, Jitsi,
 LiveKit or anyone else. Who is in a call is answered in one place, by evidence we own — a second source that could
 disagree with the roster is how a call ends up counted as occupied by one half of the code and empty by the other.
@@ -520,6 +534,42 @@ iframe and leave the tab open and you stay listed until the window closes; a win
 throttled hard enough to miss `PRESENCE_LEASE_MS` of renewals reads as gone until it renews again. Both are the
 cost of a single source of truth, and the lease is long enough — three minutes against a thirty-second heartbeat —
 that the second needs five missed renewals in a row.
+
+### When the provider reports presence
+
+A provider whose capabilities say `providerPresence` — Pexip, through its event sink — reports every connection
+itself, with the user id it was given as `callTag` and the times it connected and disconnected. For such a call
+that report is the **only** source of presence, and everything above about leaving and leases does not apply:
+
+- **Joining** from Rocket.Chat (`video-conference.join`) makes the user a member and counts as answering: the
+  ring stops and a direct call starts. It does not put them in the call. That waits for the provider.
+- **A connection** puts the member in the call from its `connect_time`, unless they already are.
+- **A disconnection** takes them out at its `end_time`, but only once none of their connections is still up: a
+  second window or device keeps them in the call. A disconnection is also proof they were in it, so a member
+  whose connection was never seen arriving is marked as having joined too.
+- **The call window leaving** (`pagehide`, the opener's watch, the plugin's `disconnected`) changes nothing in the
+  roster. It says nothing about the member's other windows and devices. It still closes the leaver's own popups.
+- **The call ends** when the provider reports it ending (`conference_ended`), not when the last member leaves:
+  guests and telephones that have no member can still be in it. A Pexip conference's name is always the call's
+  `_id`, which is what lets that event find it.
+
+**The lobby** has no say in any of this: a member waiting for a host to let them in is already in the call and
+busy. Each connection records whether it is waiting instead (`waiting` on the entry), from `service_type` —
+`waiting_room` on `participant_connected`, and on every `participant_updated` after it, `conference` once a host
+lets them in. Only a change to that flag is broadcast, since Pexip repeats it on every update about the
+connection; see [The lobby](#the-lobby) for what the windows do with it.
+
+Both presence writes are conditional updates (`setUserJoinedIfConnectedById`, `setUserLeftIfDisconnectedById`)
+that read the member's connections as they stand when the write lands. Two events for one member can be handled
+at the same time, and asking the database rather than reading first is what keeps them from settling on a
+state their connections contradict.
+
+Nothing is inferred. Pexip retries an event it could not deliver every second and queues the rest, so a
+departure that happened while the workspace was down still arrives, late, with its real time. The call window
+doesn't send heartbeats for such a call: a Pexip call is not `embedded`, so the sweep never read them, and
+nothing else does. What isn't covered is an event Pexip gives up
+on, and a workspace without the event sink configured or on Infinity older than v33: nobody connects with a
+tag there, so nobody is ever shown as in the call.
 
 ### The window that opened the call watches it
 
@@ -812,11 +862,14 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | plugin → window | `toggle-participants` | `{ active }` | The same for the people panel, which the provider's own participant list is hidden in favour of |
 | plugin → window | `connected` | — | Past the provider's own prejoin screen and into the call |
 | plugin → window | `disconnected` | `{ userInitiated }` | Left the call from inside the provider's page. A deliberate leave reports the departure and closes the window, exactly as hanging up does; an involuntary drop is left to the provider's page to recover from |
+| plugin → window | `select-new-host` | — | The call's only host pressed the provider's Leave button while others are still in it. The plugin held the leave back; see [Handing the call over](#handing-the-call-over-before-leaving) |
+| window → plugin | `leave` | — | Leave the call as the provider's own Leave button does. The answer to `select-new-host`; the plugin then reports `disconnected` as usual |
 | window → plugin | `participants-state` | `{ active }` | The same for the people panel, so its control follows the panel however it was opened |
 | window → plugin | `chat-state` | `{ active }` | Pushed whenever the panel changes, so all three ways of opening it — the top bar, the panel's close button, the plugin's own control — keep that control honest |
 | plugin → window | `self` | `{ participantUuid, micMuted, camMuted, clientMuted, isHost, canControl }` | Where the viewer stands in the call; `canControl` is what offers the call-wide controls |
 | plugin → window | `roster` | `{ participants }` | Who the provider has in the call, the whole list on every change |
 | window → plugin | `chat-unread` | `{ unread }` | The same unread that badges the top bar's chat toggle |
+| window → plugin | `screen-share` | `{ allowed }` | Whether the viewer may start sharing their screen; see [Restricting screen sharing](#restricting-screen-sharing) |
 | window → plugin | `mute` / `mute-video` | `{ participantUuid, muted }` | The conference's own mute, which is the one a host can undo |
 | window → plugin | `admit` / `disconnect` | `{ participantUuid }` | Let somebody in, or hang up on them — turning someone away at the door is the same request as the latter |
 | window → plugin | `spotlight` | `{ participantUuid, active }` | |
@@ -825,11 +878,50 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | window → plugin | `transfer` | `{ participantUuid, alias, role?, pin? }` | Move somebody to another conference. The role is deliberately never sent, so a transfer cannot quietly promote anyone |
 | window → plugin | `dtmf` | `{ participantUuid, digits }` | Keypad tones for whoever joined over a telephone line |
 | window → plugin | `mute-all-guests` | `{ muted }` | Silences the call at once |
+| window → plugin | `refresh-roster` | — | Ask the provider who is in the call and send the `roster` it answers. See [The lobby](#the-lobby) |
 
 `transfer`, `dtmf` and `mute-all-guests` are in the vocabulary and Pexip's plugin answers all three, but this
 window sends none of them — they are not features we support yet. They stay named so a plugin announcing one is
 understood rather than discarded, and so turning one on later is a control and a caller rather than a change to
 the protocol.
+
+#### Handing the call over before leaving
+
+A Pexip conference whose last host leaves is left with guests nobody can admit, mute or hang up on. So when the
+only host presses the provider's own Leave button with someone else still in the call (the lobby does not count),
+the plugin stops the leave and sends `select-new-host`, and `useLastHostHandover` asks the user who takes over:
+
+- **Make host and leave** sends `set-role` for the chosen participant, then waits for the roster to show them as a
+  host before sending `leave`. Nothing answers a promotion, and leaving while it is still in flight could leave the
+  call without a host after all. If the roster has not shown it after ten seconds, the user stays in the call and is
+  told so.
+- **Leave without a host** sends `leave` straight away.
+- Closing the dialog sends nothing, and the user stays in the call.
+
+The candidates are everyone else the roster has in the call who is not already a host. A provider whose plugin does
+not announce `leave` never sends `select-new-host`, and its Leave button behaves as it always did.
+
+Closing the window is the other way out, and it never reaches the plugin. A page that is closing cannot open a
+dialog of its own, so when the roster says the user is the last host, `beforeunload` asks the browser to show its
+generic "Leave site?" prompt and opens the picker behind it. A user who stays finds the picker waiting. A user who
+leaves anyway closes the window without a handover. Browsers show that prompt only on a page the user has
+interacted with, and the call frame counts, so in practice it shows. Once a promotion is in flight, the prompt is
+not shown again.
+
+#### Restricting screen sharing
+
+Whether a user may share their screen in a call is the `videoconf-share-screen` permission, checked against the
+call's room so that a room owner or moderator holds it there whatever their global roles. Every default role has
+it, so nothing changes until an administrator takes it away.
+
+The screen-share button is the provider's, so this window cannot hide it; it tells the plugin instead. It sends
+`screen-share` with every answer to `ready`, before the user can be past the prejoin screen, and again whenever
+the permission changes. Pexip's plugin then turns a press of its button into a toast saying sharing is not
+available, while still letting a presentation that is already running be stopped.
+
+Only the button is held back. The provider is never told, so this is not a security boundary: someone who starts
+a presentation any other way is not stopped. A plugin that does not announce `screen-share` ignores the message,
+and sharing there works as it always did.
 
 Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
 
@@ -868,8 +960,8 @@ gave. Where the two disagree, both are simply shown — someone we still record 
 keeps their row with nothing to press on it, and someone whose join we have not heard about yet is listed as not
 in the call with the controls that do work.
 
-The lobby is the exception: anyone the provider has waiting is lifted into a group of their own ahead of the
-rest, because being let in is the only thing anyone can do about them, and a member sitting under "in the call"
+The lobby is the exception: anyone the provider has waiting is lifted into a group of their own, listed between
+"in the call" and "not in the call" — connected, but not in the call yet — because being let in is the only thing anyone can do about them, and a member sitting under "in the call"
 would be offered a ring instead of the admit they need.
 
 **A control is offered only when three things agree**: the provider announced the feature in `ready`, the viewer
@@ -883,14 +975,52 @@ That rule is not a nicety: the protocol carries no replies, so a request the pro
 a console this window cannot read, and the only sign of it is the next roster looking exactly like the last one.
 A control offered against any of the three is a button that silently does nothing, every time it is pressed.
 
-Identity is `client/views/conference/lib/callParticipants.ts`. Every control is addressed by the participant's
-`uuid` and never by a name; whether that participant *is* a known user is a separate question, answered by a
-uuid the member's own client claimed with the display name corroborating it, or — failing a claim — by exactly
-one member wearing that name. Two namesakes with nothing to separate them is a coin toss rather than a match,
-and losing it would put one person's microphone under another's face, so it resolves to an external participant
-instead. The claim is self-reported and unverifiable against the provider, which is why the name still has to
-agree: impersonation is narrowed to two users who are already indistinguishable on screen, which was accepted
-deliberately.
+Identity is `packages/ui-conference/src/lib/callParticipants.ts`. Every control is addressed by the
+participant's `uuid` and never by a name; whether that participant *is* a known user is a separate question,
+answered by the member's `providerParticipants`, or — for a member with none in the call — by being the only
+member wearing that name. Two namesakes with nothing to separate them is a coin toss rather than a match, and
+losing it would put one person's microphone under another's face, so it resolves to an external participant
+instead.
+
+`providerParticipants` comes from Pexip. The join url carries the member's user id as `callTag` (Infinity v33
+and later), and Pexip repeats it with the participant's `uuid` and connect time on `participant_connected`, and
+with the end time on `participant_disconnected`. The server keeps one entry per connection on the member —
+`{ id, connectedAt, leftAt? }` — so a reload, a second window or a second device each add one rather than
+replacing the last. A disconnect can be the first the server hears of a connection, so it records the
+connection as well. These entries are also what decides whether the member is in the call (see
+[When the provider reports presence](#when-the-provider-reports-presence)). The plugin can't do any of this
+itself: its API does not expose a participant's call tag.
+
+A member connected from several places has one row, carrying the newest connection's controls — for the viewer,
+always their own window's, which the plugin reports before the event sink has been heard from. Each other
+connection the provider still has gets a row under it, named after the member and labelled "Another
+connection", with controls of its own so a connection left behind by a closed window can be hung up. A
+connection the server hasn't recorded is never added to a member who already has one by name: it is most likely
+theirs, but it could be a namesake who followed a link, so it stays external until the server says.
+
+A claim settles the pairing whatever name the provider shows, because the name typed on Pexip's own join screen
+is exactly what drifts from the member's. The tag is the plain user id and is trusted as is: anyone who can edit
+their join url and holds the pin can appear under another member's row, which was accepted deliberately. Without
+a working event sink no connection is ever recorded, and the panel falls back to names for everyone but the
+viewer.
+
+#### The lobby
+
+Pexip's plugin hears when somebody arrives in the lobby but never when they leave it — turned away, let in by
+another host, or hanging up while they wait — and a guest is not told about the lobby at all, so a participant
+promoted to host has never heard of anybody already waiting. Left alone, a host's panel keeps offering Admit and
+Reject for somebody who is gone, and a new host's shows a waiting member as already in the call.
+
+The event sink hears all of it, as the `waiting` flag on each connection (see
+[When the provider reports presence](#when-the-provider-reports-presence)). `useLobbyRefresh` watches which of
+the members' live connections are waiting, and whenever that set changes — or the viewer becomes someone who can
+let people in — sends `refresh-roster`. The plugin then asks Infinity for the conference's participant list and
+answers with a `roster` built from it, so who is waiting and who is in the call still comes from the provider;
+the server only says when to ask. Only a plugin that announces `refresh-roster` is asked, and only by a viewer
+who controls the conference, since nobody else is shown the lobby.
+
+Somebody without a call tag has no member to hang a connection on, so nothing on the server changes when they
+leave the lobby. Their row is corrected by the next refresh that something else sets off.
 
 ## Settings
 
@@ -899,7 +1029,7 @@ deliberately.
 | `VideoConf_Conference_Window_Enabled` | EE, **off by default**. The switch for everything in this document: the call window, the preflight, the ongoing-calls list, the membership-based flow. Off means the pre-existing client behaviour, unchanged. |
 | `VideoConf_Enable_Persistent_Chat` | EE. Whether each call gets a discussion or thread of its own, server-side. Unchanged by this feature, and independent of the setting above. |
 | `VideoConf_Persistent_Chat_Mode` | `thread` (default) or `main_room`. Thread opens a thread from the call message; main room shows the channel itself in the chat panel. |
-| `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name, used only in `main_room` mode, which is the mode that creates a discussion; `[date]` is substituted, or the date is prefixed when absent. Requires `Discussion_enabled`. |
+| `VideoConf_Persistent_Chat_Discussion_Name` | Fallback discussion name, for when the discussion's room and people cannot be told (see [naming a discussion](../persistent-chat.md#naming-a-discussion)); `[date]` is substituted, or the date is prefixed when absent. The call list still uses it to name a call that never got a discussion. Requires `Discussion_enabled`. |
 
 ## REST Endpoints
 
@@ -959,13 +1089,13 @@ and [Access Control](#access-control).
 
 Things worth knowing that aren't visible from the code alone.
 
-### Group ringing was dead code before this work
+### The room-wide `ring` stays unhandled
 
-The server had long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
+The server has long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
 handled it** — 1:1 ringing is driven entirely client-side, by the caller's own `VideoConfManager` republishing
-`'call'` while it waits. `VideoConfManager` now handles `'ring'`, which is what makes ringing-on-add work; the side
-effect is that group conferences which had been silently not ringing **will now ring**, which the EE code always
-intended but is a visible change beyond "ring on add".
+`'call'` while it waits. It is left alone: handling it would make every group conference ring its whole channel.
+Ringing people who were added to a running conference uses its own action, `'ring-member'`, which names exactly
+the people to ring.
 
 A server-originated ring is one-shot: nothing refreshes the 10s abort timeout a 1:1 caller keeps alive, so it rings
 once and gives up. That suits an already-running conference, where there is no caller waiting.
@@ -1191,6 +1321,7 @@ as the last read. A member removed from the room *during* a call still has the r
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
 | Reaching a call | `apps/meteor/client/components/OngoingCalls/` (`CallListItem` over the sidebar's own room item, its two rows, `OngoingCallsList` and `useOngoingCalls`), `client/sidebar/hooks/useRoomList.ts` and `RoomList/RoomList.tsx` (where the group is), `client/navbar/NavBarItemOngoingCalls.tsx` (the stand-in), `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
+| Last host leaving | `apps/meteor/client/views/conference/hooks/useLastHostHandover.tsx`, `ConferenceSelectNewHostModal.tsx` |
 | Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/cron/videoConferences.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |

@@ -3,6 +3,7 @@ import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-media';
 import { useMemo } from 'react';
 
 import { getEndCall } from '../utils/instanceControlsGetters';
+import { toSipCallTarget } from '../utils/toSipCallTarget';
 
 export type MediaSessionControls = {
 	toggleMute: () => void;
@@ -12,9 +13,14 @@ export type MediaSessionControls = {
 	acceptCall: (micless: boolean) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
+	swapCalls: () => void;
+	completeTransfer: () => void;
+	consultBeforeTransfer: (type: 'user' | 'sip', id: string) => Promise<void>;
 	sendTone: (tone: string) => void;
 	toggleScreenSharing: () => void;
 };
+
+const toCallTarget = (kind: 'user' | 'sip', id: string): string | undefined => (kind === 'sip' ? toSipCallTarget(id) : id);
 
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
 	const requestDevice = useDevicePermissionPrompt2();
@@ -80,9 +86,14 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instance) {
 				return;
 			}
+			const target = toCallTarget(kind, id);
+			if (!target) {
+				console.error('Error starting call: nothing to call in', id);
+				return;
+			}
 			try {
 				instance.micless = micless;
-				await instance.startCall(kind, id);
+				await instance.startCall(kind, target);
 			} catch (error) {
 				console.error('Error starting call', error);
 			}
@@ -103,7 +114,46 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instanceState?.confirmed) {
 				return;
 			}
-			instanceState.call.transfer({ type, id });
+			const target = toCallTarget(type, id);
+			if (!target) {
+				console.error('Error transferring call: nothing to call in', id);
+				return;
+			}
+			instanceState.call.transfer({ type, id: target });
+		};
+
+		const swapCalls = () => {
+			try {
+				instance?.swapCalls();
+			} catch (error) {
+				console.error('Error switching calls', error);
+			}
+		};
+
+		const completeTransfer = () => {
+			try {
+				instance?.completeTransfer();
+			} catch (error) {
+				console.error('Error completing transfer', error);
+			}
+		};
+
+		const consultBeforeTransfer = async (type: 'user' | 'sip', id: string) => {
+			if (!instance) {
+				return;
+			}
+
+			const target = toCallTarget(type, id);
+			if (!target) {
+				console.error('Error starting attended transfer: nothing to call in', id);
+				return;
+			}
+
+			try {
+				await instance.startAttendedTransfer(type, target);
+			} catch (error) {
+				console.error('Error starting attended transfer', error);
+			}
 		};
 
 		const sendTone = (tone: string) => {
@@ -148,6 +198,9 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			acceptCall,
 			changeDevice,
 			forwardCall,
+			swapCalls,
+			completeTransfer,
+			consultBeforeTransfer,
 			sendTone,
 		};
 	}, [instance, requestDevice]);

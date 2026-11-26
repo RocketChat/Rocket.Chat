@@ -105,11 +105,11 @@ export class RoomToolbar extends Toolbar {
 
 	/** The room's conference-call history. */
 	get menuItemCalls(): Locator {
-		return this.menu.getMenuItem('Calls');
+		return this.menu.getMenuItem('Conference call history');
 	}
 
 	get btnCalls(): Locator {
-		return this.root.getByRole('button', { name: 'Calls', exact: true });
+		return this.root.getByRole('button', { name: 'Conference call history', exact: true });
 	}
 
 	/**

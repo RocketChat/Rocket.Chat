@@ -101,6 +101,11 @@ export interface IRocketChatDesktop {
 	destroyNotification: (id: unknown) => void;
 	getInternalVideoChatWindowEnabled: () => boolean;
 	openInternalVideoChatWindow: (url: string, options: VideoChatWindowOptions) => void;
+	/**
+	 * Registers a handler for routes the main window is asked to open, such as a link followed in the call
+	 * window. Optional: only desktop builds that implement it have one.
+	 */
+	onNavigateToRoute?: (cb: (path: string) => void) => void;
 	setGitCommitHash: (gitCommitHash: string) => void;
 	writeTextToClipboard: (text: string) => void;
 	getOutlookEvents: (date: Date) => Promise<OutlookEventsResponse>;
@@ -118,6 +123,7 @@ export interface IRocketChatDesktop {
 	 * nothing of the main window's but no-op setters.
 	 */
 	videoCall?: IVideoCallWindow;
+	onTelephonyCallRequested?: (callback: (payload: { phoneNumber: string; rawUri: string }) => void) => void;
 }
 
 /** What the desktop app's video call window offers the page loaded in it. */
@@ -125,6 +131,11 @@ export interface IVideoCallWindow {
 	openInMainWindow: (path: string) => void;
 	close: () => void;
 	requestScreenSharing: () => Promise<string | null>;
+	/**
+	 * Decides what the user closing the window (its close button, a shortcut) means: the handler returns true to keep it
+	 * open. The window closes without asking when the page closes it through `close`. Desktop 4.20 and later.
+	 */
+	setCloseRequestHandler?: (handler: (() => boolean | Promise<boolean>) | null) => void;
 	/** @deprecated Removed in desktop 4.18, and never used: it handed the user's session token to the provider's page. */
 	getAuthCredentials?: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
 }

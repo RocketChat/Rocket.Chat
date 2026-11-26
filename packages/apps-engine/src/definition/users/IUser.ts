@@ -1,5 +1,6 @@
 import type { FederationUserLookup } from '../federation';
 import type { IUserEmail } from './IUserEmail';
+import type { IUserMediaCallDevice } from './IUserMediaCallDevice';
 import type { IUserSettings } from './IUserSettings';
 import type { UserStatusConnection } from './UserStatusConnection';
 import type { UserType } from './UserType';
@@ -27,6 +28,8 @@ export interface IUser {
 	settings?: IUserSettings;
 	appId?: string;
 	sipExtension?: string;
+	/** Set when the user takes media calls on an external device instead of Rocket.Chat. */
+	mediaCallDevice?: IUserMediaCallDevice;
 	isFederated?: boolean;
 	federation?: FederationUserLookup;
 	customFields?: { [key: string]: any };

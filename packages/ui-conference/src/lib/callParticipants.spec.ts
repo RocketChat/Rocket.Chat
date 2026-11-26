@@ -8,6 +8,9 @@ import {
 import type { PluginFeature, PluginParticipant, PluginSelf } from './providerPlugin';
 import { buildConferenceMember } from '../fixtures/testFixtures';
 
+/** A connection the server recorded for a member, `at` milliseconds into the call. */
+const connection = (id: string, at = 0) => ({ id, connectedAt: new Date(at) });
+
 const buildParticipant = (overrides: Partial<PluginParticipant> & Pick<PluginParticipant, 'uuid'>): PluginParticipant => ({
 	displayName: `Name of ${overrides.uuid}`,
 	isWaiting: false,
@@ -76,26 +79,31 @@ describe('matchesConferenceMember', () => {
 /**
  * Turning a participant into a person, which is what decides whose face a mute button ends up under.
  *
- * The uuid is what every request is addressed by; the name is only ever asked whether it agrees. Neither on its
- * own is allowed to settle it — the claim because a member's window reports it and nothing can check that
- * against the provider, the name because two people share one.
+ * The uuid is what every request is addressed by, and a member known to be that participant settles it outright.
+ * The name is only the fallback for a participant nobody is known to be, and never settles a name two people share.
  */
 describe('resolveParticipant', () => {
 	const ada = buildConferenceMember({ _id: 'ada', username: 'ada', name: 'Ada Lovelace' });
 	const grace = buildConferenceMember({ _id: 'grace', username: 'grace', name: 'Grace Hopper' });
 
 	it('resolves a member who claims the uuid and wears the name to go with it', () => {
-		const claiming = { ...grace, providerParticipantId: 'p1' };
+		const claiming = { ...grace, providerParticipants: [connection('p1')] };
 
 		expect(resolveParticipant(buildParticipant({ uuid: 'p1', displayName: 'Grace Hopper' }), [ada, claiming])).toBe(claiming);
 	});
 
-	// A stale or wrong id, corroborated by nothing. Going on to match the name would turn it into a confident
-	// misattribution rather than leaving it as the unanswered question it is.
-	it('resolves nobody for a claim the name contradicts, rather than looking for a better fit', () => {
-		const claiming = { ...grace, providerParticipantId: 'p1' };
+	// The name a provider shows is whatever was typed on its own join screen, which is exactly what drifts from
+	// the member's. The claim is what makes that drift harmless.
+	it('resolves the member who claims the uuid whatever name the provider shows', () => {
+		const claiming = { ...grace, providerParticipants: [connection('p1')] };
 
-		expect(resolveParticipant(buildParticipant({ uuid: 'p1', displayName: 'Ada Lovelace' }), [ada, claiming])).toBeUndefined();
+		expect(resolveParticipant(buildParticipant({ uuid: 'p1', displayName: 'G. Hopper' }), [ada, claiming])).toBe(claiming);
+	});
+
+	it('trusts the claim over a name another member wears', () => {
+		const claiming = { ...grace, providerParticipants: [connection('p1')] };
+
+		expect(resolveParticipant(buildParticipant({ uuid: 'p1', displayName: 'Ada Lovelace' }), [ada, claiming])).toBe(claiming);
 	});
 
 	it('falls back to the name where nobody claims the uuid', () => {
@@ -110,7 +118,10 @@ describe('resolveParticipant', () => {
 	});
 
 	it('resolves the one of two namesakes who claims the uuid', () => {
-		const twin = { ...buildConferenceMember({ _id: 'twin', username: 'twin', name: 'Grace Hopper' }), providerParticipantId: 'p1' };
+		const twin = {
+			...buildConferenceMember({ _id: 'twin', username: 'twin', name: 'Grace Hopper' }),
+			providerParticipants: [connection('p1')],
+		};
 
 		expect(resolveParticipant(buildParticipant({ uuid: 'p1', displayName: 'Grace Hopper' }), [grace, twin])).toBe(twin);
 	});
@@ -125,6 +136,19 @@ describe('resolveParticipant', () => {
 		const nameless = buildConferenceMember({ _id: 'nameless', username: '', name: '' });
 
 		expect(resolveParticipant(buildParticipant({ uuid: 'p3', displayName: '' }), [nameless, ada])).toBeUndefined();
+	});
+
+	it('resolves a member who claims the uuid among several connections', () => {
+		const claiming = { ...grace, providerParticipants: [connection('p0'), connection('p1', 1000)] };
+
+		expect(resolveParticipant(buildParticipant({ uuid: 'p0', displayName: 'G. Hopper' }), [ada, claiming])).toBe(claiming);
+	});
+
+	// The viewer's window knows its own participant before the server has been told by the provider.
+	it('resolves the viewer from their own window before the server has recorded the connection', () => {
+		const self = { uid: 'grace', participantUuid: 'p1' };
+
+		expect(resolveParticipant(buildParticipant({ uuid: 'p1', displayName: 'G. Hopper' }), [ada, grace], self)).toBe(grace);
 	});
 
 	it('considers only the members it was offered', () => {
@@ -319,7 +343,10 @@ describe('composeCallParticipants', () => {
 	// what leaves the other namesake unambiguous — rather than the first row read winning the coin toss.
 	it('lets a claim settle which of two namesakes is which, whichever is listed first', () => {
 		const first = buildConferenceMember({ _id: 'first', username: 'first', name: 'Grace Hopper' });
-		const second = { ...buildConferenceMember({ _id: 'second', username: 'second', name: 'Grace Hopper' }), providerParticipantId: 'p-2' };
+		const second = {
+			...buildConferenceMember({ _id: 'second', username: 'second', name: 'Grace Hopper' }),
+			providerParticipants: [connection('p-2')],
+		};
 
 		const unclaimed = buildParticipant({ uuid: 'p-1', displayName: 'Grace Hopper' });
 		const claimed = buildParticipant({ uuid: 'p-2', displayName: 'Grace Hopper' });
@@ -357,5 +384,46 @@ describe('composeCallParticipants', () => {
 			{ key: 'nameless', member: nameless, participant: undefined },
 			{ key: 'provider:p-phone', participant: unnamed },
 		]);
+	});
+	// A reload, a second device: the provider has the member more than once, and every connection is still theirs.
+	describe('for a member connected from more than one place', () => {
+		const older = buildParticipant({ uuid: 'p-old', displayName: 'Ada (laptop)' });
+		const newer = buildParticipant({ uuid: 'p-new', displayName: 'Ada (phone)' });
+		const twice = { ...ada, providerParticipants: [connection('p-old', 1000), connection('p-new', 2000)] };
+
+		it('gives their row the newest connection and lists the others under it, whatever order the provider sends', () => {
+			const { present } = composeCallParticipants([twice], [newer, older]);
+
+			expect(present).toEqual([{ key: 'ada', member: twice, participant: newer, otherConnections: [older] }]);
+			expect(composeCallParticipants([twice], [older, newer]).present).toEqual(present);
+		});
+
+		it('gives the viewer their own window ahead of any newer connection', () => {
+			const self = { uid: 'ada', participantUuid: 'p-old' };
+
+			const { present } = composeCallParticipants([twice], [newer, older], self);
+
+			expect(present).toEqual([{ key: 'ada', member: twice, participant: older, otherConnections: [newer] }]);
+		});
+
+		it('lists a connection that has gone from the provider nowhere', () => {
+			const { present } = composeCallParticipants([twice], [older]);
+
+			expect(present).toEqual([{ key: 'ada', member: twice, participant: older }]);
+		});
+
+		// A name answers only for a member known to be nobody else. The extra one is most likely theirs, but might be
+		// a namesake who followed a link, so it waits for the server to say.
+		it('does not hand them an unrecorded connection under their name', () => {
+			const recorded = { ...ada, providerParticipants: [connection('p-old')] };
+			const unrecorded = buildParticipant({ uuid: 'p-new', displayName: 'Ada Lovelace' });
+
+			const { present } = composeCallParticipants([recorded], [older, unrecorded]);
+
+			expect(present).toEqual([
+				{ key: 'ada', member: recorded, participant: older },
+				{ key: 'provider:p-new', participant: unrecorded },
+			]);
+		});
 	});
 });

@@ -47,6 +47,8 @@ type MeProjectedUserFields = Pick<
 	| '_updatedAt'
 	| 'avatarETag'
 	| 'abacAttributes'
+	| 'mediaCallDevice'
+	| 'sipExtension'
 	| 'oauth'
 	| 'createdAt'
 	| 'lastLogin'
