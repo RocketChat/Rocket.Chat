@@ -42,7 +42,8 @@ another address: starting from the preflight puts the call in the same window at
 comes back to the same conference.
 
 With this provider the room header's video call button is a menu. At phone width the button stays on the header
-and opens the same menu, whose sub menus and dialogs fit the screen.
+and opens the same menu. Its dialogs and sub menus stay on screen, but while a sub menu is open the page can be
+panned a few pixels sideways.
 
 ## Settings
 
@@ -173,6 +174,8 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
-- End-to-end coverage reaches conference links (create, copy, open, start, join, rename, delete, phone width) with
-  placeholder LiveKit settings; nothing covers the call's media.
+- End-to-end coverage of conference links runs on placeholder LiveKit settings: creating, copying, opening a link to
+  its start preflight, renaming, deleting, a second user offered to join a conference running from it, and phone
+  width. Being in the call from a link (starting, joining, reloading) is covered only when the suite is given a
+  real LiveKit server, and nothing covers the call's media.
 - Background blur ships in a follow-up.
