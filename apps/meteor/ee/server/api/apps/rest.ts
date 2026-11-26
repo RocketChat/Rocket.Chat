@@ -1257,8 +1257,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							// oxlint-disable-next-line typescript/no-unsafe-call -- apiManager is private on AppManager
-							apis: (manager as Record<string, any>).apiManager.listApis(this.urlParams.id), // TODO: this is accessing a private property from the manager, we should expose a method to get the list of APIs
+							apis: manager.getApiManager().listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);

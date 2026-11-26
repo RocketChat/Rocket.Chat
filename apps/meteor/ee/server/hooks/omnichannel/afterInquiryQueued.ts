@@ -16,8 +16,7 @@ export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) =>
 	await OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 
-afterInquiryQueued.patch(async (originalFn: any, inquiry: ILivechatInquiryRecord) => {
-	// oxlint-disable-next-line typescript/no-unsafe-call -- next is called without the inquiry, which its typed signature requires
-	await originalFn();
+afterInquiryQueued.patch(async (originalFn, inquiry) => {
+	await originalFn(inquiry);
 	return afterInquiryQueuedFunc(inquiry);
 });

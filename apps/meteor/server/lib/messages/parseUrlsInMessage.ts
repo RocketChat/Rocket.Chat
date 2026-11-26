@@ -31,7 +31,7 @@ export const parseUrlsInMessage = (
 	// TODO: remove this after make the parser official
 	// Parse the message to extract URLs from links without schema
 	// The message parser converts links like "github.com" to proper links with "//" prefix
-	const result: { html?: string } = Markdown.code({
+	const result = Markdown.code({
 		html: message.msg,
 		msg: message.msg,
 	});

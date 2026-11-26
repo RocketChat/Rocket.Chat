@@ -28,10 +28,11 @@ export class UIHelper {
 		return blocks;
 	}
 
-	private static assignBlockIds(block: any, appId: string): void {
-		if (!block || typeof block !== 'object') {
+	private static assignBlockIds(input: unknown, appId: string): void {
+		if (!input || typeof input !== 'object') {
 			return;
 		}
+		const block = input as Record<string, unknown>;
 
 		if (!block.appId) {
 			block.appId = appId;
@@ -54,7 +55,6 @@ export class UIHelper {
 		UIHelper.assignActionIds(block.tabs);
 
 		if (block.type === 'data_table' && Array.isArray(block.rows)) {
-			// oxlint-disable-next-line typescript/no-unsafe-call -- block is app-supplied untyped JSON
 			block.rows.forEach((row: unknown) => {
 				if (Array.isArray(row)) {
 					row.forEach((cell) => cell?.type === 'action_cell' && UIHelper.assignActionIds(cell.element));
@@ -67,11 +67,10 @@ export class UIHelper {
 		UIHelper.assignNested(block.render, appId);
 
 		if (block.type === 'layout' && Array.isArray(block.rows)) {
-			// oxlint-disable-next-line typescript/no-unsafe-call -- block is app-supplied untyped JSON
-			block.rows.forEach((row: any) => {
-				if (Array.isArray(row?.items)) {
-					// oxlint-disable-next-line typescript/no-unsafe-call -- block is app-supplied untyped JSON
-					row.items.forEach((item: any) => UIHelper.assignBlockIds(item?.block, appId));
+			block.rows.forEach((row: { items?: unknown } | null | undefined) => {
+				const items = row?.items;
+				if (Array.isArray(items)) {
+					items.forEach((item: { block?: unknown } | null | undefined) => UIHelper.assignBlockIds(item?.block, appId));
 				}
 			});
 		}

@@ -22,9 +22,8 @@ export type SetText = (
 export const triggerEvent = (input: HTMLElement, evt: string): void => {
 	const event = new Event(evt, { bubbles: true });
 	// TODO: Remove this hack for react to trigger onChange
-	const tracker = (input as any)._valueTracker;
+	const tracker = (input as HTMLElement & { _valueTracker?: { setValue(value: string): void } })._valueTracker;
 	if (tracker) {
-		// oxlint-disable-next-line typescript/no-unsafe-call -- _valueTracker is an untyped React internal
 		tracker.setValue(new Date().toString());
 	}
 	input.dispatchEvent(event);

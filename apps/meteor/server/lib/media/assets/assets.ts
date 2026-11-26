@@ -306,7 +306,10 @@ class RocketChatAssetsClass {
 		});
 	}
 
-	public async processAsset(settingKey: string, settingValue: any): Promise<Record<string, any> | undefined> {
+	public async processAsset(
+		settingKey: string,
+		settingValue: Pick<IRocketChatAsset, 'url' | 'defaultUrl'> | undefined,
+	): Promise<Record<string, any> | undefined> {
 		if (settingKey.indexOf('Assets_') !== 0) {
 			return;
 		}
@@ -330,7 +333,6 @@ class RocketChatAssetsClass {
 		}
 
 		const hash = crypto.createHash('sha1').update(file.buffer).digest('hex');
-		// oxlint-disable-next-line typescript/no-unsafe-call -- setting values reach processAsset untyped
 		const extension = settingValue.url.split('.').pop();
 
 		assetValue.cache = {

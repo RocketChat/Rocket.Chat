@@ -19,6 +19,10 @@ export function useExperimentalEndpoint<
 	TPath extends keyof ExperimentalEndpoints,
 	TMethod extends keyof ExperimentalEndpoints[TPath] & string,
 >(method: TMethod, path: TPath): (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>> {
-	// oxlint-disable-next-line typescript/no-unsafe-call -- useEndpoint is typed against stable Endpoints only
-	return (useEndpoint as any)(method, path) as (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>>;
+	return (
+		useEndpoint as unknown as (
+			method: TMethod,
+			path: TPath,
+		) => (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>>
+	)(method, path);
 }

@@ -1,7 +1,6 @@
 import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser, IVisitor } from '@rocket.chat/core-typings';
-import type { FindPaginated } from '@rocket.chat/model-typings';
 import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
-import type { FindCursor, FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../../../lib/callbacks';
@@ -64,7 +63,7 @@ export async function findChatHistory({
 	}
 
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
-	const { cursor, totalCount }: FindPaginated<FindCursor<IOmnichannelRoom>> = LivechatRooms.findPaginatedByVisitorId(
+	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(
 		visitorId,
 		{
 			sort: sort || { ts: -1 },

@@ -62,15 +62,15 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	countAllQueuedChatsBetweenDate(params: Period & WithDepartment): any;
 
-	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
 
-	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
 
-	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
 
-	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): any;
+	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; name: string; chats: number }[]>;
 
-	countAllClosedChatsByDepartmentBetweenDate(params: Period & WithDepartment): any;
+	countAllClosedChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; name: string; chats: number }[]>;
 
 	calculateResponseTimingsBetweenDates(params: Period & WithDepartment): any;
 
@@ -80,9 +80,17 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findAllAverageOfServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 
-	findByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findByVisitorId(
+		visitorId: string,
+		options: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
 
-	findPaginatedByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findPaginatedByVisitorId(
+		visitorId: string,
+		options: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindPaginated<FindCursor<IOmnichannelRoom>>;
 
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;

@@ -61,7 +61,7 @@ class MarkdownClass {
 		return message;
 	}
 
-	code(message: any) {
+	code<T extends { html?: string }>(message: T) {
 		return code(message);
 	}
 }

@@ -140,7 +140,7 @@ export const createService = ({
 	}
 	delete require.cache[require.resolve('./service')];
 	// oxlint-disable-next-line @typescript-eslint/no-require-imports
-	const { VideoConfService } = require('./service');
+	const { VideoConfService } = require('./service') as typeof import('./service');
 	mock.restoreAll();
 
 	const doubles: Partial<Record<ModelName, object>> = {
@@ -154,7 +154,6 @@ export const createService = ({
 	return class extends VideoConfService {
 		constructor() {
 			(Object.entries(doubles) as [ModelName, object][]).forEach(([name, double]) => mockModel(name, double));
-			// oxlint-disable-next-line typescript/no-unsafe-call -- proxyquire.load returns the module untyped
 			super();
 		}
 	} as new () => any;

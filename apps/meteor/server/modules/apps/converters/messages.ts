@@ -1,4 +1,11 @@
-import type { IAppMessagesConverter, IAppServerOrchestrator, IAppsMessage, IAppsMesssageRaw } from '@rocket.chat/apps';
+import type {
+	IAppMessagesConverter,
+	IAppRoomsConverter,
+	IAppServerOrchestrator,
+	IAppsMessage,
+	IAppsMesssageRaw,
+	IAppUsersConverter,
+} from '@rocket.chat/apps';
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
@@ -16,7 +23,14 @@ import { convertMessageFiles } from './convertMessageFiles';
 type MessageData = Record<string, any>;
 
 export class AppMessagesConverter implements IAppMessagesConverter {
-	private mem = new WeakMap<object, Map<string, any>>();
+	private mem = new WeakMap<
+		object,
+		{
+			room: IAppRoomsConverter['convertById'];
+			convertUserById: IAppUsersConverter['convertById'];
+			convertUserToApp: IAppUsersConverter['convertToApp'];
+		}
+	>();
 
 	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
@@ -83,19 +97,11 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			return undefined;
 		}
 
-		const cache =
-			this.mem.get(cacheObj as object) ??
-			new Map<string, any>([
-				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
-				[
-					'user.convertById',
-					cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
-				],
-				[
-					'user.convertToApp',
-					cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
-				],
-			]);
+		const cache = this.mem.get(cacheObj as object) ?? {
+			room: cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms'))),
+			convertUserById: cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
+			convertUserToApp: cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
+		};
 
 		this.mem.set(cacheObj as object, cache);
 
@@ -121,8 +127,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			type: 't',
 			files: async (message: MessageData) => convertMessageFiles(message.files, attachments),
 			room: async (message: MessageData): Promise<unknown> => {
-				// oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
-				const result = await cache.get('room')(message.rid);
+				const result = await cache.room(message.rid);
 				delete message.rid;
 				return result;
 			},
@@ -134,8 +139,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 					return undefined;
 				}
 
-				// oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
-				return cache.get('user.convertById')(editedBy._id);
+				return cache.convertUserById(editedBy._id);
 			},
 			attachments: async (message: MessageData) => {
 				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
@@ -151,11 +155,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				const sender = message.u;
 
 				// When the message contains token, means the message is from the visitor(omnichannel)
-				const user = await (isMessageFromVisitor(msgObj)
-					? // oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
-						cache.get('user.convertToApp')(sender)
-					: // oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
-						cache.get('user.convertById')(sender._id));
+				const user = await (isMessageFromVisitor(msgObj) ? cache.convertUserToApp(sender) : cache.convertUserById(sender._id));
 
 				delete message.u;
 
@@ -164,8 +164,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
-				// oxlint-disable-next-line typescript/no-unsafe-call -- the converter cache is an untyped Map of functions
-				return user || cache.get('user.convertToApp')(sender);
+				return user || cache.convertUserToApp(sender);
 			},
 		} as const;
 

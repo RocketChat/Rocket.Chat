@@ -297,11 +297,9 @@ const findAllChatMetricsByAgentAsync = async ({
 	});
 
 	const result: Record<string, { open: number; closed: number; onhold?: number }> = {};
-	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(open || []).forEach((agent: { chats: number; _id: string }) => {
 		result[agent._id] = { open: agent.chats, closed: 0, onhold: 0 };
 	});
-	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(closed || []).forEach((agent: { _id: string; chats: number }) => {
 		result[agent._id] = {
 			open: result[agent._id] ? result[agent._id].open : 0,
@@ -309,7 +307,6 @@ const findAllChatMetricsByAgentAsync = async ({
 		};
 	});
 
-	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(onhold || []).forEach((agent: { _id: string; chats: number }) => {
 		result[agent._id] = {
 			...result[agent._id],
@@ -345,11 +342,9 @@ const findAllChatMetricsByDepartmentAsync = async ({
 		departmentId,
 	});
 	const result: Record<string, { open: number; closed: number }> = {};
-	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(open || []).forEach((department: { name: string; chats: number }) => {
 		result[department.name] = { open: department.chats, closed: 0 };
 	});
-	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this count as any
 	(closed || []).forEach((department: { name: string; chats: number }) => {
 		result[department.name] = {
 			open: result[department.name] ? result[department.name].open : 0,

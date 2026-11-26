@@ -807,7 +807,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; chats: number }>([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -832,7 +832,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; chats: number }>([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -854,7 +854,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; chats: number }>([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -900,7 +900,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; name: string; chats: number }>(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -946,7 +946,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; name: string; chats: number }>(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	calculateResponseTimingsBetweenDates({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
