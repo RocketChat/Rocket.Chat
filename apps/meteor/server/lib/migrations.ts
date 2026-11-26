@@ -291,7 +291,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 				});
 			}
 		}
-		for await (const migration of migrations) {
+		for (const migration of migrations) {
 			await migration();
 		}
 	} catch (e) {

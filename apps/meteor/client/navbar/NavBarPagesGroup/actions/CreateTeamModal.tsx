@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useWatch, useFormState } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
@@ -54,7 +54,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
-	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
@@ -105,15 +105,17 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 		},
 	});
 
-	const {
-		control,
-		handleSubmit,
-		setValue,
-		watch,
-		formState: { errors, isSubmitting },
-	} = methods;
+	const { control, handleSubmit, setValue } = methods;
+	const { errors, isSubmitting } = useFormState({ control });
 
-	const { isPrivate, broadcast, readOnly, encrypted, isAbacManaged, members = [], attributes } = watch();
+	const watched = useWatch({ control });
+	const isPrivate = watched.isPrivate ?? false;
+	const broadcast = watched.broadcast ?? false;
+	const readOnly = watched.readOnly ?? false;
+	const encrypted = watched.encrypted ?? false;
+	const isAbacManaged = watched.isAbacManaged ?? false;
+	const members = useWatch({ control, name: 'members' }) ?? [];
+	const attributes = useWatch({ control, name: 'attributes' });
 
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });
 
@@ -133,7 +135,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 		}
 
 		setValue('readOnly', broadcast);
-	}, [watch, setValue, broadcast, isPrivate, e2eEnforcedForPrivate]);
+	}, [setValue, broadcast, isPrivate, e2eEnforcedForPrivate]);
 
 	const readOnlyDisabled = broadcast || !canSetReadOnly;
 	const canChangeEncrypted = isPrivate && e2eEnabled && !e2eEnforcedForPrivate;
@@ -230,12 +232,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 
 	return (
 		<FormProvider {...methods}>
-			<Modal
-				aria-labelledby={`${createTeamFormId}-title`}
-				wrapperFunction={(props: ComponentProps<typeof Box>) => (
-					<Box is='form' id={createTeamFormId} onSubmit={handleStepSubmit} {...props} />
-				)}
-			>
+			<Modal aria-labelledby={`${createTeamFormId}-title`} onSubmit={handleStepSubmit} formId={createTeamFormId}>
 				<ModalHeader>
 					<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
 					<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />

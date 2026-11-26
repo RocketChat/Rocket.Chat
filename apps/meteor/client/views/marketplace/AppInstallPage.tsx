@@ -1,19 +1,19 @@
-import { Box, Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
+import { Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { PageScrollableContent, Page, PageHeader, useSingleFileInput } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useInstallApp } from './hooks/useInstallApp';
-import { useSingleFileInput } from '../../hooks/useSingleFileInput';
+import ContentColumn from '../../components/ContentColumn';
 
 const AppInstallPage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
-	const { control, setValue, watch } = useForm<{ file: File }>();
-	const { file } = watch();
+	const { control, setValue } = useForm<{ file: File }>();
+	const file = useWatch({ control, name: 'file' });
 	const { install, isInstalling } = useInstallApp(file);
 
 	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');
@@ -34,7 +34,7 @@ const AppInstallPage = () => {
 		<Page flexDirection='column'>
 			<PageHeader title={t('App_Installation')} />
 			<PageScrollableContent>
-				<Box maxWidth='x600' width='full' alignSelf='center'>
+				<ContentColumn>
 					<FieldGroup>
 						<Field>
 							<FieldLabel htmlFor={fileField}>{t('App_Url_to_Install_From_File')}</FieldLabel>
@@ -68,7 +68,7 @@ const AppInstallPage = () => {
 							</ButtonGroup>
 						</Field>
 					</FieldGroup>
-				</Box>
+				</ContentColumn>
 			</PageScrollableContent>
 		</Page>
 	);

@@ -17,17 +17,10 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 
 			if (typeof value === 'function') {
 				return new ivm.Reference(async (...args: any[]) => {
-					const result = (obj[key] as any)(...args);
+					const result = obj[key](...args);
 
 					if (result && result instanceof Promise) {
-						return new Promise(async (resolve, reject) => {
-							try {
-								const awaitedResult = await result;
-								resolve(makeTransferable(awaitedResult));
-							} catch (e) {
-								reject(e);
-							}
-						});
+						return makeTransferable(await result);
 					}
 
 					return makeTransferable(result);

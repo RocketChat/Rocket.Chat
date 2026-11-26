@@ -20,7 +20,13 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
-import { Page, PageHeader, PageScrollableContentWithShadow, useHasLicenseModule } from '@rocket.chat/ui-client';
+import {
+	Page,
+	PageHeader,
+	PageScrollableContentWithShadow,
+	useHasLicenseModule,
+	useFormSubmitWithDirtyCheck,
+} from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
@@ -31,11 +37,10 @@ import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTabl
 import DepartmentTags from './DepartmentTags';
 import type { EditDepartmentFormData } from './definitions';
 import { useRoomsList } from './useRoomsList';
+import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
-import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';

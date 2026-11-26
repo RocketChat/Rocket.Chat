@@ -19,7 +19,7 @@ Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
 });
 
 export async function getEmailContent({ message, user, room }) {
-	const lng = (user && user.language) || settings.get('Language') || 'en';
+	const lng = user?.language || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
 	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
@@ -66,7 +66,7 @@ export async function getEmailContent({ message, user, room }) {
 		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
-				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
+				token.text = token.text.replace(/([^$])(\$[^$])/gm, '$1$$$2');
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}

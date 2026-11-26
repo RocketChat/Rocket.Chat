@@ -996,6 +996,7 @@
   "Everyone_can_access_this_channel": "Gall pawb gael mynediad i'r sianel hon",
   "Example_s": "Enghraifft: <code>{{value}}</code>",
   "except_pinned": "(ac eithrio'r rhai sy'n cael eu pinio)",
+  "Exchange_Graph_Client_Secret": "Secret Cleient",
   "Exclude_Botnames": "Eithrio Bots",
   "Exclude_Botnames_Description": "Peidiwch â chynyddu'r negeseuon o botiau y mae eu henw yn cyfateb â'r mynegiant rheolaidd uchod. Os bydd yn wag, bydd yr holl negeseuon o bots yn cael eu lluosogi.",
   "Exclude_pinned": "Eithrio negeseuon wedi'u pinnio",

@@ -16,6 +16,7 @@ import postcssNested from 'postcss-nested';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
+import { reactCompilerPlugin } from './reactCompiler';
 import { staticBox } from './staticBox/plugin';
 import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
@@ -113,7 +114,7 @@ const singlePackageFormat = (): Plugin => ({
 			return null;
 		}
 
-		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true } as typeof options);
+		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true });
 	},
 });
 
@@ -174,6 +175,11 @@ const zeroStylesheetLastInDev = (): Plugin => ({
 	},
 });
 
+// Why a zero stylesheet cannot ship: a token the Tamagui config lacks, or a theme key no theme class declares. The check
+// lives with Fuselage's verify scripts, reached by path as the Tamagui config is.
+const zeroStylesheetErrors = async (css: string): Promise<string[]> =>
+	(await import(pathToFileURL(join(fuselageRoot, 'scripts/verify/zero-stylesheet.mjs')).href)).zeroStylesheetErrors(css);
+
 // Moves Tamagui's zero-runtime stylesheet into the bundle under a content hash, linked from `index.html` and listed
 // with the entry's stylesheets in the manifest, so `index.html` and the bundle load without anything else.
 const zeroStylesheetInBundle = (): Plugin => {
@@ -189,7 +195,7 @@ const zeroStylesheetInBundle = (): Plugin => {
 		closeBundle: {
 			order: 'post',
 			sequential: true,
-			handler() {
+			async handler() {
 				const { assetsDir } = config.build;
 				const outDir = resolve(config.root, config.build.outDir);
 				const written = join(outDir, 'tamagui-zero.css');
@@ -198,6 +204,10 @@ const zeroStylesheetInBundle = (): Plugin => {
 				}
 
 				const css = dedupeTopLevelRules(readFileSync(written, 'utf8'));
+				const errors = await zeroStylesheetErrors(css);
+				if (errors.length) {
+					throw new Error(`Tamagui's zero-runtime stylesheet cannot ship. ${errors.join('. ')}`);
+				}
 				const file = `${assetsDir}/tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
 				writeFileSync(join(outDir, file), css);
 				rmSync(written);
@@ -255,6 +265,7 @@ const devPage = (): Plugin => ({
 });
 const serverRoutes = [
 	'/api',
+	'^/oauth/(?!authorize|error/)',
 	'/_oauth',
 	'/_saml',
 	'/_cas',
@@ -279,6 +290,9 @@ const serverRoutes = [
 	'^/[^?]*\\?(hash|meteor_js_resource|meteor_css_resource)=',
 	'^/(packages|app)/[0-9a-f]+\\.map$',
 	'/__meteor__',
+	// Federation: other homeservers reach the server through the dev origin.
+	'/_matrix',
+	'/.well-known/matrix',
 ];
 
 // Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.
@@ -393,6 +407,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-client',
 	'@rocket.chat/ui-composer',
 	'@rocket.chat/ui-conference',
+	'@rocket.chat/ui-contacts',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
 	'@rocket.chat/ui-registration',
@@ -408,6 +423,7 @@ export default defineConfig({
 	plugins: [
 		staticBox(),
 		react(),
+		reactCompilerPlugin(),
 		appFallbackResolve(),
 		singlePackageFormat(),
 		rocketchatInfo(),
@@ -466,6 +482,8 @@ export default defineConfig({
 		port: Number(process.env.PORT) || 3000,
 		// Same default as the Meteor server this replaces in dev.
 		host: process.env.BIND_IP || '0.0.0.0',
+		// Comma-separated hostnames to accept behind a reverse proxy (e.g. a federation test domain).
+		allowedHosts: process.env.RC_DEV_ALLOWED_HOSTS?.split(','),
 		strictPort: true,
 		proxy: {
 			...Object.fromEntries(serverRoutes.map((route) => [route, proxyTo()])),

@@ -46,11 +46,11 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 	// site. A room in a panel beside a call has no use for it — `Header` reads exactly these two flags, and with
 	// the setting on the panel would have grown the full room header.
 	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [layout]);
-	const room = Rooms.use((state) => state.get(rid));
+	const room = Rooms.useStore((state) => state.get(rid));
 
 	const messageJumpParam = useSearchParameter('msg');
 
-	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
+	const subscritionFromLocal = Subscriptions.useStore((state) => state.find((record) => record.rid === rid));
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
 

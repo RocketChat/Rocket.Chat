@@ -75,7 +75,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
 			getPath(file: IUpload) {
-				const avatarFile = file.rid ? `room-${file.rid}` : file.userId;
+				const avatarFile = (file.rid && `room-${file.rid}`) || (file.contactId && `contact-${file._id}`) || file.userId;
 				return `${settings.get('uniqueID')}/avatars/${avatarFile}`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
@@ -93,6 +93,18 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 		};
 	},
 };
+
+async function triggerPreFileUploadEvent(file: IUpload, content?: Buffer | string) {
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new ClientSafeError('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+}
 
 export const FileUpload = {
 	handlers,
@@ -176,15 +188,7 @@ export const FileUpload = {
 		}
 
 		// App IPreFileUpload event hook
-		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
-		} catch (error: any) {
-			if (error.name === AppsEngineException.name) {
-				throw new ClientSafeError('error-app-prevented', error.message);
-			}
-
-			throw error;
-		}
+		await triggerPreFileUploadEvent(file, content);
 
 		return true;
 	},
@@ -225,7 +229,7 @@ export const FileUpload = {
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = settings.get('Accounts_AvatarSize') as number;
-		const width = height as number;
+		const width = height;
 
 		const s = sharp(tempFilePath);
 		if (settings.get('FileUpload_RotateImages') === true) {
@@ -323,7 +327,7 @@ export const FileUpload = {
 			height: pageHeight ?? height,
 			thumbFileType: (mime.lookup(format) as string) || '',
 			thumbFileName: file?.name as string,
-			originalFileId: file?._id as string,
+			originalFileId: file?._id,
 		}));
 		image.pipe(transformer);
 
@@ -418,7 +422,7 @@ export const FileUpload = {
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (file.rid) {
+		if (file.rid || file.contactId) {
 			return;
 		}
 
@@ -612,7 +616,7 @@ export const FileUpload = {
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
 				if (contents === false) {
-					return reject();
+					return reject(new Error('Failed to get file contents'));
 				}
 				resolve(contents);
 			});
@@ -713,7 +717,9 @@ export const FileUpload = {
 			];
 
 			headersToProxy.forEach((header) => {
-				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+				if (fileRes.headers[header]) {
+					res.setHeader(header, String(fileRes.headers[header]));
+				}
 			});
 
 			res.statusCode = statusCode;
@@ -893,12 +899,8 @@ export class FileUploadClass {
 			content = Buffer.from(content.buffer, content.byteOffset, content.byteLength);
 		}
 
-		try {
-			await filter.check(fileData, content);
-			return content;
-		} catch (e) {
-			throw e;
-		}
+		await filter.check(fileData, content);
+		return content;
 	}
 
 	async _doInsert(
@@ -909,34 +911,30 @@ export class FileUploadClass {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
-		try {
-			if (typeof content === 'string') {
-				await fs.promises.rename(content, tmpFile);
-			} else if (isArrayBufferView(content)) {
-				await fs.promises.writeFile(tmpFile, content);
-			} else if (content instanceof stream.Readable) {
-				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
-			} else {
-				throw new Error('Invalid file type');
-			}
-
-			const file = await ufsComplete(fileId, this.name, { session: options?.session });
-
-			// `/ufs` used to serve every store generically; it was replaced by per-store routes.
-			// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
-			// (apps, integrations, …) keeps getting a link that resolves.
-			const path = this.getPublicPath(file);
-			if (path) {
-				const url = getURL(path, { cdn: false, full: true });
-				await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
-				file.path = path;
-				file.url = url;
-			}
-
-			return file;
-		} catch (e) {
-			throw e;
+		if (typeof content === 'string') {
+			await fs.promises.rename(content, tmpFile);
+		} else if (isArrayBufferView(content)) {
+			await fs.promises.writeFile(tmpFile, content);
+		} else if (content instanceof stream.Readable) {
+			await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
+		} else {
+			throw new Error('Invalid file type');
 		}
+
+		const file = await ufsComplete(fileId, this.name, { session: options?.session });
+
+		// `/ufs` used to serve every store generically; it was replaced by per-store routes.
+		// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
+		// (apps, integrations, …) keeps getting a link that resolves.
+		const path = this.getPublicPath(file);
+		if (path) {
+			const url = getURL(path, { cdn: false, full: true });
+			await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
+			file.path = path;
+			file.url = url;
+		}
+
+		return file;
 	}
 
 	// The modern route depends on which store the file lives in (the old `/ufs` path served all of them).

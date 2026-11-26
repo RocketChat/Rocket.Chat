@@ -5,9 +5,9 @@ import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInp
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ComponentProps } from 'react';
+import type { ChangeEvent } from 'react';
 import { useEffect, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
@@ -34,17 +34,14 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [customStatus, setCustomStatus] = useLocalStorage<string>('Local_Custom_Status', '');
 
-	const {
-		control,
-		handleSubmit,
-		setValue,
-		watch,
-		formState: { errors, isDirty },
-	} = useForm<StatusFormValues>({
+	const { control, handleSubmit, setValue } = useForm<StatusFormValues>({
 		defaultValues: getUserStatusInitialValues(user, customStatus),
 	});
+	const { errors, isDirty } = useFormState({ control });
 
-	const { statusDuration, statusType, statusText } = watch();
+	const statusDuration = useWatch({ control, name: 'statusDuration' });
+	const statusType = useWatch({ control, name: 'statusType' });
+	const statusText = useWatch({ control, name: 'statusText' });
 	const isExpirationDisabled = statusType === UserStatusType.ONLINE && !statusText.trim();
 
 	useEffect(() => {
@@ -93,7 +90,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 			onCancel={onClose}
 			confirmText={t('Save')}
 			confirmDisabled={!isDirty}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSaveStatus)} {...props} />}
+			onSubmit={handleSubmit(handleSaveStatus)}
 		>
 			<FieldGroup>
 				<Field>

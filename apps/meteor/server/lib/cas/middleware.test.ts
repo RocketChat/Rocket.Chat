@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -11,10 +10,13 @@ const settingValues = new Map<string, unknown>();
 const validate = sandbox.stub();
 const CredentialTokens = { create: sandbox.stub() };
 
-const { middlewareCAS } = p.noCallThru().load('./middleware.ts', {
-	'@rocket.chat/cas-validate': { validate },
-	'../../settings': { settings: { get: (key: string) => settingValues.get(key) } },
-	'../utils/getURL': { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` },
+let middlewareCAS: any;
+
+before(async () => {
+	mock.module('@rocket.chat/cas-validate', { exports: { validate } });
+	mock.module('../../settings', { exports: { settings: { get: (key: string) => settingValues.get(key) } } });
+	mock.module('../utils/getURL', { exports: { getWorkspaceURL: (path: string) => `https://chat.example.com/${path}` } });
+	({ middlewareCAS } = await import('./middleware'));
 });
 
 const request = (url: string) =>
@@ -57,6 +59,16 @@ describe('middlewareCAS', () => {
 		expect(body).to.include('window.close()');
 		expect(next.called).to.be.false;
 		expect(validate.called).to.be.false;
+	});
+
+	it('should close the login popup without validating the ticket while CAS is disabled', async () => {
+		settingValues.set('CAS_enabled', false);
+
+		const { body } = await request('/_cas/credential-token?ticket=ST-1');
+
+		expect(body).to.include('window.close()');
+		expect(validate.called).to.be.false;
+		expect(CredentialTokens.create.called).to.be.false;
 	});
 
 	it('should validate the ticket for this workspace and keep the CAS user and attributes under the credential token', async () => {

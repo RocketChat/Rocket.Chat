@@ -15,11 +15,11 @@ import {
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete, useFormSubmitWithDirtyCheck } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState, useWatch } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import UserPresenceConfirmModal from './UserPresenceConfirmModal';
@@ -28,7 +28,6 @@ import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { hasAdminStatusRules } from './useManagedPresenceUsers';
 import { useResetUserPresenceRules } from './useResetUserPresenceRules';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
 type UserPresenceEditorFormValues = {
@@ -66,15 +65,11 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 
-	const {
-		control,
-		handleSubmit,
-		watch,
-		formState: { isSubmitting, isDirty, errors, dirtyFields },
-	} = useForm<UserPresenceEditorFormValues>({ defaultValues });
+	const { control, handleSubmit } = useForm<UserPresenceEditorFormValues>({ defaultValues });
+	const { isSubmitting, isDirty, errors, dirtyFields } = useFormState({ control });
 
-	const presenceEnabled = watch('presenceEnabled');
-	const targetUsername = watch('username');
+	const presenceEnabled = useWatch({ control, name: 'presenceEnabled' });
+	const targetUsername = useWatch({ control, name: 'username' });
 
 	const resolveTarget = useStableCallback(async (username: string) => {
 		if (userId) {

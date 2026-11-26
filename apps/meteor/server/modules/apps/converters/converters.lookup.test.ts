@@ -1,9 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { AppContactsConverter } from './contacts';
@@ -31,18 +30,6 @@ const findVisitorById = sandbox.stub();
 const findVisitorByToken = sandbox.stub();
 const getVideoConf = sandbox.stub();
 
-const load = (module: string, stubs: Record<string, unknown>) => proxyquire.noCallThru().load(`./${module}`, stubs);
-
-const uploadsCodec = proxyquire.noCallThru().load('./codecs/uploads', {
-	'../../../../lib/utils/getURL': { getURL: (path: string) => path },
-});
-const { AppUploadsConverter } = load('uploads', {
-	'./codecs/uploads': uploadsCodec,
-});
-const { AppVideoConferencesConverter } = load('videoConferences', {
-	'@rocket.chat/core-services': { VideoConf: { getUnfiltered: getVideoConf } },
-});
-
 const orch = {
 	getConverters: () => ({
 		get: (key: string) => ({
@@ -59,10 +46,20 @@ const messages = new AppMessagesConverter(orch);
 const roles = new AppRolesConverter();
 const rooms = new AppRoomsConverter(orch);
 const settings = new AppSettingsConverter(orch);
-const uploads = new AppUploadsConverter(orch);
 const users = new AppUsersConverter(orch);
 const visitors = new AppVisitorsConverter(orch);
-const videoConferences = new AppVideoConferencesConverter(orch);
+
+let uploads: any;
+let videoConferences: any;
+
+before(async () => {
+	mock.module('../../../lib/utils/getURL', { exports: { getURL: (path: string) => path } });
+	mock.module('@rocket.chat/core-services', { exports: { VideoConf: { getUnfiltered: getVideoConf } } });
+	const { AppUploadsConverter } = await import('./uploads');
+	const { AppVideoConferencesConverter } = await import('./videoConferences');
+	uploads = new AppUploadsConverter(orch);
+	videoConferences = new AppVideoConferencesConverter();
+});
 
 const lookups = [
 	{

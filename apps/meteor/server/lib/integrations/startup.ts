@@ -4,7 +4,5 @@ import { Integrations } from '@rocket.chat/models';
 import { triggerHandler } from './lib/triggerHandler';
 
 export const loadOutgoingIntegrations = async (): Promise<void> => {
-	await Integrations.find<IOutgoingIntegration>({ type: 'webhook-outgoing' }).forEach((data) =>
-		triggerHandler.addIntegration(data as IOutgoingIntegration),
-	);
+	await Integrations.find<IOutgoingIntegration>({ type: 'webhook-outgoing' }).forEach((data) => triggerHandler.addIntegration(data));
 };

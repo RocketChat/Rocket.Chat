@@ -34,7 +34,7 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 	try {
 		await Mailer.send(email);
 	} catch (error) {
-		const errorMessage = typeof error === 'object' && error && 'message' in error ? error.message : '';
+		const errorMessage = typeof error === 'object' && error && 'message' in error && typeof error.message === 'string' ? error.message : '';
 
 		throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${errorMessage}`, {
 			function: 'RocketChat.saveUser',

@@ -1,10 +1,15 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { splitSendMessageFields } = proxyquire.noCallThru().load('./splitSendMessageFields', {
-	'@rocket.chat/rest-typings': { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
+let splitSendMessageFields: typeof import('./splitSendMessageFields').splitSendMessageFields;
+
+before(async () => {
+	mock.module('@rocket.chat/rest-typings', {
+		exports: { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
+	});
+	({ splitSendMessageFields } = await import('./splitSendMessageFields'));
+	mock.restoreAll();
 });
 
 describe('splitSendMessageFields', () => {

@@ -1,11 +1,11 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-import DarkModeProvider from '../../DarkModeProvider';
-import BackgroundLayer from '../../components/BackgroundLayer';
-import LayoutLogo from '../../components/LayoutLogo';
-import type { LayoutContextValue } from '../../contexts/LayoutContext';
-import { LayoutContext } from '../../contexts/LayoutContext';
+import DarkModeProvider from '../../DarkModeProvider.js';
+import BackgroundLayer from '../../components/BackgroundLayer/index.js';
+import LayoutLogo from '../../components/LayoutLogo/index.js';
+import type { LayoutContextValue } from '../../contexts/LayoutContext.js';
+import { LayoutContext } from '../../contexts/LayoutContext.js';
 
 const HeroLayout = ({
 	children,
@@ -24,13 +24,13 @@ const HeroLayout = ({
 					textAlign='center'
 					width='100%'
 					maxWidth={576}
-					paddingBlock={32}
-					paddingInline={16}
+					gap='x32'
+					paddingBlockStart='x32'
+					paddingBlockEnd={64}
+					paddingInline='x16'
 				>
-					<Margins blockEnd={32}>
-						<LayoutLogo />
-						{children}
-					</Margins>
+					<LayoutLogo />
+					{children}
 				</Box>
 			</BackgroundLayer>
 		</LayoutContext.Provider>

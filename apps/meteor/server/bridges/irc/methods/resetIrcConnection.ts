@@ -28,9 +28,14 @@ Meteor.methods<ServerMethods>({
 			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'resetIrcConnection' });
 		}
 
+		const user = await Meteor.userAsync();
+		if (!user?.username) {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'resetIrcConnection' });
+		}
+
 		const auditSettingOperation = updateAuditedByUser({
 			_id: uid,
-			username: (await Meteor.userAsync())!.username!,
+			username: user.username,
 			ip: this.connection?.clientAddress || '',
 			useragent: this.connection?.httpHeaders['user-agent'] || '',
 		});

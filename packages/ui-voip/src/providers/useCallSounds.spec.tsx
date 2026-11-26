@@ -7,14 +7,12 @@ const mockPlayCallEnded = jest.fn();
 const mockPlayDialer = jest.fn();
 const mockPlayRinger = jest.fn();
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	...jest.requireActual('@rocket.chat/ui-contexts'),
-	useCustomSound: () => ({
-		voipSounds: {
-			playCallEnded: mockPlayCallEnded,
-			playDialer: mockPlayDialer,
-			playRinger: mockPlayRinger,
-		},
+jest.mock('../context', () => ({
+	...jest.requireActual('../context'),
+	useVoipSounds: () => ({
+		playCallEnded: mockPlayCallEnded,
+		playDialer: mockPlayDialer,
+		playRinger: mockPlayRinger,
 	}),
 }));
 

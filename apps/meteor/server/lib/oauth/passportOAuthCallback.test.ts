@@ -1,8 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
+import { runInNewContext } from 'node:vm';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -11,10 +12,22 @@ const LoginCodes = { createCode: sandbox.stub() };
 const issueLoginToken = sandbox.stub();
 const doesUserRequire2FA = sandbox.stub();
 const sendTwoFactorChallenge = sandbox.stub();
+const logError = sandbox.stub();
 
-const { passportOAuthCallback } = p.noCallThru().load('./passportOAuthCallback.ts', {
-	'../auth/issueLoginToken': { issueLoginToken },
-	'./twoFactorAuth': { doesUserRequire2FA },
+let passportOAuthCallback: any;
+let passportOAuthErrorCallback: any;
+
+before(async () => {
+	mock.module('../auth/issueLoginToken', { exports: { issueLoginToken } });
+	mock.module('./twoFactorAuth', { exports: { doesUserRequire2FA } });
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = logError;
+			},
+		},
+	});
+	({ passportOAuthCallback, passportOAuthErrorCallback } = await import('./passportOAuthCallback'));
 });
 
 const siteUrl = 'https://chat.example.com';
@@ -31,10 +44,38 @@ const callback = async (
 	return { res, destroy };
 };
 
-const popupPayload = (res: { send: sinon.SinonStub }) => {
+const runPopupPage = (res: { send: sinon.SinonStub }, { opener }: { opener: 'open' | 'closed' | 'none' }) => {
 	const html: string = res.send.firstCall.args[0];
-	return JSON.parse(html.slice(html.indexOf('postMessage(') + 'postMessage('.length, html.lastIndexOf(',')));
+	const script = html.slice(html.indexOf('>', html.indexOf('<script')) + 1, html.indexOf('</script>'));
+	const sent: { to: string; message: unknown; targetOrigin?: string }[] = [];
+	const close = sandbox.stub();
+	const window = {
+		location: { origin: siteUrl },
+		opener:
+			opener === 'none'
+				? null
+				: {
+						closed: opener === 'closed',
+						postMessage: (message: unknown, targetOrigin: string) => sent.push({ to: 'opener', message, targetOrigin }),
+					},
+		close,
+	};
+	class BroadcastChannel {
+		constructor(private name: string) {}
+
+		postMessage(message: unknown) {
+			sent.push({ to: `channel ${this.name}`, message });
+		}
+
+		close() {
+			return undefined;
+		}
+	}
+	runInNewContext(script, { window, BroadcastChannel });
+	return { sent: JSON.parse(JSON.stringify(sent)), closed: close.calledOnce };
 };
+
+const popupPayload = (res: { send: sinon.SinonStub }) => runPopupPage(res, { opener: 'open' }).sent[0].message;
 
 describe('passportOAuthCallback', () => {
 	before(() => {
@@ -92,14 +133,27 @@ describe('passportOAuthCallback', () => {
 			expect(issueLoginToken.calledOnceWith('user-id')).to.be.true;
 			expect(popupPayload(res)).to.deep.equal({ oauthPopupCommand: 'oauth-login-with-token', token: 'resume-token' });
 
+			expect(runPopupPage(res, { opener: 'open' }).sent).to.have.nested.property('[0].targetOrigin', siteUrl);
 			const html: string = res.send.firstCall.args[0];
-			const postMessageCall = html.slice(
-				html.indexOf('postMessage(') + 'postMessage('.length,
-				html.indexOf(');', html.indexOf('postMessage(')),
-			);
-			expect(postMessageCall.slice(postMessageCall.lastIndexOf(',') + 1).trim()).to.equal('window.location.origin');
 			const [, nonce] = /nonce="([^"]+)"/.exec(html) ?? [];
 			expect(res.setHeader.calledOnceWith('Content-Security-Policy', `script-src 'nonce-${nonce}'`)).to.be.true;
+		});
+
+		it('should hand the session token to the workspace tabs when the provider cut the popup off from its opener', async () => {
+			const { res } = await callback('popup');
+
+			expect(runPopupPage(res, { opener: 'none' })).to.deep.equal({
+				sent: [{ to: 'channel oauth-popup', message: { oauthPopupCommand: 'oauth-login-with-token', token: 'resume-token' } }],
+				closed: true,
+			});
+		});
+
+		it('should hand the session token to the workspace tabs when the tab that opened the popup was closed', async () => {
+			const { res } = await callback('popup');
+
+			expect(runPopupPage(res, { opener: 'closed' }).sent).to.deep.equal([
+				{ to: 'channel oauth-popup', message: { oauthPopupCommand: 'oauth-login-with-token', token: 'resume-token' } },
+			]);
 		});
 
 		it('should redirect a login client home with the session token', async () => {
@@ -119,5 +173,43 @@ describe('passportOAuthCallback', () => {
 			expect(popupPayload(res)).to.deep.equal({ oauthPopupCommand: 'redirect', path: '/2fa/email/challenge-id' });
 			expect(issueLoginToken.called).to.be.false;
 		});
+	});
+});
+
+describe('passportOAuthErrorCallback', () => {
+	beforeEach(() => {
+		sandbox.resetHistory();
+	});
+
+	const fail = (launchStyle: 'popup' | 'redirect', error: unknown, workspaceUrl = siteUrl) => {
+		const res = { redirect: sandbox.stub(), send: sandbox.stub(), setHeader: sandbox.stub() };
+		passportOAuthErrorCallback(workspaceUrl, launchStyle)(error, {}, res, sandbox.stub());
+		return res;
+	};
+
+	it('should send the visitor back home with the reason the login was refused', () => {
+		const res = fail('redirect', new ClientSafeError('error-invalid-username', 'alice@example.com is not a valid username'));
+
+		expect(res.redirect.calledOnceWith('https://chat.example.com/home?oauthError=error-invalid-username')).to.be.true;
+	});
+
+	it('should keep the workspace path when the workspace runs under a subpath', () => {
+		const res = fail('redirect', new Error('User not found'), 'https://example.com/chat');
+
+		expect(res.redirect.calledOnceWith('https://example.com/chat/home?oauthError=error-oauth-login-failed')).to.be.true;
+	});
+
+	it('should hide the reason of any other error behind a generic one, keeping it in the server log', () => {
+		const error = new ClientSafeError('CustomOAuth', 'User with username alice already exists');
+		const res = fail('redirect', error);
+
+		expect(res.redirect.calledOnceWith('https://chat.example.com/home?oauthError=error-oauth-login-failed')).to.be.true;
+		expect(logError.calledOnceWith(sinon.match({ err: error }))).to.be.true;
+	});
+
+	it('should hand the reason to the opener window when the login runs in a popup', () => {
+		const res = fail('popup', new Error('User not found'));
+
+		expect(popupPayload(res)).to.deep.equal({ oauthPopupCommand: 'login-error', oauthError: 'error-oauth-login-failed' });
 	});
 });

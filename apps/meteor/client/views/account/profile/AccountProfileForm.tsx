@@ -1,5 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
-import type { AvatarObject } from '@rocket.chat/core-typings';
+import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Button, Divider, Icon, Stack } from '@rocket.chat/fuselage';
@@ -18,7 +18,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch, useFormState } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import ProfileNameFields from './layout/ProfileNameFields';
@@ -34,6 +34,12 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
+
+const getPreviousAccountValues = (user: IUser | null) => ({
+	previousEmail: user ? getUserEmailAddress(user) : '',
+	previousUsername: user?.username || '',
+	isUserVerified: user?.emails?.[0]?.verified ?? false,
+});
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
@@ -63,16 +69,16 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		namesRegex,
 	} = useAccountProfileSettings();
 
-	const {
-		control,
-		watch,
-		handleSubmit,
-		reset,
-		setValue,
-		formState: { errors, dirtyFields },
-	} = useFormContext<AccountProfileFormValues>();
+	const { control, handleSubmit, reset, setValue } = useFormContext<AccountProfileFormValues>();
+	const { errors, dirtyFields } = useFormState({ control });
 
-	const { email, avatar, username, name: userFullName, statusType, statusText } = watch();
+	const watched = useWatch({ control });
+	const email = watched.email ?? '';
+	const avatar = useWatch({ control, name: 'avatar' });
+	const username = watched.username ?? '';
+	const userFullName = watched.name ?? '';
+	const { statusType } = watched;
+	const statusText = watched.statusText ?? '';
 
 	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 
@@ -87,9 +93,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		[t],
 	);
 
-	const previousEmail = user ? getUserEmailAddress(user) : '';
-	const previousUsername = user?.username || '';
-	const isUserVerified = user?.emails?.[0]?.verified ?? false;
+	const { previousEmail, previousUsername, isUserVerified } = getPreviousAccountValues(user);
 
 	const mutateConfirmationEmail = useMutation({
 		mutationFn: sendConfirmationEmail,

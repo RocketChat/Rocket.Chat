@@ -116,11 +116,6 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		return this.listbox.getOption(optionText);
 	}
 
-	async selectUnit(unitName: string) {
-		await this.inputUnit.click();
-		await this.listbox.selectOption(unitName);
-	}
-
 	get inputAgents() {
 		return this.page.getByRole('group', { name: 'Agents' }).getByRole('textbox');
 	}

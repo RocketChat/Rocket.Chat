@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FormattingToolbarDropdown from './FormattingToolbarDropdown';
+import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 import type { FormattingButton } from '../../../../../lib/messageBoxFormatting';
 import { isLinePrefixButton, isPromptButton } from '../../../../../lib/messageBoxFormatting';
@@ -17,6 +18,7 @@ export type MessageBoxFormattingToolbarProps = {
 
 const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled }: MessageBoxFormattingToolbarProps) => {
 	const { t } = useTranslation();
+	const openExternalLink = useExternalLink();
 
 	const applyFormatter = (formatter: FormattingButton): void => {
 		if (isPromptButton(formatter)) {
@@ -30,7 +32,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 		}
 
 		if ('link' in formatter) {
-			window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
+			openExternalLink(formatter.link);
 			return;
 		}
 

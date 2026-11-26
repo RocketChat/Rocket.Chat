@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import {
-	Box,
 	Modal,
 	Button,
 	ModalHeader,
@@ -14,7 +13,7 @@ import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '
 import { useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -31,11 +30,8 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { isSubmitting, isValidating, errors },
-	} = useForm({ defaultValues: { users: [] } });
+	const { control, handleSubmit } = useForm({ defaultValues: { users: [] } });
+	const { isSubmitting, isValidating, errors } = useFormState({ control });
 
 	const goToRoom = useGoToRoom();
 
@@ -58,10 +54,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 	};
 
 	return (
-		<Modal
-			aria-labelledby={`${createDMFormId}-title`}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
-		>
+		<Modal aria-labelledby={`${createDMFormId}-title`} onSubmit={handleSubmit(handleCreate)}>
 			<ModalHeader>
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />

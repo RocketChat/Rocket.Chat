@@ -11,4 +11,5 @@ export type MultiStaticSelectElement = Actionable<{
 	maxSelectItems?: number;
 	initialValue?: Option['value'][];
 	initialOption?: Option[];
+	focus_on_load?: boolean;
 }>;

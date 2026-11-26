@@ -1,1 +1,1 @@
-export { default, type RegisterOfflinePayload } from './RegisterOfflineForm';
+export { default, type RegisterOfflinePayload } from './RegisterOfflineForm.js';

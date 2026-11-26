@@ -134,6 +134,14 @@
 							{
 								"name": "meteor/check",
 								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							},
+							{
+								"name": "meteor/service-configuration",
+								"message": "Use the LoginServiceConfiguration model, then notifyOnLoginServiceConfigurationChanged or notifyOnLoginServiceConfigurationChangedByService so connected clients see the change."
+							},
+							{
+								"name": "meteor/email",
+								"message": "Send email with the Mailer from 'server/lib/notifications/email/api'."
 							}
 						]
 					}
@@ -163,6 +171,34 @@
 			"env": {
 				"mocha": true
 			}
+		},
+		{
+			"files": ["apps/meteor/**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}"],
+			"rules": {
+				"jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "expectListKeyboard"] }]
+			},
+			"plugins": ["jest"]
+		},
+		{
+			"files": ["packages/fuselage/**/*.spec.{ts,tsx}"],
+			"rules": {
+				"jest/expect-expect": [
+					"warn",
+					{
+						"assertFunctionNames": [
+							"expect",
+							"expectForwards",
+							"expectKeyboardActivation",
+							"expectTabOrder",
+							"expectCompositeList",
+							"expectCombobox",
+							"expectMenu",
+							"Story.run"
+						]
+					}
+				]
+			},
+			"plugins": ["jest"]
 		},
 		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
@@ -298,6 +334,7 @@
 				"apps/meteor/server/**/*.ts",
 				"packages/fuselage-ui-kit/**/*.{ts,tsx}",
 				"packages/ui-account/**/*.{ts,tsx}",
+				"packages/ui-contacts/**/*.{ts,tsx}",
 				"packages/ui-client/**/*.{ts,tsx}",
 				"packages/ui-registration/**/*.{ts,tsx}",
 				"packages/ui-voip/**/*.{ts,tsx}"
@@ -371,6 +408,26 @@
 					{
 						"selector": "MemberExpression[object.name='Accounts'][property.name=/^setPassword(Async)?$/]",
 						"message": "Use Users.setPasswordHash(userId, await hashPassword(password)) with hashPassword from '@rocket.chat/account-utils' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(emailTemplates|urls|generateResetToken|generateVerificationToken|generateOptionsForEmail)$/]",
+						"message": "Use the templates and senders in 'server/lib/auth/accountEmails' instead."
+					},
+					{
+						"selector": "CallExpression > MemberExpression.callee[object.name='Accounts'][property.name=/^send(ResetPassword|Verification|Enrollment)Email$/]",
+						"message": "Use sendResetPasswordEmail, sendVerificationEmail or sendEnrollmentEmail from 'server/lib/auth/accountEmails' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(createUser|createUserAsync|createUserVerifyingEmail|insertUserDoc)$/]",
+						"message": "Use createUser from 'server/lib/auth/createUser' or insertUser from 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(onCreateUser|validateNewUser)$/]",
+						"message": "Add the step to insertUser in 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='updateOrCreateUserFromExternalService']",
+						"message": "Use updateOrCreateUserFromExternalService from 'server/lib/auth/updateOrCreateUserFromExternalService' instead."
 					}
 				]
 			}
@@ -393,6 +450,51 @@
 							{
 								"group": ["@rocket.chat/fuselage", "react-dom", "**/views/**"],
 								"message": "logic/ must not depend on rendering; move this to views/ or pass it in."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": ["apps/meteor/client/views/**/*.{ts,tsx}"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						],
+						"patterns": [
+							{
+								"group": ["meteor/*"],
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not Meteor. See docs/frontend/view-isolation.md."
+							},
+							{
+								"regex": "^(?:(?:\\.\\./)+|/)(?:app|client/meteor)/|^(?:\\.\\./)+meteor/",
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not apps/meteor/app or client/meteor. See docs/frontend/view-isolation.md."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"apps/meteor/client/views/**/*.{spec,test,stories}.{ts,tsx}",
+				"apps/meteor/client/views/**/{__tests__,__mocks__,tests,testing}/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
 							}
 						]
 					}
@@ -427,6 +529,13 @@
 			"files": ["**/*.stories.{ts,tsx,js,jsx,mjs,cjs}"],
 			"rules": {
 				"storybook/no-renderer-packages": "off"
+			}
+		},
+		{
+			"files": ["packages/fuselage/src/**/*.tsx"],
+			"jsPlugins": [{ "name": "rocket.chat", "specifier": "./packages/lint-config/rules/index.js" }],
+			"rules": {
+				"rocket.chat/render-element-spread": ["error", { "safeCalls": ["ariaAndDataAttributes", "pickWebPressHandlers", "pickWebInteractionHandlers"] }]
 			}
 		},
 		{

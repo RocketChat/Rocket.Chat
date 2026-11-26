@@ -1,8 +1,11 @@
+import assert from 'node:assert/strict';
+
 import { Cleanup } from './cleanup';
-import { config } from './config';
+import { config, federationPolling } from './config';
 import { connectRocketChat, forgetRemoteUserOnCleanup } from './rocketchat';
 import type { RocketChat } from './rocketchat';
 import { XmppUser } from './xmpp-client';
+import { retry } from '../../../../../../apps/meteor/tests/data/retry';
 
 /** Connects to Rocket.Chat and returns the suite's context; pass it to `teardown` when done. */
 export async function setupSuite(): Promise<RocketChat> {
@@ -17,7 +20,12 @@ async function assertServiceForwards(): Promise<void> {
 	}
 }
 
-export type ServiceStats = { decodeOnly: boolean; decoded: Record<string, number>; completed: Record<string, number> };
+export type ServiceStats = {
+	decodeOnly: boolean;
+	decoded: Record<string, number>;
+	completed: Record<string, number>;
+	failed: Record<string, number>;
+};
 
 /** The service's `/stats`, or undefined when XMPP_E2E_SERVICE_URL does not answer. */
 export async function serviceStats(): Promise<ServiceStats | undefined> {
@@ -27,6 +35,21 @@ export async function serviceStats(): Promise<ServiceStats | undefined> {
 	} catch {
 		return undefined;
 	}
+}
+
+/** Resolves once the service has finished handling every event of this kind it decoded so far. */
+export async function waitUntilHandled(event: string): Promise<void> {
+	await retry(
+		`every decoded ${event} to be handled`,
+		async () => {
+			const stats = await serviceStats();
+			assert.ok(stats, `${config.serviceUrl}/stats does not answer`);
+			const decoded = stats.decoded[event] ?? 0;
+			const handled = (stats.completed[event] ?? 0) + (stats.failed?.[event] ?? 0);
+			assert.equal(handled, decoded, `${handled} of ${decoded} handled`);
+		},
+		federationPolling,
+	);
 }
 
 /**

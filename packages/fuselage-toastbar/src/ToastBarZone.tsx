@@ -1,7 +1,7 @@
 import styled from '@rocket.chat/styled';
 import type { ReactNode } from 'react';
 
-import type { ToastBarPayload } from './ToastBarContext';
+import type { ToastBarPayload } from './ToastBarContext.js';
 
 const positionProps = {
 	'top-start': {

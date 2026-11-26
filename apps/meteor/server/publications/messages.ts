@@ -144,7 +144,10 @@ export async function handleCursorPagination(
 	const messages =
 		type === 'UPDATED'
 			? Messages.findForUpdates(rid, { updatedAt: query }, options)
-			: Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!;
+			: Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options });
+	if (!messages) {
+		throw new Error('The messages trash collection is not available');
+	}
 
 	const response: IMessage[] = [];
 	let hasMore = false;

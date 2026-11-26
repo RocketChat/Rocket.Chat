@@ -1,5 +1,20 @@
 # @rocket.chat/ddp-client
 
+## 3.0.0-rc.0
+
+### Patch Changes
+
+- ([#43611](https://github.com/RocketChat/Rocket.Chat/pull/43611)) Fixes the Livechat widget no longer showing new messages after a network outage longer than about a minute; the widget now keeps trying to reconnect until the server is reachable again
+
+- <details><summary>Updated dependencies [9971f492da4960edce747fa9feb07c7fc332dbac, 46cba6391140d334aecbe764a0fc3341feb27ce9, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 42f9f7efa463480e5168ff054a66f9c086bbf809, be88a0ba4a3a72f9a606f054d5c2d051650140ee, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/media-signaling@1.5.0-rc.0
+  - @rocket.chat/ui-kit@3.0.0-rc.0
+
+  </details>
+
 ## 2.0.0
 
 ### Major Changes

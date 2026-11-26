@@ -14,15 +14,15 @@ import {
 } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
-import VideoConfMessageAction from './VideoConfMessageAction';
-import VideoConfMessageActions from './VideoConfMessageActions';
-import VideoConfMessageButton from './VideoConfMessageButton';
-import VideoConfMessageContent from './VideoConfMessageContent';
-import VideoConfMessageFooter from './VideoConfMessageFooter';
-import VideoConfMessageFooterText from './VideoConfMessageFooterText';
-import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
-import VideoConfMessageUserStack from './VideoConfMessageUserStack';
+import VideoConfMessageAction from './VideoConfMessageAction.js';
+import VideoConfMessageActions from './VideoConfMessageActions.js';
+import VideoConfMessageButton from './VideoConfMessageButton.js';
+import VideoConfMessageContent from './VideoConfMessageContent.js';
+import VideoConfMessageFooter from './VideoConfMessageFooter.js';
+import VideoConfMessageFooterText from './VideoConfMessageFooterText.js';
+import VideoConfMessageSkeleton from './VideoConfMessageSkeleton.js';
+import VideoConfMessageUserStack from './VideoConfMessageUserStack.js';
+import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from './index.js';
 
 export default {
 	component: VideoConfMessage,

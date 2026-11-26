@@ -3,7 +3,7 @@ import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import { useId } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
@@ -28,15 +28,10 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const confirmPasswordId = useId();
 	const passwordVerifierId = useId();
 
-	const {
-		watch,
-		formState: { errors },
-		handleSubmit,
-		reset,
-		control,
-	} = useFormContext<PasswordFieldValues>();
+	const { handleSubmit, reset, control } = useFormContext<PasswordFieldValues>();
+	const { errors } = useFormState({ control });
 
-	const password = watch('password');
+	const password = useWatch({ control, name: 'password' });
 	const passwordIsValid = useValidatePassword(password);
 	const { allowPasswordChange } = useAllowPasswordChange();
 

@@ -11,7 +11,7 @@ declare module 'express' {
 }
 declare global {
 	namespace Express {
-		// oxlint-disable-next-line @typescript-eslint/no-empty-interface -- merges with Passport's Express.User
+		// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type -- merges with Passport's Express.User
 		interface User extends IUser {}
 	}
 }

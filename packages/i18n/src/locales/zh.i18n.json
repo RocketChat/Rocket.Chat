@@ -2438,6 +2438,7 @@
   "Example_payload": "示例载荷",
   "Example_s": "例如：<code>{{value}}</code>",
   "except_pinned": "（固定的除外）",
+  "Exchange_Graph_Client_Secret": "客户端秘密",
   "Exclude_Botnames": "排除机器人",
   "Exclude_Botnames_Description": "不要传播其名称与上述正则表达式匹配的机器人的消息。如果留空，所有来自机器人的消息将被传播。",
   "Exclude_pinned": "排除固定消息",

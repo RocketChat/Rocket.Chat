@@ -104,18 +104,7 @@ export class SettingsRegistry {
 		this.model = model;
 	}
 
-	/*
-	 * Add a setting
-	 */
-	async add(_id: string, value: SettingValue, { sorter, section, group, schema, ...options }: ISettingAddOptions = {}): Promise<void> {
-		if (!_id || value == null) {
-			throw new Error('Invalid arguments');
-		}
-
-		if (schema) {
-			registerSettingSchema(_id, schema);
-		}
-
+	private resolveSorter(sorter: ISettingAddOptions['sorter'], group: ISettingAddOptions['group'], section: ISettingAddOptions['section']) {
 		const sorterKey = group && section ? `${group}_${section}` : group;
 
 		if (sorterKey && this._sorter[sorterKey] == null) {
@@ -129,12 +118,27 @@ export class SettingsRegistry {
 			this._sorter[sorterKey] = this._sorter[sorterKey] ?? -1;
 		}
 
+		return sorter ?? (sorterKey?.length && this._sorter[sorterKey]++);
+	}
+
+	/*
+	 * Add a setting
+	 */
+	async add(_id: string, value: SettingValue, { sorter, section, group, schema, ...options }: ISettingAddOptions = {}): Promise<void> {
+		if (!_id || value == null) {
+			throw new Error('Invalid arguments');
+		}
+
+		if (schema) {
+			registerSettingSchema(_id, schema);
+		}
+
 		const settingFromCode = getSettingDefaults(
 			{
 				_id,
 				type: 'string',
 				value,
-				sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]++),
+				sorter: this.resolveSorter(sorter, group, section),
 				group,
 				section,
 				...options,
@@ -158,7 +162,9 @@ export class SettingsRegistry {
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
-			IS_DEVELOPMENT && SystemLogger.error({ msg: 'Invalid setting code', _id, err: e as Error });
+			if (IS_DEVELOPMENT) {
+				SystemLogger.error({ msg: 'Invalid setting code', _id, err: e as Error });
+			}
 		}
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
@@ -202,7 +208,9 @@ export class SettingsRegistry {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				IS_DEVELOPMENT && SystemLogger.error({ msg: 'Invalid setting stored', _id, err: e as Error });
+				if (IS_DEVELOPMENT) {
+					SystemLogger.error({ msg: 'Invalid setting stored', _id, err: e as Error });
+				}
 			}
 			return;
 		}

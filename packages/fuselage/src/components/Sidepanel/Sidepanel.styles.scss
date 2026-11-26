@@ -33,7 +33,7 @@ $sidepanel-color-default: colors.font(default);
 	&-header {
 		@extend %section-base;
 		height: lengths.size(44);
-		padding-inline: lengths.padding(16);
+		padding-inline: lengths.padding(12);
 
 		&__title {
 			color: colors.font(titles-labels);

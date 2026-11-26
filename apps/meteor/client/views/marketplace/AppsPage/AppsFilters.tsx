@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../components/FilterBar';
@@ -52,7 +51,7 @@ const AppsFilters = ({
 	};
 
 	return (
-		<Box paddingInline={24}>
+		<>
 			<FilterBar>
 				<FilterBarSearch value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]} />
 				<FilterBarFilters>
@@ -65,7 +64,7 @@ const AppsFilters = ({
 				</FilterBarFilters>
 			</FilterBar>
 			<TagList categories={categoryTagList} onClick={onSelected} />
-		</Box>
+		</>
 	);
 };
 

@@ -17,6 +17,7 @@ export type AudioMessageRecorderProps = {
 
 const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderProps) => {
 	const { t } = useTranslation();
+	const chat = useChat();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
 	const [time, setTime] = useState('00:00');
@@ -77,8 +78,6 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	const handleCancelButtonClick = useStableCallback(async () => {
 		await stopRecording();
 	});
-
-	const chat = useChat();
 
 	const handleDoneButtonClick = useStableCallback(async () => {
 		setState('loading');

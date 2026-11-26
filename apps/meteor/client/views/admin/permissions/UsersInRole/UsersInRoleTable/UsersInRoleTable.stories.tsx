@@ -1,4 +1,3 @@
-import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
 import type { Meta } from '@storybook/react';
 
@@ -7,13 +6,7 @@ import { createMockedPagination } from '../../../../../../tests/mocks/data';
 
 export default {
 	component: UsersInRoleTable,
-	decorators: [
-		(fn) => (
-			<PageContent marginBlock='neg-x8'>
-				<Margins block={8}>{fn()}</Margins>
-			</PageContent>
-		),
-	],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof UsersInRoleTable>;
 
 const generateMockedUsers = (count: number) =>
@@ -46,7 +39,7 @@ export const Default = {
 	},
 };
 
-export const withLoading = {
+export const WithLoading = {
 	args: {
 		total: 0,
 		isLoading: true,
@@ -59,7 +52,7 @@ export const withLoading = {
 	},
 };
 
-export const withNoResults = {
+export const WithNoResults = {
 	args: {
 		total: 0,
 		isLoading: false,
@@ -72,7 +65,7 @@ export const withNoResults = {
 	},
 };
 
-export const withError = {
+export const WithError = {
 	args: {
 		total: 0,
 		isLoading: false,

@@ -1,6 +1,6 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 
-import InvalidLinkPage from './InvalidLinkPage';
+import InvalidLinkPage from './InvalidLinkPage.js';
 
 export default {
 	title: 'pages/InvalidLinkPage',

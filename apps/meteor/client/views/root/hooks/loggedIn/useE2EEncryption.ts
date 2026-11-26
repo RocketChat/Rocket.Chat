@@ -75,7 +75,7 @@ export const useE2EEncryption = () => {
 
 				if (room) resolve(room);
 
-				const unsubscribe = Rooms.use.subscribe((state) => {
+				const unsubscribe = Rooms.useStore.subscribe((state) => {
 					const room = state.get(message.rid);
 					if (room) {
 						unsubscribe();
@@ -84,7 +84,11 @@ export const useE2EEncryption = () => {
 				});
 			});
 
-			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			if (subscription.encrypted) {
+				e2eRoom.resume();
+			} else {
+				e2eRoom.pause();
+			}
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 

@@ -5,6 +5,7 @@ import { createElement } from 'react';
 
 import { useNormalizedMessage } from './useNormalizedMessage';
 import { createFakeMessage } from '../../../../tests/mocks/data';
+import { createMessageNormalizer } from '../../../lib/createMessageNormalizer';
 import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
 const encryption = { key: { kty: 'oct' }, iv: 'initialization-vector' };
@@ -29,12 +30,23 @@ describe('useNormalizedMessage', () => {
 	});
 
 	describe('with math formulas', () => {
-		const renderWithKatex = (katex?: { dollarSyntaxEnabled: boolean; parenthesisSyntaxEnabled: boolean }) =>
-			renderHook(() => useNormalizedMessage(createFakeMessage({ msg: 'see $x^2$ and \\(y^2\\)' })), {
+		const renderWithKatex = (katex?: { dollarSyntaxEnabled: boolean; parenthesisSyntaxEnabled: boolean }) => {
+			const normalizeMessage = createMessageNormalizer(
+				{
+					emoticons: true,
+					...(katex && { katex: { dollarSyntax: katex.dollarSyntaxEnabled, parenthesisSyntax: katex.parenthesisSyntaxEnabled } }),
+				},
+				messageListContextDefaultValue.autoTranslate,
+			);
+
+			return renderHook(() => useNormalizedMessage(createFakeMessage({ msg: 'see $x^2$ and \\(y^2\\)' })), {
 				wrapper: mockAppRoot()
-					.wrap((children) => createElement(MessageListContext.Provider, { value: { ...messageListContextDefaultValue, katex } }, children))
+					.wrap((children) =>
+						createElement(MessageListContext.Provider, { value: { ...messageListContextDefaultValue, normalizeMessage } }, children),
+					)
 					.build(),
 			}).result.current.md;
+		};
 
 		const countFormulas = (md: unknown) => JSON.stringify(md).split('"INLINE_KATEX"').length - 1;
 

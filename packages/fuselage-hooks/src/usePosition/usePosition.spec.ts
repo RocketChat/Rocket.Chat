@@ -1,6 +1,6 @@
-import { usePosition } from '.';
-import { withResizeObserverMock } from '../../mocks/withResizeObserverMock';
-import { act, renderHook } from '../testing';
+import { usePosition } from './index.js';
+import { withResizeObserverMock } from '../../mocks/withResizeObserverMock.js';
+import { act, renderHook } from '../testing.js';
 
 withResizeObserverMock();
 

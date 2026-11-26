@@ -15,7 +15,7 @@ import { useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { i18n } from '../../lib/i18n';
@@ -147,9 +147,12 @@ const useAutoLanguage = () => {
 	// usually that value is set based on the user's config language
 	const [language] = useLocalStorage('userLanguage', suggestedLanguage);
 
-	document.documentElement.classList[isRTLScriptLanguage(language) ? 'add' : 'remove']('rtl');
-	document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
-	document.documentElement.lang = language;
+	useLayoutEffect(() => {
+		const isRTL = isRTLScriptLanguage(language);
+		document.documentElement.classList[isRTL ? 'add' : 'remove']('rtl');
+		document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+		document.documentElement.lang = language;
+	}, [language]);
 
 	// if user has no language set, we should set it to the default language
 	return language || suggestedLanguage;

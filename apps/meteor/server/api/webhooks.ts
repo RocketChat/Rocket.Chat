@@ -162,6 +162,54 @@ function getBodyParams(bodyParams: unknown, request: Request): Record<string, un
 	return bodyParams;
 }
 
+async function buildIntegrationScriptRequest(
+	context: IntegrationThis,
+	body: ReadableStream<Uint8Array>,
+	bodyParams: Record<string, unknown>,
+) {
+	const buffers = [];
+	const reader = body.getReader();
+	for (let result = await reader.read(); !result.done; result = await reader.read()) {
+		buffers.push(result.value);
+	}
+	const contentRaw = Buffer.concat(buffers).toString('utf8');
+	const url = new URL(context.request.url);
+	const query = isPlainObject(context.queryParams) ? context.queryParams : {};
+
+	return {
+		url: {
+			query,
+			hash: url.hash,
+			search: url.search,
+			pathname: url.pathname,
+			path: context.request.url,
+		},
+		url_raw: context.request.url,
+		url_params: context.urlParams,
+		content: bodyParams,
+		content_raw: contentRaw,
+		headers: Object.fromEntries(context.request.headers.entries()),
+		body: bodyParams,
+		user: {
+			_id: context.user._id,
+			name: context.user.name || '',
+			username: context.user.username,
+		},
+	};
+}
+
+function getWebhookMessageErrorResult(err: any) {
+	incomingLogger.error({ msg: 'Error processing webhook message', err });
+	const code = err?.error || err?.message || 'Unknown error';
+	if (code === 'error-invalid-room') {
+		return API.v1.notFound(code);
+	}
+	if (refusalErrorCodes.has(code)) {
+		return API.v1.forbidden(isClientSafeError(err) ? err.reason : code);
+	}
+	return API.v1.failure(code);
+}
+
 async function executeIntegrationRest(
 	this: IntegrationThis,
 ): Promise<
@@ -209,36 +257,7 @@ async function executeIntegrationRest(
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
-		const buffers = [];
-		const reader = this.request.body.getReader();
-		for (let result = await reader.read(); !result.done; result = await reader.read()) {
-			buffers.push(result.value);
-		}
-		const contentRaw = Buffer.concat(buffers).toString('utf8');
-		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
-		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
-		const query = isPlainObject(this.queryParams) ? this.queryParams : {};
-
-		const request = {
-			url: {
-				query,
-				hash: url.hash,
-				search: url.search,
-				pathname: url.pathname,
-				path: this.request.url,
-			},
-			url_raw: this.request.url,
-			url_params: this.urlParams,
-			content: bodyParams,
-			content_raw: contentRaw,
-			headers: Object.fromEntries(this.request.headers.entries()),
-			body: bodyParams,
-			user: {
-				_id: this.user._id,
-				name: this.user.name || '',
-				username: this.user.username,
-			},
-		};
+		const request = await buildIntegrationScriptRequest(this, this.request.body, bodyParams);
 
 		try {
 			const result = await scriptEngine.processIncomingRequest({
@@ -313,15 +332,7 @@ async function executeIntegrationRest(
 		}
 		return API.v1.success();
 	} catch (err: any) {
-		incomingLogger.error({ msg: 'Error processing webhook message', err });
-		const code = err?.error || err?.message || 'Unknown error';
-		if (code === 'error-invalid-room') {
-			return API.v1.notFound(code);
-		}
-		if (refusalErrorCodes.has(code)) {
-			return API.v1.forbidden(isClientSafeError(err) ? err.reason : code);
-		}
-		return API.v1.failure(code);
+		return getWebhookMessageErrorResult(err);
 	}
 }
 

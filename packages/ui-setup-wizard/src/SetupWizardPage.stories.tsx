@@ -1,13 +1,13 @@
 import { extractTranslationNamespaces } from '@rocket.chat/i18n';
-import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
+import en from '@rocket.chat/i18n/dist/resources/en.i18n.json' with { type: 'json' };
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentProps } from 'react';
 import { userEvent, within } from 'storybook/test';
 
-import SetupWizardPage from './SetupWizardPage';
-import { SetupWizardContext } from './contexts/SetupWizardContext';
-import type { OrganizationOptions } from './hooks/useOrganizationOptions';
+import SetupWizardPage from './SetupWizardPage.js';
+import { SetupWizardContext } from './contexts/SetupWizardContext.js';
+import type { OrganizationOptions } from './hooks/useOrganizationOptions.js';
 
 type SetupWizardContextValue = ComponentProps<typeof SetupWizardContext.Provider>['value'];
 

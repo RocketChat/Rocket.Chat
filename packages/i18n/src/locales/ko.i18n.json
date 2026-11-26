@@ -1509,6 +1509,7 @@
   "Example_payload": "Payload 예시",
   "Example_s": "예: <code>{{value}}</code>",
   "except_pinned": "(고정 된 것을 제외하고)",
+  "Exchange_Graph_Client_Secret": "Client 암호",
   "Exclude_Botnames": "봇 제외",
   "Exclude_Botnames_Description": "위의 정규식과 이름이 일치하는 봇의 메시지를 전파하지 마십시오. 비워두면 봇의 모든 메시지가 전파됩니다.",
   "Exclude_pinned": "고정된 메시지 제외",

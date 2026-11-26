@@ -7,7 +7,8 @@
 		display: flex;
 
 		margin-block: lengths.margin(4);
-		margin-inline: lengths.margin(-4);
+
+		gap: lengths.margin(8);
 	}
 
 	&__item {
@@ -17,13 +18,9 @@
 		justify-content: center;
 		align-items: center;
 
-		margin-inline: lengths.margin(4);
-
 		color: colors.font(default);
 
-		&-label {
-			margin-inline-start: lengths.margin(4);
-		}
+		gap: lengths.margin(4);
 	}
 
 	&__avatar-row {

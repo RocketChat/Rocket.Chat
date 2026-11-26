@@ -1,11 +1,12 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react';
 
-import ParticipantThumbnail from './ParticipantThumbnail';
-import ParticipantTile from './ParticipantTile';
-import SelfThumbnail from './SelfThumbnail';
-import SelfTile from './SelfTile';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures';
-import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles';
+import ParticipantThumbnail from './ParticipantThumbnail.js';
+import ParticipantTile from './ParticipantTile.js';
+import SelfThumbnail from './SelfThumbnail.js';
+import SelfTile from './SelfTile.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures.js';
+import { CallPinsProvider } from '../context.js';
+import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles.js';
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
@@ -84,4 +85,36 @@ export const SelfThumbnailMuted: Story = {
 	name: 'Self thumbnail, muted',
 	decorators: [withThumbnailSize],
 	render: () => <SelfThumbnail displayName='John Doe' muted held={false} />,
+};
+
+const withPins =
+	(pinnedId: string | null): Decorator =>
+	(Story) => (
+		<CallPinsProvider value={{ pinnedId, shares: [], screenOnStage: null, togglePin: () => undefined, toggleScreenPin: () => undefined }}>
+			<Story />
+		</CallPinsProvider>
+	);
+
+/** Offers to pin them on hover or focus. */
+export const Pinnable: Story = {
+	args: { participantId: 'ada' },
+	decorators: [withPins(null)],
+};
+
+export const Pinned: Story = {
+	args: { participantId: 'ada' },
+	decorators: [withPins('ada')],
+};
+
+/** Narrower than a strip thumbnail: only the mark. */
+export const PinnedNarrow: Story = {
+	args: { participantId: 'ada' },
+	decorators: [
+		(Story) => (
+			<div style={{ width: 120, aspectRatio: '4 / 3' }}>
+				<Story />
+			</div>
+		),
+		withPins('ada'),
+	],
 };

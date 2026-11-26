@@ -6,16 +6,16 @@ import {
 	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarClose,
+	useFormSubmitWithDirtyCheck,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
 import { ActionForm } from './actions/ActionForm';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type TriggersPayload = {
 	name: string;
@@ -87,12 +87,8 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 	const nameField = useId();
 	const descriptionField = useId();
 
-	const {
-		control,
-		handleSubmit,
-		trigger,
-		formState: { isSubmitting, errors, isDirty },
-	} = useForm<TriggersPayload>({ values: initValues });
+	const { control, handleSubmit, trigger } = useForm<TriggersPayload>({ values: initValues });
+	const { isSubmitting, errors, isDirty } = useFormState({ control });
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -138,7 +134,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 				<ContextualbarTitle>{triggerData?._id ? t('Edit_Trigger') : t('New_Trigger')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent paddingBlockEnd='x32'>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<FieldGroup>
 						<Field>

@@ -66,7 +66,7 @@ export const createEmojiList = (
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
-			const tone = actualTone && actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
+			const tone = actualTone && actualTone > 0 && Object.hasOwn(emojiPackage.toneList, current) ? `_tone${actualTone}` : '';
 
 			const emojiToRender = `:${current}${tone}:`;
 
@@ -119,7 +119,9 @@ export const createEmojiList = (
 export const updateRecent = (recentList: string[]) => {
 	const recentPkgList: string[] = emoji.packages.base.emojisByCategory.recent;
 	recentList?.forEach((_emoji) => {
-		!recentPkgList.includes(_emoji) && recentPkgList.push(_emoji);
+		if (!recentPkgList.includes(_emoji)) {
+			recentPkgList.push(_emoji);
+		}
 	});
 };
 

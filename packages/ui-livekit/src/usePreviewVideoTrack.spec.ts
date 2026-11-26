@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { LocalVideoTrack } from 'livekit-client';
 import { VideoPresets, createLocalVideoTrack } from 'livekit-client';
 
-import { usePreviewVideoTrack } from './usePreviewVideoTrack';
+import { usePreviewVideoTrack } from './usePreviewVideoTrack.js';
 
 jest.mock('livekit-client', () => ({
 	...jest.requireActual('livekit-client'),

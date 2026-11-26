@@ -61,7 +61,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		const roomNames = getNameForDMs([...roomMembers, ...(updatedNames ?? [])]);
 
-		for await (const sub of subs) {
+		for (const sub of subs) {
 			// don't update the name if the user is invited but hasn't accepted yet
 			if (!ignoreStatusFromSubs?.includes(sub._id) && sub.status === 'INVITED') {
 				continue;
@@ -175,7 +175,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
-		return roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name });
+		return roomCoordinator.getRouteLink(room.t, { rid: room._id, name: room.name });
 	}
 
 	/**
@@ -273,7 +273,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			return; // 'user' role essentially
 		}
 
-		for await (const currentRole of sub.roles) {
+		for (const currentRole of sub.roles) {
 			if (currentRole === 'owner') {
 				await removeRoomOwner(fromUserId, roomId, userId);
 				return;
@@ -323,7 +323,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			groupMentions: 0,
 			...(roles && { roles }),
 			...(status && { status }),
-			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, ...(inviter.name && { name: inviter.name }) } }),
+			...(inviter?.username && { inviter: { _id: inviter._id, username: inviter.username, ...(inviter.name && { name: inviter.name }) } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
 			// `name` is optional for users, so fall back to the username like `getNameForDMs` does

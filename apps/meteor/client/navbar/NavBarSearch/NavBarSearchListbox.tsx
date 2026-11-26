@@ -4,7 +4,7 @@ import { Box, ItemGroupHeader, ItemGroupTitle, PopoverSurface } from '@rocket.ch
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
@@ -25,8 +25,8 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, watch } = useFormContext();
-	const { filterText } = watch();
+	const { resetField } = useFormContext();
+	const filterText: string = useWatch({ name: 'filterText' });
 
 	const handleSelect = useStableCallback(() => {
 		state.close();

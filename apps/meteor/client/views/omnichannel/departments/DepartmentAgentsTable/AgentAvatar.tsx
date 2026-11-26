@@ -10,7 +10,7 @@ const AgentAvatar = ({ name, username, eTag }: AgentAvatarProps) => {
 
 	return (
 		<Box display='flex' alignItems='center'>
-			<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={eTag} />
+			<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={eTag} />
 			<Box display='flex' withTruncatedText marginInline={8}>
 				<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 					<Text fontScale='p2m' truncate color='default'>

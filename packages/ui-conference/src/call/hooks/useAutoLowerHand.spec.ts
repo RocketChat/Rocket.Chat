@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useAutoLowerHand } from './useAutoLowerHand';
-import { AUTO_LOWER_AFTER_MS, SPEAKING_GAP_TOLERANCE_MS } from '../lib/autoLowerHand';
+import { useAutoLowerHand } from './useAutoLowerHand.js';
+import { AUTO_LOWER_AFTER_MS, SPEAKING_GAP_TOLERANCE_MS } from '../lib/autoLowerHand.js';
 
 let mockLevel = 0;
 jest.mock('@rocket.chat/ui-media', () => ({ useAudioLevel: () => mockLevel }));

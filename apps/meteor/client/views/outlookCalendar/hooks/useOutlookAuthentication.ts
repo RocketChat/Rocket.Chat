@@ -47,7 +47,7 @@ export const useOutlookAuthenticationMutationLogout = () => {
 				throw new NotOnDesktopError();
 			}
 
-			await desktopApp.clearOutlookCredentials();
+			desktopApp.clearOutlookCredentials();
 
 			return mutation.mutateAsync();
 		},

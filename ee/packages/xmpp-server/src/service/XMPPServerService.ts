@@ -792,7 +792,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		return current;
 	}
 
-	/** Makes the invited local user a member of the remote MUC's shadow room, creating it on first invite, and joins them into the MUC. */
+	/** Makes the invited local user a member of the remote MUC's shadow room, creating it on first invite, and joins them into the MUC; never touches another kind of room. */
 	private async onMucInvite(event: { roomJid: string; toLocalJid: string; fromJid: string }): Promise<void> {
 		if (!this.server) {
 			return;
@@ -803,9 +803,13 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 
-		const inviter = await createOrUpdateXMPPUser({ jid: toBareJid(event.fromJid) });
-
 		let room = await Rooms.findOneByXMPPMucJid(event.roomJid, { projection: { _id: 1, xmppFederation: 1 } });
+		if (room && !isRoomXMPPRemoteMuc(room)) {
+			this.logger.warn({ msg: 'MUC invite refused: the room is not a remote room', muc: event.roomJid, from: event.fromJid });
+			return;
+		}
+
+		const inviter = await createOrUpdateXMPPUser({ jid: toBareJid(event.fromJid) });
 		if (room) {
 			await Room.addUserToRoom(room._id, localUser, inviter);
 		} else {

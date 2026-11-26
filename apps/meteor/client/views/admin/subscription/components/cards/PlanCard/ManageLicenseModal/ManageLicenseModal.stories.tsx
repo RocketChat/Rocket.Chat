@@ -9,7 +9,7 @@ import ManageLicenseModal from './ManageLicenseModal';
 const SAMPLE_LICENSE = 'RCLICENSE-'.padEnd(120, 'x');
 
 const validationSuccess = () => null;
-const validationFailure = (reasons: BehaviorWithContext[]) => () => Promise.reject({ reasons });
+const validationFailure = (reasons: BehaviorWithContext[]) => () => Promise.reject(Object.assign(new Error(), { reasons }));
 
 const enterLicense = async (text: string) => {
 	await userEvent.click(screen.getByRole('textbox'));

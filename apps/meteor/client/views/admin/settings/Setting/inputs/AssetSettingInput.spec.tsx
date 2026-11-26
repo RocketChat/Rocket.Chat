@@ -34,11 +34,8 @@ const setup = (props: Partial<AssetSettingInputProps> = {}) => {
 	});
 
 	const getFileInput = () => {
-		const input = view.container.querySelector('input');
+		const input = screen.getByLabelText('Site logo', { selector: 'input' });
 		expect(input).toHaveAttribute('type', 'file');
-		if (!input) {
-			throw new Error('File input was not rendered');
-		}
 		return input;
 	};
 
@@ -86,7 +83,7 @@ describe('AssetSettingInput', () => {
 	it('names the select file button after the setting label', () => {
 		setup();
 
-		const labelId = screen.getByText('Site logo').closest('label')?.id;
+		const labelId = screen.getByText('Site logo').id;
 		const button = screen.getByRole('button', { name: /Select file/ });
 		expect(labelId).toBeTruthy();
 		expect(button.getAttribute('aria-labelledby')?.split(' ')).toEqual([labelId, button.id]);
@@ -149,11 +146,11 @@ describe('AssetSettingInput', () => {
 	});
 
 	it('replaces file selection with an enabled delete button when an asset exists', () => {
-		const { container } = setup({ value: { url: '/logo.png' } });
+		setup({ value: { url: '/logo.png' } });
 
 		expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled();
 		expect(screen.queryByText('Select file')).not.toBeInTheDocument();
-		expect(container.querySelector('input')).not.toBeInTheDocument();
+		expect(screen.queryByLabelText('Site logo', { selector: 'input' })).not.toBeInTheDocument();
 	});
 
 	it('removes the configured asset when Delete is clicked', async () => {
@@ -206,7 +203,7 @@ describe('AssetSettingInput', () => {
 		const { getFileInput, upload, dispatchToast } = setup({ disabled: true });
 
 		expect(getFileInput()).toBeDisabled();
-		expect(screen.getByText('Select file').closest('.rcx-button')).toHaveAttribute('disabled');
+		expect(screen.getByRole('button', { name: /Select file/ })).toBeDisabled();
 		await userEvent.upload(getFileInput(), new File(['image'], 'logo.png', { type: 'image/png' }));
 		expect(upload).not.toHaveBeenCalled();
 		expect(dispatchToast).not.toHaveBeenCalled();

@@ -16,7 +16,7 @@ const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps) => {
 	const contextValue = useMessageBlockContextValue(rid, mid);
 
 	return (
-		<MessageBlock fixedWidth>
+		<MessageBlock>
 			<UiKitContext.Provider value={contextValue}>
 				<GazzodownText>
 					<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />

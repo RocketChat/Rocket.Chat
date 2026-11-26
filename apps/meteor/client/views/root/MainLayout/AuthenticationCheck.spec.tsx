@@ -23,6 +23,25 @@ afterEach(() => {
 	localStorage.clear();
 });
 
+it('keeps the login page instead of the anonymous view when an OAuth sign-in came back refused', () => {
+	const dispatch = jest.fn();
+	const session = {
+		query: () => [() => () => undefined, () => undefined] as ReturnType<SessionContextValue['query']>,
+		dispatch,
+	};
+
+	renderGate(
+		mockAppRoot()
+			.withAnonymous()
+			.withSetting('Accounts_AllowAnonymousRead', true)
+			.withRouter({ getSearchParameters: () => ({ oauthError: 'error-invalid-username' }) })
+			.wrap((children) => <SessionContext.Provider value={session}>{children}</SessionContext.Provider>),
+	);
+
+	expect(screen.getByText('login-page')).toBeInTheDocument();
+	expect(dispatch).toHaveBeenCalledWith('forceLogin', true);
+});
+
 it('renders the route for a user who is logged in', () => {
 	renderGate(mockAppRoot().withJohnDoe());
 

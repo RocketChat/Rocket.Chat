@@ -1,5 +1,6 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
-import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon, Text } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon, Text, useStyle } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink, links, useLicense, useLicenseName } from '@rocket.chat/ui-client';
@@ -16,6 +17,7 @@ import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
 import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
@@ -32,14 +34,15 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 	const isExtraLargeOrBigger = breakpoints.includes('xl');
 
 	const getUrl = useMediaUrl();
-	const cardBackground = {
-		backgroundImage: `url(${getUrl('images/globe.png')})`,
-		backgroundRepeat: 'no-repeat',
-		backgroundPosition: isExtraLargeOrBigger ? 'right 20px center' : 'left 450px center',
-		backgroundSize: 'auto',
-	};
+	const cardBackgroundClassName = useStyle(css`
+		background-image: url(${getUrl('images/globe.png')});
+		background-repeat: no-repeat;
+		background-position: ${isExtraLargeOrBigger ? 'right 20px center' : 'left 450px center'};
+		background-size: auto;
+	`);
 
 	const setModal = useSetModal();
+	const openExternalLink = useExternalLink();
 
 	const { t } = useTranslation();
 
@@ -97,7 +100,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 		if (versionStatus?.label === 'outdated') {
 			return {
 				action: () => {
-					window.open(RELEASES_EXTERNAL_LINK, '_blank');
+					openExternalLink(RELEASES_EXTERNAL_LINK);
 				},
 				label: t('Update_version'),
 			};
@@ -106,7 +109,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 		if (isOverLimits) {
 			return { path: '/admin/subscription', label: t('Manage_subscription') };
 		}
-	}, [canViewRegistrationStatus, isRegistered, versionStatus, isOverLimits, t, setModal, refetchLicense]);
+	}, [canViewRegistrationStatus, isRegistered, versionStatus, isOverLimits, t, setModal, refetchLicense, openExternalLink]);
 
 	const actionItems = useMemo(() => {
 		return (
@@ -180,14 +183,14 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 
 	if (isPending && !licenseData) {
 		return (
-			<Card style={{ ...cardBackground }}>
+			<Card className={cardBackgroundClassName}>
 				<VersionCardSkeleton />
 			</Card>
 		);
 	}
 
 	return (
-		<Card style={{ ...cardBackground }}>
+		<Card className={cardBackgroundClassName}>
 			<CardCol>
 				<CardHeader>
 					<CardTitle variant='h3'>{t('Version_version', { version: serverVersion })}</CardTitle>

@@ -21,6 +21,40 @@ export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageCom
 	onChange: (value: string) => void;
 };
 
+const applyMarkdownSyntax = (
+	textArea: HTMLTextAreaElement | null,
+	char: '*' | '_' | '~' | '[]()',
+	onChange: (value: string) => void,
+): void => {
+	if (!textArea) {
+		return;
+	}
+	const text = textArea.value;
+	const startPos = textArea.selectionStart;
+	const endPos = textArea.selectionEnd;
+
+	if (char === '[]()') {
+		if (startPos !== endPos) {
+			textArea.value = `${text.slice(0, startPos)}[${text.slice(startPos, endPos)}]()${text.slice(endPos)}`;
+		}
+	} else {
+		textArea.value = `${text.slice(0, startPos)}${char}${text.slice(startPos, endPos)}${char}${text.slice(endPos)}`;
+	}
+	textArea.focus();
+
+	if (char === '[]()') {
+		if (startPos === endPos) {
+			textArea.setSelectionRange(startPos, endPos);
+		} else {
+			textArea.setSelectionRange(endPos + 3, endPos + 3);
+		}
+	} else {
+		textArea.setSelectionRange(startPos + 1, endPos + 1);
+	}
+
+	onChange(textArea.value);
+};
+
 const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposerProps) => {
 	const { t } = useTranslation();
 	const useEmojisPreference = useUserPreference('useEmojis');
@@ -32,35 +66,10 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 
 	const { open: openEmojiPicker } = useEmojiPicker();
 
-	const useMarkdownSyntax = (char: '*' | '_' | '~' | '[]()'): (() => void) =>
-		useCallback(() => {
-			if (textAreaRef?.current) {
-				const text = textAreaRef.current.value;
-				const startPos = textAreaRef.current.selectionStart;
-				const endPos = textAreaRef.current.selectionEnd;
-
-				if (char === '[]()') {
-					if (startPos !== endPos) {
-						textAreaRef.current.value = `${text.slice(0, startPos)}[${text.slice(startPos, endPos)}]()${text.slice(endPos)}`;
-					}
-				} else {
-					textAreaRef.current.value = `${text.slice(0, startPos)}${char}${text.slice(startPos, endPos)}${char}${text.slice(endPos)}`;
-				}
-				textAreaRef.current.focus();
-
-				if (char === '[]()') {
-					if (startPos === endPos) {
-						textAreaRef.current.setSelectionRange(startPos, endPos);
-					} else {
-						textAreaRef.current.setSelectionRange(endPos + 3, endPos + 3);
-					}
-				} else {
-					textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
-				}
-
-				onChange?.(textAreaRef.current.value);
-			}
-		}, [char]);
+	const handleBold = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '*', onChange), [onChange]);
+	const handleItalic = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '_', onChange), [onChange]);
+	const handleStrike = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '~', onChange), [onChange]);
+	const handleLink = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '[]()', onChange), [onChange]);
 
 	const onClickEmoji = (emojiName: string): void => {
 		if (textAreaRef?.current) {
@@ -91,7 +100,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 	};
 
 	const openPlaceholderSelect = (): void => {
-		textAreaRef?.current && textAreaRef.current.focus();
+		textAreaRef?.current?.focus();
 		setVisible(!visible);
 	};
 
@@ -107,10 +116,10 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 					<MessageComposerAction icon='emoji' disabled={!useEmojisPreference} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
 					<MessageComposerActionsDivider />
-					<MessageComposerAction icon='bold' onClick={useMarkdownSyntax('*')} title={t('Bold')} />
-					<MessageComposerAction icon='italic' onClick={useMarkdownSyntax('_')} title={t('Italic')} />
-					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
-					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
+					<MessageComposerAction icon='bold' onClick={handleBold} title={t('Bold')} />
+					<MessageComposerAction icon='italic' onClick={handleItalic} title={t('Italic')} />
+					<MessageComposerAction icon='strike' onClick={handleStrike} title={t('Strikethrough')} />
+					<MessageComposerAction icon='link' onClick={handleLink} title={t('Link')} />
 					<MessageComposerActionsDivider />
 					<Button ref={ref} size='small' onClick={openPlaceholderSelect}>
 						{t('Insert_Placeholder')}
@@ -118,7 +127,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					{visible && (
 						<Backdrop
 							onClick={(): void => {
-								textAreaRef?.current && textAreaRef.current.focus();
+								textAreaRef?.current?.focus();
 								setVisible(false);
 							}}
 						/>

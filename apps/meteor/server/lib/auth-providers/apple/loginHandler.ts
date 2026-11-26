@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { handleIdentityToken } from './handleIdentityToken';
 import { settings } from '../../../settings';
+import { updateOrCreateUserFromExternalService } from '../../auth/updateOrCreateUserFromExternalService';
 
 Accounts.registerLoginHandler('apple', async (loginRequest) => {
 	if (!loginRequest.identityToken) {
@@ -27,7 +28,7 @@ Accounts.registerLoginHandler('apple', async (loginRequest) => {
 			profile.name = `${givenName} ${familyName}`;
 		}
 
-		const result = await Accounts.updateOrCreateUserFromExternalService('apple', serviceData, { profile });
+		const result = await updateOrCreateUserFromExternalService('apple', serviceData, { profile });
 
 		if (result?.userId === undefined) {
 			return {

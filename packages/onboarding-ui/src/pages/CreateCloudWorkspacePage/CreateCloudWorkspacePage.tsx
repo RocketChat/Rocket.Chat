@@ -2,10 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 import { BackgroundLayer } from '@rocket.chat/layout';
 import { useTranslation, Trans } from 'react-i18next';
 
-import Description from './Description';
-import TitleCreateCloudPage from './TitleCreateCloudPage';
-import FormPageLayout from '../../common/FormPageLayout';
-import CreateCloudWorkspaceForm, { type CreateCloudWorkspaceFormProps } from '../../forms/CreateCloudWorkspaceForm';
+import Description from './Description.js';
+import TitleCreateCloudPage from './TitleCreateCloudPage.js';
+import FormPageLayout from '../../common/FormPageLayout.js';
+import CreateCloudWorkspaceForm, { type CreateCloudWorkspaceFormProps } from '../../forms/CreateCloudWorkspaceForm/index.js';
 
 export type CreateCloudWorkspacePageProps = CreateCloudWorkspaceFormProps;
 

@@ -11,8 +11,8 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { DontAskAgainItem } from './preferencesPayload';
-import { toPreferencesPayload } from './preferencesPayload';
+import type { DontAskAgainItem } from './preferencesPayload.js';
+import { toPreferencesPayload } from './preferencesPayload.js';
 
 export type AccountPreferencesData = {
 	language?: string;

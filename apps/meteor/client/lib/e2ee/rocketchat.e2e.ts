@@ -161,7 +161,7 @@ class E2E extends Emitter {
 		const span = log.span('observeSubscriptions');
 		this.unsubscribeFromSubscriptions?.();
 
-		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe((state) => {
+		this.unsubscribeFromSubscriptions = Subscriptions.useStore.subscribe((state) => {
 			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
 
 			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
@@ -230,7 +230,7 @@ class E2E extends Emitter {
 
 			if (room) resolve(room);
 
-			const unsubscribe = Rooms.use.subscribe((state) => {
+			const unsubscribe = Rooms.useStore.subscribe((state) => {
 				const room = state.get(rid);
 				if (room) {
 					unsubscribe();
@@ -748,7 +748,7 @@ class E2E extends Emitter {
 					const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 					quotedMessage = getQuotedMessage?.message;
 				} catch (error) {
-					console.error(`Error getting quoted message: ${error}`);
+					log.span('parseQuoteAttachment').error('Error getting quoted message', error);
 					return;
 				}
 
@@ -806,7 +806,7 @@ class E2E extends Emitter {
 		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
 
 		const sampleIds: string[] = [];
-		for await (const roomId of randomRoomIds) {
+		for (const roomId of randomRoomIds) {
 			const e2eroom = await this.getInstanceByRoomId(roomId);
 			if (!e2eroom?.hasSessionKey()) {
 				continue;

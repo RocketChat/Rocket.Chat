@@ -21,7 +21,7 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 
 	const displayCustomFields = Object.entries(customFields).reduce(
 		(acc, [key, value]) => {
-			acc[key] = value ? `${key}: ${value}` : undefined;
+			acc[key] = typeof value === 'string' && value ? `${key}: ${value}` : undefined;
 			return acc;
 		},
 		{} as { [key: string]: string | undefined },
@@ -41,5 +41,5 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 };
 
 const parseMultiSelect = (data: PaginatedMultiSelectOption[]) => {
-	return data.map((a) => (a.label as string).split(' (')[0]).join(', ');
+	return data.map((a) => a.label.split(' (')[0]).join(', ');
 };

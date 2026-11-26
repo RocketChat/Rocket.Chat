@@ -1,13 +1,14 @@
 import type { ImgHTMLAttributes } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
+import type { ModalSize } from './Modal';
 
 export type ModalHeroImageProps = ElementProps<HTMLImageElement, ImgHTMLAttributes<HTMLImageElement>> & {
 	/** The rendered width, which the `width` attribute alone cannot set over the fluid default. */
-	width?: BoxProps['width'];
+	width?: ModalSize;
 	/** The rendered height, which the `height` attribute alone cannot set over the fluid default. */
-	height?: BoxProps['height'];
+	height?: ModalSize;
 };
 
 const ModalHeroImage = ({ ...props }: ModalHeroImageProps) => (

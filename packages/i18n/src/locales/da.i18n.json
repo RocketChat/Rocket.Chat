@@ -1511,6 +1511,7 @@
   "Example_payload": "Eksempel på data",
   "Example_s": "F.eks: <code>{{value}}</code>",
   "except_pinned": "(undtagen dem der er fastgjort)",
+  "Exchange_Graph_Client_Secret": "Klient-secret",
   "Exclude_Botnames": "Ekskludér Bots",
   "Exclude_Botnames_Description": "Udbred ikke meddelelser fra bots, hvis navn svarer til det regulære udtryk ovenfor. Hvis tomt er tomt, vil alle meddelelser fra bots blive udbredt.",
   "Exclude_pinned": "Ekskluder pinnede meddelelser",

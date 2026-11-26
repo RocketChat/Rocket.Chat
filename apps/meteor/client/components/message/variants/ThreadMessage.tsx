@@ -16,6 +16,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
+import { messageToolbarScope } from '../toolbar/MessageToolbarReveal';
 
 export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -38,6 +39,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 
 	return (
 		<Message
+			className={messageToolbarScope}
 			role='listitem'
 			aria-roledescription={t('thread_message')}
 			tabIndex={0}

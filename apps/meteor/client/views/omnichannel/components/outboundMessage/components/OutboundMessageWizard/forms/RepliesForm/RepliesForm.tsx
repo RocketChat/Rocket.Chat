@@ -84,7 +84,9 @@ const RepliesForm = (props: RepliesFormProps) => {
 	});
 
 	useEffect(() => {
-		isErrorDepartment && trigger('departmentId');
+		if (isErrorDepartment) {
+			trigger('departmentId');
+		}
 		return () => clearErrors('departmentId');
 	}, [clearErrors, isErrorDepartment, trigger]);
 

@@ -95,7 +95,7 @@ describe('SystemMessage', () => {
 	});
 
 	describe('while selecting messages', () => {
-		const renderMessage = () => {
+		const mountMessage = () => {
 			const message = createBaseMessage('test');
 			render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
 			return message._id;
@@ -110,7 +110,7 @@ describe('SystemMessage', () => {
 		});
 
 		it('should select the message on a click', async () => {
-			const id = renderMessage();
+			const id = mountMessage();
 
 			await userEvent.click(screen.getByRole('listitem'));
 
@@ -118,7 +118,7 @@ describe('SystemMessage', () => {
 		});
 
 		it.each(['Space', 'Enter'])('should select the message with the %s key', (code) => {
-			const id = renderMessage();
+			const id = mountMessage();
 
 			fireEvent.keyDown(screen.getByRole('listitem'), { code });
 
@@ -126,7 +126,7 @@ describe('SystemMessage', () => {
 		});
 
 		it('should ignore other keys', () => {
-			const id = renderMessage();
+			const id = mountMessage();
 
 			fireEvent.keyDown(screen.getByRole('listitem'), { code: 'KeyA' });
 
@@ -134,7 +134,7 @@ describe('SystemMessage', () => {
 		});
 
 		it('should show a checkbox', () => {
-			renderMessage();
+			mountMessage();
 
 			expect(screen.getByRole('checkbox')).toBeInTheDocument();
 		});
