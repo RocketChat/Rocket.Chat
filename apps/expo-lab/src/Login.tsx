@@ -23,6 +23,7 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 	const [busy, setBusy] = useState(false);
 	const [codeRequest, setCodeRequest] = useState<CodeRequest>();
 	const [code, setCode] = useState('');
+	const [gallery, setGallery] = useState(process.env.EXPO_PUBLIC_GALLERY === '1');
 	const answer = useRef<{ resolve: (code: string) => void; reject: (e: Error) => void } | undefined>(undefined);
 
 	const askCode = (request: CodeRequest) =>
@@ -55,6 +56,12 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 			setBusy(false);
 		}
 	};
+
+	if (gallery) {
+		// Loaded on demand: importing Fuselage registers its own Tamagui config
+		const { Gallery } = require('./Gallery') as typeof import('./Gallery');
+		return <Gallery onBack={() => setGallery(false)} />;
+	}
 
 	return (
 		<YStack flex={1} padding={24} paddingTop={96} gap={12}>
@@ -98,6 +105,7 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 				{busy ? 'Signing in...' : 'Sign in'}
 			</Button>
 			{error && <RNText style={{ color: 'crimson' }}>{error}</RNText>}
+			<Button onPress={() => setGallery(true)}>Components</Button>
 		</YStack>
 	);
 }

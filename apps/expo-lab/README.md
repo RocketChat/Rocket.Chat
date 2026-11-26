@@ -102,6 +102,39 @@ Goal: render real Fuselage components on iOS by resolving `@rocket.chat/fuselage
 - `className`/`rcx-*` classes, `ariaAndDataAttributes` and `pickWebPressHandlers`: no effect on native; `onClick` is not `onPress`.
 - Module-scope DOM globals: the whole of `index.runtime.ts` loaded without throwing, so none were hit at load.
 
+## Converted components on native
+
+This branch (`feat/expo-lab-all`) combines the open Fuselage to Tamagui conversion PRs (L1 to L6 and Icon, see `MERGE-NOTES.md`). The gallery (`src/Gallery.tsx`) renders them with the same source alias as the spike. Open it from the "Components" button on the login screen, or start Metro with `EXPO_PUBLIC_GALLERY=1` to open it first. It mounts its own `TamaguiProvider` with Fuselage's config and is loaded on demand, because importing Fuselage calls `createTamagui` again; the chat screens are untouched. `src/polyfills.ts` adds a no-op `ResizeObserver`, which `Callout` needs.
+
+Observed on the iPhone 17 Pro simulator (dev client, Metro on port 8085). Screenshots are in `/tmp/expolab/shots/`: `12-gallery-top.png` (buttons to chip), `16-gallery.png` (callouts, message parts, rows), `11-gallery.png` (rows, check box). The simulator has no touch tool here, so presses were not exercised: "press" is not verified for any row.
+
+| Component | Converted by a PR | Renders | Styled | Press | Observed |
+| --- | --- | --- | --- | --- | --- |
+| `Button` primary, secondary, danger | L1 | yes | fill, radius and padding applied (blue, grey, red) | not verified | Full-width, label left-aligned and black on every kind (no centring, no `on-primary` text colour). |
+| `Badge` primary, secondary, danger | L1 | yes | yes: pill, fill, white bold text | no handler | Matches the web look. Spike: bold text only. |
+| `Chip` | L1 | yes | grey fill, radius, padding | not verified | The dismiss glyph shows as an emoji (icon font not applied). |
+| `CheckBox` | L1 | yes | empty box outline only | not verified | Rendered as the `render: 'input'` element; no checked state drawn. |
+| `Icon` | Icon PR | yes, wrong glyph | n/a | no handler | A private-use character is drawn without the icon font, so the system shows an emoji (`bell` shows a person emoji). |
+| `Callout` info, danger | L2 | yes, after a `ResizeObserver` stub | border, radius, title weight, type colour | no handler | Without the stub: `ReferenceError: Property 'ResizeObserver' doesn't exist` (`Callout.tsx:186`, `useResizeObserver`). The icon is the same emoji problem. |
+| `MessageName`, `MessageBody`, `MessageTimestamp`, `MessageUsername`, `MessageHeader` inside `Message` | L6 and Item (L3) | yes | bold name, grey timestamp, spacing | no handler | `Message` renders with these parts. |
+| `Item` row (`ItemIcon`, `ItemContent`, `ItemTitle`, `ItemMeta`) | L3 | yes | row layout and meta aligned at the end | not verified | Icon again an emoji. |
+| `SidebarItem` | L3 and L5 | yes | text only | not verified | No surface or hover paint visible at rest. |
+| `Avatar` | not converted | no | n/a | n/a | `Invariant Violation: View config getter callback for component 'img' must be a function` at `Avatar.tsx:23` (`<img>`). Same error inside `Message` when it holds an `Avatar` (`AvatarContainer.tsx:9`). |
+| `Banner` | not converted | no | n/a | n/a | Same invariant for `h6` (`Banner.tsx:87`). |
+| `Tag` | not converted | no | n/a | n/a | Same invariant for `span` (`Tag.tsx:37`, `<Box is='span'>`). |
+
+### What the conversion PRs changed natively
+
+Against the earlier spike (Badge showed bold text only, Button text at the left edge with no fill, Avatar nothing): the converted frames now carry their colours, radius, padding and layout on native. The spike's missing values (`var(--rcx-*)`, `rem`) were the blocker; the frames now name tokens and theme keys, which Tamagui resolves on native. Badge, Button, Chip, Callout, Message parts and Item rows are visibly styled. The components not in the PRs (Avatar, Banner, Tag) still fail on DOM tags.
+
+### Remaining fixes, in Fuselage (not done here, other branches' work)
+
+- Press: `pickWebPressHandlers` maps `onPress` to `onClick`, which a native `View` does not take. Pass `onPress` through on native in `packages/fuselage/src/helpers/pickWebPressHandlers.ts` (or a native twin of it).
+- Button text: the label is not centred and ignores the variant text colour; `Button.tsx` frame needs `justifyContent: 'center'` and a text colour the label inherits on native.
+- Icon font: `Icon.tsx` writes the glyph character with no `fontFamily`; the app has to load `packages/icons/dist/font` and the frame must name it on native.
+- `useResizeObserver` (`@rocket.chat/fuselage-hooks`) should guard a missing `ResizeObserver` instead of the app stubbing it.
+- Avatar, Banner, Tag and every `Box`-based component: render `View`/`Text`/`Image` on native (not part of L1 to L6).
+
 ## SDK on React Native: findings
 
 Observed on the iPhone 17 Pro simulator (dev client, RN 0.88, Hermes) against open.rocket.chat with a personal access token. No polyfill and no Metro change were needed for any of the three packages.
