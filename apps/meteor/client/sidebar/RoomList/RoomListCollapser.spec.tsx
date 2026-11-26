@@ -101,12 +101,20 @@ describe('RoomListCollapser', () => {
 		expect(screen.getByRole('button', { name: 'Channels' })).not.toContainElement(menu);
 	});
 
-	it('renders no category menu for dynamic groups', async () => {
+	it('renders no category menu for the Unread group', async () => {
 		renderCollapser(makeGroup(false, 0, 'Unread'));
 
 		screen.getByRole('button', { name: 'Unread' }).focus();
 
 		await expect(screen.findByRole('button', { name: 'Options' }, { timeout: 200 })).rejects.toThrow();
+	});
+
+	it('keeps the category menu on the other dynamic groups', async () => {
+		renderCollapser(makeGroup(false, 0, 'Open_Livechats'));
+
+		screen.getByRole('button', { name: 'Open_Livechats' }).focus();
+
+		expect(await screen.findByRole('button', { name: 'Options' })).toBeInTheDocument();
 	});
 
 	it('does not toggle the group from the category menu', async () => {

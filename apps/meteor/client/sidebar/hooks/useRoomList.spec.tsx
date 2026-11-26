@@ -333,7 +333,7 @@ it('should keep unread rooms visible (and show no header badge) when a group is 
 	});
 });
 
-it('should ignore a "Show unreads" flag stored for a dynamic group, which has no menu to turn it off', async () => {
+it('should ignore a "Show unreads" flag stored for the Unread group, which has no menu to turn it off', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Unread'] }), {
 		wrapper: getWrapperSettings({
 			sidebarGroupByType: true,
