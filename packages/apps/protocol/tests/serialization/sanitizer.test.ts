@@ -4,7 +4,7 @@ import * as v8 from 'node:v8';
 
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
-import { sanitizeForIpc } from '../../src/lib/IpcSanitizer';
+import { sanitizeForIpc } from '../../src/serialization/sanitizer.js';
 
 describe('sanitizeForIpc', () => {
 	it('returns primitives unchanged', () => {
@@ -42,8 +42,8 @@ describe('sanitizeForIpc', () => {
 			},
 		});
 
-		assert.strictEqual(result.level1.level2[0].fn, undefined);
-		assert.strictEqual(result.level1.level2[0].value, 1);
+		assert.strictEqual((result.level1.level2[0] as { fn?: unknown; value?: number }).fn, undefined);
+		assert.strictEqual((result.level1.level2[0] as { fn?: unknown; value?: number }).value, 1);
 		assert.strictEqual(result.level1.level2[1], undefined);
 		assert.strictEqual(result.level1.level2[2], 'two');
 	});

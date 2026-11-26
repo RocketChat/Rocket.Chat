@@ -3,3 +3,5 @@
 export * from './rpc/contract';
 export * from './rpc/errors';
 export * from './rpc/server';
+export * from './serialization/sanitizer';
+export * from './serialization/secureFields';

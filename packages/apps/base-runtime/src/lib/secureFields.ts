@@ -1,10 +1,9 @@
-import type { WithSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
-import { hasSecureFields, kSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
+import { hasSecureFields, kSecureFields, type WithSecureFields } from '@rocket.chat/apps/protocol/dist/serialization/secureFields';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 
-export type { WithSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
+export type { WithSecureFields } from '@rocket.chat/apps/protocol/dist/serialization/secureFields';
 
 export function applySecureFields(object: WithSecureFields<Record<string, unknown>>) {
 	const { [kSecureFields]: secureFields, ...rest } = object;

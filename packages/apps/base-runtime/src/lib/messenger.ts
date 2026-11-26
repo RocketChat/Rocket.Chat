@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 
-import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+import { sanitizeForIpc } from '@rocket.chat/apps/protocol/dist/serialization/sanitizer';
 
 import type { RequestContext } from './requestContext';
 

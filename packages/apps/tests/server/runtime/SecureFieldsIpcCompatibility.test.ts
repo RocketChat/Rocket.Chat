@@ -6,7 +6,7 @@ import { describe, it, before, after } from 'node:test';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { kSecureFields } from '../../../src/lib/SecureFields';
+import { kSecureFields } from '../../../protocol/src/serialization/secureFields';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';

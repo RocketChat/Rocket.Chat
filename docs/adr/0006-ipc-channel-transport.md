@@ -1,5 +1,7 @@
 # ADR 0006 — Node's IPC channel carries the host↔subprocess protocol
 
+> **Amended (2026-11):** the sanitizer and the secure-fields helpers moved into `packages/apps/protocol`, the shared protocol package, so both halves import them from there. The decision itself is unchanged.
+
 ## TL;DR
 
 - The subprocess is spawned with an `'ipc'` file descriptor and `serialization: 'advanced'`. Both
@@ -35,7 +37,7 @@
    its callback. Each side receives with `on('message')`.
 2. **msgpack is removed.** Both `codec.ts` files and the `@msgpack/msgpack` dependency go. Framing
    and binary values are native to the channel.
-3. **A sanitizer replaces the function-stripping extension.** `src/lib/IpcSanitizer.ts` is one
+3. **A sanitizer replaces the function-stripping extension.** `protocol/src/serialization/sanitizer.ts` is one
    implementation shared by both halves, and it runs on every message before the send. It replaces
    functions, symbols and `App` instances with `undefined`, and preserves `Buffer`, `Date`,
    `RegExp`, `Error`, `Map`, `Set`, shared references and cycles.
@@ -163,11 +165,11 @@ decision 4.
 
 - Spawn options and stream forwarding: `packages/apps/src/server/runtime/base/BaseRuntimeSubprocessController.ts`
 - Host send path: `packages/apps/src/server/runtime/base/ProcessMessenger.ts`
-- Sanitizer: `packages/apps/src/lib/IpcSanitizer.ts`; tests `packages/apps/tests/lib/IpcSanitizer.test.ts`
+- Sanitizer: `packages/apps/protocol/src/serialization/sanitizer.ts`; tests `packages/apps/protocol/tests/serialization/sanitizer.test.ts`
 - Runtime send path and receive loop: `packages/apps/base-runtime/src/lib/messenger.ts`;
   `packages/apps/base-runtime/src/mainLoop.ts`
 - Secure fields: `packages/apps/base-runtime/src/lib/secureFields.ts`; marker and mapper
-  `packages/apps/src/lib/SecureFields.ts`; round-trip test
+  `packages/apps/protocol/src/serialization/secureFields.ts`; round-trip test
   `packages/apps/tests/server/runtime/SecureFieldsIpcCompatibility.test.ts`
 - Liveness: `packages/apps/src/server/runtime/base/LivenessManager.ts`
 
