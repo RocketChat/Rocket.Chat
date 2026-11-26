@@ -10,7 +10,7 @@ const BannerEnterpriseTrialEnded = () => {
 	const bannerLink = {
 		link: '/links/manage-subscription',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
-		linkTarget: '_blank',
+		linkTarget: '_blank' as const,
 	};
 
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial', false);

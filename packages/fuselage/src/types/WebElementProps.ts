@@ -27,5 +27,8 @@ export type WebDivRef = Ref<HTMLDivElement>;
 /** A `section` that can be pressed and whose `title` is its own content, not the attribute. */
 export type WebSectionProps<TContract> = WebProps<TContract, HTMLElement> & WebPressAlias<HTMLElement>;
 
+/** The element of a `div` part, for a ref the part measures its own size through. */
+export type WebDivElement = HTMLDivElement;
+
 /** The element of a `section` part, for a ref the part measures its own size through. */
 export type WebSectionElement = HTMLElement;
