@@ -22,7 +22,7 @@ export class Nps implements IUiKitCoreApp {
 
 		const bannerId = viewId.replace(`${npsId}-`, '');
 
-		const modal: UiKit.ServerInteraction = createModal({
+		return createModal({
 			type: actionId === 'nps-score' ? 'modal.update' : 'modal.open',
 			id: `${npsId}-${bannerId}`,
 			appId: this.appId,
@@ -30,9 +30,7 @@ export class Nps implements IUiKitCoreApp {
 			triggerId,
 			score: String(score),
 			user,
-		});
-
-		return modal;
+		}) as UiKit.ServerInteraction;
 	}
 
 	async viewSubmit(payload: UiKitCoreAppViewSubmitPayload): Promise<undefined> {
