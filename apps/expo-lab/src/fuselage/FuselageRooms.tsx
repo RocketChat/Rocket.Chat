@@ -7,6 +7,7 @@ import {
 	SidebarItemContent,
 	SidebarItemIcon,
 	SidebarItemTitle,
+	Tag,
 } from '@rocket.chat/fuselage';
 
 import type { RoomItem } from '../api';
@@ -42,6 +43,7 @@ export function FuselageRooms({ session, onOpen, onLogout }: Props) {
 						<SidebarItemContent>
 							<SidebarItemTitle>{item.title}</SidebarItemTitle>
 						</SidebarItemContent>
+						{item.t === 'p' && <Tag>private</Tag>}
 						{item.unread > 0 && <SidebarItemBadge variant='primary'>{item.unread}</SidebarItemBadge>}
 					</SidebarItem>
 				)}
