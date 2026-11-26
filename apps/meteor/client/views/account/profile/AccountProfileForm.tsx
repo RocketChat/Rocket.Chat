@@ -41,7 +41,6 @@ const getPreviousAccountValues = (user: IUser | null) => ({
 	isUserVerified: user?.emails?.[0]?.verified ?? false,
 });
 
-// oxlint-disable-next-line complexity -- every watched form field's default counts as a branch
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const user = useUser();
@@ -73,13 +72,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const { control, handleSubmit, reset, setValue } = useFormContext<AccountProfileFormValues>();
 	const { errors, dirtyFields } = useFormState({ control });
 
-	const watched = useWatch({ control });
-	const email = watched.email ?? '';
-	const avatar = useWatch({ control, name: 'avatar' });
-	const username = watched.username ?? '';
-	const userFullName = watched.name ?? '';
-	const { statusType } = watched;
-	const statusText = watched.statusText ?? '';
+	const [email, avatar, username, userFullName, statusType, statusText] = useWatch({
+		control,
+		name: ['email', 'avatar', 'username', 'name', 'statusType', 'statusText'],
+	});
 
 	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 

@@ -118,7 +118,6 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
-// oxlint-disable-next-line complexity -- every watched form field's default counts as a branch
 const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleData, roleError, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -149,13 +148,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const watched = useWatch({ control });
-	const avatar = useWatch({ control, name: 'avatar' });
-	const username = watched.username ?? '';
-	const setRandomPassword = watched.setRandomPassword ?? false;
-	const password = watched.password ?? '';
-	const userFullName = watched.name ?? '';
-	const presenceDisabledByAdmin = watched.presenceDisabledByAdmin ?? false;
+	const [avatar, username, setRandomPassword, password, userFullName, presenceDisabledByAdmin] = useWatch({
+		control,
+		name: ['avatar', 'username', 'setRandomPassword', 'password', 'name', 'presenceDisabledByAdmin'],
+	});
 	const showUserStatusSection = userStatusEnabled && canManageUserStatus;
 	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 
