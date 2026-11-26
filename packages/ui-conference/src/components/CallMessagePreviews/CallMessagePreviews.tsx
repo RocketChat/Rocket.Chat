@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import CallMessagePreview from './CallMessagePreview.js';
 import { useConferenceViewer } from '../../context/ConferenceContext.js';
-import type { ConferenceIncomingMessage } from '../../context/definitions.js';
+import type { ConferenceNewMessage } from '../../context/definitions.js';
 
 const listStyles = css`
 	display: flex;
@@ -19,7 +19,7 @@ const listStyles = css`
 `;
 
 export type CallMessagePreviewsProps = {
-	messages: ConferenceIncomingMessage[];
+	messages: ConferenceNewMessage[];
 	/** One line per message and tighter spacing, for a window with little room over the call. */
 	compact?: boolean;
 	onOpen: (mid: string) => void;

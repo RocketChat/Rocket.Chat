@@ -1,4 +1,4 @@
-import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
+import type { ConferenceContextValue, ConferenceFailure, ConferencePanel, ConferenceRoom } from '@rocket.chat/ui-conference';
 import { ConferenceContext, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -85,14 +85,12 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		ignored: subscription?.ignored,
 	});
 
-	const incomingMessages = useMemo(
-		() =>
-			subscribeToIncomingMessages && {
-				subscribe: subscribeToIncomingMessages,
-				open: (mid: string) => void setMessageJumpQueryStringParameter(mid),
-			},
+	const onNewMessage = useCallback<ConferenceRoom['onNewMessage']>(
+		(listener) => subscribeToIncomingMessages?.(listener) ?? (() => undefined),
 		[subscribeToIncomingMessages],
 	);
+
+	const jumpToMessage = useCallback((mid: string) => void setMessageJumpQueryStringParameter(mid), []);
 
 	/**
 	 * Which panel the window is showing, held here rather than in the window because a provider's page can carry
@@ -200,7 +198,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 					variant: unreadVariant,
 					title: unreadTitle,
 				},
-				incomingMessages,
+				onNewMessage,
+				jumpToMessage,
 			},
 			session: {
 				url: conference.url,
@@ -243,7 +242,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			uid,
 			useRealName,
 			showUnread,
-			incomingMessages,
+			onNewMessage,
+			jumpToMessage,
 			subscription,
 			thread,
 			unreadCount.total,

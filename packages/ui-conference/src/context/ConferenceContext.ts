@@ -83,6 +83,8 @@ export const defaultConferenceContextValue: ConferenceContextValue = {
 		loading: true,
 		retry: () => undefined,
 		unread: { count: 0, hasUnseenActivity: false },
+		onNewMessage: () => () => undefined,
+		jumpToMessage: () => undefined,
 	},
 	session: {
 		embedded: false,

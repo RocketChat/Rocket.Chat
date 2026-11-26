@@ -3,10 +3,10 @@ import type { RefCallback } from 'react';
 import { useEffect, useState } from 'react';
 
 import { useHeld } from './useHeld.js';
-import type { ConferenceIncomingMessage, ConferenceRoom } from '../context/definitions.js';
+import type { ConferenceNewMessage, ConferenceRoom } from '../context/definitions.js';
 import { MESSAGE_PREVIEW_VISIBLE_MS } from '../lib/constants.js';
 
-type ShownMessage = ConferenceIncomingMessage & { shownAt: number };
+type ShownMessage = ConferenceNewMessage & { shownAt: number };
 
 type CallMessagePreviewsOptions = {
 	/** While true nothing is previewed, and what was showing is cleared. */
@@ -16,7 +16,7 @@ type CallMessagePreviewsOptions = {
 };
 
 type CallMessagePreviews = {
-	messages: ConferenceIncomingMessage[];
+	messages: ConferenceNewMessage[];
 	dismiss: (mid: string) => void;
 	/** For the element the previews are drawn in: while someone is busy with it, none of them leaves. */
 	holdRef: RefCallback<HTMLElement>;
@@ -28,13 +28,13 @@ type CallMessagePreviews = {
  * press stays where it is; newer messages wait for them to let go.
  */
 export const useCallMessagePreviews = (
-	subscribe: NonNullable<ConferenceRoom['incomingMessages']>['subscribe'] | undefined,
+	subscribe: ConferenceRoom['onNewMessage'] | undefined,
 	{ paused, limit }: CallMessagePreviewsOptions,
 ): CallMessagePreviews => {
 	const [holdRef, held] = useHeld();
 	const [shown, setShown] = useState<ShownMessage[]>([]);
 
-	const show = useStableCallback((message: ConferenceIncomingMessage) => {
+	const show = useStableCallback((message: ConferenceNewMessage) => {
 		if (paused) {
 			return;
 		}

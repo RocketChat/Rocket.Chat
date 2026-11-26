@@ -1,7 +1,7 @@
 import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEditedMessage } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { ConferenceIncomingMessage, ConferenceRoom } from '@rocket.chat/ui-conference';
+import type { ConferenceNewMessage } from '@rocket.chat/ui-conference';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ export const useSubscribeToIncomingMessages = ({
 	tmid?: IMessage['_id'];
 	since?: Date;
 	ignored?: ISubscription['ignored'];
-}): NonNullable<ConferenceRoom['incomingMessages']>['subscribe'] | undefined => {
+}): ((listener: (message: ConferenceNewMessage) => void) => () => void) | undefined => {
 	const uid = useUserId();
 	const subscribeToRoomMessages = useStream('room-messages');
 	const { t } = useTranslation();
@@ -68,7 +68,7 @@ export const useSubscribeToIncomingMessages = ({
 		(message: IMessage, since: Date): boolean => !!uid && isIncomingCallMessage(message, { uid, tmid, since, ignored }),
 	);
 
-	const toIncomingMessage = useStableCallback(async (message: IMessage): Promise<ConferenceIncomingMessage | undefined> => {
+	const toIncomingMessage = useStableCallback(async (message: IMessage): Promise<ConferenceNewMessage | undefined> => {
 		const read = await readable(message);
 		const text = isUnreadable(read) ? undefined : normalizeMessagePreview(read, t);
 

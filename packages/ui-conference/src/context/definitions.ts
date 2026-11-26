@@ -87,20 +87,14 @@ export type ConferenceRoom = {
 		variant?: ComponentProps<typeof Badge>['variant'];
 		title?: string;
 	};
-	/**
-	 * The chat's new messages, for the window to preview while its chat is closed. Absent until the reader is in
-	 * the call, because what counts as new is counted from when they joined.
-	 */
-	incomingMessages?: {
-		/** Hands over each message someone else sends to the call's chat, once, and returns how to stop. */
-		subscribe: (listener: (message: ConferenceIncomingMessage) => void) => () => void;
-		/** Takes the chat to a message. Showing the chat panel is the window's own to do. */
-		open: (mid: string) => void;
-	};
+	/** Calls `listener` with each message someone else sends to the call's chat after the reader joined, and returns how to stop. */
+	onNewMessage: (listener: (message: ConferenceNewMessage) => void) => () => void;
+	/** Takes the call's chat to a message. */
+	jumpToMessage: (mid: string) => void;
 };
 
 /** A chat message as the window previews it: who sent it, and what it says as plain text. */
-export type ConferenceIncomingMessage = {
+export type ConferenceNewMessage = {
 	_id: string;
 	username: string;
 	name?: string;

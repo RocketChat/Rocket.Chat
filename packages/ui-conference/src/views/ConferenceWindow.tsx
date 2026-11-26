@@ -69,7 +69,7 @@ const ConferenceWindow = () => {
 	const sheetPanel = !breakpoints.includes('md') || tooShortToSplit;
 
 	// Only once in the call, and not while the chat is being read or a sheet has risen over the corner they show in.
-	const messagePreviews = useCallMessagePreviews(session.joined ? room.incomingMessages?.subscribe : undefined, {
+	const messagePreviews = useCallMessagePreviews(session.joined ? room.onNewMessage : undefined, {
 		paused: chatVisible || (sheetPanel && !!activePanel),
 		limit: sheetPanel ? MESSAGE_PREVIEWS_SHOWN_COMPACT : MESSAGE_PREVIEWS_SHOWN,
 	});
@@ -142,7 +142,7 @@ const ConferenceWindow = () => {
 									onOpen={(mid) => {
 										focusChatButton();
 										setActivePanel('chat');
-										room.incomingMessages?.open(mid);
+										room.jumpToMessage(mid);
 									}}
 									onDismiss={messagePreviews.dismiss}
 									onFocusLeave={focusChatButton}

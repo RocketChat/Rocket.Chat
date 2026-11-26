@@ -196,19 +196,17 @@ describe('a call that runs in this window', () => {
 
 	it('opens the chat at a previewed message', async () => {
 		const set = jest.fn();
-		const open = jest.fn();
+		const jumpToMessage = jest.fn();
 
 		renderNative({
 			room: {
 				...buildConferenceContext().room,
 				rid: 'room-id',
-				incomingMessages: {
-					subscribe: (listener) => {
-						listener({ _id: 'message-id', username: 'ada', text: 'Can everyone see my screen?' });
-						return () => undefined;
-					},
-					open,
+				onNewMessage: (listener) => {
+					listener({ _id: 'message-id', username: 'ada', text: 'Can everyone see my screen?' });
+					return () => undefined;
 				},
+				jumpToMessage,
 			},
 			panel: { set },
 		});
@@ -216,7 +214,7 @@ describe('a call that runs in this window', () => {
 		await userEvent.click(screen.getByRole('button', { name: /Can everyone see my screen\?/ }));
 
 		expect(set).toHaveBeenCalledWith('chat');
-		expect(open).toHaveBeenCalledWith('message-id');
+		expect(jumpToMessage).toHaveBeenCalledWith('message-id');
 	});
 });
 

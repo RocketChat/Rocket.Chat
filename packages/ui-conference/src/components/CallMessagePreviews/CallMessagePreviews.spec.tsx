@@ -3,16 +3,16 @@ import { act, render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
 import CallMessagePreviews from './CallMessagePreviews.js';
-import type { ConferenceIncomingMessage } from '../../context/definitions.js';
+import type { ConferenceNewMessage } from '../../context/definitions.js';
 import { useCallMessagePreviews } from '../../hooks/useCallMessagePreviews.js';
 import { MESSAGE_PREVIEWS_SHOWN, MESSAGE_PREVIEW_VISIBLE_MS } from '../../lib/constants.js';
 
 const ada = { username: 'ada', name: 'Ada Lovelace' };
 
-const message = (_id: string, text: string | undefined = `Message ${_id}`): ConferenceIncomingMessage => ({ _id, ...ada, text });
+const message = (_id: string, text: string | undefined = `Message ${_id}`): ConferenceNewMessage => ({ _id, ...ada, text });
 
 type PreviewsProps = {
-	subscribe: (listener: (message: ConferenceIncomingMessage) => void) => () => void;
+	subscribe: (listener: (message: ConferenceNewMessage) => void) => () => void;
 	paused: boolean;
 	onOpen: (mid: string) => void;
 	onFocusLeave: () => void;
@@ -26,9 +26,9 @@ const Previews = ({ subscribe, paused, onOpen, onFocusLeave }: PreviewsProps) =>
 };
 
 const renderPreviews = ({ paused = false } = {}) => {
-	let listener: ((message: ConferenceIncomingMessage) => void) | undefined;
+	let listener: ((message: ConferenceNewMessage) => void) | undefined;
 	const unsubscribe = jest.fn();
-	const subscribe = jest.fn((next: (message: ConferenceIncomingMessage) => void) => {
+	const subscribe = jest.fn((next: (message: ConferenceNewMessage) => void) => {
 		listener = next;
 		return unsubscribe;
 	});
@@ -39,7 +39,7 @@ const renderPreviews = ({ paused = false } = {}) => {
 		wrapper: mockAppRoot().withJohnDoe().withTranslations('en', 'core', { Chat_message_from_name: '{{name}}: {{message}}' }).build(),
 	});
 
-	const send = (...messages: ConferenceIncomingMessage[]) => act(() => messages.forEach((incoming) => listener?.(incoming)));
+	const send = (...messages: ConferenceNewMessage[]) => act(() => messages.forEach((incoming) => listener?.(incoming)));
 
 	const rerender = (props: { paused: boolean }) =>
 		view.rerender(<Previews subscribe={subscribe} paused={props.paused} onOpen={onOpen} onFocusLeave={onFocusLeave} />);

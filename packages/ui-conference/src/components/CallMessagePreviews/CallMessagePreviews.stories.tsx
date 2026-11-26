@@ -2,21 +2,21 @@ import type { Decorator, Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
 import CallMessagePreviews from './CallMessagePreviews.js';
-import type { ConferenceIncomingMessage, ConferenceRoom } from '../../context/definitions.js';
+import type { ConferenceNewMessage, ConferenceRoom } from '../../context/definitions.js';
 import { CallSurface, conferenceAppRoot, onPhone, withConference, withConferenceWindow } from '../../fixtures/storyFixtures.js';
 import { useCallMessagePreviews } from '../../hooks/useCallMessagePreviews.js';
 import { MESSAGE_PREVIEWS_SHOWN } from '../../lib/constants.js';
 import CallStageNotices from '../CallStageNotices.js';
 
-const ada: ConferenceIncomingMessage = { _id: '1', username: 'ada', name: 'Ada Lovelace', text: 'Can everyone see my screen?' };
-const grace: ConferenceIncomingMessage = { _id: '2', username: 'grace', name: 'Grace Hopper', text: 'Yes, the slides are up.' };
-const alan: ConferenceIncomingMessage = {
+const ada: ConferenceNewMessage = { _id: '1', username: 'ada', name: 'Ada Lovelace', text: 'Can everyone see my screen?' };
+const grace: ConferenceNewMessage = { _id: '2', username: 'grace', name: 'Grace Hopper', text: 'Yes, the slides are up.' };
+const alan: ConferenceNewMessage = {
 	_id: '3',
 	username: 'alan',
 	name: 'Alan Turing',
 	text: 'The second chart is cut off on my side.',
 };
-const hedy: ConferenceIncomingMessage = {
+const hedy: ConferenceNewMessage = {
 	_id: '4',
 	username: 'hedy',
 	name: 'Hedy Lamarr, Frequency Hopping and Spread Spectrum Working Group',
@@ -32,7 +32,7 @@ const conversation = [
 	{ afterMs: 12_000, username: 'grace', name: 'Grace Hopper', text: 'Perfect, thanks!' },
 ];
 
-const replayConversation: NonNullable<ConferenceRoom['incomingMessages']>['subscribe'] = (listener) => {
+const replayConversation: ConferenceRoom['onNewMessage'] = (listener) => {
 	let sent = 0;
 	let timer: ReturnType<typeof setTimeout>;
 
