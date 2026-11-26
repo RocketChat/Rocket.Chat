@@ -84,6 +84,18 @@ export type WebDropTargetProps = Pick<DOMAttributes<HTMLButtonElement | HTMLAnch
 export type WebButtonRef = Ref<HTMLButtonElement>;
 export type WebLinkRef = Ref<HTMLAnchorElement>;
 
+/**
+ * A contract as a web renderer that is a `span` or, with an `href`, an `a` takes it: the deprecated press alias and the
+ * attributes of the link, which reach only the `a`.
+ */
+export type WebSpanOrLinkProps<TContract> = WebProps<TContract, HTMLSpanElement | HTMLAnchorElement> &
+	WebPressAlias<HTMLSpanElement | HTMLAnchorElement> &
+	WebLinkAttributes &
+	Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'target'> & {
+		title?: string;
+		tabIndex?: number;
+	};
+
 /** A contract as a web renderer that is always a `span` and only shows something takes it. */
 export type WebSpanProps<TContract> = WebProps<TContract, HTMLSpanElement> & {
 	title?: string;
