@@ -900,7 +900,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate<{ _id: string; name: string; chats: number }>(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col
+			.aggregate<{ _id?: string; name?: string; chats: number }>(params, { readPreference: readSecondaryPreferred() })
+			.toArray();
 	}
 
 	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -946,7 +948,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate<{ _id: string; name: string; chats: number }>(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col
+			.aggregate<{ _id?: string; name?: string; chats: number }>(params, { readPreference: readSecondaryPreferred() })
+			.toArray();
 	}
 
 	calculateResponseTimingsBetweenDates({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {

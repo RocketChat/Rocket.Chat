@@ -23,7 +23,6 @@
 		"packages/{apps,apps-engine}/{client,definition,docs,server,lib}",
 		"packages/jest-presets/{client,server}/**",
 		"packages/node-poplib/**",
-		"packages/fuselage/scripts/generate-tamagui-tokens.mts",
 		"packages/storybook-config/*.{d.ts,js}",
 		"scripts/**",
 		".github/**",

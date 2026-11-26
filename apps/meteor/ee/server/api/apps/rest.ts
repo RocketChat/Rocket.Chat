@@ -1217,13 +1217,14 @@ export class AppsRestApi {
 
 						return API.v1.success({ setting });
 					} catch (e) {
-						if ((e as Error).message.includes('No setting found')) {
+						const message = e instanceof Error ? e.message : String(e);
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if ((e as Error).message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure((e as Error).message);
+						return API.v1.failure(message);
 					}
 				},
 				async post() {
@@ -1236,13 +1237,14 @@ export class AppsRestApi {
 
 						return API.v1.success();
 					} catch (e) {
-						if ((e as Error).message.includes('No setting found')) {
+						const message = e instanceof Error ? e.message : String(e);
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if ((e as Error).message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure((e as Error).message);
+						return API.v1.failure(message);
 					}
 				},
 			},

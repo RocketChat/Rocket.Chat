@@ -342,13 +342,13 @@ const findAllChatMetricsByDepartmentAsync = async ({
 		departmentId,
 	});
 	const result: Record<string, { open: number; closed: number }> = {};
-	(open || []).forEach((department: { name: string; chats: number }) => {
-		result[department.name] = { open: department.chats, closed: 0 };
+	open.forEach(({ name, chats }) => {
+		result[String(name)] = { open: chats, closed: 0 };
 	});
-	(closed || []).forEach((department: { name: string; chats: number }) => {
-		result[department.name] = {
-			open: result[department.name] ? result[department.name].open : 0,
-			closed: department.chats,
+	closed.forEach(({ name, chats }) => {
+		result[String(name)] = {
+			open: result[String(name)]?.open ?? 0,
+			closed: chats,
 		};
 	});
 	return result;
