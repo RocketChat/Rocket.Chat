@@ -357,6 +357,30 @@ it('should ignore a "Show unreads" flag stored for the Unread group, which has n
 	expect(groupByKey('Unread').unreadInfo.unread).toBeGreaterThan(0);
 });
 
+it('should ignore a "Show unreads" flag stored for the Unread group as a custom category', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Unread'] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			isEnterprise: true,
+			// An entry without `default` is read as a custom category, which no longer buys the Unread group
+			// the options its own entry cannot hold.
+			sidebarCategories: [
+				{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true },
+				{ _id: 'Unread', name: 'Unread', showUnreads: true },
+			],
+		}).build(),
+	});
+
+	const groupByKey = (key: string) => result.current.groups[groupsListOf(result.current.groups).indexOf(key)];
+
+	// isEnterprise resolves asynchronously from the mock endpoint.
+	await waitFor(() => expect(groupByKey('Channels').showUnreads).toBe(true));
+
+	expect(groupByKey('Unread').showUnreads).toBe(false);
+	expect(result.current.groupsCount[groupsListOf(result.current.groups).indexOf('Unread')]).toEqual(0);
+});
+
 it('should always return groupsCount and groupsList with the same length', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
