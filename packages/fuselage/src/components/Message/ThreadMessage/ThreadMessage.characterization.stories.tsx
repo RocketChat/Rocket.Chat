@@ -6,10 +6,10 @@ import ThreadMessage from './ThreadMessage';
 import ThreadMessageBody from './ThreadMessageBody';
 import ThreadMessageContainer from './ThreadMessageContainer';
 import ThreadMessageEmoji from './ThreadMessageEmoji';
+import ThreadMessageFollowIndicator from './ThreadMessageFollowIndicator';
 import ThreadMessageIconThread from './ThreadMessageIconThread';
 import ThreadMessageOrigin from './ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessageRow';
-import ThreadMessageFollowIndicator from './ThreadMessageFollowIndicator';
 import { ariaSnapshot, classContract, computed, expectComputed, expectForwards, forcePseudo, isJsdom } from '../../../testing/g0';
 import MessageLeftContainer from '../MessageLeftContainer';
 
