@@ -27,10 +27,12 @@ import {
 	MessageUsername,
 	NavBar,
 	NavBarSection,
+	PasswordInput,
 	SidebarItem,
 	SidebarItemContent,
 	SidebarItemTitle,
 	Tag,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 
 // A frame that throws must not blank the screen: the error is the finding for that component
@@ -117,6 +119,7 @@ export function Content() {
 	const [item, setItem] = useState(0);
 	const [sidebar, setSidebar] = useState(0);
 	const [checked, setChecked] = useState(false);
+	const [toggled, setToggled] = useState(true);
 
 	return (
 		<>
@@ -156,6 +159,9 @@ export function Content() {
 							</SidebarItemContent>
 						</SidebarItem>
 					</PressProbe>
+					<PressProbe label='PasswordInput eye'>
+						<PasswordInput value='secret' onChange={() => undefined} />
+					</PressProbe>
 					<PressProbe label='Message onPress'>
 						<Message onClick={() => undefined}>
 							<MessageContainer>
@@ -191,8 +197,13 @@ export function Content() {
 			<Cell name='Chip' presses={chip}>
 				<Chip onPress={() => setChip((n) => n + 1)}>Chip</Chip>
 			</Cell>
-			<Cell name='Tag (not converted)' throws>
+			<Cell name='Tag'>
 				<Tag>@rocket.cat</Tag>
+				<Tag variant='secondary-danger'>Admin</Tag>
+			</Cell>
+			<Cell name={`ToggleSwitch (checked: ${toggled})`}>
+				<ToggleSwitch checked={toggled} onChange={() => setToggled((c) => !c)} aria-label='Toggle' />
+				<ToggleSwitch checked disabled aria-label='Checked, disabled' />
 			</Cell>
 			<Cell name='Message parts (no Avatar)'>
 				<Message>
