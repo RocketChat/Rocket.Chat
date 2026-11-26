@@ -1,3 +1,4 @@
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import type { IEmailDescriptor, IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
 import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
@@ -46,7 +47,6 @@ import { isEventResult, makeHostEventResult } from '../eventResult';
 import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
 import { getMediaCallCreatePatch } from '../mediaCalls';
 import { Utilities } from '../misc/Utilities';
-import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
 
 export interface IListenerExecutor {
 	[AppInterface.IPreMessageSentPrevent]: {
@@ -501,7 +501,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGESENTPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -530,7 +530,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGESENTEXTEND, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -553,7 +553,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGESENTMODIFY, msg).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -598,7 +598,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTMESSAGESENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -626,7 +626,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEDELETEPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -662,7 +662,7 @@ export class AppListenerManager {
 				)
 				.catch((error) => {
 					// This method is optional, so if it doesn't exist, we should continue
-					if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+					if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 						return true;
 					}
 
@@ -683,7 +683,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEUPDATEDPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -710,7 +710,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEUPDATEDEXTEND, msg).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -733,7 +733,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEUPDATEDMODIFY, msg).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -754,7 +754,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTMESSAGEUPDATED, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -776,7 +776,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMCREATEPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -803,7 +803,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMCREATEEXTEND, room).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -826,7 +826,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMCREATEMODIFY, room).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -847,7 +847,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTROOMCREATE, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -868,7 +868,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMDELETEPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -893,7 +893,7 @@ export class AppListenerManager {
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTROOMDELETED, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return true;
 				}
 
@@ -960,7 +960,7 @@ export class AppListenerManager {
 
 		const app = this.manager.getOneById(appId);
 		const handleError = (method: string) => (error: unknown) => {
-			if ((error as Record<string, number>)?.code === JSONRPC_METHOD_NOT_FOUND) {
+			if ((error as Record<string, number>)?.code === ErrorCode.METHOD_NOT_FOUND) {
 				if (this.defaultHandlers.has(method)) {
 					console.warn(
 						`App ${appId} triggered an interaction but it doesn't exist or doesn't have method ${method}. Falling back to default handler.`,
@@ -1351,7 +1351,7 @@ export class AppListenerManager {
 			const app = this.manager.getOneById(appId);
 
 			const result = await app.call(AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED, patchAccumulator).catch((error) => {
-				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+				if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 					return undefined;
 				}
 
@@ -1397,7 +1397,7 @@ export class AppListenerManager {
 
 			dispatched.push(
 				app.call(event.method, event.context).catch((error) => {
-					if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+					if (error?.code === ErrorCode.METHOD_NOT_FOUND) {
 						return;
 					}
 

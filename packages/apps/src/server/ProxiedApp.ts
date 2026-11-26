@@ -13,7 +13,6 @@ import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import type { IRuntimeController } from './runtime/IRuntimeController';
-import { JSONRPC_METHOD_NOT_FOUND } from './runtime/base/BaseRuntimeSubprocessController';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {
@@ -72,7 +71,7 @@ export class ProxiedApp {
 				throw new AppsEngineException(e.message);
 			}
 
-			if (e.code === JSONRPC_METHOD_NOT_FOUND) {
+			if (e.code === ErrorCode.METHOD_NOT_FOUND) {
 				throw e;
 			}
 

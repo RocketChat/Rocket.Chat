@@ -1,3 +1,4 @@
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
@@ -10,7 +11,6 @@ import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoC
 import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser';
 
 import type { ProxiedApp } from '../ProxiedApp';
-import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
 import type { AppLogStorage } from '../storage';
 
 export class AppVideoConfProvider {
@@ -89,7 +89,7 @@ export class AppVideoConfProvider {
 
 			return result as string | boolean | Array<IBlock> | undefined;
 		} catch (e) {
-			if (e?.code === JSONRPC_METHOD_NOT_FOUND) {
+			if (e?.code === ErrorCode.METHOD_NOT_FOUND) {
 				if (method === AppMethod._VIDEOCONF_IS_CONFIGURED) {
 					return true;
 				}

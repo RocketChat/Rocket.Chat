@@ -23,8 +23,6 @@ const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: tru
 
 const COMMAND_PONG = '_zPONG';
 
-export const JSONRPC_METHOD_NOT_FOUND = -32601;
-
 function getRuntimeTimeout() {
 	const defaultTimeout = 30000;
 	const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any)
