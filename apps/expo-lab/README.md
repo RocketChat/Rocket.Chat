@@ -240,3 +240,40 @@ Props: `Markup` takes `{ md, msg?, mentions?, channels?, searchText?, onMention?
 | unknown node | degraded | source slice from `fallback` if present, else its text children, else nothing |
 
 Not done: highlight of `searchText`, `onTaskChecked`, `useRealName` and `ownUserId` looks of mentions, `detectEmoji` and `convertAsciiToEmoji`, and the web's `title` hints.
+
+## Session persistence
+
+The signed-in session survives app restarts, so you do not log in every time.
+
+**What is stored.** One Keychain item (`rc-expo-lab.session`) holding `{"v":1,"serverUrl","userId","authToken"}`, the resume credentials the server issues at login. A personal access token login stores the same pair. The password, a 2FA code and a typed token are never stored. A second item (`rc-expo-lab.last-server`) holds only the server URL, so the login prefills it after sign out.
+
+**Where.** `expo-secure-store` (iOS Keychain), `keychainAccessible: WHEN_UNLOCKED_THIS_DEVICE_ONLY`: readable only while the device is unlocked, never synced to iCloud, not migrated to another device. On read the shape is validated (`v` 1, non-empty strings, `https` URL, or `http` for localhost only); anything else is deleted.
+
+**Start-up** (`useRestoreSession` in `src/session.ts`, storage in `src/sessionStore.ts`, shared by the Fuselage and plain UIs):
+
+| State | Meaning | Next |
+|---|---|---|
+| `restoring` | stored session found, one `GET /v1/me` (plus the DDP connect), 10 s timeout | below |
+| `restored` | the server accepted it | rooms screen |
+| `rejected` | 401 or 403 | stored session deleted, login with the server URL prefilled |
+| `offline` | network error, timeout, any other failure | session kept, "Could not reach the server" with Retry (back to `restoring`) or "Sign in instead" |
+| `none` | nothing stored | login |
+
+Sign out deletes the stored session first, then calls `POST /v1/logout` (best effort) and closes the DDP connection. Logs say only "session saved", "session restored", "session rejected (401)"; token values are never logged.
+
+Deviation from the first design: the offline state is a small gate screen in `App.tsx` (message, Retry) rather than a message inside each login screen, so the two UIs share it without duplicating it.
+
+**Native module.** `expo-secure-store` needs a dev client rebuilt with it (`expo run:ios --no-bundler`). On a binary without it the import throws; the store then falls back to memory only (a dev warning is logged) and the app keeps working.
+
+**Dev switches.**
+- `EXPO_PUBLIC_SESSION_STORE=off`: no reads or writes (clean login for screenshots).
+- `EXPO_PUBLIC_CHAT_MOCK`: never reads or writes the store.
+- `EXPO_PUBLIC_SESSION_LAB=1`: `src/SessionLab.tsx` runs the store and the restore state machine against fake values and an unrelated key (`rc-expo-lab.lab-session`), cleaning up after itself. Screenshots: `docs/session/` (`session-lab-keychain.jpg` with the module, `session-lab-fallback.jpg` with it missing; the one FAIL there is the "available" probe, expected).
+
+**Clearing it.** Sign out, delete the app, or `xcrun simctl uninstall <udid> chat.rocket.expolab`.
+
+**Known limits.**
+- The simulator Keychain persists across launches but not after uninstall.
+- Tokens expire server-side; an expired one lands in `rejected` and you log in again.
+- No biometric gate yet before restoring.
+- Restore against a real server, the 401 path and the 2FA-then-save path have not been exercised without a real login.
