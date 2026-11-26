@@ -1,6 +1,8 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import * as i18next from 'i18next';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { modalParser, messageParser } from '../surfaces';
 
@@ -79,6 +81,29 @@ it('enables Previous and disables Next at the end in RTL', () => {
 
 	expect(screen.getByRole('button', { name: 'UIKit_Carousel_previous' })).toBeEnabled();
 	expect(screen.getByRole('button', { name: 'UIKit_Carousel_next' })).toBeDisabled();
+});
+
+it('finds the edges again when a language change flips the direction', async () => {
+	const i18n = i18next.createInstance().use(initReactI18next);
+	await i18n.init({ lng: 'en' });
+	layOutRow();
+	const scrollLeft = jest.spyOn(Element.prototype, 'scrollLeft', 'get').mockReturnValue(600);
+
+	render(
+		<I18nextProvider i18n={i18n}>
+			<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>
+		</I18nextProvider>,
+	);
+
+	expect(screen.getByRole('button', { name: 'UIKit_Carousel_next' })).toBeDisabled();
+
+	// The flip leaves the row at the start of the RTL axis without a scroll event to report it.
+	setRtl();
+	scrollLeft.mockReturnValue(0);
+	await act(() => i18n.changeLanguage('ar'));
+
+	expect(screen.getByRole('button', { name: 'UIKit_Carousel_previous' })).toBeDisabled();
+	expect(screen.getByRole('button', { name: 'UIKit_Carousel_next' })).toBeEnabled();
 });
 
 it('renders nothing in a modal, which does not accept carousels', () => {

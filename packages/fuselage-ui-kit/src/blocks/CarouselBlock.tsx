@@ -16,7 +16,7 @@ const isCard = (value: unknown): value is UiKit.CardBlock =>
 // The carousel follows the carousel pattern: the previous and next buttons are ordinary tab stops, and the row
 // scrolls natively, so Tab into a card brings it into view.
 const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps) => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const scroller = useRef<HTMLDivElement>(null);
 	const [edges, setEdges] = useState({ start: true, end: true });
 
@@ -35,12 +35,13 @@ const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps
 		});
 	}, []);
 
+	// A language change can flip the layout direction, which moves the edges without a scroll event.
 	useEffect(() => {
 		updateEdges();
 		window.addEventListener('resize', updateEdges);
 
 		return () => window.removeEventListener('resize', updateEdges);
-	}, [block.elements, updateEdges]);
+	}, [block.elements, i18n.language, updateEdges]);
 
 	const scrollBy = (direction: -1 | 1) => {
 		const element = scroller.current;
