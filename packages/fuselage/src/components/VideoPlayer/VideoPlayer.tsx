@@ -41,6 +41,7 @@ export type VideoPlayerProps = RefAttributes<HTMLVideoElement> & {
  * as the AudioPlayer drawn over the video. Controls hide while the video plays
  * and the pointer rests.
  */
+// oxlint-disable-next-line complexity -- one component drives every control drawn over the video
 const VideoPlayer = ({
 	ref,
 	src,

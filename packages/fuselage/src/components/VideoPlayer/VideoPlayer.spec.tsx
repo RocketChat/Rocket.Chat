@@ -7,12 +7,14 @@ import { render } from '../../testing';
 
 const { Default } = composeStories(stories);
 
+// oxlint-disable-next-line testing-library/no-node-access -- a video element has no role, label or text of its own
 const getVideo = (container: HTMLElement) => container.querySelector('video') as HTMLVideoElement;
 
 // jsdom never matches `:focus-visible`; keyboard focus always would.
 const stubFocusVisible = () => {
 	const { matches } = Element.prototype;
 	jest.spyOn(Element.prototype, 'matches').mockImplementation(function (this: Element, selector: string) {
+		// oxlint-disable-next-line testing-library/no-node-access -- the stub compares against the focused element, as `:focus-visible` does
 		return selector === ':focus-visible' ? this === this.ownerDocument.activeElement : matches.call(this, selector);
 	});
 };

@@ -118,6 +118,7 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
+// oxlint-disable-next-line complexity -- every watched form field's default counts as a branch
 const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleData, roleError, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();

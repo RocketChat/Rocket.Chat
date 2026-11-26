@@ -78,6 +78,7 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
+// oxlint-disable-next-line complexity -- every watched form field's default counts as a branch
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess, abac }: CreateChannelModalProps) => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);

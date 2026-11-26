@@ -41,6 +41,7 @@ const getPreviousAccountValues = (user: IUser | null) => ({
 	isUserVerified: user?.emails?.[0]?.verified ?? false,
 });
 
+// oxlint-disable-next-line complexity -- every watched form field's default counts as a branch
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const user = useUser();
