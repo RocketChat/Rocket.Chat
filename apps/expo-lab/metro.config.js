@@ -16,8 +16,9 @@ config.watchFolders = [...(config.watchFolders ?? []), path.resolve(__dirname, '
 
 config.resolver.resolveRequest = (context, moduleName, platform) => {
 	const resolve = upstream ?? context.resolveRequest;
-	if (/\.s?css$/.test(moduleName)) return { type: 'sourceFile', filePath: emptyModule };
-	if (moduleName === '@rocket.chat/fuselage') return { type: 'sourceFile', filePath: path.join(fuselageSrc, 'index.runtime.ts') };
+	const native = platform !== 'web';
+	if (native && /\.s?css$/.test(moduleName)) return { type: 'sourceFile', filePath: emptyModule };
+	if (native && moduleName === '@rocket.chat/fuselage') return { type: 'sourceFile', filePath: path.join(fuselageSrc, 'index.runtime.ts') };
 	if (moduleName === '@tamagui/web') return resolve(context, tamaguiWeb, platform);
 	if (!singletons.some((s) => moduleName === s || moduleName.startsWith(`${s}/`))) {
 		return resolve(context, moduleName, platform);

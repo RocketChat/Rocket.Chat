@@ -127,6 +127,8 @@ Observed on the iPhone 17 Pro simulator (dev client, Metro on port 8085). Screen
 
 Against the earlier spike (Badge showed bold text only, Button text at the left edge with no fill, Avatar nothing): the converted frames now carry their colours, radius, padding and layout on native. The spike's missing values (`var(--rcx-*)`, `rem`) were the blocker; the frames now name tokens and theme keys, which Tamagui resolves on native. Badge, Button, Chip, Callout, Message parts and Item rows are visibly styled. The components not in the PRs (Avatar, Banner, Tag) still fail on DOM tags.
 
+Native against web, per component, with images and a per-PR list of what could already be done in each conversion PR: [NATIVE-GAP.md](NATIVE-GAP.md). The web reference is `src/Gallery.web.tsx` (published `dist`, `EXPO_PUBLIC_GALLERY=1 npx expo export --platform web`); the Metro alias to the source and the CSS stub apply to native only. Two notes in the list below are out of date: `Icon` already names `fontFamily: 'RocketChat'` (the app only has to load the font, the gallery does with `expo-font`), and `Avatar`, `Banner` and `Tag` are skipped natively unless `EXPO_PUBLIC_GALLERY_PROBE=1`.
+
 ### Remaining fixes, in Fuselage (not done here, other branches' work)
 
 - Press: `pickWebPressHandlers` maps `onPress` to `onClick`, which a native `View` does not take. Pass `onPress` through on native in `packages/fuselage/src/helpers/pickWebPressHandlers.ts` (or a native twin of it).

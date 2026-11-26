@@ -10441,6 +10441,7 @@ __metadata:
     "@types/react": "npm:^19.1.1"
     expo: "npm:~58.0.23"
     expo-dev-client: "npm:~58.0.18"
+    expo-font: "npm:~58.0.12"
     expo-status-bar: "npm:~58.0.4"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
