@@ -17,22 +17,13 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Avatar/Avatar.styles.scss": {
-		"rules": 10,
-		"nested": 6,
-		"combinators": 2,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
 	"Banner/Banner.styles.scss": {
-		"rules": 21,
-		"nested": 20,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Box/Box.styles.scss": {
@@ -57,6 +48,15 @@
 		"rules": 19,
 		"nested": 11,
 		"combinators": 1,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Button/IconButton.styles.scss": {
+		"rules": 20,
+		"nested": 12,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
