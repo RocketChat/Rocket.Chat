@@ -650,6 +650,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          cache-modules: true
+          install: true
 
       - uses: ./.github/actions/restore-packages
 
