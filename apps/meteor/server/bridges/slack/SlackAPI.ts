@@ -82,7 +82,7 @@ export class SlackAPI {
 	}
 
 	async getMembers(channelId) {
-		const { num_members } = this.getRoomInfo(channelId);
+		const { num_members } = await this.getRoomInfo(channelId);
 		const MAX_MEMBERS_PER_CALL = 100;
 		let members = [];
 		let currentCursor = '';
