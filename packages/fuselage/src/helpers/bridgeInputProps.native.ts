@@ -4,7 +4,7 @@ type BridgeableProps = {
 	rows?: number | undefined;
 	readOnly?: boolean | undefined;
 	disabled?: boolean | undefined;
-	autoCorrect?: 'on' | 'off' | undefined;
+	autoCorrect?: 'on' | 'off' | boolean | undefined;
 	onChange?: ((value: string) => void) | undefined;
 };
 
@@ -28,7 +28,7 @@ const typeDefaults: Partial<Record<string, NativeInputProps>> = {
 	tel: { keyboardType: 'phone-pad' },
 };
 
-/** The props an input hands to a React Native `TextInput`: the web-style props mapped to their native ones. A `type='password'` always becomes `secureTextEntry`. */
+/** The props an input hands to a React Native `TextInput`: the web-style props mapped to their native ones. A `type='password'` always becomes `secureTextEntry`, with autocorrect and autocapitalize off. */
 export const bridgeInputProps = <P extends BridgeableProps>({
 	onChange,
 	type,
@@ -41,8 +41,8 @@ export const bridgeInputProps = <P extends BridgeableProps>({
 	...(type ? typeDefaults[type] : undefined),
 	...props,
 	...(onChange && { onChangeText: (text: string) => onChange(text) }),
-	...(autoCorrect && { autoCorrect: autoCorrect === 'on' }),
+	...(autoCorrect !== undefined && { autoCorrect: autoCorrect === true || autoCorrect === 'on' }),
 	...((readOnly || disabled) && { editable: false as const }),
 	...(props.is === 'textarea' && { multiline: true as const, numberOfLines: rows }),
-	...(type === 'password' && { secureTextEntry: true }),
+	...(type === 'password' && { secureTextEntry: true, autoCorrect: false, autoCapitalize: 'none' as const }),
 });
