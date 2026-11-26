@@ -1,8 +1,16 @@
-import { buildAgentRecord110, buildSeatEnvelope110, validateEngineReport110 } from './recordContract';
+import {
+	buildAgentRecord110,
+	buildSeatEnvelope110,
+	parseStoredRecord110,
+	revisionBytesToUtf8,
+	validateEngineReport110,
+} from './recordContract';
 import {
 	AiAgentValidationError,
 	containsSecretShape,
+	formatModelRoute,
 	isSeatAllowedPublicTool,
+	parseModelRoute,
 	validateAgentInstructions,
 	validateAgentName,
 } from './textValidation';
@@ -152,7 +160,7 @@ describe('1.1.0 engine report validation', () => {
 			tools: ['docs_search', 'docs_read'],
 			skillsCommit: '438544159fd6359527759d2a97dd227ae9f6c58c',
 			skills: ['public-docs'],
-			modelRoutes: ['openrouter:openai/gpt-4o-mini'],
+			modelRoutes: ['openrouter/openai/gpt-4o-mini'],
 		},
 		seats: [
 			{
@@ -181,5 +189,66 @@ describe('1.1.0 engine report validation', () => {
 			ok: false,
 			error: 'contract-version-unsupported',
 		});
+	});
+});
+
+describe('cross-realm BSON Binary decoding and model route contract parity', () => {
+	it('decodes foreign-realm BSON Binary instances with length() or position-only and padded buffers', () => {
+		const payload = Buffer.from(GOLDEN_PUBLISHED_RAW, 'utf8');
+		const padded = Buffer.alloc(payload.byteLength + 16, 0x20);
+		payload.copy(padded, 8);
+		const view = new Uint8Array(padded.buffer, padded.byteOffset + 8, payload.byteLength + 8);
+
+		const foreignWithLength = {
+			_bsontype: 'Binary' as const,
+			buffer: view,
+			position: payload.byteLength,
+			length: () => payload.byteLength,
+		};
+		expect(revisionBytesToUtf8(foreignWithLength as unknown as Buffer)).toBe(GOLDEN_PUBLISHED_RAW);
+		expect(parseStoredRecord110(foreignWithLength as unknown as Buffer)?.name).toBe('Docs Helper');
+
+		const foreignPositionOnly = {
+			_bsontype: 'Binary' as const,
+			buffer: view,
+			position: payload.byteLength,
+		};
+		expect(revisionBytesToUtf8(foreignPositionOnly as unknown as Buffer)).toBe(GOLDEN_PUBLISHED_RAW);
+		expect(parseStoredRecord110(foreignPositionOnly as unknown as Buffer)?.chat.rooms).toEqual(['room-general']);
+	});
+
+	it('parses and formats canonical <provider>/<model id> routes matching agent-core qualifiedModel', () => {
+		expect(parseModelRoute('openai/gpt-6-luna')).toEqual({ provider: 'openai', id: 'gpt-6-luna' });
+		expect(formatModelRoute({ provider: 'openai', id: 'gpt-6-luna' })).toBe('openai/gpt-6-luna');
+
+		expect(parseModelRoute('openrouter/google/gemini-2.5-flash')).toEqual({
+			provider: 'openrouter',
+			id: 'google/gemini-2.5-flash',
+		});
+		expect(formatModelRoute({ provider: 'openrouter', id: 'google/gemini-2.5-flash' })).toBe('openrouter/google/gemini-2.5-flash');
+
+		expect(parseModelRoute('openrouter/google/gemini-2.5-flash:free')).toEqual({
+			provider: 'openrouter',
+			id: 'google/gemini-2.5-flash:free',
+		});
+		expect(formatModelRoute({ provider: 'openrouter', id: 'google/gemini-2.5-flash:free' })).toBe(
+			'openrouter/google/gemini-2.5-flash:free',
+		);
+
+		// Legacy provider:id still accepted when `:` precedes any `/`.
+		expect(parseModelRoute('openrouter:openai/gpt-4o-mini')).toEqual({
+			provider: 'openrouter',
+			id: 'openai/gpt-4o-mini',
+		});
+
+		expect(() => parseModelRoute('/openai/gpt-6-luna')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openai/')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openai/google/')).toThrow('route-invalid');
+		expect(() => parseModelRoute(':gpt-6-luna')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openai:')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openrouter/google/gemini:')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openrouter//gpt-4o')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openrouter/:free')).toThrow('route-invalid');
+		expect(() => parseModelRoute('openrouter:/gpt-4o')).toThrow('route-invalid');
 	});
 });

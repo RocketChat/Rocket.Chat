@@ -229,12 +229,36 @@ export function buildAgentRecord110(input: {
 	};
 }
 
+interface BsonBinaryLike {
+	readonly _bsontype: 'Binary';
+	readonly buffer: ArrayBufferView;
+	readonly position?: number;
+	length?: () => number;
+}
+
+function isBsonBinaryLike(value: unknown): value is BsonBinaryLike {
+	if (!value || typeof value !== 'object') {
+		return false;
+	}
+	const candidate = value as Partial<BsonBinaryLike>;
+	return candidate._bsontype === 'Binary' && ArrayBuffer.isView(candidate.buffer);
+}
+
 export function revisionBytesToUtf8(bytes: Binary | Buffer | Uint8Array | string): string {
 	if (typeof bytes === 'string') {
 		return bytes;
 	}
-	if (bytes instanceof Binary) {
-		return Buffer.from(bytes.buffer.buffer, bytes.buffer.byteOffset, bytes.length()).toString('utf8');
+	// Dual-package BSON instances across Meteor/MongoDB driver realms fail `instanceof Binary`,
+	// so duck-type `_bsontype === 'Binary'` before falling back to generic buffer views.
+	if (bytes instanceof Binary || isBsonBinaryLike(bytes)) {
+		const raw = bytes.buffer;
+		const declaredLen = typeof bytes.length === 'function' ? bytes.length() : bytes.position;
+		const len =
+			typeof declaredLen === 'number' && Number.isFinite(declaredLen) ? Math.max(0, Math.min(declaredLen, raw.byteLength)) : raw.byteLength;
+		return Buffer.from(raw.buffer, raw.byteOffset, len).toString('utf8');
+	}
+	if (ArrayBuffer.isView(bytes)) {
+		return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('utf8');
 	}
 	return Buffer.from(bytes).toString('utf8');
 }

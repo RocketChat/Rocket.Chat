@@ -264,7 +264,7 @@ describe('AiEnginesRaw credentials', () => {
 					tools: ['docs_search'],
 					skillsCommit: '438544159fd6359527759d2a97dd227ae9f6c58c',
 					skills: ['public-docs'],
-					modelRoutes: ['openrouter:openai/gpt-4o-mini'],
+					modelRoutes: ['openrouter/openai/gpt-4o-mini'],
 				},
 				seats: [],
 			},

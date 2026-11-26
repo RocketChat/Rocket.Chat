@@ -178,19 +178,41 @@ export function validateModelRouteId(route: string): string {
 
 export function parseModelRoute(route: string): { provider: string; id: string } {
 	const validated = validateModelRouteId(route);
+	if (validated.startsWith('/') || validated.endsWith('/') || validated.startsWith(':') || validated.endsWith(':')) {
+		throw new AiAgentValidationError('route-invalid');
+	}
+
+	const slashIndex = validated.indexOf('/');
 	const colonIndex = validated.indexOf(':');
-	if (colonIndex > 0 && colonIndex < validated.length - 1) {
-		return {
+
+	// Canonical agent-core route format is `<provider>/<model id>` (e.g. `openai/gpt-6-luna`
+	// or `openrouter/google/gemini-2.5-flash:free`). Check `/` before `:` so model IDs carrying
+	// `:free` / `:thinking` suffixes split on the provider prefix, while still accepting legacy
+	// `<provider>:<model id>` when `:` precedes any `/`.
+	let parsed: { provider: string; id: string };
+	if (slashIndex > 0 && (colonIndex === -1 || slashIndex < colonIndex)) {
+		parsed = {
+			provider: validated.slice(0, slashIndex),
+			id: validated.slice(slashIndex + 1),
+		};
+	} else if (colonIndex > 0) {
+		parsed = {
 			provider: validated.slice(0, colonIndex),
 			id: validated.slice(colonIndex + 1),
 		};
+	} else {
+		parsed = {
+			provider: 'openrouter',
+			id: validated,
+		};
 	}
-	return {
-		provider: 'openrouter',
-		id: validated,
-	};
+
+	if (!parsed.provider || !parsed.id || parsed.id.startsWith('/') || parsed.id.startsWith(':')) {
+		throw new AiAgentValidationError('route-invalid');
+	}
+	return parsed;
 }
 
 export function formatModelRoute(model: { provider: string; id: string }): string {
-	return `${model.provider}:${model.id}`;
+	return `${model.provider}/${model.id}`;
 }
