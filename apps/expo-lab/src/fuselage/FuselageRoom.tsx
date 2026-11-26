@@ -48,7 +48,10 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 					renderItem={({ item }) => (
 						<Message>
 							<MessageLeftContainer>
-								<AppAvatar url={userAvatarUrl(session, item.u.username ?? item.u._id)} />
+								{/* The web centers the avatar on the header and first body line (min-block-size 40px, scss); native does not run it */}
+								<View style={{ height: 40, justifyContent: 'center' }}>
+									<AppAvatar url={userAvatarUrl(session, item.u.username ?? item.u._id)} />
+								</View>
 							</MessageLeftContainer>
 							<MessageContainer>
 								<MessageHeader>
