@@ -17,7 +17,7 @@ export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & 
 };
 
 const defaultRenderThumb = ({ url }: { url: string }) => (
-	<Box rcx-avatar>
+	<Box rcx-avatar display='inline-flex' verticalAlign='middle'>
 		<Avatar size='x20' url={url} />
 	</Box>
 );
