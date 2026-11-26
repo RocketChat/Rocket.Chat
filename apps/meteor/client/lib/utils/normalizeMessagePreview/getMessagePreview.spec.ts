@@ -1,12 +1,12 @@
 import type { TFunction } from 'i18next';
 
 import { getMessagePreview } from './getMessagePreview';
-import { normalizeMessagePreview } from './normalizeMessagePreview';
+import { getEscapedMessagePreviewText } from './normalizeMessagePreview';
 import { createFakeSubscription, createFakeMessage } from '../../../../tests/mocks/data';
 
 jest.mock('./normalizeMessagePreview');
 
-const mockNormalizeMessagePreview = normalizeMessagePreview as jest.MockedFunction<typeof normalizeMessagePreview>;
+const mockNormalizeMessagePreview = getEscapedMessagePreviewText as jest.MockedFunction<typeof getEscapedMessagePreviewText>;
 
 describe('getMessagePreview', () => {
 	const mockT = jest.fn((key: string) => key) as unknown as TFunction;

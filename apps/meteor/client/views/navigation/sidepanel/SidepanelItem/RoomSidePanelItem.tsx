@@ -70,6 +70,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
 			unread={highlighted}
 			time={time}
+			// TODO: convert message preview to plain text
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
 			parentRoom={!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
 			badges={<RoomSidePanelItemBadges room={room} roomTitle={title} />}

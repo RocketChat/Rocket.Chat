@@ -13,6 +13,10 @@ const transformCustomEmoji = (key: string): string | undefined => {
 	}
 };
 
+/**
+ * Warning: Messages are unfiltered user input, and may contain dangerous HTML markup
+ * use the output of this function as plain react text, **NEVER** use it as `dangerouslySetInnerHTML`
+ */
 export const getMessagePreviewText = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
 		return filterMarkdown(shortnameToUnicode(message.msg, transformCustomEmoji));
@@ -25,7 +29,12 @@ export const getMessagePreviewText = (message: IMessage, t: TFunction): string |
 	}
 };
 
-export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
+/**
+ * @deprecated Prefer getMessagePreviewText used as plain text
+ * This function is to be used exclusively when its output is used as `dangerouslySetInnerHtml`
+ * TODO: convert message preview to plain text
+ */
+export const getEscapedMessagePreviewText = (message: IMessage, t: TFunction): string | undefined => {
 	const text = getMessagePreviewText(message, t);
 
 	return text && escapeHTML(text);

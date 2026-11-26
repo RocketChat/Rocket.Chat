@@ -4,9 +4,10 @@ import { escapeHTML } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
-import { normalizeMessagePreview } from './normalizeMessagePreview';
+import { getEscapedMessagePreviewText } from './normalizeMessagePreview';
 import { getSubscriptionDraft } from '../getSubscriptionDraft';
 
+// TODO: convert message preview to plain text
 export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	const draft = getSubscriptionDraft(room);
 	if (draft) {
@@ -23,7 +24,7 @@ export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMess
 		return t('Encrypted_message_preview_unavailable');
 	}
 
-	const normalizedMessage = normalizeMessagePreview(lastMessage, t);
+	const normalizedMessage = getEscapedMessagePreviewText(lastMessage, t);
 	if (!normalizedMessage) {
 		return '';
 	}

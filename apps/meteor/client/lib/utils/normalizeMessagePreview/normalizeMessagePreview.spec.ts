@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 
-import { normalizeMessagePreview } from './normalizeMessagePreview';
+import { getEscapedMessagePreviewText } from './normalizeMessagePreview';
 import { createFakeMessage, createFakeMessageWithAttachment } from '../../../../tests/mocks/data';
 import { emoji } from '../../emoji/lib';
 
@@ -18,35 +18,35 @@ describe('normalizeMessagePreview', () => {
 	describe('when message has msg property', () => {
 		it('should return escaped HTML filtered markdown with emoji conversion', () => {
 			const message = createFakeMessage({ msg: 'Hello :smile: world' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Hello 😄 world');
 		});
 
 		it('should filter markdown from message', () => {
 			const message = createFakeMessage({ msg: '*bold* text' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('bold text');
 		});
 
 		it('should escape HTML in message', () => {
 			const message = createFakeMessage({ msg: '<script>alert("xss")</script>' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
 		});
 
 		it('should convert emoji shortnames to unicode', () => {
 			const message = createFakeMessage({ msg: 'Hello :smile: :heart:' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Hello 😄 ❤️');
 		});
 
 		it('should convert native emoji when the client registry is empty', () => {
 			const message = createFakeMessage({ msg: 'Hello :smile: :troll:' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Hello 😄 🧌');
 		});
@@ -55,7 +55,7 @@ describe('normalizeMessagePreview', () => {
 			emoji.list[':troll:'] = { name: 'troll', extension: 'png', emojiPackage: 'emojiCustom' } as unknown as (typeof emoji.list)[string];
 
 			const message = createFakeMessage({ msg: 'Hello :troll: :smile:' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Hello :troll: 😄');
 		});
@@ -64,7 +64,7 @@ describe('normalizeMessagePreview', () => {
 			emoji.list[':troll:'] = { emojiPackage: 'emojiCustom', aliasOf: 'trollface' };
 
 			const message = createFakeMessage({ msg: 'Hello :troll: :smile:' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Hello :troll: 😄');
 		});
@@ -73,14 +73,14 @@ describe('normalizeMessagePreview', () => {
 			emoji.list[':bride_with_veil:'] = { emojiPackage: 'emojiCustom', aliasOf: 'bride' };
 
 			const message = createFakeMessage({ msg: 'Hello :bride_with_veil:' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Hello :bride_with_veil:');
 		});
 
 		it('should return undefined when message is empty', () => {
 			const message = createFakeMessage({ msg: '' });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBeUndefined();
 		});
@@ -97,7 +97,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Attachment description');
 		});
@@ -111,7 +111,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Attachment title');
 		});
@@ -125,7 +125,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Sent_an_attachment');
 			expect(mockT).toHaveBeenCalledWith('Sent_an_attachment');
@@ -146,7 +146,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Second attachment title');
 		});
@@ -166,7 +166,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Second attachment description');
 		});
@@ -180,7 +180,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
 		});
@@ -194,7 +194,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('&lt;img src=&quot;x&quot; onerror=&quot;alert(1)&quot;&gt;');
 		});
@@ -211,7 +211,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Message text');
 		});
@@ -220,7 +220,7 @@ describe('normalizeMessagePreview', () => {
 	describe('when message has no msg and no attachments', () => {
 		it('should return undefined', () => {
 			const message = createFakeMessage({ msg: undefined });
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBeUndefined();
 		});
@@ -232,7 +232,7 @@ describe('normalizeMessagePreview', () => {
 				msg: undefined,
 				attachments: [],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Sent_an_attachment');
 			expect(mockT).toHaveBeenCalledWith('Sent_an_attachment');
@@ -252,7 +252,7 @@ describe('normalizeMessagePreview', () => {
 					},
 				],
 			});
-			const result = normalizeMessagePreview(message, mockT);
+			const result = getEscapedMessagePreviewText(message, mockT);
 
 			expect(result).toBe('Sent_an_attachment');
 			expect(mockT).toHaveBeenCalledWith('Sent_an_attachment');

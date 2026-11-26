@@ -102,6 +102,7 @@ const SidebarItemTemplateWithData = ({
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const message = viewMode === 'extended' && getMessagePreview(room, lastMessage, t);
+	// TODO: convert message preview to plain text
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	return (
