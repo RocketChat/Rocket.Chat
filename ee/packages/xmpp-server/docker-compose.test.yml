@@ -9,6 +9,12 @@ x-service-env: &service-env
   MONGO_URL: mongodb://mongo:27017/rocketchat?replicaSet=rs0
   TRANSPORTER: nats://nats:4222
 
+x-service-healthcheck: &service-healthcheck
+  test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+  interval: 2s
+  timeout: 2s
+  retries: 150
+
 services:
   certs:
     image: alpine/openssl:3.5.8
@@ -77,6 +83,7 @@ services:
     image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/authorization-service:${XMPP_STACK_TAG:-local}
     environment: *service-env
     depends_on: [mongo, nats]
+    healthcheck: *service-healthcheck
 
   presence-service:
     build:
@@ -87,6 +94,41 @@ services:
     image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/presence-service:${XMPP_STACK_TAG:-local}
     environment: *service-env
     depends_on: [mongo, nats]
+    healthcheck: *service-healthcheck
+
+  account-service:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/account-service
+      args:
+        SERVICE: account-service
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/account-service:${XMPP_STACK_TAG:-local}
+    environment: *service-env
+    depends_on: [mongo, nats]
+    healthcheck: *service-healthcheck
+
+  ddp-streamer:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/ddp-streamer
+      args:
+        SERVICE: ddp-streamer
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/ddp-streamer-service:${XMPP_STACK_TAG:-local}
+    environment: *service-env
+    ports:
+      - ${XMPP_STACK_DDP_PORT:-4000}:3000
+    # the stack script waits on this service alone, so it starts once the services behind DDP login are up
+    depends_on:
+      mongo:
+        condition: service_started
+      nats:
+        condition: service_started
+      account-service:
+        condition: service_healthy
+      authorization-service:
+        condition: service_healthy
+      presence-service:
+        condition: service_healthy
 
   xmpp-server-service:
     build:
