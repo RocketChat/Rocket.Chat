@@ -535,7 +535,7 @@
 			"files": ["packages/fuselage/src/**/*.tsx"],
 			"jsPlugins": [{ "name": "rocket.chat", "specifier": "./packages/lint-config/rules/index.js" }],
 			"rules": {
-				"rocket.chat/render-element-spread": ["error", { "safeCalls": ["ariaAndDataAttributes", "pickWebPressHandlers", "pickWebInteractionHandlers", "openStyle", "pickSvgTitle", "pickWebRowHandlers", "pickVirtualizedListStyle", "pickWebContainerHandlers"] }]
+				"rocket.chat/render-element-spread": ["error", { "safeCalls": ["ariaAndDataAttributes", "pickWebPressHandlers", "pickWebInteractionHandlers", "openStyle", "pickSvgTitle", "pickWebRowHandlers", "pickVirtualizedListStyle", "pickWebContainerHandlers"], "frameSafeCalls": ["pickFramePressHandlers"] }]
 			}
 		},
 		{

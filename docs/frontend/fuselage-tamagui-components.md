@@ -35,7 +35,7 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | --- | --- |
 | No frame bails to the runtime; no `@tamagui/*` reachable from the client | zero `enforce` mode in `build:vite`, and the zero graph receipt |
 | Compiled output looks like the runtime output | visual regression, runtime and zero legs against the same baselines |
-| `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` |
+| `className` never in a render-element spread; no `{...props}` on a frame, except `{...pickFramePressHandlers(props)}`, which is empty on web and carries the press events React Native needs, since it ignores `render` | lint rule `rocket.chat/render-element-spread` |
 | Frame values name tokens, theme keys and conditions the Tamagui config has, never a CSS custom property, a length with a unit (a length is a number, see [policy 5](#policies)) or a `$` token in a font property; generated sections are in sync | `generate:frame-values --check`, run by `yarn lint` ([`generate-frame-values.mts`](../../packages/fuselage/scripts/generate-frame-values.mts)) |
 | The Tamagui config's tokens and themes, plus the generated type scale, match `fuselage-tokens` | `generate:tamagui-tokens --check`, run by `yarn workspace @rocket.chat/fuselage test:verify` |
 | Fuselage's stylesheet declares every token of the config, a size and a radius in `rem` | jest ([`tamagui.config.spec.ts`](../../packages/fuselage/src/tamagui.config.spec.ts)) |
