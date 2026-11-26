@@ -31,7 +31,7 @@ export const getMessagePreviewText = (message: IMessage, t: TFunction): string |
 
 /**
  * @deprecated Prefer getMessagePreviewText used as plain text
- * This function is to be used exclusively when its output is used as `dangerouslySetInnerHtml`
+ * This function is to be used exclusively when its output is used as `dangerouslySetInnerHTML`
  * TODO: convert message preview to plain text
  */
 export const getEscapedMessagePreviewText = (message: IMessage, t: TFunction): string | undefined => {
