@@ -2,6 +2,9 @@
 
 Sandbox Expo app to try Tamagui, the Rocket.Chat SDK packages and `@rocket.chat/fuselage` in React Native.
 
+`App.tsx` is a chat prototype on the SDK packages (no Fuselage): log in to a server you type, list rooms, open a room, see live messages, send. Files: `src/session.ts` (login, `DDPSDK`), `src/twoFactor.ts`, `src/api.ts` (rooms, history, send), `src/Login.tsx`, `src/Rooms.tsx`, `src/Room.tsx`. The session lives in memory only.
+The SDK packages are consumed from their `dist/`; build them first: `yarn workspaces foreach -Rpt --from @rocket.chat/ddp-client run build`.
+
 ## Running
 
 Needs Node `>=22.22.3` (the repo's `engines`) and the workspace packages that Fuselage imports built first:
@@ -98,3 +101,30 @@ Goal: render real Fuselage components on iOS by resolving `@rocket.chat/fuselage
 - `render={<span/>}` and `render: 'span'` in each frame (e.g. `components/Badge/Badge.tsx`): DOM elements and tags do not apply on native; need a platform split for the `render` prop.
 - `className`/`rcx-*` classes, `ariaAndDataAttributes` and `pickWebPressHandlers`: no effect on native; `onClick` is not `onPress`.
 - Module-scope DOM globals: the whole of `index.runtime.ts` loaded without throwing, so none were hit at load.
+
+## SDK on React Native: findings
+
+Observed on the iPhone 17 Pro simulator (dev client, RN 0.88, Hermes) against open.rocket.chat with a personal access token. No polyfill and no Metro change were needed for any of the three packages.
+
+| Package | Needed | Notes |
+| --- | --- | --- |
+| `@rocket.chat/api-client` | nothing | Uses global `fetch`, `FormData`, `File`, `XMLHttpRequest`; all exist in RN. `query-string` resolves. Rejections are RN's polyfilled `Response`, so `instanceof Response` is false: check for a `status` field instead. |
+| `@rocket.chat/ddp-client` | nothing | `DDPSDK.create(url)` uses the global `WebSocket` (RN's); `ws` is a devDependency only and is never imported. Connect, resume-token login and `stream('room-messages', rid, cb)` reach `ready`. `sdk.rest` is the api-client `RestClient` with the DDP account's credentials. |
+| `@rocket.chat/emitter` | nothing | |
+
+Other findings:
+
+- `subscriptions.get` is not in `@rocket.chat/rest-typings`, so `rest.get` rejects it at type level; `rest.send(path, 'GET')` plus a local type is used.
+- A Metro left running from an earlier session on port 8081 served a broken state (`Got unexpected undefined ... nullthrows.js`); start Metro on a free `--port` and open the dev client with `exp+expo-lab://expo-development-client/?url=http%3A%2F%2Flocalhost%3A<port>`.
+- Login with a token: the app calls `sdk.account.setCredentials({ id, token })` and `sdk.connection.connect()`; the SDK then sends the DDP `login` with `resume` itself on every (re)connection.
+
+### Two-factor authentication
+
+Read from `apps/meteor/server/api/ApiClass.ts` (`login` route, `loginCompatibility`) and `apps/meteor/server/lib/2fa/code/index.ts`:
+
+- `POST /v1/login` with a user that has 2FA answers **401** (not 400) with `{ error: 'totp-required', details: { method: 'totp' | 'email' } }`. `RestClient`'s built-in `handleTwoFactorChallenge` only reacts to 400, so it does not fire for login; `src/twoFactor.ts` handles it.
+- Retry the same request with `code` in the body (the `x-2fa-code` header is read too). The server wraps it as `{ totp: { code, login } }`; the method is not sent: the code is checked against the user's first enabled method (TOTP before email). The login path disables the password fallback, so `password` (sha-256 of the password) is never requested here.
+- A wrong code answers 401 `totp-invalid` (the app asks again and says the code was invalid); too many wrong email codes answer `totp-max-attempts` (shown as an error).
+- For `email` the server sends the code when it answers `totp-required`. A resend goes through `POST /v1/twoFactorChallenges.sendEmailCode { challengeId }` (the id is in the `totp-required` details); the app does not offer resend.
+- Personal access tokens skip 2FA, and the DDP login uses the resume token from the REST login, so no 2FA there.
+- Verified only against a local fake server (required, then invalid, then valid code: 3 requests, the last carries the code and password; a non-2FA failure is rethrown). Not exercised against a real 2FA account or open.rocket.chat.
