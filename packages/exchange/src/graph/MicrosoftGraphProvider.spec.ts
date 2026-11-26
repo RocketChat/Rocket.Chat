@@ -528,7 +528,11 @@ describe('MicrosoftGraphProvider', () => {
 		it('stops at a throttled batch and reports the mailbox as rate limited, even when another photo in it failed too', async () => {
 			mockTokenThen(
 				graphResponse({
-					responses: [entry('c0', { status: 503, body: undefined }), entry(CONTACT_ID, { status: 429, body: undefined }), entry(OTHER_CONTACT_ID)],
+					responses: [
+						entry('c0', { status: 503, body: undefined }),
+						entry(CONTACT_ID, { status: 429, body: undefined }),
+						entry(OTHER_CONTACT_ID),
+					],
 				}),
 			);
 
