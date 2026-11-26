@@ -8,7 +8,7 @@ import { formatErrorResponse } from '../formatResponseErrorHandler';
 describe('formatErrorResponse', () => {
 	describe('JSON-RPC ErrorObject handling', () => {
 		it('formats ErrorObject instances correctly', () => {
-			const errorObject = jsonrpc.error('test-id', new jsonrpc.JsonRpcError('Test error message', 1000));
+			const errorObject = jsonrpc.error('test-id', new jsonrpc.JsonRpcError('Test error message', jsonrpc.SERVER_ERROR));
 			const result = formatErrorResponse(errorObject);
 
 			assert.ok(result instanceof Error, `Expected instance of Error`);

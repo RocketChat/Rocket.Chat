@@ -177,7 +177,7 @@ describe('jsonrpc', () => {
 
 			assert.deepStrictEqual(message.meta, meta);
 			assert.strictEqual(message.error.code, -32603);
-			assert.strictEqual(message.error.data, 'cause');
+			assert.deepStrictEqual(message.error.data, { detail: 'cause' });
 		});
 
 		it('should leave meta absent when it is not supplied', () => {

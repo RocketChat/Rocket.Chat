@@ -11,11 +11,11 @@ import type {
 } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import { AppInterface, AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 
+import { ErrorCode } from '../../../protocol/src/framing/errors';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppListenerManager } from '../../../src/server/managers';
 import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../../../src/server/mediaCalls';
-import { JSONRPC_METHOD_NOT_FOUND } from '../../../src/server/runtime/base/BaseRuntimeSubprocessController';
 import type { IAppStorageItem } from '../../../src/server/storage';
 
 type AppMethodHandlers = Record<string, (...args: any[]) => unknown>;
@@ -40,7 +40,7 @@ function mockApp(id: string, handlers: AppMethodHandlers, languageContent: { [la
 		},
 		async call(method: string, ...args: unknown[]) {
 			if (!(method in handlers)) {
-				throw Object.assign(new Error(`Method not found: ${method}`), { code: JSONRPC_METHOD_NOT_FOUND });
+				throw Object.assign(new Error(`Method not found: ${method}`), { code: ErrorCode.METHOD_NOT_FOUND });
 			}
 
 			return handlers[method](...args);

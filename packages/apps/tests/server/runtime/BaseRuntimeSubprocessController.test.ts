@@ -5,7 +5,7 @@ import { describe, it, afterEach, mock, before, after } from 'node:test';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { isSuccessObject, request } from '../../../protocol/src/framing/jsonrpc';
+import { INVALID_PARAMS, METHOD_NOT_FOUND, isErrorObject, isSuccessObject, request } from '../../../protocol/src/framing/jsonrpc';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';
@@ -79,5 +79,25 @@ describe('BaseRuntimeSubprocessController', () => {
 
 		assert.strictEqual(id, 'requestId');
 		assert.strictEqual(result, 'random-message-id');
+	});
+
+	it('answers an unknown bridge, a non-"do" method and a missing method with METHOD_NOT_FOUND', async () => {
+		for (const method of [
+			'bridges:getNoSuchBridge:doCreate',
+			'bridges:getMessageBridge:create',
+			'bridges:getMessageBridge:doNoSuchMethod',
+		]) {
+			const response = await controller['handleBridgeMessage'](request('requestId', method, []));
+
+			assert.ok(isErrorObject(response), method);
+			assert.strictEqual(response.error.code, METHOD_NOT_FOUND, method);
+		}
+	});
+
+	it('answers params that are not an array with INVALID_PARAMS', async () => {
+		const response = await controller['handleBridgeMessage'](request('requestId', 'bridges:getMessageBridge:doCreate', {}));
+
+		assert.ok(isErrorObject(response));
+		assert.strictEqual(response.error.code, INVALID_PARAMS);
 	});
 });

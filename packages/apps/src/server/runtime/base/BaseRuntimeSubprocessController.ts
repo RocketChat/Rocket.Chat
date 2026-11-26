@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
+import { toServerErrorData } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
@@ -22,8 +23,6 @@ import type { IRuntimeController } from '../IRuntimeController';
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
 const COMMAND_PONG = '_zPONG';
-
-export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
 function getRuntimeTimeout() {
 	const defaultTimeout = 30000;
@@ -400,8 +399,12 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
 
-		if (!bridgeMethod.startsWith('do') || !Array.isArray(params)) {
-			throw new Error('Invalid bridge request');
+		if (!bridgeMethod?.startsWith('do')) {
+			return jsonrpc.error(id, jsonrpc.JsonRpcError.methodNotFound());
+		}
+
+		if (!Array.isArray(params)) {
+			return jsonrpc.error(id, jsonrpc.JsonRpcError.invalidParams());
 		}
 
 		let bridgeInstance: unknown;
@@ -419,7 +422,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
 
 			if (typeof bridge !== 'function') {
-				throw new Error('Invalid bridge request');
+				return jsonrpc.error(id, jsonrpc.JsonRpcError.methodNotFound());
 			}
 
 			bridgeInstance = bridge.call(this.bridges);
@@ -428,7 +431,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		const methodRef = (bridgeInstance as Record<string, unknown>)[bridgeMethod] as unknown;
 
 		if (typeof methodRef !== 'function') {
-			throw new Error('Invalid bridge request');
+			return jsonrpc.error(id, jsonrpc.JsonRpcError.methodNotFound());
 		}
 
 		let result;
@@ -441,7 +444,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			);
 		} catch (error) {
 			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, error);
+			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, toServerErrorData(error));
 			return jsonrpc.error(id, jsonRpcError);
 		}
 
@@ -457,7 +460,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			try {
 				result = await this.handleBridgeMessage(message as jsonrpc.RequestObject);
 			} catch (e) {
-				result = jsonrpc.error((message as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
+				result = jsonrpc.error((message as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, jsonrpc.INTERNAL_ERROR));
 			}
 
 			this.messenger.send(result).catch((error) => {

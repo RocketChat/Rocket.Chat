@@ -170,7 +170,7 @@ describe('dispatch', () => {
 		const response = await dispatchRequest('bridges:getRoomBridge:doGetById', ['r1']);
 
 		assert.strictEqual(response?.error?.code, -32601);
-		assert.strictEqual(response?.error?.data, 'bridges:getRoomBridge:doGetById');
+		assert.deepStrictEqual(response?.error?.data, { detail: 'bridges:getRoomBridge:doGetById' });
 	});
 
 	it('answers -32600 for a request to a notification procedure', async () => {
@@ -184,7 +184,7 @@ describe('dispatch', () => {
 
 		assert.strictEqual(response?.error?.code, -32602);
 		assert.deepStrictEqual(
-			(response?.error?.data as { path: unknown[] }[]).map((issue) => issue.path),
+			(response?.error?.data as { detail: { path: unknown[] }[] }).detail.map((issue) => issue.path),
 			[['roomId']],
 		);
 	});

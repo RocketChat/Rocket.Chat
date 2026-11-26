@@ -1,5 +1,7 @@
 # ADR 0003 — Media-call lifecycle events for apps
 
+> **Amended (2026-11):** The constant `JSONRPC_METHOD_NOT_FOUND` is replaced by `ErrorCode.METHOD_NOT_FOUND` from `packages/apps/protocol`, because the error codes are now one closed set. The decision itself is unchanged.
+
 ## TL;DR
 
 - Apps implement one `IMediaCallHandler` with one optional method per event.
@@ -467,7 +469,7 @@ family and are not touched again.
 
 1. `packages/apps-engine/src/definition/metadata/AppMethod.ts` — add the `EXECUTE…` method name.
    Media-call events have **no `CHECK…` companion**: the executors call the `EXECUTE…` method
-   directly and read a `JSONRPC_METHOD_NOT_FOUND` rejection as "this app did not implement it",
+   directly and read an `ErrorCode.METHOD_NOT_FOUND` rejection as "this app did not implement it",
    which is what makes every member of `IMediaCallHandler` optional.
 2. `packages/apps-engine/src/definition/mediaCalls/` — add the context type and the method on
    `IMediaCallHandler`; export them from that folder's `index.ts`.

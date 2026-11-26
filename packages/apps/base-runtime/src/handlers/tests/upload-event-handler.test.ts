@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
+import type { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import { JsonRpcError } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload';
@@ -15,6 +16,9 @@ import { createMockRequest } from './helpers/mod';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import handleUploadEvents from '../app/handleUploadEvents';
 import { Errors } from '../lib/assertions';
+
+// The context of a standard-code error sits in `data.detail`.
+const detailOf = (error: unknown) => ((error as JsonRpcError<typeof ErrorCode.INTERNAL_ERROR>).data.detail ?? {}) as Record<string, any>;
 
 describe('handlers > upload', () => {
 	let app: App & IPreFileUpload;
@@ -80,7 +84,7 @@ describe('handlers > upload', () => {
 		);
 
 		assert.ok(result instanceof JsonRpcError, `Expected instance of ${JsonRpcError.name}`);
-		assert.deepStrictEqual((result as JsonRpcError).data.code, Errors.DRT_APP_NOT_AVAILABLE);
+		assert.deepStrictEqual(detailOf(result).code, Errors.DRT_APP_NOT_AVAILABLE);
 	});
 
 	it('fails when the app does not implement the IPreFileUpload event handler', async () => {
@@ -91,7 +95,7 @@ describe('handlers > upload', () => {
 		);
 
 		assert.ok(result instanceof JsonRpcError, `Expected instance of ${JsonRpcError.name}`);
-		assert.deepStrictEqual((result as JsonRpcError).data.code, Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING);
+		assert.deepStrictEqual(detailOf(result).code, Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING);
 	});
 
 	it('fails when "file" is not a proper IUploadDetails object', async () => {
@@ -100,14 +104,14 @@ describe('handlers > upload', () => {
 		);
 
 		assert.ok(result instanceof JsonRpcError, `Expected instance of ${JsonRpcError.name}`);
-		assert.ok((result as JsonRpcError).data.err.includes('Expected IUploadDetails'));
+		assert.ok(detailOf(result).err.includes('Expected IUploadDetails'));
 	});
 
 	it('fails when "path" is not a proper string', async () => {
 		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path: {} }] }));
 
 		assert.ok(result instanceof JsonRpcError, `Expected instance of ${JsonRpcError.name}`);
-		assert.ok((result as JsonRpcError).data.err.includes('Expected string'));
+		assert.ok(detailOf(result).err.includes('Expected string'));
 	});
 
 	it('fails when "path" is not a readable file path', async () => {
@@ -118,6 +122,6 @@ describe('handlers > upload', () => {
 		);
 
 		assert.ok(result instanceof JsonRpcError, `Expected instance of ${JsonRpcError.name}`);
-		assert.deepStrictEqual((result as JsonRpcError).data.code, 'ENOENT');
+		assert.deepStrictEqual(detailOf(result).code, 'ENOENT');
 	});
 });

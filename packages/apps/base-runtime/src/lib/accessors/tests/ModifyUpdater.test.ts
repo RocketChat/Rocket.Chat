@@ -1,6 +1,7 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
@@ -162,7 +163,8 @@ describe('ModifyUpdater', () => {
 				const _stub = mock.method(
 					modifyUpdater,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => modifyUpdater.message('message-id', { id: 'user-id' } as IUser), { message: 'unit-test-error' });
@@ -194,7 +196,8 @@ describe('ModifyUpdater', () => {
 				const _stub = mock.method(
 					modifyUpdater,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => modifyUpdater.room('room-id', { id: 'user-id' } as IUser), { message: 'unit-test-error' });
@@ -236,7 +239,8 @@ describe('ModifyUpdater', () => {
 				const _stub = mock.method(
 					modifyUpdater,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => modifyUpdater.finish(messageUpdater), { message: 'unit-test-error' });

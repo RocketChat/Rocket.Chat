@@ -1,6 +1,7 @@
 import EventEmitter from 'node:events';
 
 import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 import type { RequestContext } from './requestContext';
@@ -59,7 +60,7 @@ export function parseMessage(message: unknown): jsonrpc.JsonRpc {
 		return message;
 	}
 
-	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message));
+	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message as jsonrpc.Defined));
 }
 
 export async function sendInvalidRequestError(): Promise<void> {
@@ -87,16 +88,16 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 }
 
 export async function errorResponse(
-	{ error: { message, code = -32000, data = {} }, id, meta }: ErrorResponseDescriptor,
+	{ error: { message, code = ErrorCode.SERVER_ERROR, data = {} }, id, meta }: ErrorResponseDescriptor,
 	req?: RequestContext,
 ): Promise<void> {
 	const { logger } = req?.context || {};
 
-	if (logger?.hasEntries()) {
-		data.logs = logger.getLogs();
-	}
-
-	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
+	const rpc = jsonrpc.error(
+		id,
+		new jsonrpc.JsonRpcError(message, code as ErrorCode, logger?.hasEntries() ? { ...data, logs: logger.getLogs() } : data),
+		meta,
+	);
 
 	await ipcChannel.send(rpc);
 }

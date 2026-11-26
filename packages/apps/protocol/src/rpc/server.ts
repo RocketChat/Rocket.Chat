@@ -2,13 +2,11 @@ import type { z } from 'zod';
 
 import type { Contract, Domain, ErrorDataOf, ErrorNameOf, InputOf, OutputOf, Procedure } from './contract';
 import { PROCEDURE_ERROR, ProcedureError } from './errors';
+import { ErrorCode, type ErrorData } from '../framing/errors';
 import type { Defined, ErrorObject, NotificationObject, RequestObject, SuccessObject } from '../framing/jsonrpc';
 import { JsonRpcError, SERVER_ERROR, error, success } from '../framing/jsonrpc';
 
 type MaybePromise<T> = T | Promise<T>;
-
-/** `AppsEngineException.JSONRPC_ERROR_CODE`. A thrown error with this code keeps it on the wire. */
-const APPS_ENGINE_EXCEPTION = -32070;
 
 export type ErrorConstructors<P extends Procedure> = {
 	readonly [N in ErrorNameOf<P>]: (data: ErrorDataOf<P, N>) => ProcedureError<N, ErrorDataOf<P, N>>;
@@ -135,8 +133,9 @@ const toJsonRpcError = (thrown: unknown): JsonRpcError => {
 	const { message, code, data } = (thrown ?? {}) as { message?: unknown; code?: unknown; data?: unknown };
 	const text = typeof message === 'string' ? message : String(thrown);
 
-	if (code === APPS_ENGINE_EXCEPTION) {
-		return new JsonRpcError(text, APPS_ENGINE_EXCEPTION, data);
+	// A thrown error with the `AppsEngineException` code keeps it on the wire.
+	if (code === ErrorCode.APPS_ENGINE_EXCEPTION) {
+		return new JsonRpcError(text, ErrorCode.APPS_ENGINE_EXCEPTION, data as ErrorData<typeof ErrorCode.APPS_ENGINE_EXCEPTION>);
 	}
 
 	return new JsonRpcError(text, SERVER_ERROR);

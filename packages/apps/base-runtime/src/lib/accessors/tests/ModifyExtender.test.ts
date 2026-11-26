@@ -1,6 +1,7 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
@@ -121,7 +122,8 @@ describe('ModifyExtender', () => {
 				const _stub = mock.method(
 					extender,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => extender.extendMessage('message-id', { _id: 'user-id' } as any), { message: 'unit-test-error' });
@@ -153,7 +155,8 @@ describe('ModifyExtender', () => {
 				const _stub = mock.method(
 					extender,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => extender.extendRoom('room-id', { _id: 'user-id' } as any), { message: 'unit-test-error' });
@@ -183,7 +186,8 @@ describe('ModifyExtender', () => {
 				const _stub = mock.method(
 					extender,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => extender.extendVideoConference('video-conference-id'), { message: 'unit-test-error' });
@@ -213,7 +217,8 @@ describe('ModifyExtender', () => {
 				const _stub = mock.method(
 					extender,
 					'senderFn' as any,
-					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+					() =>
+						Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', ErrorCode.SERVER_ERROR))) as any,
 				);
 
 				await assert.rejects(() => extender.finish({ kind: 'message', getMessage: () => ({}) } as any), { message: 'unit-test-error' });

@@ -1,5 +1,6 @@
 import { inspect } from 'node:util';
 
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { IAppAuthorInfo, IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
@@ -12,7 +13,6 @@ import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import type { IRuntimeController } from './runtime/IRuntimeController';
-import { JSONRPC_METHOD_NOT_FOUND } from './runtime/base/BaseRuntimeSubprocessController';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {
@@ -67,11 +67,11 @@ export class ProxiedApp {
 		try {
 			return (await this.appRuntime.sendRequest({ method: `app:${method}`, params: args }, options)) as T;
 		} catch (e) {
-			if (e.code === AppsEngineException.JSONRPC_ERROR_CODE) {
+			if (e.code === ErrorCode.APPS_ENGINE_EXCEPTION) {
 				throw new AppsEngineException(e.message);
 			}
 
-			if (e.code === JSONRPC_METHOD_NOT_FOUND) {
+			if (e.code === ErrorCode.METHOD_NOT_FOUND) {
 				throw e;
 			}
 
