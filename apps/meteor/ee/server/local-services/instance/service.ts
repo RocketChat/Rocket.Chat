@@ -152,11 +152,14 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const { host, tcpPort } = record.extraInformation;
 
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
 	}
 
 	private disconnectNode(nodeId: string) {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 

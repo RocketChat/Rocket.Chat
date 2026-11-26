@@ -803,6 +803,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
 		if (room?.t !== 'd') {
+			// oxlint-disable-next-line typescript/restrict-template-expressions -- TODO: the endpoint declares no query schema, so queryParams is typed never; adding one makes it reject requests it accepts today
 			throw new ClientSafeError('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 		}
 

@@ -1,7 +1,9 @@
+/* oxlint-disable typescript/no-unsafe-call -- the legacy markdown parser is untyped; it will be typed in a separate change */
 /*
  * code() is a named function that will parse `inline code` and ```codeblock``` syntaxes
  * @param {Object} message - The message object
  */
+import type { IMessage } from '@rocket.chat/core-typings';
 import { unescapeHTML } from '@rocket.chat/tools';
 
 import { addAsToken } from './token';
@@ -77,7 +79,7 @@ const codeblocks = (message: any) => {
 	}
 };
 
-export const code = (message: any) => {
+export const code = <T extends { html?: string }>(message: T): T & { html?: string } & Pick<IMessage, 'tokens'> => {
 	if (message.html?.trim()) {
 		codeblocks(message);
 		inlinecode(message);

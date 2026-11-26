@@ -26,8 +26,8 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 
 	const { t } = useTranslation();
 
-	const attributeValues = useWatch({ control, name: 'attributeValues' }) ?? [];
-	const lockedAttributes = useWatch({ control, name: 'lockedAttributes' }) ?? [];
+	const attributeValues = useWatch({ control, name: 'attributeValues' });
+	const lockedAttributes = useWatch({ control, name: 'lockedAttributes' });
 
 	const isAttributeUsed = useEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', { key: getValues('name') });
 
@@ -38,7 +38,8 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const validateRepeatedValues = useCallback(
 		(value: string) => {
 			// Only one instance of the same attribute value is allowed to be in the form at a time
-			const repeatedAttributes = [...lockedAttributes, ...attributeValues].filter((attribute) => attribute.value === value).length > 1;
+			const repeatedAttributes =
+				[...(lockedAttributes ?? []), ...(attributeValues ?? [])].filter((attribute) => attribute.value === value).length > 1;
 			return repeatedAttributes ? t('ABAC_No_repeated_values') : undefined;
 		},
 		[lockedAttributes, attributeValues, t],

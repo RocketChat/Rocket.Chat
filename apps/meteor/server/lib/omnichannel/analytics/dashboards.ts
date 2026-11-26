@@ -63,6 +63,7 @@ const getProductivityMetricsAsync = async ({
 
 	const totalOfWaitingTime = averageWaitingTime.departments.length;
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfWaitingTime = averageWaitingTime.departments.reduce((acc: number, serviceTime: { averageWaitingTimeInSeconds: number }) => {
 		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
@@ -117,6 +118,7 @@ const getAgentsProductivityMetricsAsync = async ({
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfServiceTime = averageOfServiceTime.departments.reduce(
 		(
 			acc: number,
@@ -169,6 +171,7 @@ const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { 
 	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
 	const totalOfChatDurationTime = averageOfChatDurationTime.departments.length;
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce(
 		(
 			acc: number,
@@ -181,6 +184,7 @@ const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { 
 		},
 		0,
 	);
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const sumOfChatDurationTime = averageOfChatDurationTime.departments.reduce(
 		(
 			acc: number,
@@ -193,6 +197,7 @@ const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { 
 		},
 		0,
 	);
+	// oxlint-disable-next-line typescript/no-unsafe-call -- departments come from an any-typed ILivechatRoomsModel aggregation
 	const totalAbandonedRooms = abandonedRooms.departments.reduce(
 		(
 			acc: number,
@@ -292,20 +297,20 @@ const findAllChatMetricsByAgentAsync = async ({
 	});
 
 	const result: Record<string, { open: number; closed: number; onhold?: number }> = {};
-	(open || []).forEach((agent: { chats: number; _id: string }) => {
-		result[agent._id] = { open: agent.chats, closed: 0, onhold: 0 };
+	open.forEach(({ _id, chats }) => {
+		result[String(_id)] = { open: chats, closed: 0, onhold: 0 };
 	});
-	(closed || []).forEach((agent: { _id: string; chats: number }) => {
-		result[agent._id] = {
-			open: result[agent._id] ? result[agent._id].open : 0,
-			closed: agent.chats,
+	closed.forEach(({ _id, chats }) => {
+		result[String(_id)] = {
+			open: result[String(_id)]?.open ?? 0,
+			closed: chats,
 		};
 	});
 
-	(onhold || []).forEach((agent: { _id: string; chats: number }) => {
-		result[agent._id] = {
-			...result[agent._id],
-			onhold: agent.chats,
+	onhold.forEach(({ _id, chats }) => {
+		result[String(_id)] = {
+			...result[String(_id)],
+			onhold: chats,
 		};
 	});
 	return result;
@@ -337,13 +342,13 @@ const findAllChatMetricsByDepartmentAsync = async ({
 		departmentId,
 	});
 	const result: Record<string, { open: number; closed: number }> = {};
-	(open || []).forEach((department: { name: string; chats: number }) => {
-		result[department.name] = { open: department.chats, closed: 0 };
+	open.forEach(({ name, chats }) => {
+		result[String(name)] = { open: chats, closed: 0 };
 	});
-	(closed || []).forEach((department: { name: string; chats: number }) => {
-		result[department.name] = {
-			open: result[department.name] ? result[department.name].open : 0,
-			closed: department.chats,
+	closed.forEach(({ name, chats }) => {
+		result[String(name)] = {
+			open: result[String(name)]?.open ?? 0,
+			closed: chats,
 		};
 	});
 	return result;

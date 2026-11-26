@@ -55,10 +55,10 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		}
 
 		return updatedUser;
-	} catch (err: any) {
+	} catch (err) {
 		SystemLogger.error({ err });
 
-		let message = err.toString();
+		let message = (err as Error).toString();
 		let errorCode = '';
 
 		if (isClientSafeError(err)) {

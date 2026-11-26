@@ -461,10 +461,12 @@ it('stays open when the pointer jumps straight from the trigger onto the card', 
 		const card = getCardContainer();
 
 		// a single fast move: the browser fires every pointer event before the matching mouse events
+		/* oxlint-disable testing-library/prefer-user-event -- userEvent.hover/unhover fire each element's pointer and mouse events together, so they cannot reproduce this order */
 		fireEvent.pointerLeave(trigger);
 		fireEvent.pointerEnter(card);
 		fireEvent.mouseLeave(trigger);
 		fireEvent.mouseEnter(card);
+		/* oxlint-enable testing-library/prefer-user-event */
 		await advance(1000);
 
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();

@@ -128,16 +128,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const { handleSubmit, control, setValue } = methods;
 	const { errors, isSubmitting } = useFormState({ control });
 
-	const watched = useWatch({ control });
-	const isPrivate = watched.isPrivate ?? false;
-	const broadcast = watched.broadcast ?? false;
-	const readOnly = watched.readOnly ?? false;
-	const federated = watched.federated ?? false;
-	const xmppFederated = watched.xmppFederated ?? false;
-	const encrypted = watched.encrypted ?? false;
-	const isAbacManaged = watched.isAbacManaged ?? false;
-	const members = useWatch({ control, name: 'members' });
-	const attributes = useWatch({ control, name: 'attributes' });
+	const [isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes] = useWatch({
+		control,
+		name: ['isPrivate', 'broadcast', 'readOnly', 'federated', 'xmppFederated', 'encrypted', 'isAbacManaged', 'members', 'attributes'],
+	});
 
 	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated || xmppFederated);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });

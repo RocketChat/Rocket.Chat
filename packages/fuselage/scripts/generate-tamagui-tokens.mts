@@ -76,7 +76,7 @@ const webTokens = Object.fromEntries(
 
 // Tamagui's own names: `--t-<category>-<token>`, a number of pixels with its unit, a layer and a zero as plain numbers.
 const variables = Object.entries(webTokens).flatMap(([category, values]) =>
-	Object.entries(values).map(
+	Object.entries<string | number>(values).map(
 		([name, value]) =>
 			`\t--t-${category}-${name}: ${value}${category === 'zIndex' || typeof value === 'string' || value === 0 ? '' : 'px'};`,
 	),
