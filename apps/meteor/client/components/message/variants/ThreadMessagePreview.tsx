@@ -8,7 +8,8 @@ import {
 	ThreadMessageContainer,
 	ThreadMessageOrigin,
 	ThreadMessageBody,
-	ThreadMessageFollowIndicator,
+	ThreadMessageFollow,
+	ThreadMessageUnfollow,
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
@@ -45,6 +46,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const parentMessage = useParentMessage(message.tmid);
 	const uid = useUserId();
 	const threadMainMessage = Messages.use((state) => state.get(message.tmid)) ?? parentMessage.data;
+	const following = Boolean(uid && threadMainMessage?.replies?.includes(uid));
 
 	const translated = useShowTranslated(message);
 	const { t } = useTranslation();
@@ -116,7 +118,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							{messageType?.text(t, message)}
 							{parentMessage.isLoading && <Skeleton />}
 						</ThreadMessageOrigin>
-						<ThreadMessageFollowIndicator following={Boolean(uid && threadMainMessage?.replies?.includes(uid))} />
+						{following ? <ThreadMessageFollow /> : <ThreadMessageUnfollow />}
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
