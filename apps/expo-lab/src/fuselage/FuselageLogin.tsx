@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Text as RNText, View } from 'react-native';
+import { Text as RNText, TextInput as RNTextInput, View } from 'react-native';
 import {
 	Button,
 	Field,
@@ -14,6 +14,9 @@ import {
 
 import type { Session } from '../session';
 import { codeLabels, useLogin } from '../useLogin';
+
+// EXPO_PUBLIC_CHAT_PASSWORD=fuselage shows the Fuselage PasswordInput: it masks the text but its input collapses to the caret width (cannot be focused by a tap) and its eye has no press handler, so the default is a React Native field
+const fuselagePassword = process.env.EXPO_PUBLIC_CHAT_PASSWORD === 'fuselage';
 
 // On native the input's onChange receives the string value; on the web it receives an event
 const onText = (set: (value: string) => void) => (value: unknown) => set(String(value));
@@ -57,7 +60,11 @@ export function FuselageLogin({ onSession }: { onSession: (session: Session) => 
 				<FieldLabel>{form.useToken ? 'Token' : 'Password'}</FieldLabel>
 				<FieldRow>
 					<Boxed>
-						<PasswordInput value={form.secret} onChange={onText(form.setSecret)} />
+						{fuselagePassword ? (
+							<PasswordInput value={form.secret} onChange={onText(form.setSecret)} />
+						) : (
+							<RNTextInput value={form.secret} onChangeText={form.setSecret} secureTextEntry autoCapitalize='none' autoCorrect={false} style={{ fontSize: 16 }} />
+						)}
 					</Boxed>
 				</FieldRow>
 			</Field>
