@@ -7,7 +7,15 @@ import { createFakeRoom, createFakeSubscription } from '../../../tests/mocks/dat
 
 const room = (subscription: Parameters<typeof createFakeSubscription>[0]) =>
 	({
-		...createFakeSubscription({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], alert: false, ...subscription }),
+		...createFakeSubscription({
+			open: true,
+			userMentions: 0,
+			groupMentions: 0,
+			tunread: [],
+			tunreadUser: [],
+			alert: false,
+			...subscription,
+		}),
 		...createFakeRoom({ t: 'c' }),
 	}) as unknown as SubscriptionWithRoom;
 
