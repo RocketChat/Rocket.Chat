@@ -47,7 +47,7 @@
 3. **Both serialization modules move wholesale into `protocol/`.** `src/lib/SecureFields.ts` becomes
    `protocol/src/serialization/secureFields.ts` and `src/lib/IpcSanitizer.ts` becomes
    `protocol/src/serialization/sanitizer.ts`. The Meteor call site
-   (`apps/meteor/app/apps/server/converters/codecs/rooms.ts`, which uses `secureFieldsMapper`) is
+   (`apps/meteor/server/modules/apps/converters/codecs/rooms.ts`, which uses `secureFieldsMapper`) is
    updated. No re-export shim.
    - Both are shared by construction, which is what makes `protocol/` their home. `sanitizeForIpc`
      runs on every message before every send, on both sides; the secure-fields marker is written by
@@ -87,7 +87,7 @@
    is invariant on app→host; the **`logs` field** stays conditional on `logger.hasEntries()`.
 6. **The error taxonomy is a closed enum owned by `protocol/`**: the five standard JSON-RPC codes,
    plus `-32070` (`AppsEngineException.JSONRPC_ERROR_CODE`, unchanged — defined in `apps-engine` and
-   the only code with a live consumer), plus `-32000` for "handler or bridge threw", plus `-32001`
+   read by `ProxiedApp.call`; the only other code the host reads is `-32601`), plus `-32000` for "handler or bridge threw", plus `-32001`
    for a declared procedure error (decision 20).
    - Half of this exists. `src/lib/jsonrpc.ts` already exports the five standard codes and
      `SERVER_ERROR` as named constants, and `JsonRpcError` already carries the matching static
@@ -140,7 +140,7 @@
 11. **Schemas are authored in Zod** (`~4.3.6`, the version that `apps/meteor` and `core-typings`
     use). There is no JSON Schema step and no AJV.
     - **One schema library for the apps code.** The converter codecs in
-      `apps/meteor/app/apps/server/converters/` and the schemas in `core-typings` already use Zod.
+      `apps/meteor/server/modules/apps/converters/` and the schemas in `core-typings` already use Zod.
     - **The handler gets a clean copy.** `safeParse` returns a new object with only the declared
       keys.
     - **The speed gap is too small to matter.** An `addReaction` input validates in 17.6 ns with
@@ -161,7 +161,7 @@
       What it costs is start-up. Every module the runtime imports is loaded once per app process,
       and the schemas are the largest thing in `protocol/` that the subprocess has no use for.
 13. **No codegen.** No ts-morph, no committed generated artifact, no codegen build step. The
-    122 procedures are hand-authored and mostly shallow (`string`, `boolean`, `object`).
+    125 procedures are hand-authored and mostly shallow (`string`, `boolean`, `object`).
     - Deep `IMessage`/`IRoom`/`IUser` schemas are **redundant**: `docs/proposals/apps-converters-zod`
       is putting runtime-validated codecs on those same objects one layer down, and a deep IPC
       schema for them would validate the same payload twice.
@@ -214,8 +214,8 @@
       path, a missing field or a wrong field type is a **compile error** in `typecheck:base-runtime`.
       The `bridgeCall<T>` type arguments and the output casts go away.
     - **Exhaustiveness is checked against the contract, not against `AppBridges`.** A bridge method
-      with no procedure is unreachable. Today `handleBridgeMessage` reaches 152 `do*` methods by
-      reflection; the accessors emit 122 of them. The other 30 get no procedure. An accessor that
+      with no procedure is unreachable. Today `handleBridgeMessage` reaches 155 `do*` methods by
+      reflection; the accessors emit 125 of them. The other 30 get no procedure. An accessor that
       needs one later adds its procedure in the same PR.
     - Together these subsume a reflection-based drift test
       (`Object.getOwnPropertyNames` + `Function.prototype.length`), which is strictly weaker —
@@ -267,7 +267,7 @@
     - **Two bridge methods get a corrected name:** `getOAuthAppsBridge:doGetByid` →
       `oauthApps.getById`, and `getLivechatBridge:do_fetchLivechatRoomMessages` →
       `livechat.fetchLivechatRoomMessages`.
-    - The rule gives 122 distinct paths for the 122 emitted pairs. A better name than the rule gives
+    - The rule gives 125 distinct paths for the 125 emitted pairs. A better name than the rule gives
       is a separate change after the migration.
 20. **A procedure can declare the errors that its handler throws on purpose.** This is the error map
     of oRPC (`oc.errors({ … })`), on the taxonomy of decision 6.
@@ -424,11 +424,11 @@ file.
 
 ### Surface being covered
 
-- **App→host, emitted today:** 122 `(bridge, method)` pairs across 21 bridges, called from 39 files
+- **App→host, emitted today:** 125 `(bridge, method)` pairs across 22 bridges, called from 39 files
   in `base-runtime/src`. The largest domains are `livechat` (22), `room` (18), `appResource` (15),
   `user` (12) and `message` (9). Each gets one procedure.
-- **App→host, reachable today but not emitted:** 30 of the **152 `public do*` declarations** across
-  **27 bridge classes**, reachable through **28 `AppBridges` getters plus `AppResourceBridge`**. They
+- **App→host, reachable today but not emitted:** 30 of the **155 `public do*` declarations** across
+  **28 bridge classes**, reachable through **29 `AppBridges` getters plus `AppResourceBridge`**. They
   get no procedure.
 - **App→host notifications:** `runtime.ready`, `runtime.log`, `runtime.unhandledRejection`,
   `runtime.uncaughtException`; and `_zPONG`, which stays a bare control frame.
@@ -461,7 +461,7 @@ Named `params` (decision 19) and `-32001` (decision 20) are not deviations. JSON
 ## Rejected alternatives
 
 - **An invoker table keyed by `'getXBridge:doY'`, exhaustive over `AppBridges`.** The key is still a bridge getter plus a bridge method, so the bridge class shape
-  stays the wire shape. The exhaustiveness check keeps all 152 `do*` methods reachable by design,
+  stays the wire shape. The exhaustiveness check keeps all 155 `do*` methods reachable by design,
   including host-internal ones such as `getAppActivationBridge:doActionsChanged`, which has no
   permission check. `names.ts` repeats the bridge names and gives the runtime no input or output
   type, so `bridgeCall<T>` keeps its casts.
@@ -480,7 +480,7 @@ Named `params` (decision 19) and `-32001` (decision 20) are not deviations. JSON
   packages, including HTTP and serverless adapters; it has no notification kind, no closed-input
   check and no `shaped<T>()`; a validation failure must be converted from `ORPCError('BAD_REQUEST')`
   to `-32602`; `tsc` fails with `skipLibCheck: false`; and a 1.x library with announced v2 changes
-  puts all 122 handlers on its upgrade path.
+  puts all 125 handlers on its upgrade path.
 - **The oRPC implementer tree** (`implement(contract).$context<Ctx>()`, then `.use().handler()` on
   each leaf). A missing handler gives a long `Lazyable<Procedure<…>>` error. `Handlers<>` gives the
   same checks with a shorter error.
@@ -489,7 +489,7 @@ Named `params` (decision 19) and `-32001` (decision 20) are not deviations. JSON
 
 ## Consequences
 
-- **Output types are written by hand.** Each of the 122 procedures declares a `type<T>()`. The host
+- **Output types are written by hand.** Each of the 125 procedures declares a `type<T>()`. The host
   compiler checks every handler against it, so a wrong declaration fails `typecheck:default`.
 - **Nullability is not checked at the use sites yet.** The contract compiles `strict: true`, but the
   host and `base-runtime` compile `strict: false`, and both erase `| undefined` when they read the
@@ -506,7 +506,7 @@ Named `params` (decision 19) and `-32001` (decision 20) are not deviations. JSON
   path takes a positional array with `'APP_ID'`. No version skew makes this safe.
 - **The legacy fallback keeps today's exposure until it is deleted, and no longer.** While domains
   migrate, the reflection path still serves every `bridges:*` method. The PR that deletes it is the
-  point where the surface shrinks from 152 methods to the declared set, and it must be the last step
+  point where the surface shrinks from 155 methods to the declared set, and it must be the last step
   of the app→host work.
 
 ## Follow-ups
@@ -589,8 +589,9 @@ single-commit changes.
 
 ### Facts that shaped specific decisions
 
-- **`data: <Error>` does not transmit what the sender meant.** Both `handleApp` (`:110`, `:121`) and
-  `handleBridgeMessage` pass a raw `Error` as `data` today. Structured clone carries an `Error`
+- **`data: <Error>` does not transmit what the sender meant.** Both `handleApp` (`:121`) and
+  `handleBridgeMessage` pass a raw `Error` as `data` today; `handleApp` (`:110`) passes a thrown
+  non-`Error` value as is. Structured clone carries an `Error`
   through its own path, so it keeps `name`, `message` and `stack` — and drops every *other* own
   property, including the `logs` that the sender mutated onto that same object. The shape changed
   with the transport; it did not become useful. Hence decision 6's declared `data` shapes.
@@ -606,7 +607,7 @@ single-commit changes.
 - **The host sends zero notifications** — `jsonrpc.notification` appears nowhere in
   `src/server/runtime/`.
 - **Listener dispatch is runtime-local, and fragile.** The wire contract for all ~70 listeners is a
-  uniform `params: [context]` with one 2-arg exception (`AppListenerManager.ts:652`). Everything the
+  uniform `params: [context]` with one 2-arg exception (`AppListenerManager.ts:657` and `:673`). Everything the
   proposal framed as protocol-level guessing — `includes('Message')` → hydrate, `endsWith('Extend')`
   → splice a `MessageExtender`, `startsWith('check')` → stop at `(context, reader, http)` — decides
   which accessors to inject and never crosses the wire. No current misfire was found; it is correct
@@ -619,8 +620,8 @@ single-commit changes.
   (`PersistenceBridge.doCreate(data: object)` — arbitrary app data) or a deep domain object. Hence
   decision 13's shallow-contract split.
 - **The reachable surface is larger than the used surface.** `handleBridgeMessage` resolves
-  `this.bridges[bridgeName]` and then `bridgeInstance[bridgeMethod]`, so it reaches 152 `do*`
-  methods. The accessors emit 122. The other 30 are reachable from the untrusted subprocess only
+  `this.bridges[bridgeName]` and then `bridgeInstance[bridgeMethod]`, so it reaches 155 `do*`
+  methods. The accessors emit 125. The other 30 are reachable from the untrusted subprocess only
   because they exist. Hence decision 16's rule that the contract is the surface.
 - **Bridge signatures do not state the permission-failure result.** `MessageBridge.doCreate`
   declares `Promise<string>` but returns `undefined` when the permission check fails, and
@@ -643,6 +644,6 @@ The probes and the steps to run them are in
 ### Dependency inventory at time of writing
 
 Zod `~4.3.6` is a direct dependency of `packages/apps`, at the version that `core-typings` and
-`apps/meteor` use. AJV `^8.20.0` is a direct dependency of `http-router`, `rest-typings`, `livechat`,
+`apps/meteor` use. AJV `^8.20.0` is a direct dependency of `apps/meteor`, `http-router`, `rest-typings`, `livechat`,
 and `media-signaling`, and not of `packages/apps`. `@sinclair/typebox@0.34.33` is present
 transitively only and does not become a direct dependency. `json-schema-to-ts` is not installed.
