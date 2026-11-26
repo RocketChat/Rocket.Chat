@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useSortMenu } from '../../navbar/NavBarPagesGroup/hooks/useSortMenu';
 
-type SidebarRailSortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type SidebarRailPreferencesProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const SidebarRailSort = (props: SidebarRailSortProps) => {
+const SidebarRailPreferences = (props: SidebarRailPreferencesProps) => {
 	const { t } = useTranslation();
 
 	const sections = useSortMenu();
@@ -16,13 +16,13 @@ const SidebarRailSort = (props: SidebarRailSortProps) => {
 		<GenericMenu
 			icon='sort'
 			sections={sections}
-			title={t('Display')}
+			title={t('Sidebar_preferences')}
 			selectionMode='multiple'
 			is={NavBarItem}
-			placement='right-start'
+			placement='bottom-end'
 			{...props}
 		/>
 	);
 };
 
-export default SidebarRailSort;
+export default SidebarRailPreferences;
