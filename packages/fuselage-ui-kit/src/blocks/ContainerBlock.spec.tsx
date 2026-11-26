@@ -188,8 +188,8 @@ it('draws no heading when neither title renders anything', () => {
 });
 
 it.each([
-	[undefined, 'var(--rcx-message-block-width-fixed, 368px)'],
-	['standard', 'var(--rcx-message-block-width-fixed, 368px)'],
+	[undefined, ''],
+	['standard', ''],
 	['narrow', '280px'],
 	['wide', '640px'],
 	['full', ''],
