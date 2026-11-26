@@ -1,0 +1,19 @@
+.changeset/xmpp-outbound-negotiation-limit.md
+  s_5d8ef8a7e1d8a7::t_68a18bcb46bef6 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9df3786e5ebb7130636afff140d1c4744b1879cd",
+  "prompts": {},
+  "sessions": {
+    "s_5d8ef8a7e1d8a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d28f98a9-76cb-4ead-b42d-d25c81cce77e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
