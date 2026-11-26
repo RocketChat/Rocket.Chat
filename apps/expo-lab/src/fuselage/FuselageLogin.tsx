@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
-import { Text as RNText, TextInput as RNTextInput, View } from 'react-native';
+import { Text as RNText, View } from 'react-native';
 import {
 	Button,
 	Field,
 	FieldError,
 	FieldLabel,
 	FieldRow,
+	PasswordInput,
 	TextInput,
 	ToggleSwitch,
 	UrlInput,
@@ -17,7 +18,6 @@ import { codeLabels, useLogin } from '../useLogin';
 // On native the input's onChange receives the string value; on the web it receives an event
 const onText = (set: (value: string) => void) => (value: unknown) => set(String(value));
 
-// PasswordInput shows the text in the clear on native (its type='password' never becomes secureTextEntry), so the secret stays a React Native input
 // The input frames draw no border or background on native yet, so a field would look like loose text
 const Boxed = ({ children }: { children: ReactNode }) => (
 	<View style={{ flex: 1, borderWidth: 1, borderColor: '#9ea2a8', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 6 }}>{children}</View>
@@ -57,7 +57,7 @@ export function FuselageLogin({ onSession }: { onSession: (session: Session) => 
 				<FieldLabel>{form.useToken ? 'Token' : 'Password'}</FieldLabel>
 				<FieldRow>
 					<Boxed>
-						<RNTextInput value={form.secret} onChangeText={form.setSecret} secureTextEntry autoCapitalize='none' autoCorrect={false} style={{ fontSize: 16 }} />
+						<PasswordInput value={form.secret} onChange={onText(form.setSecret)} />
 					</Boxed>
 				</FieldRow>
 			</Field>
