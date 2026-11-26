@@ -168,7 +168,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 	&__input.rcx-item__actions {
 		justify-content: flex-end;
 
-		// The popover has no width of its own and shrink-wraps to its widest row, so the widest label lands exactly this far from its control.
+		// A label keeps at least this much room before its control, whatever the slot gap.
 		margin-inline-start: calc(#{lengths.margin(40)} - var(--rcx-item-gap));
 	}
 
