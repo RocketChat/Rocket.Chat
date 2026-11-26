@@ -605,3 +605,7 @@ Probes (`EXPO_PUBLIC_GALLERY_PROBE=1`): `Avatar` still throws on `img` (`AvatarC
 ### Could not be verified
 
 Press and any interaction (no touch tool), typing, dark theme, Android, Inter. The 4 empty components were not checked beyond their size.
+
+### After the chat screens (2026-11-26)
+
+Two findings the first runs could not make, from using the inputs in `src/fuselage/`: `PasswordInput` renders but shows its text in the clear on native (`type='password'` is not turned into `secureTextEntry` by the host map), and the input frames (`InputBox`, `TextInput`, `UrlInput`) draw no border or background there. `ToggleSwitch` renders an empty outline with no thumb. See the README section "Chat with Fuselage components".

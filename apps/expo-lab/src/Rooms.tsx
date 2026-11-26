@@ -1,19 +1,14 @@
-import { useEffect, useState } from 'react';
 import { FlatList, Pressable, Text as RNText } from 'react-native';
 import { Button, XStack, YStack } from 'tamagui';
 
-import { listRooms, type RoomItem } from './api';
+import type { RoomItem } from './api';
 import type { Session } from './session';
+import { useRooms } from './useRooms';
 
 type Props = { session: Session; onOpen: (room: RoomItem) => void; onLogout: () => void };
 
 export function Rooms({ session, onOpen, onLogout }: Props) {
-	const [rooms, setRooms] = useState<RoomItem[]>();
-	const [error, setError] = useState<string>();
-
-	useEffect(() => {
-		listRooms(session).then(setRooms, (e) => setError(String(e)));
-	}, [session]);
+	const { rooms, error } = useRooms(session);
 
 	return (
 		<YStack flex={1} paddingTop={64}>

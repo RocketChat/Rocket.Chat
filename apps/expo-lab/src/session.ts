@@ -1,5 +1,6 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 
+import { mock } from './chatConfig';
 import { loginWithCode, type AskCode } from './twoFactor';
 
 export type Session = { sdk: DDPSDK; userId: string; serverUrl: string };
@@ -14,6 +15,7 @@ const normalizeUrl = (url: string) => url.trim().replace(/\/+$/, '');
 export async function login(rawUrl: string, credentials: Credentials, askCode: AskCode): Promise<Session> {
 	const serverUrl = normalizeUrl(rawUrl);
 	const sdk = DDPSDK.create(serverUrl);
+	if (mock) return { sdk, userId: 'mock', serverUrl };
 
 	let userId: string;
 	let token: string;

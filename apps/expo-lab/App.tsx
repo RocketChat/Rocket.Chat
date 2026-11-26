@@ -1,16 +1,18 @@
-import { useState } from 'react';
-import { TamaguiProvider } from 'tamagui';
+import { useEffect, useState } from 'react';
 
-import { Login } from './src/Login';
-import { Room } from './src/Room';
-import { Rooms } from './src/Rooms';
 import type { RoomItem } from './src/api';
-import type { Session } from './src/session';
-import { config } from './tamagui.config';
+import { fuselageUi, mockStart } from './src/chatConfig';
+import { mockRooms } from './src/mockData';
+import { login, type Session } from './src/session';
 
 export default function App() {
 	const [session, setSession] = useState<Session>();
-	const [room, setRoom] = useState<RoomItem>();
+	const [room, setRoom] = useState<RoomItem | undefined>(mockStart === 'room' ? mockRooms[0] : undefined);
+
+	// Dev only: EXPO_PUBLIC_CHAT_MOCK=rooms|room starts past the login, with no network
+	useEffect(() => {
+		if (mockStart) login('https://mock.invalid', { kind: 'token', userId: 'mock', token: 'mock' }, () => Promise.reject(new Error('no code'))).then(setSession);
+	}, []);
 
 	const logout = () => {
 		session?.sdk.connection.close();
@@ -18,15 +20,15 @@ export default function App() {
 		setSession(undefined);
 	};
 
-	return (
-		<TamaguiProvider config={config} defaultTheme='light'>
-			{!session ? (
-				<Login onSession={setSession} />
-			) : room ? (
-				<Room session={session} room={room} onBack={() => setRoom(undefined)} />
-			) : (
-				<Rooms session={session} onOpen={setRoom} onLogout={logout} />
-			)}
-		</TamaguiProvider>
-	);
+	const props = { session, room, onSession: setSession, onOpen: setRoom, onBack: () => setRoom(undefined), onLogout: logout };
+
+	// Each UI is loaded on demand: Fuselage and the plain screens each create their own Tamagui config, and only one may exist
+	// The gallery and the sweep open from the plain login, so asking for them first selects it
+	const devScreen = process.env.EXPO_PUBLIC_GALLERY === '1' || process.env.EXPO_PUBLIC_SWEEP === '1';
+	if (fuselageUi && !devScreen) {
+		const { FuselageChat } = require('./src/fuselage/FuselageChat') as typeof import('./src/fuselage/FuselageChat');
+		return <FuselageChat {...props} />;
+	}
+	const { PlainChat } = require('./src/PlainChat') as typeof import('./src/PlainChat');
+	return <PlainChat {...props} />;
 }

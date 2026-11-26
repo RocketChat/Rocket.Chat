@@ -1,0 +1,74 @@
+import type { ReactNode } from 'react';
+import { FlatList, KeyboardAvoidingView, Platform, Text as RNText, View } from 'react-native';
+import {
+	Button,
+	Message,
+	MessageBody,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageTimestamp,
+	MessageUsername,
+	TextInput,
+} from '@rocket.chat/fuselage';
+
+import type { RoomItem } from '../api';
+import type { Session } from '../session';
+import { useRoom } from '../useRoom';
+
+type Props = { session: Session; room: RoomItem; onBack: () => void };
+
+const time = (ts: string) => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+// A Fuselage Button takes the width of its row on native, so it is wrapped in a fixed width
+const Fit = ({ children }: { children: ReactNode }) => <View style={{ width: 96 }}>{children}</View>;
+
+export function FuselageRoom({ session, room, onBack }: Props) {
+	const { messages, draft, setDraft, error, live, send } = useRoom(session, room);
+
+	return (
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+			<View style={{ flex: 1, paddingTop: 64 }}>
+				<View style={{ padding: 12, gap: 12, flexDirection: 'row', alignItems: 'center' }}>
+					<Fit>
+						<Button onPress={onBack}>Back</Button>
+					</Fit>
+					<RNText style={{ fontSize: 18, fontWeight: '700', flexShrink: 1 }} numberOfLines={1}>
+						{room.title}
+					</RNText>
+					<RNText style={{ color: live ? 'green' : 'gray' }}>{live ? 'live' : '...'}</RNText>
+				</View>
+				{error && <RNText style={{ color: 'crimson', padding: 12 }}>{error}</RNText>}
+				<FlatList
+					inverted
+					data={messages}
+					keyExtractor={(m) => m._id}
+					renderItem={({ item }) => (
+						<Message>
+							<MessageContainer>
+								<MessageHeader>
+									<MessageName>{item.u.name || item.u.username}</MessageName>
+									{item.u.name && item.u.username && <MessageUsername>@{item.u.username}</MessageUsername>}
+									<MessageTimestamp>{time(item.ts)}</MessageTimestamp>
+								</MessageHeader>
+								<MessageBody>{item.msg}</MessageBody>
+							</MessageContainer>
+						</Message>
+					)}
+				/>
+				<View style={{ padding: 12, gap: 8, flexDirection: 'row', alignItems: 'center' }}>
+					<View style={{ flex: 1 }}>
+						<View style={{ borderWidth: 1, borderColor: '#9ea2a8', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 6 }}>
+							<TextInput value={draft} onChange={(value: unknown) => setDraft(String(value))} placeholder='Message' />
+						</View>
+					</View>
+					<Fit>
+						<Button variant='primary' onPress={send}>
+							Send
+						</Button>
+					</Fit>
+				</View>
+			</View>
+		</KeyboardAvoidingView>
+	);
+}

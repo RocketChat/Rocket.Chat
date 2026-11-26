@@ -163,3 +163,32 @@ Read from `apps/meteor/server/api/ApiClass.ts` (`login` route, `loginCompatibili
 - For `email` the server sends the code when it answers `totp-required`. A resend goes through `POST /v1/twoFactorChallenges.sendEmailCode { challengeId }` (the id is in the `totp-required` details); the app does not offer resend.
 - Personal access tokens skip 2FA, and the DDP login uses the resume token from the REST login, so no 2FA there.
 - Verified only against a local fake server (required, then invalid, then valid code: 3 requests, the last carries the code and password; a non-2FA failure is rethrown). Not exercised against a real 2FA account or open.rocket.chat.
+
+## Chat with Fuselage components
+
+The chat screens have two versions, picked when Metro starts: `EXPO_PUBLIC_CHAT_UI=plain` keeps the React Native and Tamagui-only screens (`src/Login.tsx`, `Rooms.tsx`, `Room.tsx`); anything else, the default, renders Fuselage (`src/fuselage/`). Both read the same state from `useLogin`, `useRooms` and `useRoom`, and the same `api.ts`. Each version is loaded with `require` from `App.tsx`, because each creates its own Tamagui config and only one may exist; the Fuselage one mounts `FuselageProvider` (config plus the icon font, as the gallery does). `EXPO_PUBLIC_GALLERY=1` or `EXPO_PUBLIC_SWEEP=1` select the plain screens, since the gallery and the sweep open from the plain login.
+
+Dev only: `EXPO_PUBLIC_CHAT_MOCK=1` feeds invented rooms and messages (`src/mockData.ts`) to the same components, and a login with any text succeeds without a network call; `EXPO_PUBLIC_CHAT_MOCK=rooms` or `=room` also starts past the login, because there is no touch tool. Screenshots in `docs/chat/` use this data only: `login-`, `rooms-` and `room-plain-vs-fuselage.png` (plain left, Fuselage right). The login shot has a fake password typed in to show the masking.
+
+What renders in the Fuselage version: `SidebarItem` rows with `SidebarItemIcon`, `SidebarItemContent`/`Title` and `SidebarItemBadge` for the rooms; `Message`, `MessageContainer`, `MessageHeader`, `MessageName`, `MessageUsername`, `MessageTimestamp` and `MessageBody` for each message (no `Avatar`: it still throws); `Button`, `Field`, `FieldLabel`, `FieldRow`, `UrlInput`, `TextInput` and `ToggleSwitch` on the login and the composer.
+
+Looks different from the plain version, or wrong:
+
+- Icons come from the Rocket.Chat font (hash, lock, at) where the plain rows have `#`, `P`, `@` text; the badge replaces `(3)`.
+- A long room name truncates with an ellipsis in one line; the plain row wraps it onto two lines. The badge of `120` is cut to `1...` because the badge is the one that shrinks.
+- A read room is gray, an unread one black: the `highlighted` look, absent in the plain list. Rows have no divider and are visibly denser than the plain ones.
+- Messages show the display name, `@username` and `HH:MM` (the plain rows show `HH:MM:SS`); the body wraps at the web's line height, and the content is inset further from the edge than the plain rows.
+- A `Button` takes the whole width of a row on native (it is not given `width: fit-content`), so each one in a row is wrapped in a fixed 96 px box (`Fit`); in a column it is full width, which looks like a primary action and is fine for Sign in.
+- `UrlInput`, `TextInput` and the composer draw no border or background on native, only text; each is wrapped in a bordered `View` in the app. That is a workaround for a missing look, not Fuselage styling.
+- `ToggleSwitch` draws an empty outline with no thumb or fill, so its state cannot be seen; its `onChange` was not exercised. The plain version uses the iOS `Switch`.
+- The placeholder of the composer input is gray and shows; typing, caret and keyboard were not exercised (no keyboard tool).
+
+What stays plain, and why:
+
+- The password and token field is a React Native `TextInput` with `secureTextEntry`. `PasswordInput` mounts, but on native it shows the text in the clear: `type='password'` is not mapped to `secureTextEntry` (`docs/chat` run, a fake password rendered as text), and its eye icon is an `onClick` on an `Icon`, not a press. Do not ship `PasswordInput` on native until the host map covers it.
+- The screen titles and the live indicator are `Text` of React Native: Fuselage has no title component without the web's `h1`/`h2` tags.
+- The gallery and the sweep, reachable from the plain login only.
+
+`onChange` of the Fuselage inputs receives the string on native, the event on the web; the screens take `String(value)`.
+
+Press: `src/GalleryContent.tsx` has a dev probe (cell "Press attach probe", `EXPO_PUBLIC_GALLERY=1 EXPO_PUBLIC_GALLERY_ONLY=Press`) that walks the fibers under `Button`, `Chip`, `Item`, `SidebarItem` and `Message` and lists those carrying a press prop. On the simulator each one shows `onPress` on the Fuselage component, on the Tamagui `View` and `onClick`, `onResponderRelease`, `onStartShouldSetResponder` on the host `RCTView`; the control `View` with no handler shows none (`docs/chat/press-probe.png`). A real touch was not made.

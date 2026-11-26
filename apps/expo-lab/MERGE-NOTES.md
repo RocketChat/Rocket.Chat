@@ -114,3 +114,7 @@ Conflicts: the native-enabling commits applied without conflict (Box, Text, Inpu
 | expo-lab | `yarn.lock` | none of the expo-lab commits conflicted; `yarn install` changed the lock, committed as `chore: refresh yarn.lock ...`; `yarn install --immutable` passes |
 
 App-side workarounds removed (checked on the simulator): the `ResizeObserver` stub (`src/polyfills.ts`, its imports) and `is='div'` on `SidebarItem` in the gallery. Kept: the LogBox error swallowing in `Sweep.tsx`, since a thrown render error still raises the overlay. `packages/fuselage-hooks` has to be built (`yarn build` there) for Metro to see the guard: `dist` is not tracked.
+
+## Press handlers (2026-11-26)
+
+`feat/fuselage-press-handlers` (`pickFramePressHandlers`, web and native, the `frameSafeCalls` lint option) is cherry-picked onto `8c278bad295`, below the expo-lab commits, and the `press-codemod` is run on `packages/fuselage/src` as its own commit: 79 `pickWebPressHandlers` sites in 55 files, all rewritten, none left for manual work. The `Message.tsx` site named in the plan does not exist on this tree: `Message` passes `{...props}` to `Item` by name, so `onPress` and `onClick` already reach `Item`, whose own rewritten sites attach them. The two `.oxlintrc.json` and `docs/frontend/fuselage-tamagui-components.md` lines conflicted with the longer `safeCalls` list and the `{ ...props }` wording on this tree; both were resolved by keeping this tree's text and adding the `frameSafeCalls` option and the `pickFramePressHandlers` exception.
