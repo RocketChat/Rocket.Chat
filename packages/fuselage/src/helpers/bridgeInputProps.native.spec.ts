@@ -32,6 +32,13 @@ describe('bridgeInputProps on native', () => {
 			expect(props.secureTextEntry).toBe(true);
 		});
 
+		it('turns autocorrect and autocapitalize off, whatever the props ask for', () => {
+			const asked = { type: 'password', autoCorrect: 'on' as const, autoCapitalize: 'words' };
+
+			expect(bridgeInputProps(asked)).toMatchObject({ autoCorrect: false, autoCapitalize: 'none' });
+			expect(bridgeInputProps({ type: 'password', autoCorrect: true })).toHaveProperty('autoCorrect', false);
+		});
+
 		it('shows the text for any other type', () => {
 			expect(bridgeInputProps({ type: 'text' })).not.toHaveProperty('secureTextEntry');
 			expect(bridgeInputProps({})).not.toHaveProperty('secureTextEntry');
@@ -64,6 +71,8 @@ describe('bridgeInputProps on native', () => {
 	it.each([
 		['on', true],
 		['off', false],
+		[true, true],
+		[false, false],
 	] as const)('maps autoCorrect %s to %s', (autoCorrect, expected) => {
 		expect(bridgeInputProps({ autoCorrect })).toEqual({ autoCorrect: expected });
 	});
