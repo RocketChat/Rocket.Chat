@@ -1,6 +1,6 @@
 # Merge notes: feat/expo-lab-all
 
-The branch is `origin/develop` (cfeded83a54) plus the open Fuselage to Tamagui conversion PRs, with the expo-lab commits of `feat/expo-lab` on top.
+The branch is `origin/develop` (cfeded83a54) plus the open Fuselage to Tamagui conversion PRs, with the expo-lab commits of `feat/expo-lab` on top. Rebuilt on 2026-11-26 after the PR authors updated #43674, #43653, #43671, #43679 and #43706; the rebuild section at the end lists what changed.
 
 ## Order and method
 
@@ -53,3 +53,34 @@ Commit `chore(fuselage): carry develop's Item insetBlock and divided, and Throbb
 - Stylelint reports `no-duplicate-selectors` for `&__panel--expanded` in `Sidebar.styles.scss`; the same duplicate is in the L5 head itself.
 - `Table.styles.scss` still carries the `[class][class]` rule whose Deviation row says it goes when Table migrates (L4 migrates Table).
 - The CSS-hack baseline was regenerated from the combined tree, so counts are the combined tree's, not any single PR's.
+
+## Rebuild after the PR updates (2026-11-26)
+
+`origin/develop` did not move (still cfeded83a54), all eight PRs are open on `develop`, none restacked. Heads before and after (the old ones are the previous `origin/<branch>` values from the reflog):
+
+| PR | Before | After | Change |
+| --- | --- | --- | --- |
+| #43668 prerequisites | c742a5cc822 | c742a5cc822 | none |
+| #43674 Icon | eac65af23a7 | 580d2ab6e33 | changeset only |
+| #43653 L1 | 4a9e8ad63ab | 83714dde7fb | `Button.tsx` (+67): label colour and alignment on the `Text`; `Chip.tsx`: the `color: 'inherit'` replaced by an explicit `chipTextLooks` colour per state |
+| #43658 L2 | c8135345c65 | c8135345c65 | none |
+| #43671 L3 | c9bb3cf115d | b55ca11c534 | `Item*` frames: 31 lines (generator and frames) |
+| #43679 L4 | a9c3480ba32 | e0de00fb102 | `className` in six `apps/meteor` row components and two e2e files; `ThreadChat.tsx` |
+| #43693 L5 | 38076448cd0 | 38076448cd0 | none |
+| #43706 L6 | 2ced9828ea4 | 093e20041ac | `Divider.styles.scss`: the labelled message divider rule moves there |
+
+Same method as before (`git cherry-pick origin/develop..origin/<head>` per PR, in the same order, rerere on). New or changed resolutions:
+
+| PR | File | Resolution |
+| --- | --- | --- |
+| L1 | `Chip/Chip.tsx`, `Chip.styles.scss` | The generated block changed on the head, so the cached resolution no longer applied; took the PR's files. |
+| L3 | `Label/*`, `Item/*`, `Message/Message.tsx` | The cached resolution marked them conflicted again; took the PR's files (the develop behaviour is carried by the integration commit, which applied cleanly). |
+| L4 | `tamagui.config.ts`, `tamagui.media.ts`, `tamagui.config.spec.ts` | Same as before (config on `media`, `sm` and `md` in `tamagui.media.ts`), restored from the previous tip. |
+| L4 | `ThreadChat.tsx` | New. The head moved the drop-target props onto an inner `Box`; develop now has `ThreadChatSection`, so kept develop's file. |
+| L4 | `Contextualbar/Contextualbar.styles.scss` | Modify/delete. The head deletes it; accepted the deletion. The previous tip had kept it, but nothing imports it, so it was dead. Consequence: the `--rcx-surface` custom property it declared (read by the sticky `ItemGroupHeader` rule, with a fallback) is declared nowhere, as it effectively was before. |
+| L4 | `ContextualbarSkeletonContent.tsx`, generator `Contextualbar.mts` | Restored from the previous tip (frame moved out of `ContextualbarSkeleton.tsx`). |
+| L6 | `Divider/Divider.styles.scss` | New. The head restores the whole legacy file; kept L2's reduced file (only the bar `::after`) and added the `.rcx-message-divider.rcx-divider--labelled` rule the head moves there. |
+| L6 | `Message/MessageMetrics/MessageMetrics.styles.scss` | Modify/delete; accepted the deletion (was dead, as above). |
+| baselines | `css-hacks.baseline.json`, `selector-inventory.baseline.json` | Both regenerated from the combined tree (`--write`); the selector baseline now lists the labelled message divider override. |
+
+The develop-carried commit (Item `insetBlock` and `divided`, Throbber `x4`) applied unchanged and is still needed. `iconVariation` on `ContextualbarEmptyContent` is still missing on the L4 head and still ported.

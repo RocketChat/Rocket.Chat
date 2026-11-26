@@ -190,3 +190,54 @@ Ready to post, one per PR (same text as in the sections above).
 >
 > - [ ] `MessageName.tsx:29`, `:34`, `:38`; `MessageBody.tsx:38`, `:58`, `:81`; `Message.tsx:30`: same `render={<tag/>}` plus `pickWebPressHandlers` pattern; native ignores `render`, so the press path is the one open item (15 `pickWebPressHandlers(` calls here). Needs the decision taken for #43653 and #43671.
 > - [ ] Not this PR: a `Message` holding an `Avatar` still throws on native (`AvatarContainer.tsx:9`, `<img>`), since Avatar is not converted by any of the eight PRs.
+
+## After the PR updates
+
+Same simulator (iPhone 17 Pro, iOS 26.5, RN 0.88), same gallery, on the rebuilt `feat/expo-lab-all` (see `MERGE-NOTES.md`, "Rebuild after the PR updates"). Heads: #43653 83714dde7fb, #43671 b55ca11c534, #43679 e0de00fb102, #43706 093e20041ac, #43674 580d2ab6e33; #43668, #43658 and #43693 unchanged. Web reference as before (`Gallery.web.tsx` on the rebuilt `dist`). New composites: `docs/compare/actions-v2.png`, `indicators-v2.png`, `message-v2.png`, `structure-v2.png`. The round dim button at the bottom right of some native crops is the dev client's menu button, not part of the gallery. The previous comment drafts above quote line numbers of the old heads; they are out of date.
+
+Gallery changes for this round: two cells, `Contextualbar header + content (L4)` and `NavBar + NavBarSection (L5)`, both render natively without app context and without a throw; `EXPO_PUBLIC_GALLERY_ONLY=<name part>,...` shows only the matching cells, since scrolling by `contentOffset` proved unreliable and the simulator has no touch tool. Nothing upstream touches `@rocket.chat/fuselage-hooks` or `@rocket.chat/icons`, so the `ResizeObserver` stub (`polyfills.ts`) and the icon font loading in `Gallery.tsx` stay; I did not test removing them.
+
+### Component x bucket (recomputed)
+
+Buckets as above; `x` observed, `.` none.
+
+| Component (PR) | a | b | c | d | e | f | g | h | Observed difference now |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Button (#43653) | . | x | . | . | . | . | not verified | . | Fills the row (web: content width); label is now variant coloured and centred |
+| Badge (#43653) | . | . | . | . | . | . | . | . | None |
+| Chip (#43653) | . | . | . | . | . | . | not verified | . | Matches (grey label); default thumb not exercised |
+| CheckBox (#43653) | x | . | . | . | . | x | not verified | . | Outline with the top edge missing, no mark: unchanged |
+| Icon (#43674) | . | x | . | . | . | . | . | . | Bell is cut at the bottom at x24 (the check is not cut); font still loaded by the app |
+| Callout (#43658) | . | . | . | . | . | x | . | x | Fills the row; still needs the `ResizeObserver` stub |
+| Message parts, Name, Body, Timestamp (#43706, #43671) | . | . | . | . | . | . | not verified | . | Match |
+| Item row (#43671) | . | . | . | . | . | x | not verified | . | Row fills the container, meta at the far end: unchanged |
+| SidebarItem (#43671) | x | . | . | . | . | . | not verified | . | Matches at rest |
+| Contextualbar (#43679, new cell) | . | x | . | . | . | x | . | . | Renders; header, title and content look right; fills the cell height (taller than the 104 px of web) and is about half the row wide where web shrinks to its content |
+| NavBar + NavBarSection (#43693, new cell) | . | . | . | . | . | . | . | . | Matches: fill, border, padding, bold title, bell at the far end |
+| Avatar, Banner, Tag (not converted) | . | . | x | . | . | . | . | . | Still throw (skipped by default); unchanged |
+| All text | . | . | . | x | . | . | . | . | System font, unchanged |
+
+### Before and after, per reported item
+
+Evidence is the native crop in the `-v2` composites (the raw simulator frames are not committed).
+
+| Item | Before | After | Status | Evidence |
+| --- | --- | --- | --- | --- |
+| Button label colour | black | white on primary and danger, dark on secondary | fixed (observed) | `actions-v2.png` |
+| Button label alignment | left | centred | fixed (observed) | `actions-v2.png` |
+| Button width | fills the row | fills the row | unchanged | `actions-v2.png` |
+| Button press | `render` ignored, handler lost | not tapped, no touch tool | not verified | none |
+| Chip text colour | black | grey, as web | fixed (observed) | `actions-v2.png` |
+| Chip dismiss glyph | matches with the font | matches | unchanged | `actions-v2.png` |
+| Icon clipping | x20 and x24 cut at the bottom | the bell is still cut at the bottom (x24); check not cut | unchanged | `indicators-v2.png` |
+| Icon font | emoji without the font | needs the font, loaded by the gallery | unchanged | `indicators-v2.png` |
+| Callout `ResizeObserver` | `ReferenceError` without a stub | no source change (hooks untouched); stub kept, not retested without it | unchanged | none |
+| Callout width | fills the row | fills the row | unchanged | `indicators-v2.png` |
+| CheckBox mark | none, top edge missing | none, top edge missing | unchanged | `actions-v2.png` |
+| Item row width and meta | row width, meta far end | same | unchanged | `message-v2.png` |
+| Press handlers (Item, SidebarItem, Chip) | lost natively | not tapped | not verified | none |
+| Avatar, Banner, Tag | throw on a DOM tag | still skipped by default; not re-probed with `EXPO_PUBLIC_GALLERY_PROBE=1` | not verified (no source change on the PR heads) | none |
+| L4 component | no cell | Contextualbar renders; height and width differ from web | new issue | `structure-v2.png` |
+| L5 component | no cell | NavBar matches web | new evidence, no issue | `structure-v2.png` |
+
+The L1 head changes were aimed at Button and Chip (label colour, alignment, chip text colour) and the simulator confirms them. The L3 `Item*` and L6 `Divider` changes are not visible in these cells (the Item row looks as before; the labelled Divider is not in the gallery).

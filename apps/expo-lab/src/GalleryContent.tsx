@@ -8,6 +8,10 @@ import {
 	Callout,
 	CheckBox,
 	Chip,
+	Contextualbar,
+	ContextualbarContent,
+	ContextualbarHeader,
+	ContextualbarTitle,
 	Icon,
 	Item,
 	ItemContent,
@@ -21,6 +25,8 @@ import {
 	MessageName,
 	MessageTimestamp,
 	MessageUsername,
+	NavBar,
+	NavBarSection,
 	SidebarItem,
 	SidebarItemContent,
 	SidebarItemTitle,
@@ -44,7 +50,12 @@ class Probe extends Component<{ children: ReactNode }, { error?: string }> {
 // Natively these throw on a DOM tag and the dev overlay covers the screen; EXPO_PUBLIC_GALLERY_PROBE=1 renders them anyway
 const skipThrowing = Platform.OS !== 'web' && process.env.EXPO_PUBLIC_GALLERY_PROBE !== '1';
 
+// EXPO_PUBLIC_GALLERY_ONLY=Item,NavBar shows only the cells whose name contains one of them, to photograph a part of a long gallery
+const only = process.env.EXPO_PUBLIC_GALLERY_ONLY?.split(',').filter(Boolean);
+
 function Cell({ name, children, presses, throws }: { name: string; children: ReactNode; presses?: number; throws?: boolean }) {
+	if (only && !only.some((part: string) => name.includes(part))) return null;
+
 	return (
 		<View style={{ paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#ddd' }}>
 			<RNText style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>
@@ -147,6 +158,26 @@ export function Content() {
 						<SidebarItemTitle>random</SidebarItemTitle>
 					</SidebarItemContent>
 				</SidebarItem>
+			</Cell>
+			<Cell name='Contextualbar header + content (L4)'>
+				<Contextualbar>
+					<ContextualbarHeader>
+						<ContextualbarTitle>Thread</ContextualbarTitle>
+					</ContextualbarHeader>
+					<ContextualbarContent>
+						<MessageBody>Contextualbar content</MessageBody>
+					</ContextualbarContent>
+				</Contextualbar>
+			</Cell>
+			<Cell name='NavBar + NavBarSection (L5)'>
+				<NavBar>
+					<NavBarSection>
+						<MessageName>Home</MessageName>
+					</NavBarSection>
+					<NavBarSection>
+						<Icon name='bell' size='x20' />
+					</NavBarSection>
+				</NavBar>
 			</Cell>
 			<Cell name={`CheckBox (checked: ${checked})`}>
 				<CheckBox
