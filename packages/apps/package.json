@@ -21,13 +21,15 @@
 		"lint": "yarn run -T oxlint",
 		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test-timeout=60000 --test \"tests/**/*.test.ts\"",
 		"test:base-runtime": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test \"base-runtime/**/*.test.ts\"",
-		"testunit": "run-s test:node test:base-runtime",
+		"test:protocol": "NODE_ENV=test node --import tsx --test-reporter spec --test \"protocol/tests/**/*.test.ts\"",
+		"testunit": "run-s test:node test:base-runtime test:protocol",
 		"typecheck:protocol": "tsc -p protocol/tsconfig.json --noEmit",
+		"typecheck:protocol-tests": "tsc -p protocol/tsconfig-tests.json",
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
 		"typecheck:types": "tsc -p tsconfig-types-test.json && tsc -p protocol/tsconfig-types-test.json",
-		"typecheck": "run-s typecheck:protocol typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
+		"typecheck": "run-s typecheck:protocol typecheck:protocol-tests typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
 	},
 	"dependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
@@ -58,6 +60,7 @@
 		"@types/uuid": "~10.0.0",
 		"npm-run-all": "^4.1.5",
 		"ts-node": "^10.9.2",
+		"tsx": "~4.22.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
