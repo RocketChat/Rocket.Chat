@@ -56,6 +56,11 @@ const VideoConferenceModelMock = {
 		Object.assign(fixture, data);
 	}),
 	setStatusById: sinon.stub().resolves(),
+	unsetUserRingingById: sinon.stub().resolves(),
+	addUserProviderParticipantById: sinon.stub().resolves(),
+	setUserProviderParticipantLeftById: sinon.stub().resolves(),
+	setUserJoinedIfConnectedById: sinon.stub().resolves(true),
+	setUserLeftIfDisconnectedById: sinon.stub().resolves(true),
 	find: sinon.stub().returns({ toArray: async () => [] }),
 };
 
@@ -103,9 +108,13 @@ describe('VideoConfService presence while in a call', () => {
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.setUserJoinedById,
 			VideoConferenceModelMock.renewUserPresenceById,
+			VideoConferenceModelMock.setUserJoinedIfConnectedById,
+			VideoConferenceModelMock.setUserLeftIfDisconnectedById,
 			broadcastStub,
 		);
 		PresenceMock.setActiveState.resolves(true);
+		VideoConferenceModelMock.setUserJoinedIfConnectedById.resolves(true);
+		VideoConferenceModelMock.setUserLeftIfDisconnectedById.resolves(true);
 		// The busy claim only exists for embedded providers — they are the ones with a leave/sweep to release it.
 		providerCapabilities.current = { embedded: true };
 	});
@@ -274,6 +283,68 @@ describe('VideoConfService presence while in a call', () => {
 			await service.endCall('call1');
 
 			expect(PresenceMock.endActiveState.called).to.be.false;
+		});
+	});
+
+	// Pexip: the provider's report of who is connected is what puts a member in the call, so it is also what makes
+	// them busy. Joining from Rocket.Chat says nothing about whether they ever connect.
+	describe('for a provider that reports presence', () => {
+		const connection = (id: string, endedAt?: Date) => ({ id, connectedAt: at(-60_000), ...(endedAt && { leftAt: endedAt }) });
+
+		beforeEach(() => {
+			providerCapabilities.current = { providerPresence: true };
+			fixture = buildGroupCall([buildMember({ _id: 'host' }), buildMember({ _id: 'joiner', joined: false, joinedAt: undefined })]);
+		});
+
+		it('does not claim busy when a member joins from Rocket.Chat', async () => {
+			await service.addUser('call1', 'joiner');
+
+			expect(PresenceMock.setActiveState.called).to.be.false;
+		});
+
+		it('claims busy when the provider reports their first connection', async () => {
+			await service.recordProviderParticipant('call1', 'joiner', connection('p1'));
+
+			expect(PresenceMock.setActiveState.calledOnce).to.be.true;
+			const [uid, claim] = PresenceMock.setActiveState.firstCall.args;
+			expect(uid).to.equal('joiner');
+			expect(claim).to.include({ statusDefault: UserStatus.BUSY, statusSource: 'internal', statusId: 'video-conference' });
+		});
+
+		// A second window or device of somebody already in the call changes nothing about them.
+		it('claims nothing more for a connection of somebody already in the call', async () => {
+			VideoConferenceModelMock.setUserJoinedIfConnectedById.resolves(false);
+
+			await service.recordProviderParticipant('call1', 'joiner', connection('p2'));
+
+			expect(PresenceMock.setActiveState.called).to.be.false;
+		});
+
+		it('ends the claim when their last connection ends', async () => {
+			await service.recordProviderParticipant('call1', 'joiner', connection('p1', at(0)));
+
+			expect(PresenceMock.endActiveState.calledWith('joiner', 'video-conference')).to.be.true;
+			expect(PresenceMock.setActiveState.called).to.be.false;
+		});
+
+		// Closing one of two windows leaves them in the call, and busy.
+		it('keeps the claim while another of their connections is up', async () => {
+			VideoConferenceModelMock.setUserLeftIfDisconnectedById.resolves(false);
+
+			await service.recordProviderParticipant('call1', 'joiner', connection('p1', at(0)));
+
+			expect(PresenceMock.endActiveState.called).to.be.false;
+		});
+
+		// The provider reporting the conference over is the last word for whoever it had not yet reported leaving.
+		it('ends the claim for everyone still in a call that ends', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'present' }), buildMember({ _id: 'left-earlier', leftAt: at(-60_000) })]);
+
+			await service.endCall('call1');
+
+			const released = PresenceMock.endActiveState.args.map((args: any[]) => args[0] as string);
+			expect(released).to.include('present');
+			expect(released).to.not.include('left-earlier');
 		});
 	});
 });

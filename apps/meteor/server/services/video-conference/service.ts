@@ -581,10 +581,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			});
 		}
 
-		if (this.isEmbeddedProvider(call.providerName)) {
+		if (this.isEmbeddedProvider(call.providerName) || this.hasProviderPresence(call.providerName)) {
 			// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
-			// else reports their departure: the call is over, so there is no leave left to arrive. Only embedded joins
-			// claim busy in the first place, so only they have anything to give back.
+			// else reports their departure: the call is over, so there is no leave left to arrive. Only embedded
+			// joins and provider-reported connections claim busy in the first place, so only they have anything to
+			// give back.
 			await Promise.all(call.users.filter(isInVideoConference).map(({ _id }) => this.releaseBusyForCall(_id)));
 		}
 
@@ -1506,7 +1507,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// In a call is busy, for as long as it lasts. Embedded only: the claim is released by leaving, by the
 		// heartbeat sweep or by the call ending, and a non-embedded call has none of those — the claim would
-		// outrank whatever status the user sets by hand, leaving them busy forever.
+		// outrank whatever status the user sets by hand, leaving them busy forever. A provider that reports
+		// presence claims it from its own report instead, since joining from here does not put anyone in the call.
 		if (isEmbedded) {
 			await this.claimBusyForCall(_id);
 		}
@@ -1876,9 +1878,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * Records a connection the provider reported a member making, or its end, so every window can pair the
 	 * member with each of their connections by id rather than by the name the provider shows.
 	 *
-	 * For a provider that reports presence, this is also what puts the member in the call and takes them out:
-	 * in while any of their connections is up, out once the last one ends. An end can be the first the server
-	 * hears of a connection, so it records the connection as well.
+	 * For a provider that reports presence, this is also what puts the member in the call and takes them out —
+	 * and so what marks them busy and gives their status back: in while any of their connections is up, out once
+	 * the last one ends. An end can be the first the server hears of a connection, so it records the connection
+	 * as well.
 	 *
 	 * The last member leaving does not end the call: guests and phones the conference has no member for can
 	 * still be in it. The provider reports the call ending as well, and that is what ends it.
@@ -1909,6 +1912,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		await (participant.leftAt ? this.releaseBusyForCall(uid) : this.claimBusyForCall(uid));
 		this.notifyConferenceUpdate(callId);
 		this.notifyVideoConfUpdate(call.rid, callId);
 	}
