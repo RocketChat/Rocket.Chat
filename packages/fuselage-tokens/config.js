@@ -14,6 +14,7 @@ const categories = [
 	'surface',
 	'border',
 	'spacing',
+	'size',
 	'zIndex',
 ];
 
