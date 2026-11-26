@@ -1,32 +1,23 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { getUserDisplayName } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { useStyle } from '@rocket.chat/fuselage';
-import type { MouseEvent, Ref } from 'react';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import type { Ref } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallMessagePreview from './CallMessagePreview.js';
+import CallMessagePreviewCompact from './CallMessagePreviewCompact.js';
+import CallMessagePreviewList from './CallMessagePreviewList.js';
 import { useConferenceViewer } from '../../context/ConferenceContext.js';
 import type { ConferenceNewMessage } from '../../context/definitions.js';
 
-const listStyles = css`
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-`;
-
 export type CallMessagePreviewsProps = {
 	messages: ConferenceNewMessage[];
-	/** One line per message and tighter spacing, for a window with little room over the call. */
 	compact?: boolean;
 	onOpen: (mid: string) => void;
 	onDismiss: (mid: string) => void;
 	/** Where the keyboard's focus goes when the last preview it was on is dismissed. */
 	onFocusLeave?: () => void;
-	/** The list of previews, which is only there while there is one to show. */
 	ref?: Ref<HTMLUListElement>;
 };
 
@@ -34,7 +25,9 @@ export type CallMessagePreviewsProps = {
 const CallMessagePreviews = ({ messages, compact, onOpen, onDismiss, onFocusLeave, ref }: CallMessagePreviewsProps) => {
 	const { t } = useTranslation();
 	const { useRealName } = useConferenceViewer();
-	const listClassName = useStyle(listStyles);
+	const items = useRef(new Map<string, HTMLLIElement>());
+	const openButtons = useRef(new Map<string, HTMLButtonElement>());
+	const Preview = compact ? CallMessagePreviewCompact : CallMessagePreview;
 
 	const previews = messages.map(({ _id, username, name, text }) => ({
 		_id,
@@ -43,22 +36,30 @@ const CallMessagePreviews = ({ messages, compact, onOpen, onDismiss, onFocusLeav
 		text: text ?? t('Encrypted_message_preview_unavailable'),
 	}));
 
-	const handleDismiss = (mid: string) => (event?: MouseEvent<HTMLElement>) => {
-		// A click with no pointer behind it came from the keyboard, whose focus would go with the preview.
-		if (event?.detail === 0) {
-			const preview = event.currentTarget.closest('li');
-			const neighbour = preview?.nextElementSibling ?? preview?.previousElementSibling;
-			const target = neighbour?.querySelector('button');
-
-			if (target) {
-				target.focus();
-			} else {
-				onFocusLeave?.();
-			}
+	const handOffFocus = (mid: string) => {
+		if (!items.current.get(mid)?.contains(document.activeElement)) {
+			return;
 		}
 
-		onDismiss(mid);
+		const index = previews.findIndex(({ _id }) => _id === mid);
+		const next = previews[index + 1] ?? previews[index - 1];
+		const target = next && openButtons.current.get(next._id);
+
+		if (target) {
+			target.focus();
+		} else {
+			onFocusLeave?.();
+		}
 	};
+
+	const register =
+		<T,>(map: Map<string, T>, mid: string) =>
+		(node: T) => {
+			map.set(mid, node);
+			return () => {
+				map.delete(mid);
+			};
+		};
 
 	return (
 		<>
@@ -70,20 +71,25 @@ const CallMessagePreviews = ({ messages, compact, onOpen, onDismiss, onFocusLeav
 				))}
 			</VisuallyHidden>
 			{previews.length > 0 && (
-				<ul ref={ref} aria-label={t('New_messages')} className={listClassName}>
+				<CallMessagePreviewList ref={ref} aria-label={t('New_messages')}>
 					{previews.map(({ _id, username, name, text }) => (
-						<CallMessagePreview
+						<Preview
 							key={_id}
-							username={username}
+							ref={register(items.current, _id)}
+							openButtonRef={register(openButtons.current, _id)}
+							avatar={<UserAvatar username={username} size={compact ? 'x28' : 'x36'} />}
 							name={name}
-							compact={compact}
+							text={text}
+							openLabel={t('Chat_message_from_name', { name, message: text })}
+							dismissLabel={t('Dismiss_message_from_name', { name })}
 							onOpen={() => onOpen(_id)}
-							onDismiss={handleDismiss(_id)}
-						>
-							{text}
-						</CallMessagePreview>
+							onDismiss={() => {
+								handOffFocus(_id);
+								onDismiss(_id);
+							}}
+						/>
 					))}
-				</ul>
+				</CallMessagePreviewList>
 			)}
 		</>
 	);

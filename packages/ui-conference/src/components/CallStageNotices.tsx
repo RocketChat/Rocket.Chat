@@ -17,6 +17,10 @@ const noticesStyles = css`
 	width: min(20rem, calc(100% - 2 * var(--call-stage-notices-inset)));
 	overflow-y: clip;
 	pointer-events: none;
+
+	& > * {
+		pointer-events: auto;
+	}
 `;
 
 type CallStageNoticesProps = {
