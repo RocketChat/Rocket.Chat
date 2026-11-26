@@ -7,7 +7,7 @@ import { messageParser } from '../surfaces';
 const renderActions = (elements: unknown[]) =>
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action: jest.fn(), updateState: jest.fn(), values: {}, appId: 'app' }}>
+			<UiKitContext.Provider value={{ action: jest.fn(), appId: 'app' }}>
 				{messageParser.render([{ type: 'actions', blockId: 'release', elements }] as any)}
 			</UiKitContext.Provider>
 		</MockedServerContext>,

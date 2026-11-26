@@ -10,7 +10,7 @@ it('renders its icon buttons and sends a block action with the block id when one
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
+			<UiKitContext.Provider value={{ action, appId: 'app' }}>
 				{messageParser.render([
 					// Elements without appId or blockId take the block's.
 					{

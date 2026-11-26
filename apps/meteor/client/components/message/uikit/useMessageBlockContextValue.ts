@@ -111,6 +111,5 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 				mid,
 			}),
 		rid,
-		values: {}, // TODO: this is a hack to make the context work, but it should be removed
 	};
 };

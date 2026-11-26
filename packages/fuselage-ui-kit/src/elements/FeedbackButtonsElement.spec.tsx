@@ -8,7 +8,7 @@ import { messageParser } from '../surfaces';
 const renderFeedback = (action = jest.fn(), negativeValue = 'bad') => {
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
+			<UiKitContext.Provider value={{ action, appId: 'app' }}>
 				{messageParser.render([
 					{
 						type: 'context_actions',

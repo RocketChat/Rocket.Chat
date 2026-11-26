@@ -21,7 +21,7 @@ const selectOption = async (url: string) => {
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, values: {} }}>
+			<UiKitContext.Provider value={{ action }}>
 				<OverflowElement index={0} block={block} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
 			</UiKitContext.Provider>
 		</MockedServerContext>,
@@ -73,7 +73,7 @@ it('asks for confirmation before sending the selected option', async () => {
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, values: {} }}>
+			<UiKitContext.Provider value={{ action }}>
 				<OverflowElement index={0} block={block} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
 			</UiKitContext.Provider>
 		</MockedServerContext>,

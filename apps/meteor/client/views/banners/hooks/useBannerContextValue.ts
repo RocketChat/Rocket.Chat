@@ -1,4 +1,4 @@
-import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import type { UiKitContext, UiKitViewState } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ContextType } from 'react';
 
@@ -6,16 +6,11 @@ import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManage
 
 type UseBannerContextValueParams = {
 	view: UiKit.BannerView;
-	values: {
-		[actionId: string]: {
-			value: unknown;
-			blockId?: string | undefined;
-		};
-	};
+	viewState: UiKitViewState;
 };
 type UseBannerContextValueReturn = ContextType<typeof UiKitContext>;
 
-export const useBannerContextValue = ({ view, values }: UseBannerContextValueParams): UseBannerContextValueReturn => {
+export const useBannerContextValue = ({ view, viewState }: UseBannerContextValueParams): UseBannerContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
 	return {
@@ -57,9 +52,8 @@ export const useBannerContextValue = ({ view, values }: UseBannerContextValuePar
 				viewId,
 			});
 		},
-		updateState: (): void => undefined,
 		appId: view.appId,
 		viewId: view.viewId,
-		values,
+		viewState,
 	};
 };

@@ -1,40 +1,22 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import type { UiKitContext, UiKitViewState } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
-import type { Dispatch, ContextType } from 'react';
+import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 import { useUiKitFileUpload } from '../../../hooks/uikit/useUiKitFileUpload';
 
 type UseModalContextValueParams = {
 	view: UiKit.ModalView;
-	values: {
-		[actionId: string]: {
-			value: unknown;
-			blockId?: string | undefined;
-		};
-	};
+	viewState: UiKitViewState;
 	errors?: { [field: string]: string }[] | { [field: string]: string };
-	updateValues: Dispatch<{
-		actionId: string;
-		payload: {
-			value: unknown;
-			blockId?: string;
-		};
-	}>;
 	rid?: string;
 };
 
 type UseModalContextValueReturn = ContextType<typeof UiKitContext>;
 
-export const useModalContextValue = ({
-	view,
-	errors,
-	values,
-	updateValues,
-	rid,
-}: UseModalContextValueParams): UseModalContextValueReturn => {
+export const useModalContextValue = ({ view, viewState, errors, rid }: UseModalContextValueParams): UseModalContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
 	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
@@ -81,19 +63,10 @@ export const useModalContextValue = ({
 				rid,
 			});
 		},
-		updateState: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
-			updateValues({
-				actionId,
-				payload: {
-					blockId,
-					value,
-				},
-			});
-		},
 		...view,
 		...fileUpload,
 		errors,
-		values,
+		viewState,
 		viewId: view.id,
 		rid,
 	};

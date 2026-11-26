@@ -22,9 +22,7 @@ it('renders every part of the card and sends a block action with the card id whe
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
-				{messageParser.render([card])}
-			</UiKitContext.Provider>
+			<UiKitContext.Provider value={{ action, appId: 'app' }}>{messageParser.render([card])}</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
 

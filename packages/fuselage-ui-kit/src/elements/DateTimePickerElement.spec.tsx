@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 
 import { UiKitContext } from '../contexts/UiKitContext';
 import { modalParser } from '../surfaces';
+import { createUiKitViewState } from '../utils/createUiKitViewState';
 
 const element: UiKit.DateTimePickerElement = {
 	type: 'datetimepicker',
@@ -14,14 +15,17 @@ const element: UiKit.DateTimePickerElement = {
 	initial_date_time: new Date(2026, 9, 5, 14, 30).getTime() / 1000,
 };
 
-const renderPicker = (updateState = jest.fn()) =>
+const renderPicker = () => {
+	const viewState = createUiKitViewState([]);
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action: jest.fn(), updateState, values: {}, appId: 'app', viewId: 'view' }}>
+			<UiKitContext.Provider value={{ action: jest.fn(), viewState, appId: 'app', viewId: 'view' }}>
 				{modalParser.render([{ type: 'input', label: { type: 'plain_text', text: 'When' }, element }])}
 			</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
+	return viewState;
+};
 
 it('shows the initial timestamp in local time', () => {
 	renderPicker();
@@ -30,14 +34,10 @@ it('shows the initial timestamp in local time', () => {
 });
 
 it('reports the picked local date and time as a Unix timestamp in seconds', () => {
-	const updateState = jest.fn();
-	renderPicker(updateState);
+	const viewState = renderPicker();
 
 	// oxlint-disable-next-line testing-library/prefer-user-event -- jsdom cannot type into datetime-local inputs
 	fireEvent.input(screen.getByDisplayValue('2026-10-05T14:30'), { target: { value: '2026-10-06T09:15' } });
 
-	expect(updateState).toHaveBeenCalledWith(
-		expect.objectContaining({ actionId: 'when', value: new Date(2026, 9, 6, 9, 15).getTime() / 1000 }),
-		expect.anything(),
-	);
+	expect(viewState.getValue('when')?.value).toBe(new Date(2026, 9, 6, 9, 15).getTime() / 1000);
 });

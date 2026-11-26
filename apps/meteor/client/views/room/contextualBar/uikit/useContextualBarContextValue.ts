@@ -1,35 +1,22 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import type { UiKitContext, UiKitViewState } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
-import type { Dispatch, ContextType } from 'react';
+import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
 import { useUiKitFileUpload } from '../../../../hooks/uikit/useUiKitFileUpload';
 
 type UseContextualBarContextValueParams = {
 	view: UiKit.ContextualBarView;
-	values: {
-		[actionId: string]: {
-			value: unknown;
-			blockId?: string | undefined;
-		};
-	};
-	updateValues: Dispatch<{
-		actionId: string;
-		payload: {
-			value: unknown;
-			blockId?: string | undefined;
-		};
-	}>;
+	viewState: UiKitViewState;
 	rid: string;
 };
 type UseContextualBarContextValueReturn = ContextType<typeof UiKitContext>;
 
 export const useContextualBarContextValue = ({
 	view,
-	values,
-	updateValues,
+	viewState,
 	rid,
 }: UseContextualBarContextValueParams): UseContextualBarContextValueReturn => {
 	const actionManager = useUiKitActionManager();
@@ -79,18 +66,9 @@ export const useContextualBarContextValue = ({
 				rid,
 			});
 		},
-		updateState: ({ actionId, value, blockId = 'default' }) => {
-			updateValues({
-				actionId,
-				payload: {
-					blockId,
-					value,
-				},
-			});
-		},
 		...view,
 		...fileUpload,
-		values,
+		viewState,
 		viewId: view.id,
 		rid,
 	};

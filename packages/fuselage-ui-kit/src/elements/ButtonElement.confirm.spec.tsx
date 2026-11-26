@@ -30,7 +30,7 @@ const renderButton = (withConfirm: boolean, url?: string) => {
 
 	render(
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, values: {} }}>
+			<UiKitContext.Provider value={{ action }}>
 				<ButtonElement index={0} block={block} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
 			</UiKitContext.Provider>
 		</MockedServerContext>,
@@ -120,7 +120,7 @@ it('drops the action when the element changes while the dialog is open', async (
 	});
 	const ui = (actionId: string) => (
 		<MockedServerContext>
-			<UiKitContext.Provider value={{ action, values: {} }}>
+			<UiKitContext.Provider value={{ action }}>
 				<ButtonElement index={0} block={make(actionId)} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
 			</UiKitContext.Provider>
 		</MockedServerContext>

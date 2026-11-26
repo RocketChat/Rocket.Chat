@@ -2,6 +2,8 @@ import type { ActionableElement, BlockSuggestionResponse, InputElementDispatchAc
 import type { MouseEventHandler } from 'react';
 import { createContext } from 'react';
 
+import type { UiKitViewState } from '../utils/createUiKitViewState';
+
 type ActionId = ActionableElement['actionId'];
 
 type ActionParams = {
@@ -21,25 +23,20 @@ type SuggestParams = Pick<ActionParams, 'blockId' | 'appId' | 'actionId' | 'view
 
 type UiKitContextValue = {
 	action: (state: ActionParams, event: Parameters<MouseEventHandler<HTMLElement>>[0]) => Promise<void> | void;
-	updateState?: (state: ActionParams, event: Parameters<MouseEventHandler<HTMLElement>>[0]) => Promise<void> | void;
 	suggest?: (params: SuggestParams) => Promise<BlockSuggestionResponse>;
 	appId?: string;
 	errors?: { [field: string]: string }[] | { [field: string]: string };
-	values: Record<ActionId, { value: unknown } | undefined>;
+	/** Absent on surfaces with no view state, such as messages; elements then keep their value to themselves. */
+	viewState?: UiKitViewState;
 	viewId?: string;
 	rid?: string;
 	/** Absent when the surface cannot store files; `file_input` then renders disabled. */
 	uploadFile?: (file: File) => Promise<{ _id: string; name: string }>;
-	/** Lets a surface keep its submit disabled while a `file_input` still has uploads in flight. */
-	setUploading?: (actionId: ActionId, uploading: boolean) => void;
-	uploading?: boolean;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({
 	action: () => undefined,
-	updateState: () => undefined,
 	appId: 'core',
-	values: {},
 });
 
 Object.assign(UiKitContext.Provider, { displayName: 'UiKitContext.Provider' });

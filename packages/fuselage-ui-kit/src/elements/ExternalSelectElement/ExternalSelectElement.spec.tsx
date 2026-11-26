@@ -23,7 +23,7 @@ const renderSelect = (element: UiKit.InputBlock['element'], suggest: jest.Mock |
 
 	return render(
 		<Wrapper>
-			<UiKitContext.Provider value={{ action: jest.fn(), values: {}, viewId: 'view', suggest }}>
+			<UiKitContext.Provider value={{ action: jest.fn(), viewId: 'view', suggest }}>
 				{modalParser.render([{ type: 'input', label: { type: 'plain_text', text: 'Pick' }, element }])}
 			</UiKitContext.Provider>
 		</Wrapper>,

@@ -13,7 +13,7 @@ const ToggleSwitchElement = ({ block, context, surfaceRenderer }: ToggleSwitchEl
 	return (
 		<Box>
 			{options.map((option: UiKit.Option) => {
-				const isChecked = value.includes(option.value);
+				const isChecked = value?.includes(option.value);
 
 				return (
 					<Box key={option.value} paddingBlock={4}>

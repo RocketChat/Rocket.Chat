@@ -1,24 +1,16 @@
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { KeyboardEvent } from 'react';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
 import { useStringFromTextObject } from './useStringFromTextObject';
 import { UiKitContext } from '../contexts/UiKitContext';
 import { askConfirmation } from '../utils/askConfirmation';
 import { getInitialValue } from '../utils/getInitialValue';
 
-const getElementValueFromState = (
-	actionId: string,
-	values: Record<
-		string,
-		| {
-				value: unknown;
-		  }
-		| undefined
-	>,
-	initialValue: string | number | string[] | undefined,
-) => (values && (values[actionId]?.value as string | number | string[] | undefined)) ?? initialValue;
+type ElementValue = string | number | string[] | undefined;
+
+const subscribeToNothing = () => () => undefined;
 
 type UiKitState<TElement extends UiKit.ActionableElement = UiKit.ActionableElement> = {
 	loading: boolean;
@@ -40,19 +32,33 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 ] => {
 	const { blockId, actionId, appId, dispatchActionConfig, confirm } = element;
 	const fromTextObjectToString = useStringFromTextObject();
-	const { action, appId: appIdFromContext = undefined, viewId = undefined, updateState } = useContext(UiKitContext);
+	const { action, appId: appIdFromContext = undefined, viewId = undefined, viewState, errors } = useContext(UiKitContext);
 
-	const initialValue = getInitialValue(element);
-
-	const { values, errors } = useContext(UiKitContext);
-
-	const _value = getElementValueFromState(actionId, values, initialValue);
 	const error = Array.isArray(errors)
 		? errors.find((error) => Object.keys(error).find((key) => key === actionId))?.[actionId]
 		: errors?.[actionId];
 
-	const [value, setValue] = useSafely(useState(_value));
+	const [localValue, setLocalValue] = useSafely(useState<ElementValue>(() => getInitialValue(element)));
+	const stored = useSyncExternalStore(viewState?.subscribe ?? subscribeToNothing, () => viewState?.getValue(actionId));
+	const value = stored ? (stored.value as ElementValue) : localValue;
+
+	const setValue = (value: ElementValue) => {
+		setLocalValue(value);
+		viewState?.setValue(actionId, { value, blockId: blockId ?? 'default' });
+	};
+
 	const [loading, setLoading] = useSafely(useState(false));
+
+	// Checkboxes and toggle switches report the option the user clicked; the value is the list of checked options.
+	const holdsOptionList = element.type === 'checkbox' || element.type === 'checkboxes' || element.type === 'toggle_switch';
+	const getNextValue = (changed: unknown) => {
+		if (Array.isArray(changed) || !(holdsOptionList || Array.isArray(value))) {
+			return changed as typeof value;
+		}
+
+		const options = Array.isArray(value) ? value : [];
+		return options.includes(changed as string) ? options.filter((option) => option !== changed) : [...options, changed as string];
+	};
 
 	const actionFunction = useStableCallback(async (e: any) => {
 		// FIXME: fix typings
@@ -61,24 +67,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 
 		setLoading(true);
+		setValue(getNextValue(elValue));
 
-		if (Array.isArray(value)) {
-			if (Array.isArray(elValue)) {
-				setValue(elValue);
-			} else {
-				const idx = value.findIndex((value) => value === elValue);
-
-				if (idx > -1) {
-					setValue(value.filter((_, i) => i !== idx));
-				} else {
-					setValue([...value, elValue]);
-				}
-			}
-		} else {
-			setValue(elValue);
-		}
-
-		await updateState?.({ blockId, appId, actionId, value: elValue, viewId }, e);
 		await action(
 			{
 				blockId,
@@ -101,10 +91,6 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 		setValue(value);
 
-		if (updateState) {
-			await updateState({ blockId, appId, actionId, value, viewId }, e);
-		}
-
 		await action(
 			{
 				blockId,
@@ -124,20 +110,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 			target: { value },
 		} = e;
 
+		const nextValue = getNextValue(value);
+
 		// This path never asks, so the value counts as accepted.
 		e?.onConfirmed?.();
-		setValue(value);
-
-		await updateState?.(
-			{
-				blockId,
-				appId: appId || appIdFromContext || 'core',
-				actionId,
-				value,
-				viewId,
-			},
-			e,
-		);
+		setValue(nextValue);
 	});
 
 	const identity = JSON.stringify([actionId, blockId, viewId]);
