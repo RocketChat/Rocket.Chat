@@ -78,7 +78,8 @@ const COMPARED_FIELDS = ['dependencies', 'peerDependencies', 'exports', 'main', 
 
 // A bundler's content hash (`index-8cj66ONL.js`) changes with any bundled dependency, so it is not a change of the package.
 const CONTENT_HASH = /-(?=[\w-]{0,7}[A-Z0-9])[\w-]{8}(?=\.(?:js|mjs|cjs|css)(?:\.map)?$)/;
-const fileNames = (files) => [...new Set(files.map((file) => file.replace(CONTENT_HASH, '')))];
+// Turbo's build log lands in a tarball only when the build ran in the same folder, so it is not a change of the package.
+const fileNames = (files) => [...new Set(files.filter((file) => !file.startsWith('.turbo/')).map((file) => file.replace(CONTENT_HASH, '')))];
 
 // The fields and files that decide what a consumer installs and loads; file bytes differ between builds, so they are not compared.
 function differences(local, published) {
