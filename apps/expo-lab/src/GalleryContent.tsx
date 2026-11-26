@@ -153,7 +153,7 @@ export function Content() {
 				</Item>
 			</Cell>
 			<Cell name='SidebarItem row' presses={sidebar}>
-				<SidebarItem is='div' onPress={() => setSidebar((n) => n + 1)}>
+				<SidebarItem onPress={() => setSidebar((n) => n + 1)}>
 					<SidebarItemContent>
 						<SidebarItemTitle>random</SidebarItemTitle>
 					</SidebarItemContent>

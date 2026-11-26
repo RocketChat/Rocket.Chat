@@ -90,7 +90,7 @@ No native-visible item. It moves styles between components; nothing in it is in 
 
 ### #43658 L2 indicators (`feat/fuselage-tamagui-l2`, c8135345c65)
 
-- `Callout.tsx:186` `useResizeObserver` throws `ReferenceError: Property 'ResizeObserver' doesn't exist` on native until a stub is installed (`src/polyfills.ts`). The guard belongs in `@rocket.chat/fuselage-hooks` (a separate small change, not in this PR); if the hook stays, say so in the PR. Alternative inside the PR: take the size from `onLayout` natively. Cost small for the guard; web none.
+- `Callout.tsx:186` `useResizeObserver` throws `ReferenceError: Property 'ResizeObserver' doesn't exist` on native until the guard in `fuselage-hooks` (`fix/fuselage-hooks-resize-observer-guard`, now below the PRs in `feat/expo-lab-all`) lands; the app stub `src/polyfills.ts` was removed. The guard belongs in `@rocket.chat/fuselage-hooks` (a separate small change, not in this PR); if the hook stays, say so in the PR. Alternative inside the PR: take the size from `onLayout` natively. Cost small for the guard; web none.
 - `Callout.tsx:14-24` `calloutFrame` states no width: it fills the row natively and shrink-wraps on web. Add `alignSelf: 'flex-start'` only if shrink-wrapping is intended on both (it is today on web). Needs decision.
 - `Callout.tsx:91-92`, `:111-112` rem sizes and line heights: same remark as Button, no observed effect here.
 - `Callout.tsx:194-195` `render={<section ... ref={mergedRef} />}`: the measuring ref sits inside the DOM element passed as `render`; natively `render` is ignored, so check the ref is attached when the guard above lands.
@@ -231,7 +231,7 @@ Evidence is the native crop in the `-v2` composites (the raw simulator frames ar
 | Chip dismiss glyph | matches with the font | matches | unchanged | `actions-v2.png` |
 | Icon clipping | x20 and x24 cut at the bottom | the bell is still cut at the bottom (x24); check not cut | unchanged | `indicators-v2.png` |
 | Icon font | emoji without the font | needs the font, loaded by the gallery | unchanged | `indicators-v2.png` |
-| Callout `ResizeObserver` | `ReferenceError` without a stub | no source change (hooks untouched); stub kept, not retested without it | unchanged | none |
+| Callout `ResizeObserver` | `ReferenceError` without a stub | fixed by the `useResizeObserver` guard (`fix/fuselage-hooks-resize-observer-guard`); renders with no stub (observed) | fixed | `indicators-v3.png` |
 | Callout width | fills the row | fills the row | unchanged | `indicators-v2.png` |
 | CheckBox mark | none, top edge missing | none, top edge missing | unchanged | `actions-v2.png` |
 | Item row width and meta | row width, meta far end | same | unchanged | `message-v2.png` |
@@ -241,3 +241,8 @@ Evidence is the native crop in the `-v2` composites (the raw simulator frames ar
 | L5 component | no cell | NavBar matches web | new evidence, no issue | `structure-v2.png` |
 
 The L1 head changes were aimed at Button and Chip (label colour, alignment, chip text colour) and the simulator confirms them. The L3 `Item*` and L6 `Divider` changes are not visible in these cells (the Item row looks as before; the labelled Divider is not in the gallery).
+
+
+## After the native-enabling branches
+
+Re-run on the rebuilt branch (`NATIVE-SWEEP.md`, last section; composites `docs/compare/*-v3.png`). Changed: Callout renders with no `ResizeObserver` stub; `SidebarItem` renders without `is='div'` (the `Box` tag map). Unchanged: Button width, Chip, Icon clipping, CheckBox mark, Item meta position, Callout width. Still throwing in the gallery set: Avatar (`img`), Banner (`h6`), Tag (`span`), all literal DOM tags. Press not verified.

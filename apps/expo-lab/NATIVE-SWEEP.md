@@ -7,7 +7,7 @@ Every component exported by `@rocket.chat/fuselage` was mounted on the iOS simul
 - The list is read from the runtime exports of `packages/fuselage/src/index.runtime.ts` (what native Metro resolves `@rocket.chat/fuselage` to): 297 capitalised exports, 296 components (`Palette` is a token object, not a component).
 - Each component is mounted alone, one every 150 ms, inside its own error boundary (`getDerivedStateFromError`, first line of the error). A wrapper `View` reports its layout size: 0 wide or 0 high is "empty".
 - Props are a table by component name in `src/sweepCases.tsx`; a component not in the table gets its own name as a string child. A component that draws nothing with a string child is retried once with a `Text` child and flagged `viaText`.
-- Dev switches: `EXPO_PUBLIC_SWEEP_POLYFILL=1` loads `polyfills.ts` (the `ResizeObserver` stub; off in this run, so the raw failure shows), `EXPO_PUBLIC_SWEEP_SINK=<url>` posts the names and results as JSON to a local listener and asks it which components to show (used to photograph parts of the list).
+- Dev switches: (`EXPO_PUBLIC_SWEEP_POLYFILL` and `polyfills.ts` were removed in the second run, see the last section) `EXPO_PUBLIC_SWEEP_SINK=<url>` posts the names and results as JSON to a local listener and asks it which components to show (used to photograph parts of the list).
 - Errors a boundary catches are still reported to LogBox, whose full-screen overlay covered the screen in the first run; the screen replaces `LogBox.addException` with a no-op and `console.error` with a no-op while it is open, which kept the overlay away for the whole run. The earlier note that the overlay cannot be suppressed was about the gallery, which does not do this.
 - Nothing was pressed (no touch tool). Results are about mounting and layout size, not interaction.
 
@@ -396,3 +396,212 @@ Component, result, bucket, PR touching its file (none = unchanged from develop),
 | Var | needs context | - | n/a | not a component (class) |
 | VideoPlayer | throws | c | none | host `source` |
 
+
+
+## After the native-enabling branches
+
+Second run, same method, results in `/tmp/expolab/sweep-v2/raw/results.json` (not committed). `feat/expo-lab-all` was rebuilt with three branches below the eight PR batches: `feat/fuselage-native-host-map` (aec9a57c087: `Box` and `Text` render through a resolved React Native host, `onChangeText` bridged to the neutral `onChange`), `fix/fuselage-no-document-guard` (d78d2b2f933) and `fix/fuselage-hooks-resize-observer-guard` (888b59cad6c). See `MERGE-NOTES.md`. The app no longer stubs `ResizeObserver` (`polyfills.ts` removed) and the gallery no longer passes `is='div'` to `SidebarItem`; both were checked on the simulator (Callout and the SidebarItem row render). The Sweep screen keeps swallowing LogBox errors, because a thrown render error still raises the full-screen overlay (the Avatar and Banner probes showed it).
+
+### Summary
+
+| Result | Before | After |
+| --- | --- | --- |
+| renders | 149 | 201 (146 as given, 55 only with a `Text` child) |
+| throws | 134 | 79 |
+| needs context | 12 | 12 |
+| renders but empty | 1 (`Skeleton`) | 4 (`Skeleton`, `AnimatedVisibility`, `InputBoxSkeleton`, `PaletteStyleTag`) |
+| total | 296 | 296 |
+
+| Bucket | Before | After | Note |
+| --- | --- | --- | --- |
+| c DOM host element | 127 | 77 | the 79 throwers are 77 of this bucket plus `Menu` and `StylingBox` |
+| h other | 7 | 5 | `Menu`, `StylingBox` throw; `AnimatedVisibility`, `InputBoxSkeleton`, `PaletteStyleTag` are empty (they draw nothing with a string child) |
+| f bare string child | 33 | 55 | 22 components moved here from throwing: they mount, and need a `Text` child like the other containers |
+| a css stubbed | 1 | 1 | `Skeleton` |
+| `-` needs context | 12 | 12 | |
+| none | 116 | 146 | |
+
+Remaining host-element throws by tag: div 43, span 20, input 3 (`AudioPlayer`, `AudioPlayerControls`, `Slider`), img 3, figure 2, h3 2, path 2, ul 1, source 1. Before: div 65, span 29, input 16, img 4. `Tamagui` frames were not the cause in either run; what is left is JSX or `createElement` with a literal tag that bypasses `Box` and `Text`.
+
+### Before and after, per component
+
+Components whose result or bucket changed (55 rows: 52 throws to renders, 3 throws to empty). Everything not listed kept its result (149 renders, 79 throws, 12 needs context, 1 empty). No component went from rendering to throwing.
+
+| Component | Before | After | Bucket after | Size after |
+| --- | --- | --- | --- | --- |
+| Accordion | throws (host `span`) | renders | . | 370x89 |
+| AccordionItem | throws (host `span`) | renders | . | 370x88 |
+| AnimatedVisibility | throws (WeakMap key must be an Object or non-registered Symbol) | empty | h | 370x0 |
+| AutoComplete | throws (host `input`) | renders | . | 370x33 |
+| Box | throws (host `div`) | renders | f | 370x17 |
+| Callout | throws (Property 'ResizeObserver' doesn't exist) | renders | . | 370x46 |
+| Card | throws (host `div`) | renders | f | 370x17 |
+| CardBody | throws (host `div`) | renders | f | 370x17 |
+| CardGrid | throws (host `div`) | renders | f | 370x17 |
+| CardGridItem | throws (host `div`) | renders | f | 370x17 |
+| CardGroup | throws (host `div`) | renders | f | 370x17 |
+| CardTitle | throws (host `h4`) | renders | . | 370x17 |
+| Chevron | throws (host `span`) | renders | . | 370x16 |
+| EmailInput | throws (host `input`) | renders | . | 370x17 |
+| Grid | throws (host `div`) | renders | f | 370x17 |
+| GridItem | throws (host `div`) | renders | f | 370x17 |
+| Input | throws (host `input`) | renders | . | 370x17 |
+| InputBox | throws (host `input`) | renders | . | 370x17 |
+| InputBoxSkeleton | throws (host `div`) | empty | h | 370x0 |
+| Listbox | throws (host `ul`) | renders | . | 370x25 |
+| Margins | throws (WeakMap key must be an Object or non-registered Symbol) | renders | f | 370x17 |
+| Modal | throws (host `div`) | renders | f | 370x17 |
+| ModalBackdrop | throws (host `div`) | renders | f | 370x17 |
+| ModalContent | throws (host `div`) | renders | f | 370x17 |
+| ModalFooter | throws (host `div`) | renders | f | 370x17 |
+| ModalFooterAnnotation | throws (host `div`) | renders | f | 370x17 |
+| ModalHeader | throws (host `div`) | renders | f | 370x17 |
+| ModalHeaderText | throws (host `div`) | renders | f | 370x17 |
+| ModalIcon | throws (host `div`) | renders | . | 370x16 |
+| ModalTagline | throws (host `div`) | renders | f | 370x17 |
+| ModalTitle | throws (host `h2`) | renders | . | 370x17 |
+| MultiSelect | throws (host `button`) | renders | . | 370x16 |
+| MultiSelectFiltered | throws (host `input`) | renders | . | 370x33 |
+| NumberInput | throws (host `input`) | renders | . | 370x17 |
+| OptionContainer | throws (host `div`) | renders | f | 370x17 |
+| PaginatedMultiSelectFiltered | throws (host `input`) | renders | . | 370x33 |
+| PaginatedSelectFiltered | throws (host `input`) | renders | . | 370x33 |
+| Pagination | throws (host `span`) | renders | . | 370x89 |
+| PaletteStyleTag | throws (Cannot read property 'getElementById' of undefined) | empty | h | 370x0 |
+| PasswordInput | throws (host `input`) | renders | . | 370x20 |
+| Scrollable | throws (WeakMap key must be an Object or non-registered Symbol) | renders | f | 370x17 |
+| SearchInput | throws (host `input`) | renders | . | 370x17 |
+| Select | throws (host `span`) | renders | . | 370x33 |
+| SelectFiltered | throws (host `span`) | renders | . | 370x50 |
+| SelectLegacy | throws (host `span`) | renders | . | 370x33 |
+| SidebarAccordionItem | throws (host `span`) | renders | . | 370x3 |
+| SidepanelSearch | throws (host `input`) | renders | . | 370x18 |
+| Stack | throws (host `div`) | renders | f | 370x17 |
+| StatesLink | throws (host `a`) | renders | . | 370x17 |
+| Text | throws (host `div`) | renders | . | 370x17 |
+| TextAreaInput | throws (host `textarea`) | renders | . | 370x17 |
+| TextInput | throws (host `input`) | renders | . | 370x17 |
+| Tile | throws (host `div`) | renders | f | 370x17 |
+| Tooltip | throws (host `div`) | renders | f | 370x17 |
+| UrlInput | throws (host `input`) | renders | . | 370x17 |
+
+### Remaining failures
+
+Group 1 (`Box`/`Text` tag map), group 3 for `InputBox` (`input` to `TextInput`), group 4 (`document` in `useStyle`, `PaletteStyleTag`) and group 5 (`ResizeObserver`) of the table above are gone. What is left:
+
+| Group | Count | Root cause |
+| --- | --- | --- |
+| literal JSX with a DOM tag | 55 of the 79 have the tag in their own file (line below); 22 more have it in a sibling file or a shared part | `<div>`, `<span>`, `<img>`, `<ul>` ... written in the component, not going through `Box`/`Text` |
+| `Menu` | 1 | `undefined is not a function`, untouched |
+| `StylingBox` | 1 | `Cannot read property 'className' of undefined`: it clones its child and expects an element |
+
+Per owner of the file, first literal tag (component | tag | file:line on the combined branch). Rows without a line have the tag in another file of the family.
+
+```
+## #43653 1
+   SplitButton | host `div` | SplitButton/SplitButton.tsx:32
+## #43658 1
+   StatusBullet | host `path` | StatusBullet/StatusBullet.tsx:67
+## #43668 #43693 1
+   SidepanelHeader | host `div` | Sidepanel/SidepanelHeader.tsx:37
+## #43671 10
+   Menu | TypeError: undefined is not a function | file Menu/Menu.tsx (tag in another file)
+   Option | host `span` | file Option/Option.tsx (tag in another file)
+   OptionAvatar | host `span` | file Option/OptionAvatar.tsx (tag in another file)
+   OptionColumn | host `span` | file Option/OptionColumn.tsx (tag in another file)
+   OptionInput | host `span` | file Option/OptionInput.tsx (tag in another file)
+   OptionMenu | host `span` | file Option/OptionMenu.tsx (tag in another file)
+   SidebarCollapseGroupMenu | host `span` | Sidebar/SidebarCollapseGroupMenu.tsx:9
+   SidebarGroupTitle | host `div` | Sidebar/SidebarGroupTitle.tsx:45
+   SidebarItemMenu | host `span` | Sidebar/SidebarItem/SidebarItemMenu.tsx:10
+   ThreadMessageContainer | host `div` | Message/ThreadMessage/ThreadMessageContainer.tsx:13
+## #43679 2
+   ContextualbarEmptyContent | host `h3` | file Contextualbar/ContextualbarEmptyContent.tsx (tag in another file)
+   ContextualbarSkeleton | host `div` | file Contextualbar/ContextualbarSkeleton.tsx (tag in another file)
+## #43693 2
+   SidebarBanner | host `div` | Sidebar/SidebarBanner/SidebarBanner.tsx:110
+   SidebarSection | host `div` | Sidebar/SidebarSection.tsx:34
+## n/a 4
+   MenuItemAvatar | host `span` | file  (tag in another file)
+   MenuItemColumn | host `span` | file  (tag in another file)
+   MenuItemDescription | host `div` | file  (tag in another file)
+   MenuItemInput | host `span` | file  (tag in another file)
+## none 58
+   AudioPlayer | host `input` | file AudioPlayer/AudioPlayer.tsx (tag in another file)
+   AudioPlayerControls | host `input` | file AudioPlayer/AudioPlayerControls.tsx (tag in another file)
+   Avatar | host `img` | Avatar/Avatar.tsx:23
+   AvatarContainer | host `figure` | Avatar/AvatarContainer.tsx:15
+   AvatarStack | host `div` | Avatar/AvatarStack.tsx:10
+   Banner | host `div` | Banner/Banner.tsx:71
+   Bubble | host `span` | file Bubble/Bubble.tsx (tag in another file)
+   CardCol | host `div` | Card/CardCol.tsx:10
+   CardControls | host `div` | Card/CardControls.tsx:7
+   CardHeader | host `div` | Card/CardHeader.tsx:10
+   CardRow | host `div` | Card/CardRow.tsx:10
+   ContextualbarSkeletonContent | host `div` | Contextualbar/ContextualbarSkeletonContent.tsx:33
+   FieldLabelInfo | host `span` | file Field/FieldLabelInfo.tsx (tag in another file)
+   MessageEmoji | host `span` | file Message/MessageEmoji.tsx (tag in another file)
+   MessageGenericPreview | host `div` | Message/MessageGenericPreview/MessageGenericPreview.tsx:8
+   MessageGenericPreviewContent | host `div` | Message/MessageGenericPreview/MessageGenericPreviewContent.tsx:9
+   MessageGenericPreviewCoverImage | host `div` | Message/MessageGenericPreview/MessageGenericPreviewCoverImage.tsx:11
+   MessageGenericPreviewDescription | host `div` | Message/MessageGenericPreview/MessageGenericPreviewDescription.tsx:11
+   MessageGenericPreviewFooter | host `div` | Message/MessageGenericPreview/MessageGenericPreviewFooter.tsx:10
+   MessageGenericPreviewIcon | host `div` | Message/MessageGenericPreview/MessageGenericPreviewIcon.tsx:8
+   MessageGenericPreviewImage | host `img` | Message/MessageGenericPreview/MessageGenericPreviewImage.tsx:11
+   MessageGenericPreviewThumb | host `div` | Message/MessageGenericPreview/MessageGenericPreviewThumb.tsx:8
+   MessageGenericPreviewTitle | host `span` | Message/MessageGenericPreview/MessageGenericPreviewTitle.tsx:26
+   MessageMetricsItemAvatarRowContent | host `div` | Message/MessageMetrics/MessageMetricsItem/MessageMetricsItemAvatarRowContent.tsx:8
+   MessageReaction | host `div` | Message/MessageReactions/MessageReaction.tsx:10
+   MessageReactionAction | host `div` | Message/MessageReactions/MessageReactionAction.tsx:8
+   MessageReactionCounter | host `div` | Message/MessageReactions/MessageReactionCounter.tsx:7
+   MessageReactionEmoji | host `span` | file Message/MessageReactions/MessageReactionEmoji.tsx (tag in another file)
+   MessageReactions | host `div` | Message/MessageReactions/MessageReactions.tsx:8
+   MessageRole | host `span` | file Message/MessageRole.tsx (tag in another file)
+   MessageSystemBody | host `div` | Message/MessageSystem/MessageSystemBody.tsx:8
+   MessageSystemName | host `span` | Message/MessageSystem/MessageSystemName.tsx:7
+   MessageToolbar | host `div` | Message/MessageToolbar/MessageToolbar.tsx:7
+   MessageToolbarWrapper | host `div` | Message/MessageToolbar/MessageToolbarWrapper.tsx:11
+   ModalHeroImage | host `figure` | Modal/ModalHeroImage.tsx:15
+   ModalThumb | host `img` | file Modal/ModalThumb.tsx (tag in another file)
+   OptionDescriptionBlock | host `div` | Option/OptionDescriptionBlock.tsx:10
+   SidebarCollapseGroup | host `div` | Sidebar/SidebarCollapseGroup.tsx:43
+   SidebarItemAction | host `div` | Sidebar/SidebarItem/SidebarItemAction.tsx:15
+   SidebarItemStatusBullet | host `path` | file Sidebar/SidebarItem/SidebarItemStatusBullet.tsx (tag in another file)
+   SidebarListItem | host `div` | Sidebar/SidebarItem/SidebarListItem.tsx:10
+   SidepanelListItem | host `div` | Sidepanel/SidepanelListItem.tsx:6
+   SidepanelSectionAction | host `div` | Sidepanel/SidepanelSectionAction.tsx:6
+   Slider | host `input` | file Slider/Slider.tsx (tag in another file)
+   States | host `div` | States/States.tsx:10
+   StatesSubtitle | host `div` | States/StatesSubtitle.tsx:10
+   StatesSuggestion | host `div` | States/StatesSuggestion.tsx:10
+   StatesSuggestionList | host `ul` | States/StatesSuggestionList.tsx:10
+   StatesSuggestionListItem | host `span` | States/StatesSuggestionListItem.tsx:11
+   StatesSuggestionText | host `div` | States/StatesSuggestionText.tsx:10
+   StatesTitle | host `h3` | States/StatesTitle.tsx:10
+   StylingBox | TypeError: Cannot read property 'className' of undefined | file Box/StylingBox.tsx (tag in another file)
+   Tag | host `span` | Tag/Tag.tsx:39
+   ThreadMessageBody | host `div` | Message/ThreadMessage/ThreadMessageBody.tsx:10
+   ThreadMessageEmoji | host `span` | file Message/ThreadMessage/ThreadMessageEmoji.tsx (tag in another file)
+   ThreadMessageOrigin | host `div` | Message/ThreadMessage/ThreadMessageOrigin.tsx:11
+   ToastBar | host `div` | ToastBar/ToastBar.tsx:41
+   VideoPlayer | host `source` | VideoPlayer/VideoPlayer.tsx:94
+with a literal tag in own file: 55 of 79
+```
+
+### New behaviour to watch (not measured by mounting)
+
+- Every `Box` and `Text` now forwards its `className` string (with `rcx-*` classes) to a `View` or `Text`. React Native ignores it and printed no warning in Metro during the run; it is dead weight, not an error. An instrumented count of these (patching `React.createElement`) was attempted and dropped: `createElement` is a getter-only export in this React build.
+- `is='select'` resolves to `View`: `SelectLegacy` mounts (it is in the 52) but its `<option>` children are `View`s, so it is not a working native select. `Select`, `SelectFiltered`, `MultiSelect` and the paginated ones mount through the same path.
+- `is='textarea'` resolves to `TextInput` without `multiline`: `TextAreaInput` mounts as a single-line input.
+- `onChange` on inputs now receives the string value on native (the neutral contract), not an event: a handler written for the web (`event.currentTarget.value`) gets `undefined` there. `Input`, `InputBox`, `TextInput` and the other 12 input components mount, but typing was not exercised (no keyboard tool).
+- Nothing was pressed; press handlers are unchanged.
+
+### Look, where a web composite exists
+
+New composites in `docs/compare/*-v3.png` (web left, native right, light theme): `actions-v3.png` (Button, Badge, Chip, CheckBox), `indicators-v3.png` (Icon, Callout), `message-v3.png` (Message parts, MessageName, MessageBody, MessageTimestamp, Item row, SidebarItem), `structure-v3.png` (Contextualbar, NavBar). Compared with the `-v2` ones the native column is the same: the host map changed what mounts, not how the converted frames look. Callout now renders with no stub and looks as in v2 (fills the row, web shrinks to content). `CheckBox` is unchanged (top edge missing, no mark). `SidebarItem` renders without `is='div'`. Components that newly render (Box, Text, inputs, Card, Modal parts, Select family, Grid, Stack, Tile ...) have no web composite, so their look is not judged.
+
+Probes (`EXPO_PUBLIC_GALLERY_PROBE=1`): `Avatar` still throws on `img` (`AvatarContainer.tsx:9`, then `Avatar.tsx:23`), `Banner` on `h6` (`Banner.tsx:26`, literal `<h6>`), `Tag` on `span` (`Tag.tsx:39`, literal `<span>`; `Tag` is not in the 52). Screens: `docs/sweep/probe-banner-v3.png`, `docs/sweep/probe-tag-v3.png`.
+
+### Could not be verified
+
+Press and any interaction (no touch tool), typing, dark theme, Android, Inter. The 4 empty components were not checked beyond their size.

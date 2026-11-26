@@ -104,7 +104,7 @@ Goal: render real Fuselage components on iOS by resolving `@rocket.chat/fuselage
 
 ## Converted components on native
 
-This branch (`feat/expo-lab-all`) combines the open Fuselage to Tamagui conversion PRs (L1 to L6 and Icon, see `MERGE-NOTES.md`). The gallery (`src/Gallery.tsx`) renders them with the same source alias as the spike. Open it from the "Components" button on the login screen, or start Metro with `EXPO_PUBLIC_GALLERY=1` to open it first. It mounts its own `TamaguiProvider` with Fuselage's config and is loaded on demand, because importing Fuselage calls `createTamagui` again; the chat screens are untouched. `src/polyfills.ts` adds a no-op `ResizeObserver`, which `Callout` needs.
+This branch (`feat/expo-lab-all`) combines the open Fuselage to Tamagui conversion PRs (L1 to L6 and Icon, see `MERGE-NOTES.md`). The gallery (`src/Gallery.tsx`) renders them with the same source alias as the spike. Open it from the "Components" button on the login screen, or start Metro with `EXPO_PUBLIC_GALLERY=1` to open it first. It mounts its own `TamaguiProvider` with Fuselage's config and is loaded on demand, because importing Fuselage calls `createTamagui` again; the chat screens are untouched. `Callout` needs no `ResizeObserver` stub since the `useResizeObserver` guard of the native-enabling branches (see `NATIVE-SWEEP.md`).
 
 Observed on the iPhone 17 Pro simulator (dev client, Metro on port 8085). Screenshots are in `/tmp/expolab/shots/`: `12-gallery-top.png` (buttons to chip), `16-gallery.png` (callouts, message parts, rows), `11-gallery.png` (rows, check box). The simulator has no touch tool here, so presses were not exercised: "press" is not verified for any row.
 
@@ -115,7 +115,7 @@ Observed on the iPhone 17 Pro simulator (dev client, Metro on port 8085). Screen
 | `Chip` | L1 | yes | grey fill, radius, padding | not verified | The dismiss glyph shows as an emoji (icon font not applied). |
 | `CheckBox` | L1 | yes | empty box outline only | not verified | Rendered as the `render: 'input'` element; no checked state drawn. |
 | `Icon` | Icon PR | yes, wrong glyph | n/a | no handler | A private-use character is drawn without the icon font, so the system shows an emoji (`bell` shows a person emoji). |
-| `Callout` info, danger | L2 | yes, after a `ResizeObserver` stub | border, radius, title weight, type colour | no handler | Without the stub: `ReferenceError: Property 'ResizeObserver' doesn't exist` (`Callout.tsx:186`, `useResizeObserver`). The icon is the same emoji problem. |
+| `Callout` info, danger | L2 | yes (the `useResizeObserver` guard replaced the stub) | border, radius, title weight, type colour | no handler | Without the stub: `ReferenceError: Property 'ResizeObserver' doesn't exist` (`Callout.tsx:186`, `useResizeObserver`). The icon is the same emoji problem. |
 | `MessageName`, `MessageBody`, `MessageTimestamp`, `MessageUsername`, `MessageHeader` inside `Message` | L6 and Item (L3) | yes | bold name, grey timestamp, spacing | no handler | `Message` renders with these parts. |
 | `Item` row (`ItemIcon`, `ItemContent`, `ItemTitle`, `ItemMeta`) | L3 | yes | row layout and meta aligned at the end | not verified | Icon again an emoji. |
 | `SidebarItem` | L3 and L5 | yes | text only | not verified | No surface or hover paint visible at rest. |
@@ -134,7 +134,7 @@ Native against web, per component, with images and a per-PR list of what could a
 - Press: `pickWebPressHandlers` maps `onPress` to `onClick`, which a native `View` does not take. Pass `onPress` through on native in `packages/fuselage/src/helpers/pickWebPressHandlers.ts` (or a native twin of it).
 - Button text: the label is not centred and ignores the variant text colour; `Button.tsx` frame needs `justifyContent: 'center'` and a text colour the label inherits on native.
 - Icon font: `Icon.tsx` writes the glyph character with no `fontFamily`; the app has to load `packages/icons/dist/font` and the frame must name it on native.
-- `useResizeObserver` (`@rocket.chat/fuselage-hooks`) should guard a missing `ResizeObserver` instead of the app stubbing it.
+- `useResizeObserver` (`@rocket.chat/fuselage-hooks`) now guards a missing `ResizeObserver` (done by the native-enabling branches); the app stub is gone.
 - Avatar, Banner, Tag and every `Box`-based component: render `View`/`Text`/`Image` on native (not part of L1 to L6).
 
 ## SDK on React Native: findings

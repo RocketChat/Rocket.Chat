@@ -1,4 +1,3 @@
-import './polyfills';
 import type { ComponentProps } from 'react';
 import { LogBox, Text as RNText, ScrollView, Pressable, View } from 'react-native';
 import { useFonts } from 'expo-font';

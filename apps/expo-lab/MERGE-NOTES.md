@@ -84,3 +84,33 @@ Same method as before (`git cherry-pick origin/develop..origin/<head>` per PR, i
 | baselines | `css-hacks.baseline.json`, `selector-inventory.baseline.json` | Both regenerated from the combined tree (`--write`); the selector baseline now lists the labelled message divider override. |
 
 The develop-carried commit (Item `insetBlock` and `divided`, Throbber `x4`) applied unchanged and is still needed. `iconVariation` on `ContextualbarEmptyContent` is still missing on the L4 head and still ported.
+
+## Rebuild with native-enabling branches (2026-11-26)
+
+The branch was rebuilt so that three branches of another session sit below the eight PRs. Base is `origin/develop` at b25d0367e86 (the three branches are cut from f7d208078e1; develop gained one UiKit commit, #43940, which the stack was rebased onto without conflict). The previous tip is kept as the local branch `backup/expo-lab-all-9f4ec89`.
+
+Order: (1) `feat/fuselage-native-host-map` (3 commits: tag-name to React Native host map, `Box` and `Text` through it, `onChangeText` bridge), (2) `fix/fuselage-no-document-guard` (1), (3) `fix/fuselage-hooks-resize-observer-guard` (1), cherry-picked, their branches untouched; (4) the eight PRs as before (cherry-pick of each PR's own commits); (5) the carry commit (Item `insetBlock` and `divided`, Throbber `x4`: still needed, applied unchanged); (6) regenerated baselines (now below expo-lab, as it should be); (7) the expo-lab commits in their order with a fresh `yarn.lock` commit.
+
+PR heads used: #43668 c742a5cc822, #43674 124495c54ad (was 580d2ab6e33: now two commits, the second updates the Icon visual baselines), #43653 f3f90ceb41b (was 83714dde7fb; 11 commits), #43658 c8135345c65, #43671 b55ca11c534, #43679 e0de00fb102, #43693 38076448cd0, #43706 093e20041ac. All open, none merged.
+
+Conflicts: the native-enabling commits applied without conflict (Box, Text, InputBox, `useStyle`, `PaletteStyleTag` and `useResizeObserver` were not touched by the same hunks as the PRs, so both behaviours are kept). The PR cherry-picks conflicted in the same files as in the previous rebuild and were resolved the same way (rerere replayed them, each result was inspected for markers and, for the Contextualbar files and `Sidepanel`, compared with the previous tip):
+
+| PR | File | Resolution |
+| --- | --- | --- |
+| L1 | `Chip/Chip.tsx`, `Chip.styles.scss` | took the PR's files |
+| L1 | `Button/Button.styles.scss`, `IconButton.styles.scss`, `components/index.scss` | kept L1's Button file, deleted `IconButton.styles.scss` and its `@use` |
+| L1, L4, L5, L6 | `css-hacks.baseline.json` | each step took the replayed result; regenerated at the end (`--write`), `verify:css-hacks:check` and `verify:selectors:check` pass |
+| L2 | `docs/frontend/fuselage-tamagui-components.md` | both Deviations rows kept |
+| L3 | `Label/*` | took the PR's files |
+| L3 | `Item/*`, `Message/Message.tsx`, `.oxlintrc.json` | PR's frames; `safeCalls` union of both lists |
+| L4 | `WebAttributes.ts` | both sets of types |
+| L4 | `tamagui.config.ts` | develop now builds the tokens by `TAMAGUI_TARGET` and imports `media` from `tamagui.media.ts`; kept that and added `sm` and `md` to `tamagui.media.ts` (spec updated) |
+| L4 | `Table.styles.scss`, docs | replayed |
+| L4 | `ThreadChat.tsx` | kept develop's file |
+| L4 | `Contextualbar.styles.scss` | accepted the PR's deletion |
+| L4 | `ContextualbarEmptyContent.tsx`, `ContextualbarSkeleton.tsx`, `ContextualbarSkeletonContent.tsx`, generator `Contextualbar.mts` | restored from the previous tip (`iconVariation`, skeleton content frame) |
+| L5 | `.oxlintrc.json`, `NavBar.styles.scss`, `Sidepanel/*`, `Sidebar.styles.scss` | replayed from the cache, identical to the previous tip for `Sidepanel` |
+| L6 | `WebAttributes.ts`, `Divider.styles.scss`, `Message*.tsx` | replayed; `MessageMetrics.styles.scss` deletion accepted |
+| expo-lab | `yarn.lock` | none of the expo-lab commits conflicted; `yarn install` changed the lock, committed as `chore: refresh yarn.lock ...`; `yarn install --immutable` passes |
+
+App-side workarounds removed (checked on the simulator): the `ResizeObserver` stub (`src/polyfills.ts`, its imports) and `is='div'` on `SidebarItem` in the gallery. Kept: the LogBox error swallowing in `Sweep.tsx`, since a thrown render error still raises the overlay. `packages/fuselage-hooks` has to be built (`yarn build` there) for Metro to see the guard: `dist` is not tracked.

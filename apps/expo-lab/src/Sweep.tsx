@@ -8,11 +8,6 @@ import * as Fuselage from '@rocket.chat/fuselage';
 import { tamaguiConfig } from '../../../packages/fuselage/src/tamagui.config';
 import { cases } from './sweepCases';
 
-// Off by default so the sweep sees the raw failure of components that read ResizeObserver
-if (process.env.EXPO_PUBLIC_SWEEP_POLYFILL === '1') {
-	require('./polyfills');
-}
-
 // Errors a boundary caught are still reported to LogBox, whose full-screen overlay would cover the sweep
 LogBox.ignoreAllLogs();
 Object.assign(LogBox, { addException: () => undefined });
