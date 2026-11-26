@@ -11,30 +11,30 @@ export class VideoCallMenu {
 		readonly btnVideoCall: Locator,
 	) {}
 
-	private get menu(): Locator {
+	private get selectVideoCallMenu(): Locator {
 		return this.page.getByRole('menu', { name: 'Video call', exact: true });
 	}
 
 	get btnStartConference(): Locator {
-		return this.menu.getByRole('menuitem', { name: 'Start conference', exact: true });
+		return this.selectVideoCallMenu.getByRole('menuitem', { name: 'Start conference', exact: true });
 	}
 
 	get btnCreateLink(): Locator {
-		return this.menu.getByRole('menuitem', { name: 'Create link', exact: true });
+		return this.selectVideoCallMenu.getByRole('menuitem', { name: 'Create link', exact: true });
 	}
 
 	get textConferenceLinks(): Locator {
-		return this.menu.getByText('Conference links', { exact: true });
+		return this.selectVideoCallMenu.getByText('Conference links', { exact: true });
 	}
 
 	/** A link's row, by the title its name holds, whether or not a conference runs from it. */
 	getBtnLink(title: string): Locator {
-		return this.menu.getByRole('menuitem', { name: title });
+		return this.selectVideoCallMenu.getByRole('menuitem', { name: title });
 	}
 
 	/** A link's row as it is announced while a conference runs from it. */
 	getBtnOngoingLink(title: string): Locator {
-		return this.menu.getByRole('menuitem', { name: `${title}, ongoing` });
+		return this.selectVideoCallMenu.getByRole('menuitem', { name: `${title}, ongoing` });
 	}
 
 	getTextOngoing(title: string): Locator {
@@ -42,17 +42,17 @@ export class VideoCallMenu {
 	}
 
 	/** The sub menu of a link's row, named after the row that opens it. */
-	private linkActions(title: string): Locator {
+	private selectLinkActions(title: string): Locator {
 		return this.page.getByRole('menu', { name: title });
 	}
 
 	getBtnLinkAction(title: string, action: LinkAction): Locator {
-		return this.linkActions(title).getByRole('menuitem', { name: action, exact: true });
+		return this.selectLinkActions(title).getByRole('menuitem', { name: action, exact: true });
 	}
 
 	async open(): Promise<void> {
 		await this.btnVideoCall.click();
-		await expect(this.menu).toBeVisible();
+		await expect(this.selectVideoCallMenu).toBeVisible();
 	}
 
 	/** Opens the menu and then the sub menu of the link titled `title`, by tap where the test runs on a touch screen. */
@@ -60,62 +60,62 @@ export class VideoCallMenu {
 		await this.open();
 		await expect(this.getBtnLink(title)).toBeVisible();
 		await (tap ? this.getBtnLink(title).tap() : this.getBtnLink(title).click());
-		await expect(this.linkActions(title)).toBeVisible();
+		await expect(this.selectLinkActions(title)).toBeVisible();
 	}
 
-	private get dialogCreateLink(): Locator {
+	private get textCreateLinkDialog(): Locator {
 		return this.page.getByRole('dialog', { name: 'Create link', exact: true });
 	}
 
-	private get dialogRenameLink(): Locator {
+	private get textRenameLinkDialog(): Locator {
 		return this.page.getByRole('dialog', { name: 'Rename link', exact: true });
 	}
 
-	private get dialogDeleteLink(): Locator {
+	private get textDeleteLinkDialog(): Locator {
 		return this.page.getByRole('dialog', { name: 'Delete link', exact: true });
 	}
 
 	get textCreateLinkTitle(): Locator {
-		return this.dialogCreateLink.getByText('Create link', { exact: true });
+		return this.textCreateLinkDialog.getByText('Create link', { exact: true });
 	}
 
 	get textRenameLinkTitle(): Locator {
-		return this.dialogRenameLink.getByText('Rename link', { exact: true });
+		return this.textRenameLinkDialog.getByText('Rename link', { exact: true });
 	}
 
 	get textDeleteLinkTitle(): Locator {
-		return this.dialogDeleteLink.getByText('Delete link', { exact: true });
+		return this.textDeleteLinkDialog.getByText('Delete link', { exact: true });
 	}
 
 	/** The link name field of whichever of the create and rename dialogs is open. */
 	get inputLinkName(): Locator {
-		return this.dialogCreateLink.or(this.dialogRenameLink).getByRole('textbox', { name: 'Link name' });
+		return this.textCreateLinkDialog.or(this.textRenameLinkDialog).getByRole('textbox', { name: 'Link name' });
 	}
 
 	get textRenameHint(): Locator {
-		return this.dialogRenameLink.getByText(
+		return this.textRenameLinkDialog.getByText(
 			"The link's address changes with its name. Share the new address with anyone who used the old one.",
 			{ exact: true },
 		);
 	}
 
 	getTextDeleteLink(title: string): Locator {
-		return this.dialogDeleteLink.getByText(`Delete ${title}?`);
+		return this.textDeleteLinkDialog.getByText(`Delete ${title}?`);
 	}
 
 	get btnCreate(): Locator {
-		return this.dialogCreateLink.getByRole('button', { name: 'Create', exact: true });
+		return this.textCreateLinkDialog.getByRole('button', { name: 'Create', exact: true });
 	}
 
 	get btnCancelCreate(): Locator {
-		return this.dialogCreateLink.getByRole('button', { name: 'Cancel', exact: true });
+		return this.textCreateLinkDialog.getByRole('button', { name: 'Cancel', exact: true });
 	}
 
 	get btnRename(): Locator {
-		return this.dialogRenameLink.getByRole('button', { name: 'Rename', exact: true });
+		return this.textRenameLinkDialog.getByRole('button', { name: 'Rename', exact: true });
 	}
 
 	get btnDelete(): Locator {
-		return this.dialogDeleteLink.getByRole('button', { name: 'Delete', exact: true });
+		return this.textDeleteLinkDialog.getByRole('button', { name: 'Delete', exact: true });
 	}
 }
