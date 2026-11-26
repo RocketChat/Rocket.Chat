@@ -20,6 +20,13 @@ export default function App() {
 		setSession(undefined);
 	};
 
+	// Dev only: EXPO_PUBLIC_COMPOSER_LAB=1 opens the TextInput probe, Fuselage included, instead of the chat
+	if (process.env.EXPO_PUBLIC_COMPOSER_LAB === '1') {
+		const { ComposerLab } = require('./src/ComposerLab') as typeof import('./src/ComposerLab');
+		const { FuselageArea, FuselageProvider } = require('./src/FuselageField') as typeof import('./src/FuselageField');
+		return <ComposerLab fuselage={{ Provider: FuselageProvider, Area: FuselageArea }} />;
+	}
+
 	const props = { session, room, onSession: setSession, onOpen: setRoom, onBack: () => setRoom(undefined), onLogout: logout };
 
 	// Each UI is loaded on demand: Fuselage and the plain screens each create their own Tamagui config, and only one may exist

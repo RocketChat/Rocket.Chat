@@ -12,6 +12,13 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 	const { codeRequest } = form;
 	const [gallery, setGallery] = useState(process.env.EXPO_PUBLIC_GALLERY === '1');
 	const [sweep, setSweep] = useState(process.env.EXPO_PUBLIC_SWEEP === '1');
+	const [composer, setComposer] = useState(false);
+
+	if (composer) {
+		// Without Fuselage here: the plain screens already own the Tamagui config
+		const { ComposerLab } = require('./ComposerLab') as typeof import('./ComposerLab');
+		return <ComposerLab onBack={() => setComposer(false)} />;
+	}
 
 	if (sweep) {
 		const { Sweep } = require('./Sweep') as typeof import('./Sweep');
@@ -68,6 +75,7 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 			{form.error && <RNText style={{ color: 'crimson' }}>{form.error}</RNText>}
 			<Button onPress={() => setGallery(true)}>Components</Button>
 			<Button onPress={() => setSweep(true)}>Sweep</Button>
+			<Button onPress={() => setComposer(true)}>Composer lab</Button>
 		</YStack>
 	);
 }
