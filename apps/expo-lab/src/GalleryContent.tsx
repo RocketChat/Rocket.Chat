@@ -37,6 +37,7 @@ import {
 
 import { AppAvatar } from './AppAvatar';
 import { mockAvatar } from './mockData';
+import { gradientJpeg, gradientPng, letterAvatars } from './mockAvatars';
 
 // A frame that throws must not blank the screen: the error is the finding for that component
 class Probe extends Component<{ children: ReactNode }, { error?: string }> {
@@ -117,6 +118,16 @@ function Cell({ name, children, presses, throws }: { name: string; children: Rea
 // The server serves its default avatars as SVG (drawn by AppAvatar); the PNG is a remote bitmap
 const avatarUrl = 'https://open.rocket.chat/avatar/rocket.cat';
 const pngUrl = 'https://open.rocket.chat/images/logo/android-chrome-192x192.png';
+const avatarFormats = [
+	['svg', avatarUrl],
+	['png', pngUrl],
+	['png?etag', `${pngUrl}?etag=abc`],
+	['jpeg', 'https://httpbin.org/image/jpeg'],
+	['jpeg 2', 'https://picsum.photos/id/237/72/72.jpg'],
+	['data png', gradientPng],
+	['data jpeg', gradientJpeg],
+	['data letter', letterAvatars.R],
+] as const;
 
 export function Content() {
 	const [button, setButton] = useState(0);
@@ -190,6 +201,19 @@ export function Content() {
 				<Avatar url={pngUrl} size='x36' />
 				<AppAvatar url={avatarUrl} />
 				<AppAvatar url='https://open.rocket.chat/avatar/ggazzo' size='x24' rounded />
+			</Cell>
+			<Cell name='AppAvatar formats (x36, x24, rounded x36, rounded x24)'>
+				{avatarFormats.map(([label, url]) => (
+					<View key={label} style={{ alignItems: 'center', gap: 4 }}>
+						<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+							<AppAvatar url={url} />
+							<AppAvatar url={url} size='x24' />
+							<AppAvatar url={url} rounded />
+							<AppAvatar url={url} size='x24' rounded />
+						</View>
+						<RNText style={{ fontSize: 10 }}>{label}</RNText>
+					</View>
+				))}
 			</Cell>
 			<Cell name='Icon'>
 				<Icon name='bell' size='x24' />

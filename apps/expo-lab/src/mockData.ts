@@ -1,4 +1,5 @@
 import type { ChatMessage, RoomItem } from './api';
+import { letterAvatars } from './mockAvatars';
 
 export const mockRooms: RoomItem[] = [
 	{ rid: 'r1', t: 'c', name: 'general', title: 'general', unread: 3, sortKey: '5' },
@@ -8,14 +9,11 @@ export const mockRooms: RoomItem[] = [
 	{ rid: 'r5', t: 'c', name: 'a-channel-with-a-rather-long-name-that-must-truncate', title: 'a-channel-with-a-rather-long-name-that-must-truncate', unread: 120, sortKey: '1' },
 ];
 
-// There is no server to serve /avatar in mock mode: 24px solid squares as data URIs, one color per name
-const placeholders = [
-	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4EOVNFcQwatCoQaMGjRo0atCoQQNvEAAEs2tuqhHb7AAAAABJRU5ErkJggg==',
-	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mPw7n5AFcQwatCoQaMGjRo0atCoQQNvEAC/HdmupEWdSgAAAABJRU5ErkJggg==',
-	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mPw3pBFFcQwatCoQaMGjRo0atCoQQNvEAABKyNuw68+1AAAAABJRU5ErkJggg==',
-	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4sFCLKohh1KBRg0YNGjVo1KBRgwbeIADyD8DuYcRYFAAAAABJRU5ErkJggg==',
-	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mPoijpBFcQwatCoQaMGjRo0atCoQQNvEACAacMuIF4C+wAAAABJRU5ErkJggg==',
-];
+// There is no server to serve /avatar in mock mode: a letter PNG per name (src/mockAvatars.ts), and two solid squares as plain uploads
+const solids: Record<string, string> = {
+	'design-review': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4EOVNFcQwatCoQaMGjRo0atCoQQNvEAAEs2tuqhHb7AAAAABJRU5ErkJggg==',
+	'launch-team': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mPw7n5AFcQwatCoQaMGjRo0atCoQQNvEAC/HdmupEWdSgAAAABJRU5ErkJggg==',
+};
 
 // Two names use the public default (SVG) avatars so the SVG path shows in mock mode
 const publicDefaults: Record<string, string> = {
@@ -23,9 +21,7 @@ const publicDefaults: Record<string, string> = {
 	'ada.lovelace': 'https://open.rocket.chat/avatar/ggazzo',
 };
 
-export const mockAvatar = (name: string) =>
-	publicDefaults[name] ??
-	placeholders[[...name].reduce((sum, c) => sum + c.charCodeAt(0), 0) % placeholders.length];
+export const mockAvatar = (name: string) => publicDefaults[name] ?? solids[name] ?? letterAvatars[name[0]?.toUpperCase() ?? ''] ?? solids['design-review'];
 
 const at = (minutesAgo: number) => new Date(Date.now() - minutesAgo * 60_000).toISOString();
 
