@@ -17,7 +17,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Messages } from '../../../stores';
@@ -47,6 +47,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const uid = useUserId();
 	const threadMainMessage = Messages.use((state) => state.get(message.tmid)) ?? parentMessage.data;
 	const following = Boolean(uid && threadMainMessage?.replies?.includes(uid));
+	const followStateId = useId();
 
 	const translated = useShowTranslated(message);
 	const { t } = useTranslation();
@@ -90,6 +91,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			tabIndex={0}
 			onClick={handleThreadClick}
 			onKeyDown={handleKeyDown}
+			aria-describedby={followStateId}
 			isSelected={isSelected}
 			{...props}
 		>
@@ -151,6 +153,9 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
+			<span id={followStateId} hidden>
+				{following ? t('Following') : t('Not_following')}
+			</span>
 		</ThreadMessage>
 	);
 };
