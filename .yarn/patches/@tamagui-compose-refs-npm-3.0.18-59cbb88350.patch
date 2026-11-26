@@ -1,8 +1,8 @@
 diff --git a/dist/cjs/compose-refs.cjs b/dist/cjs/compose-refs.cjs
-index f4555e7ac319bd693792577459a6db1317048b39..eef1e6d883877e2ca72b49fec00023c653004503 100644
+index f4555e7ac319bd693792577459a6db1317048b39..c84c40aed2355afbb0650ac71562f309aac2b709 100644
 --- a/dist/cjs/compose-refs.cjs
 +++ b/dist/cjs/compose-refs.cjs
-@@ -35,14 +35,23 @@ module.exports = __toCommonJS(compose_refs_exports);
+@@ -35,14 +35,36 @@ module.exports = __toCommonJS(compose_refs_exports);
  var React = __toESM(require("react"), 1);
  function setRef(ref, value) {
  	if (typeof ref === "function") {
@@ -13,8 +13,7 @@ index f4555e7ac319bd693792577459a6db1317048b39..eef1e6d883877e2ca72b49fec00023c6
  		ref.current = value;
  	}
  }
- function composeRefs(...refs) {
--	return (node) => refs.forEach((ref) => setRef(ref, node));
++function createComposedRef(refs) {
 +	return (node) => {
 +		const cleanups = refs.map((ref) => setRef(ref, node));
 +		// React 19 runs the returned cleanup instead of calling the ref again with null
@@ -25,14 +24,28 @@ index f4555e7ac319bd693792577459a6db1317048b39..eef1e6d883877e2ca72b49fec00023c6
 +			});
 +		};
 +	};
++}
++// A stable input list yields the same composed function, so React keeps the ref attached across renders
++const composeCache = { map: new WeakMap() };
++const NULL_KEY = {};
+ function composeRefs(...refs) {
+-	return (node) => refs.forEach((ref) => setRef(ref, node));
++	let node = composeCache;
++	for (const ref of refs) {
++		const key = ref == null ? NULL_KEY : ref;
++		let next = node.map.get(key);
++		if (!next) node.map.set(key, (next = { map: new WeakMap() }));
++		node = next;
++	}
++	return node.fn ?? (node.fn = createComposedRef(refs));
  }
  function useComposedRefs(...refs) {
  	return React.useCallback(composeRefs(...refs), refs);
 diff --git a/dist/esm/compose-refs.mjs b/dist/esm/compose-refs.mjs
-index 44d51087adc2dcad0d0d37822707954d45dadc82..56ee8f0420ebac23302c2bde689c50d5544fe6d1 100644
+index 44d51087adc2dcad0d0d37822707954d45dadc82..46435372dd7ca7233eef2bc00039a4ea60f09d1e 100644
 --- a/dist/esm/compose-refs.mjs
 +++ b/dist/esm/compose-refs.mjs
-@@ -2,14 +2,23 @@ import * as React from "react";
+@@ -2,14 +2,36 @@ import * as React from "react";
  
  function setRef(ref, value) {
  	if (typeof ref === "function") {
@@ -43,8 +56,7 @@ index 44d51087adc2dcad0d0d37822707954d45dadc82..56ee8f0420ebac23302c2bde689c50d5
  		ref.current = value;
  	}
  }
- function composeRefs(...refs) {
--	return (node) => refs.forEach((ref) => setRef(ref, node));
++function createComposedRef(refs) {
 +	return (node) => {
 +		const cleanups = refs.map((ref) => setRef(ref, node));
 +		// React 19 runs the returned cleanup instead of calling the ref again with null
@@ -55,6 +67,20 @@ index 44d51087adc2dcad0d0d37822707954d45dadc82..56ee8f0420ebac23302c2bde689c50d5
 +			});
 +		};
 +	};
++}
++// A stable input list yields the same composed function, so React keeps the ref attached across renders
++const composeCache = { map: new WeakMap() };
++const NULL_KEY = {};
+ function composeRefs(...refs) {
+-	return (node) => refs.forEach((ref) => setRef(ref, node));
++	let node = composeCache;
++	for (const ref of refs) {
++		const key = ref == null ? NULL_KEY : ref;
++		let next = node.map.get(key);
++		if (!next) node.map.set(key, (next = { map: new WeakMap() }));
++		node = next;
++	}
++	return node.fn ?? (node.fn = createComposedRef(refs));
  }
  function useComposedRefs(...refs) {
  	return React.useCallback(composeRefs(...refs), refs);
