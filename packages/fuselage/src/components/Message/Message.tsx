@@ -2,6 +2,7 @@ import { MessagePendingContext } from './MessageContext';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import type { LongPressEvents } from '../../types/Attributes.contract';
 import Item, { type ItemAttributes } from '../Item/Item';
+import type { ItemInset } from '../Item/Item.contract';
 
 export type MessageProps = ItemAttributes &
 	LongPressEvents & {
@@ -14,6 +15,14 @@ export type MessageProps = ItemAttributes &
 		isSelected?: boolean;
 		isEditing?: boolean;
 		isPending?: boolean;
+		/**
+		 * Adds space above and below the message, for a list of separate messages such as a panel's threads or discussions.
+		 */
+		insetBlock?: ItemInset;
+		/**
+		 * Draws a rule under the message, for a list of separate messages that needs a line between them.
+		 */
+		divided?: boolean;
 	};
 
 function Message({

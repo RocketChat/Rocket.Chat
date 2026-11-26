@@ -77,6 +77,19 @@ const edges = {
 	lg: { default: space('x24'), [narrow]: space('x16') },
 };
 
+// Block padding on top of the 4px a row has (8px on a coarse pointer) and the 4px a group header has
+const itemBlockInsets = {
+	sm: { paddingBlock: { default: space('x8'), pointerCoarse: space('x12') } },
+	md: { paddingBlock: { default: space('x12'), pointerCoarse: space('x16') } },
+	lg: { paddingBlock: { default: space('x16'), pointerCoarse: space('x20') } },
+};
+
+const headerBlockInsets = {
+	sm: { paddingBlock: space('x8') },
+	md: { paddingBlock: space('x12') },
+	lg: { paddingBlock: space('x16') },
+};
+
 const insets = (property: string, values: Record<string, Value>) =>
 	Object.fromEntries(Object.entries(values).map(([inset, value]) => [inset, { [property]: value }]));
 
@@ -133,6 +146,7 @@ const generateItem = () => {
 	return [
 		constant('itemFrame', frame),
 		constant('itemInsets', insets('paddingInline', edges)),
+		constant('itemBlockInsets', itemBlockInsets),
 		constant('itemGutters', { narrow: { gap: space('x4') }, wide: { gap: space('x8') } }),
 		constant('itemTones', tones),
 		constant('itemPaints', paints),
@@ -191,6 +205,7 @@ const generateItemGroupHeader = () => {
 	return [
 		constant('itemGroupHeaderFrame', frame),
 		constant('itemGroupHeaderInsets', insets('paddingInline', edges)),
+		constant('itemGroupHeaderBlockInsets', headerBlockInsets),
 		constant('itemGroupHeaderSurfaces', surfaces),
 	].join('\n\n');
 };

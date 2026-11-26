@@ -42,7 +42,10 @@ const flags = [
 	['dragging', 'rcx-item--dragging'],
 ] as const;
 
-type RowClassStates = Pick<ItemProps, 'inset' | 'align' | 'dropIndicator' | 'dropTarget' | 'dropDisabled' | 'dropped'> &
+type RowClassStates = Pick<
+	ItemProps,
+	'inset' | 'insetBlock' | 'divided' | 'align' | 'dropIndicator' | 'dropTarget' | 'dropDisabled' | 'dropped'
+> &
 	Record<(typeof flags)[number][0], boolean | undefined>;
 
 // The row's modifier classes in the order `cxx` wrote them: a row renders on every update of a list, and the generic
@@ -51,6 +54,12 @@ const rowClasses = (states: RowClassStates, className?: string) => {
 	let classes = 'rcx-item';
 	if (states.inset !== 'none') {
 		classes += ` rcx-item--inset-${states.inset}`;
+	}
+	if (states.insetBlock !== 'none') {
+		classes += ` rcx-item--inset-block-${states.insetBlock}`;
+	}
+	if (states.divided) {
+		classes += ' rcx-item--divided';
 	}
 	if (states.align !== 'center') {
 		classes += ` rcx-item--align-${states.align}`;
@@ -130,6 +139,27 @@ const itemInsets = {
 		paddingInline: {
 			'default': '$space.x24',
 			'@narrow/rcx-item-group': '$space.x16',
+		},
+	},
+} as const;
+
+const itemBlockInsets = {
+	sm: {
+		paddingBlock: {
+			default: '$space.x8',
+			pointerCoarse: '$space.x12',
+		},
+	},
+	md: {
+		paddingBlock: {
+			default: '$space.x12',
+			pointerCoarse: '$space.x16',
+		},
+	},
+	lg: {
+		paddingBlock: {
+			default: '$space.x16',
+			pointerCoarse: '$space.x20',
 		},
 	},
 } as const;
@@ -259,6 +289,7 @@ const ItemFrame = styled(View, {
 	group: 'item',
 	variants: {
 		inset: itemInsets,
+		insetBlock: itemBlockInsets,
 		gutter: itemGutters,
 		align: { center: {}, start: { alignItems: 'flex-start' } },
 		tone: itemTones,
@@ -337,6 +368,8 @@ const Item = (props: ItemProps) => {
 	const {
 		is = 'div',
 		inset = 'none',
+		insetBlock = 'none',
+		divided,
 		align = 'center',
 		hoverable,
 		selected,
@@ -414,6 +447,8 @@ const Item = (props: ItemProps) => {
 	const classes = rowClasses(
 		{
 			inset,
+			insetBlock,
+			divided,
 			align,
 			hoverable,
 			clickable: pressable,
@@ -448,6 +483,7 @@ const Item = (props: ItemProps) => {
 			return (
 				<ItemFrame
 					inset={inset}
+					insetBlock={insetBlock}
 					gutter={wide ? 'wide' : 'narrow'}
 					align={align}
 					tone={tone}
@@ -482,6 +518,7 @@ const Item = (props: ItemProps) => {
 			return (
 				<ItemFrame
 					inset={inset}
+					insetBlock={insetBlock}
 					gutter={wide ? 'wide' : 'narrow'}
 					align={align}
 					tone={tone}
@@ -519,6 +556,7 @@ const Item = (props: ItemProps) => {
 			return (
 				<ItemFrame
 					inset={inset}
+					insetBlock={insetBlock}
 					gutter={wide ? 'wide' : 'narrow'}
 					align={align}
 					tone={tone}
@@ -551,6 +589,7 @@ const Item = (props: ItemProps) => {
 		return (
 			<ItemFrame
 				inset={inset}
+				insetBlock={insetBlock}
 				gutter={wide ? 'wide' : 'narrow'}
 				align={align}
 				tone={tone}

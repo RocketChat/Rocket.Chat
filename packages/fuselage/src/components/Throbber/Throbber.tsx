@@ -33,6 +33,10 @@ const throbberCircle = {
 } as const;
 
 const throbberSizes = {
+	x4: {
+		width: '$size.x4',
+		height: '$size.x4',
+	},
 	x8: {
 		width: '$size.x8',
 		height: '$size.x8',

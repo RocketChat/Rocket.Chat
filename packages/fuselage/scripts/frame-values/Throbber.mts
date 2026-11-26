@@ -21,7 +21,7 @@ const generate = () => {
 	};
 
 	const sizes = Object.fromEntries(
-		(['x8', 'x12', 'x16', 'x20', 'x24', 'x32', 'x40'] as const).map((step) => [step, { width: size(step), height: size(step) }]),
+		(['x4', 'x8', 'x12', 'x16', 'x20', 'x24', 'x32', 'x40'] as const).map((step) => [step, { width: size(step), height: size(step) }]),
 	);
 
 	const tones = {

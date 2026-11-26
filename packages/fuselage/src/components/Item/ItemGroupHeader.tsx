@@ -60,6 +60,18 @@ const itemGroupHeaderInsets = {
 	},
 } as const;
 
+const itemGroupHeaderBlockInsets = {
+	sm: {
+		paddingBlock: '$space.x8',
+	},
+	md: {
+		paddingBlock: '$space.x12',
+	},
+	lg: {
+		paddingBlock: '$space.x16',
+	},
+} as const;
+
 const itemGroupHeaderSurfaces = {
 	'sticky': {
 		position: 'sticky',
@@ -91,6 +103,7 @@ const ItemGroupHeaderFrame = styled(View, {
 	group: 'item',
 	variants: {
 		inset: itemGroupHeaderInsets,
+		insetBlock: itemGroupHeaderBlockInsets,
 		surface: itemGroupHeaderSurfaces,
 	},
 });
@@ -106,7 +119,7 @@ const surfaceOf = (sticky: boolean | undefined, interactive: boolean | undefined
  * The label row of a group, such as Favorites, Recent or Moderators. It holds an `ItemGroupTitle` and optional trailing content.
  */
 const ItemGroupHeader = (props: ItemGroupHeaderProps) => {
-	const { is = 'div', inset = 'none', sticky, children } = props;
+	const { is = 'div', inset = 'none', insetBlock = 'none', sticky, children } = props;
 	const [holdsButton, setHoldsButton] = useState(false);
 	const interactive = props.interactive ?? holdsButton;
 
@@ -118,7 +131,9 @@ const ItemGroupHeader = (props: ItemGroupHeaderProps) => {
 	const classes = cx(
 		cxx('rcx-item-group-header')({
 			[`inset-${inset}`]: inset !== 'none',
+			[`inset-block-${insetBlock}`]: insetBlock !== 'none',
 			sticky: !!sticky,
+			interactive,
 		}),
 		props.className,
 	);
@@ -131,6 +146,7 @@ const ItemGroupHeader = (props: ItemGroupHeaderProps) => {
 				{is === 'li' ? (
 					<ItemGroupHeaderFrame
 						inset={inset}
+						insetBlock={insetBlock}
 						surface={surface}
 						className={classes}
 						render={
@@ -151,6 +167,7 @@ const ItemGroupHeader = (props: ItemGroupHeaderProps) => {
 				) : (
 					<ItemGroupHeaderFrame
 						inset={inset}
+						insetBlock={insetBlock}
 						surface={surface}
 						className={classes}
 						render={

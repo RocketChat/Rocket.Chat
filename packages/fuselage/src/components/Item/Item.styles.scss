@@ -210,3 +210,25 @@ button.rcx-item-group-title:focus-visible::after {
 
 	@include elevation-level(2);
 }
+
+// Web only. The rule along a row's bottom edge is a pseudo-element, which a frame cannot style
+.rcx-item--divided::after {
+	position: absolute;
+	inset-block-end: 0;
+	inset-inline: 0;
+
+	content: '';
+
+	pointer-events: none;
+
+	border-block-end: lengths.border-width(default) solid colors.stroke(extra-light);
+}
+
+// Web only. A pinned header paints the surface of the panel it sits in, which a frame cannot read from a custom property
+.rcx-item-group-header--sticky[class]:not(.rcx-item-group-header--interactive) {
+	background-color: var(--rcx-surface, #{colors.surface(light)});
+}
+
+.rcx-item-group-header--sticky.rcx-item-group-header--interactive[class]:not(:hover) {
+	background-color: var(--rcx-surface, #{colors.surface(light)});
+}

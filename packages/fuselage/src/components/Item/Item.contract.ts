@@ -17,6 +17,14 @@ export type ItemContract = ItemPartContract & {
 	 */
 	inset?: ItemInset;
 	/**
+	 * Adds space above and below the slots, for rows that read as separate entries, such as messages in a panel's list.
+	 */
+	insetBlock?: ItemInset;
+	/**
+	 * Draws a rule along the row's bottom edge, for lists whose rows need a line between them.
+	 */
+	divided?: boolean;
+	/**
 	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
 	 */
 	align?: 'center' | 'start';
@@ -169,7 +177,11 @@ export type ItemGroupHeaderContract = ItemPartContract & {
 	 */
 	inset?: ItemInset;
 	/**
-	 * Pins the header to the top of its scroll container.
+	 * Adds space above and below the title, as `insetBlock` does for a row.
+	 */
+	insetBlock?: ItemInset;
+	/**
+	 * Pins the header to the top of its scroll container, painted with the surface it sits on so rows that scroll under it stay hidden.
 	 */
 	sticky?: boolean;
 	/**
