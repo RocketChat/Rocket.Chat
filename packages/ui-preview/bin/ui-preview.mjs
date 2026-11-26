@@ -115,7 +115,19 @@ const download = async () => {
 };
 
 // Paths a browser navigates to that the server, not the client, must answer (OAuth popups, downloads, livechat).
-const serverPages = ['/api', '/oauth', '/_oauth', '/_saml', '/_cas', '/file-upload', '/file-decrypt', '/ufs', '/data-export', '/livechat'];
+const serverPages = [
+	'/api',
+	'/api-docs',
+	'/oauth',
+	'/_oauth',
+	'/_saml',
+	'/_cas',
+	'/file-upload',
+	'/file-decrypt',
+	'/ufs',
+	'/data-export',
+	'/livechat',
+];
 
 // Client routes nested under a server page prefix (the OAuth provider's consent and error pages).
 const clientPagesUnderServerPages = ['/oauth/authorize', '/oauth/error'];
