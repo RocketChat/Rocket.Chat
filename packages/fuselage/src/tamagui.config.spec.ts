@@ -45,6 +45,8 @@ describe('the conditions of a frame value', () => {
 		const queries = Object.fromEntries(Object.entries(tamaguiConfig.media).map(([name, query]) => [name, mediaObjectToString(query)]));
 
 		expect(queries).toEqual({
+			sm: '(min-width: 600px)',
+			md: '(min-width: 768px)',
 			pointerCoarse: '(pointer: coarse)',
 			hoverNone: '(hover: none)',
 			reducedMotion: '(prefers-reduced-motion: reduce)',
