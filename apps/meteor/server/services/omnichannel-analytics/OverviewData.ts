@@ -56,7 +56,7 @@ export class OverviewData {
 		return sum;
 	}
 
-	getBusiestDay(map: Map<string, Map<string, number>>): string {
+	getBusiestDay(map: Map<string, Map<number, number>>): string {
 		let mostMessages = -1;
 		let busiestDay = '-';
 
@@ -89,7 +89,7 @@ export class OverviewData {
 		t = (v: string): string => v,
 		extraQuery: Filter<IOmnichannelRoom> = {},
 	) {
-		const analyticsMap = new Map();
+		const analyticsMap = new Map<string, Map<number, number>>();
 		let openConversations = 0; // open conversations
 		let totalMessages = 0; // total msgs
 		let totalConversations = 0; // Total conversations
@@ -110,22 +110,11 @@ export class OverviewData {
 				openConversations++;
 			}
 			const creationDay = moment.tz(room.ts, timezone).format('DD-MM-YYYY'); // @string: 01-01-2021
-			const creationHour = moment.tz(room.ts, timezone).format('H'); // @int : 0, 1, ... 23
+			const creationHour = moment.tz(room.ts, timezone).hour();
 
-			if (!analyticsMap.has(creationDay)) {
-				analyticsMap.set(creationDay, new Map());
-			}
-
-			const dayMap = analyticsMap.get(creationDay);
-
-			// oxlint-disable-next-line typescript/no-unsafe-call -- analyticsMap is untyped; typing it needs new undefined guards
-			if (!dayMap.has(creationHour)) {
-				// oxlint-disable-next-line typescript/no-unsafe-call -- analyticsMap is untyped; typing it needs new undefined guards
-				dayMap.set(creationHour, 0);
-			}
-
-			// oxlint-disable-next-line typescript/no-unsafe-call -- analyticsMap is untyped; typing it needs new undefined guards
-			dayMap.set(creationHour, dayMap.get(creationHour) ? dayMap.get(creationHour) + room.msgs : room.msgs);
+			const dayMap = analyticsMap.get(creationDay) ?? new Map<number, number>();
+			analyticsMap.set(creationDay, dayMap);
+			dayMap.set(creationHour, (dayMap.get(creationHour) ?? 0) + room.msgs);
 			totalMessages += room.msgs;
 		}
 
