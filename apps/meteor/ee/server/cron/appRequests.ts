@@ -50,7 +50,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 					await Apps.getMarketplaceClient().fetch(`v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})
-				.catch((err) => {
+				.catch((err): unknown => {
 					Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
 					return err;
 				});

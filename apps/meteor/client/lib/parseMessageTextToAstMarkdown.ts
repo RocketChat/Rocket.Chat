@@ -115,6 +115,7 @@ export const removePossibleNullMessageValues = <TMessage extends IMessage = IMes
 	attachments,
 	reactions,
 	...message
+	// oxlint-disable-next-line typescript/no-unsafe-return -- rebuilds the message without its null fields; the spread cannot be typed back to TMessage
 }: any): TMessage => ({
 	...message,
 	...(isNotNullOrUndefined(editedBy) && { editedBy }),

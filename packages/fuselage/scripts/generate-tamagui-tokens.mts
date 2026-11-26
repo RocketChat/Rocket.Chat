@@ -17,8 +17,8 @@ import zIndex from '@rocket.chat/fuselage-tokens/dist/zIndex.json';
 import prettier from 'prettier';
 
 import { toRem } from './frame-values/lib/literal.mts';
-import { themeKey } from '../src/components/PaletteStyleTag/helpers/convertToCss';
-import { getThemePalette } from '../src/components/PaletteStyleTag/helpers/getPalette';
+import { themeKey } from '../src/components/PaletteStyleTag/helpers/convertToCss.ts';
+import { getThemePalette } from '../src/components/PaletteStyleTag/helpers/getPalette.ts';
 
 const file = join(import.meta.dirname, '../src/tamagui.tokens.ts');
 
@@ -32,7 +32,7 @@ const radius = Object.fromEntries(Object.entries(border.radius).map(([name, valu
 
 /** The palette `PaletteStyleTag` writes as `--rcx-color-*`, under the keys a frame reads it by. */
 const theme = (name: Parameters<typeof getThemePalette>[0]) => {
-	const entries = Object.entries(getThemePalette(name)).map(([color, value]) => [themeKey(color), value]);
+	const entries = Object.entries<string>(getThemePalette(name)).map(([color, value]): [string, string] => [themeKey(color), value]);
 	const keys = new Set(entries.map(([key]) => key));
 	if (keys.size !== entries.length) {
 		throw new Error(`The ${name} palette names a color twice`);

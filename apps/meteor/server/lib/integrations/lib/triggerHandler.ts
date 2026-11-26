@@ -24,7 +24,7 @@ import { notifyOnIntegrationChangedById } from '../../notifyListener';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../rooms/getRoomByNameOrIdWithOptionToJoin';
 import { outgoingLogger } from '../logger';
 
-type Trigger = Record<string, Record<string, any>>;
+type Trigger = Record<string, Record<string, IOutgoingIntegration>>;
 
 type MessageWithEditedAt = IMessage & { editedAt?: Date };
 type ArgumentsObject = {
@@ -488,6 +488,7 @@ class RocketChatIntegrationHandler {
 
 	// Script engine errors are rethrown as client-safe ClientSafeError
 	async wrapScriptEngineCall(getter: () => Promise<any>) {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- integration script results are untyped by design and callers read arbitrary fields
 		return wrapExceptions(getter).catch((error) => {
 			if (error instanceof Error) {
 				throw new ClientSafeError(error.message);
@@ -639,6 +640,7 @@ class RocketChatIntegrationHandler {
 					}
 
 					try {
+						// oxlint-disable-next-line typescript/no-unsafe-return -- the webhook response body is arbitrary JSON consumed as a message
 						return JSON.parse(content);
 					} catch (_error) {
 						return null;

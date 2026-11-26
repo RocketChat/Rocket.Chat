@@ -88,7 +88,7 @@ export abstract class AbstractBusinessHourType {
 			);
 			return businessHourData._id;
 		}
-		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
+		const { insertedId }: { insertedId: string } = await this.BusinessHourRepository.insertOne(businessHourData);
 		return insertedId;
 	}
 

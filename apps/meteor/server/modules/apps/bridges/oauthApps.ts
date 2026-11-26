@@ -44,6 +44,7 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 		const data = await OAuthApps.findOne({ _id: id, appId });
 		if (data) {
 			const { _id, _createdAt, _createdBy, _updatedAt, ...rest } = data as any;
+			// oxlint-disable-next-line typescript/no-unsafe-return -- updatedAt is passed through as a Date although IOAuthApp declares it as string
 			return {
 				...rest,
 				id: _id,

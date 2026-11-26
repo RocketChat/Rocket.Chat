@@ -156,7 +156,8 @@ export const isAgentWithinChatLimits = async ({
 const getWaitingQueueMessage = async (departmentId?: string) => {
 	const department = departmentId ? await LivechatDepartmentRaw.findOneById(departmentId) : null;
 	if (department?.waitingQueueMessage) {
-		return department.waitingQueueMessage;
+		const message: string = department.waitingQueueMessage;
+		return message;
 	}
 
 	return settings.get<string>('Livechat_waiting_queue_message');

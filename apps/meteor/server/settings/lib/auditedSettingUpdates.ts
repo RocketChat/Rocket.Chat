@@ -56,6 +56,7 @@ export const resetAuditedSettingByUser =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key);
 	};
 
@@ -82,6 +83,7 @@ export const updateAuditedByUser =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key, value, ...rest);
 	};
 
@@ -108,6 +110,7 @@ export const updateAuditedBySystem =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key, value, ...rest);
 	};
 
@@ -132,5 +135,6 @@ export const updateAuditedByApp =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key, value, ...rest);
 	};

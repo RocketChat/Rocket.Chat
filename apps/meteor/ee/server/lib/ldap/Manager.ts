@@ -467,7 +467,7 @@ export class LDAPManager {
 			return [`${username}@${defaultDomain}`];
 		}
 
-		if (ldapUser.mail?.includes('@')) {
+		if (typeof ldapUser.mail === 'string' && ldapUser.mail.includes('@')) {
 			return [ldapUser.mail];
 		}
 

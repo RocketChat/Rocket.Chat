@@ -10,7 +10,7 @@ type NPSResultPayload = {
 	votes: Pick<INpsVote, 'identifier' | 'roles' | 'score' | 'comment'>[];
 };
 
-export const sendNpsResults = async function sendNpsResults(npsId: string, data: NPSResultPayload) {
+export const sendNpsResults = async function sendNpsResults(npsId: string, data: NPSResultPayload): Promise<unknown> {
 	const token = await getWorkspaceAccessToken();
 	if (!token) {
 		return false;

@@ -36,6 +36,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 			}
 		}
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- extraData is an untyped bag of caller values
 		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken && room.open === true;
 	},
 	async function (room, user) {

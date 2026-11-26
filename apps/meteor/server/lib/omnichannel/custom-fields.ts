@@ -96,7 +96,8 @@ export async function setCustomFields({
 		return 0;
 	}
 
-	return result.modifiedCount;
+	const modifiedCount: number = result.modifiedCount;
+	return modifiedCount;
 }
 
 export async function setMultipleVisitorCustomFields(

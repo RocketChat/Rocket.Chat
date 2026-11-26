@@ -36,7 +36,8 @@ const useCustomTranslations = (i18n: typeof i18next) => {
 		}
 
 		try {
-			return JSON.parse(customTranslations);
+			const translations: Record<string, Record<string, string>> = JSON.parse(customTranslations);
+			return translations;
 		} catch (e) {
 			console.error(e);
 			return undefined;
@@ -121,6 +122,7 @@ const useI18next = (lng: string): typeof i18next => {
 		// Registered right after init(), not on 'initialized': with English bundled, init completes synchronously and that event has already fired.
 		i18n.services.formatter?.add('capitalize', (value) => {
 			if (typeof value !== 'string') {
+				// oxlint-disable-next-line typescript/no-unsafe-return -- i18next hands arbitrary values to formatters; non-strings pass through untouched
 				return value;
 			}
 			return capitalize(value);

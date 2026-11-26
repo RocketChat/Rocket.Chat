@@ -776,6 +776,7 @@ class E2E extends Emitter {
 
 	async getSuggestedE2EEKeys(usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>) {
 		const roomIds = Object.keys(usersWaitingForE2EKeys);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- typing the pairs exposes `key: string | undefined` (encryptGroupKeyForParticipant can fail), which the endpoint type does not accept
 		return Object.fromEntries(
 			(
 				await Promise.all(

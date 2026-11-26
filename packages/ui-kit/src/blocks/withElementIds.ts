@@ -17,7 +17,7 @@ const withItemIds = (row: unknown): unknown => {
 
 	return {
 		...row,
-		items: row.items.map((item) => {
+		items: row.items.map((item: unknown) => {
 			if (!isObject(item)) {
 				return item;
 			}
@@ -36,7 +36,7 @@ export const withElementIds = (blocks: unknown): unknown => {
 		return blocks;
 	}
 
-	return blocks.map((block) => {
+	return blocks.map((block: unknown) => {
 		if (!isObject(block)) {
 			return block;
 		}
@@ -56,7 +56,7 @@ export const withElementIds = (blocks: unknown): unknown => {
 		}
 
 		if (block.type === 'data_table' && Array.isArray(copy.rows)) {
-			copy.rows = copy.rows.map((row) => (Array.isArray(row) ? row.map((cell) => withCellIds(cell, block)) : row));
+			copy.rows = copy.rows.map((row: unknown) => (Array.isArray(row) ? row.map((cell) => withCellIds(cell, block)) : row));
 		}
 
 		if (block.type === 'container' && Array.isArray(copy.child_blocks)) {

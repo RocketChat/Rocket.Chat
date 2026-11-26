@@ -49,7 +49,8 @@ function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 	channelsMap = (channelsMap || '{}').trim();
 
 	try {
-		return JSON.parse(channelsMap);
+		const parsed: Record<string, unknown> = JSON.parse(channelsMap);
+		return parsed;
 	} catch (err) {
 		logger.error({ msg: 'Unexpected error', err });
 	}

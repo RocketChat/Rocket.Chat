@@ -30,7 +30,7 @@ export const createMeteorInvocation = (
 	}
 
 	return {
-		applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
+		applyInvocation: <F extends () => Promise<unknown>>(action: F): ReturnType<F> => {
 			return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
 		},
 	};

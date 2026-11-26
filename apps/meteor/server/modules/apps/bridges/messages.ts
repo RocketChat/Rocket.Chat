@@ -26,7 +26,7 @@ export class AppMessageBridge extends MessageBridge {
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const definedMessage = convertedMessage as IMessage;
 
-		const sentMessage = await executeSendMessage(definedMessage.u._id, definedMessage);
+		const sentMessage: IMessage = await executeSendMessage(definedMessage.u._id, definedMessage);
 		return sentMessage._id;
 	}
 

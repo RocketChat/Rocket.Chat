@@ -272,5 +272,6 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 
 	void notifyOnRoomChangedById(message.rid);
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- `message` is a legacy any-typed parameter (see the file TODO) and callers rely on that
 	return message;
 };

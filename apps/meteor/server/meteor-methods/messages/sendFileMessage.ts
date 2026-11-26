@@ -234,5 +234,6 @@ export const sendFileMessage = async (
 
 	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- executeSendMessage result is untyped (any)
 	return msg;
 };

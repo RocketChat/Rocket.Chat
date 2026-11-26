@@ -230,6 +230,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 		identity.displayName = identity.name || identity.displayName;
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- transform_helpers is untyped JavaScript
 		return renameInvalidProperties(identity);
 	}
 
