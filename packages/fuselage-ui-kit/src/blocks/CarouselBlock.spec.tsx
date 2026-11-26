@@ -21,6 +21,24 @@ beforeAll(() => {
 
 beforeEach(() => scrollBy.mockClear());
 
+afterEach(() => jest.restoreAllMocks());
+
+// jsdom has no layout: give the row a width and more content than fits, as a browser would.
+const layOutRow = () => {
+	jest.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(300);
+	jest.spyOn(Element.prototype, 'scrollWidth', 'get').mockReturnValue(900);
+};
+
+const setRtl = () => {
+	const { getComputedStyle } = window;
+	jest.spyOn(window, 'getComputedStyle').mockImplementation(
+		(...args) =>
+			new Proxy(getComputedStyle(...args), {
+				get: (target, prop) => (prop === 'direction' ? 'rtl' : Reflect.get(target, prop)),
+			}),
+	);
+};
+
 it('renders each card as a slide of a labelled carousel and skips what is not a card', () => {
 	render(<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>);
 
@@ -32,11 +50,7 @@ it('renders each card as a slide of a labelled carousel and skips what is not a 
 });
 
 it('scrolls the row sideways with the previous and next buttons', async () => {
-	// jsdom has no layout: give the row a width and more content than fits, as a browser would.
-	const sizes = ['clientWidth', 'scrollWidth'] as const;
-	const originals = sizes.map((key) => Object.getOwnPropertyDescriptor(HTMLElement.prototype, key));
-	Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 300 });
-	Object.defineProperty(HTMLElement.prototype, 'scrollWidth', { configurable: true, value: 900 });
+	layOutRow();
 
 	render(<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>);
 
@@ -44,74 +58,28 @@ it('scrolls the row sideways with the previous and next buttons', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'UIKit_Carousel_next' }));
 	expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 240 }));
-
-	sizes.forEach((key, index) => {
-		const descriptor = originals[index];
-
-		if (descriptor) {
-			Object.defineProperty(HTMLElement.prototype, key, descriptor);
-		} else {
-			delete (HTMLElement.prototype as unknown as Record<string, unknown>)[key];
-		}
-	});
 });
 
-const withRtl = (fn: () => Promise<void> | void) => async () => {
-	const sizes = ['clientWidth', 'scrollWidth'] as const;
-	const originals = sizes.map((key) => Object.getOwnPropertyDescriptor(HTMLElement.prototype, key));
-	Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 300 });
-	Object.defineProperty(HTMLElement.prototype, 'scrollWidth', { configurable: true, value: 900 });
+it('scrolls in the opposite physical direction in RTL', async () => {
+	layOutRow();
+	setRtl();
 
-	const originalGetComputedStyle = window.getComputedStyle;
-	window.getComputedStyle = jest.fn((...args: Parameters<typeof window.getComputedStyle>) => {
-		const style = originalGetComputedStyle(...args);
-		return new Proxy(style, {
-			get: (target, prop) => (prop === 'direction' ? 'rtl' : Reflect.get(target, prop)),
-		});
-	}) as typeof window.getComputedStyle;
+	render(<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>);
 
-	try {
-		await fn();
-	} finally {
-		window.getComputedStyle = originalGetComputedStyle;
-		sizes.forEach((key, index) => {
-			const descriptor = originals[index];
+	await userEvent.click(screen.getByRole('button', { name: 'UIKit_Carousel_next' }));
+	expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: -240 }));
+});
 
-			if (descriptor) {
-				Object.defineProperty(HTMLElement.prototype, key, descriptor);
-			} else {
-				delete (HTMLElement.prototype as unknown as Record<string, unknown>)[key];
-			}
-		});
-	}
-};
+it('enables Previous and disables Next at the end in RTL', () => {
+	layOutRow();
+	setRtl();
+	jest.spyOn(Element.prototype, 'scrollLeft', 'get').mockReturnValue(-600);
 
-it(
-	'scrolls in the opposite physical direction in RTL',
-	withRtl(async () => {
-		render(<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>);
+	render(<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>);
 
-		await userEvent.click(screen.getByRole('button', { name: 'UIKit_Carousel_next' }));
-		expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: -240 }));
-	}),
-);
-
-it(
-	'enables Previous and disables Next at the end in RTL',
-	withRtl(async () => {
-		Object.defineProperty(HTMLElement.prototype, 'scrollLeft', { configurable: true, value: -600 });
-
-		render(<MockedServerContext>{messageParser.render([carousel])}</MockedServerContext>);
-
-		expect(screen.getByRole('button', { name: 'UIKit_Carousel_previous' })).toBeEnabled();
-		expect(screen.getByRole('button', { name: 'UIKit_Carousel_next' })).toBeDisabled();
-
-		const descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollLeft');
-		if (descriptor) {
-			delete (HTMLElement.prototype as unknown as Record<string, unknown>).scrollLeft;
-		}
-	}),
-);
+	expect(screen.getByRole('button', { name: 'UIKit_Carousel_previous' })).toBeEnabled();
+	expect(screen.getByRole('button', { name: 'UIKit_Carousel_next' })).toBeDisabled();
+});
 
 it('renders nothing in a modal, which does not accept carousels', () => {
 	render(<MockedServerContext>{modalParser.render([carousel])}</MockedServerContext>);
