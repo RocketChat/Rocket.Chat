@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { ajvQuery } from '../Ajv';
+import { ajvQuery } from '../Ajv.js';
 
 export type CalendarEventListProps = { date: string };
 

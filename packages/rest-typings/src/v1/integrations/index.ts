@@ -1,12 +1,12 @@
-export type * from './integrations';
+export type * from './integrations.js';
 
-export * from './IntegrationsClearHistoryProps';
-export * from './IntegrationsCreateProps';
-export * from './IntegrationsHistoryProps';
-export * from './IntegrationsRemoveProps';
-export * from './IntegrationsReplayProps';
-export * from './IntegrationsGetProps';
-export * from './IntegrationsUpdateProps';
-export * from './IntegrationsListProps';
-export * from './hooks/IntegrationHooksAddProps';
-export * from './hooks/IntegrationHooksRemoveProps';
+export * from './IntegrationsClearHistoryProps.js';
+export * from './IntegrationsCreateProps.js';
+export * from './IntegrationsHistoryProps.js';
+export * from './IntegrationsRemoveProps.js';
+export * from './IntegrationsReplayProps.js';
+export * from './IntegrationsGetProps.js';
+export * from './IntegrationsUpdateProps.js';
+export * from './IntegrationsListProps.js';
+export * from './hooks/IntegrationHooksAddProps.js';
+export * from './hooks/IntegrationHooksRemoveProps.js';

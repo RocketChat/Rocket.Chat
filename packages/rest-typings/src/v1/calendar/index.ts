@@ -1,18 +1,18 @@
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
 
-import type { CalendarEventCreateProps } from './CalendarEventCreateProps';
-import type { CalendarEventDeleteProps } from './CalendarEventDeleteProps';
-import type { CalendarEventImportProps } from './CalendarEventImportProps';
-import type { CalendarEventInfoProps } from './CalendarEventInfoProps';
-import type { CalendarEventListProps } from './CalendarEventListProps';
-import type { CalendarEventUpdateProps } from './CalendarEventUpdateProps';
+import type { CalendarEventCreateProps } from './CalendarEventCreateProps.js';
+import type { CalendarEventDeleteProps } from './CalendarEventDeleteProps.js';
+import type { CalendarEventImportProps } from './CalendarEventImportProps.js';
+import type { CalendarEventInfoProps } from './CalendarEventInfoProps.js';
+import type { CalendarEventListProps } from './CalendarEventListProps.js';
+import type { CalendarEventUpdateProps } from './CalendarEventUpdateProps.js';
 
-export * from './CalendarEventCreateProps';
-export * from './CalendarEventDeleteProps';
-export * from './CalendarEventImportProps';
-export * from './CalendarEventInfoProps';
-export * from './CalendarEventUpdateProps';
-export * from './CalendarEventListProps';
+export * from './CalendarEventCreateProps.js';
+export * from './CalendarEventDeleteProps.js';
+export * from './CalendarEventImportProps.js';
+export * from './CalendarEventInfoProps.js';
+export * from './CalendarEventUpdateProps.js';
+export * from './CalendarEventListProps.js';
 
 export type CalendarEndpoints = {
 	'/v1/calendar-events.create': {

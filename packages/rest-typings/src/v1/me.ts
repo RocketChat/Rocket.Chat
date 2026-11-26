@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import type { MeApiSuccessResponse } from './me/meSuccessResponse';
+import type { MeApiSuccessResponse } from './me/meSuccessResponse.js';
 
 type Keys =
 	| 'name'

@@ -1,4 +1,4 @@
-import { ajv } from './Ajv';
+import { ajv } from './Ajv.js';
 
 type TwoFactorChallengesSendEmailCode = { challengeId: string };
 

@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv } from './Ajv.js';
 
 type E2eSetUserPublicAndPrivateKeysProps = {
 	public_key: string;

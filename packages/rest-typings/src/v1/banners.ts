@@ -1,6 +1,6 @@
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 
-import { ajv, ajvQuery } from './Ajv';
+import { ajv, ajvQuery } from './Ajv.js';
 
 type BannersId = {
 	platform: BannerPlatform;

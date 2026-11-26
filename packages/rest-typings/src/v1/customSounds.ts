@@ -1,8 +1,8 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 
-import { ajvQuery, ajv } from './Ajv';
-import { paginationQueryProperties } from './pagination';
-import { type PaginatedRequest } from '../helpers/PaginatedRequest';
+import { ajvQuery, ajv } from './Ajv.js';
+import { paginationQueryProperties } from './pagination.js';
+import { type PaginatedRequest } from '../helpers/PaginatedRequest.js';
 
 type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
 
