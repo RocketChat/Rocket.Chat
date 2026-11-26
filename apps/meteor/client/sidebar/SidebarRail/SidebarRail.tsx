@@ -8,6 +8,7 @@ import SidebarRailInbox from './SidebarRailInbox';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
 import SidebarRailPreferences from './SidebarRailPreferences';
+import SidebarRailTeams from './SidebarRailTeams';
 import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
@@ -44,6 +45,7 @@ const SidebarRail = () => {
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
 				<NavBarGroup vertical aria-label={t('Navigation')}>
 					<SidebarRailInbox />
+					<SidebarRailTeams />
 				</NavBarGroup>
 				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
+import { useTeamsPanel } from '../TeamsPanel/hooks/useTeamsPanel';
 import { getRoomCategory, useCategoryList } from '../hooks/useCategoryList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 import { buildUnreadInfo } from '../lib/unreadRooms';
@@ -23,6 +24,7 @@ const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 	const router = useRouter();
 	const currentRoute = useCurrentRoutePath();
 	const { sidebar } = useLayout();
+	const { open: teamsPanelOpen, close: closeTeamsPanel } = useTeamsPanel();
 	const secondarySidebarEnabled = useFeaturePreview('secondarySidebar');
 	const subscriptions = useUserSubscriptions(query);
 	const categoryList = useCategoryList(useOmnichannelEnabled(), useQueuedInquiries().enabled);
@@ -46,6 +48,7 @@ const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 	const title = t('Inbox_and_home');
 
 	const handleClick = useStableCallback(() => {
+		closeTeamsPanel();
 		router.navigate('/home');
 	});
 
@@ -56,7 +59,7 @@ const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 			title={title}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			badge={showUnread ? <Badge variant={unreadVariant}>{unreadCount.total > 99 ? '99+' : unreadCount.total}</Badge> : undefined}
-			pressed={!secondarySidebarEnabled && !sidebar.overlayed}
+			pressed={!secondarySidebarEnabled && !sidebar.overlayed && !teamsPanelOpen}
 			aria-current={currentRoute?.includes('/home') ? 'page' : undefined}
 			onClick={handleClick}
 		/>

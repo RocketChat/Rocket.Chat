@@ -115,3 +115,6 @@ export const useTeamsList = ({
 			];
 		});
 	}, [teams, expandedTeams, filterText, teamsUnreads]);
+
+export const useTeamsUnreadInfo = (teams: TeamSubscriptions[]): GroupUnreadInfo =>
+	useMemo(() => buildUnreadInfo(teams.flatMap(({ main, rooms }) => [main, ...rooms])), [teams]);
