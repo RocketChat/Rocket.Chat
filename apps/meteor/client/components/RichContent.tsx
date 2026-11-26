@@ -10,7 +10,7 @@ export type RichContentProps = {
  * A block of formatted text, its headings, paragraphs, lists, links and code set in the rich text styles.
  */
 const RichContent = ({ children, dangerouslySetInnerHTML }: RichContentProps) => (
-	<Box withRichContent dangerouslySetInnerHTML={dangerouslySetInnerHTML}>
+	<Box withRichContent wordBreak='break-word' dangerouslySetInnerHTML={dangerouslySetInnerHTML}>
 		{children}
 	</Box>
 );
