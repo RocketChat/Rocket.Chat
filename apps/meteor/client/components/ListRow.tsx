@@ -1,11 +1,13 @@
-import type { ReactNode, Ref } from 'react';
+import type { CSSProperties, ReactNode, Ref } from 'react';
 
 export type ListRowProps = {
 	'ref'?: Ref<HTMLDivElement>;
 	'className'?: string;
+	'style'?: CSSProperties;
+	'aria-label'?: string;
 	'data-id'?: unknown;
 	'data-time'?: unknown;
-	'children': ReactNode;
+	'children'?: ReactNode;
 };
 
 /**
