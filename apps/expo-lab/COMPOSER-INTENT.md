@@ -6,6 +6,8 @@ Author: Guilherme Gazzo (decisions); drafted by an agent. Status: draft. Nothing
 
 This follows the section style of `ee/packages/xmpp-server/docs/templates/intent.md` (title, author and status line, problem, proposed outcome, constraints, numbered open questions) with the sections `docs/change-organization.md` asks for (what, why, out of scope, decisions, gaps). Deviations: "Problem" is split into "What" and "Why now"; "Open questions" is called "Open gaps" and keeps the `Q1`, `Q2` numbering, never renumbered; "Affected users and systems" is folded into "What"; the outcomes list is new and is the only numbered requirement-like list (no `R1`: that is the spec).
 
+Spec: [COMPOSER-SPEC.md](COMPOSER-SPEC.md) (draft, for the user's review).
+
 ## What
 
 The Expo app (`apps/expo-lab`) can show a room's messages but cannot write one. This intent is for a composer in that app: a person in a room can write a message in a field that grows, send it with a button, edit and reply, mention people and channels, use slash commands, format text, attach a file or photo, record audio, pick an emoji and keep a draft per room. For the same input it does what the web composer does: same message payload, same markup, same permissions and the same disabled states (read-only room, blocked, archived, no permission, e2e).
