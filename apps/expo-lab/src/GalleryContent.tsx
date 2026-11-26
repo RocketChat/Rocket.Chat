@@ -35,6 +35,8 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 
+import { mockAvatar } from './mockData';
+
 // A frame that throws must not blank the screen: the error is the finding for that component
 class Probe extends Component<{ children: ReactNode }, { error?: string }> {
 	state: { error?: string } = {};
@@ -111,7 +113,9 @@ function Cell({ name, children, presses, throws }: { name: string; children: Rea
 	);
 }
 
+// The server serves its default avatars as SVG, which a React Native Image cannot draw; the PNG is a remote bitmap
 const avatarUrl = 'https://open.rocket.chat/avatar/rocket.cat';
+const pngUrl = 'https://open.rocket.chat/images/logo/android-chrome-192x192.png';
 
 export function Content() {
 	const [button, setButton] = useState(0);
@@ -145,6 +149,9 @@ export function Content() {
 					<PressProbe label='Chip'>
 						<Chip onPress={() => undefined}>Chip</Chip>
 					</PressProbe>
+					<PressProbe label='Tag'>
+						<Tag onPress={() => undefined}>Tag</Tag>
+					</PressProbe>
 					<PressProbe label='Item'>
 						<Item onPress={() => undefined}>
 							<ItemContent>
@@ -176,7 +183,10 @@ export function Content() {
 				<Badge variant='secondary'>12</Badge>
 				<Badge variant='danger'>99</Badge>
 			</Cell>
-			<Cell name='Avatar (not converted)' throws>
+			<Cell name='Avatar'>
+				<Avatar url={mockAvatar('rocket.cat')} size='x36' />
+				<Avatar url={mockAvatar('rocket.cat')} size='x24' rounded />
+				<Avatar url={pngUrl} size='x36' />
 				<Avatar url={avatarUrl} size='x36' />
 			</Cell>
 			<Cell name='Icon'>
@@ -191,7 +201,7 @@ export function Content() {
 					Something went wrong
 				</Callout>
 			</Cell>
-			<Cell name='Banner (not converted)' throws>
+			<Cell name='Banner'>
 				<Banner title='Banner title'>Banner body</Banner>
 			</Cell>
 			<Cell name='Chip' presses={chip}>

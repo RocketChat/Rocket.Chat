@@ -1,10 +1,10 @@
 import { mock } from './chatConfig';
-import { mockMessages, mockRooms } from './mockData';
+import { mockAvatar, mockMessages, mockRooms } from './mockData';
 import type { Session } from './session';
 
 export type RoomType = 'c' | 'p' | 'd' | 'l';
 
-export type RoomItem = { rid: string; t: RoomType; title: string; unread: number; sortKey: string };
+export type RoomItem = { rid: string; t: RoomType; name: string; title: string; unread: number; sortKey: string };
 
 export type ChatMessage = { _id: string; rid: string; msg: string; ts: string; u: { _id: string; username?: string; name?: string } };
 
@@ -20,12 +20,20 @@ export async function listRooms({ sdk }: Session): Promise<RoomItem[]> {
 		.map((s) => ({
 			rid: s.rid,
 			t: s.t,
+			name: s.name,
 			title: s.fname || s.name,
 			unread: s.unread,
 			sortKey: String(s.lr ?? s._updatedAt),
 		}))
 		.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
 }
+
+// A direct room shows the avatar of the other user, whose username is the subscription name; any other room has its own
+export const roomAvatarUrl = ({ serverUrl }: Session, room: RoomItem) =>
+	mock ? mockAvatar(room.name) : room.t === 'd' ? `${serverUrl}/avatar/${encodeURIComponent(room.name)}` : `${serverUrl}/avatar/room/${room.rid}`;
+
+export const userAvatarUrl = ({ serverUrl }: Session, username: string) =>
+	mock ? mockAvatar(username) : `${serverUrl}/avatar/${encodeURIComponent(username)}`;
 
 const historyEndpoint = { c: '/v1/channels.history', p: '/v1/groups.history', d: '/v1/im.history' } as const;
 
