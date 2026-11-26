@@ -154,9 +154,10 @@ The dialback secret is generated at start and never persisted
 - A cap on inbound connections, overall or per peer address, and closing authenticated
   inbound streams that sit idle: only the authentication deadline (R17) bounds them today.
   Part of [scale-and-availability](../intents/scale-and-availability.md).
-- A cap on dialback verifications running at once, per inbound stream, per peer address or
-  overall: each `<db:result/>` starts its own (R5). Inbound streams hold no unanswered
-  elements, so R19 has no inbound counterpart. Part of the same intent.
+- A cap on dialback verifications per inbound stream or per peer address: only the overall
+  cap (R20) bounds them, so one peer can take every slot and delay other peers' dialback.
+  Inbound streams hold no unanswered elements, so R19 has no inbound counterpart. Part of
+  the same intent.
 
 ## Known defects
 
@@ -178,17 +179,6 @@ although their send resolved (R18). Where: `S2SManager.stopAll` calls `destroy()
 sessions. Test: `tests/integration/s2s.spec.ts`, "delivers every stanza already sent when
 the server stops"; the end-to-end harness cannot stop the service between a send and its
 delivery, so this one is an integration test.
-
-### D4 A peer can exhaust memory by starting dialback verifications without limit
-
-Each `<db:result/>` starts its own verification, over its own outbound connection to the
-claimed domain, and nothing bounds how many run at once (R20). A peer sends many on one
-inbound stream and has the claimed domain flood each verification stream with negotiation
-elements, up to the R19 limit each, and the process runs out of heap. No account is needed,
-only a domain the allow list accepts. Where: `S2SManager.requestDialbackVerification`. Test:
-`tests/integration/inbound-addressing.spec.ts`, "answers a request past the limit with the
-error verdict without connecting"; ejabberd cannot be made to send that many, so this one is
-an integration test.
 
 ## Open questions
 

@@ -500,8 +500,7 @@ describe('Dialback verifications running at once (s2s-connectivity R20)', () => 
 		silentServer.close();
 	});
 
-	// Known defect: ../../docs/specs/s2s-connectivity.md#d4-a-peer-can-exhaust-memory-by-starting-dialback-verifications-without-limit
-	it.skip('answers a request past the limit with the error verdict without connecting, and starts new ones once a slot frees (D4)', async () => {
+	it('answers a request past the limit with the error verdict without connecting, and starts new ones once a slot frees', async () => {
 		const { peer } = await RawPeer.open(ports.get('b.localhost') as number, 'evil.localhost', 'b.localhost');
 		peers.push(peer);
 		peer.write(dbResult.repeat(LIMIT + 1));

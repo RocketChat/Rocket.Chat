@@ -33,6 +33,7 @@ export const XMPP_SERVER_DEFAULTS = {
 	idleTimeoutMs: 10 * 60_000,
 	inboundAuthTimeoutMs: 60_000,
 	outboundQueueLimit: 256,
+	maxConcurrentDialbackVerifications: 64,
 } as const;
 
 /** Inbound: advertise STARTTLS as required. Outbound: abort if the peer lacks STARTTLS. */
@@ -63,6 +64,8 @@ export type XMPPServerConfig = TlsRequirement & {
 	inboundAuthTimeoutMs?: number;
 	/** Max stanzas queued per remote domain while connecting. */
 	outboundQueueLimit?: number;
+	/** Dialback verifications running at once across the server; a request past it gets the error verdict. */
+	maxConcurrentDialbackVerifications?: number;
 	delegates?: MucDelegates;
 	logger?: Logger;
 };
@@ -105,6 +108,8 @@ export function resolveConfig(config: XMPPServerConfig): ResolvedXMPPServerConfi
 		idleTimeoutMs: config.idleTimeoutMs ?? XMPP_SERVER_DEFAULTS.idleTimeoutMs,
 		inboundAuthTimeoutMs: config.inboundAuthTimeoutMs ?? XMPP_SERVER_DEFAULTS.inboundAuthTimeoutMs,
 		outboundQueueLimit: config.outboundQueueLimit ?? XMPP_SERVER_DEFAULTS.outboundQueueLimit,
+		maxConcurrentDialbackVerifications:
+			config.maxConcurrentDialbackVerifications ?? XMPP_SERVER_DEFAULTS.maxConcurrentDialbackVerifications,
 		delegates: config.delegates ?? {},
 		logger: config.logger ?? pino({ name: 'xmpp-server' }),
 	};
