@@ -15,7 +15,7 @@ async function SlackBridgeImport({ command, message, userId }: SlashCommandCallb
 	const room = await Rooms.findOneById(message.rid);
 	const user = await Users.findOneById(userId);
 	if (!room || !user) {
-		return;
+		throw new Error('slackbridge-import: room or user not found');
 	}
 	const channel = room.name;
 

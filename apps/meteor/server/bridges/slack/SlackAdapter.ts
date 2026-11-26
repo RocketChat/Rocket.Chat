@@ -1026,7 +1026,7 @@ export default class SlackAdapter {
 		}
 		const file = slackMessage.files?.[0];
 
-		if (file?.url_private_download !== undefined && file.permalink) {
+		if (file?.url_private_download !== undefined) {
 			const rocketChannel = await this.rocket.getChannel(slackMessage);
 			const rocketUser = await this.rocket.getUser(slackMessage.user);
 			if (!rocketChannel) {
@@ -1039,7 +1039,7 @@ export default class SlackAdapter {
 			// If the text includes the file link, simply use the same text for the rocket message.
 			// If the link was not included, then use it instead of the message.
 
-			if (!slackMessage.text || slackMessage.text.indexOf(file.permalink) < 0) {
+			if (file.permalink && (!slackMessage.text || slackMessage.text.indexOf(file.permalink) < 0)) {
 				slackMessage.text = file.permalink;
 			}
 
@@ -1202,11 +1202,13 @@ export default class SlackAdapter {
 			const inviter = slackMessage.inviter
 				? (await this.rocket.findUser(slackMessage.inviter)) || (await this.rocket.addUser(slackMessage.inviter))
 				: null;
-			if (isImporting && inviter) {
-				await Message.saveSystemMessage('au', rocketChannel._id, rocketUser.username ?? '', inviter, {
-					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-					imported: 'slackbridge',
-				});
+			if (isImporting) {
+				if (inviter) {
+					await Message.saveSystemMessage('au', rocketChannel._id, rocketUser.username ?? '', inviter, {
+						ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+						imported: 'slackbridge',
+					});
+				}
 			} else {
 				await addUserToRoom(rocketChannel._id, rocketUser, inviter ?? undefined);
 			}
