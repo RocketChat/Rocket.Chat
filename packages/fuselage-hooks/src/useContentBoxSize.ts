@@ -30,6 +30,10 @@ export const useContentBoxSize = (
 			return;
 		}
 
+		if (typeof ResizeObserver === 'undefined') {
+			return;
+		}
+
 		const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
 			if (entries.length === 0) {
 				return;
