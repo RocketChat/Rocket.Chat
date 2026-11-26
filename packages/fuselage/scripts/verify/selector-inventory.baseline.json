@@ -55,8 +55,6 @@
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button--primary {",
 		"packages/fuselage/src/components/ButtonGroup/ButtonGroup.styles.scss: > .rcx-button--square {",
-		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button {",
-		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button.rcx-split-button__trigger {",
 		"packages/fuselage/src/styles/mixins/button.scss: .rcx-button--content {",
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {",
 		"packages/ui-conference/src/preflight/PreflightDeviceMenuButton.tsx: & > .rcx-button--content {",
@@ -105,20 +103,17 @@
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
 	],
+	"rcx-message-divider": [
+		"packages/fuselage/src/components/Divider/Divider.styles.scss: .rcx-message-divider.rcx-divider--labelled {"
+	],
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
-	],
-	"rcx-check-box": [
-		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
 	],
 	"rcx-option": [
 		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
 	],
 	"rcx-input-box": [
 		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
-	],
-	"rcx-divider": [
-		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"

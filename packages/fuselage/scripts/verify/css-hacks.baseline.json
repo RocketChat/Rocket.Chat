@@ -1,7 +1,7 @@
 {
 	"AudioPlayer/AudioPlayer.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 7,
+		"nested": 6,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -99,9 +99,9 @@
 		"displayContents": 0
 	},
 	"CheckBox/CheckBox.styles.scss": {
-		"rules": 8,
-		"nested": 7,
-		"combinators": 2,
+		"rules": 9,
+		"nested": 8,
+		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -135,12 +135,12 @@
 		"displayContents": 0
 	},
 	"Divider/Divider.styles.scss": {
-		"rules": 1,
+		"rules": 2,
 		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Dropdown/Dropdown.styles.css": {
@@ -188,15 +188,6 @@
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
-	"Icon/Icon.styles.css": {
-		"rules": 1,
-		"nested": 0,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"InputBox/InputBox.styles.scss": {
 		"rules": 36,
 		"nested": 26,
@@ -216,11 +207,11 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 22,
+		"rules": 25,
 		"nested": 7,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -297,9 +288,9 @@
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 23,
-		"nested": 21,
-		"combinators": 11,
+		"rules": 21,
+		"nested": 19,
+		"combinators": 9,
 		"important": 0,
 		"specificityBumps": 4,
 		"negativeMargins": 0,
@@ -329,7 +320,16 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"NavBar/NavBar.styles.scss": {
+		"rules": 1,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Option/Option.styles.scss": {
@@ -418,7 +418,7 @@
 		"nested": 3,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 2,
+		"specificityBumps": 1,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
