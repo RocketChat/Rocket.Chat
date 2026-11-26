@@ -1361,11 +1361,11 @@ export default class SlackAdapter {
 			if (channel?.purpose?.value) {
 				if (topic_last_set) {
 					if (topic_last_set < channel.purpose.last_set) {
-						topic = channel.purpose.topic;
+						topic = channel.purpose.value;
 						topic_creator = channel.purpose.creator;
 					}
 				} else {
-					topic = channel.purpose.topic;
+					topic = channel.purpose.value;
 					topic_creator = channel.purpose.creator;
 				}
 			}
