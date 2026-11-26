@@ -55,8 +55,6 @@ export const useSwipeToDismiss = (onDismiss: () => void): RefCallback<HTMLElemen
 				follow(0);
 			};
 
-			// Without it the browser takes a sideways drag for its own gestures and cancels the pointer.
-			node.style.touchAction = 'pan-y';
 			node.addEventListener('pointerdown', handlePointerDown);
 			node.addEventListener('pointermove', handlePointerMove);
 			node.addEventListener('pointerup', handlePointerUp);
