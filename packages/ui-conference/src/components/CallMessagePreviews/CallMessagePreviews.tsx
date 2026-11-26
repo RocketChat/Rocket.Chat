@@ -1,40 +1,56 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { getUserDisplayName } from '@rocket.chat/core-typings';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { Ref } from 'react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallMessagePreview from './CallMessagePreview.js';
-import CallMessagePreviewCompact from './CallMessagePreviewCompact.js';
 import CallMessagePreviewList from './CallMessagePreviewList.js';
-import { useConferenceViewer } from '../../context/ConferenceContext.js';
+import CallMessagePreviewTimed from './CallMessagePreviewTimed.js';
+import { useConferenceRoom, useConferenceViewer } from '../../context/ConferenceContext.js';
 import type { ConferenceNewMessage } from '../../context/definitions.js';
+import { useHeld } from '../../hooks/useHeld.js';
+import { MESSAGE_PREVIEWS_ANNOUNCED, MESSAGE_PREVIEWS_SHOWN, MESSAGE_PREVIEWS_SHOWN_COMPACT } from '../../lib/constants.js';
 
 export type CallMessagePreviewsProps = {
-	messages: ConferenceNewMessage[];
 	compact?: boolean;
 	onOpen: (mid: string) => void;
-	onDismiss: (mid: string) => void;
-	/** Where the keyboard's focus goes when the last preview it was on is dismissed. */
-	onFocusLeave?: () => void;
-	ref?: Ref<HTMLUListElement>;
+	/** Where the keyboard's focus goes when the last preview it was on leaves. */
+	onFocusLeave: () => void;
 };
 
-/** The chat messages previewed over the call, each announced once as it arrives. */
-const CallMessagePreviews = ({ messages, compact, onOpen, onDismiss, onFocusLeave, ref }: CallMessagePreviewsProps) => {
+/**
+ * The call chat's new messages, previewed over the call and announced as they arrive. While the previews are
+ * held nothing leaves and nothing is replaced; newer messages wait for them to be let go.
+ */
+const CallMessagePreviews = ({ compact = false, onOpen, onFocusLeave }: CallMessagePreviewsProps) => {
 	const { t } = useTranslation();
+	const { onNewMessage } = useConferenceRoom();
 	const { useRealName } = useConferenceViewer();
+	const limit = compact ? MESSAGE_PREVIEWS_SHOWN_COMPACT : MESSAGE_PREVIEWS_SHOWN;
+
+	const [shown, setShown] = useState<ConferenceNewMessage[]>([]);
+	const [announced, setAnnounced] = useState<ConferenceNewMessage[]>([]);
+	const [held, holdHandlers] = useHeld<HTMLUListElement>({ onRelease: () => setShown((shown) => shown.slice(-limit)) });
+
 	const items = useRef(new Map<string, HTMLLIElement>());
 	const openButtons = useRef(new Map<string, HTMLButtonElement>());
-	const Preview = compact ? CallMessagePreviewCompact : CallMessagePreview;
 
-	const previews = messages.map(({ _id, username, name, text }) => ({
+	const handleNewMessage = useStableCallback((message: ConferenceNewMessage) => {
+		setAnnounced((announced) => [...announced, message].slice(-MESSAGE_PREVIEWS_ANNOUNCED));
+		setShown((shown) => (held ? [...shown, message] : [...shown, message].slice(-limit)));
+	});
+
+	useEffect(() => onNewMessage(handleNewMessage), [onNewMessage, handleNewMessage]);
+
+	const toPreview = ({ _id, username, name, text }: ConferenceNewMessage) => ({
 		_id,
 		username,
 		name: getUserDisplayName(name, username, useRealName) ?? username,
 		text: text ?? t('Encrypted_message_preview_unavailable'),
-	}));
+	});
+
+	const previews = shown.slice(0, limit).map(toPreview);
 
 	const handOffFocus = (mid: string) => {
 		if (!items.current.get(mid)?.contains(document.activeElement)) {
@@ -48,8 +64,13 @@ const CallMessagePreviews = ({ messages, compact, onOpen, onDismiss, onFocusLeav
 		if (target) {
 			target.focus();
 		} else {
-			onFocusLeave?.();
+			onFocusLeave();
 		}
+	};
+
+	const remove = (mid: string) => {
+		handOffFocus(mid);
+		setShown((shown) => shown.filter(({ _id }) => _id !== mid));
 	};
 
 	const register =
@@ -63,34 +84,31 @@ const CallMessagePreviews = ({ messages, compact, onOpen, onDismiss, onFocusLeav
 
 	return (
 		<>
-			{/* Apart from the list, and always mounted: a live region wrapping the buttons reads them out with every
-			    message, and one that arrives already filled is not announced. */}
+			{/* Apart from the list: a live region wrapping the buttons reads them out with every message. */}
 			<VisuallyHidden role='log'>
-				{previews.map(({ _id, name, text }) => (
+				{announced.map(toPreview).map(({ _id, name, text }) => (
 					<p key={_id}>{t('Chat_message_from_name', { name, message: text })}</p>
 				))}
 			</VisuallyHidden>
-			{previews.length > 0 && (
-				<CallMessagePreviewList ref={ref} aria-label={t('New_messages')}>
-					{previews.map(({ _id, username, name, text }) => (
-						<Preview
-							key={_id}
-							ref={register(items.current, _id)}
-							openButtonRef={register(openButtons.current, _id)}
-							avatar={<UserAvatar username={username} size={compact ? 'x28' : 'x36'} />}
-							name={name}
-							text={text}
-							openLabel={t('Chat_message_from_name', { name, message: text })}
-							dismissLabel={t('Dismiss_message_from_name', { name })}
-							onOpen={() => onOpen(_id)}
-							onDismiss={() => {
-								handOffFocus(_id);
-								onDismiss(_id);
-							}}
-						/>
-					))}
-				</CallMessagePreviewList>
-			)}
+			<CallMessagePreviewList aria-label={t('New_messages')} {...holdHandlers}>
+				{previews.map(({ _id, username, name, text }) => (
+					<CallMessagePreviewTimed
+						key={_id}
+						compact={compact}
+						held={held}
+						ref={register(items.current, _id)}
+						openButtonRef={register(openButtons.current, _id)}
+						avatar={<UserAvatar username={username} size={compact ? 'x28' : 'x36'} />}
+						name={name}
+						text={text}
+						openLabel={t('Chat_message_from_name', { name, message: text })}
+						dismissLabel={t('Dismiss_message_from_name', { name })}
+						onOpen={() => onOpen(_id)}
+						onDismiss={() => remove(_id)}
+						onExpire={() => remove(_id)}
+					/>
+				))}
+			</CallMessagePreviewList>
 		</>
 	);
 };

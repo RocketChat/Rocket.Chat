@@ -1,44 +1,43 @@
-import type { RefCallback } from 'react';
-import { useCallback, useState } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { FocusEvent } from 'react';
+import { useState } from 'react';
 
-/** Whether someone is busy with an element: the pointer is over it, or focus is inside it. */
-export const useHeld = (): [ref: RefCallback<HTMLElement>, held: boolean] => {
+type HeldHandlers<T extends HTMLElement> = {
+	onPointerEnter: () => void;
+	onPointerLeave: () => void;
+	onFocus: () => void;
+	onBlur: (event: FocusEvent<T>) => void;
+};
+
+/**
+ * Whether someone is busy with an element: the pointer is over it, or focus is inside it. `onRelease` is called
+ * when they let go of it.
+ */
+export const useHeld = <T extends HTMLElement>({ onRelease }: { onRelease: () => void }): [held: boolean, handlers: HeldHandlers<T>] => {
 	const [hovered, setHovered] = useState(false);
 	const [focused, setFocused] = useState(false);
+	const release = useStableCallback(onRelease);
 
-	const ref = useCallback((node: HTMLElement) => {
-		const handlePointerEnter = () => setHovered(true);
-		const handlePointerLeave = () => setHovered(false);
-		const handleFocusIn = () => setFocused(true);
-		const handleFocusOut = (event: FocusEvent) => {
-			if (!node.contains(event.relatedTarget as Node | null)) {
-				setFocused(false);
-			}
-		};
-
-		// Removing the focused element takes focus with it and fires no event to say so.
-		const removals = new MutationObserver(() => {
-			if (!node.contains(node.ownerDocument.activeElement)) {
-				setFocused(false);
-			}
-		});
-		removals.observe(node, { childList: true, subtree: true });
-
-		node.addEventListener('pointerenter', handlePointerEnter);
-		node.addEventListener('pointerleave', handlePointerLeave);
-		node.addEventListener('focusin', handleFocusIn);
-		node.addEventListener('focusout', handleFocusOut);
-
-		return () => {
-			removals.disconnect();
-			node.removeEventListener('pointerenter', handlePointerEnter);
-			node.removeEventListener('pointerleave', handlePointerLeave);
-			node.removeEventListener('focusin', handleFocusIn);
-			node.removeEventListener('focusout', handleFocusOut);
+	const handlers: HeldHandlers<T> = {
+		onPointerEnter: () => setHovered(true),
+		onPointerLeave: () => {
 			setHovered(false);
-			setFocused(false);
-		};
-	}, []);
+			if (!focused) {
+				release();
+			}
+		},
+		onFocus: () => setFocused(true),
+		onBlur: (event) => {
+			if (event.currentTarget.contains(event.relatedTarget)) {
+				return;
+			}
 
-	return [ref, hovered || focused];
+			setFocused(false);
+			if (!hovered) {
+				release();
+			}
+		},
+	};
+
+	return [hovered || focused, handlers];
 };

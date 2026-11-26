@@ -25,9 +25,7 @@ import { useCallSounds } from '../context/CallSoundsContext.js';
 import { ChatPanelContext } from '../context/ChatPanelContext.js';
 import type { ConferencePanel } from '../context/ConferenceContext.js';
 import { useConference } from '../context/ConferenceContext.js';
-import { useCallMessagePreviews } from '../hooks/useCallMessagePreviews.js';
 import { useRinging } from '../hooks/useRinging.js';
-import { MESSAGE_PREVIEWS_SHOWN, MESSAGE_PREVIEWS_SHOWN_COMPACT } from '../lib/constants.js';
 
 /**
  * The conference window: the call, the bar above it, and the panels beside it.
@@ -68,11 +66,7 @@ const ConferenceWindow = () => {
 	// wide — past `md` — and far too short to dock a panel beside the call.
 	const sheetPanel = !breakpoints.includes('md') || tooShortToSplit;
 
-	// Only once in the call, and not while the chat is being read or a sheet has risen over the corner they show in.
-	const messagePreviews = useCallMessagePreviews(session.joined ? room.onNewMessage : undefined, {
-		paused: chatVisible || (sheetPanel && !!activePanel),
-		limit: sheetPanel ? MESSAGE_PREVIEWS_SHOWN_COMPACT : MESSAGE_PREVIEWS_SHOWN,
-	});
+	const showMessagePreviews = session.joined && !chatVisible && !(sheetPanel && activePanel);
 
 	// Where the keyboard's focus is left when the preview it was on goes: beside the chat those previews came from.
 	const chatButtonRef = useRef<HTMLButtonElement>(null);
@@ -135,18 +129,17 @@ const ConferenceWindow = () => {
 						<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
 							{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
 							<CallStageNotices>
-								<CallMessagePreviews
-									ref={messagePreviews.holdRef}
-									messages={messagePreviews.messages}
-									compact={sheetPanel}
-									onOpen={(mid) => {
-										focusChatButton();
-										setActivePanel('chat');
-										room.jumpToMessage(mid);
-									}}
-									onDismiss={messagePreviews.dismiss}
-									onFocusLeave={focusChatButton}
-								/>
+								{showMessagePreviews && (
+									<CallMessagePreviews
+										compact={sheetPanel}
+										onOpen={(mid) => {
+											setActivePanel('chat');
+											room.jumpToMessage(mid);
+											focusChatButton();
+										}}
+										onFocusLeave={focusChatButton}
+									/>
+								)}
 							</CallStageNotices>
 						</Box>
 

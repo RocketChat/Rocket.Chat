@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FocusEventHandler, PointerEventHandler, ReactNode, Ref } from 'react';
+import type { FocusEventHandler, PointerEventHandler, ReactNode } from 'react';
 
 export type CallMessagePreviewListProps = {
 	'aria-label': string;
@@ -8,7 +8,6 @@ export type CallMessagePreviewListProps = {
 	'onPointerLeave'?: PointerEventHandler<HTMLUListElement>;
 	'onFocus'?: FocusEventHandler<HTMLUListElement>;
 	'onBlur'?: FocusEventHandler<HTMLUListElement>;
-	'ref'?: Ref<HTMLUListElement>;
 };
 
 /** The chat messages previewed over the call, newest last. */

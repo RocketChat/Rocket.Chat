@@ -3,48 +3,37 @@ import { act, render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
 import CallMessagePreviews from './CallMessagePreviews.js';
+import { ConferenceContext } from '../../context/ConferenceContext.js';
 import type { ConferenceNewMessage } from '../../context/definitions.js';
-import { useCallMessagePreviews } from '../../hooks/useCallMessagePreviews.js';
-import { MESSAGE_PREVIEWS_SHOWN, MESSAGE_PREVIEW_VISIBLE_MS } from '../../lib/constants.js';
+import { buildConferenceContext } from '../../fixtures/storyFixtures.js';
+import { MESSAGE_PREVIEW_VISIBLE_MS } from '../../lib/constants.js';
 
 const ada = { username: 'ada', name: 'Ada Lovelace' };
 
 const message = (_id: string, text: string | undefined = `Message ${_id}`): ConferenceNewMessage => ({ _id, ...ada, text });
 
-type PreviewsProps = {
-	subscribe: (listener: (message: ConferenceNewMessage) => void) => () => void;
-	paused: boolean;
-	onOpen: (mid: string) => void;
-	onFocusLeave: () => void;
-};
-
-// The hook and the list as the conference window puts them together.
-const Previews = ({ subscribe, paused, onOpen, onFocusLeave }: PreviewsProps) => {
-	const { messages, dismiss, holdRef } = useCallMessagePreviews(subscribe, { paused, limit: MESSAGE_PREVIEWS_SHOWN });
-
-	return <CallMessagePreviews ref={holdRef} messages={messages} onOpen={onOpen} onDismiss={dismiss} onFocusLeave={onFocusLeave} />;
-};
-
-const renderPreviews = ({ paused = false } = {}) => {
+const renderPreviews = () => {
 	let listener: ((message: ConferenceNewMessage) => void) | undefined;
-	const unsubscribe = jest.fn();
-	const subscribe = jest.fn((next: (message: ConferenceNewMessage) => void) => {
+	const off = jest.fn();
+	const onNewMessage = jest.fn((next: (message: ConferenceNewMessage) => void) => {
 		listener = next;
-		return unsubscribe;
+		return off;
 	});
 	const onOpen = jest.fn();
 	const onFocusLeave = jest.fn();
 
-	const view = render(<Previews subscribe={subscribe} paused={paused} onOpen={onOpen} onFocusLeave={onFocusLeave} />, {
-		wrapper: mockAppRoot().withJohnDoe().withTranslations('en', 'core', { Chat_message_from_name: '{{name}}: {{message}}' }).build(),
-	});
+	const view = render(
+		<ConferenceContext.Provider value={buildConferenceContext({ room: { onNewMessage } })}>
+			<CallMessagePreviews onOpen={onOpen} onFocusLeave={onFocusLeave} />
+		</ConferenceContext.Provider>,
+		{
+			wrapper: mockAppRoot().withJohnDoe().withTranslations('en', 'core', { Chat_message_from_name: '{{name}}: {{message}}' }).build(),
+		},
+	);
 
-	const send = (...messages: ConferenceNewMessage[]) => act(() => messages.forEach((incoming) => listener?.(incoming)));
+	const send = (...messages: ConferenceNewMessage[]) => act(() => messages.forEach((newMessage) => listener?.(newMessage)));
 
-	const rerender = (props: { paused: boolean }) =>
-		view.rerender(<Previews subscribe={subscribe} paused={props.paused} onOpen={onOpen} onFocusLeave={onFocusLeave} />);
-
-	return { ...view, rerender, send, onOpen, onFocusLeave, unsubscribe };
+	return { ...view, send, onOpen, onFocusLeave, off };
 };
 
 const previews = () => screen.queryAllByRole('button', { name: /^ada: / });
@@ -59,7 +48,7 @@ afterEach(() => {
 	jest.useRealTimers();
 });
 
-it('previews each incoming message with who sent it and what it says', () => {
+it('previews each new message with who sent it and what it says', () => {
 	const { send } = renderPreviews();
 
 	send(message('1', 'Can everyone see my screen?'));
@@ -70,7 +59,7 @@ it('previews each incoming message with who sent it and what it says', () => {
 });
 
 // Announced from outside the list: a live region around the buttons reads them out with every message.
-it('announces each incoming message without its buttons', () => {
+it('announces each new message without its buttons', () => {
 	const { send } = renderPreviews();
 
 	send(message('1', 'Can everyone see my screen?'));
@@ -94,24 +83,6 @@ it('keeps only the most recent previews', () => {
 	send(message('1'), message('2'), message('3'), message('4'));
 
 	expect(previews().map((preview) => preview.textContent)).toEqual(['adaMessage 2', 'adaMessage 3', 'adaMessage 4']);
-});
-
-it('previews nothing while paused', () => {
-	const { send } = renderPreviews({ paused: true });
-
-	send(message('1'));
-
-	expect(previews()).toHaveLength(0);
-});
-
-it('clears the previews when paused', () => {
-	const { send, rerender } = renderPreviews();
-
-	send(message('1'));
-	rerender({ paused: true });
-	rerender({ paused: false });
-
-	expect(previews()).toHaveLength(0);
 });
 
 it('takes a preview down after a while', () => {
@@ -218,9 +189,40 @@ it('opens the message it previews', async () => {
 });
 
 it('stops listening when it goes away', () => {
-	const { unmount, unsubscribe } = renderPreviews();
+	const { unmount, off } = renderPreviews();
 
 	unmount();
 
-	expect(unsubscribe).toHaveBeenCalled();
+	expect(off).toHaveBeenCalled();
+});
+
+// Held previews hold back the newer ones, which would otherwise never reach a screen reader.
+it('announces a message that is not shown while the previews are held', async () => {
+	const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+	const { send } = renderPreviews();
+
+	send(message('1'), message('2'), message('3'));
+	await user.hover(previews()[0]);
+	send(message('4'));
+
+	expect(previews().map((preview) => preview.textContent)).not.toContain('adaMessage 4');
+	expect(screen.getByRole('log')).toHaveTextContent('ada: Message 4');
+});
+
+it('pauses the time a preview has left while the previews are held', async () => {
+	const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+	const { send } = renderPreviews();
+
+	send(message('1'));
+	act(() => jest.advanceTimersByTime(MESSAGE_PREVIEW_VISIBLE_MS - 1));
+	await user.hover(previews()[0]);
+	act(() => jest.advanceTimersByTime(MESSAGE_PREVIEW_VISIBLE_MS * 2));
+	await user.unhover(previews()[0]);
+	act(() => jest.advanceTimersByTime(MESSAGE_PREVIEW_VISIBLE_MS - 1));
+
+	expect(previews()).toHaveLength(1);
+
+	act(() => jest.advanceTimersByTime(1));
+
+	expect(previews()).toHaveLength(0);
 });
