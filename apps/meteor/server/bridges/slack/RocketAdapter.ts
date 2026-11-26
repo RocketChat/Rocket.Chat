@@ -351,7 +351,7 @@ export default class RocketAdapter {
 		let addedUser;
 		for await (const slack of this.slackAdapters) {
 			if (addedUser) {
-				return;
+				break;
 			}
 
 			const user = await slack.slackAPI.getUser(slackUserID);
