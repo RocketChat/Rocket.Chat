@@ -39,10 +39,10 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 		Site_Name: settings.get<string>('Site_Name'),
 		Site_URL: settings.get<string>('Site_Url'),
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
-		...(data.name
+		...(typeof data.name === 'string' && data.name
 			? {
-					fname: strLeft(String(data.name), ' '),
-					lname: strRightBack(String(data.name), ' '),
+					fname: strLeft(data.name, ' '),
+					lname: strRightBack(data.name, ' '),
 				}
 			: {}),
 		...data,
@@ -61,8 +61,9 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 		Site_Name: siteName ? escapeHTML(siteName) : undefined,
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
 		...Object.entries(data).reduce<{ [key: string]: string }>((ret, [key, value]) => {
-			if (value !== undefined && value !== null) {
-				ret[key] = nonEscapeKeys.includes(key) ? String(value) : escapeHTML(String(value));
+			if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+				const text = String(value);
+				ret[key] = nonEscapeKeys.includes(key) ? text : escapeHTML(text);
 			}
 			return ret;
 		}, {}),

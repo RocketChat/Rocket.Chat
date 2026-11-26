@@ -16,7 +16,7 @@ import {
 	Stack,
 } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
@@ -38,21 +38,17 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 
 	const appId = useRouteParameter('id');
 
-	const {
-		control,
-		watch,
-		getValues,
-		formState: { isValid },
-	} = useForm<FormDataType>({
+	const { control, getValues } = useForm<FormDataType>({
 		defaultValues: {
 			type: 'json',
 			count: 'max',
 			customExportAmount: 100,
 		},
 	});
+	const { isValid } = useFormState({ control });
 
-	const type = watch('type');
-	const count = watch('count');
+	const type = useWatch({ control, name: 'type' });
+	const count = useWatch({ control, name: 'count' });
 
 	const getFileUrl = ({
 		severity,

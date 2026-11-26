@@ -1,8 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
+import * as apps from '@rocket.chat/apps';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { replaceVariables } from './replaceVariables';
@@ -39,11 +39,14 @@ const sendMail = sinon.stub();
 const triggerEvent = sinon.stub();
 const incrementValueById = sinon.stub();
 
-const Mailer = proxyquire.noCallThru().load('./api', {
-	'../../../settings': { settings: settingsMock },
-	'../../i18n': { i18n: { t: (key: string) => `t:${key}` } },
-	'./transport': { sendMail },
-	'@rocket.chat/apps': { 'Apps': { self: { triggerEvent } }, '@noCallThru': false },
+let Mailer: any;
+
+before(async () => {
+	mock.module('../../../settings', { exports: { settings: settingsMock } });
+	mock.module('../../i18n', { exports: { i18n: { t: (key: string) => `t:${key}` } } });
+	mock.module('./transport', { exports: { sendMail } });
+	mock.module('@rocket.chat/apps', { exports: { ...apps, Apps: { self: { triggerEvent } } } });
+	Mailer = await import('./api');
 });
 
 const deliveredEmail = async () => {

@@ -1,8 +1,7 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 import speakeasy from 'speakeasy';
 
@@ -12,9 +11,12 @@ const sandbox = sinon.createSandbox();
 
 const settings = { get: (key: string) => key === 'Accounts_TwoFactorAuthentication_By_TOTP_Enabled' };
 
-const { TOTP } = p.noCallThru().load('../lib/totp.ts', { '../../../settings': { settings } });
-const { TOTPCheck } = p.noCallThru().load('./TOTPCheck.ts', { '../../../settings': { settings }, '../lib/totp': { TOTP } });
-const { TOTPCheckForOAuth } = p.noCallThru().load('./TOTPCheckForOAuth.ts', { './TOTPCheck': { TOTPCheck } });
+let TOTPCheckForOAuth: any;
+
+before(async () => {
+	mock.module('../../../settings', { exports: { settings } });
+	({ TOTPCheckForOAuth } = await import('./TOTPCheckForOAuth'));
+});
 
 const TwoFactorChallenges = {
 	findOneByPendingChallengeId: sandbox.stub(),
@@ -26,10 +28,11 @@ const user = createFakeUser({ services: { totp: { enabled: true, secret, hashedB
 const currentCode = () => speakeasy.totp({ secret, encoding: 'base32' });
 
 describe('TOTPCheckForOAuth.verifyEmailTwoFactorChallenge', () => {
-	const check = new TOTPCheckForOAuth();
+	let check: any;
 	let clock: sinon.SinonFakeTimers;
 
 	before(() => {
+		check = new TOTPCheckForOAuth();
 		clock = sinon.useFakeTimers({ now: new Date('2026-11-04T10:00:10.000Z'), toFake: ['Date'] });
 		mockModel('TwoFactorChallenges', TwoFactorChallenges);
 	});

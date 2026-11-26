@@ -7,7 +7,7 @@ import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { forwardRef, memo, useMemo, useState } from 'react';
+import { forwardRef, useMemo, useState } from 'react';
 
 type LabelType = { name: string; avatarETag?: string; type: IRoom['t']; encrypted?: IRoom['encrypted'] };
 
@@ -100,4 +100,4 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 	);
 });
 
-export default memo(RoomAutoComplete);
+export default RoomAutoComplete;

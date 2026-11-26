@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
+import * as coreServices from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('Message Broadcast Tests', () => {
@@ -46,6 +46,16 @@ describe('Message Broadcast Tests', () => {
 		},
 	});
 
+	const loadNotifyListener = (coreServicesExports: Record<string, unknown>) => {
+		mock.module('@rocket.chat/core-services', { exports: coreServicesExports });
+		mock.module('mem', { exports: { default: memStub } });
+		delete require.cache[require.resolve('./notifyListener')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const notifyListener = require('./notifyListener');
+		mock.restoreAll();
+		return notifyListener;
+	};
+
 	beforeEach(() => {
 		getSettingValueByIdStub = sinon.stub();
 		usersFindOneStub = sinon.stub();
@@ -59,10 +69,7 @@ describe('Message Broadcast Tests', () => {
 		mockModel('Users', models.Users);
 		mockModel('Settings', models.Settings);
 
-		const proxyMock = proxyquire.noPreserveCache().load('./notifyListener', {
-			'@rocket.chat/core-services': coreStubs(),
-			'mem': memStub,
-		});
+		const proxyMock = loadNotifyListener({ ...coreServices, ...coreStubs() });
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
@@ -276,10 +283,7 @@ describe('Message Broadcast Tests', () => {
 
 	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = () => {
-			const proxyMock = proxyquire.noCallThru().load('./notifyListener', {
-				'@rocket.chat/core-services': coreStubs(),
-				'mem': memStub,
-			});
+			const proxyMock = loadNotifyListener(coreStubs());
 			notifyOnMessageChange = proxyMock.notifyOnMessageChange;
 		};
 

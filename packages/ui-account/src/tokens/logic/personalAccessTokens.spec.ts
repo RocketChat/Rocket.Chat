@@ -1,4 +1,4 @@
-import { getTokensPage, isValidTokenName } from './personalAccessTokens';
+import { getTokensPage, isValidTokenName } from './personalAccessTokens.js';
 
 describe('isValidTokenName', () => {
 	it.each([

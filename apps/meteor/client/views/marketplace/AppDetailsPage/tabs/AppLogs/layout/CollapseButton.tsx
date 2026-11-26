@@ -9,17 +9,18 @@ export type CollapseButtonProps = {
 	onClick: () => void;
 };
 
+const clickable = css`
+	background: ${Palette.surface['surface-light']};
+
+	&:hover {
+		background: ${Palette.surface['surface-tint']};
+	}
+`;
+
 /**
  * The header of a collapsible panel entry: the button that expands or collapses the region it controls.
  */
 export const CollapseButton = ({ regionId, children, expanded, onClick }: CollapseButtonProps) => {
-	const clickable = css`
-		background: ${Palette.surface['surface-light']};
-
-		&:hover {
-			background: ${Palette.surface['surface-tint']};
-		}
-	`;
 	const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 	return (
 		<Box is='dt' style={style}>

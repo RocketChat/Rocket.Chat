@@ -1,15 +1,18 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const createTransport = sinon.stub();
 const SystemLogger = { info: sinon.stub(), warn: sinon.stub() };
 
-const { configureMailTransport, sendMail } = proxyquire.noCallThru().load('./transport', {
-	'nodemailer': { createTransport },
-	'../../logger/system': { SystemLogger },
+let configureMailTransport: any;
+let sendMail: any;
+
+before(async () => {
+	mock.module('nodemailer', { exports: { default: { createTransport } } });
+	mock.module('../../logger/system', { exports: { SystemLogger } });
+	({ configureMailTransport, sendMail } = await import('./transport'));
 });
 
 const fakeTransport = () => ({ sendMail: sinon.stub().resolves(), close: sinon.stub() });
@@ -140,7 +143,7 @@ describe('email transport', () => {
 		await expect(sendMail(mail)).to.be.rejectedWith('connection refused');
 	});
 
-	for (const testMode of ['true', 'api']) {
+	['true', 'api'].forEach((testMode) => {
 		it(`should log instead of sending when TEST_MODE is ${testMode}`, async () => {
 			const transport = fakeTransport();
 			createTransport.returns(transport);
@@ -152,5 +155,5 @@ describe('email transport', () => {
 			expect(transport.sendMail.called).to.be.false;
 			expect(SystemLogger.info.calledOnce).to.be.true;
 		});
-	}
+	});
 });

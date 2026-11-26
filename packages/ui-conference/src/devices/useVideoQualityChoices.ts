@@ -1,8 +1,8 @@
 import type { DeviceMenuChoices } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import { useVideoQualitySelection } from './VideoQualityContext';
-import { VIDEO_QUALITY_LABELS } from '../call/lib/mediaChoiceLabels';
+import { useVideoQualitySelection } from './VideoQualityContext.js';
+import { VIDEO_QUALITY_LABELS } from '../call/lib/mediaChoiceLabels.js';
 
 /**
  * The camera menu's resolution section. A ceiling rather than a promise, which is why the one in use says what is

@@ -13,7 +13,7 @@ export const useDownloadExportMutation = () => {
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const filterMessages = Messages.use((state) => state.filter);
+	const filterMessages = Messages.useStore((state) => state.filter);
 
 	return useMutation({
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {

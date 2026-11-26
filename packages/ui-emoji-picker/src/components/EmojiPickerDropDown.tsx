@@ -3,7 +3,7 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode, RefObject } from 'react';
 import { forwardRef } from 'react';
 
-import EmojiPickerDesktopDropdown from './EmojiPickerDesktopDropdown';
+import EmojiPickerDesktopDropdown from './EmojiPickerDesktopDropdown.js';
 
 type EmojiPickerDropdownProps<R> = {
 	children: ReactNode;

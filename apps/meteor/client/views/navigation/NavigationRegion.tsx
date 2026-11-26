@@ -8,6 +8,62 @@ import Sidebar from './sidebar';
 import SidePanel from './sidepanel';
 import { NAVIGATION_REGION_ID } from '../../lib/constants';
 
+const navMobileStyle = css`
+	position: absolute;
+	user-select: none;
+	transform: translate3d(-100%, 0, 0);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-user-drag: none;
+	touch-action: pan-y;
+	will-change: transform;
+
+	.rtl & {
+		transform: translate3d(200%, 0, 0);
+
+		&.opened {
+			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
+			transform: translate3d(0px, 0px, 0px);
+		}
+	}
+`;
+
+const navRegionStyle = css`
+	position: relative;
+	z-index: 2;
+	display: flex;
+	height: 100%;
+	user-select: none;
+	transition: transform 0.3s;
+
+	&.opened {
+		box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
+		transform: translate3d(0px, 0px, 0px);
+	}
+
+	.hidden-visibility {
+		visibility: hidden;
+	}
+`;
+
+const navBackdropStyle = css`
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	height: 100%;
+	user-select: none;
+	transition: opacity 0.3s;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	touch-action: pan-y;
+	-webkit-user-drag: none;
+
+	&.opened {
+		width: 100%;
+		background-color: rgb(0, 0, 0);
+		opacity: 0.8;
+	}
+`;
+
 const NavigationRegion = () => {
 	const {
 		isTablet,
@@ -15,62 +71,6 @@ const NavigationRegion = () => {
 		sidePanel: { displaySidePanel },
 	} = useLayout();
 	const { sidebar: sidebarSize } = useLayoutSizes();
-
-	const navMobileStyle = css`
-		position: absolute;
-		user-select: none;
-		transform: translate3d(-100%, 0, 0);
-		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-		-webkit-user-drag: none;
-		touch-action: pan-y;
-		will-change: transform;
-
-		.rtl & {
-			transform: translate3d(200%, 0, 0);
-
-			&.opened {
-				box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
-				transform: translate3d(0px, 0px, 0px);
-			}
-		}
-	`;
-
-	const navRegionStyle = css`
-		position: relative;
-		z-index: 2;
-		display: flex;
-		height: 100%;
-		user-select: none;
-		transition: transform 0.3s;
-
-		&.opened {
-			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
-			transform: translate3d(0px, 0px, 0px);
-		}
-
-		.hidden-visibility {
-			visibility: hidden;
-		}
-	`;
-
-	const navBackdropStyle = css`
-		position: absolute;
-		z-index: 1;
-		top: 0;
-		left: 0;
-		height: 100%;
-		user-select: none;
-		transition: opacity 0.3s;
-		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-		touch-action: pan-y;
-		-webkit-user-drag: none;
-
-		&.opened {
-			width: 100%;
-			background-color: rgb(0, 0, 0);
-			opacity: 0.8;
-		}
-	`;
 
 	const sidebarWrapStyle = css`
 		width: ${sidebarSize};

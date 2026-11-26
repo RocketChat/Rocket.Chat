@@ -1,8 +1,7 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const mocks = {
@@ -10,6 +9,14 @@ const mocks = {
 	findOneByIdAndLoginToken: sinon.stub(),
 	fileUploadGet: sinon.spy(),
 };
+
+mock.module('../../lib/media/file-upload', { exports: { FileUpload: { get: mocks.fileUploadGet } } });
+mock.module('../../settings', { exports: { settings: { get: mocks.settingsGet } } });
+mock.module('sharp', {
+	exports: { default: () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }) },
+});
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
+const utils = require('./utils');
 
 const {
 	getAvatarSizeFromRequest,
@@ -21,19 +28,7 @@ const {
 	wasFallbackModified,
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
-} = proxyquire.noCallThru().load('./utils', {
-	'../../lib/media/file-upload': {
-		FileUpload: {
-			get: mocks.fileUploadGet,
-		},
-	},
-	'../../settings': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'sharp': () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
-});
+} = utils;
 
 describe('#serveAvatarFile()', () => {
 	const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };

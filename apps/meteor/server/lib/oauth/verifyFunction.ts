@@ -1,6 +1,7 @@
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 import type { DoneCallback, Profile } from 'passport';
+
+import { updateOrCreateUserFromExternalService } from '../auth/updateOrCreateUserFromExternalService';
 
 export const verifyFunction = async (
 	accessToken: string,
@@ -14,7 +15,7 @@ export const verifyFunction = async (
 
 	let user;
 	try {
-		user = await Accounts.updateOrCreateUserFromExternalService(
+		user = await updateOrCreateUserFromExternalService(
 			serviceName,
 			{
 				accessToken,

@@ -3,8 +3,8 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import { canOfferControl } from '../../lib/callParticipants';
-import type { PluginFeature, PluginParticipant, PluginSelf, ProviderPluginActions } from '../../lib/providerPlugin';
+import { canOfferControl } from '../../lib/callParticipants.js';
+import type { PluginFeature, PluginParticipant, PluginSelf, ProviderPluginActions } from '../../lib/providerPlugin.js';
 
 export type CallParticipantControlsProps = {
 	/** Whoever this row is about, named as the row names them — the menu and its buttons are announced with it. */

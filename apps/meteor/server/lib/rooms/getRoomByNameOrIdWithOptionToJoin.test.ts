@@ -1,9 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
 type RoomType = 'c' | 'p' | 'd' | 'l';
@@ -57,20 +56,23 @@ const isObjectMock = {
 	},
 };
 
-const {
-	getRoomByNameOrIdWithOptionToJoin,
-}: {
-	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
-} = proxyquire.noCallThru().load('./getRoomByNameOrIdWithOptionToJoin.ts', {
-	'@rocket.chat/core-services': {
-		Room: RoomServiceStub,
-		ClientSafeError,
-	},
-	'../../../lib/utils/isObject': isObjectMock,
-	'../../meteor-methods/messages/createDirectMessage': {
-		createDirectMessage: createDirectMessageStub,
-	},
-}) as any;
+let getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			Room: RoomServiceStub,
+			ClientSafeError,
+		},
+	});
+	mock.module('../../../lib/utils/isObject', { exports: isObjectMock });
+	mock.module('../../meteor-methods/messages/createDirectMessage', {
+		exports: {
+			createDirectMessage: createDirectMessageStub,
+		},
+	});
+	({ getRoomByNameOrIdWithOptionToJoin } = (await import('./getRoomByNameOrIdWithOptionToJoin')) as any);
+});
 
 describe('getRoomByNameOrIdWithOptionToJoin', () => {
 	const baseUser: IUser = {

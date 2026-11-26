@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { VideoQuality } from '../hooks/useCallDevicesInitialState';
+import type { VideoQuality } from '../hooks/useCallDevicesInitialState.js';
 
 /** A camera track the preflight can show, whatever SDK opened it. */
 export type PreviewVideoTrack = {

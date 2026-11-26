@@ -103,16 +103,18 @@ const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => 
 
 export const customRender = (html: string) => {
 	const emojisMatchGroup = emoji.packages.emojiCustom.list?.map(escapeRegExp).join('|');
-	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
+	let regexp = emoji.packages.emojiCustom._regexp;
+	if (!regexp || emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
-		emoji.packages.emojiCustom._regexp = new RegExp(
+		regexp = new RegExp(
 			`<object[^>]*>.*?</object>|<span[^>]*>.*?</span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
 			'gi',
 		);
+		emoji.packages.emojiCustom._regexp = regexp;
 		emoji.dispatchUpdate();
 	}
 
-	html = html.replace(emoji.packages.emojiCustom._regexp!, (shortname) => {
+	html = html.replace(regexp, (shortname) => {
 		if (typeof shortname === 'undefined' || shortname === '' || (emoji.packages.emojiCustom.list?.indexOf(shortname) ?? -1) === -1) {
 			return shortname;
 		}
@@ -125,9 +127,13 @@ export const customRender = (html: string) => {
 			dataCheck = emoji.list[`:${emojiAlias}:`];
 		}
 
+		if (!dataCheck.extension) {
+			return shortname;
+		}
+
 		return `<span class="emoji emoji--custom" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
-			dataCheck.extension!,
+			dataCheck.extension,
 			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
 	});

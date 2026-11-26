@@ -1,9 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IRoomsModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const settingValues: Record<string, unknown> = {};
@@ -12,25 +11,30 @@ let job: () => Promise<void>;
 
 const cleanRoomHistoryMock = sinon.stub();
 
-p.noCallThru().load('./cronPruneMessages.ts', {
-	'../../../settings': {
-		settings: {
-			get: (id: string) => settingValues[id],
-			watchMultiple: (_ids: string[], callback: () => Promise<void>) => {
-				reloadPolicy = callback;
+before(async () => {
+	mock.module('../../../settings', {
+		exports: {
+			settings: {
+				get: (id: string) => settingValues[id],
+				watchMultiple: (_ids: string[], callback: () => Promise<void>) => {
+					reloadPolicy = callback;
+				},
 			},
 		},
-	},
-	'@rocket.chat/cron': {
-		cronJobs: {
-			has: async () => false,
-			remove: async () => undefined,
-			add: async (_name: string, _precision: string, fn: () => Promise<void>) => {
-				job = fn;
+	});
+	mock.module('@rocket.chat/cron', {
+		exports: {
+			cronJobs: {
+				has: async () => false,
+				remove: async () => undefined,
+				add: async (_name: string, _precision: string, fn: () => Promise<void>) => {
+					job = fn;
+				},
 			},
 		},
-	},
-	'../cleanRoomHistory': { cleanRoomHistory: cleanRoomHistoryMock },
+	});
+	mock.module('../cleanRoomHistory', { exports: { cleanRoomHistory: cleanRoomHistoryMock } });
+	await import('./cronPruneMessages');
 });
 
 const cursorOf = (docs: unknown[]) => ({ toArray: async () => docs });

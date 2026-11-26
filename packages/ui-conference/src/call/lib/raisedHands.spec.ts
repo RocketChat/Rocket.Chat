@@ -1,4 +1,4 @@
-import { handPositionsOf, nameRaisedHands } from './raisedHands';
+import { handPositionsOf, nameRaisedHands } from './raisedHands.js';
 
 const hands = [
 	{ id: 'ada', raisedAt: 1 },

@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useDownloadExportMutation } from './useDownloadExportMutation';
@@ -46,16 +46,7 @@ const ExportMessages = () => {
 
 	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
 
-	const {
-		control,
-		formState: { errors, isSubmitting, isDirty, isSubmitted },
-		watch,
-		register,
-		setValue,
-		handleSubmit,
-		clearErrors,
-		reset,
-	} = useForm<ExportMessagesFormValues>({
+	const { control, getValues, register, setValue, handleSubmit, clearErrors, reset } = useForm<ExportMessagesFormValues>({
 		defaultValues: {
 			type: isE2ERoom ? 'download' : 'email',
 			dateFrom: '',
@@ -67,6 +58,7 @@ const ExportMessages = () => {
 			format: isE2ERoom ? 'json' : 'html',
 		},
 	});
+	const { errors, isSubmitting, isDirty, isSubmitted } = useFormState({ control });
 
 	const exportOptions = useMemo<SelectOption[]>(
 		() => [
@@ -106,7 +98,9 @@ const ExportMessages = () => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
 
-	const { type, toUsers } = watch();
+	const watched = useWatch({ control });
+	const { type } = watched;
+	const toUsers = watched.toUsers ?? [];
 
 	useEffect(() => {
 		if (type === 'email') {
@@ -277,7 +271,7 @@ const ExportMessages = () => {
 											rules={{
 												validate: {
 													validateRecipient: (toUsers) => {
-														const additionalEmails = watch('additionalEmails');
+														const additionalEmails = getValues('additionalEmails');
 														if (toUsers?.length > 0 || additionalEmails !== '') {
 															return undefined;
 														}

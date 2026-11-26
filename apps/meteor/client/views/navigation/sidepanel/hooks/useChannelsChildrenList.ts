@@ -39,7 +39,7 @@ const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean
 };
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
-	return Subscriptions.use(
+	return Subscriptions.useStore(
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
 				if (parentRid === subscription.prid || parentRid === subscription.rid) {

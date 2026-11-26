@@ -1,23 +1,26 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+const mockLicense = {
+	getLicense: sinon.stub(),
+};
+
+let disableCustomScripts: () => boolean;
+
+before(async () => {
+	const license = await import('@rocket.chat/license');
+	mock.module('@rocket.chat/license', { exports: { ...license, License: mockLicense } });
+	({ disableCustomScripts } = await import('./disableCustomScripts'));
+});
+
 describe('disableCustomScripts', () => {
-	let mockLicense: sinon.SinonStubbedInstance<any>;
-	let disableCustomScripts: () => boolean;
 	let disableCustomScriptsVar: any;
 
 	beforeEach(() => {
 		disableCustomScriptsVar = process.env.DISABLE_CUSTOM_SCRIPTS;
-		mockLicense = {
-			getLicense: sinon.stub(),
-		};
-
-		disableCustomScripts = proxyquire('./disableCustomScripts.ts', {
-			'@rocket.chat/license': { License: mockLicense },
-		}).disableCustomScripts;
+		mockLicense.getLicense.reset();
 	});
 
 	afterEach(() => {

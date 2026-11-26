@@ -3,6 +3,7 @@ import { Pagination, Stack } from '@rocket.chat/fuselage';
 import { CustomScrollbars, usePagination, GenericNoResults, GenericError } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer } from 'react';
+import { useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -50,15 +51,15 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	const { instanceId: instanceLogsFilter } = router.getSearchParameters();
 
-	const { watch, setValue } = useAppLogsFilterFormContext();
+	const { control, setValue } = useAppLogsFilterFormContext();
+
+	const { startTime, endTime, startDate, endDate, event, severity, instance } = useWatch({ control });
 
 	useEffect(() => {
 		if (instanceLogsFilter) {
 			setValue('instance', instanceLogsFilter);
 		}
 	}, [instanceLogsFilter, setValue]);
-
-	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
 	const query = {
 		...(instance !== 'all' && { instanceId: instance }),

@@ -1,15 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
 const verify = sinon.stub();
 
-const { TOTPCheck } = proxyquire.noCallThru().load('./TOTPCheck', {
-	'../../../settings': { settings: { get: settingsGet } },
-	'../lib/totp': { TOTP: { verify } },
+let TOTPCheck: any;
+
+before(async () => {
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../lib/totp', { exports: { TOTP: { verify } } });
+	({ TOTPCheck } = await import('./TOTPCheck'));
 });
 
 const hashedBackup = ['hashed-backup-code'];

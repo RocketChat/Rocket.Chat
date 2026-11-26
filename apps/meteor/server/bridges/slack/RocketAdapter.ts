@@ -6,11 +6,11 @@ import util from 'node:util';
 
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
 import { sleep } from '../../../lib/utils/sleep';
+import { createUser } from '../../lib/auth/createUser';
 import { callbacks } from '../../lib/callbacks';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createRoom } from '../../lib/rooms/createRoom';
@@ -384,7 +384,7 @@ export default class RocketAdapter {
 						newUser.joinDefaultChannels = false;
 					}
 
-					rocketUserData.rocketId = await Accounts.createUserAsync(newUser);
+					rocketUserData.rocketId = await createUser(newUser);
 					const userUpdate = {
 						utcOffset: rocketUserData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 						roles: isBot ? ['bot'] : ['user'],
@@ -532,7 +532,9 @@ export default class RocketAdapter {
 
 			slackMsgTxt.replace(regex, async (match, userId) => {
 				if (!this.userTags[userId]) {
-					(await this.findUser(userId)) || (await this.addUser(userId)); // This adds userTags for the userId
+					if (!(await this.findUser(userId))) {
+						await this.addUser(userId); // This adds userTags for the userId
+					}
 				}
 				const userTags = this.userTags[userId];
 				if (userTags) {

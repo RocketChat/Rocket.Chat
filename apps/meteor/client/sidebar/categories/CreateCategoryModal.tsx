@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateCustomCategory } from './hooks/useCreateCustomCategory';
@@ -20,17 +20,13 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	const validateName = useValidateCategoryName();
 	const createCategoryMutation = useCreateCustomCategory({ settleCallback: onClose });
 
-	const {
-		handleSubmit,
-		control,
-		setFocus,
-		formState: { errors },
-	} = useForm({
+	const { handleSubmit, control, setFocus } = useForm({
 		defaultValues: {
 			name: '',
 			rooms: room ? [room.rid] : [],
 		},
 	});
+	const { errors } = useFormState({ control });
 
 	useEffect(() => {
 		setFocus('name');

@@ -1691,6 +1691,7 @@
   "Example_payload": "مثال الحمولة",
   "Example_s": "مثال: <code>{{value}}</code>",
   "except_pinned": "(باستثناء المثبتة)",
+  "Exchange_Graph_Client_Secret": "كلمة سر العميل",
   "Exclude_Botnames": "استبعاد الروبوتات",
   "Exclude_Botnames_Description": "لا تنشر رسائل من الروبوتات التي يتطابق اسمها مع التعبير النمطي أعلاه. إذا تُركت فارغة، فسيتم نشر جميع الرسائل الواردة من الروبوتات.",
   "Exclude_pinned": "استبعاد الرسائل المثبتة",

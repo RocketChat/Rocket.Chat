@@ -46,7 +46,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...pro
 				e.stopPropagation();
 				e.preventDefault();
 
-				ref.current &&
+				if (ref.current) {
 					openTooltip(
 						<ReactionTooltip
 							emojiName={name}
@@ -58,6 +58,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...pro
 						/>,
 						ref.current,
 					);
+				}
 			}}
 			onMouseLeave={(): void => {
 				closeTooltip();

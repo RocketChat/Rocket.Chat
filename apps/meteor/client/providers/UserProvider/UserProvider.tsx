@@ -20,7 +20,7 @@ import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore'
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { settings } from '../../lib/settings';
-import { userIdStore } from '../../lib/user';
+import { useUserIdStore } from '../../lib/user';
 import { logout } from '../../meteor/accounts';
 import { logoutFromSamlIdp } from '../../meteor/login/saml';
 import { Users, Rooms, Subscriptions } from '../../stores';
@@ -45,7 +45,7 @@ const queryRoom = (
 	let snapshot = Rooms.state.find(predicate);
 
 	const subscribe = (onStoreChange: () => void) =>
-		Rooms.use.subscribe(() => {
+		Rooms.useStore.subscribe(() => {
 			const newSnapshot = Rooms.state.find(predicate);
 			if (newSnapshot === snapshot) return;
 			snapshot = newSnapshot;
@@ -58,9 +58,9 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps) => {
-	const userId = userIdStore();
+	const userId = useUserIdStore();
 
-	const user = Users.use((state) => {
+	const user = Users.useStore((state) => {
 		if (!userId) return null;
 		return state.get(userId) ?? null;
 	});
@@ -105,17 +105,17 @@ const UserProvider = ({ children }: UserProviderProps) => {
 				return [subscribe, getSnapshot];
 			};
 
-		return userId ? createSubscriptionFactory(Subscriptions.use) : createSubscriptionFactory(Rooms.use);
+		return userId ? createSubscriptionFactory(Subscriptions.useStore) : createSubscriptionFactory(Rooms.useStore);
 	}, [userId]);
 
 	const querySubscription = useMemo(() => {
 		return (query: object): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom] => {
 			const predicate = createPredicateFromFilter<SubscriptionWithRoom>(query);
-			let snapshot = Subscriptions.use.getState().find(predicate);
+			let snapshot = Subscriptions.useStore.getState().find(predicate);
 
 			const subscribe = (onStoreChange: () => void) =>
-				Subscriptions.use.subscribe(() => {
-					const newSnapshot = Subscriptions.use.getState().find(predicate);
+				Subscriptions.useStore.subscribe(() => {
+					const newSnapshot = Subscriptions.useStore.getState().find(predicate);
 					if (newSnapshot === snapshot) return;
 					snapshot = newSnapshot;
 					onStoreChange();
@@ -140,7 +140,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
 				const effectiveKey = String(key);
 
 				const subscribe = (onStoreChange: () => void): (() => void) => {
-					const unsubUsers = Users.use.subscribe(onStoreChange);
+					const unsubUsers = Users.useStore.subscribe(onStoreChange);
 					const unsubSettings = settings.observe(`Accounts_Default_User_Preferences_${effectiveKey}`, onStoreChange);
 					return () => {
 						unsubUsers();

@@ -28,9 +28,11 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
 
-	const trackRef = useRef<PersistentAudioTrack | null>(null);
-	trackRef.current = track;
+	const activeTrackId = track?.id ?? null;
+
 	// Not every browser honors a seek made before the metadata is loaded, so such a seek waits for it.
 	const pendingStartTimeRef = useRef(0);
 
@@ -47,11 +49,12 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			return;
 		}
 
-		if (trackRef.current?.id !== next.id) {
+		if (track?.id !== next.id) {
 			setTrack(next);
 			setCurrentTime(startTime);
 			setDuration(0);
 			pendingStartTimeRef.current = startTime;
+			setError(false);
 			audio.src = next.url;
 			audio.load();
 		}
@@ -62,7 +65,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const toggle = useStableCallback(() => {
 		const audio = audioRef.current;
-		if (!audio || !trackRef.current) {
+		if (!audio || !track) {
 			return;
 		}
 		if (audio.paused) {
@@ -107,13 +110,55 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		setPlaying(false);
 		setCurrentTime(0);
 		setDuration(0);
+		setLoading(false);
+		setError(false);
 	});
 
-	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
+	const retry = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (!audio || !track) {
+			return;
+		}
+		setError(false);
+		// A retry before metadata loads sees 0, so it keeps the position an earlier retry or seek saved.
+		pendingStartTimeRef.current = audio.currentTime || pendingStartTimeRef.current;
+		audio.load();
+		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
+	});
 
 	const value = useMemo<MediaPlayerContextValue>(
-		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
-		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		() => ({
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			activeTrackId,
+		}),
+		[
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			activeTrackId,
+		],
 	);
 
 	return (
@@ -126,8 +171,19 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onPlay={() => setPlaying(true)}
 				onPause={() => setPlaying(false)}
 				onEnded={() => close()}
+				onWaiting={() => setLoading(true)}
+				onCanPlay={() => setLoading(false)}
+				onPlaying={() => setLoading(false)}
+				onError={() => {
+					// An error arriving after close() belongs to no track.
+					if (track) {
+						setLoading(false);
+						setError(true);
+					}
+				}}
 				onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
 				onLoadedMetadata={(e) => {
+					setError(false);
 					setDuration(e.currentTarget.duration || 0);
 					if (pendingStartTimeRef.current > 0) {
 						e.currentTarget.currentTime = pendingStartTimeRef.current;

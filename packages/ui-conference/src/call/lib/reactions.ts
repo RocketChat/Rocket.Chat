@@ -1,4 +1,4 @@
-import type { ActiveReaction } from '../context';
+import type { ActiveReaction } from '../context.js';
 
 /** How long a reaction is seen: rising over the call, and on its sender's tile, alike. */
 export const REACTION_VISIBLE_MS = 3000;

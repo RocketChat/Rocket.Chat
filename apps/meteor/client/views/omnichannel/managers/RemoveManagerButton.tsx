@@ -32,7 +32,9 @@ const RemoveManagerButton = ({ _id }: RemoveManagerButtonProps) => {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Manager_removed') });
 			} catch (error: unknown) {
-				(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
+				if (typeof error === 'string' || error instanceof Error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
 			}
 			setModal();
 		};

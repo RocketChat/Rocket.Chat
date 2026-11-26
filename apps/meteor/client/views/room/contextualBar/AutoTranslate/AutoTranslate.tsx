@@ -1,11 +1,11 @@
-import { Box, Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarIcon,
-	ContextualbarContent,
+	ContextualbarScrollableContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useId } from 'react';
@@ -36,40 +36,38 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent>
-				<Box paddingBlockStart='x24'>
-					<FieldGroup>
-						{room.encrypted && (
-							<Callout title={t('Automatic_translation_not_available')} type='warning'>
-								{t('Automatic_translation_not_available_info')}
-							</Callout>
-						)}
-						<Field>
-							<FieldRow>
-								<FieldLabel htmlFor={autoTranslateId}>{t('Automatic_Translation')}</FieldLabel>
-								<ToggleSwitch
-									id={autoTranslateId}
-									onChange={handleSwitch}
-									defaultChecked={translateEnable}
-									disabled={room.encrypted && !translateEnable}
-								/>
-							</FieldRow>
-						</Field>
-						<Field>
-							<FieldLabel htmlFor={translateToId}>{t('Translate_to')}</FieldLabel>
-							<FieldRow>
-								<Select
-									id={translateToId}
-									value={language}
-									disabled={!translateEnable}
-									onChange={(value) => handleChangeLanguage(String(value))}
-									options={languages}
-								/>
-							</FieldRow>
-						</Field>
-					</FieldGroup>
-				</Box>
-			</ContextualbarContent>
+			<ContextualbarScrollableContent padding='x24'>
+				<FieldGroup>
+					{room.encrypted && (
+						<Callout title={t('Automatic_translation_not_available')} type='warning'>
+							{t('Automatic_translation_not_available_info')}
+						</Callout>
+					)}
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={autoTranslateId}>{t('Automatic_Translation')}</FieldLabel>
+							<ToggleSwitch
+								id={autoTranslateId}
+								onChange={handleSwitch}
+								defaultChecked={translateEnable}
+								disabled={room.encrypted && !translateEnable}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={translateToId}>{t('Translate_to')}</FieldLabel>
+						<FieldRow>
+							<Select
+								id={translateToId}
+								value={language}
+								disabled={!translateEnable}
+								onChange={(value) => handleChangeLanguage(String(value))}
+								options={languages}
+							/>
+						</FieldRow>
+					</Field>
+				</FieldGroup>
+			</ContextualbarScrollableContent>
 		</ContextualbarDialog>
 	);
 };

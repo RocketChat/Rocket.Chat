@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const livechatDepartmentStub = {
@@ -20,13 +19,20 @@ const livechatUnitStub = {
 const hasAnyRoleStub = sinon.stub();
 const getUnitsFromUserStub = sinon.stub();
 
-const { manageDepartmentUnit } = proxyquire.noCallThru().load('./manageDepartmentUnit.ts', {
-	'@rocket.chat/omni-core-ee': {
-		getUnitsFromUser: getUnitsFromUserStub,
-	},
-	'../../../../server/lib/authorization/hasRole': {
-		hasAnyRoleAsync: hasAnyRoleStub,
-	},
+let manageDepartmentUnit: any;
+
+before(async () => {
+	mock.module('@rocket.chat/omni-core-ee', {
+		exports: {
+			getUnitsFromUser: getUnitsFromUserStub,
+		},
+	});
+	mock.module('../../../../server/lib/authorization/hasRole', {
+		exports: {
+			hasAnyRoleAsync: hasAnyRoleStub,
+		},
+	});
+	({ manageDepartmentUnit } = await import('./manageDepartmentUnit'));
 });
 
 describe('hooks/manageDepartmentUnit', () => {

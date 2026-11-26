@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
-import { Accounts } from 'meteor/accounts-base';
 
 import { logger } from './logger';
+import { insertUser } from '../auth/insertUser';
 import { createRoom } from '../rooms/createRoom';
 
 type CASUserOptions = {
@@ -19,7 +19,7 @@ export const createNewUser = async (username: string, { attributes, casVersion, 
 		active: true,
 		globalRoles: ['user'],
 		emails: [attributes.email]
-			.filter((e) => e)
+			.filter((e): e is string => !!e)
 			.map((address) => ({
 				address,
 				verified: flagEmailAsVerified,
@@ -36,7 +36,7 @@ export const createNewUser = async (username: string, { attributes, casVersion, 
 
 	// Create the user
 	logger.debug({ msg: 'User does not exist yet, creating it', username });
-	const userId = await Accounts.insertUserDoc({}, newUser);
+	const userId = await insertUser({}, newUser);
 
 	// Fetch and use it
 	const user = await Users.findOneById(userId);

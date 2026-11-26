@@ -5,13 +5,13 @@ import type { IUser, IIncomingMessage, IRole, SettingValue } from '@rocket.chat/
 import { CredentialTokens, Rooms, Users, Roles, SamlUsedAssertions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/tools';
-import { Accounts } from 'meteor/accounts-base';
 
 import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
 import { getSAMLEnvelope } from './getSAMLEnvelope';
 import { i18n } from '../../../../../lib/i18n';
 import { ensureArray } from '../../../../../lib/utils/arrayUtils';
+import { insertUser } from '../../../../../server/lib/auth/insertUser';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../../server/lib/rooms/createRoom';
@@ -169,7 +169,7 @@ export class SAML {
 		// otherwise, leave it as false to fallback to generic auth service default roles
 		// from Accounts_Registration_AuthenticationServices_Default_Roles
 		const skipAuthServiceDefaultRoles = roleNamesOrIds.length > 0;
-		const userId = await Accounts.insertUserDoc({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
+		const userId = await insertUser({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
 		const user = await Users.findOneById(userId);
 
 		if (user && userObject.channels && channelsAttributeUpdate !== true) {

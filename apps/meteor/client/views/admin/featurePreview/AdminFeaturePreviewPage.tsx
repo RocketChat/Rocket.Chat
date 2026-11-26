@@ -24,7 +24,7 @@ import {
 import { useToastMessageDispatch, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import ContentColumn from '../../../components/ContentColumn';
@@ -38,24 +38,22 @@ const AdminFeaturePreviewPage = () => {
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features } = useDefaultSettingFeaturePreviewList();
 
-	const {
-		watch,
-		formState: { isDirty },
-		setValue,
-		handleSubmit,
-		reset,
-	} = useForm({
+	const { control, setValue, handleSubmit, reset } = useForm({
 		defaultValues: { featuresPreview: features },
 	});
-	const { featuresPreview } = watch();
+	const { isDirty } = useFormState({ control });
+	const featuresPreview = useWatch({ control, name: 'featuresPreview' });
 	const dispatch = useSettingsDispatch();
 
 	const handleSave = async () => {
 		try {
+			if (!allowFeaturePreviewSetting) {
+				throw new Error('Setting Accounts_AllowFeaturePreview not found');
+			}
 			const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 
 			await dispatch([
-				{ _id: allowFeaturePreviewSetting!._id, value: allowFeaturePreviewSetting!.value },
+				{ _id: allowFeaturePreviewSetting._id, value: allowFeaturePreviewSetting.value },
 				{ _id: 'Accounts_Default_User_Preferences_featuresPreview', value: JSON.stringify(featuresToBeSaved) },
 			]);
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });

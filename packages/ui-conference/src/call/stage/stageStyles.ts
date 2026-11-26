@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Palette, borderRadius } from '@rocket.chat/fuselage';
 
-import type { SpotlightOrientation } from '../lib/stageTiles';
-import { COLUMN_THUMB_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles';
-import { TILE_GAP_PX } from '../lib/tileGrid';
+import type { SpotlightOrientation } from '../lib/stageTiles.js';
+import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles.js';
+import { TILE_GAP_PX } from '../lib/tileGrid.js';
 
 export const stageStyles = css`
 	position: relative;
@@ -92,43 +92,21 @@ const thumbColumnStyles = css`
 	scrollbar-width: thin;
 `;
 
-const thumbItemStyles = css`
-	flex: 0 0 auto;
-	width: ${STRIP_THUMB_WIDTH}px;
-	height: 100%;
-`;
-
-// In a column each thumb takes its width and gets its height from the aspect ratio, however tall the column is.
-const thumbItemColumnStyles = css`
-	flex: 0 0 auto;
-	width: 100%;
-	aspect-ratio: 16 / 9;
-`;
-
 /** The classes for a spotlight arrangement in either orientation. */
 export const spotlightClasses = (orientation: SpotlightOrientation) =>
 	orientation === 'side-by-side'
-		? { container: spotlightSideBySideStyles, thumbs: thumbColumnStyles, thumb: thumbItemColumnStyles, thumbOrientation: 'column' }
-		: { container: spotlightStackedStyles, thumbs: thumbStripStyles, thumb: thumbItemStyles, thumbOrientation: 'row' };
+		? { container: spotlightSideBySideStyles, thumbs: thumbColumnStyles }
+		: { container: spotlightStackedStyles, thumbs: thumbStripStyles };
 
-// Wider than a participant thumb so the screen is legible. In a column, the column sets the width and the aspect
-// ratio the height.
 export const screenThumbStyles = css`
 	position: relative;
-	flex: 0 0 auto;
-	width: 12.5rem;
+	width: 100%;
 	height: 100%;
 	border-radius: ${borderRadius('large')};
 	overflow: hidden;
 	/* Fixed, not themed: the letterbox around a video frame is black in every theme. */
 	background-color: black;
 	border: 1px solid ${Palette.stroke['stroke-medium'].toString()};
-
-	[data-thumb-orientation='column'] & {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 16 / 9;
-	}
 
 	& .rcx-screen-thumb-overlay {
 		opacity: 0;
@@ -143,22 +121,6 @@ export const screenThumbStyles = css`
 		opacity: 1;
 		pointer-events: auto;
 	}
-`;
-
-export const spotlightOverlayStyles = css`
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: ${Palette.surface['surface-overlay'].toString()};
-`;
-
-export const stopShareButtonStyles = css`
-	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	z-index: 1;
 `;
 
 export const ownBadgeStyles = css`

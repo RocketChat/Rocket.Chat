@@ -1047,6 +1047,7 @@
   "Everyone_can_access_this_channel": "Visi gali pasiekti šį kanalą",
   "Example_s": "Pavyzdys: <code>{{value}}</code>",
   "except_pinned": "(išskyrus tuos, kurie yra prisegami)",
+  "Exchange_Graph_Client_Secret": "Kliento paslaptis",
   "Exclude_Botnames": "Išskirti robotai",
   "Exclude_Botnames_Description": "Neplatinkite pranešimų iš robotų, kurių pavadinimas atitinka aukščiau esančią įprastinę išraišką. Jei bus paliktas tuščias, bus išplatinti visi laiškų pranešimai.",
   "Exclude_pinned": "Išskirti prisegtus pranešimus",

@@ -17,7 +17,7 @@ const runBeforeAddUserToRoomHooks = async (userToBeAdded: IUser, room: IRoom, in
 	try {
 		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
 		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
-		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
+		await beforeAddUserToRoomPatch([userToBeAdded.username], room, inviterUser);
 		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
 	} catch (error) {
 		if (error instanceof AbacContractError || isClientSafeError(error)) {
@@ -112,7 +112,7 @@ export const addUserToRoom = async (
 		void notifyOnSubscriptionChanged(deletedSub, 'removed');
 
 		if (!skipSystemMessage && inviter) {
-			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username!, inviter, { ts: now });
+			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username ?? '', inviter, { ts: now });
 		}
 	}
 

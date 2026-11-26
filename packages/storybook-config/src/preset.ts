@@ -17,6 +17,18 @@ export const env = (config: Record<string, string> = {}, { configDir }: Options)
 	STORYBOOK_PACKAGE_NAME: JSON.parse(readFileSync(join(configDir, '..', 'package.json'), 'utf8')).name,
 });
 
+/** Lets stories and preview files of ES module packages import TypeScript sources by their `.js` specifiers. */
+export const webpackFinal = <T extends { resolve?: { extensionAlias?: Record<string, string[]> } }>(config: T): T => ({
+	...config,
+	resolve: {
+		...config.resolve,
+		extensionAlias: {
+			...config.resolve?.extensionAlias,
+			'.js': ['.ts', '.tsx', '.js', '.jsx'],
+		},
+	},
+});
+
 const fuselageFontsDir = dirname(require.resolve('@rocket.chat/fuselage/dist/fonts/InterVariable.woff2'));
 
 const translationsDir = dirname(require.resolve('@rocket.chat/i18n/dist/resources/en.i18n.json'));

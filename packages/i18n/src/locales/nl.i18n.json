@@ -1696,6 +1696,7 @@
   "Example_payload": "Voorbeeld payload",
   "Example_s": "Voorbeeld: <code>{{value}}</code>",
   "except_pinned": "(behalve degene die zijn vastgemaakt)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Bots uitsluiten",
   "Exclude_Botnames_Description": "Propageer geen berichten van bots waarvan de naam overeenkomt met de bovenstaande reguliere expressie. Indien leeg gelaten, worden alle berichten van bots gepropageerd.",
   "Exclude_pinned": "Sluit vastgezette berichten uit",

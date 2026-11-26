@@ -2,16 +2,16 @@ import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 
-import AddParticipantsModal from './AddParticipantsModal';
-import * as stories from './AddParticipantsModal.stories';
-import { ConferenceContext } from '../../context/ConferenceContext';
-import type { UserPickerProps } from '../../context/definitions';
-import { buildConferenceContext } from '../../fixtures/storyFixtures';
-import { callPreferencesStorageKey } from '../../hooks/useCallDevicesInitialState';
+import AddParticipantsModal from './AddParticipantsModal.js';
+import * as stories from './AddParticipantsModal.stories.js';
+import { ConferenceContext } from '../../context/ConferenceContext.js';
+import type { UserPickerProps } from '../../context/definitions.js';
+import { buildConferenceContext } from '../../fixtures/storyFixtures.js';
+import { callPreferencesStorageKey } from '../../hooks/useCallDevicesInitialState.js';
 
 // The mocked app root leaves its toast provider commented out, so what the modal reports has to be observed
 // at the dispatch instead of in the DOM.

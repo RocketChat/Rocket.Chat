@@ -1,26 +1,30 @@
 import { EventEmitter } from 'node:events';
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import ldapjs from 'ldapjs';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 const createClient = sinon.stub();
 
-const { LDAPConnection } = proxyquire.noCallThru().load('./Connection', {
-	'ldapjs': { ...ldapjs, createClient },
-	'../../../../server/settings': { settings: { get: sinon.stub() } },
-	'./getLDAPConditionalSetting': { getLDAPConditionalSetting: sinon.stub().returns('') },
-	'./Logger': {
-		logger: loggerStub,
-		connLogger: loggerStub,
-		bindLogger: loggerStub,
-		searchLogger: loggerStub,
-		authLogger: loggerStub,
-		mapLogger: loggerStub,
-	},
+let LDAPConnection: typeof import('./Connection').LDAPConnection;
+
+before(async () => {
+	mock.module('ldapjs', { exports: { ...ldapjs, createClient } });
+	mock.module('../../../../server/settings', { exports: { settings: { get: sinon.stub() } } });
+	mock.module('./getLDAPConditionalSetting', { exports: { getLDAPConditionalSetting: sinon.stub().returns('') } });
+	mock.module('./Logger', {
+		exports: {
+			logger: loggerStub,
+			connLogger: loggerStub,
+			bindLogger: loggerStub,
+			searchLogger: loggerStub,
+			authLogger: loggerStub,
+			mapLogger: loggerStub,
+		},
+	});
+	({ LDAPConnection } = await import('./Connection'));
 });
 
 describe('LDAPConnection', () => {

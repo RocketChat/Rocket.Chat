@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 
 import type { IImport } from '@rocket.chat/core-typings';
-import { parse } from 'csv-parse/lib/sync';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '..';
 import { addParsedContacts } from './addParsedContacts';
 import type { ConverterOptions } from '../classes/ImportDataConverter';
 import type { ImporterProgress } from '../classes/ImporterProgress';
+import { parse } from '../csvParser';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 
 export class ContactImporter extends Importer {

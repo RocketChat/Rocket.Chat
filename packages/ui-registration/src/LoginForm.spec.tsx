@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { LoginForm } from './LoginForm';
+import { LoginForm } from './LoginForm.js';
 
 const renderAfterOAuth = (oauthError: string, { showFormLogin = true } = {}) => {
 	const navigate = jest.fn();

@@ -1,9 +1,8 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
@@ -56,21 +55,31 @@ class PasswordCheckFallback {
 	}
 }
 
-const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru().load('./index', {
-	'meteor/accounts-base': {
-		Accounts: {
-			_getLoginToken: () => 'token-hash',
+let checkCodeForUser: any;
+let getFingerprintFromConnection: any;
+
+before(async () => {
+	mock.module(require.resolve('meteor/accounts-base'), {
+		exports: {
+			Accounts: {
+				_getLoginToken: () => 'token-hash',
+			},
 		},
-	},
-	'./TOTPCheck': { TOTPCheck },
-	'./EmailCheck': { EmailCheck },
-	'./PasswordCheckFallback': { PasswordCheckFallback },
-	'../../shared/getModifiedHttpHeaders': {
-		normalizeHeaders: (headers: unknown) => headers,
-	},
-	'../../../settings': {
-		settings: { get: settingsGet },
-	},
+	});
+	mock.module('./TOTPCheck', { exports: { TOTPCheck } });
+	mock.module('./EmailCheck', { exports: { EmailCheck } });
+	mock.module('./PasswordCheckFallback', { exports: { PasswordCheckFallback } });
+	mock.module('../../shared/getModifiedHttpHeaders', {
+		exports: {
+			normalizeHeaders: (headers: unknown) => headers,
+		},
+	});
+	mock.module('../../../settings', {
+		exports: {
+			settings: { get: settingsGet },
+		},
+	});
+	({ checkCodeForUser, getFingerprintFromConnection } = await import('./index'));
 });
 
 const REMEMBER_FOR_SECONDS = 1800;

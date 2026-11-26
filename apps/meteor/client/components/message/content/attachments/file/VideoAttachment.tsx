@@ -1,5 +1,6 @@
 import type { VideoAttachmentProps } from '@rocket.chat/core-typings';
-import { Box, MessageBlock, MessageGenericPreview } from '@rocket.chat/fuselage';
+import { Box, MessageBlock, MessageGenericPreview, VideoPlayer } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -23,6 +24,7 @@ const VideoAttachment = ({
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'video');
+	const [customPlayer] = useLocalStorage('feature.customVideoPlayer', false);
 
 	return (
 		<>
@@ -30,9 +32,13 @@ const VideoAttachment = ({
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageBlock fixedWidth>
 					<MessageGenericPreview>
-						<Box is='video' controls preload='metadata' ref={mediaRef} position='relative'>
-							<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />
-						</Box>
+						{customPlayer ? (
+							<VideoPlayer ref={mediaRef} src={src} type={userAgentMIMETypeFallback(type)} />
+						) : (
+							<Box is='video' controls preload='metadata' ref={mediaRef} position='relative'>
+								<source src={src} type={userAgentMIMETypeFallback(type)} />
+							</Box>
+						)}
 					</MessageGenericPreview>
 				</MessageBlock>
 			</MessageCollapsible>

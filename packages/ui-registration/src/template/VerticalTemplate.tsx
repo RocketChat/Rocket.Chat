@@ -2,10 +2,10 @@ import { LayoutLogoImage, VerticalWizardLayout, VerticalWizardLayoutTitle, Verti
 import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
-import LoginPoweredBy from '../components/LoginPoweredBy';
-import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
-import LoginTerms from '../components/LoginTerms';
-import { RegisterTitle } from '../components/RegisterTitle';
+import LoginPoweredBy from '../components/LoginPoweredBy.js';
+import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter.js';
+import LoginTerms from '../components/LoginTerms.js';
+import { RegisterTitle } from '../components/RegisterTitle.js';
 
 export type VerticalTemplateProps = { children: ReactNode };
 

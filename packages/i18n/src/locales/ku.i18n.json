@@ -993,6 +993,7 @@
   "Everyone_can_access_this_channel": "Her kes dikare kanalê vê kanaletê bigirin",
   "Example_s": "Mînak: <code>{{value}}</code>",
   "except_pinned": "(bila wan ên ku guneh kirin)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Botspace",
   "Exclude_Botnames_Description": "Ji botên ku navê wî bi ramanek rasterast bi jorê re digel peyamên xwe belav nakin. Heke ku vala berbiçav, hemî peyamên ji boteyên wê bêne belav kirin.",
   "Exclude_pinned": "Peyamên pinned",

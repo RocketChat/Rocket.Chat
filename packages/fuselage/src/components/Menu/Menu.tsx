@@ -3,15 +3,14 @@ import type { ElementType, ReactElement } from 'react';
 import { cloneElement, useRef } from 'react';
 import type { AriaMenuProps } from 'react-aria';
 import { useButton, useMenuTrigger } from 'react-aria';
-import { createPortal } from 'react-dom';
 import type { MenuTriggerProps } from 'react-stately';
 import { useMenuTriggerState } from 'react-stately';
 
-import { useOwnerDocument } from '../../contexts';
 import { IconButton } from '../Button';
 import MenuDropDown from './MenuDropdown';
 import MenuPopover from './MenuPopover';
 import type { IconButtonProps } from '../Button/IconButton';
+import { Overlay } from '../Overlay';
 import { getPlacement } from './helpers/helpers';
 
 export type MenuProps<T> = AriaMenuProps<T> &
@@ -59,8 +58,6 @@ const Menu = <T extends object>({
 		ref,
 	);
 
-	const { document: ownerDocument } = useOwnerDocument();
-
 	const popover = state.isOpen && (
 		<MenuPopover state={state} triggerRef={ref} placement={getPlacement(placement)} maxWidth={maxWidth}>
 			<MenuDropDown {...props} {...menuProps} rootMenuTriggerState={state} />
@@ -89,7 +86,7 @@ const Menu = <T extends object>({
 					size={size}
 				/>
 			)}
-			{detached ? createPortal(popover, ownerDocument?.body || document.body) : popover}
+			{detached ? <Overlay>{popover}</Overlay> : popover}
 		</>
 	);
 };

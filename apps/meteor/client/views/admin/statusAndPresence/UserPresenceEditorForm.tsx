@@ -19,7 +19,7 @@ import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete, 
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState, useWatch } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import UserPresenceConfirmModal from './UserPresenceConfirmModal';
@@ -65,15 +65,11 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 
-	const {
-		control,
-		handleSubmit,
-		watch,
-		formState: { isSubmitting, isDirty, errors, dirtyFields },
-	} = useForm<UserPresenceEditorFormValues>({ defaultValues });
+	const { control, handleSubmit } = useForm<UserPresenceEditorFormValues>({ defaultValues });
+	const { isSubmitting, isDirty, errors, dirtyFields } = useFormState({ control });
 
-	const presenceEnabled = watch('presenceEnabled');
-	const targetUsername = watch('username');
+	const presenceEnabled = useWatch({ control, name: 'presenceEnabled' });
+	const targetUsername = useWatch({ control, name: 'username' });
 
 	const resolveTarget = useStableCallback(async (username: string) => {
 		if (userId) {

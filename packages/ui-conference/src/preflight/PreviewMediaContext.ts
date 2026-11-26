@@ -1,7 +1,7 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { createRequiredContext } from '@rocket.chat/ui-media';
 
-import type { useCallDevicePreview } from './useCallDevicePreview';
+import type { useCallDevicePreview } from './useCallDevicePreview.js';
 
 export type PreviewMediaState = {
 	capabilities: VideoConferenceCapabilities;

@@ -1,9 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IImport, IImportChannel, IImportRecord, IImportUser, IImporterShortSelection } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { ImporterSelection } from './ImporterSelection';
@@ -33,18 +32,19 @@ const fakeConverter = (dataType: IImportRecord['dataType']) =>
 		}
 	};
 
-const { ImportDataConverter } = proxyquire.noCallThru().load('./ImportDataConverter', {
-	'./converters/UserConverter': { UserConverter: fakeConverter('user') },
-	'./converters/ContactConverter': { ContactConverter: fakeConverter('contact') },
-	'./converters/RoomConverter': { RoomConverter: fakeConverter('channel') },
-	'./converters/MessageConverter': { MessageConverter: fakeConverter('message') },
-});
+let Importer: any;
 
-const { Importer } = proxyquire.noCallThru().load('./Importer', {
-	'./ImportDataConverter': { ImportDataConverter },
-	'./ImporterWebsocket': { ImporterWebsocket: { progressUpdated: () => undefined } },
-	'../../notifyListener': { notifyOnSettingChanged: () => undefined, notifyOnSettingChangedById: () => undefined },
-	'../index': { Selection: ImporterSelection, SelectionChannel, SelectionUser },
+before(async () => {
+	mock.module('./converters/UserConverter', { exports: { UserConverter: fakeConverter('user') } });
+	mock.module('./converters/ContactConverter', { exports: { ContactConverter: fakeConverter('contact') } });
+	mock.module('./converters/RoomConverter', { exports: { RoomConverter: fakeConverter('channel') } });
+	mock.module('./converters/MessageConverter', { exports: { MessageConverter: fakeConverter('message') } });
+	mock.module('./ImporterWebsocket', { exports: { ImporterWebsocket: { progressUpdated: () => undefined } } });
+	mock.module('../../notifyListener', {
+		exports: { notifyOnSettingChanged: () => undefined, notifyOnSettingChangedById: () => undefined },
+	});
+	mock.module('../index', { exports: { Selection: ImporterSelection, SelectionChannel, SelectionUser } });
+	({ Importer } = await import('./Importer'));
 });
 
 let importRecord: IImport;
