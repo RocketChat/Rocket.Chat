@@ -1,5 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 import { isLivechatVisitorStatusProps, isPOSTLivechatVisitorProps } from '@rocket.chat/rest-typings';
@@ -24,10 +24,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			// TODO: drop the annotation when this endpoint moves to API.v1.post(); legacy addRoute types these fields as any once the return value depends on them
-			const { customFields, id, token, name, email, department, phone, username, connectionData }: ILivechatVisitorDTO =
-				this.bodyParams.visitor;
+			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
 
+			// oxlint-disable-next-line typescript/no-unsafe-call -- TODO: legacy addRoute types the body as any once the return value depends on it; fix when moving this endpoint to API.v1.post()
 			if (!token?.trim()) {
 				throw new ClientSafeError('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
 			}
