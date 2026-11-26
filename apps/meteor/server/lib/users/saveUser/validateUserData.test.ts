@@ -1,7 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
@@ -11,14 +10,17 @@ const isAdminHidingAllowed = sinon.stub();
 const checkEmailAvailability = sinon.stub();
 const checkUsernameAvailability = sinon.stub();
 
-const { validateUserData } = proxyquire.noCallThru().load('./validateUserData', {
-	'./saveUser': { isUpdateUserData: (params: { _id?: string }) => '_id' in params && !!params._id },
-	'../../../settings': { settings: { get: settingsGet } },
-	'../../authorization/getRoles': { getRoleIds },
-	'../../authorization/hasPermission': { hasPermissionAsync },
-	'../../statusVisibility/settings': { isAdminHidingAllowed },
-	'../checkEmailAvailability': { checkEmailAvailability },
-	'../checkUsernameAvailability': { checkUsernameAvailability },
+let validateUserData: any;
+
+before(async () => {
+	mock.module('./saveUser', { exports: { isUpdateUserData: (params: { _id?: string }) => '_id' in params && !!params._id } });
+	mock.module('../../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../../authorization/getRoles', { exports: { getRoleIds } });
+	mock.module('../../authorization/hasPermission', { exports: { hasPermissionAsync } });
+	mock.module('../../statusVisibility/settings', { exports: { isAdminHidingAllowed } });
+	mock.module('../checkEmailAvailability', { exports: { checkEmailAvailability } });
+	mock.module('../checkUsernameAvailability', { exports: { checkUsernameAvailability } });
+	({ validateUserData } = await import('./validateUserData'));
 });
 
 describe('validateUserData', () => {

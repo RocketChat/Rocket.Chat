@@ -231,7 +231,9 @@ export class CachedSettings
 			};
 		}
 
-		this.store.has(_id) && cb(this.store.get(_id)?.value as T);
+		if (this.store.has(_id)) {
+			cb(this.store.get(_id)?.value as T);
+		}
 		return this.change(_id, cb, config);
 	}
 

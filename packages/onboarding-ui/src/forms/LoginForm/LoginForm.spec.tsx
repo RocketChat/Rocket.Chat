@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import LoginForm from './LoginForm';
+import LoginForm from './LoginForm.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

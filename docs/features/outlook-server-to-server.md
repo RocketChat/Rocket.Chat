@@ -36,8 +36,8 @@ integrations:
 
 ## What an administrator sees
 
-Everything lives under **Admin → Outlook Calendar**, in a settings card named **Microsoft Exchange**. It
-requires a premium license that includes the `outlook-calendar` module.
+Everything lives under **Administration → Settings → Microsoft Exchange**. It requires a premium license
+that includes the `outlook-calendar` module.
 
 1. **Pick the mode.** `Legacy` keeps today's behaviour, where each user signs in from the desktop app.
    `Server-to-server` switches to the admin-configured connection.
@@ -137,6 +137,18 @@ left as an intention.
   contact is a favorite in Outlook, so with that provider users mark favorites in Rocket.Chat instead.
   Those stay in Rocket.Chat and never reach Outlook. They are lost when the contact is moved to another
   address book in Outlook, and when the workspace switches to EWS.
+
+## Where the code lives
+
+- **`@rocket.chat/exchange`** (`packages/exchange`): both providers behind `IExchangeProvider`, the EWS
+  transport and its connection pool, retries, the active provider and the calendar window, calendar and
+  contact sync, the per-mailbox sync lease, mailbox resolution and the `Exchange` logger.
+- **`@rocket.chat/ntlm`** (`packages/ntlm`): the NTLMv2 messages, channel binding and MD4.
+- **`@rocket.chat/ui-contacts`** (`packages/ui-contacts`): the contacts table, contact details, editing,
+  favorites and their hooks.
+- **`apps/meteor`**: the settings (`ee/server/settings/exchange.ts`), building the provider from them
+  (`ee/server/lib/exchange/ExchangeProviderRegistry.ts`), both cron jobs, the REST endpoints and the
+  Contacts tab (`client/views/contacts/`).
 
 ## Where the decisions are written down
 

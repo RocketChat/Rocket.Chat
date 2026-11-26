@@ -1,8 +1,8 @@
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useDebouncedState } from './useDebouncedState';
-import { useSafely } from './useSafely';
+import { useDebouncedState } from './useDebouncedState.js';
+import { useSafely } from './useSafely.js';
 
 declare global {
 	interface Window {

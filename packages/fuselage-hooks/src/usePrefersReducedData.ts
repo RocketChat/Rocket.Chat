@@ -1,4 +1,4 @@
-import { useMediaQuery } from './useMediaQuery';
+import { useMediaQuery } from './useMediaQuery.js';
 
 /**
  * Hook to get the prefers-reduce-data value.

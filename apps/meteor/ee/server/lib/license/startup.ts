@@ -28,24 +28,29 @@ export const startLicense = async () => {
 	});
 
 	License.onValidateLicense(async () => {
-		(await Settings.updateValueById('Enterprise_License', License.encryptedLicense)).modifiedCount &&
+		if ((await Settings.updateValueById('Enterprise_License', License.encryptedLicense)).modifiedCount) {
 			void notifyOnSettingChangedById('Enterprise_License');
+		}
 
-		(await Settings.updateValueById('Enterprise_License_Status', 'Valid')).modifiedCount &&
+		if ((await Settings.updateValueById('Enterprise_License_Status', 'Valid')).modifiedCount) {
 			void notifyOnSettingChangedById('Enterprise_License_Status');
+		}
 	});
 
 	License.onInvalidateLicense(async () => {
-		(await Settings.updateValueById('Enterprise_License_Status', 'Invalid')).modifiedCount &&
+		if ((await Settings.updateValueById('Enterprise_License_Status', 'Invalid')).modifiedCount) {
 			void notifyOnSettingChangedById('Enterprise_License_Status');
+		}
 	});
 
 	License.onRemoveLicense(async () => {
-		(await Settings.updateValueById('Enterprise_License', '')).modifiedCount &&
+		if ((await Settings.updateValueById('Enterprise_License', '')).modifiedCount) {
 			void notifyOnSettingChangedById('Enterprise_License_Status');
+		}
 
-		(await Settings.updateValueById('Enterprise_License_Status', 'Invalid')).modifiedCount &&
+		if ((await Settings.updateValueById('Enterprise_License_Status', 'Invalid')).modifiedCount) {
 			void notifyOnSettingChangedById('Enterprise_License_Status');
+		}
 	});
 
 	/**
@@ -95,17 +100,21 @@ export const startLicense = async () => {
 
 		const obj = Object.fromEntries(contexts.map((context) => [context, period]));
 
-		(
-			await Settings.updateValueById(
-				'Enterprise_License_Data',
-				JSON.stringify({
-					...(existingData.signed === signed && existingData),
-					...existingData,
-					...obj,
-					signed,
-				}),
-			)
-		).modifiedCount && void notifyOnSettingChangedById('Enterprise_License_Data');
+		if (
+			(
+				await Settings.updateValueById(
+					'Enterprise_License_Data',
+					JSON.stringify({
+						...(existingData.signed === signed && existingData),
+						...existingData,
+						...obj,
+						signed,
+					}),
+				)
+			).modifiedCount
+		) {
+			void notifyOnSettingChangedById('Enterprise_License_Data');
+		}
 
 		try {
 			await syncWorkspace();

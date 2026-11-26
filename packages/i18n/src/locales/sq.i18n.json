@@ -999,6 +999,7 @@
   "Everyone_can_access_this_channel": "Gjithkush mund të hyjë në këtë kanal",
   "Example_s": "Shembull: <code>{{value}}</code>",
   "except_pinned": "(me përjashtim të atyre që janë mbështetur)",
+  "Exchange_Graph_Client_Secret": "klienti Secret",
   "Exclude_Botnames": "Përjashton Bots",
   "Exclude_Botnames_Description": "Mos propagandoni mesazhe nga robotët emri i të cilit përputhet me shprehjen e rregullt të mësipërme. Nëse majtas bosh, të gjitha mesazhet nga bots do të përhapet.",
   "Exclude_pinned": "Përjashto mesazhet e mbështetura",

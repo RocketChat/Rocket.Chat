@@ -7,11 +7,11 @@ import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AudioDevicePicker from './AudioDevicePicker';
-import type { StageLayout } from './CallStage';
-import CameraPicker from './CameraPicker';
-import { useCallActions, useCallState } from './context';
-import { useAutoLowerHand } from './hooks/useAutoLowerHand';
+import AudioDevicePicker from './AudioDevicePicker.js';
+import type { StageLayout } from './CallStage.js';
+import CameraPicker from './CameraPicker.js';
+import { useCallActions, useCallState } from './context.js';
+import { useAutoLowerHand } from './hooks/useAutoLowerHand.js';
 
 // Google Meet's defaults, so there is no new vocabulary to learn.
 const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '🎉', '👏', '🤔', '🙏'];

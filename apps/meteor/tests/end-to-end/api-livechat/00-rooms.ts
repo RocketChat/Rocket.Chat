@@ -20,7 +20,8 @@ import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../server/api/definition';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { apps, APP_URL } from '../../data/apps/apps-data';
+import { apps } from '../../data/apps/apps-data';
+import { installTestApp } from '../../data/apps/helper';
 import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import type { OnlineAgent } from '../../data/livechat/department';
 import {
@@ -88,22 +89,10 @@ describe('LIVECHAT - rooms', () => {
 
 	before(async () => {
 		if (IS_EE) {
-			// install the app
-			await request
-				.post(apps())
-				.set(credentials)
-				.send({ url: APP_URL })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('app');
-					expect(res.body.app).to.have.a.property('id');
-					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('manually_enabled');
+			const app = await installTestApp();
+			expect(app).to.have.a.property('status').and.to.be.equal('manually_enabled');
 
-					appId = res.body.app.id;
-				});
+			appId = app.id;
 		}
 
 		await updateSetting('Livechat_enabled', true);

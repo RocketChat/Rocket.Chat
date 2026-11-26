@@ -4,16 +4,16 @@ import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import ConferenceWindow from './ConferenceWindow';
-import type { CallState } from '../call/context';
-import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
-import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
-import { ConferenceContext } from '../context/ConferenceContext';
-import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
-import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
-import type { VideoQualitySelection } from '../devices/VideoQualityContext';
-import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import { buildConferenceContext } from '../fixtures/storyFixtures';
+import ConferenceWindow from './ConferenceWindow.js';
+import type { CallState } from '../call/context.js';
+import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context.js';
+import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext.js';
+import { ConferenceContext } from '../context/ConferenceContext.js';
+import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext.js';
+import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext.js';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext.js';
+import { VideoQualityProvider } from '../devices/VideoQualityContext.js';
+import { buildConferenceContext } from '../fixtures/storyFixtures.js';
 
 const buildCallState = (overrides: Partial<CallState> = {}): CallState => ({
 	self: {

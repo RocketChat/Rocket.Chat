@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -19,14 +19,16 @@ const mocks = {
 	},
 };
 
-const { contactAvatar } = proxyquire.noCallThru().load('./contact', {
-	'@rocket.chat/account-utils': { hashLoginToken: mocks.hashLoginToken },
-	'@rocket.chat/models': {
-		Contacts: { findOneById: mocks.contactFindOneById },
-		Avatars: { findOneContactAvatar: mocks.findOneContactAvatar },
-		Users: { findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken },
-	},
-	'./utils': mocks.utils,
+let contactAvatar: any;
+
+before(async () => {
+	mockModel('Contacts', { findOneById: mocks.contactFindOneById });
+	mockModel('Avatars', { findOneContactAvatar: mocks.findOneContactAvatar });
+	mockModel('Users', { findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken });
+
+	mock.module('@rocket.chat/account-utils', { exports: { hashLoginToken: mocks.hashLoginToken } });
+	mock.module('./utils', { exports: mocks.utils });
+	({ contactAvatar } = await import('./contact'));
 });
 
 const OWNER = 'owner-uid';

@@ -1,8 +1,7 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -13,8 +12,11 @@ const modelsMock = {
 
 const getContactManagerIdByUsername = sinon.stub();
 
-const { ContactMerger } = proxyquire.noCallThru().load('./ContactMerger', {
-	'./getContactManagerIdByUsername': { getContactManagerIdByUsername },
+let ContactMerger: any;
+
+before(async () => {
+	mock.module('./getContactManagerIdByUsername', { exports: { getContactManagerIdByUsername } });
+	({ ContactMerger } = await import('./ContactMerger'));
 });
 
 describe('ContactMerger.mergeFieldsIntoContact', () => {

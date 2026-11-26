@@ -1,10 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -26,12 +25,15 @@ const AppEvents = {
 	IPostRoomCreate: 'IPostRoomCreate',
 };
 
-const { createDirectRoom } = p.noCallThru().load('./createDirectRoom.ts', {
-	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents },
-	'@rocket.chat/core-services': { ClientSafeError },
-	'../../settings': { settings: { get: settingsGet } },
-	'../callbacks': { callbacks: { run: callbacksRun } },
-	'../notifyListener': { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId },
+let createDirectRoom: any;
+
+before(async () => {
+	mock.module('@rocket.chat/apps', { exports: { Apps: { self: { triggerEvent } }, AppEvents } });
+	mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+	mock.module('../../settings', { exports: { settings: { get: settingsGet } } });
+	mock.module('../callbacks', { exports: { callbacks: { run: callbacksRun } } });
+	mock.module('../notifyListener', { exports: { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } });
+	({ createDirectRoom } = await import('./createDirectRoom'));
 });
 
 const alice = { _id: 'u2', username: 'alice', name: 'Alice' };

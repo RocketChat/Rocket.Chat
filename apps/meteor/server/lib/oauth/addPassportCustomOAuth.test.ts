@@ -1,7 +1,6 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const routes = { get: sinon.stub() };
@@ -9,15 +8,18 @@ const loginErrorCallback = sinon.stub();
 const passportOAuthErrorCallback = sinon.stub().returns(loginErrorCallback);
 const authenticate = sinon.stub();
 
-const { addPassportCustomOAuth } = p.noCallThru().load('./addPassportCustomOAuth.ts', {
-	'passport': { use: sinon.stub(), unuse: sinon.stub(), authenticate },
-	'./allowPassportOAuthMiddleware': { allowPassportOAuthMiddleware: () => sinon.stub() },
-	'./passportOAuthCallback': { passportOAuthCallback: () => sinon.stub(), passportOAuthErrorCallback },
-	'./removeOAuthRoutes': { removeOAuthRoutes: sinon.stub() },
-	'./verifyFunction': { verifyFunction: sinon.stub() },
-	'../../configuration/configurePassport': { oAuthRouter: routes },
-	'../../settings': { settings: { get: () => 'https://chat.example.com/' } },
-	'../auth-providers/custom-oauth/customOAuth': { CustomOAuthStrategy: class {} },
+let addPassportCustomOAuth: any;
+
+before(async () => {
+	mock.module('passport', { exports: { default: { use: sinon.stub(), unuse: sinon.stub(), authenticate } } });
+	mock.module('./allowPassportOAuthMiddleware', { exports: { allowPassportOAuthMiddleware: () => sinon.stub() } });
+	mock.module('./passportOAuthCallback', { exports: { passportOAuthCallback: () => sinon.stub(), passportOAuthErrorCallback } });
+	mock.module('./removeOAuthRoutes', { exports: { removeOAuthRoutes: sinon.stub() } });
+	mock.module('./verifyFunction', { exports: { verifyFunction: sinon.stub() } });
+	mock.module('../../configuration/configurePassport', { exports: { oAuthRouter: routes } });
+	mock.module('../../settings', { exports: { settings: { get: () => 'https://chat.example.com/' } } });
+	mock.module('../auth-providers/custom-oauth/customOAuth', { exports: { CustomOAuthStrategy: class {} } });
+	({ addPassportCustomOAuth } = await import('./addPassportCustomOAuth'));
 });
 
 describe('addPassportCustomOAuth', () => {

@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
 import AnimatedVisibility from './AnimatedVisibility';
 import { render } from '../../testing';
@@ -10,20 +10,21 @@ const cssClassCount = (element: Element | null) =>
 
 describe('[AnimatedVisibility Component]', () => {
 	it('keeps a string className of the child', () => {
-		const { container } = render(
+		render(
 			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
-				<Box className='own' />
+				<Box data-testid='child' className='own' />
 			</AnimatedVisibility>,
 		);
 
-		expect(container.firstElementChild).toHaveClass('own');
-		expect(container.firstElementChild).toHaveCssInJsClass();
+		expect(screen.getByTestId('child')).toHaveClass('own');
+		expect(screen.getByTestId('child')).toHaveCssInJsClass();
 	});
 
 	it('keeps a css function className of the child', () => {
-		const { container } = render(
+		render(
 			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
 				<Box
+					data-testid='child'
 					className={css`
 						color: red;
 					`}
@@ -31,14 +32,15 @@ describe('[AnimatedVisibility Component]', () => {
 			</AnimatedVisibility>,
 		);
 
-		expect(container.firstElementChild?.className).not.toMatch(/=>|function/);
-		expect(cssClassCount(container.firstElementChild)).toBeGreaterThanOrEqual(2);
+		expect(screen.getByTestId('child').className).not.toMatch(/=>|function/);
+		expect(cssClassCount(screen.getByTestId('child'))).toBeGreaterThanOrEqual(2);
 	});
 
 	it('keeps an array className of the child', () => {
-		const { container } = render(
+		render(
 			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
 				<Box
+					data-testid='child'
 					className={[
 						'own',
 						css`
@@ -49,29 +51,29 @@ describe('[AnimatedVisibility Component]', () => {
 			</AnimatedVisibility>,
 		);
 
-		expect(container.firstElementChild).toHaveClass('own');
-		expect(container.firstElementChild?.className).not.toMatch(/=>|function/);
-		expect(cssClassCount(container.firstElementChild)).toBeGreaterThanOrEqual(2);
+		expect(screen.getByTestId('child')).toHaveClass('own');
+		expect(screen.getByTestId('child').className).not.toMatch(/=>|function/);
+		expect(cssClassCount(screen.getByTestId('child'))).toBeGreaterThanOrEqual(2);
 	});
 
 	it('runs the child onAnimationEnd and still hides once the animation ends', () => {
 		const onAnimationEnd = jest.fn();
-		const { container, rerender } = render(
+		const { rerender } = render(
 			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
-				<Box data-qa='child' onAnimationEnd={onAnimationEnd} />
+				<Box data-testid='child' onAnimationEnd={onAnimationEnd} />
 			</AnimatedVisibility>,
 		);
 
 		rerender(
 			<AnimatedVisibility visibility={AnimatedVisibility.HIDDEN}>
-				<Box data-qa='child' onAnimationEnd={onAnimationEnd} />
+				<Box data-testid='child' onAnimationEnd={onAnimationEnd} />
 			</AnimatedVisibility>,
 		);
-		expect(container.firstElementChild).not.toBeNull();
+		expect(screen.getByTestId('child')).toBeInTheDocument();
 
-		fireEvent.animationEnd(container.firstElementChild as Element);
+		fireEvent.animationEnd(screen.getByTestId('child'));
 
 		expect(onAnimationEnd).toHaveBeenCalledTimes(1);
-		expect(container.firstElementChild).toBeNull();
+		expect(screen.queryByTestId('child')).not.toBeInTheDocument();
 	});
 });

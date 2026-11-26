@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallParticipants from './CallParticipants';
-import { conferenceAppRoot, withCallProviders } from '../fixtures/storyFixtures';
+import CallParticipants from './CallParticipants.js';
+import { conferenceAppRoot, withCallProviders } from '../fixtures/storyFixtures.js';
 
 /**
  * Who is already in a call: their faces, then how many more there are.

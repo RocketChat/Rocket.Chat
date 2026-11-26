@@ -1,8 +1,8 @@
-import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, FieldDescription } from '@rocket.chat/fuselage';
+import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, FieldDescription, Stack, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useId } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 export type ReportUserModalProps = {
@@ -17,15 +17,12 @@ type ReportUserModalsFields = {
 };
 
 const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUserModalProps) => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<ReportUserModalsFields>({
+	const { register, handleSubmit, control } = useForm<ReportUserModalsFields>({
 		defaultValues: {
 			reasonForReport: '',
 		},
 	});
+	const { errors } = useFormState({ control });
 
 	const { t } = useTranslation();
 
@@ -40,17 +37,15 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
-			<Box marginBlockEnd={16} display='flex' alignItems='center'>
-				<UserAvatar username={username} />
-				<Box marginInlineStart={8} fontScale='p2b'>
-					{displayName}
-				</Box>
-			</Box>
-			<FieldGroup>
-				<Field>
-					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
-					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
-					<Box paddingBlockEnd={4}>
+			<Stack gap='x16'>
+				<Stack direction='row' align='center' gap='x8'>
+					<UserAvatar username={username} />
+					<Text fontScale='p2b'>{displayName}</Text>
+				</Stack>
+				<FieldGroup>
+					<Field>
+						<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
+						<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
 						<FieldRow>
 							<TextAreaInput
 								id={reasonForReportId}
@@ -60,14 +55,14 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 								aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
 							/>
 						</FieldRow>
-					</Box>
-					{errors.reasonForReport && (
-						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
-							{errors.reasonForReport.message}
-						</FieldError>
-					)}
-				</Field>
-			</FieldGroup>
+						{errors.reasonForReport && (
+							<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
+								{errors.reasonForReport.message}
+							</FieldError>
+						)}
+					</Field>
+				</FieldGroup>
+			</Stack>
 		</GenericModal>
 	);
 };

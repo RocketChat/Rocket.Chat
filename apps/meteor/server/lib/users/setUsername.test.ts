@@ -1,9 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('setUsername', () => {
@@ -48,25 +47,27 @@ describe('setUsername', () => {
 		SystemLogger: sinon.stub(),
 	};
 
-	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('./setUsername', {
-		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-		'@rocket.chat/core-services': { api: stubs.api, ClientSafeError },
-		'../auth/accountEmails': stubs.accountEmails,
-		'underscore': stubs.underscore,
-		'../../settings': { settings: stubs.settings },
-		'../notifyListener': { notifyOnUserChange: stubs.notifyOnUserChange },
-		'../rooms/addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
-		'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
-		'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
-		'../rooms/joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
-		'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
-		'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
-		'./validateUsername': { validateUsername: stubs.validateUsername },
-		'../callbacks': { callbacks: stubs.callbacks },
-		'../logger/system': { SystemLogger: stubs.SystemLogger },
-	});
+	let setUsernameWithValidation: any;
+	let _setUsername: any;
 
-	before(() => {
+	before(async () => {
+		mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } });
+		mock.module('@rocket.chat/core-services', { exports: { api: stubs.api, ClientSafeError } });
+		mock.module('../auth/accountEmails', { exports: stubs.accountEmails });
+		mock.module('underscore', { exports: { default: stubs.underscore } });
+		mock.module('../../settings', { exports: { settings: stubs.settings } });
+		mock.module('../notifyListener', { exports: { notifyOnUserChange: stubs.notifyOnUserChange } });
+		mock.module('../rooms/addUserToRoom', { exports: { addUserToRoom: stubs.addUserToRoom } });
+		mock.module('./checkUsernameAvailability', { exports: { checkUsernameAvailability: stubs.checkUsernameAvailability } });
+		mock.module('./getAvatarSuggestionForUser', { exports: { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser } });
+		mock.module('../rooms/joinDefaultChannels', { exports: { joinDefaultChannels: stubs.joinDefaultChannels } });
+		mock.module('./saveUserIdentity', { exports: { saveUserIdentity: stubs.saveUserIdentity } });
+		mock.module('./setUserAvatar', { exports: { setUserAvatar: stubs.setUserAvatar } });
+		mock.module('./validateUsername', { exports: { validateUsername: stubs.validateUsername } });
+		mock.module('../callbacks', { exports: { callbacks: stubs.callbacks } });
+		mock.module('../logger/system', { exports: { SystemLogger: stubs.SystemLogger } });
+		({ setUsernameWithValidation, _setUsername } = await import('./setUsername'));
+
 		mockModel('Users', stubs.Users);
 		mockModel('Invites', stubs.Invites);
 		mockModel('Subscriptions', stubs.Subscriptions);

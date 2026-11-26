@@ -1,13 +1,13 @@
 import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
 import { getNewUserRoles } from '../../../services/user/lib/getNewUserRoles';
+import { createUser } from '../../auth/createUser';
 import { notifyOnUserChangeById } from '../../notifyListener';
 import { validateEmailDomain } from '../../validateEmailDomain';
 
@@ -18,7 +18,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	const isGuest = roles?.length === 1 && roles.includes('guest');
 
 	// insert user
-	const createUser: Record<string, any> = {
+	const createUserOptions: Record<string, any> = {
 		username: userData.username,
 		password: userData.password,
 		...(userData.name && { name: userData.name }),
@@ -29,10 +29,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		performedBy,
 	};
 	if (userData.email) {
-		createUser.email = userData.email;
+		createUserOptions.email = userData.email;
 	}
 
-	const _id = await Accounts.createUserAsync(createUser);
+	const _id = await createUser(createUserOptions);
 
 	const updater = Users.getUpdater();
 

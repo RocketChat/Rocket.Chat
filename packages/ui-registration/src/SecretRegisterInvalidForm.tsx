@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import VerticalTemplate from './template/VerticalTemplate';
+import VerticalTemplate from './template/VerticalTemplate.js';
 
 const SecretRegisterInvalidForm = () => {
 	const { t } = useTranslation();

@@ -3,10 +3,10 @@ import { BackgroundLayer } from '@rocket.chat/layout';
 import type { ReactNode } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 
-import type { FormPageLayoutStyleProps } from '../../Types';
-import FormPageLayout from '../../common/FormPageLayout';
-import OrganizationInfoForm from '../../forms/OrganizationInfoForm';
-import type { OrganizationInfoPayload } from '../../forms/OrganizationInfoForm/OrganizationInfoForm';
+import type { FormPageLayoutStyleProps } from '../../Types/index.js';
+import FormPageLayout from '../../common/FormPageLayout.js';
+import type { OrganizationInfoPayload } from '../../forms/OrganizationInfoForm/OrganizationInfoForm.js';
+import OrganizationInfoForm from '../../forms/OrganizationInfoForm/index.js';
 
 export type OrganizationInfoPageProps = {
 	title?: ReactNode;

@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Text } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
@@ -12,7 +12,7 @@ import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui
 import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AbacAttributesFormData } from '../../../../components/ABAC/AbacRoomCreation';
@@ -50,11 +50,8 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 		defaultValues: { attributes: getInitialAttributeRows(roomAttributes, requiredKeys) },
 		mode: 'onChange',
 	});
-	const {
-		control,
-		handleSubmit,
-		formState: { isValid },
-	} = methods;
+	const { control, handleSubmit } = methods;
+	const { isValid } = useFormState({ control });
 
 	const attributes = useWatch({ control, name: 'attributes' });
 	const draft = toAttributeMap(attributes);
@@ -123,9 +120,9 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 					id={formId}
 					onSubmit={handleSubmit((values) => setPreviewAttributes(toAttributeMap(values.attributes)))}
 				>
-					<Box fontScale='p2' color='hint'>
+					<Text fontScale='p2' color='hint'>
 						{t('ABAC_Manage_attributes_description')}
-					</Box>
+					</Text>
 					<AbacAttributesStep
 						requiredKeys={requiredKeys}
 						assignable={assignable.data}

@@ -1,1 +1,1 @@
-export { default, type CreateNewAccountPageProps } from './CreateNewAccountPage';
+export { default, type CreateNewAccountPageProps } from './CreateNewAccountPage.js';

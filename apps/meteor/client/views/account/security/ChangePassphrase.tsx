@@ -16,7 +16,7 @@ import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import SecuritySection from './layout/SecuritySection';
@@ -69,20 +69,15 @@ export const ChangePassphrase = () => {
 	const passphraseVerifierId = `verifier-${uniqueId}`;
 	const e2ePasswordExplanationId = `explanation-${uniqueId}`;
 
-	const {
-		watch,
-		formState: { errors, isValid },
-		handleSubmit,
-		reset,
-		resetField,
-		control,
-		trigger,
-	} = useForm({
+	const { handleSubmit, reset, resetField, control, trigger } = useForm({
 		defaultValues,
 		mode: 'all',
 	});
+	const { errors, isValid } = useFormState({ control });
 
-	const { passphrase, confirmationPassphrase } = watch();
+	const watched = useWatch({ control });
+	const passphrase = watched.passphrase ?? '';
+	const confirmationPassphrase = watched.confirmationPassphrase ?? '';
 	const { validations, valid } = useValidatePassphrase(passphrase);
 	useEffect(() => {
 		if (!valid) {

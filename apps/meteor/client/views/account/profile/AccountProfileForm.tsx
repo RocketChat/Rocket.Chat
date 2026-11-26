@@ -18,7 +18,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch, useFormState } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import ProfileNameFields from './layout/ProfileNameFields';
@@ -69,16 +69,16 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		namesRegex,
 	} = useAccountProfileSettings();
 
-	const {
-		control,
-		watch,
-		handleSubmit,
-		reset,
-		setValue,
-		formState: { errors, dirtyFields },
-	} = useFormContext<AccountProfileFormValues>();
+	const { control, handleSubmit, reset, setValue } = useFormContext<AccountProfileFormValues>();
+	const { errors, dirtyFields } = useFormState({ control });
 
-	const { email, avatar, username, name: userFullName, statusType, statusText } = watch();
+	const watched = useWatch({ control });
+	const email = watched.email ?? '';
+	const avatar = useWatch({ control, name: 'avatar' });
+	const username = watched.username ?? '';
+	const userFullName = watched.name ?? '';
+	const { statusType } = watched;
+	const statusText = watched.statusText ?? '';
 
 	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 

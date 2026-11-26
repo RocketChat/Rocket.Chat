@@ -1,10 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 import { runInNewContext } from 'node:vm';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -15,14 +14,20 @@ const doesUserRequire2FA = sandbox.stub();
 const sendTwoFactorChallenge = sandbox.stub();
 const logError = sandbox.stub();
 
-const { passportOAuthCallback, passportOAuthErrorCallback } = p.noCallThru().load('./passportOAuthCallback.ts', {
-	'../auth/issueLoginToken': { issueLoginToken },
-	'./twoFactorAuth': { doesUserRequire2FA },
-	'@rocket.chat/logger': {
-		Logger: class {
-			error = logError;
+let passportOAuthCallback: any;
+let passportOAuthErrorCallback: any;
+
+before(async () => {
+	mock.module('../auth/issueLoginToken', { exports: { issueLoginToken } });
+	mock.module('./twoFactorAuth', { exports: { doesUserRequire2FA } });
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = logError;
+			},
 		},
-	},
+	});
+	({ passportOAuthCallback, passportOAuthErrorCallback } = await import('./passportOAuthCallback'));
 });
 
 const siteUrl = 'https://chat.example.com';

@@ -1,7 +1,6 @@
-import { afterEach, describe, it, mock } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const warn = sinon.stub();
@@ -11,22 +10,22 @@ mock.module('@rocket.chat/network-broker', { namedExports: { startBroker } });
 
 const stub = (name: string) => ({ [name]: true });
 
-const { registerEEBroker } = proxyquire
-	.noPreserveCache()
-	.noCallThru()
-	.load('./index', {
-		'../hooks/auth/callback': stub('hooks'),
-		'./audit': stub('audit'),
-		'./deviceManagement': stub('deviceManagement'),
-		'./engagementDashboard': stub('engagementDashboard'),
-		'./maxRoomsPerGuest': stub('maxRoomsPerGuest'),
-		'./services': stub('services'),
-		'./readReceiptsArchive': stub('readReceiptsArchive'),
-		'./mcp': stub('mcp'),
-		'./presence': stub('presence'),
-		'@rocket.chat/core-services': { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } },
-		'../../../server/lib/logger/system': { SystemLogger: { warn } },
-	}) as { registerEEBroker: () => Promise<void> };
+let registerEEBroker: (typeof import('./index'))['registerEEBroker'];
+
+before(async () => {
+	mock.module('./presence', { exports: stub('presence') });
+	mock.module('../hooks/auth/callback', { exports: stub('hooks') });
+	mock.module('./audit', { exports: stub('audit') });
+	mock.module('./deviceManagement', { exports: stub('deviceManagement') });
+	mock.module('./engagementDashboard', { exports: stub('engagementDashboard') });
+	mock.module('./maxRoomsPerGuest', { exports: stub('maxRoomsPerGuest') });
+	mock.module('./services', { exports: stub('services') });
+	mock.module('./readReceiptsArchive', { exports: stub('readReceiptsArchive') });
+	mock.module('./mcp', { exports: stub('mcp') });
+	mock.module('@rocket.chat/core-services', { exports: { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } } });
+	mock.module('../../../server/lib/logger/system', { exports: { SystemLogger: { warn } } });
+	({ registerEEBroker } = await import('./index'));
+});
 
 describe('registerEEBroker encryption warning', () => {
 	const env = { ...process.env };

@@ -1,10 +1,10 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
+	ContextualbarEmptyContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -111,13 +111,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 				</ContextualbarContent>
 			)}
 
-			{isError && !user && (
-				<ContextualbarContent>
-					<Box paddingBlock={16}>
-						<Callout type='danger'>{t('User_not_found')}</Callout>
-					</Box>
-				</ContextualbarContent>
-			)}
+			{isError && !user && <ContextualbarEmptyContent icon='circle-exclamation' iconVariation='danger' title={t('User_not_found')} />}
 
 			{!isPending && user && (
 				<UserInfo

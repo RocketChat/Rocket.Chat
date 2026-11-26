@@ -1,14 +1,16 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { SearchResultValidationService } = proxyquire.noCallThru().load('./SearchResultValidationService', {
-	'meteor/meteor': { Meteor: { userId: () => 'viewer' } },
-	'../../authorization': { canAccessRoomAsync: sinon.stub().resolves(true) },
-	'../logger/logger': { SearchLogger: { debug: sinon.stub() } },
+let SearchResultValidationService: any;
+
+before(async () => {
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: { userId: () => 'viewer' } } });
+	mock.module('../../authorization', { exports: { canAccessRoomAsync: sinon.stub().resolves(true) } });
+	mock.module('../logger/logger', { exports: { SearchLogger: { debug: sinon.stub() } } });
+	({ SearchResultValidationService } = await import('./SearchResultValidationService'));
 });
 
 describe('SearchResultValidationService', () => {

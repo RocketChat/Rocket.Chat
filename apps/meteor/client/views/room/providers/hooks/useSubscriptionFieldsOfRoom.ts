@@ -1,5 +1,5 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { useRef } from 'react';
+import { useState } from 'react';
 
 import { omit } from '../../../../../lib/utils/omit';
 
@@ -25,13 +25,13 @@ export const useSubscriptionFieldsOfRoom = (subscription: ISubscription | undefi
 			'_updatedAt',
 		);
 
-	// ponytail: compares by JSON, enough for a single subscription record per render
 	const key = JSON.stringify(fields);
-	const cache = useRef<{ key: string; fields: typeof fields }>({ key, fields });
+	const [cache, setCache] = useState({ key, fields });
 
-	if (cache.current.key !== key) {
-		cache.current = { key, fields };
+	if (cache.key !== key) {
+		setCache({ key, fields });
+		return fields;
 	}
 
-	return cache.current.fields;
+	return cache.fields;
 };

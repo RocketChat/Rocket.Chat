@@ -33,7 +33,7 @@ export const _canEnableApp = async ({ Apps, License }: _canEnableAppDependencies
 			}
 
 			break;
-		default:
+		default: {
 			if (await License.shouldPreventAction('marketplaceApps')) {
 				throw new Error('license-prevented');
 			}
@@ -44,6 +44,7 @@ export const _canEnableApp = async ({ Apps, License }: _canEnableAppDependencies
 			}
 
 			break;
+		}
 	}
 };
 

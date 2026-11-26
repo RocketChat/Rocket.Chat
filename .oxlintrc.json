@@ -180,6 +180,27 @@
 			"plugins": ["jest"]
 		},
 		{
+			"files": ["packages/fuselage/**/*.spec.{ts,tsx}"],
+			"rules": {
+				"jest/expect-expect": [
+					"warn",
+					{
+						"assertFunctionNames": [
+							"expect",
+							"expectForwards",
+							"expectKeyboardActivation",
+							"expectTabOrder",
+							"expectCompositeList",
+							"expectCombobox",
+							"expectMenu",
+							"Story.run"
+						]
+					}
+				]
+			},
+			"plugins": ["jest"]
+		},
+		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
 			"rules": {
 				"jest/expect-expect": "off",
@@ -395,6 +416,18 @@
 					{
 						"selector": "CallExpression > MemberExpression.callee[object.name='Accounts'][property.name=/^send(ResetPassword|Verification|Enrollment)Email$/]",
 						"message": "Use sendResetPasswordEmail, sendVerificationEmail or sendEnrollmentEmail from 'server/lib/auth/accountEmails' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(createUser|createUserAsync|createUserVerifyingEmail|insertUserDoc)$/]",
+						"message": "Use createUser from 'server/lib/auth/createUser' or insertUser from 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(onCreateUser|validateNewUser)$/]",
+						"message": "Add the step to insertUser in 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='updateOrCreateUserFromExternalService']",
+						"message": "Use updateOrCreateUserFromExternalService from 'server/lib/auth/updateOrCreateUserFromExternalService' instead."
 					}
 				]
 			}
@@ -496,6 +529,13 @@
 			"files": ["**/*.stories.{ts,tsx,js,jsx,mjs,cjs}"],
 			"rules": {
 				"storybook/no-renderer-packages": "off"
+			}
+		},
+		{
+			"files": ["packages/fuselage/src/**/*.tsx"],
+			"jsPlugins": [{ "name": "rocket.chat", "specifier": "./packages/lint-config/rules/index.js" }],
+			"rules": {
+				"rocket.chat/render-element-spread": ["error", { "safeCalls": ["ariaAndDataAttributes", "pickWebPressHandlers", "pickWebInteractionHandlers"] }]
 			}
 		},
 		{

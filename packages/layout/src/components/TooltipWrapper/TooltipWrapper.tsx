@@ -3,7 +3,7 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import type { Dispatch, RefObject, ReactElement, ReactNode, SetStateAction } from 'react';
 import { cloneElement, useCallback, useId, useMemo, useRef } from 'react';
 
-import InnerTooltip from './InnerTooltip';
+import InnerTooltip from './InnerTooltip.js';
 
 export type AnchorParams = {
 	ref: RefObject<Element | null>;

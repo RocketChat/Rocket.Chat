@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import FeaturePreviewView from './FeaturePreviewView';
+import FeaturePreviewView from './FeaturePreviewView.js';
 
 const features: FeaturePreviewProps[] = [
 	{

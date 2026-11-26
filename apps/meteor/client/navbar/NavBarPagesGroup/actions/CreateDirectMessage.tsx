@@ -13,7 +13,7 @@ import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '
 import { useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -30,11 +30,8 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { isSubmitting, isValidating, errors },
-	} = useForm({ defaultValues: { users: [] } });
+	const { control, handleSubmit } = useForm({ defaultValues: { users: [] } });
+	const { isSubmitting, isValidating, errors } = useFormState({ control });
 
 	const goToRoom = useGoToRoom();
 

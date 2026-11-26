@@ -9,8 +9,8 @@
 		"displayContents": 0
 	},
 	"AudioPlayer/AudioPlayer.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 7,
+		"nested": 6,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -252,8 +252,8 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 88,
-		"nested": 60,
+		"rules": 92,
+		"nested": 61,
 		"combinators": 10,
 		"important": 0,
 		"specificityBumps": 6,
@@ -297,12 +297,12 @@
 		"displayContents": 0
 	},
 	"Message/MessageMetrics/MessageMetrics.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 4,
+		"nested": 3,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/MessageReactions/MessageReactions.styles.scss": {
@@ -333,9 +333,9 @@
 		"displayContents": 0
 	},
 	"Message/MessageToolbar/MessageToolbar.styles.scss": {
-		"rules": 6,
-		"nested": 5,
-		"combinators": 2,
+		"rules": 3,
+		"nested": 2,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,

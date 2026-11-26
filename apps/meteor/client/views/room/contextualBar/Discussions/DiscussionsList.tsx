@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Icon, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -7,6 +7,7 @@ import {
 	ContextualbarContent,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarTitle,
 	ContextualbarSection,
 	ContextualbarDialog,
@@ -18,6 +19,7 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
+import ListViewport from '../../../../components/ListViewport';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
@@ -83,33 +85,28 @@ function DiscussionsList({
 			</ContextualbarSection>
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
-				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
+				{isPending && <ContextualbarSkeletonContent />}
 				{error instanceof Error && (
-					<Box paddingInline={24}>
-						<Callout type='danger'>{error.toString()}</Callout>
-					</Box>
+					<ContextualbarEmptyContent
+						icon='circle-exclamation'
+						iconVariation='danger'
+						title={t('Something_went_wrong')}
+						subtitle={error.toString()}
+					/>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<ListViewport id={discussionListId} ref={discussionListRef}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<Box height='full' width='full' style={{ minHeight: 0 }}>
-								<PaginatedVirtualList
-									items={discussions}
-									totalCount={itemCount}
-									overscan={25}
-									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion) => (
-										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
-									)}
-								/>
-							</Box>
+							<PaginatedVirtualList
+								items={discussions}
+								totalCount={itemCount}
+								overscan={25}
+								onEndReached={isPending ? undefined : loadMoreItems}
+								renderItem={(discussion) => <DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />}
+							/>
 						)}
-					</Box>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

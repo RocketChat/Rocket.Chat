@@ -17,7 +17,7 @@ const storyFiles = (directory: string): string[] =>
 /** Every story of every `*.stories.tsx` in the package, composed with its meta and ready to render or `run()`. */
 export const loadStories = () =>
 	storyFiles(SRC).flatMap((file) =>
-		// oxlint-disable-next-line import/no-dynamic-require -- the story files are discovered on disk
+		// oxlint-disable-next-line import/no-dynamic-require, typescript/no-require-imports -- the story files are discovered on disk, and test.each needs them before any test runs, which an async import() can't provide
 		Object.entries(composeStories(require(file)) as Record<string, ComposedStory>).map(([name, Story]) => ({
 			title: `${relative(SRC, file)} ${name}`,
 			Story,

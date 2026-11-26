@@ -992,6 +992,7 @@
   "Everyone_can_access_this_channel": "ทุกคนสามารถเข้าถึงช่องนี้ได้",
   "Example_s": "ตัวอย่าง: <code>{{value}}</code>",
   "except_pinned": "(ยกเว้นผู้ที่ถูกตรึงไว้)",
+  "Exchange_Graph_Client_Secret": "ความลับของลูกค้า",
   "Exclude_Botnames": "ไม่รวมบอท",
   "Exclude_Botnames_Description": "อย่าเผยแพร่ข้อความจากบอทที่มีชื่อตรงกับนิพจน์ทั่วไปข้างต้น หากปล่อยให้ว่างข้อความทั้งหมดจากบอทจะถูกเผยแพร่",
   "Exclude_pinned": "ไม่รวมข้อความตรึง",

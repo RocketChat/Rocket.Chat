@@ -1,9 +1,8 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { getShiftedTime } = proxyquire.noCallThru().load('./getShiftedTime', {});
+import { getShiftedTime } from './getShiftedTime';
 
 describe('#getShiftedTime', () => {
 	it('should shift time forward by minutes', () => {

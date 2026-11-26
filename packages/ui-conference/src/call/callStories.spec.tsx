@@ -3,18 +3,18 @@ import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import type { ComponentType } from 'react';
 
-import * as audioDevicePicker from './AudioDevicePicker.stories';
-import * as callControls from './CallControls.stories';
-import * as callHeader from './CallHeader.stories';
-import * as callReactions from './CallReactions.stories';
-import * as callStageArea from './CallStageArea.stories';
-import * as cameraPicker from './CameraPicker.stories';
-import * as voiceActivity from './VoiceActivity.stories';
-import * as callDiagnosticsPanel from './diagnostics/CallDiagnosticsPanel.stories';
-import * as participantTile from './tile/ParticipantTile.stories';
-import * as callBar from '../components/CallBar.stories';
-import * as callPresenting from '../components/CallPresenting.stories';
-import * as callRaisedHands from '../components/CallRaisedHands.stories';
+import * as audioDevicePicker from './AudioDevicePicker.stories.js';
+import * as callControls from './CallControls.stories.js';
+import * as callHeader from './CallHeader.stories.js';
+import * as callReactions from './CallReactions.stories.js';
+import * as callStageArea from './CallStageArea.stories.js';
+import * as cameraPicker from './CameraPicker.stories.js';
+import * as voiceActivity from './VoiceActivity.stories.js';
+import * as callDiagnosticsPanel from './diagnostics/CallDiagnosticsPanel.stories.js';
+import * as participantTile from './tile/ParticipantTile.stories.js';
+import * as callBar from '../components/CallBar.stories.js';
+import * as callPresenting from '../components/CallPresenting.stories.js';
+import * as callRaisedHands from '../components/CallRaisedHands.stories.js';
 
 type ComposedStory = ComponentType & { storyName?: string; play?: (context: { canvasElement: HTMLElement }) => Promise<void> };
 

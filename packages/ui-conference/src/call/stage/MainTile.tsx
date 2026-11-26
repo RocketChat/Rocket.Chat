@@ -1,6 +1,6 @@
-import type { StageTile } from '../lib/stageTiles';
-import ParticipantTile from '../tile/ParticipantTile';
-import SelfTile from '../tile/SelfTile';
+import type { StageTile } from '../lib/stageTiles.js';
+import ParticipantTile from '../tile/ParticipantTile.js';
+import SelfTile from '../tile/SelfTile.js';
 
 export type MainTileProps = {
 	tile: StageTile;
@@ -18,6 +18,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
+			participantId={tile.id}
 			sendHeight={tile.sendHeight}
 		/>
 	) : (
@@ -30,6 +31,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
+			participantId={tile.id}
 		/>
 	);
 
