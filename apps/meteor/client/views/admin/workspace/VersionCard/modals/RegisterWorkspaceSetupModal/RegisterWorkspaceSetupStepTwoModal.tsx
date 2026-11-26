@@ -1,8 +1,8 @@
 import {
-	Box,
 	Field,
 	FieldLabel,
 	FieldRow,
+	LinkButton,
 	Modal,
 	ModalClose,
 	ModalContent,
@@ -104,18 +104,11 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 			</ModalContent>
 			<ModalFooter justify='space-between'>
 				<Text fontScale='c1'>
-					<Stack direction='row'>
-						<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
-							Didn&apos;t receive email?{' '}
-							<Box is='a' paddingInline='x4' onClick={handleResendRegistrationEmail}>
-								Resend
-							</Box>{' '}
-							or{' '}
-							<Box is='a' paddingInline='x4' onClick={handleBackFromConfirmation}>
-								change email
-							</Box>
-						</Trans>
-					</Stack>
+					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
+						Didn&apos;t receive email? <LinkButton onClick={handleResendRegistrationEmail}>Resend</LinkButton>
+						{' or '}
+						<LinkButton onClick={handleBackFromConfirmation}>change email</LinkButton>
+					</Trans>
 				</Text>
 			</ModalFooter>
 		</Modal>

@@ -2,7 +2,7 @@ import { Box, Margins } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import LegendSymbol from './LegendSymbol';
+import LegendSymbol from '../layout/LegendSymbol';
 
 export default {
 	component: LegendSymbol,

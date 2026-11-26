@@ -5,6 +5,9 @@ export type LegendSymbolProps = {
 	color?: CSSProperties['backgroundColor'];
 };
 
+/**
+ * The coloured square that marks a series in a chart legend.
+ */
 const LegendSymbol = ({ color = 'currentColor' }: LegendSymbolProps) => (
 	<Margins inlineEnd='x8'>
 		<Box

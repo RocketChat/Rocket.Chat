@@ -9,8 +9,8 @@ import {
 	MessageContainerFixed,
 	MessageStatusIndicatorItem,
 	Message,
-	Box,
 	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTimeAgo } from '@rocket.chat/ui-client';
@@ -78,9 +78,9 @@ const ThreadListMessage = ({
 				</MessageHeader>
 				<MessageBody clamp={2}>
 					{ignored ? (
-						<Box is='span' fontSize='c2' color='hint'>
+						<Text is='span' fontScale='c2' color='hint'>
 							{t('Message_Ignored')}
-						</Box>
+						</Text>
 					) : (
 						msg
 					)}

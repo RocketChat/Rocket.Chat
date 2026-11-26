@@ -14,6 +14,9 @@ const hidden = {
 	position: 'fixed',
 } as const;
 
+/**
+ * The surface of a marketplace filter's options, placed below the button that opened it and closed by a click outside.
+ */
 const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
 	function CategoryDropDownListWrapper({ children, onClose }, ref) {
 		const target = useRef<HTMLElement>(null);

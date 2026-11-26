@@ -3,12 +3,12 @@ import type { StoryFn } from '@storybook/react';
 import { useState } from 'react';
 
 import CategoryDropDown from './CategoryDropDown';
-import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
 import TagList from './TagList';
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 import { useCategories } from '../../hooks/useCategories';
 import { useCategoryToggle } from '../../hooks/useCategoryToggle';
+import CategoryDropDownAnchor from '../../layout/CategoryDropDownAnchor';
 
 export default {
 	component: CategoryDropDownAnchor,

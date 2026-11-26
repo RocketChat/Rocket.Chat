@@ -3,14 +3,20 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEvent } from 'react';
 import { forwardRef } from 'react';
 
-import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 
 type RadioDropdownAnchorProps = {
 	onClick: (event: MouseEvent<HTMLElement>) => void;
 	group: RadioDropDownGroup;
 } & Omit<ComponentProps<typeof Button>, 'onClick'>;
 
-const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function SortDropDownAnchor({ onClick, group, ...props }, ref) {
+/**
+ * The button that opens a marketplace radio filter, showing the option it has selected.
+ */
+const RadioDropDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function RadioDropDownAnchor(
+	{ onClick, group, ...props },
+	ref,
+) {
 	const selected = group?.items.find((item) => item.checked)?.label;
 
 	return (
@@ -42,4 +48,4 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 	);
 });
 
-export default RadioDownAnchor;
+export default RadioDropDownAnchor;

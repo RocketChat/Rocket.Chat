@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber, Callout, Stack } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -9,6 +9,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	ContextualbarSkeletonContent,
 } from '@rocket.chat/ui-client';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,7 @@ import {
 	DEFAULT_INTERVAL_HOURS,
 	DEFAULT_WINDOW_DAYS,
 } from '../../../../ee/lib/exchange/calendarSyncSchedule';
+import ListViewport from '../../../components/ListViewport';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useItemListNavigation } from '../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../lib/errorHandling';
@@ -68,8 +70,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent flush>
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={eventsListRef}>
-					{calendarListResult.isPending && <Throbber size='x12' />}
+				{calendarListResult.isPending && <ContextualbarSkeletonContent />}
+				<ListViewport ref={eventsListRef}>
 					{calendarListResult.isError && (
 						<States>
 							<StatesIcon name='circle-exclamation' variation='danger' />
@@ -97,7 +99,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				{isServerManaged ? (
@@ -121,7 +123,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 						)}
 					</Stack>
 				) : (
-					<>
+					<Stack gap='x8'>
 						<ButtonGroup stretch>
 							{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
 							{outlookUrl && (
@@ -131,15 +133,13 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 							)}
 						</ButtonGroup>
 						{hasOutlookMethods && (
-							<Box marginBlockStart={8}>
-								<ButtonGroup stretch>
-									<Button variant='primary' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
-										{authEnabled ? t('Sync') : t('Log_in_to_sync')}
-									</Button>
-								</ButtonGroup>
-							</Box>
+							<ButtonGroup stretch>
+								<Button variant='primary' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
+									{authEnabled ? t('Sync') : t('Log_in_to_sync')}
+								</Button>
+							</ButtonGroup>
 						)}
-					</>
+					</Stack>
 				)}
 			</ContextualbarFooter>
 		</ContextualbarDialog>

@@ -14,9 +14,9 @@ import { useActiveUsers } from './useActiveUsers';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import CounterSet from '../../../../components/dataView/CounterSet';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import LegendSymbol from '../dataView/LegendSymbol';
 import ChartFrame from '../layout/ChartFrame';
 import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
+import LegendSymbol from '../layout/LegendSymbol';
 
 export type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';
