@@ -87,6 +87,8 @@ export type IVideoConferenceProviderParticipant = {
 	connectedAt: Date;
 	/** Absent while the connection is up, or when the provider never reported it ending. */
 	leftAt?: Date;
+	/** In the provider's lobby, waiting for a host to let them in. Absent once they are admitted. */
+	waiting?: true;
 };
 
 /** Absent `joined` predates the flag, and entries were only written on join then — so absent reads as joined. */

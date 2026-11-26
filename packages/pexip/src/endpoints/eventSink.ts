@@ -13,6 +13,9 @@ import { logger } from '../logger';
 import { PexipEndpoint } from './endpoint';
 
 /** Pexip stamps its events in seconds since the epoch. A missing stamp is read as the event arriving now. */
+/** Whether the participant is in the lobby, waiting for a host to let them in. */
+const isWaiting = (data: ParticipantStatusEventData): boolean => data.service_type === 'waiting_room';
+
 const fromPexipTime = (seconds: number | undefined): Date => (seconds ? new Date(seconds * 1000) : new Date());
 
 export class EventSinkEndpoint extends PexipEndpoint {
@@ -22,6 +25,8 @@ export class EventSinkEndpoint extends PexipEndpoint {
 				return this.processConferenceEnded(event.data);
 			case 'participant_connected':
 				return this.processParticipantConnected(event.data);
+			case 'participant_updated':
+				return this.processParticipantUpdated(event.data);
 			case 'participant_disconnected':
 				return this.processParticipantDisconnected(event.data);
 		}
@@ -63,6 +68,25 @@ export class EventSinkEndpoint extends PexipEndpoint {
 		});
 	}
 
+	/** Follows a member's connection out of the lobby. Every other change Pexip reports here is of no interest. */
+	protected async processParticipantUpdated(data: ParticipantStatusEventData): Promise<void> {
+		const { destination_alias: conferenceUri, call_direction: direction, call_tag: uid, uuid: id } = data;
+		if (!conferenceUri || direction !== 'in' || !uid || !id) {
+			return;
+		}
+
+		const identification = this.getIdentificationFromAlias(conferenceUri);
+		if (!identification) {
+			return;
+		}
+
+		void this.getCallByIdentification(identification)
+			.then((call) => call && VideoConf.setProviderParticipantWaiting(call._id, uid, id, isWaiting(data)))
+			.catch((err) => {
+				logger.error({ msg: 'Failed to update a call participant', err, identification, uid, participantId: id });
+			});
+	}
+
 	protected async processParticipantDisconnected(data: ParticipantDisconnectedEventData): Promise<void> {
 		const { destination_alias: conferenceUri, call_direction: direction } = data;
 		if (!conferenceUri || direction !== 'in') {
@@ -89,7 +113,12 @@ export class EventSinkEndpoint extends PexipEndpoint {
 			return;
 		}
 
-		const participant = { id, connectedAt: fromPexipTime(connectTime), ...(leftAt && { leftAt }) };
+		const participant = {
+			id,
+			connectedAt: fromPexipTime(connectTime),
+			...(leftAt && { leftAt }),
+			...(isWaiting(data) && { waiting: true as const }),
+		};
 
 		void this.getCallByIdentification(identification)
 			.then((call) => call && VideoConf.recordProviderParticipant(call._id, uid, participant))

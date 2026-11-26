@@ -60,6 +60,7 @@ export interface IVideoConfService {
 	declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	recordProviderParticipant(callId: VideoConference['_id'], uid: IUser['_id'], participant: IVideoConferenceProviderParticipant): Promise<void>;
+	setProviderParticipantWaiting(callId: VideoConference['_id'], uid: IUser['_id'], participantId: string, waiting: boolean): Promise<void>;
 	renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	expirePresenceLeases(now?: Date): Promise<void>;
 	ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean>;

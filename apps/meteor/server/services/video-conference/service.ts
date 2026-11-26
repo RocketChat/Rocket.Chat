@@ -1918,6 +1918,24 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
+	 * Records whether one of a member's connections is in the provider's lobby, so every window can tell when
+	 * somebody starts or stops waiting for a host.
+	 *
+	 * Says nothing about presence: a member waiting to be let in is already in the call as far as the roster and
+	 * their status are concerned.
+	 */
+	public async setProviderParticipantWaiting(
+		callId: VideoConference['_id'],
+		uid: IUser['_id'],
+		participantId: string,
+		waiting: boolean,
+	): Promise<void> {
+		if (await VideoConferenceModel.setUserProviderParticipantWaitingById(callId, uid, participantId, waiting)) {
+			this.notifyConferenceUpdate(callId);
+		}
+	}
+
+	/**
 	 * Renews a member's presence lease — their call window saying it is still in the call.
 	 *
 	 * A renewal also revives a departure that was inferred rather than reported, undoing what the sweep did to

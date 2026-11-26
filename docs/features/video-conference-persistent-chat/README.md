@@ -553,6 +553,12 @@ that report is the **only** source of presence, and everything above about leavi
   guests and telephones that have no member can still be in it. A Pexip conference's name is always the call's
   `_id`, which is what lets that event find it.
 
+**The lobby** has no say in any of this: a member waiting for a host to let them in is already in the call and
+busy. Each connection records whether it is waiting instead (`waiting` on the entry), from `service_type` —
+`waiting_room` on `participant_connected`, and on every `participant_updated` after it, `conference` once a host
+lets them in. Only a change to that flag is broadcast, since Pexip repeats it on every update about the
+connection; see [The lobby](#the-lobby) for what the windows do with it.
+
 Both presence writes are conditional updates (`setUserJoinedIfConnectedById`, `setUserLeftIfDisconnectedById`)
 that read the member's connections as they stand when the write lands. Two events for one member can be handled
 at the same time, and asking the database rather than reading first is what keeps them from settling on a

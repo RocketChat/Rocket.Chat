@@ -29,6 +29,7 @@ const VideoConferenceModelMock = {
 	setUserProviderParticipantLeftById: sinon.stub().resolves(),
 	setUserJoinedIfConnectedById: sinon.stub().resolves(true),
 	setUserLeftIfDisconnectedById: sinon.stub().resolves(true),
+	setUserProviderParticipantWaitingById: sinon.stub().resolves(true),
 	find: sinon.stub().returns({ toArray: async () => [] }),
 };
 
@@ -63,6 +64,7 @@ describe('VideoConfService presence reported by the provider', () => {
 		resetAll(...Object.values(VideoConferenceModelMock), broadcastStub);
 		VideoConferenceModelMock.setUserJoinedIfConnectedById.resolves(true);
 		VideoConferenceModelMock.setUserLeftIfDisconnectedById.resolves(true);
+		VideoConferenceModelMock.setUserProviderParticipantWaitingById.resolves(true);
 		clock = sinon.useFakeTimers({ toFake: ['setTimeout'] });
 	});
 
@@ -170,5 +172,34 @@ describe('VideoConfService presence reported by the provider', () => {
 		expect(VideoConferenceModelMock.addUserProviderParticipantById.called).to.be.true;
 		expect(VideoConferenceModelMock.setUserJoinedIfConnectedById.called).to.be.false;
 		expect(roomWasNotified()).to.be.false;
+	});
+
+	// Whether a connection is waiting for a host is for the windows to follow, and has no say in presence.
+	describe('the provider moving a connection in or out of the lobby', () => {
+		const conferenceWasUpdated = () => broadcastStub.args.some(([channel]) => channel === 'video-conference.updated');
+
+		it('records it and tells every window of the call', async () => {
+			await service.setProviderParticipantWaiting('call1', 'joiner', 'p1', false);
+
+			expect(VideoConferenceModelMock.setUserProviderParticipantWaitingById.calledWith('call1', 'joiner', 'p1', false)).to.be.true;
+			expect(conferenceWasUpdated()).to.be.true;
+		});
+
+		// Pexip repeats the same service type on every update about the connection, mute or otherwise.
+		it('tells nobody anything when the connection was already in that state', async () => {
+			VideoConferenceModelMock.setUserProviderParticipantWaitingById.resolves(false);
+
+			await service.setProviderParticipantWaiting('call1', 'joiner', 'p1', true);
+
+			expect(conferenceWasUpdated()).to.be.false;
+		});
+
+		it('puts nobody in or out of the call', async () => {
+			await service.setProviderParticipantWaiting('call1', 'joiner', 'p1', false);
+
+			expect(VideoConferenceModelMock.setUserJoinedIfConnectedById.called).to.be.false;
+			expect(VideoConferenceModelMock.setUserLeftIfDisconnectedById.called).to.be.false;
+			expect(roomWasNotified()).to.be.false;
+		});
 	});
 });

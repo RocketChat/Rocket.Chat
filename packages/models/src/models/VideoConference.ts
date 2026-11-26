@@ -495,6 +495,32 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	/** Records whether one of a member's connections is waiting in the lobby, answering whether that changed anything. */
+	public async setUserProviderParticipantWaitingById(
+		callId: string,
+		uid: IUser['_id'],
+		participantId: string,
+		waiting: boolean,
+	): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{
+				_id: callId,
+				users: {
+					$elemMatch: {
+						_id: uid,
+						providerParticipants: { $elemMatch: { id: participantId, waiting: waiting ? { $ne: true } : true } },
+					},
+				},
+			},
+			waiting
+				? { $set: { 'users.$[user].providerParticipants.$[participant].waiting': true } }
+				: { $unset: { 'users.$[user].providerParticipants.$[participant].waiting': 1 } },
+			{ arrayFilters: [{ 'user._id': uid }, { 'participant.id': participantId }] },
+		);
+
+		return modifiedCount > 0;
+	}
+
 	/** Records that an existing member dismissed the call, mutating their entry in place. */
 	public async setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt = new Date()): Promise<void> {
 		await this.updateOne(

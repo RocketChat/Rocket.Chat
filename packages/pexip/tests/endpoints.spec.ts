@@ -3,6 +3,8 @@ const findOneById = jest.fn();
 const increaseSipParticipantCount = jest.fn();
 const increaseWebRTCParticipantCount = jest.fn();
 const setStatus = jest.fn();
+const recordProviderParticipant = jest.fn();
+const setProviderParticipantWaiting = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	VideoConference: {
@@ -14,7 +16,11 @@ jest.mock('@rocket.chat/models', () => ({
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
-	VideoConf: { setStatus: (...args: unknown[]) => setStatus(...args) },
+	VideoConf: {
+		setStatus: (...args: unknown[]) => setStatus(...args),
+		recordProviderParticipant: (...args: unknown[]) => recordProviderParticipant(...args),
+		setProviderParticipantWaiting: (...args: unknown[]) => setProviderParticipantWaiting(...args),
+	},
 }));
 
 // eslint-disable-next-line import-x/first -- the mocks above must be registered before the modules under test
@@ -54,6 +60,8 @@ beforeEach(() => {
 	increaseSipParticipantCount.mockResolvedValue({ _id: 'call1' });
 	increaseWebRTCParticipantCount.mockResolvedValue({ _id: 'call1' });
 	setStatus.mockResolvedValue(undefined);
+	recordProviderParticipant.mockResolvedValue(undefined);
+	setProviderParticipantWaiting.mockResolvedValue(undefined);
 });
 
 describe('ServerConfigurationEndpoint', () => {
@@ -181,6 +189,67 @@ describe('EventSinkEndpoint', () => {
 
 		await expect(endpoint().post(participantEvent() as never)).resolves.toBeUndefined();
 		await settle();
+	});
+
+	describe('lobby', () => {
+		// A member's own connection: tagged with their user id, to a conference named by its id.
+		const memberEvent = (event: string, overrides: Record<string, unknown> = {}) => ({
+			...participantEvent({
+				protocol: 'WebRTC',
+				destination_alias: 'sip:call1@pexip.example',
+				call_tag: 'user1',
+				uuid: 'p1',
+				connect_time: 1795702085,
+				...overrides,
+			}),
+			event,
+		});
+
+		beforeEach(() => findOneById.mockResolvedValue({ _id: 'call1' }));
+
+		it('should record a connection that arrives in the lobby as waiting', async () => {
+			await endpoint().post(memberEvent('participant_connected', { service_type: 'waiting_room' }) as never);
+			await settle();
+
+			expect(recordProviderParticipant).toHaveBeenCalledWith('call1', 'user1', expect.objectContaining({ id: 'p1', waiting: true }));
+		});
+
+		it('should record a connection that arrives straight in the call as not waiting', async () => {
+			await endpoint().post(memberEvent('participant_connected', { service_type: 'conference' }) as never);
+			await settle();
+
+			expect(recordProviderParticipant).toHaveBeenCalledWith('call1', 'user1', expect.not.objectContaining({ waiting: true }));
+		});
+
+		it('should stop a connection waiting once Pexip moves it into the conference', async () => {
+			await endpoint().post(memberEvent('participant_updated', { service_type: 'conference' }) as never);
+			await settle();
+
+			expect(setProviderParticipantWaiting).toHaveBeenCalledWith('call1', 'user1', 'p1', false);
+		});
+
+		it('should keep a connection waiting while Pexip still has it in the lobby', async () => {
+			await endpoint().post(memberEvent('participant_updated', { service_type: 'waiting_room' }) as never);
+			await settle();
+
+			expect(setProviderParticipantWaiting).toHaveBeenCalledWith('call1', 'user1', 'p1', true);
+		});
+
+		// Without a call tag there is no member to hold the connection.
+		it('should ignore an update about somebody who did not join through Rocket.Chat', async () => {
+			await endpoint().post(memberEvent('participant_updated', { service_type: 'conference', call_tag: undefined }) as never);
+			await settle();
+
+			expect(setProviderParticipantWaiting).not.toHaveBeenCalled();
+		});
+
+		it('should not count anybody in on an update', async () => {
+			await endpoint().post(memberEvent('participant_updated', { service_type: 'conference' }) as never);
+			await settle();
+
+			expect(increaseWebRTCParticipantCount).not.toHaveBeenCalled();
+			expect(recordProviderParticipant).not.toHaveBeenCalled();
+		});
 	});
 
 	it('should flag a conference as ended', async () => {
