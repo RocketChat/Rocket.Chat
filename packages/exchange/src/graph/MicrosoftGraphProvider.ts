@@ -246,10 +246,12 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	public async *getContactPhotos(mailbox: string, folderId: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
 		const batchUrl = `${this.graphHost}/${GRAPH_API_VERSION}/$batch`;
 		const contactsPath = this.contactsPath(mailbox, folderId);
+		let failedStatus: number | undefined;
 
 		for (let i = 0; i < externalIds.length; i += GRAPH_BATCH_SIZE) {
 			const chunk = externalIds.slice(i, i + GRAPH_BATCH_SIZE);
 			const batch: ExchangeContactPhoto[] = [];
+			let throttled = false;
 
 			const batchPayload = {
 				requests: chunk.map((externalId) => ({
@@ -259,64 +261,59 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				})),
 			};
 
-			let throttled = false;
+			const batchResult = await this.requestJson<GraphBatchResponse>(batchUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(batchPayload),
+			});
 
-			try {
-				const batchResult = await this.requestJson<GraphBatchResponse>(batchUrl, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(batchPayload),
-				});
+			for (const res of batchResult.responses ?? []) {
+				if (res.status === 429) {
+					throttled = true;
+					continue;
+				}
 
-				for (const res of batchResult.responses ?? []) {
-					if (res.status === 429) {
-						throttled = true;
-						continue;
-					}
+				if (res.status !== 200 && res.status !== 404) {
+					failedStatus ??= res.status;
+					continue;
+				}
 
-					if (res.status !== 200 || !res.body) {
-						continue;
-					}
+				if (res.status !== 200 || !res.body) {
+					continue;
+				}
 
-					const base64Length = res.body.length;
-					if (!base64Length) {
-						continue;
-					}
+				const base64Length = res.body.length;
+				if (!base64Length) {
+					continue;
+				}
 
-					let padding = 0;
-					if (res.body.endsWith('==')) padding = 2;
-					else if (res.body.endsWith('=')) padding = 1;
+				let padding = 0;
+				if (res.body.endsWith('==')) padding = 2;
+				else if (res.body.endsWith('=')) padding = 1;
 
-					const estimatedByteLength = (base64Length * 3) / 4 - padding;
-					if (estimatedByteLength > MAX_CONTACT_PHOTO_BYTES) {
-						logger.warn({
-							msg: 'Skipping a Graph contact photo above the size cap (pre-allocation check)',
-							externalId: res.id,
-							bytes: estimatedByteLength,
-						});
-						continue;
-					}
-
-					const data = new Uint8Array(Buffer.from(res.body, 'base64'));
-
-					if (!data.byteLength) {
-						continue;
-					}
-
-					const contentType = res.headers?.['Content-Type'] ?? res.headers?.['content-type'] ?? 'image/jpeg';
-
-					batch.push({
+				const estimatedByteLength = (base64Length * 3) / 4 - padding;
+				if (estimatedByteLength > MAX_CONTACT_PHOTO_BYTES) {
+					logger.warn({
+						msg: 'Skipping a Graph contact photo above the size cap (pre-allocation check)',
 						externalId: res.id,
-						data,
-						contentType,
+						bytes: estimatedByteLength,
 					});
-				}
-			} catch (error) {
-				if (isExchangeError(error) && error.code === 'mailbox-rate-limited') {
-					throw error;
+					continue;
 				}
 
-				logger.error({ msg: 'Failed to fetch contact photos batch from Graph', mailbox, error });
+				const data = new Uint8Array(Buffer.from(res.body, 'base64'));
+
+				if (!data.byteLength) {
+					continue;
+				}
+
+				const contentType = res.headers?.['Content-Type'] ?? res.headers?.['content-type'] ?? 'image/jpeg';
+
+				batch.push({
+					externalId: res.id,
+					data,
+					contentType,
+				});
 			}
 
 			yield* batch;
@@ -324,6 +321,10 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			if (throttled) {
 				throw new ExchangeError('mailbox-rate-limited', 'Microsoft Graph throttled the contact photos of this mailbox');
 			}
+		}
+
+		if (failedStatus !== undefined) {
+			throw new ExchangeError('unexpected-response', `Microsoft Graph answered a contact photo read with ${failedStatus}`);
 		}
 	}
 

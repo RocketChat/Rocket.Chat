@@ -461,6 +461,20 @@ describe('MicrosoftGraphProvider', () => {
 		const requestedIds = (call: number): string[] =>
 			JSON.parse(serverFetch.mock.calls[call][1].body).requests.map(({ id }: { id: string }) => id);
 
+		const getContactPhotosUntilError = async (ids: string[]) => {
+			const photos: string[] = [];
+
+			try {
+				for await (const { externalId } of new MicrosoftGraphProvider(config).getContactPhotos(MAILBOX, 'default', ids)) {
+					photos.push(externalId);
+				}
+			} catch (error) {
+				return { photos, error };
+			}
+
+			return { photos, error: undefined };
+		};
+
 		it('asks for a chunk of photos in one batch instead of a request per contact', async () => {
 			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID), entry(OTHER_CONTACT_ID)] }));
 
@@ -480,12 +494,58 @@ describe('MicrosoftGraphProvider', () => {
 			expect(requestedIds(2)).toEqual([`c${BATCH_SIZE}`]);
 		});
 
-		it('skips the contacts Graph answered for with anything but a photo', async () => {
+		it('skips a contact Graph says has no photo', async () => {
 			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { status: 404, body: undefined }), entry(OTHER_CONTACT_ID)] }));
 
 			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
 
 			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('hands over the photos it read, then fails, when Graph could not read one', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { status: 503, body: undefined }), entry(OTHER_CONTACT_ID)] }));
+
+			const { photos, error } = await getContactPhotosUntilError([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos).toEqual([OTHER_CONTACT_ID]);
+			expect(error).toMatchObject({ code: 'unexpected-response' });
+		});
+
+		it('reads every batch before failing, so one photo that keeps failing does not hold back the rest of the folder', async () => {
+			const LAST_ID = `c${BATCH_SIZE}`;
+			mockTokenThen(
+				graphResponse({ responses: [entry('c0', { status: 500, body: undefined }), entry(CONTACT_ID)] }),
+				graphResponse({ responses: [entry(LAST_ID)] }),
+			);
+
+			const { photos, error } = await getContactPhotosUntilError(Array.from({ length: BATCH_SIZE + 1 }, (_, i) => `c${i}`));
+
+			expect(requestedIds(2)).toEqual([LAST_ID]);
+			expect(photos).toEqual([CONTACT_ID, LAST_ID]);
+			expect(error).toMatchObject({ code: 'unexpected-response' });
+		});
+
+		it('stops at a throttled batch and reports the mailbox as rate limited, even when another photo in it failed too', async () => {
+			mockTokenThen(
+				graphResponse({
+					responses: [entry('c0', { status: 503, body: undefined }), entry(CONTACT_ID, { status: 429, body: undefined }), entry(OTHER_CONTACT_ID)],
+				}),
+			);
+
+			const { photos, error } = await getContactPhotosUntilError(Array.from({ length: BATCH_SIZE + 1 }, (_, i) => `c${i}`));
+
+			expect(serverFetch).toHaveBeenCalledTimes(2);
+			expect(photos).toEqual([OTHER_CONTACT_ID]);
+			expect(error).toMatchObject({ code: 'mailbox-rate-limited' });
+		});
+
+		it('fails when the batch itself fails, rather than reading it as a folder without photos', async () => {
+			mockTokenThen(graphResponse({ error: {} }, 400));
+
+			const { photos, error } = await getContactPhotosUntilError([CONTACT_ID]);
+
+			expect(photos).toEqual([]);
+			expect(error).toMatchObject({ code: 'unexpected-response' });
 		});
 
 		it('skips a photo above the size cap rather than storing it', async () => {
