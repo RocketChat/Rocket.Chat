@@ -24,6 +24,10 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 		title: 'Discussions',
 		icon: 'balloons',
 	},
+	drafts: {
+		title: 'Drafts',
+		icon: 'pencil',
+	},
 	inProgress: {
 		title: 'In_progress',
 		icon: 'user-arrow-right',
@@ -58,7 +62,7 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 	},
 };
 
-export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'inProgress' | 'queue' | 'onHold';
+export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'drafts' | 'inProgress' | 'queue' | 'onHold';
 
 export const collapsibleFilters: SideBarFiltersKeys[] = ['unread', 'conversations', 'teams', 'channels', 'directMessages'];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
