@@ -1,7 +1,7 @@
 # Delivery plan: a contract for app→host calls, implemented by the host
 
 **Status: delivery plan.** The decisions live in
-[ADR 0006](../../adr/0006-apps-subprocess-protocol.md); decisions 18–23 cover the app→host
+[ADR 0014](../../adr/0014-apps-subprocess-protocol.md); decisions 18–23 cover the app→host
 contract. This document holds the design detail that the implementation needs, a worked example,
 and the PR sequence.
 
@@ -52,7 +52,7 @@ project.
 `base-runtime` gets the full contract from `protocol/` and nothing from the host project. The client
 module must not import `rpc/server.ts` or the contract values, and the runtime imports the client by
 its subpath, not through the `protocol/` barrel. So Zod stays out of the subprocess, which
-is the intent of ADR 0006 decision 12.
+is the intent of ADR 0014 decision 12.
 
 ### The contract
 
@@ -88,14 +88,14 @@ export type HostContract = typeof hostContract;
 
 - **The input is one named object, not a positional tuple.** JSON-RPC 2.0 allows `params` as an
   object. Named fields make each schema readable, and they remove the positional problem of caller
-  identity (ADR 0006 decision 14).
+  identity (ADR 0014 decision 14).
 - **Every input schema is closed** (`z.strictObject`, never `z.object`). `z.object` removes an
   unknown key without an error. With `z.strictObject`, an `appId` key that the procedure does not
   declare fails validation with `-32602`.
 - **The builder sets the kind.** `request(…)` expects a response. `notification(…)` does not, and
-  its output is `void` (ADR 0006 decision 7).
+  its output is `void` (ADR 0014 decision 7).
 - **`type<T>()` is a phantom.** It carries the output type and has no runtime content. Outputs are
-  not validated, because host→app traffic is self-sent (ADR 0006 decision 10).
+  not validated, because host→app traffic is self-sent (ADR 0014 decision 10).
 - **The contract compiles `strict: true`.** It can state `IMessage | undefined` where the bridge
   signature says `Promise<IMessage>` but returns `undefined` when a permission check fails.
 - **A procedure path is not a bridge name.** The contract does not mention bridges at all. The
@@ -104,7 +104,7 @@ export type HostContract = typeof hostContract;
 ### Declared errors
 
 A procedure can declare the errors that its handler throws on purpose. This is the error map of
-oRPC (`oc.errors({ … })`), on the error taxonomy of ADR 0006 decision 6. The example shows a
+oRPC (`oc.errors({ … })`), on the error taxonomy of ADR 0014 decision 6. The example shows a
 possible later form of `room.getById`, not the form of the first migration:
 
 ```ts
@@ -121,11 +121,11 @@ export const room = {
 ```
 
 - **An error has a name and a `data` type.** The name is unique inside the procedure. The `data`
-  type is a phantom, as the output is. The host sends it, so it is not validated (ADR 0006
+  type is a phantom, as the output is. The host sends it, so it is not validated (ADR 0014
   decision 10).
 - **All declared errors share one wire code, `-32001`.** The envelope is
   `{ code: -32001, message, data: { name: 'ROOM_NOT_FOUND', data: { roomId } } }`. This code is part of the
-  closed enum of ADR 0006 decision 6. The names stay in the contract, not in the enum.
+  closed enum of ADR 0014 decision 6. The names stay in the contract, not in the enum.
 - **The handler throws with a typed constructor.** The handler options include `errors`, one
   constructor for each declared name: `throw errors.ROOM_NOT_FOUND({ roomId })`. A name that the
   procedure does not declare is a compile error.
@@ -138,7 +138,7 @@ export const room = {
   A move from `undefined` to a declared error changes what the accessor sees, so it is a separate
   change for each procedure, after the migration.
 - **App code does not see the declared errors yet.** `mainLoop.handleResponse` drops `code` and
-  `data` (ADR 0006 follow-up 4). Only the accessors in `base-runtime` can read them until that
+  `data` (ADR 0014 follow-up 4). Only the accessors in `base-runtime` can read them until that
   follow-up lands.
 
 ### Paths and field names
@@ -172,7 +172,7 @@ a path or for a field, is a separate change after the migration. For example, `u
 ### Domain objects in the input: `shaped<T>()`
 
 Some procedures take a whole Apps-Engine object: `message.create` takes an `IMessage`, and
-`room.create` takes an `IRoom`. ADR 0006 decision 13 splits the work. The contract checks only the
+`room.create` takes an `IRoom`. ADR 0014 decision 13 splits the work. The contract checks only the
 fields that the call depends on, and the converters validate the domain object. `shaped<T>()`
 expresses that split:
 
@@ -309,7 +309,7 @@ type HostContext = {
 `HostContext` is a host type. The contract does not know it, so `Handlers` takes it as a parameter.
 
 Caller identity comes only from `ctx.appId`. It never crosses the wire, and the `'APP_ID'` sentinel
-goes away. ADR 0006 decision 14 names three cases. The contract shows which inputs carry an
+goes away. ADR 0014 decision 14 names three cases. The contract shows which inputs carry an
 app id, and the handler shows where the caller identity goes. Each pair below is the contract entry,
 then its handler:
 
@@ -411,7 +411,7 @@ assert.equal(bridges.getMessageBridge().created.length, 1);
   envelope, the serialization and the transport.
 - **A test checks both sides of a domain in one process.** An input that the accessor builds and
   the schema rejects fails the test. A handler that calls the wrong bridge method fails the test.
-- **It does not replace the round-trip test of ADR 0006 decision 17.** That test still covers the
+- **It does not replace the round-trip test of ADR 0014 decision 17.** That test still covers the
   serialization and the subprocess.
 - **It lives in `rpc/local.ts`, and only tests import it.** It imports `rpc/server.ts`, so it loads
   Zod.
@@ -429,7 +429,7 @@ JSON Schema step.
   subprocess does not load Zod.
 - **No schema sharing with the converters.** They live in `apps/meteor`, which `protocol/` cannot
   import. The `core-typings` schemas describe Rocket.Chat shapes (`IRoom`); the wire carries
-  Apps-Engine shapes (`IAppsRoom`). ADR 0006 decision 13 keeps deep domain objects in the
+  Apps-Engine shapes (`IAppsRoom`). ADR 0014 decision 13 keeps deep domain objects in the
   converters anyway.
 
 Two measurements back this choice. The scripts and the steps to run them are in
@@ -441,7 +441,7 @@ Two measurements back this choice. The scripts and the steps to run them are in
 | Validation of an `addReaction` input, Node, 2 million iterations | AJV compiled 17.6 ns, Zod `safeParse` 48.6 ns, `structuredClone` of the same request 1782 ns |
 
 Zod adds about 30 ns to a bridge call whose serialization alone costs about 1.8 µs. The speed gap
-does not justify AJV (ADR 0006 decision 11).
+does not justify AJV (ADR 0014 decision 11).
 
 ## Worked example: `message.create`
 
@@ -605,7 +605,7 @@ bridge and method names as strings.
   - It works in one direction only. The same model for host→app needs a router in `base-runtime`,
     and the host would have to import `base-runtime` types, which ADR 0001 forbids. A contract in
     `protocol/` serves both directions.
-  - It moves the schemas out of `protocol/`, against ADR 0006 decision 12, for no gain.
+  - It moves the schemas out of `protocol/`, against ADR 0014 decision 12, for no gain.
 - **The `@trpc/server` / `@trpc/client` libraries.** tRPC documents `strict: true` as a
   requirement, and the host and `base-runtime` compile `strict: false`. tRPC also has its own wire
   format and error model, which would replace the JSON-RPC envelope that ADR 0004 just built.
@@ -669,7 +669,7 @@ bridge and method names as strings.
 
 No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 
-| # | Content | ADR 0006 | Status |
+| # | Content | ADR 0014 | Status |
 | --- | --- | --- | --- |
 | 0 | `protocol/` skeleton: the fourth tsc project, `build:protocol` first, `strict: true` | 2 | **Landed** (`4845e40665`) |
 | 1 | Control frames into `protocol/framing/` | 8 | Open |
@@ -690,7 +690,7 @@ No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 - **Each domain migrates on both sides in one PR.** A procedure takes a named object; the legacy
   path takes a positional array with `'APP_ID'`. An accessor switches from `bridgeCall` to
   `host.request` in the same PR that declares and implements its procedure. No version skew
-  ([ADR 0006, *Context*](../../adr/0006-apps-subprocess-protocol.md#no-version-skew)) makes this
+  ([ADR 0014, *Context*](../../adr/0014-apps-subprocess-protocol.md#no-version-skew)) makes this
   safe.
 - **The legacy fallback keeps today's exposure until PR 9, and no longer.** During PRs 6–8 the
   reflection path still serves every `bridges:*` method, which is the current behavior. PR 9 is the

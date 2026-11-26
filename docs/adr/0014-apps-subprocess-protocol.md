@@ -1,4 +1,4 @@
-# ADR 0006 — The host↔subprocess protocol is owned by `packages/apps/protocol`
+# ADR 0014 — The host↔subprocess protocol is owned by `packages/apps/protocol`
 
 ## Status
 
@@ -14,7 +14,7 @@
   replaced `jsonrpc-lite` with in-house types in `packages/apps/src/lib/jsonrpc.ts`. That module is
   the JSON-RPC surface this ADR relocates into `protocol/`; decisions 4 and 6 start from it rather
   than from a library
-- **Builds on:** [ADR 0005](./0005-ipc-channel-transport.md), which put the protocol on Node's IPC
+- **Builds on:** [ADR 0006](./0006-ipc-channel-transport.md), which put the protocol on Node's IPC
   channel. `protocol/` therefore owns the two serialization passes that the transport needs — a
   sanitizer and a secure-fields walk
 
@@ -54,7 +54,7 @@
      the host and read by the subprocess.
    - Their consumer is the transport itself. The sanitizer runs before `send()`, and the subprocess
      applies the marked fields by walking each incoming message —
-     [ADR 0005](./0005-ipc-channel-transport.md), decisions 3 and 4.
+     [ADR 0006](./0006-ipc-channel-transport.md), decisions 3 and 4.
    - **The walk itself stays in `base-runtime`.** `applySecureFieldsDeep` needs the app's
      permissions, which only the subprocess holds. `protocol/` owns the marker, the descriptor and
      the mapper.
@@ -565,7 +565,7 @@ its decoder, because `new Decoder()` allocates nothing and a pooled one would ke
 whole outer frame reachable. Both conclusions were right for their half. Neither was written down
 where the other half could read it.
 
-[ADR 0005](./0005-ipc-channel-transport.md) deleted both files with the transport switch. That
+[ADR 0006](./0006-ipc-channel-transport.md) deleted both files with the transport switch. That
 settles the instance without settling the class. The host and the subprocess are still two
 independently maintained halves of one wire format, and the goal is still to make that kind of
 divergence impossible to introduce. What replaced the codec is two modules of exactly the same kind

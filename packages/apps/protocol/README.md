@@ -4,11 +4,11 @@ The wire format spoken between the host controller (`packages/apps/src/server/ru
 subprocess (`packages/apps/base-runtime/`, run by `node-runtime`), and the contract that declares
 every app→host call.
 
-- **Decisions and rationale:** [ADR 0006](../../../docs/adr/0006-apps-subprocess-protocol.md),
-  building on [ADR 0005](../../../docs/adr/0005-ipc-channel-transport.md) for the transport and
+- **Decisions and rationale:** [ADR 0014](../../../docs/adr/0014-apps-subprocess-protocol.md),
+  building on [ADR 0006](../../../docs/adr/0006-ipc-channel-transport.md) for the transport and
   [ADR 0004](../../../docs/adr/0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md) for the
   envelope
-- **App→host contract:** ADR 0006, decisions 18–23
+- **App→host contract:** ADR 0014, decisions 18–23
 - **Design detail and delivery plan:**
   [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
@@ -90,7 +90,7 @@ processor ids — live in `params`, never in the name, so nothing app-supplied i
 dispatch key. (`api:call` also folds `httpMethod` into params, because an API path may itself contain
 `:`.)
 
-- **Host→app** keeps the `{category}:{member}` grammar of ADR 0006 decision 9. ⏳ The exact member
+- **Host→app** keeps the `{category}:{member}` grammar of ADR 0014 decision 9. ⏳ The exact member
   names for the five flattened families are fixed in PR 10.
 - **App→host** uses ⏳ the dotted procedure path of the contract, for example `message.addReaction`.
   The wire method is the path verbatim. The host looks it up in one map and never splits it. The
