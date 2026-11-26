@@ -349,7 +349,7 @@ export default class RocketAdapter {
 		let addedUser: IUser | null | undefined;
 		for (const slack of this.slackAdapters) {
 			if (addedUser) {
-				break;
+				return;
 			}
 
 			const rocketUserData = await slack.slackAPI.getUser(slackUserID);
