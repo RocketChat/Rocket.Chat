@@ -16,7 +16,7 @@ import type {
 	ExchangeProviderCapabilities,
 	Page,
 } from '../definition/types';
-import { ExchangeError } from '../errors';
+import { ExchangeError, isExchangeError } from '../errors';
 import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
 import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
@@ -259,6 +259,8 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				})),
 			};
 
+			let throttled = false;
+
 			try {
 				const batchResult = await this.requestJson<GraphBatchResponse>(batchUrl, {
 					method: 'POST',
@@ -267,6 +269,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				});
 
 				for (const res of batchResult.responses ?? []) {
+					if (res.status === 429) {
+						throttled = true;
+						continue;
+					}
+
 					if (res.status !== 200 || !res.body) {
 						continue;
 					}
@@ -305,10 +312,18 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 					});
 				}
 			} catch (error) {
+				if (isExchangeError(error) && error.code === 'mailbox-rate-limited') {
+					throw error;
+				}
+
 				logger.error({ msg: 'Failed to fetch contact photos batch from Graph', mailbox, error });
 			}
 
 			yield* batch;
+
+			if (throttled) {
+				throw new ExchangeError('mailbox-rate-limited', 'Microsoft Graph throttled the contact photos of this mailbox');
+			}
 		}
 	}
 
@@ -468,6 +483,10 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		try {
 			return await this.requestJson<GraphEvent>(url, { headers: { Prefer: PREFER_UTC } });
 		} catch (err) {
+			if (isExchangeError(err) && err.code === 'mailbox-rate-limited') {
+				throw err;
+			}
+
 			logger.warn({ msg: 'Could not read the series master of a recurring event', mailbox, masterId: id, err });
 			return undefined;
 		}
