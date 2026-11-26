@@ -7,7 +7,7 @@ import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS, filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -125,9 +125,12 @@ export const useRoomList = ({
 				const title = category ? category.name : key;
 				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
 				const collapsed = isCollapsed(key);
-				const showUnreadsForGroup = isEnterprise ? isShowUnreads(key) : false;
+				// Dynamic groups offer no category menu, so a flag an earlier version stored for one is ignored
+				// rather than left stuck with no way to turn it off.
+				const isConfigurable = isEnterprise && !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key);
+				const showUnreadsForGroup = isConfigurable ? isShowUnreads(key) : false;
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
-				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
+				const keepUnreadsOnTopForGroup = isConfigurable ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the

@@ -333,6 +333,30 @@ it('should keep unread rooms visible (and show no header badge) when a group is 
 	});
 });
 
+it('should ignore a "Show unreads" flag stored for a dynamic group, which has no menu to turn it off', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Unread'] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			isEnterprise: true,
+			sidebarCategories: [
+				{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true },
+				{ _id: 'Unread', name: 'Unread', default: true, showUnreads: true },
+			],
+		}).build(),
+	});
+
+	const groupByKey = (key: string) => result.current.groups[groupsListOf(result.current.groups).indexOf(key)];
+
+	// isEnterprise resolves asynchronously from the mock endpoint: the stored flag only takes effect once it does.
+	await waitFor(() => expect(groupByKey('Channels').showUnreads).toBe(true));
+
+	expect(groupByKey('Unread').showUnreads).toBe(false);
+	// Collapsing the group hides its rooms and falls back to the header badge, as it would without the flag.
+	expect(result.current.groupsCount[groupsListOf(result.current.groups).indexOf('Unread')]).toEqual(0);
+	expect(groupByKey('Unread').unreadInfo.unread).toBeGreaterThan(0);
+});
+
 it('should always return groupsCount and groupsList with the same length', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
