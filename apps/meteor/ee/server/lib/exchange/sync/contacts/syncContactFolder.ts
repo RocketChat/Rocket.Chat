@@ -195,7 +195,9 @@ export const syncContactFolder = async (
 					await syncAvatars(provider, uid, mailbox, folderId, fetchAvatars ? undefined : [...upserts.keys()]);
 				} catch (err) {
 					avatarsSynced = false;
-					throttled = isExchangeError(err) && err.code === 'mailbox-rate-limited' ? err : undefined;
+					if (isExchangeError(err) && err.code === 'mailbox-rate-limited') {
+						throttled = err;
+					}
 
 					logger.warn({ msg: 'Could not read Exchange contact photos for a folder', uid, folderId, err: scrubForLog(err) });
 				}
