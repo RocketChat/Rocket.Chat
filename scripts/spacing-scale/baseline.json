@@ -336,7 +336,7 @@
 	"packages/fuselage/src/components/Icon/Icon.stories.tsx": 2,
 	"packages/fuselage/src/components/Item/Item.stories.tsx": 7,
 	"packages/fuselage/src/components/Margins/Margins.stories.tsx": 15,
-	"packages/fuselage/src/components/Menu/Menu.stories.tsx": 6,
+	"packages/fuselage/src/components/Menu/Menu.stories.tsx": 5,
 	"packages/fuselage/src/components/Modal/Modal.stories.tsx": 1,
 	"packages/fuselage/src/components/Option/Option.stories.tsx": 1,
 	"packages/fuselage/src/components/PaginatedSelect/PaginatedSelect.tsx": 1,
