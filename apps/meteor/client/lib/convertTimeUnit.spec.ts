@@ -1,4 +1,14 @@
-import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from './convertTimeUnit';
+import { TIMEUNIT, isValidTimespan, timeUnitToMs, msToTimeUnit } from './convertTimeUnit';
+
+describe('isValidTimespan function', () => {
+	it.each([0, 5, 2.5, '0', '5', '2592000000'])('accepts %p', (timespan) => {
+		expect(isValidTimespan(timespan)).toBe(true);
+	});
+
+	it.each(['', '   ', true, false, [], {}, null, undefined, NaN, Infinity, -1, '-1', 'abc'])('rejects %p', (timespan) => {
+		expect(isValidTimespan(timespan)).toBe(false);
+	});
+});
 
 describe('timeUnitToMs function', () => {
 	it('should correctly convert days to milliseconds', () => {
@@ -29,6 +39,13 @@ describe('timeUnitToMs function', () => {
 		expect(() => timeUnitToMs(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
 		expect(() => timeUnitToMs(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
 		expect(() => timeUnitToMs(TIMEUNIT.days, -1)).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, '')).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, 'invalid')).toThrow(errorMessage);
+	});
+
+	it('should correctly convert numeric strings to milliseconds', () => {
+		expect(timeUnitToMs(TIMEUNIT.days, '1')).toBe(86400000);
+		expect(timeUnitToMs(TIMEUNIT.days, '0.5')).toBe(43200000);
 	});
 });
 
@@ -37,6 +54,11 @@ describe('msToTimeUnit function', () => {
 		expect(msToTimeUnit(TIMEUNIT.days, 86400000)).toBe(1); // 1 day
 		expect(msToTimeUnit(TIMEUNIT.days, 172800000)).toBe(2); // 2 days
 		expect(msToTimeUnit(TIMEUNIT.days, 43200000)).toBe(0.5); // .5 days
+	});
+
+	it('should correctly convert numeric strings and float strings to time units', () => {
+		expect(msToTimeUnit(TIMEUNIT.days, '86400000')).toBe(1);
+		expect(msToTimeUnit(TIMEUNIT.days, '63072000000.0')).toBe(730);
 	});
 
 	it('should correctly convert milliseconds to hours', () => {
@@ -61,5 +83,8 @@ describe('msToTimeUnit function', () => {
 		expect(() => msToTimeUnit(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
 		expect(() => msToTimeUnit(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
 		expect(() => msToTimeUnit(TIMEUNIT.days, -1)).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, '')).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, 'invalid')).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, '-1')).toThrow(errorMessage);
 	});
 });
