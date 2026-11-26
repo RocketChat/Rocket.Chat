@@ -11,7 +11,12 @@ let current: IExchangeProvider | undefined;
 let resolveWindowDays: () => number = () => DEFAULT_WINDOW_DAYS;
 
 export const setExchangeProvider = (provider: IExchangeProvider | undefined): void => {
+	const previous = current;
 	current = provider;
+
+	if (previous !== provider) {
+		previous?.cleanup?.();
+	}
 };
 
 export const detachExchangeProvider = (): void => setExchangeProvider(undefined);

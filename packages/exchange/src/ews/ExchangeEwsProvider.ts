@@ -122,6 +122,10 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 	}
 
+	public cleanup(): void {
+		this.transport.close();
+	}
+
 	/** Asks the folder whether anything moved */
 	private async probeChanges(mailbox: string, from?: string): Promise<{ syncState?: string; changed: boolean }> {
 		let syncState = from;

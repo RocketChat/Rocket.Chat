@@ -38,6 +38,9 @@ const assertNotBusy = (status: number): void => {
 	}
 };
 
+const connectionClosed = (): ExchangeError =>
+	new ExchangeError('not-configured', 'The EWS connection was closed because the Exchange provider was replaced or turned off');
+
 /** For IPv6 literals */
 const normalizeHost = (hostname: string): string => (hostname.startsWith('[') ? hostname.slice(1, -1) : hostname);
 
@@ -96,8 +99,8 @@ export class EwsTransport implements IEwsTransport {
 
 	private readonly agent: Agent | undefined;
 
-	/** Serialises the NTLM sequences, never the bodies. */
-	private ntlmTurn: Promise<void> = Promise.resolve();
+	/** Requests wait here rather than in the agent, where `close` could not fail them. */
+	private turn: Promise<void> = Promise.resolve();
 
 	private readonly configError: ExchangeError | undefined;
 
@@ -109,6 +112,8 @@ export class EwsTransport implements IEwsTransport {
 
 	/** Off once Exchange asks again on a connection it had accepted. */
 	private reuseAuthentication = true;
+
+	private closed = false;
 
 	constructor(config: EwsTransportConfig) {
 		this.config = config;
@@ -147,6 +152,10 @@ export class EwsTransport implements IEwsTransport {
 	 * `not-configured` instead of failing further down as something less diagnosable.
 	 */
 	private assertConfigured(): { endpoint: URL; agent: Agent } {
+		if (this.closed) {
+			throw connectionClosed();
+		}
+
 		if (!this.endpoint || !this.agent) {
 			throw this.configError ?? new ExchangeError('not-configured', 'The EWS transport is not configured');
 		}
@@ -155,22 +164,26 @@ export class EwsTransport implements IEwsTransport {
 	}
 
 	public async post(soapEnvelope: string): Promise<string> {
-		if (this.config.authMethod === 'basic') {
-			return this.postWithBasic(soapEnvelope);
-		}
 		// NTLM authenticates the connection, not the request, and the agent holds a single socket. Two
 		// handshakes interleaving on it means one of them answers the other's challenge, which Exchange
 		// rejects as bad credentials. `maxSockets: 1` already serialised the requests, not the sequences.
-
-		const result = this.ntlmTurn.then(() => this.postWithNtlm(soapEnvelope));
+		const result = this.turn.then(() =>
+			this.config.authMethod === 'basic' ? this.postWithBasic(soapEnvelope) : this.postWithNtlm(soapEnvelope),
+		);
 
 		// Both branches: the failure must not reach the next turn, and the response must not outlive this one.
-		this.ntlmTurn = result.then(
+		this.turn = result.then(
 			() => undefined,
 			() => undefined,
 		);
 
 		return result;
+	}
+
+	public close(): void {
+		this.closed = true;
+		this.authenticatedSocket = undefined;
+		this.agent?.destroy();
 	}
 
 	private async postWithBasic(soapEnvelope: string): Promise<string> {
@@ -292,10 +305,25 @@ export class EwsTransport implements IEwsTransport {
 							socket,
 						}),
 					);
+					res.on('close', () => {
+						if (!res.complete) {
+							reject(
+								this.closed
+									? connectionClosed()
+									: new ExchangeError('connection-failed', 'The connection to Exchange closed before the response was complete'),
+							);
+						}
+					});
 				},
 			);
 
 			req.on('socket', (assigned: TLSSocket) => {
+				if (this.closed) {
+					reject(connectionClosed());
+					req.destroy();
+					return;
+				}
+
 				socket = assigned;
 				captureCertificate(assigned, (raw) => {
 					this.lastPeerCertificate = raw;
@@ -308,6 +336,11 @@ export class EwsTransport implements IEwsTransport {
 			});
 
 			req.on('error', (err) => {
+				if (this.closed) {
+					reject(connectionClosed());
+					return;
+				}
+
 				logger.warn({ msg: 'EWS request failed', err });
 				// No `cause`: a Node transport error carries request options, and those carry headers.
 				reject(new ExchangeError('connection-failed', 'Could not reach the Exchange endpoint', { detail: err.message }));

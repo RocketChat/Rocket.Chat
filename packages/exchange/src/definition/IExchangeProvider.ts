@@ -15,6 +15,9 @@ export interface IExchangeProvider {
 
 	testConnection(): Promise<void>;
 
+	/** Closes the connections a provider keeps open, once it is replaced or turned off. Any call after it fails. */
+	cleanup?(): void;
+
 	/** `timeWindow` bounds the range, `cursor` is an opaque continuation/delta token, omitted for an initial sync. */
 	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage>;
 
