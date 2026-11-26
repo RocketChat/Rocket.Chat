@@ -3,10 +3,11 @@ import type { ChildProcess } from 'node:child_process';
 import { EventEmitter } from 'node:stream';
 import { describe, it, beforeEach, afterEach, mock, type Mock } from 'node:test';
 
+import { _zPING } from '@rocket.chat/apps/protocol/dist/index';
 import debugFactory from 'debug';
 
 import type { BaseRuntimeSubprocessController } from '../../../../src/server/runtime/base/BaseRuntimeSubprocessController';
-import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/base/LivenessManager';
+import { LivenessManager } from '../../../../src/server/runtime/base/LivenessManager';
 import { ProcessMessenger } from '../../../../src/server/runtime/base/ProcessMessenger';
 
 describe('LivenessManager ping mechanism', () => {
@@ -138,7 +139,7 @@ describe('LivenessManager ping mechanism', () => {
 		mock.timers.tick(PING_INTERVAL_MS);
 
 		assert.strictEqual(sendMock.mock.calls.length, 1);
-		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [COMMAND_PING]);
+		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [_zPING]);
 	});
 
 	it('should not ping when heartbeat is recent', () => {
@@ -164,7 +165,7 @@ describe('LivenessManager ping mechanism', () => {
 
 		// Verify ping was sent
 		assert.strictEqual(sendMock.mock.calls.length, 1);
-		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [COMMAND_PING]);
+		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [_zPING]);
 
 		// Advance time to simulate latency
 		mock.timers.tick(20);
@@ -189,7 +190,7 @@ describe('LivenessManager ping mechanism', () => {
 
 		// Verify ping was sent
 		assert.strictEqual(sendMock.mock.calls.length, 1);
-		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [COMMAND_PING]);
+		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [_zPING]);
 
 		// Timeout the ping
 		mock.timers.tick(PING_TIMEOUT_MS);
@@ -234,7 +235,7 @@ describe('LivenessManager ping mechanism', () => {
 
 		// Verify ping was sent
 		assert.strictEqual(sendMock.mock.calls.length, 1);
-		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [COMMAND_PING]);
+		assert.deepStrictEqual(sendMock.mock.calls[0].arguments, [_zPING]);
 
 		// Timeout the ping
 		mock.timers.tick(PING_TIMEOUT_MS);
