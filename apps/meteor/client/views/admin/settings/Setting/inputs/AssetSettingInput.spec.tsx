@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import type { AssetSettingInputProps } from './AssetSettingInput';
@@ -70,7 +70,7 @@ describe('AssetSettingInput', () => {
 		const { getFileInput, upload, remove, dispatchToast } = setup({ asset: 'favicon' });
 		const file = new File(['image contents'], 'favicon.png', { type: 'image/png' });
 
-		fireEvent.change(getFileInput(), { target: { files: [file] } });
+		await userEvent.upload(getFileInput(), file);
 
 		await waitFor(() => expect(upload).toHaveBeenCalledTimes(1));
 		expect(upload).toHaveBeenCalledWith('/v1/assets.setAsset', expect.any(FormData));
@@ -112,7 +112,11 @@ describe('AssetSettingInput', () => {
 	it.each([[], null])('does not upload or show a toast when input files are %p', (files) => {
 		const { getFileInput, upload, remove, dispatchToast } = setup();
 
-		fireEvent.change(getFileInput(), { target: { files } });
+		const input = getFileInput();
+		Object.defineProperty(input, 'files', { configurable: true, value: files });
+		act(() => {
+			input.dispatchEvent(new Event('change', { bubbles: true }));
+		});
 
 		expect(upload).not.toHaveBeenCalled();
 		expect(remove).not.toHaveBeenCalled();
@@ -125,7 +129,7 @@ describe('AssetSettingInput', () => {
 		upload.mockRejectedValueOnce(error);
 		const file = new File(['image contents'], 'logo.png', { type: 'image/png' });
 
-		fireEvent.change(getFileInput(), { target: { files: [file] } });
+		await userEvent.upload(getFileInput(), file);
 
 		await waitFor(() => expect(dispatchToast).toHaveBeenCalledWith({ type: 'error', message: error }));
 		expect(upload).toHaveBeenCalledTimes(1);

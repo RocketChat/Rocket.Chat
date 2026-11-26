@@ -38,7 +38,6 @@ const viewWith = (actionId: string, initialValue: string): UiKitModalView => ({
 });
 
 const draw = (props: Partial<Parameters<typeof UiKitModal>[0]> & { view: UiKitModalView }) =>
-	// oxlint-disable-next-line testing-library/no-unnecessary-act
 	act(() => {
 		render(
 			<UiKitModal

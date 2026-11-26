@@ -1,4 +1,5 @@
 import type { ICalendarNotification, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import { useStream, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -11,7 +12,7 @@ export const useNotificationUserCalendar = (user: IUser) => {
 	const notifyUserStream = useStream('notify-user');
 
 	const notifyUserCalendar = useStableCallback(async (notification: ICalendarNotification) => {
-		if (user.status === 'busy') {
+		if (user.status === UserStatus.BUSY) {
 			return;
 		}
 

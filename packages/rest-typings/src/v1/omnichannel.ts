@@ -32,6 +32,7 @@ import type {
 	ILivechatContactChannel,
 	IUser,
 	OmichannelRoutingConfig,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -4738,7 +4739,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatQueueParams) => PaginatedResult<{
 			queue: {
 				_id: string;
-				user: { _id: string; userId: string; username: string; status: string };
+				user: { _id: string; userId: string; username: string; status: UserStatus };
 				department: { _id: string; name: string };
 				chats: number;
 			}[];

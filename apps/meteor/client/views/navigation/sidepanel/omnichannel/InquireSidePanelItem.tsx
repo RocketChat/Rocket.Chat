@@ -1,4 +1,4 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { SidebarItemIcon } from '@rocket.chat/fuselage';
 import { escapeHTML } from '@rocket.chat/tools';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
@@ -37,7 +37,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 
 	const badges = <>{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}</>;
 
-	const isQueued = room.status === 'queued';
+	const isQueued = room.status === LivechatInquiryStatus.QUEUED;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const menu =

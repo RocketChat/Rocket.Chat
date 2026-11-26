@@ -18,14 +18,14 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 });
 
 it('forwards aria and data attributes to the root', () => {
-	const { container } = render(
+	render(
 		<Accordion aria-label='Settings' data-qa='accordion'>
 			<AccordionItem title='Title'>Content</AccordionItem>
 		</Accordion>,
 	);
 
-	expect(container.querySelector('.rcx-accordion')).toHaveAttribute('aria-label', 'Settings');
-	expect(container.querySelector('.rcx-accordion')).toHaveAttribute('data-qa', 'accordion');
+	expect(screen.getByLabelText('Settings')).toHaveClass('rcx-accordion');
+	expect(screen.getByLabelText('Settings')).toHaveAttribute('data-qa', 'accordion');
 });
 
 describe('[AccordionItem expanded]', () => {

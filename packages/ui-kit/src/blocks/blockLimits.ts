@@ -364,6 +364,71 @@ const textLimit = (parent: Node, key: string, inFields: boolean): number | undef
 	return parent.type === undefined && 'value' in parent ? maxTextLength.option : undefined;
 };
 
+const arrayLimit = (parent: Node | undefined, key: string): number | undefined => {
+	if (key === 'options') {
+		return maxOptionsPerSelect;
+	}
+
+	if (key === 'elements' && parent?.type === 'actions') {
+		return maxElementsPerActionsBlock;
+	}
+
+	if (key === 'tasks' && parent?.type === 'plan') {
+		return maxTasksPerPlan;
+	}
+
+	if (key === 'actions' && parent?.type === 'card') {
+		return maxActionsPerCard;
+	}
+
+	if (key === 'elements' && parent?.type === 'carousel') {
+		return maxCardsPerCarousel;
+	}
+
+	return undefined;
+};
+
+const checkArrayLength = (value: unknown[], path: string, parent: Node | undefined, key: string, errors: LayoutBlockError[]): void => {
+	if (key === 'elements' && parent?.type === 'carousel' && value.length === 0) {
+		errors.push({ path, expected: 'array of at least 1 card' });
+	}
+
+	const max = arrayLimit(parent, key);
+
+	if (max !== undefined && value.length > max) {
+		errors.push({ path, expected: `array of at most ${max} items` });
+	}
+};
+
+const checkTextLength = (
+	text: string,
+	path: string,
+	parent: Node | undefined,
+	key: string,
+	inFields: boolean,
+	errors: LayoutBlockError[],
+): void => {
+	const max = parent && textLimit(parent, key, inFields);
+
+	if (max !== undefined && text.length > max) {
+		errors.push({ path: `${path}.text`, expected: `string of at most ${max} characters` });
+	}
+};
+
+const checkImage = (value: Node, path: string, parent: Node | undefined, key: string, errors: LayoutBlockError[]): void => {
+	if (value.type !== 'image' || !(parent?.type === 'card' || (parent?.type === 'container' && key === 'icon'))) {
+		return;
+	}
+
+	if (typeof value.image_url === 'string' && value.image_url.length > maxImageUrlLength) {
+		errors.push({ path: `${path}.image_url`, expected: `string of at most ${maxImageUrlLength} characters` });
+	}
+
+	if (typeof value.alt_text === 'string' && value.alt_text.length > maxImageAltLength) {
+		errors.push({ path: `${path}.alt_text`, expected: `string of at most ${maxImageAltLength} characters` });
+	}
+};
+
 /**
  * Lists where blocks exceed the size limits of the UiKit surfaces. Kept apart from the type validator so the limits
  * stay in one place and cover block types added later; they apply only when blocks are validated, never when rendering.
@@ -373,27 +438,7 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: Bl
 
 	const walk = (value: unknown, path: string, parent: Node | undefined, key: string, inFields: boolean, nesting = 0): void => {
 		if (Array.isArray(value)) {
-			let max: number | undefined;
-			if (key === 'options') {
-				max = maxOptionsPerSelect;
-			} else if (key === 'elements' && parent?.type === 'actions') {
-				max = maxElementsPerActionsBlock;
-			} else if (key === 'tasks' && parent?.type === 'plan') {
-				max = maxTasksPerPlan;
-			} else if (key === 'actions' && parent?.type === 'card') {
-				max = maxActionsPerCard;
-			} else if (key === 'elements' && parent?.type === 'carousel') {
-				max = maxCardsPerCarousel;
-
-				if (value.length === 0) {
-					errors.push({ path, expected: 'array of at least 1 card' });
-				}
-			}
-
-			if (max !== undefined && value.length > max) {
-				errors.push({ path, expected: `array of at most ${max} items` });
-			}
-
+			checkArrayLength(value, path, parent, key, errors);
 			value.forEach((item, index) => walk(item, `${path}[${index}]`, parent, key, key === 'fields', nesting));
 			return;
 		}
@@ -403,24 +448,11 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: Bl
 		}
 
 		if ((value.type === 'plain_text' || value.type === 'mrkdwn') && typeof value.text === 'string') {
-			const max = parent && textLimit(parent, key, inFields);
-
-			if (max !== undefined && value.text.length > max) {
-				errors.push({ path: `${path}.text`, expected: `string of at most ${max} characters` });
-			}
-
+			checkTextLength(value.text, path, parent, key, inFields, errors);
 			return;
 		}
 
-		if (value.type === 'image' && (parent?.type === 'card' || (parent?.type === 'container' && key === 'icon'))) {
-			if (typeof value.image_url === 'string' && value.image_url.length > maxImageUrlLength) {
-				errors.push({ path: `${path}.image_url`, expected: `string of at most ${maxImageUrlLength} characters` });
-			}
-
-			if (typeof value.alt_text === 'string' && value.alt_text.length > maxImageAltLength) {
-				errors.push({ path: `${path}.alt_text`, expected: `string of at most ${maxImageAltLength} characters` });
-			}
-		}
+		checkImage(value, path, parent, key, errors);
 
 		checkDataTable(value, path, errors);
 		checkDataVisualization(value, path, errors);

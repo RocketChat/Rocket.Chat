@@ -725,8 +725,9 @@ export class LDAPConnection {
 		clientOptions: ldapjs.ClientOptions;
 		tlsOptions: Record<string, any>;
 	} {
+		const address = `${this.options.host}:${this.options.port}`;
 		const clientOptions: ldapjs.ClientOptions = {
-			url: `${this.options.host}:${this.options.port}`,
+			url: address,
 			timeout: this.options.timeout,
 			connectTimeout: this.options.connectionTimeout,
 			idleTimeout: this.options.idleTimeout,
@@ -753,10 +754,10 @@ export class LDAPConnection {
 		}
 
 		if (this.options.encryption === 'ssl') {
-			clientOptions.url = `ldaps://${clientOptions.url}`;
+			clientOptions.url = `ldaps://${address}`;
 			clientOptions.tlsOptions = tlsOptions;
 		} else {
-			clientOptions.url = `ldap://${clientOptions.url}`;
+			clientOptions.url = `ldap://${address}`;
 		}
 
 		return {

@@ -48,11 +48,13 @@ it('renders styled text, lists, quotes and code, and resolves mentions by id', a
 	);
 
 	await waitFor(() =>
+		// oxlint-disable-next-line testing-library/no-node-access -- the rendered line is a plain Box with no role, label or text of its own
 		expect(screen.getByText('Hello', { exact: false }).parentElement).toHaveTextContent('Hello @user-u1 in #room-c1 docs'),
 	);
 	expect(screen.getByText('Hello')).toBeInTheDocument();
 	expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual(['first', 'second']);
 	expect(screen.getByText('quoted')).toBeInTheDocument();
+	// oxlint-disable-next-line testing-library/no-node-access -- the highlighter splits the code into tokens, so no text query matches it whole
 	expect(document.querySelector('pre code')).toHaveTextContent('let a = 1');
 	expect(screen.getByRole('link')).toHaveAttribute('href', 'https://docs.rocket.chat/');
 });
@@ -67,6 +69,7 @@ it('shows the id of a mention until its name loads', () => {
 		{ wrapper: wrapper() },
 	);
 
+	// oxlint-disable-next-line testing-library/no-node-access -- the rendered line is a plain Box with no role, label or text of its own
 	expect(screen.getByText('u1', { exact: false }).parentElement).toHaveTextContent('@u1');
 });
 

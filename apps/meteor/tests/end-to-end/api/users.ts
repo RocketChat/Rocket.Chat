@@ -615,7 +615,7 @@ describe('[Users]', () => {
 
 			it('should create a user with a voice call extension', async () => {
 				const sipExtension = '888999';
-				let user: TestUser<IUser>;
+				let user: TestUser<IUser> | undefined;
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -638,7 +638,7 @@ describe('[Users]', () => {
 						user = res.body.user;
 					});
 
-				if (user!) {
+				if (user) {
 					await deleteUser(user);
 				}
 			});
@@ -6485,7 +6485,10 @@ describe('[Users]', () => {
 			expect(status.status).to.be.equal('offline');
 			expect(status).to.have.property('statusSource', 'manual');
 			expect(status).to.have.property('statusExpiresAt');
-			expect(new Date(status.statusExpiresAt!).getTime()).to.be.closeTo(new Date(expiresAt).getTime(), 2000);
+			if (!status.statusExpiresAt) {
+				throw new Error('statusExpiresAt was not set');
+			}
+			expect(new Date(status.statusExpiresAt).getTime()).to.be.closeTo(new Date(expiresAt).getTime(), 2000);
 		});
 
 		it('should reject a past expiresAt date', async () => {
