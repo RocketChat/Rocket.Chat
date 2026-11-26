@@ -1,6 +1,5 @@
 import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { SidebarItemIcon } from '@rocket.chat/fuselage';
-
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -29,9 +28,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 	const { alert, rid, t: type } = room;
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
-	const message =
-		room.lastMessage &&
-		`${room.lastMessage.u.name || room.lastMessage.u.username}: ${normalizeMessagePreview(room.lastMessage, t)}`;
+	const message = room.lastMessage && `${room.lastMessage.u.name || room.lastMessage.u.username}: ${normalizeMessagePreview(room.lastMessage, t)}`;
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
