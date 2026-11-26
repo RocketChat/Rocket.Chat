@@ -9,7 +9,7 @@ import Item from '../Item/Item';
 import type { ItemInset } from '../Item/types';
 
 export type MessageProps = WebProps<MessageContract, HTMLDivElement> &
-	Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> & {
+	Omit<AllHTMLAttributes<HTMLDivElement>, 'is' | 'value'> & {
 		/**
 		 * Adds space above and below the message, for a list of separate messages such as a panel's threads or discussions.
 		 */
