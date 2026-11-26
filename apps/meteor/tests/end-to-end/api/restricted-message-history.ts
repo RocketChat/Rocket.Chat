@@ -12,7 +12,7 @@ import { sleep } from '../../data/livechat/utils';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login, type TestUser } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 const SETTING = 'Restricted_Message_History_Enabled';
@@ -31,9 +31,9 @@ type Listing = {
 	let previousSetting: ISetting['value'];
 
 	let room: IRoom;
-	let newcomer: IUser;
+	let newcomer: TestUser<IUser>;
 	let newcomerCredentials: Credentials;
-	let bystander: IUser;
+	let bystander: TestUser<IUser>;
 	let bystanderCredentials: Credentials;
 
 	const token = `restricted${Date.now()}`;
@@ -125,7 +125,7 @@ type Listing = {
 		bystander = await createUser();
 		bystanderCredentials = await login(bystander.username, password);
 
-		room = (await createRoom({ type: 'c', name: `restricted-history-${Date.now()}`, members: [bystander.username!] })).body.channel;
+		room = (await createRoom({ type: 'c', name: `restricted-history-${Date.now()}`, members: [bystander.username] })).body.channel;
 		await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: room._id, hideHistoryForNewMembers: true }).expect(200);
 
 		oldMessage = await send('sent before the newcomer joined');
@@ -142,7 +142,7 @@ type Listing = {
 		oldDiscussionMessage = await sendTo(oldDiscussion._id, 'discussed before the newcomer joined');
 
 		await sleep(50);
-		await addUserToRoom({ usernames: [newcomer.username!], rid: room._id });
+		await addUserToRoom({ usernames: [newcomer.username], rid: room._id });
 		await sleep(50);
 
 		newMessage = await send('sent after the newcomer joined');
@@ -205,8 +205,8 @@ type Listing = {
 				const discussed = await sendTo(discussion._id, 'discussed before the latecomer joined the room');
 
 				await sleep(50);
-				await addUserToRoom({ usernames: [latecomer.username!], rid: room._id });
-				await addUserToRoom({ usernames: [latecomer.username!], rid: discussion._id });
+				await addUserToRoom({ usernames: [latecomer.username], rid: room._id });
+				await addUserToRoom({ usernames: [latecomer.username], rid: discussion._id });
 
 				const roomSubscription = await getSubscriptionByRoomId(room._id, latecomerCredentials);
 				const discussionSubscription = await getSubscriptionByRoomId(discussion._id, latecomerCredentials);
@@ -338,7 +338,7 @@ type Listing = {
 			{
 				path: 'chat.getDiscussions',
 				fetch: get('chat.getDiscussions', () => ({ roomId: room._id })),
-				ids: (body) => (body.messages as IMessage[]).map(({ drid }) => drid!),
+				ids: (body) => (body.messages as Required<Pick<IMessage, 'drid'>>[]).map(({ drid }) => drid),
 				...discussions,
 			},
 			{
@@ -709,7 +709,10 @@ type Listing = {
 			await setMemberHistoryAccess(newcomer._id, true).expect(200);
 
 			const subscription = await getSubscriptionByRoomId(room._id, newcomerCredentials);
-			expect(new Date(subscription.historyVisibleFrom!).getTime()).to.equal(new Date(subscription.ts).getTime());
+			if (!subscription.historyVisibleFrom) {
+				throw new Error('historyVisibleFrom was not set');
+			}
+			expect(new Date(subscription.historyVisibleFrom).getTime()).to.equal(new Date(subscription.ts).getTime());
 			expect(await historyIds(newcomerCredentials)).to.not.include(oldMessage._id);
 
 			const starred = await request.get(api('chat.getStarredMessages')).set(newcomerCredentials).query({ roomId: room._id }).expect(200);

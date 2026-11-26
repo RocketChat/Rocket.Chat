@@ -138,8 +138,8 @@ getMembersWithoutAccessToMessage.patch(async (next, message) => {
 	const getThreadRoot = createThreadRootLoader();
 
 	const visibility = await Promise.all(
-		restrictedMembers.map(({ u, historyVisibleFrom }) =>
-			historyVisibleFrom ? isVisibleFrom(message, historyVisibleFrom, u._id, getThreadRoot) : true,
+		restrictedMembers.map(
+			async ({ u, historyVisibleFrom }) => !historyVisibleFrom || isVisibleFrom(message, historyVisibleFrom, u._id, getThreadRoot),
 		),
 	);
 
