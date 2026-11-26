@@ -4,6 +4,7 @@ import { Children } from 'react';
 import type { MessageStatusIndicatorContract } from './MessageStatusIndicator.contract';
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
 import { cx } from '../../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import type { WebDivProps } from '../../../types/WebAttributes';
@@ -35,6 +36,7 @@ function MessageStatusIndicator(props: MessageStatusIndicatorProps) {
 	return (
 		<IndicatorFrame
 			className={cx('rcx-message-status-indicator', props.className)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

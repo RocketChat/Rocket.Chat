@@ -3,6 +3,7 @@ import { createContext } from 'react';
 
 import type { FieldContract } from './Field.contract';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -38,6 +39,7 @@ function Field(props: FieldProps) {
 		<FieldContext.Provider value={true}>
 			<FieldFrame
 				className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-field')}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}

@@ -4,6 +4,7 @@ import type { TableColumnWidth } from './Table.contract';
 import { TableStickyContext } from './TableContext';
 import type { WebTableProps } from './TableWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 
@@ -166,6 +167,7 @@ const Table = (props: TableProps) => {
 						props.className,
 						`rcx-box rcx-box--full rcx-table${fixed ? ' rcx-table--fixed' : ''}${sticky ? ' rcx-table--sticky' : ''}${striped ? ' rcx-table--striped' : ''}`,
 					)}
+					{...pickFramePressHandlers(props)}
 					render={
 						<table
 							{...ariaAndDataAttributes(props)}

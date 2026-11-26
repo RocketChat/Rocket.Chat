@@ -4,6 +4,7 @@ import { memo } from 'react';
 import type { MessagePartContract } from './Message.contract';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebSpanProps } from '../../types/WebAttributes';
@@ -27,6 +28,7 @@ const UsernameFrame = styled(Text, { render: 'span', ...messageUsernameFrame });
 const MessageUsername = (props: MessageUsernameProps) => (
 	<UsernameFrame
 		className={cx('rcx-message-header__username', props.className)}
+		{...pickFramePressHandlers(props)}
 		render={
 			<span
 				{...ariaAndDataAttributes(props)}

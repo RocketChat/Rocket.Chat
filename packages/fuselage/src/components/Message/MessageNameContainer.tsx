@@ -5,6 +5,7 @@ import type { MessagePartContract } from './Message.contract';
 import { MessageHeaderContext } from './MessageContext';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebSpanProps } from '../../types/WebAttributes';
@@ -71,6 +72,7 @@ function MessageNameContainer(props: MessageNameContainerProps) {
 			inHeader={inHeader}
 			pressable={props.role === 'button'}
 			className={cx('rcx-message-header__name-container', props.className)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<span
 					{...ariaAndDataAttributes(props)}

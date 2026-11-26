@@ -2,6 +2,7 @@ import { styled, View } from '@tamagui/web';
 
 import type { WebTableSectionProps } from './TableWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 
@@ -26,6 +27,7 @@ const TableBodyFrame = styled(View, tableBodyFrame);
 const TableBody = (props: TableBodyProps) => (
 	<TableBodyFrame
 		className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-table__body')}
+		{...pickFramePressHandlers(props)}
 		render={
 			<tbody
 				{...ariaAndDataAttributes(props)}

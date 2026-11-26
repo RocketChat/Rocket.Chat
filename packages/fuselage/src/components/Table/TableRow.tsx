@@ -2,6 +2,7 @@ import { styled, View } from '@tamagui/web';
 
 import type { WebTableRowProps } from './TableWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -74,6 +75,7 @@ const TableRow = (props: TableRowProps) => {
 				props.className,
 				`rcx-box rcx-box--full rcx-table__row${selected ? ' rcx-table__row--selected' : ''}${action ? ' rcx-table__row--action' : ''}`,
 			)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<tr
 					{...ariaAndDataAttributes(props)}

@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import type { TabsItemContract } from './Tabs.contract';
 import { TabsContext } from './TabsContext';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -198,6 +199,7 @@ function TabsItem(props: TabsItemProps) {
 					selected && disabled ? ' rcx-tabs__item--selected--disabled' : ''
 				}`,
 			)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<button
 					{...ariaAndDataAttributes(props)}

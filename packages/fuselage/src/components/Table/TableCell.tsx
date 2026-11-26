@@ -5,6 +5,7 @@ import { useContext } from 'react';
 import { TableHeadContext } from './TableHead';
 import type { WebTableCellProps } from './TableWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -184,6 +185,7 @@ const TableCell = (props: TableCellProps) => {
 				truncate={!!truncate}
 				align={align}
 				className={className}
+				{...pickFramePressHandlers(props)}
 				render={
 					<th
 						{...ariaAndDataAttributes(props)}
@@ -217,6 +219,7 @@ const TableCell = (props: TableCellProps) => {
 			truncate={!!truncate}
 			align={align}
 			className={className}
+			{...pickFramePressHandlers(props)}
 			render={
 				<td
 					{...ariaAndDataAttributes(props)}

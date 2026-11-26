@@ -2,6 +2,7 @@ import { styled, Text } from '@tamagui/web';
 
 import { ariaAndDataAttributes } from '../../../../helpers/ariaAndDataAttributes';
 import { cx } from '../../../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../../helpers/pickWebPressHandlers';
 import type { WebDivProps } from '../../../../types/WebAttributes';
@@ -33,6 +34,7 @@ const ItemFrame = styled(Text, { render: 'div', ...messageMetricsItemFrame });
 const MessageMetricsItem = (props: MessageMetricsItemProps) => (
 	<ItemFrame
 		className={cx('rcx-message-metrics__item', props.className)}
+		{...pickFramePressHandlers(props)}
 		render={
 			<div
 				{...ariaAndDataAttributes(props)}

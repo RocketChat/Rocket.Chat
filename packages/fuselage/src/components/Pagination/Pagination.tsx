@@ -4,6 +4,7 @@ import { useId, useMemo } from 'react';
 import type { ItemsPerPage } from './Pagination.contract';
 import type { PaginationWebProps } from './PaginationWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 import { Chevron } from '../Chevron';
@@ -289,6 +290,7 @@ const Pagination = (props: PaginationProps) => {
 		<PaginationFrame
 			divider={divider ? 'with' : 'without'}
 			className={prependClassName(props.className, `rcx-box rcx-box--full rcx-pagination${divider ? ' rcx-pagination--divider' : ''}`)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<nav
 					{...ariaAndDataAttributes(props)}

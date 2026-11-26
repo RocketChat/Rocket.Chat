@@ -3,6 +3,7 @@ import { styled, View } from '@tamagui/web';
 import type { MessageMetricsPartContract } from './MessageMetrics.contract';
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
 import { cx } from '../../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import type { WebDivProps } from '../../../types/WebAttributes';
@@ -30,6 +31,7 @@ const MetricsFrame = styled(View, { ...messageMetricsFrame });
 const MessageMetrics = (props: MessageMetricsProps) => (
 	<MetricsFrame
 		className={cx('rcx-message-metrics__content-wrapper', props.className)}
+		{...pickFramePressHandlers(props)}
 		render={
 			<div
 				{...ariaAndDataAttributes(props)}

@@ -7,6 +7,7 @@ import type { ItemPartProps } from './types';
 import { useIdRegistry } from './useIdRegistry';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickVirtualizedListStyle } from '../../helpers/pickVirtualizedListStyle';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
@@ -135,6 +136,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 					positioned={!!dropIndicator}
 					hidden={!!hidden}
 					className={classes}
+					{...pickFramePressHandlers(props)}
 					render={
 						<ul
 							aria-labelledby={ariaLabelledBy}
@@ -166,6 +168,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 					positioned={!!dropIndicator}
 					hidden={!!hidden}
 					className={classes}
+					{...pickFramePressHandlers(props)}
 					render={
 						<ol
 							aria-labelledby={ariaLabelledBy}
@@ -196,6 +199,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 				positioned={!!dropIndicator}
 				hidden={!!hidden}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						aria-labelledby={ariaLabelledBy}

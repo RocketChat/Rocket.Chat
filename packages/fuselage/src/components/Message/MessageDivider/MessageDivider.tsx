@@ -3,6 +3,7 @@ import { styled, Text, View } from '@tamagui/web';
 import type { MessageDividerContract } from './MessageDivider.contract';
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
 import { cx } from '../../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import type { WebDivProps } from '../../../types/WebAttributes';
@@ -73,6 +74,7 @@ const MessageDivider = (props: MessageDividerProps) => {
 	return (
 		<DividerFrame
 			className={cx('rcx-message-divider', !!unreadLabel && 'rcx-message-divider--unread', className)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

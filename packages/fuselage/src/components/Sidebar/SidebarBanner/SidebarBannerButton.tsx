@@ -1,6 +1,7 @@
 import { styled, Text } from '@tamagui/web';
 
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../../helpers/prependClassName';
@@ -67,6 +68,7 @@ const ButtonFrame = styled(Text, {
 export const SidebarBannerButton = (props: SidebarBannerButtonProps) => (
 	<ButtonFrame
 		className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-sidebar-banner__link rcx-sidebar-banner__link--button')}
+		{...pickFramePressHandlers(props)}
 		render={
 			<button
 				{...ariaAndDataAttributes(props)}

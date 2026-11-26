@@ -3,6 +3,7 @@ import { styled, Text, View } from '@tamagui/web';
 
 import type { CalloutContract } from './Callout.contract';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 import type { WebSectionElement, WebSectionProps } from '../../types/WebElementProps';
@@ -191,6 +192,7 @@ const Callout = (props: CalloutProps) => {
 		<CalloutFrame
 			tone={type ?? 'default'}
 			className={prependClassName(className, `rcx-box rcx-box--full rcx-callout${type ? ` rcx-callout--${type}` : ''}`)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<section {...ariaAndDataAttributes(props)} {...pickWebPressHandlers(props)} ref={mergedRef} id={props.id} role={props.role} />
 			}

@@ -3,6 +3,7 @@ import { styled, View } from '@tamagui/web';
 import type { TabsContract } from './Tabs.contract';
 import { TabsContext, tabsValue } from './TabsContext';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 import type { WebDivPressAlias, WebDivProps } from '../../types/WebAttributes';
@@ -95,6 +96,7 @@ function Tabs(props: TabsProps) {
 					props.className,
 					`rcx-box rcx-box--full rcx-tabs${stretch ? ' rcx-tabs--stretch' : ''}${divider ? ' rcx-tabs--with-divider' : ''}`,
 				)}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div {...ariaAndDataAttributes(props)} {...pickWebPressHandlers(props)} ref={props.ref} id={props.id} title={props.title} />
 				}

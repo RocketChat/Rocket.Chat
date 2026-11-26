@@ -2,6 +2,7 @@ import { styled, View } from '@tamagui/web';
 
 import type { WebTableSectionProps } from './TableWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 
@@ -26,6 +27,7 @@ const TableFootFrame = styled(View, tableFootFrame);
 const TableFoot = (props: TableFootProps) => (
 	<TableFootFrame
 		className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-table__foot')}
+		{...pickFramePressHandlers(props)}
 		render={
 			<tfoot
 				{...ariaAndDataAttributes(props)}

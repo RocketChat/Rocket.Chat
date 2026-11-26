@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react';
 import { TableStickyContext } from './TableContext';
 import type { WebTableSectionProps } from './TableWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
 
@@ -35,6 +36,7 @@ const TableHead = (props: TableHeadProps) => {
 		<TableHeadContext.Provider value={sticky ? 'sticky' : 'static'}>
 			<TableHeadFrame
 				className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-table__head')}
+				{...pickFramePressHandlers(props)}
 				render={
 					<thead
 						{...ariaAndDataAttributes(props)}

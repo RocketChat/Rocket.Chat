@@ -4,6 +4,7 @@ import type { ItemDropSlotContract } from './Item.contract';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivRef, WebLiRef } from '../../types/WebElementAttributes';
@@ -73,6 +74,7 @@ const ItemDropSlot = (props: ItemDropSlotProps) => {
 		<ItemDropSlotFrame
 			target={dropTarget}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<li
 					{...ariaAndDataAttributes(props)}
@@ -92,6 +94,7 @@ const ItemDropSlot = (props: ItemDropSlotProps) => {
 		<ItemDropSlotFrame
 			target={dropTarget}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

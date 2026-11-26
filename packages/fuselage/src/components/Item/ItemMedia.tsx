@@ -4,6 +4,7 @@ import type { ItemMediaContract } from './Item.contract';
 import { joinClasses } from './classes';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivRef } from '../../types/WebElementAttributes';
@@ -55,6 +56,7 @@ const ItemMedia = (props: ItemMediaProps) => {
 		<ItemMediaFrame
 			variant={variant}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

@@ -3,6 +3,7 @@ import { styled, Text } from '@tamagui/web';
 import type { MessageBlockContract } from './Message.contract';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivProps } from '../../types/WebAttributes';
@@ -39,6 +40,7 @@ function MessageBlock(props: MessageBlockProps) {
 		<BlockFrame
 			fixedWidth={!!props.fixedWidth}
 			className={cx('rcx-box rcx-box--full', cxx('rcx-message-block')({ 'width-fixed': !!props.fixedWidth }), props.className)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

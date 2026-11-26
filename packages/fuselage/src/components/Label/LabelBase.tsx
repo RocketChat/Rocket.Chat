@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 
 import type { LabelContract } from './Label.contract';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -105,6 +106,7 @@ function LabelBase(props: LabelBaseProps) {
 					look={disabled ? 'disabled' : 'enabled'}
 					field={Boolean(field)}
 					className={classes}
+					{...pickFramePressHandlers(props)}
 					render={
 						<legend
 							{...ariaAndDataAttributes(props)}
@@ -125,6 +127,7 @@ function LabelBase(props: LabelBaseProps) {
 					look={disabled ? 'disabled' : 'enabled'}
 					field={Boolean(field)}
 					className={classes}
+					{...pickFramePressHandlers(props)}
 					render={
 						<span
 							{...ariaAndDataAttributes(props)}
@@ -145,6 +148,7 @@ function LabelBase(props: LabelBaseProps) {
 					look={disabled ? 'disabled' : 'enabled'}
 					field={Boolean(field)}
 					className={classes}
+					{...pickFramePressHandlers(props)}
 					render={
 						<label
 							{...ariaAndDataAttributes(props)}

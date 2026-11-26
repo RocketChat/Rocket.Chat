@@ -4,6 +4,7 @@ import type { FieldGroupContract } from './FieldGroup.contract';
 import { appendClassName } from '../../helpers/appendClassName';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { patchChildren } from '../../helpers/patchChildren';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -36,6 +37,7 @@ const FieldGroupFrame = styled(View, { ...fieldGroupFrame });
 const FieldGroup = (props: FieldGroupProps) => (
 	<FieldGroupFrame
 		className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-field-group')}
+		{...pickFramePressHandlers(props)}
 		render={
 			<fieldset
 				{...ariaAndDataAttributes(props)}

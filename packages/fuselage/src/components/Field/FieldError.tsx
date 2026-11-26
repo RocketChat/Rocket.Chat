@@ -4,6 +4,7 @@ import { FieldContext } from './Field';
 import type { FieldTextContract } from './Field.contract';
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -40,6 +41,7 @@ const FieldError = (props: FieldErrorProps) => {
 	const component = (
 		<FieldErrorFrame
 			className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-field__error')}
+			{...pickFramePressHandlers(props)}
 			render={
 				<span
 					{...ariaAndDataAttributes(props)}

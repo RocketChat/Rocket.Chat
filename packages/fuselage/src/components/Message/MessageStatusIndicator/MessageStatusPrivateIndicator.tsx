@@ -3,6 +3,7 @@ import { styled, Text } from '@tamagui/web';
 import type { MessageStatusPrivateIndicatorContract } from './MessageStatusIndicator.contract';
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
 import { cx } from '../../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import type { WebSpanProps } from '../../../types/WebAttributes';
@@ -24,6 +25,7 @@ const PrivateIndicatorFrame = styled(Text, { render: 'span', ...messageStatusPri
 const MessageStatusPrivateIndicator = (props: MessageStatusPrivateIndicatorProps) => (
 	<PrivateIndicatorFrame
 		className={cx('rcx-message-status-indicator__item', props.className)}
+		{...pickFramePressHandlers(props)}
 		render={
 			<span
 				{...ariaAndDataAttributes(props)}

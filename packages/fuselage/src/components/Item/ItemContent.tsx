@@ -7,6 +7,7 @@ import { joinClasses } from './classes';
 import { countLines } from './lines';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivRef } from '../../types/WebElementAttributes';
@@ -47,6 +48,7 @@ const ItemContent = (props: ItemContentProps) => {
 		<ItemRowContext.Provider value='detached'>
 			<ItemContentFrame
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}

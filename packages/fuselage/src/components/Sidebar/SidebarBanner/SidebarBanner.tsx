@@ -1,6 +1,7 @@
 import { styled, Text, View } from '@tamagui/web';
 
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../../helpers/prependClassName';
@@ -106,6 +107,7 @@ export const SidebarBanner = (props: SidebarBannerProps) => {
 		<BannerFrame
 			tone={variant}
 			className={prependClassName(className, `rcx-box rcx-box--full rcx-sidebar-banner rcx-sidebar-banner--${variant}`)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

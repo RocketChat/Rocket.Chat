@@ -6,6 +6,7 @@ import { ItemActionsContext, ItemRowContext, useItemContext } from './ItemContex
 import { joinClasses } from './classes';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivRef } from '../../types/WebElementAttributes';
@@ -152,6 +153,7 @@ const ItemActions = (props: ItemActionsProps) => {
 				overhang={overhang}
 				end={justify === 'end'}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}
@@ -188,6 +190,7 @@ const ItemActions = (props: ItemActionsProps) => {
 				overhang={overhang}
 				end={justify === 'end'}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}

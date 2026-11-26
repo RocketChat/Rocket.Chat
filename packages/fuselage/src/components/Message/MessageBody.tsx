@@ -5,6 +5,7 @@ import type { MessageBodyContract } from './Message.contract';
 import { MessagePendingContext } from './MessageContext';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivProps } from '../../types/WebAttributes';
@@ -55,6 +56,7 @@ const MessageBody = (props: MessageBodyProps) => {
 				pending={pending}
 				numberOfLines={2}
 				className={cx('rcx-message-body rcx-message-body--clamp', props.className)}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}
@@ -78,6 +80,7 @@ const MessageBody = (props: MessageBodyProps) => {
 		<BodyFrame
 			pending={pending}
 			className={cx('rcx-message-body', props.className)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

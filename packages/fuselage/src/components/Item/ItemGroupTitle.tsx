@@ -8,6 +8,7 @@ import { useItemGroupContext } from './ItemGroupContext';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebButtonRef, WebDivRef, WebHeadingRef } from '../../types/WebElementAttributes';
@@ -86,6 +87,7 @@ const ItemGroupTitle = (props: ItemGroupTitleProps) => {
 			<ItemGroupTitleFrame
 				button={true}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<button
 						{...ariaAndDataAttributes(props)}
@@ -110,6 +112,7 @@ const ItemGroupTitle = (props: ItemGroupTitleProps) => {
 			<ItemGroupTitleFrame
 				button={false}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<h2
 						{...ariaAndDataAttributes(props)}
@@ -133,6 +136,7 @@ const ItemGroupTitle = (props: ItemGroupTitleProps) => {
 			<ItemGroupTitleFrame
 				button={false}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<h3
 						{...ariaAndDataAttributes(props)}
@@ -156,6 +160,7 @@ const ItemGroupTitle = (props: ItemGroupTitleProps) => {
 			<ItemGroupTitleFrame
 				button={false}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<h4
 						{...ariaAndDataAttributes(props)}
@@ -178,6 +183,7 @@ const ItemGroupTitle = (props: ItemGroupTitleProps) => {
 		<ItemGroupTitleFrame
 			button={false}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

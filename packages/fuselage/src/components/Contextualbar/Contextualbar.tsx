@@ -2,6 +2,7 @@ import { styled, View } from '@tamagui/web';
 
 import { divRef, type WebContextualbarProps } from './ContextualbarWebProps';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -72,6 +73,7 @@ function Contextualbar(props: ContextualbarProps) {
 				className,
 				`rcx-box rcx-box--full${position ? ` rcx-vertical-bar--position-${position}` : ''}${stretch ? ' rcx-vertical-bar--stretch' : ''} rcx-vertical-bar`,
 			)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

@@ -10,6 +10,7 @@ import { countLines, forEachSlot } from './lines';
 import type { ItemAttributes } from './types';
 import { useIdRegistry } from './useIdRegistry';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { pickWebRowHandlers } from '../../helpers/pickWebRowHandlers';
@@ -492,6 +493,7 @@ const Item = (props: ItemProps) => {
 					ring={ring}
 					dragging={!!dragging}
 					className={classes}
+					{...pickFramePressHandlers(press)}
 					render={
 						<li
 							{...ariaAndDataAttributes(props)}
@@ -527,6 +529,7 @@ const Item = (props: ItemProps) => {
 					ring={ring}
 					dragging={!!dragging}
 					className={classes}
+					{...pickFramePressHandlers(press)}
 					render={
 						<a
 							{...ariaAndDataAttributes(props)}
@@ -565,6 +568,7 @@ const Item = (props: ItemProps) => {
 					ring={ring}
 					dragging={!!dragging}
 					className={classes}
+					{...pickFramePressHandlers(press)}
 					render={
 						<label
 							{...ariaAndDataAttributes(props)}
@@ -598,6 +602,7 @@ const Item = (props: ItemProps) => {
 				ring={ring}
 				dragging={!!dragging}
 				className={classes}
+				{...pickFramePressHandlers(press)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}

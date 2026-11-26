@@ -5,6 +5,7 @@ import { ItemRowContext } from './ItemContext';
 import { joinClasses } from './classes';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivRef } from '../../types/WebElementAttributes';
@@ -42,6 +43,7 @@ const ItemRow = (props: ItemRowProps) => {
 		<ItemRowContext.Provider value={props.fixedHeight ? fixedRow : flexibleRow}>
 			<ItemRowFrame
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<div
 						{...ariaAndDataAttributes(props)}

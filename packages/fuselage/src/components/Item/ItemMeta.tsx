@@ -5,6 +5,7 @@ import { useItemContext } from './ItemContext';
 import { joinClasses } from './classes';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebDivRef } from '../../types/WebElementAttributes';
@@ -69,6 +70,7 @@ const ItemMeta = (props: ItemMetaProps) => {
 			truncate={!!truncate}
 			highlighted={highlighted}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<span
 					{...ariaAndDataAttributes(props)}
@@ -89,6 +91,7 @@ const ItemMeta = (props: ItemMetaProps) => {
 			truncate={!!truncate}
 			highlighted={highlighted}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<div
 					{...ariaAndDataAttributes(props)}

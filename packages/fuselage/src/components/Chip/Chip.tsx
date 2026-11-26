@@ -2,6 +2,7 @@ import { styled, Text, View } from '@tamagui/web';
 
 import type { ChipContract } from './Chip.contract';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -142,6 +143,7 @@ const Chip = (props: ChipProps) => {
 			sizing={small ? 'small' : 'regular'}
 			label={Boolean(label)}
 			className={prependClassName(className, `rcx-box rcx-chip${small ? ' rcx-chip--small' : ''}${label ? ' rcx-chip--label' : ''}`)}
+			{...pickFramePressHandlers(props)}
 			render={
 				<button
 					{...ariaAndDataAttributes(props)}

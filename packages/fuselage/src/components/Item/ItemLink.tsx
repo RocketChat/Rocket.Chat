@@ -5,6 +5,7 @@ import { useItemContext } from './ItemContext';
 import { joinClasses } from './classes';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import type { WebAnchorAttributes, WebAnchorRef, WebButtonFormAttributes, WebButtonRef } from '../../types/WebElementAttributes';
@@ -78,6 +79,7 @@ const ItemLink = (props: ItemLinkProps) => {
 			<ItemLinkFrame
 				grabbable={grabbable}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<button
 						{...ariaAndDataAttributes(props)}
@@ -106,6 +108,7 @@ const ItemLink = (props: ItemLinkProps) => {
 		<ItemLinkFrame
 			grabbable={grabbable}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<a
 					{...ariaAndDataAttributes(props)}

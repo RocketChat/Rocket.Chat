@@ -5,6 +5,7 @@ import { isValidElement, useContext } from 'react';
 import type { IconButtonContract } from './IconButton.contract';
 import { SegmentContext } from './SegmentContext';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -792,6 +793,7 @@ function IconButton(props: IconButtonProps) {
 				segment={segment?.position}
 				paint={paintOf()}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<a
 						{...ariaAndDataAttributes(props)}
@@ -821,6 +823,7 @@ function IconButton(props: IconButtonProps) {
 			segment={segment?.position}
 			paint={paintOf()}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<button
 					{...ariaAndDataAttributes(props)}

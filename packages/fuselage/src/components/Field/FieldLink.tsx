@@ -4,6 +4,7 @@ import { FieldContext } from './Field';
 import type { FieldLinkContract } from './Field.contract';
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -40,6 +41,7 @@ const FieldLink = (props: FieldLinkProps) => {
 	const component = (
 		<FieldLinkFrame
 			className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-field__link')}
+			{...pickFramePressHandlers(props)}
 			render={
 				<a
 					{...ariaAndDataAttributes(props)}

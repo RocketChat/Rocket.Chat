@@ -5,6 +5,7 @@ import { useItemContext } from './ItemContext';
 import type { ItemPartProps } from './types';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 
@@ -86,6 +87,7 @@ const ItemDragHandle = (props: ItemDragHandleProps) => {
 		<ItemDragHandleFrame
 			look={lookOf(disabled, dragging)}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<span
 					aria-hidden='true'

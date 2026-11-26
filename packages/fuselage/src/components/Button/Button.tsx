@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import type { ButtonContract } from './Button.contract';
 import { SegmentContext } from './SegmentContext';
 import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../helpers/pickFramePressHandlers';
 import { pickWebInteractionHandlers } from '../../helpers/pickWebInteractionHandlers';
 import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -537,6 +538,7 @@ function Button(props: ButtonProps) {
 				segmented={Boolean(segment)}
 				paint={paint}
 				className={classes}
+				{...pickFramePressHandlers(props)}
 				render={
 					<a
 						{...ariaAndDataAttributes(props)}
@@ -570,6 +572,7 @@ function Button(props: ButtonProps) {
 			segmented={Boolean(segment)}
 			paint={paint}
 			className={classes}
+			{...pickFramePressHandlers(props)}
 			render={
 				<button
 					{...ariaAndDataAttributes(props)}

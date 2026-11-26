@@ -1,6 +1,7 @@
 import { styled, Text, View } from '@tamagui/web';
 
 import { ariaAndDataAttributes } from '../../../helpers/ariaAndDataAttributes';
+import { pickFramePressHandlers } from '../../../helpers/pickFramePressHandlers';
 import { pickWebPressHandlers } from '../../../helpers/pickWebPressHandlers';
 import { prependClassName } from '../../../helpers/prependClassName';
 import type { WebDivPressAlias, WebDivProps } from '../../../types/WebAttributes';
@@ -78,6 +79,7 @@ const TableSelectionActions = styled(Text, tableSelectionActionsFrame);
 const TableSelection = (props: TableSelectionProps) => (
 	<TableSelectionFrame
 		className={prependClassName(props.className, 'rcx-box rcx-box--full rcx-table__selection')}
+		{...pickFramePressHandlers(props)}
 		render={
 			<div
 				{...ariaAndDataAttributes(props)}
