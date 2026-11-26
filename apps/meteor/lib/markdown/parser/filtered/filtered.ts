@@ -5,6 +5,7 @@ const inlineCodeRegex = /`([^`\r\n]+)`/gm;
 /**
  * Filter markdown tags in message
  * Use case: notifications
+ * @param {string} message
  */
 export const filtered = (
 	message: string,
@@ -51,4 +52,5 @@ export const filtered = (
 	return message;
 };
 
+/** @param {string} message */
 export const filterMarkdown = (message: string) => filtered(message);
