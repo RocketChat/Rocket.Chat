@@ -1,5 +1,7 @@
 # ADR 0001 — Accessor logic lives in the base-runtime, not the host
 
+> **Amended (2026-11):** The error code `1000` is retired and `JSONRPC_METHOD_NOT_FOUND` is replaced by `ErrorCode.METHOD_NOT_FOUND` from `packages/apps/protocol`, because the error codes are now one closed set. The decision itself is unchanged.
+
 ## Status
 
 **Accepted — implemented.** All phases landed. Supersedes the `apps-accessor-consolidation` proposal.
@@ -249,7 +251,7 @@ change. Other small carry-overs: `createProcessorId` (a local function) and `Roo
 
 ### Error semantics
 
-Validation errors formerly thrown host-side inside accessor methods (serialized as JSON-RPC error 1000)
+Validation errors formerly thrown host-side inside accessor methods (serialized as JSON-RPC error 1000, a code since retired)
 now throw *locally* in the subprocess: same message, better stack traces, one less round trip.
 Bridge-side errors keep the `handleBridgeMessage` shape (code -32000, message preserved, formatted by
 `formatErrorResponse`). Permission failures on read/write bridges stay *silent-undefined*;
@@ -440,7 +442,7 @@ the `AppObjectRegistry` stash-then-forward; `accessor:api:listApis` became `doLi
 `ALLOWED_ACCESSOR_METHODS`, `isValidOrigin`, `getAccessorForOrigin`, the `accessor:` branch in
 `handleIncomingMessage`, and the controller's unused `accessors`/`api` fields — **the `accessor:*`
 category no longer exists**; the controller dispatches only `bridges:*`, `ready`, `log`, and the error
-notifications. `JSONRPC_METHOD_NOT_FOUND` is kept (imported by `ProxiedApp`, `AppListenerManager`,
+notifications. `ErrorCode.METHOD_NOT_FOUND` from `packages/apps/protocol` replaces the former `JSONRPC_METHOD_NOT_FOUND` constant (read by `ProxiedApp`, `AppListenerManager`,
 `AppVideoConfProvider`). Removed the four now-meaningless `handleAccessorMessage` cases from
 `DenoRuntimeSubprocessController.test.ts`. Physical deletion of the dead classes was folded into
 Phase 5, since it first required un-threading the ignored `accessors` parameter from the
