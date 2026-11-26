@@ -38,7 +38,8 @@ import {
 import { parse, type Root } from '@rocket.chat/message-parser';
 
 import { AppAvatar } from './AppAvatar';
-import { mockAvatar } from './mockData';
+import Markup from './markup/Markup';
+import { mockAvatar, mockMessages } from './mockData';
 import { gradientJpeg, gradientPng, letterAvatars } from './mockAvatars';
 
 // A frame that throws must not blank the screen: the error is the finding for that component
@@ -155,6 +156,34 @@ function ParserAst() {
 	);
 }
 
+const markupSamples = [
+	'# Heading 1\n## Heading 2\n### Heading 3\nPlain with **bold**, _italic_, ~~strike~~, `inline code` and **bold _nested italic_ text**.',
+	'Link [label](https://rocket.chat) and https://rocket.chat/docs, @ada.lovelace @all in #general :tada: :custom_emoji: :) ||spoiler||',
+	'> quoted line\n> second line',
+	'- one\n- two with [a link](https://rocket.chat)\n  - nested **bold**\n\n1. first\n2. second\n\n- [x] done\n- [ ] todo',
+	'```ts\nconst veryLongLine = "this code line is long enough to need a horizontal scroll inside the block";\nconsole.log(veryLongLine);\n```',
+	'color: #00ff88 and rgba(255, 0, 128, 255) \\(a+b\\)',
+	'| a | b |\n|---|---|\n| 1 | 2 |',
+	'$$x^2 + y^2$$ and \\(a+b\\)',
+	'---',
+	'<t:1700000000:f> and <t:1700000000:R>',
+	':rocket: :tada:',
+	'😀',
+];
+
+function NativeMarkup() {
+	const unknown = [{ type: 'FUTURE_NODE', value: [{ type: 'PLAIN_TEXT', value: 'unknown block text' }] }, { type: 'PARAGRAPH', value: [{ type: 'WHAT', value: 'x' }, { type: 'PLAIN_TEXT', value: 'after unknown inline' }] }] as unknown as Root;
+	return (
+		<View style={{ gap: 10, width: '100%' }}>
+			{[...mockMessages.flatMap((m) => (m.md ? [{ key: m._id, md: m.md }] : [])), ...markupSamples.map((s) => ({ key: s, md: parse(s, { colors: true, emoticons: true, katex: { dollarSyntax: true, parenthesisSyntax: true } }) })), { key: 'unknown', md: unknown }].map(({ key, md }) => (
+				<View key={key} style={{ borderLeftWidth: 2, borderLeftColor: '#ddd', paddingLeft: 6 }}>
+					<Markup md={md} onMention={(t) => console.log('mention', t)} />
+				</View>
+			))}
+		</View>
+	);
+}
+
 export function Content() {
 	const [button, setButton] = useState(0);
 	const [chip, setChip] = useState(0);
@@ -243,6 +272,9 @@ export function Content() {
 			</Cell>
 			<Cell name='message-parser AST'>
 				<ParserAst />
+			</Cell>
+			<Cell name='Native markup'>
+				<NativeMarkup />
 			</Cell>
 			<Cell name='Icon'>
 				<Icon name='bell' size='x24' />

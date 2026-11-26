@@ -15,6 +15,9 @@ import {
 
 import { AppAvatar } from '../AppAvatar';
 import { userAvatarUrl, type RoomItem } from '../api';
+import { mock } from '../chatConfig';
+import { EmojiServerContext } from '../markup/Emoji';
+import Markup from '../markup/Markup';
 import type { Session } from '../session';
 import { useRoom } from '../useRoom';
 
@@ -29,6 +32,7 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 	const { messages, draft, setDraft, error, live, send } = useRoom(session, room);
 
 	return (
+		<EmojiServerContext.Provider value={mock ? undefined : session.serverUrl}>
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
 			<View style={{ flex: 1, paddingTop: 64 }}>
 				<View style={{ padding: 12, gap: 12, flexDirection: 'row', alignItems: 'center' }}>
@@ -59,7 +63,13 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 									{item.u.name && item.u.username && <MessageUsername>@{item.u.username}</MessageUsername>}
 									<MessageTimestamp>{time(item.ts)}</MessageTimestamp>
 								</MessageHeader>
-								<MessageBody>{item.msg}</MessageBody>
+								{item.md ? (
+									<View style={{ paddingVertical: 2 }}>
+										<Markup md={item.md} msg={item.msg} mentions={item.mentions} channels={item.channels} />
+									</View>
+								) : (
+									<MessageBody>{item.msg}</MessageBody>
+								)}
 							</MessageContainer>
 						</Message>
 					)}
@@ -78,5 +88,6 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 				</View>
 			</View>
 		</KeyboardAvoidingView>
+		</EmojiServerContext.Provider>
 	);
 }
