@@ -110,10 +110,12 @@ const ChipText = styled(Text, {
 	variants: { look: chipTextLooks },
 });
 
+const ChipThumb = styled(View, { render: 'div', display: 'flex' });
+
 const defaultRenderThumb = ({ url }: { url: string }) => (
-	<div className='rcx-box rcx-box--full rcx-avatar'>
+	<ChipThumb className='rcx-box rcx-box--full rcx-avatar'>
 		<Avatar size='x20' url={url} />
-	</div>
+	</ChipThumb>
 );
 const defaultRenderDismissSymbol = () => <Icon name='cross' size='x16' />;
 
