@@ -2,6 +2,8 @@
 
 Author: Guilherme Gazzo (decisions); drafted by an agent. Status: draft. Nothing here is a spec: the numbered list below seeds the spec's requirement list, and every choice under "Open gaps" is an agent's until a person confirms it.
 
+**Revision 2026-11-26.** The user's decisions from this session are recorded as D7 to D10, closing Q1, Q4, Q5 and Q11 (their entries now point to those decisions). The TextInput lab results (`TEXTINPUT-FINDINGS.md`, iOS only) are folded into outcomes 3 and 18, Constraints, "Stays web-only on purpose", Q2, the new Q15 and "What would make this intent wrong". Numbering is unchanged.
+
 This follows the section style of `ee/packages/xmpp-server/docs/templates/intent.md` (title, author and status line, problem, proposed outcome, constraints, numbered open questions) with the sections `docs/change-organization.md` asks for (what, why, out of scope, decisions, gaps). Deviations: "Problem" is split into "What" and "Why now"; "Open questions" is called "Open gaps" and keeps the `Q1`, `Q2` numbering, never renumbered; "Affected users and systems" is folded into "What"; the outcomes list is new and is the only numbered requirement-like list (no `R1`: that is the spec).
 
 ## What
@@ -28,6 +30,7 @@ The Expo chat prototype plan has the room list, the room screen and the message 
 - Drag and drop of files (`useFileUploadDropTarget`): no touch equivalent.
 - Global and formatting keyboard shortcuts (`handleFormattingShortcut`, cmd/ctrl+key) and ArrowUp/ArrowDown at the field's edges to walk previous messages: React Native's `TextInput` reports keys without modifiers. Native gets buttons for the same actions.
 - Paste handling of HTML and the `beforeinput` "wrap the selection when typing a markup character" behavior.
+- Paste interception and modifier-key submit (sending with Shift, Ctrl, Alt or Meta plus Return): React Native 0.88 has no `onPaste` on `TextInput`, a paste arrives as an ordinary change, and `onKeyPress` carries no modifier flags.
 - The web `createComposerAPI`/`createComposerAPICore` implementations (they take an `HTMLElement`, dispatch `input` events and call `document.execCommand('insertText')`). The `ComposerAPI` type stays; native gets its own implementation of it (see Constraints).
 
 ## Observable outcomes
@@ -35,8 +38,8 @@ The Expo chat prototype plan has the room list, the room screen and the message 
 Each is testable by watching the app or by a test. "Same as web" means: given the same text, selection and state, the same message payload goes to `chat.sendMessage` (and the same call for edit, slash command and upload).
 
 1. In a room where the person may write, a text field is shown at the bottom of the room screen; typing shows the text, and the keyboard never covers the field.
-2. The field grows with its content up to a maximum height (web: 52 to 155 px, to be confirmed for touch) and scrolls inside past it; it shrinks back when the text is cleared.
-3. A send button sends the text; the return key inserts a new line by default on touch. An empty or whitespace-only message sends nothing.
+2. The field grows with its content up to a maximum height (web: 52 to 155 px, to be confirmed for touch) and scrolls inside past it; it shrinks back when the text is cleared. The height is set through min and max styles, not from `onContentSizeChange` (see Constraints).
+3. A send button sends the text. The return key follows the user's `sendOnEnter` preference (D7): when it is on, return sends; when it is off, return inserts a new line. An empty or whitespace-only message sends nothing.
 4. A sent message appears in the room list immediately, in the same optimistic state web shows, and is confirmed or marked failed when the server answers. The text sent is trimmed and an unclosed code fence is closed, as on web.
 5. The message sent for a given text has the same fields as web sends (`rid`, `msg`, `_id`, quoted message attachments, `tshow` absent) and the server derives the same `md` markup for it; no client-side markup is sent that web does not send.
 6. A draft is kept per room: leaving a room and coming back, or restarting the app, restores the unsent text; sending or clearing removes it. If the server holds a draft for the room, it wins over a local one, as on web.
@@ -51,7 +54,7 @@ Each is testable by watching the app or by a test. "Same as web" means: given th
 15. A person can see who else is typing in the room, and others see this person typing while they type; typing stops being reported after sending or clearing.
 16. Where web shows no field, native shows the same replacement and no field: read-only room (without the post permission), blocked or blocker, archived, anonymous, must join with a password, ABAC locked, air-gapped restricted, selecting messages. The state is decided by the same pure function (`resolveComposerState`) for both.
 17. A message longer than the server's limit is handled as web handles it (the same "too long" flow), not truncated or dropped.
-18. Autocorrect, dictation, the platform emoji keyboard and IME composition work in the field, and composing text is not corrupted by the popup lists above it.
+18. Autocorrect, dictation, the platform emoji keyboard and IME composition work in the field, and composing text is not corrupted by the popup lists above it (not yet verified on a device; see Q15).
 19. The web composer behaves exactly as before: its existing specs pass unedited and the web client's composer e2e still passes.
 
 ## Non-goals
@@ -66,6 +69,8 @@ Each is testable by watching the app or by a test. "Same as web" means: given th
 
 - Isolation rules (`docs/frontend/view-isolation.md`): no Meteor and no direct browser API (`document`, `window`, `navigator`, `localStorage`, `ResizeObserver`, `MediaRecorder`) in views; capability hooks (file picking, device permissions, draft storage) live in `packages/ui-client` and get a sibling `.native.ts` only together with the native consumer that needs it; web-only widgets sit behind app components.
 - One neutral seam: the existing `ComposerAPI` type (`apps/meteor/client/lib/chats/ChatAPI.ts`) is the contract between the composer views, the formatting and popup logic, and the flows. Native implements that type; the type does not grow DOM members. If it needs to change, that is a web-visible change and a person decides it.
+- Native selection model (iOS lab, `TEXTINPUT-FINDINGS.md`): native composer state is `{ text, selection }` in React state. The controlled `selection` prop is the only way to place the caret. `ref.setSelection` is not used for edits: it is dropped when it lands in the same tick as a text change or before the value does. `onSelectionChange` is not reported after programmatic changes, so selection is write-only for the composer: after a programmatic edit, the composer sets the intended selection itself.
+- Native height: min and max as styles (web: 52 to 155 px, to be confirmed for touch). `onContentSizeChange` is not a height source: it goes stale once the field is clamped. In the lab, `onScroll` carried the true content size.
 - Web unchanged and verified as unchanged: no behavior edit to web files; any extraction (pure string operations, `useComposerBoxPopup` pure part, view-model split) is its own refactor commit with existing specs green and unedited, below the feature (`docs/change-organization.md`). The isolation plan phase 1 states `createComposerAPI` stays web-only; this intent does not change that, it adds a twin.
 - Behavior is judged against the web composer on the tree this branch builds from, and re-checked against `origin/message-list/09-thread-list-and-cleanup` before the spec is accepted, because that branch changes the composer (see "Web facts that matter").
 - Payloads, permissions and disabled states come from the server and the shared pure logic, never re-implemented in the app.
@@ -85,7 +90,7 @@ Each is testable by watching the app or by a test. "Same as web" means: given th
 
 ## Decisions already taken
 
-Taken by the user or by the isolation plan, not by an agent:
+Taken by the user or by the isolation plan, not by an agent. D7 to D10 are the user's decisions of 2026-11-26:
 
 - D1. React Native scope is everything except omnichannel (isolation plan, view-isolation decisions).
 - D2. The composer's native client does not include omnichannel.
@@ -93,30 +98,35 @@ Taken by the user or by the isolation plan, not by an agent:
 - D4. Hooks that touch the browser move to `ui-client` and get a `.native.ts` sibling only when a native consumer exists; expo-lab is that consumer.
 - D5. Web stays as it is, and is verified as unchanged.
 - D6. Work starts from this written intent, then a spec, then a plan (spec-first, as the XMPP package does); opening a pull request and leaving draft are a person's decisions.
+- D7. (Q1) The native composer honors the user's `sendOnEnter` preference, as web does on desktop layouts; the button always sends. Why: the user chose this over the web mobile default, which forces a newline on a mobile layout, so native departs from web there. Open consequence: touch keyboards have no modifier+Return, so with `sendOnEnter` off the button is the only way to send. The lab found `onSubmitEditing` does not fire on a multiline field, so how Return sends is not decided.
+- D8. (Q4) Picked `{uri, name, type}` files are adapted to the existing upload call; the small web signature change (`File[]`) lands as its own PR. Why: the same server call, limits and error toasts as web (the Q4 recommendation). Timing against D10 is not set: D10 keeps extractions as commits until the POC stabilizes.
+- D9. (Q5) A `useDraftStorage` hook with a `.native.ts` over AsyncStorage, plus the server draft, and the server draft wins over a local one. Why: mirrors web, which keeps a local draft and a server draft (`useDraft.ts`); outcome 6 needs the draft back after a restart. Note: AsyncStorage is a new native module and needs a dev client rebuild.
+- D10. (Q11) One POC draft pull request accumulating ordered commits: fixes and enabling refactors below the feature, per `docs/change-organization.md`; no separate extraction pull requests until the POC stabilizes; the user owns the spec. Why: the user's call, and the change-organization rules keep extractions as their own pull requests only for the step before leaving draft.
 
 ## Open gaps
 
 Every item is an agent's choice or a thing the agent does not know. Each has a recommendation and a question for a person.
 
-- **Q1 Return key on touch.** Recommendation: Enter inserts a new line, the button sends, with no preference toggle; this is what web does on a mobile layout (see facts). Question: is "no way to send with return on a phone, even for a person who set `sendOnEnter`" acceptable, or should the preference be honored on native too?
-- **Q2 Mentions model.** Recommendation: plain text with the same `@username ` text web inserts, found again by trigger detection from text and caret; no custom text model, no styled chips in the field. Question: is unstyled text in the field acceptable, given the server resolves mentions from the text?
+- **Q1 Return key on touch.** Closed: see D7.
+- **Q2 Mentions model.** Recommendation: plain text with the same `@username ` text web inserts, found again by trigger detection from text and caret; no custom text model, no styled chips in the field. Question: is unstyled text in the field acceptable, given the server resolves mentions from the text? Lab (iOS): the text side works (replacing `@` text with `@ada ` came out right); caret placement after the insertion is not verified.
 - **Q3 Emoji picker.** Recommendation: a bottom sheet with a grid behind the existing `EmojiPickerContext` seam; `:shortcode:` autocomplete uses the same list web does. Question: sheet or inline panel above the keyboard? Is custom emoji (server-uploaded) in scope for the first spec?
-- **Q4 Upload call.** Recommendation: the same `sdk.rest.upload` call and the same limits as web, fed by an adapter from picked `{uri, name, type}` to a form part, with the flow's `File` input replaced by a small interface. Question: is changing the flow's parameter type (a web-visible refactor commit) acceptable, or should native keep its own thin upload path?
-- **Q5 Draft storage on native.** Recommendation: a `useDraftStorage` hook in `ui-client` with a `.native.ts` over AsyncStorage (a new dependency in expo-lab), plus the server draft as on web. Question: add AsyncStorage, or is the server draft alone enough for the first spec?
+- **Q4 Upload call.** Closed: see D8.
+- **Q5 Draft storage on native.** Closed: see D9.
 - **Q6 Slash command list.** Recommendation: fetch the permitted commands from the server rather than port the client registry. Not verified that an endpoint returns what the popup needs. Question: who confirms the endpoint, and is a command with a preview (`ComposerBoxPopupPreview`) in scope?
 - **Q7 Recording.** Recommendation: audio only in the first spec; video message and location later. Question: is audio required for the first milestone or can the first spec stop at text, attach, and emoji?
 - **Q8 E2E rooms.** Recommendation: in a room with `encrypted` set where unencrypted messages are not allowed, show a disabled state with a clear reason; no native E2EE. The web flow calls `onClientBeforeSendMessage` which encrypts. Question: confirm that encrypted rooms are read-only on native for now.
 - **Q9 Edit entry point.** Recommendation: edit from the message actions (long press), since ArrowUp does not exist. Depends on the message toolbar (step 6 in the gap report) being present. Question: should the composer wait for it, or ship edit after it?
-- **Q10 Pure extractions.** Recommendation: extract, as refactor commits below the feature, the pure string logic (`wrapSelection`, `messageBoxHelpers`) and the pure part of `useComposerBoxPopup`, so web and native share them; split `createComposerAPICore` into a state part (quote, editing, uploads subscribables) and a DOM part. Question: do the extractions go to `develop` as their own pull requests first, or stay as commits in the feature? They touch web files, so D5 applies.
-- **Q11 Ownership and PR split.** Recommendation: one owner for the spec and one for the plan; intent, spec and plan land as docs first; code split as (a) pure extractions, (b) capability hooks in `ui-client`, (c) native composer in expo-lab, (d) popups, (e) formatting, (f) attach and record. Question: who owns the spec, and is this split right?
+- **Q10 Pure extractions.** Recommendation: extract, as refactor commits below the feature, the pure string logic (`wrapSelection`, `messageBoxHelpers`) and the pure part of `useComposerBoxPopup`, so web and native share them; split `createComposerAPICore` into a state part (quote, editing, uploads subscribables) and a DOM part. Question: do the extractions go to `develop` as their own pull requests first, or stay as commits in the feature? They touch web files, so D5 applies. Partly answered by D10 (no extraction pull requests until the POC stabilizes); the web-visible part is still open.
+- **Q11 Ownership and PR split.** Closed: see D10.
 - **Q12 Styling props.** Recommendation: build the native composer on layout containers and Tamagui frames, not on `ui-composer`'s Box-based parts, until the Fuselage Box decision lands. Question: wait for the Fuselage owner or proceed with local frames?
 - **Q13 Typing indicator.** Recommendation: include; it uses `sdk.publish` on `notify-room`. Not exercised in expo-lab; the native `sdk` may not support publish. Question: is it required in the first milestone?
 - **Q14 Image paste.** Recommendation: leave out; text paste works through the field. Question: is pasting an image into the field expected?
+- **Q15 IME and popups.** Recommendation: popups and autocomplete never rewrite the field value while an IME composition is active. Code-read, not reproduced: a JS value that differs from the native text during composition replaces the marked text and ends the composition (`TEXTINPUT-FINDINGS.md`). Question: can this be verified on a device with a real keyboard before the spec is accepted? The lab cannot test IME.
 
 ## What would make this intent wrong
 
 1. The native `sdk` cannot do what the flows need (`publish` for typing, `rest.upload` with a URI-based file, slash command listing): the outcomes about typing, upload and commands would move out of the first spec. Check first with a one-call probe of each against a dev server.
 2. The web flows are not reusable from a React Native bundle without Meteor, `SDKClient` or `File`: if `chat.flows.sendMessage` imports an app singleton that cannot evaluate under Metro, "same payload" would need a shared extraction first, which changes the PR split and web-visible code.
-3. A controlled `TextInput` cannot hold selection and programmatic edits reliably on iOS and Android (wrap selection, mention replace): outcomes 9 and 12 would need a different input model. Check first with a small prototype on both platforms.
+3. A controlled `TextInput` cannot hold selection and programmatic edits reliably on Android, under real typing, or with an IME (wrap selection, mention replace): outcomes 9 and 12 would need a different input model. The iOS lab confirmed text and a non-empty selection through the controlled `selection` prop (`TEXTINPUT-FINDINGS.md`). Still open: Android (a different native component; do not assume the iOS result carries over), real typing and IME (not testable in the lab), and caret placement after an edit (not observed).
 4. The people who asked for "the same as web" mean visible parity including features this intent leaves web-only (shortcuts, rich text, drag and drop): the non-goals list would be too narrow.
 5. The composer's disabled states are not all decidable from data the native app already loads (blocked, ABAC, air-gapped, permissions): outcome 16 would need more room and subscription data than the room screen fetches today.
