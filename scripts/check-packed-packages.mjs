@@ -33,7 +33,7 @@ function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
-// Same rewrite as packages/release-action/src/fixWorkspaceVersionsBeforePublish.ts, which runs before `npm publish`.
+// Gives the manifest the dependency ranges that the release publishes.
 function resolveWorkspaceRanges(pkg) {
 	const copy = structuredClone(pkg);
 	for (const type of ['dependencies', 'devDependencies', 'peerDependencies']) {
@@ -76,11 +76,17 @@ function isOnNpm(name, version) {
 
 const COMPARED_FIELDS = ['dependencies', 'peerDependencies', 'exports', 'main', 'module', 'type'];
 
+// A bundler's content hash (`index-8cj66ONL.js`) changes with any bundled dependency, so it is not a change of the package.
+const CONTENT_HASH = /-(?=[\w-]{0,7}[A-Z0-9])[\w-]{8}(?=\.(?:js|mjs|cjs|css)(?:\.map)?$)/;
+const fileNames = (files) => [...new Set(files.map((file) => file.replace(CONTENT_HASH, '')))];
+
 // The fields and files that decide what a consumer installs and loads; file bytes differ between builds, so they are not compared.
 function differences(local, published) {
 	const diffs = COMPARED_FIELDS.filter((field) => JSON.stringify(local.manifest[field]) !== JSON.stringify(published.manifest[field]));
-	const added = local.files.filter((file) => !published.files.includes(file));
-	const removed = published.files.filter((file) => !local.files.includes(file));
+	const localFiles = fileNames(local.files);
+	const publishedFiles = fileNames(published.files);
+	const added = localFiles.filter((file) => !publishedFiles.includes(file));
+	const removed = publishedFiles.filter((file) => !localFiles.includes(file));
 	if (added.length) diffs.push(`files added: ${added.join(', ')}`);
 	if (removed.length) diffs.push(`files removed: ${removed.join(', ')}`);
 	return diffs;
