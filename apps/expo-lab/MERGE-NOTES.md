@@ -138,3 +138,28 @@ Conflicts:
 Skipped, still in progress on the other session: `l1/tag-press` (4892767940d, Tag press through PressTarget), `feat/fuselage-press-target` (65d2f739c2a), `l2/banner-v2` (3d8020fbd4e), `l2/avatar-v2` (c146bf5113f). The two `l2/*-v2` branches look finished (last commits are the baselines and changeset, minutes old) but were not asked for.
 
 PROVISIONAL: the spread-based press helper (`pickFramePressHandlers` and the codemod commit `refactor(fuselage): attach press handlers to the frame on React Native`) stays in this branch only. The zero-runtime compiler rejects `{...pickFramePressHandlers(props)}` (`local/unsafe-style-spread`, `local/unsupported-target`), so it cannot be delivered; `PressTarget` replaces it. `Tag` (new on this tree) still uses `pickWebPressHandlers` and was not given the spread, and its contract has no `onPress` here (that is `l1/tag-press`).
+
+## Update 3: avatar, banner, press target (2026-11-26)
+
+Backup of the previous tip: local branch `backup/expo-lab-all-9fa6357`. Changes upstream since step 2: develop moved from 90c03928166 to 5a67fbef25e (it now holds #43668 as one squashed commit, 5a67fbef25e, plus a docs commit), and #43653 moved from f3f90ceb41b to 0dc2c331b90 (it now carries `render Tag with Tamagui`, so our separate Tag commit and the second Tag changeset were dropped). The other six PR heads are unchanged (#43674 124495c54ad, #43658 c8135345c65, #43671 b55ca11c534, #43679 e0de00fb102, #43693 38076448cd0, #43706 093e20041ac). The line was rebuilt on 5a67fbef25e: our eight #43668 commits were dropped for the squash, #43653 was replayed from its new head.
+
+New commits (cherry-picked, the other session's branches untouched):
+
+- `feat/fuselage-press-target`: 65d2f739c2a (`PressTarget`, with specs, no react-native in its dist), after the toggle twin.
+- `l1/tag-press`: 4892767940d (Tag takes its press through `PressTarget`), right after the Tag commit.
+- `l2/avatar-v2`: 183fbda76ec (Banner) and db4ac5f6ad1 (Avatar, AvatarContainer, AvatarStack), after the L2 changeset; its changeset commit c146bf5113f (taken whole, a superset of ours). Its docs commit (the same run-time value row as ours) was skipped; its baseline commit 11a9fdd3f2f was skipped because the baseline is regenerated. `l2/banner-v2` is contained in `l2/avatar-v2`, so it was not taken separately.
+- The branches looked finished (tests, changesets, baselines) at ~14:50.
+
+Conflicts:
+
+| Where | Resolution |
+| --- | --- |
+| `react-native.d.ts` (PressTarget vs the host map) | kept the host map's exports; then `Image` typed as the component `styled()` takes (Avatar's declaration), commit `fix(fuselage): type the React Native Image as a component styled() takes` |
+| `Chip.tsx`, `index.scss` (Avatar on the Tamagui Chip) | the default thumb wrapper is a `display: flex` frame, so the avatar stylesheet's `inline-flex` is not needed; the `Avatar` and `Badge` `@use` lines stay out |
+| `docs/frontend/fuselage-tamagui-components.md` | kept both the Tag anchor row and the run-time value row; the PressTarget rule and the new `style` rule |
+| CSS-hack baselines | regenerated at the end (`chore(fuselage): regenerate the CSS-hack baseline ...`): `Avatar` and `Banner` fall, `IconButton.styles.scss` (from #43668) is added |
+| `yarn.lock` | none; `yarn install --immutable` passes |
+
+Press: the other session's `press-codemod` is still the spread-based one (`pickFramePressHandlers`), no wrap-based codemod exists, so the provisional helper and codemod commits and `frameSafeCalls` stay; only `Tag` uses `PressTarget`. The press probe in the gallery (now with `Tag`) shows `onPress` on the Button, Chip, Tag (through a `Pressable`), Item and SidebarItem fibers; a real touch was not tested.
+
+App: the gallery shows `Avatar` and `Banner`; the room list has an avatar on the left of each row and each message has one in `MessageLeftContainer`. Server avatars are SVG and a React Native `Image` does not draw them (see README).

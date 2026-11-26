@@ -119,8 +119,8 @@ Observed on the iPhone 17 Pro simulator (dev client, Metro on port 8085). Screen
 | `MessageName`, `MessageBody`, `MessageTimestamp`, `MessageUsername`, `MessageHeader` inside `Message` | L6 and Item (L3) | yes | bold name, grey timestamp, spacing | no handler | `Message` renders with these parts. |
 | `Item` row (`ItemIcon`, `ItemContent`, `ItemTitle`, `ItemMeta`) | L3 | yes | row layout and meta aligned at the end | not verified | Icon again an emoji. |
 | `SidebarItem` | L3 and L5 | yes | text only | not verified | No surface or hover paint visible at rest. |
-| `Avatar` | not converted | no | n/a | n/a | `Invariant Violation: View config getter callback for component 'img' must be a function` at `Avatar.tsx:23` (`<img>`). Same error inside `Message` when it holds an `Avatar` (`AvatarContainer.tsx:9`). |
-| `Banner` | not converted | no | n/a | n/a | Same invariant for `h6` (`Banner.tsx:87`). |
+| `Avatar` | not converted at step 1; renders since step 3 | see the step 3 note below | n/a | n/a | `Invariant Violation: View config getter callback for component 'img' must be a function` at `Avatar.tsx:23` (`<img>`). Same error inside `Message` when it holds an `Avatar` (`AvatarContainer.tsx:9`). |
+| `Banner` | not converted at step 1; renders since step 3 (title and body sit on one line) | n/a | n/a | n/a | Same invariant for `h6` (`Banner.tsx:87`). |
 | `Tag` | not converted | no | n/a | n/a | Same invariant for `span` (`Tag.tsx:37`, `<Box is='span'>`). |
 
 ### What the conversion PRs changed natively
@@ -170,7 +170,7 @@ The chat screens have two versions, picked when Metro starts: `EXPO_PUBLIC_CHAT_
 
 Dev only: `EXPO_PUBLIC_CHAT_MOCK=1` feeds invented rooms and messages (`src/mockData.ts`) to the same components, and a login with any text succeeds without a network call; `EXPO_PUBLIC_CHAT_MOCK=rooms` or `=room` also starts past the login, because there is no touch tool. Screenshots in `docs/chat/` use this data only: `login-`, `rooms-` and `room-plain-vs-fuselage.png` (plain left, Fuselage right). The login shot has a fake password typed in to show the masking.
 
-What renders in the Fuselage version: `SidebarItem` rows with `SidebarItemIcon`, `SidebarItemContent`/`Title` and `SidebarItemBadge` for the rooms; `Message`, `MessageContainer`, `MessageHeader`, `MessageName`, `MessageUsername`, `MessageTimestamp` and `MessageBody` for each message (no `Avatar`: it still throws); `Button`, `Field`, `FieldLabel`, `FieldRow`, `UrlInput`, `TextInput`, `PasswordInput` and `ToggleSwitch` on the login and the composer; `Tag` marks private rooms in the room list.
+What renders in the Fuselage version: `SidebarItem` rows with a `SidebarItemAvatarWrapper` around an `Avatar`, `SidebarItemIcon`, `SidebarItemContent`/`Title` and `SidebarItemBadge` for the rooms; `Message`, `MessageContainer`, `MessageHeader`, `MessageName`, `MessageUsername`, `MessageTimestamp` and `MessageBody` for each message and an `Avatar` in a `MessageLeftContainer`; `Button`, `Field`, `FieldLabel`, `FieldRow`, `UrlInput`, `TextInput`, `PasswordInput` and `ToggleSwitch` on the login and the composer; `Tag` marks private rooms in the room list.
 
 Looks different from the plain version, or wrong:
 
@@ -180,6 +180,7 @@ Looks different from the plain version, or wrong:
 - Messages show the display name, `@username` and `HH:MM` (the plain rows show `HH:MM:SS`); the body wraps at the web's line height, and the content is inset further from the edge than the plain rows.
 - A `Button` takes the whole width of a row on native (it is not given `width: fit-content`), so each one in a row is wrapped in a fixed 96 px box (`Fit`); in a column it is full width, which looks like a primary action and is fine for Sign in.
 - `UrlInput`, `TextInput`, `PasswordInput` and the composer still draw no border or background on native (checked at step 2: the input chrome has not landed, `InputBox` is still a Box with SCSS); each is wrapped in a bordered `View` in the app. That is a workaround for a missing look, not Fuselage styling.
+- Avatars (step 3): `Avatar` and `Banner` render natively (the gallery cells `Avatar` and `Banner`). The image is a React Native `Image`, so a PNG or JPEG URL loads (a remote PNG and a data URI were checked on the simulator) but an SVG does not: the server serves its default avatars (`/avatar/<username>`, `/avatar/room/<rid>`) as `image/svg+xml`, so against a real server only uploaded avatars will show and the rest are blank until an SVG renderer is added. In mock mode a bundled colored placeholder stands in for the server. Not checked: a real server's avatars.
 - `ToggleSwitch` draws a track and a thumb since step 2 (the native twin: blue when checked, light when disabled; gallery cell `ToggleSwitch`); its `onChange` was not exercised (no touch tool), and the twin is not verified by its author either.
 - The placeholder of the composer input is gray and shows; typing, caret and keyboard were not exercised (no keyboard tool).
 

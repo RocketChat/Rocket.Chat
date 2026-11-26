@@ -7,7 +7,8 @@ One row per update of the branch, same method each time (`/tmp/expolab/sweep-v3/
 | Step | Tip | Renders | Throws | Needs context | Empty | Notable changes |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 baseline | c269bea76f8 | 201 | 79 | 12 | 4 | Host map, document and ResizeObserver guards; chat on Fuselage components |
-| 2 input props, toggle twin, Tag | see `MERGE-NOTES.md` | 203 | 77 | 12 | 4 | `Tag` and `MessageRole` (which renders a `Tag`) go from throwing to rendering; `type='password'` is `secureTextEntry`; `ToggleSwitch` draws track and thumb; the rest unchanged |
+| 2 input props, toggle twin, Tag | 9fa63574334 | 203 | 77 | 12 | 4 | `Tag` and `MessageRole` (which renders a `Tag`) go from throwing to rendering; `type='password'` is `secureTextEntry`; `ToggleSwitch` draws track and thumb; the rest unchanged |
+| 3 avatar, banner, press target | f82e74e7482 (docs commit on top) | 208 | 72 | 12 | 4 | `Avatar`, `AvatarContainer`, `AvatarStack`, `Banner` and `ModalThumb` (which renders an `Avatar`) go from throwing to rendering (`/tmp/expolab/sweep-v4/raw/results.json`, not committed; same raw method as step 2, which gave 203/77 with 10 pending and 6 empty, folded to 12 and 4 as in the earlier rows); `Tag` takes its press through `PressTarget`; develop now has #43668 |
 
 Every component exported by `@rocket.chat/fuselage` was mounted on the iOS simulator (iPhone 17 Pro, iOS 26.5, dev client, RN 0.88) from the combined branch `feat/expo-lab-all` (the eight PRs #43668, #43674, #43653, #43658, #43671, #43679, #43693, #43706 on develop). The dev screen is `src/Sweep.tsx` (button "Sweep" next to "Components" on the login screen, or `EXPO_PUBLIC_SWEEP=1`).
 
