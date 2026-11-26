@@ -297,20 +297,20 @@ const findAllChatMetricsByAgentAsync = async ({
 	});
 
 	const result: Record<string, { open: number; closed: number; onhold?: number }> = {};
-	(open || []).forEach((agent: { chats: number; _id: string }) => {
-		result[agent._id] = { open: agent.chats, closed: 0, onhold: 0 };
+	open.forEach(({ _id, chats }) => {
+		result[String(_id)] = { open: chats, closed: 0, onhold: 0 };
 	});
-	(closed || []).forEach((agent: { _id: string; chats: number }) => {
-		result[agent._id] = {
-			open: result[agent._id] ? result[agent._id].open : 0,
-			closed: agent.chats,
+	closed.forEach(({ _id, chats }) => {
+		result[String(_id)] = {
+			open: result[String(_id)]?.open ?? 0,
+			closed: chats,
 		};
 	});
 
-	(onhold || []).forEach((agent: { _id: string; chats: number }) => {
-		result[agent._id] = {
-			...result[agent._id],
-			onhold: agent.chats,
+	onhold.forEach(({ _id, chats }) => {
+		result[String(_id)] = {
+			...result[String(_id)],
+			onhold: chats,
 		};
 	});
 	return result;

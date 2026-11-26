@@ -62,11 +62,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	countAllQueuedChatsBetweenDate(params: Period & WithDepartment): any;
 
-	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
+	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string | null; chats: number }[]>;
 
-	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
+	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string | null; chats: number }[]>;
 
-	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
+	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string | null; chats: number }[]>;
 
 	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id?: string; name?: string; chats: number }[]>;
 
