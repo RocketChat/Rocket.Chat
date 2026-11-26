@@ -23,8 +23,9 @@ const DeleteTeamModal = ({ onCancel, onConfirm, rooms }: DeleteTeamModalProps) =
 	const onChangeRoomSelection = useStableCallback((room: Serialized<IRoom>) => {
 		if (deletedRooms[room._id]) {
 			setDeletedRooms((deletedRooms) => {
-				delete deletedRooms[room._id];
-				return { ...deletedRooms };
+				const next = { ...deletedRooms };
+				delete next[room._id];
+				return next;
 			});
 			return;
 		}
