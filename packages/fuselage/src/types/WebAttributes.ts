@@ -1,4 +1,12 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, DOMAttributes, HTMLAttributes, InputHTMLAttributes, MouseEventHandler, Ref } from 'react';
+import type {
+	AnchorHTMLAttributes,
+	ButtonHTMLAttributes,
+	DOMAttributes,
+	HTMLAttributes,
+	InputHTMLAttributes,
+	MouseEventHandler,
+	Ref,
+} from 'react';
 
 import type { WebInteractionHandlers } from '../helpers/pickWebInteractionHandlers';
 
