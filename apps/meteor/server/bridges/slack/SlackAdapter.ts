@@ -1229,13 +1229,13 @@ export default class SlackAdapter {
 			case 'channel_archive':
 			case 'group_archive':
 				if (!isImporting) {
-					await archiveRoom(rocketChannel, rocketUser);
+					await archiveRoom(rocketChannel._id, rocketUser);
 				}
 				return;
 			case 'channel_unarchive':
 			case 'group_unarchive':
 				if (!isImporting) {
-					await unarchiveRoom(rocketChannel);
+					await unarchiveRoom(rocketChannel._id, rocketUser);
 				}
 				return;
 			case 'file_share':
