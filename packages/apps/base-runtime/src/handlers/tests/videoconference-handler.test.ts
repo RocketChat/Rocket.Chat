@@ -107,6 +107,6 @@ describe('handlers > videoconference', () => {
 		assert.ok(result instanceof JsonRpcError, `Expected instance of ${JsonRpcError.name}`);
 		assert.strictEqual((result as any).message, 'Method not found');
 		assert.strictEqual((result as any).code, -32601);
-		assert.strictEqual((result as any).data.message, `Method ${methodName} not found on provider ${providerName}`);
+		assert.strictEqual((result as any).data.detail.message, `Method ${methodName} not found on provider ${providerName}`);
 	});
 });

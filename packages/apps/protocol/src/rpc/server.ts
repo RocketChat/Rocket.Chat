@@ -2,8 +2,8 @@ import type { z } from 'zod';
 
 import type { Contract, Domain, ErrorDataOf, ErrorNameOf, InputOf, OutputOf, Procedure } from './contract';
 import { PROCEDURE_ERROR, ProcedureError } from './errors';
+import { ErrorCode, type ErrorData } from '../framing/errors';
 import type { Defined, ErrorObject, NotificationObject, RequestObject, SuccessObject } from '../framing/jsonrpc';
-import { ErrorCode } from '../framing/errors';
 import { JsonRpcError, SERVER_ERROR, error, success } from '../framing/jsonrpc';
 
 type MaybePromise<T> = T | Promise<T>;
@@ -135,7 +135,7 @@ const toJsonRpcError = (thrown: unknown): JsonRpcError => {
 
 	// A thrown error with the `AppsEngineException` code keeps it on the wire.
 	if (code === ErrorCode.APPS_ENGINE_EXCEPTION) {
-		return new JsonRpcError(text, ErrorCode.APPS_ENGINE_EXCEPTION, data);
+		return new JsonRpcError(text, ErrorCode.APPS_ENGINE_EXCEPTION, data as ErrorData<typeof ErrorCode.APPS_ENGINE_EXCEPTION>);
 	}
 
 	return new JsonRpcError(text, SERVER_ERROR);

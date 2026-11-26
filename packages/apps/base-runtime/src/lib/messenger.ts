@@ -60,7 +60,7 @@ export function parseMessage(message: unknown): jsonrpc.JsonRpc {
 		return message;
 	}
 
-	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message));
+	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message as jsonrpc.Defined));
 }
 
 export async function sendInvalidRequestError(): Promise<void> {
@@ -93,11 +93,11 @@ export async function errorResponse(
 ): Promise<void> {
 	const { logger } = req?.context || {};
 
-	if (logger?.hasEntries()) {
-		data.logs = logger.getLogs();
-	}
-
-	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code as ErrorCode, data), meta);
+	const rpc = jsonrpc.error(
+		id,
+		new jsonrpc.JsonRpcError(message, code as ErrorCode, logger?.hasEntries() ? { ...data, logs: logger.getLogs() } : data),
+		meta,
+	);
 
 	await ipcChannel.send(rpc);
 }

@@ -1,3 +1,4 @@
+import { toServerErrorData } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 import handleConstructApp from './construct';
@@ -108,7 +109,7 @@ export default async function handleApp(request: RequestContext): Promise<Define
 		}
 
 		if (!(e instanceof Error)) {
-			return new JsonRpcError('Unknown error', SERVER_ERROR, e);
+			return new JsonRpcError('Unknown error', SERVER_ERROR);
 		}
 
 		if ((e.cause as string)?.includes('invalid_param_type')) {
@@ -119,6 +120,6 @@ export default async function handleApp(request: RequestContext): Promise<Define
 			return JsonRpcError.internalError({ message: 'App unavailable' });
 		}
 
-		return new JsonRpcError(e.message, SERVER_ERROR, e);
+		return new JsonRpcError(e.message, SERVER_ERROR, toServerErrorData(e));
 	}
 }

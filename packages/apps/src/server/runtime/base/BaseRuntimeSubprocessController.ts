@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
+import { toServerErrorData } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
@@ -443,7 +444,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			);
 		} catch (error) {
 			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, error);
+			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, toServerErrorData(error));
 			return jsonrpc.error(id, jsonRpcError);
 		}
 

@@ -10,7 +10,7 @@
  * (see {@link JsonRpcMeta}).
  */
 
-import { ErrorCode } from './errors';
+import { ErrorCode, type ErrorData } from './errors';
 
 export type ID = string | number | null;
 
@@ -62,14 +62,14 @@ export type SerializedJsonRpcError = {
  * needs no `toJson()`, unlike its counterparts in `vscode-jsonrpc` and
  * `@metamask/rpc-errors`, which convert because they extend `Error`.
  */
-export class JsonRpcError implements SerializedJsonRpcError {
+export class JsonRpcError<C extends ErrorCode = ErrorCode> implements SerializedJsonRpcError {
 	public message: string;
 
-	public code: ErrorCode;
+	public code: C;
 
-	declare public data?: any;
+	declare public data?: ErrorData<C>;
 
-	constructor(message: string, code: ErrorCode, data?: any) {
+	constructor(message: string, code: C, data?: ErrorData<C>) {
 		this.message = message;
 		this.code = code;
 
@@ -80,25 +80,29 @@ export class JsonRpcError implements SerializedJsonRpcError {
 		}
 	}
 
-	static invalidRequest(data?: any): JsonRpcError {
-		return new JsonRpcError('Invalid request', INVALID_REQUEST, data);
+	static invalidRequest(detail?: Defined): JsonRpcError<typeof INVALID_REQUEST> {
+		return new JsonRpcError('Invalid request', INVALID_REQUEST, standardData(detail));
 	}
 
-	static methodNotFound(data?: any): JsonRpcError {
-		return new JsonRpcError('Method not found', METHOD_NOT_FOUND, data);
+	static methodNotFound(detail?: Defined): JsonRpcError<typeof METHOD_NOT_FOUND> {
+		return new JsonRpcError('Method not found', METHOD_NOT_FOUND, standardData(detail));
 	}
 
-	static invalidParams(data?: any): JsonRpcError {
-		return new JsonRpcError('Invalid params', INVALID_PARAMS, data);
+	static invalidParams(detail?: Defined): JsonRpcError<typeof INVALID_PARAMS> {
+		return new JsonRpcError('Invalid params', INVALID_PARAMS, standardData(detail));
 	}
 
-	static internalError(data?: any): JsonRpcError {
-		return new JsonRpcError('Internal error', INTERNAL_ERROR, data);
+	static internalError(detail?: Defined): JsonRpcError<typeof INTERNAL_ERROR> {
+		return new JsonRpcError('Internal error', INTERNAL_ERROR, standardData(detail));
 	}
 
-	static parseError(data?: any): JsonRpcError {
-		return new JsonRpcError('Parse error', PARSE_ERROR, data);
+	static parseError(detail?: Defined): JsonRpcError<typeof PARSE_ERROR> {
+		return new JsonRpcError('Parse error', PARSE_ERROR, standardData(detail));
 	}
+}
+
+function standardData(detail: Defined | undefined): { detail: Defined } | undefined {
+	return detail === undefined || detail === null ? undefined : { detail };
 }
 
 export type RequestObject = {

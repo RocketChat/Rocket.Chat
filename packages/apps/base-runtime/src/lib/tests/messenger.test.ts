@@ -47,6 +47,23 @@ describe('Messenger', () => {
 		theSpy.mock.restore();
 	});
 
+	it('should add the logs beside the data of an error response, without changing the data it received', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const data = { detail: 'kept' };
+
+		context.context.logger.info('test');
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32602, message: 'test', data } }, context);
+
+		const [{ error }] = theSpy.mock.calls[0].arguments as any;
+
+		assert.strictEqual(error.data.detail, 'kept');
+		assert.ok(error.data.logs);
+		assert.deepStrictEqual(data, { detail: 'kept' });
+
+		theSpy.mock.restore();
+	});
+
 	it('should add logs to error responses', async () => {
 		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 		const { logger } = context.context;
