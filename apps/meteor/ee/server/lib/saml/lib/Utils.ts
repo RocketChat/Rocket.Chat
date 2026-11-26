@@ -412,9 +412,8 @@ export class SAMLUtils {
 			}
 		}
 
-		if (mapping.regex && mainValue?.match) {
+		if (mapping.regex && typeof mainValue === 'string') {
 			let regexValue;
-			// oxlint-disable-next-line typescript/no-unsafe-call -- the parsed SAML profile is typed Record<string, any>
 			const match = mainValue.match(new RegExp(mapping.regex));
 			if (match?.length) {
 				if (match.length >= 2) {
@@ -506,8 +505,7 @@ export class SAMLUtils {
 		if (profile.channels) {
 			if (Array.isArray(profile.channels)) {
 				userObject.channels = profile.channels;
-			} else {
-				// oxlint-disable-next-line typescript/no-unsafe-call -- the parsed SAML profile is typed Record<string, any>
+			} else if (typeof profile.channels === 'string') {
 				userObject.channels = profile.channels.split(',');
 			}
 		}

@@ -14,7 +14,7 @@ export class OAuthEEManager {
 		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
-		channelsMap: Record<string, any> | undefined,
+		channelsMap: Record<string, unknown> | undefined,
 		channelsAdmin: string,
 	): Promise<void> {
 		if (channelsMap && user && identity && groupClaimName) {
@@ -28,12 +28,12 @@ export class OAuthEEManager {
 
 			for (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
-					let channels = channelsMap[ssoGroup];
-					if (!Array.isArray(channels)) {
-						channels = [channels];
-					}
-					for await (const channel of channels) {
-						// oxlint-disable-next-line typescript/no-unsafe-call -- channelsMap comes from a JSON setting typed Record<string, any>
+					const mappedChannels = channelsMap[ssoGroup];
+					const channels: unknown[] = Array.isArray(mappedChannels) ? mappedChannels : [mappedChannels];
+					for (const channel of channels) {
+						if (typeof channel !== 'string') {
+							continue;
+						}
 						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
 						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {

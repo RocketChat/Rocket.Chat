@@ -6,6 +6,7 @@ import type {
 	IAppsMesssageRaw,
 	IAppUsersConverter,
 } from '@rocket.chat/apps';
+import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
@@ -21,6 +22,11 @@ import { convertMessageFiles } from './convertMessageFiles';
 // them dynamically; until this converter is migrated to a codec we treat the transform inputs as
 // loosely-typed records to preserve that behaviour verbatim.
 type MessageData = Record<string, any>;
+
+type AppMessageAttachment = IMessageAttachment &
+	Partial<
+		Record<'imageDimensions' | 'imagePreview' | 'imageType' | 'imageSize' | 'audioType' | 'audioSize' | 'videoType' | 'videoSize', unknown>
+	> & { _unmappedProperties_?: Record<string, unknown> };
 
 export class AppMessagesConverter implements IAppMessagesConverter {
 	private mem = new WeakMap<
@@ -277,7 +283,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 		return newMessage;
 	}
 
-	_convertAppAttachments(attachments: any) {
+	_convertAppAttachments(attachments: AppMessageAttachment[] | undefined) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -287,7 +293,6 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				collapsed: attachment.collapsed,
 				color: attachment.color,
 				text: attachment.text,
-				// oxlint-disable-next-line typescript/no-unsafe-call -- app attachments carry fields IMessageAttachment does not declare
 				ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
 				message_link: attachment.timestampLink,
 				thumb_url: attachment.thumbnailUrl,

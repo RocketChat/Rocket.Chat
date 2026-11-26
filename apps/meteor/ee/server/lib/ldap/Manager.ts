@@ -151,8 +151,7 @@ export class LDAPManager {
 			return;
 		}
 
-		// oxlint-disable-next-line typescript/no-unsafe-call -- ILDAPEntry._raw values are typed any
-		const hash = SHA256(avatar.toString());
+		const hash = SHA256(String(avatar));
 		if (user.avatarETag === hash) {
 			return;
 		}
@@ -425,10 +424,10 @@ export class LDAPManager {
 
 		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
 		if (key) {
+			const rawValue: unknown = ldapUser._raw[key];
 			return {
 				attribute: key,
-				// oxlint-disable-next-line typescript/no-unsafe-call -- ILDAPEntry._raw values are typed any
-				value: ldapUser._raw[key].toString('hex'),
+				value: Buffer.isBuffer(rawValue) ? rawValue.toString('hex') : String(rawValue),
 			};
 		}
 
