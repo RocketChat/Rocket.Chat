@@ -10,6 +10,8 @@
  * (see {@link JsonRpcMeta}).
  */
 
+import { ErrorCode } from './errors';
+
 export type ID = string | number | null;
 
 export type Defined = string | number | boolean | object | null;
@@ -35,15 +37,7 @@ export type JsonRpcMeta = {
 
 export const JSONRPC_VERSION = '2.0';
 
-/** The five error codes JSON-RPC 2.0 reserves. */
-export const INVALID_REQUEST = -32600;
-export const METHOD_NOT_FOUND = -32601;
-export const INVALID_PARAMS = -32602;
-export const INTERNAL_ERROR = -32603;
-export const PARSE_ERROR = -32700;
-
-/** The generic code this bridge uses for an error raised by app or bridge code. */
-export const SERVER_ERROR = -32000;
+export const { INVALID_REQUEST, METHOD_NOT_FOUND, INVALID_PARAMS, INTERNAL_ERROR, PARSE_ERROR, SERVER_ERROR } = ErrorCode;
 
 /**
  * The shape an error payload has on the wire. A received payload is one of these
@@ -71,11 +65,11 @@ export type SerializedJsonRpcError = {
 export class JsonRpcError implements SerializedJsonRpcError {
 	public message: string;
 
-	public code: number;
+	public code: ErrorCode;
 
 	declare public data?: any;
 
-	constructor(message: string, code: number, data?: any) {
+	constructor(message: string, code: ErrorCode, data?: any) {
 		this.message = message;
 		this.code = code;
 

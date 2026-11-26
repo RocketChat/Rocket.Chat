@@ -1,6 +1,7 @@
 import EventEmitter from 'node:events';
 
 import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 import type { RequestContext } from './requestContext';
@@ -87,7 +88,7 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 }
 
 export async function errorResponse(
-	{ error: { message, code = -32000, data = {} }, id, meta }: ErrorResponseDescriptor,
+	{ error: { message, code = ErrorCode.SERVER_ERROR, data = {} }, id, meta }: ErrorResponseDescriptor,
 	req?: RequestContext,
 ): Promise<void> {
 	const { logger } = req?.context || {};
@@ -96,7 +97,7 @@ export async function errorResponse(
 		data.logs = logger.getLogs();
 	}
 
-	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
+	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code as ErrorCode, data), meta);
 
 	await ipcChannel.send(rpc);
 }

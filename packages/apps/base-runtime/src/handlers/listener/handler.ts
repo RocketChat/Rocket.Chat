@@ -1,3 +1,4 @@
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import { JsonRpcError, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
@@ -43,7 +44,7 @@ export default async function handleListener(request: RequestContext): Promise<D
 		}
 
 		if (e instanceof AppsEngineException) {
-			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });
+			return new JsonRpcError(e.message, ErrorCode.APPS_ENGINE_EXCEPTION, { name: e.name });
 		}
 
 		return JsonRpcError.internalError({ message: e.message });

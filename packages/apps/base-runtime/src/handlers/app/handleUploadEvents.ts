@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { readFile } from 'node:fs/promises';
 
+import { ErrorCode } from '@rocket.chat/apps/protocol/dist/framing/errors';
 import { JsonRpcError, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
@@ -66,7 +67,7 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 		);
 	} catch (e) {
 		if (e?.name === AppsEngineException.name) {
-			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });
+			return new JsonRpcError(e.message, ErrorCode.APPS_ENGINE_EXCEPTION, { name: e.name });
 		}
 
 		if (e instanceof JsonRpcError) {

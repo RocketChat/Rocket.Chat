@@ -1,7 +1,8 @@
 import type { Contract, ErrorDataOf, ErrorNameOf, PathOfKind, ProcedureAt } from './contract';
+import { ErrorCode } from '../framing/errors';
 
 /** The wire code of every declared error. The error name travels in `data`. */
-export const PROCEDURE_ERROR = -32001;
+export const { PROCEDURE_ERROR } = ErrorCode;
 
 /** An error that a procedure declares in the contract, thrown by its handler on purpose. */
 export class ProcedureError<N extends string = string, D = unknown> extends Error {
