@@ -3,7 +3,7 @@ import type { StreamControllerRef } from '@rocket.chat/mock-providers';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { isIncomingCallMessage, useSubscribeToIncomingMessages } from './useSubscribeToIncomingMessages';
+import { isIncomingCallMessage, useNewCallMessages } from './useNewCallMessages';
 import { createFakeMessage } from '../../../../tests/mocks/data';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 
@@ -76,32 +76,48 @@ describe('isIncomingCallMessage', () => {
 	});
 });
 
-describe('useSubscribeToIncomingMessages', () => {
+describe('useNewCallMessages', () => {
 	beforeEach(() => {
 		decryptMessage.mockReset();
 		decryptMessage.mockImplementation(async (message) => message);
 	});
 
-	const render = (since?: Date) => {
+	const render = (joinedAt?: Date) => {
 		const streamRef: StreamControllerRef<'room-messages'> = {};
 
-		const { result } = renderHook(() => useSubscribeToIncomingMessages({ rid, since }), {
+		const { result, rerender } = renderHook(() => useNewCallMessages({ rid, joinedAt }), {
 			wrapper: mockAppRoot().withJohnDoe().withStream('room-messages', streamRef).build(),
 		});
 
-		return { subscribe: result.current, streamRef };
+		const listener = jest.fn();
+		const off = result.current(listener);
+		const emit = (message: IMessage) => streamRef.controller?.emit(rid, [message]);
+
+		return { result, rerender, listener, off, emit };
 	};
 
-	it('offers nothing to subscribe to before the reader has joined', () => {
-		expect(render().subscribe).toBeUndefined();
+	it('hears nothing before the reader has joined', async () => {
+		const { listener, emit } = render();
+
+		emit(incoming());
+		await Promise.resolve();
+
+		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('keeps the same listener registration across renders', () => {
+		const { result, rerender } = render(joinedAt);
+		const first = result.current;
+
+		rerender();
+
+		expect(result.current).toBe(first);
 	});
 
 	it('hands over who sent a message and a plain-text preview of it', async () => {
-		const { subscribe, streamRef } = render(joinedAt);
-		const listener = jest.fn();
-		subscribe?.(listener);
+		const { listener, emit } = render(joinedAt);
 
-		streamRef.controller?.emit(rid, [incoming({ _id: 'message-id', msg: '*Can* everyone see my screen?' })]);
+		emit(incoming({ _id: 'message-id', msg: '*Can* everyone see my screen?' }));
 
 		await waitFor(() =>
 			expect(listener).toHaveBeenCalledWith({
@@ -115,13 +131,11 @@ describe('useSubscribeToIncomingMessages', () => {
 
 	// The stream sends the whole message again on every change to it, such as a link preview arriving.
 	it('hands each message over once', async () => {
-		const { subscribe, streamRef } = render(joinedAt);
-		const listener = jest.fn();
-		subscribe?.(listener);
+		const { listener, emit } = render(joinedAt);
 
 		const message = incoming();
-		streamRef.controller?.emit(rid, [message]);
-		streamRef.controller?.emit(rid, [{ ...message, urls: [{ url: 'https://rocket.chat', meta: {} }] }]);
+		emit(message);
+		emit({ ...message, urls: [{ url: 'https://rocket.chat', meta: {} }] });
 
 		await waitFor(() => expect(listener).toHaveBeenCalled());
 		expect(listener).toHaveBeenCalledTimes(1);
@@ -129,45 +143,67 @@ describe('useSubscribeToIncomingMessages', () => {
 
 	// Blocks alone, or an attachment with nothing to name it, would be a preview with a sender and no message.
 	it('leaves out a message with no text to show', async () => {
-		const { subscribe, streamRef } = render(joinedAt);
-		const listener = jest.fn();
-		subscribe?.(listener);
+		const { listener, emit } = render(joinedAt);
 
-		streamRef.controller?.emit(rid, [incoming({ _id: 'blocks-only', msg: '' })]);
-		streamRef.controller?.emit(rid, [incoming({ _id: 'with-text' })]);
+		emit(incoming({ _id: 'blocks-only', msg: '' }));
+		emit(incoming({ _id: 'with-text' }));
 
 		await waitFor(() => expect(listener).toHaveBeenCalledWith(expect.objectContaining({ _id: 'with-text' })));
 		expect(listener).toHaveBeenCalledTimes(1);
 	});
 
 	it('previews an encrypted message this session can decrypt', async () => {
-		const { subscribe, streamRef } = render(joinedAt);
-		const listener = jest.fn();
-		subscribe?.(listener);
+		const { listener, emit } = render(joinedAt);
 		decryptMessage.mockImplementation(async (message) => ({ ...message, e2e: 'done', msg: 'Hello in private' }));
 
-		streamRef.controller?.emit(rid, [incoming({ t: 'e2e', e2e: 'pending', msg: '' })]);
+		emit(incoming({ t: 'e2e', e2e: 'pending', msg: '' }));
 
 		await waitFor(() => expect(listener).toHaveBeenCalledWith(expect.objectContaining({ text: 'Hello in private' })));
 	});
 
 	it('hands over an encrypted message it cannot decrypt with no text', async () => {
-		const { subscribe, streamRef } = render(joinedAt);
-		const listener = jest.fn();
-		subscribe?.(listener);
+		const { listener, emit } = render(joinedAt);
 
-		streamRef.controller?.emit(rid, [incoming({ _id: 'message-id', t: 'e2e', e2e: 'pending', msg: '' })]);
+		emit(incoming({ _id: 'message-id', t: 'e2e', e2e: 'pending', msg: '' }));
 
 		await waitFor(() => expect(listener).toHaveBeenCalledWith(expect.objectContaining({ _id: 'message-id', text: undefined })));
 	});
 
-	it('stops handing messages over once unsubscribed', async () => {
-		const { subscribe, streamRef } = render(joinedAt);
-		const listener = jest.fn();
-		const unsubscribe = subscribe?.(listener);
+	// A plain message right behind a slow-to-decrypt one would otherwise be previewed first.
+	it('hands messages over in the order they arrived', async () => {
+		const { listener, emit } = render(joinedAt);
+		let finishDecrypting: () => void = () => undefined;
+		decryptMessage.mockImplementation(
+			(message) =>
+				new Promise((resolve) => {
+					finishDecrypting = () => resolve({ ...message, e2e: 'done', msg: 'Encrypted hello' });
+				}),
+		);
 
-		streamRef.controller?.emit(rid, [incoming()]);
-		unsubscribe?.();
+		emit(incoming({ _id: 'encrypted', t: 'e2e', e2e: 'pending', msg: '' }));
+		emit(incoming({ _id: 'plain' }));
+		await Promise.resolve();
+		finishDecrypting();
+
+		await waitFor(() => expect(listener).toHaveBeenCalledTimes(2));
+		expect(listener.mock.calls.map(([{ _id }]) => _id)).toEqual(['encrypted', 'plain']);
+	});
+
+	it('decrypts nothing while nobody is listening', async () => {
+		const { off, emit } = render(joinedAt);
+
+		off();
+		emit(incoming({ t: 'e2e', e2e: 'pending', msg: '' }));
+		await Promise.resolve();
+
+		expect(decryptMessage).not.toHaveBeenCalled();
+	});
+
+	it('stops handing messages over once the listener is removed', async () => {
+		const { listener, off, emit } = render(joinedAt);
+
+		emit(incoming());
+		off();
 		await Promise.resolve();
 
 		expect(listener).not.toHaveBeenCalled();

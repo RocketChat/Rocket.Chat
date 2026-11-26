@@ -1,4 +1,4 @@
-import type { ConferenceContextValue, ConferenceFailure, ConferencePanel, ConferenceRoom } from '@rocket.chat/ui-conference';
+import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
 import { ConferenceContext, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,8 +21,8 @@ import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease'
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { useNewCallMessages } from '../hooks/useNewCallMessages';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
-import { useSubscribeToIncomingMessages } from '../hooks/useSubscribeToIncomingMessages';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
@@ -78,17 +78,12 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	const subscription = useUserSubscription(room.rid ?? '');
 	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
 
-	const subscribeToIncomingMessages = useSubscribeToIncomingMessages({
+	const onNewMessage = useNewCallMessages({
 		rid: room.rid,
 		tmid: room.tmid,
-		since: call.members.find(({ _id }) => _id === uid)?.joinedAt,
+		joinedAt: call.members.find(({ _id }) => _id === uid)?.joinedAt,
 		ignored: subscription?.ignored,
 	});
-
-	const onNewMessage = useCallback<ConferenceRoom['onNewMessage']>(
-		(listener) => subscribeToIncomingMessages?.(listener) ?? (() => undefined),
-		[subscribeToIncomingMessages],
-	);
 
 	const jumpToMessage = useCallback((mid: string) => void setMessageJumpQueryStringParameter(mid), []);
 

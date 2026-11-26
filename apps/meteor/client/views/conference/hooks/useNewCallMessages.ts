@@ -1,15 +1,16 @@
 import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEditedMessage } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { ConferenceNewMessage } from '@rocket.chat/ui-conference';
+import type { ConferenceNewMessage, ConferenceRoom } from '@rocket.chat/ui-conference';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { normalizeMessagePreview } from '../../../lib/utils/normalizeMessagePreview/normalizeMessagePreview';
 
-type IncomingMessageScope = {
+type NewCallMessageScope = {
 	uid: IUser['_id'];
 	tmid?: IMessage['_id'];
 	since: Date;
@@ -21,7 +22,7 @@ type IncomingMessageScope = {
  * again, whole, on every change to it (a reaction, an edit, a reply in its thread), so when it was sent and
  * whether it was edited are what tell a new message from an old one that changed.
  */
-export const isIncomingCallMessage = (message: IMessage, { uid, tmid, since, ignored }: IncomingMessageScope): boolean =>
+export const isIncomingCallMessage = (message: IMessage, { uid, tmid, since, ignored }: NewCallMessageScope): boolean =>
 	message.u._id !== uid &&
 	!ignored?.includes(message.u._id) &&
 	(!message.t || isE2EEMessage(message)) &&
@@ -44,35 +45,39 @@ const readable = async (message: IMessage): Promise<IMessage> => {
 
 const isUnreadable = (message: IMessage): boolean => isE2EEMessage(message) && message.e2e !== 'done';
 
+type NewCallMessageEvents = {
+	message: ConferenceNewMessage;
+};
+
 /**
- * How to listen for the messages other people send to the call's chat from `since` on, each handed over once.
- * Undefined until there is a room, a reader and a `since` to count from.
+ * Listens for the messages other people send to the call's chat after `joinedAt`, each handed over once and in
+ * the order they arrived. Nothing is heard until there is a room, a reader and a `joinedAt`.
  */
-export const useSubscribeToIncomingMessages = ({
+export const useNewCallMessages = ({
 	rid,
 	tmid,
-	since,
+	joinedAt,
 	ignored,
 }: {
 	rid?: IMessage['rid'];
 	tmid?: IMessage['_id'];
-	since?: Date;
+	joinedAt?: Date;
 	ignored?: ISubscription['ignored'];
-}): ((listener: (message: ConferenceNewMessage) => void) => () => void) | undefined => {
+}): ConferenceRoom['onNewMessage'] => {
 	const uid = useUserId();
 	const subscribeToRoomMessages = useStream('room-messages');
 	const { t } = useTranslation();
-	const sinceTime = since?.getTime();
+	const [emitter] = useState(() => new Emitter<NewCallMessageEvents>());
+	const joinedAtTime = joinedAt?.getTime();
 
-	const isIncoming = useStableCallback(
+	const isNew = useStableCallback(
 		(message: IMessage, since: Date): boolean => !!uid && isIncomingCallMessage(message, { uid, tmid, since, ignored }),
 	);
 
-	const toIncomingMessage = useStableCallback(async (message: IMessage): Promise<ConferenceNewMessage | undefined> => {
+	const toNewMessage = useStableCallback(async (message: IMessage): Promise<ConferenceNewMessage | undefined> => {
 		const read = await readable(message);
 		const text = isUnreadable(read) ? undefined : normalizeMessagePreview(read, t);
 
-		// Nothing to show for a message that is only blocks or an empty attachment; one that could not be read still says so.
 		if (!text && !isUnreadable(read)) {
 			return undefined;
 		}
@@ -80,35 +85,43 @@ export const useSubscribeToIncomingMessages = ({
 		return { _id: message._id, username: message.u.username, name: message.u.name, text };
 	});
 
-	return useMemo(() => {
-		if (!rid || !uid || sinceTime === undefined) {
-			return undefined;
+	useEffect(() => {
+		if (!rid || !uid || joinedAtTime === undefined) {
+			return;
 		}
 
-		const since = new Date(sinceTime);
+		const since = new Date(joinedAtTime);
+		const seen = new Set<IMessage['_id']>();
+		let queue = Promise.resolve();
+		let stopped = false;
 
-		return (listener) => {
-			const previewed = new Set<IMessage['_id']>();
-			let stopped = false;
+		const stop = subscribeToRoomMessages(rid, (message) => {
+			if (seen.has(message._id) || !isNew(message, since)) {
+				return;
+			}
 
-			const stop = subscribeToRoomMessages(rid, (message) => {
-				if (previewed.has(message._id) || !isIncoming(message, since)) {
-					return;
-				}
+			seen.add(message._id);
 
-				previewed.add(message._id);
+			if (!emitter.has('message')) {
+				return;
+			}
 
-				void toIncomingMessage(message).then((incoming) => {
-					if (incoming && !stopped) {
-						listener(incoming);
+			queue = queue
+				.then(() => toNewMessage(message))
+				.then((newMessage) => {
+					if (newMessage && !stopped) {
+						emitter.emit('message', newMessage);
 					}
-				});
-			});
+				})
+				// One message failing to preview must not hold back the ones queued after it.
+				.catch(() => undefined);
+		});
 
-			return () => {
-				stopped = true;
-				stop();
-			};
+		return () => {
+			stopped = true;
+			stop();
 		};
-	}, [rid, uid, sinceTime, subscribeToRoomMessages, isIncoming, toIncomingMessage]);
+	}, [rid, uid, joinedAtTime, subscribeToRoomMessages, emitter, isNew, toNewMessage]);
+
+	return useCallback((listener) => emitter.on('message', listener), [emitter]);
 };
