@@ -35,6 +35,8 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 
+import { parse, type Root } from '@rocket.chat/message-parser';
+
 import { AppAvatar } from './AppAvatar';
 import { mockAvatar } from './mockData';
 import { gradientJpeg, gradientPng, letterAvatars } from './mockAvatars';
@@ -129,6 +131,30 @@ const avatarFormats = [
 	['data letter', letterAvatars.R],
 ] as const;
 
+const astSamples = ['Shipping the **build** now, _carefully_ with `yarn build`.', 'See https://rocket.chat and ask @ada.lovelace in #general', '- one\n- two', '> quoted\nreply :tada:'];
+
+// One node type per line, children indented
+const astLines = (nodes: Root | readonly unknown[], depth = 0): string[] =>
+	nodes.flatMap((node) => {
+		const { type, value } = node as { type: string; value: unknown };
+		const children = Array.isArray(value) ? astLines(value, depth + 1) : typeof value === 'object' && value !== null && 'type' in value ? astLines([value], depth + 1) : [];
+		const leaf = typeof value === 'string' ? ` "${value}"` : '';
+		return [`${'  '.repeat(depth)}${type}${leaf}`, ...children];
+	});
+
+function ParserAst() {
+	return (
+		<View style={{ gap: 8 }}>
+			{astSamples.map((sample) => (
+				<View key={sample}>
+					<RNText style={{ fontSize: 11, fontWeight: 'bold' }}>{JSON.stringify(sample)}</RNText>
+					<RNText style={{ fontSize: 10, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' }}>{astLines(parse(sample)).join('\n')}</RNText>
+				</View>
+			))}
+		</View>
+	);
+}
+
 export function Content() {
 	const [button, setButton] = useState(0);
 	const [chip, setChip] = useState(0);
@@ -214,6 +240,9 @@ export function Content() {
 						<RNText style={{ fontSize: 10 }}>{label}</RNText>
 					</View>
 				))}
+			</Cell>
+			<Cell name='message-parser AST'>
+				<ParserAst />
 			</Cell>
 			<Cell name='Icon'>
 				<Icon name='bell' size='x24' />
