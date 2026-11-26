@@ -1,0 +1,73 @@
+import type { ReactNode } from 'react';
+import {
+	AccordionItem,
+	Button,
+	FieldLabel,
+	ItemTitle,
+	ListboxOption,
+	MessageName,
+	TableBody,
+	TableCell,
+	TableRow,
+	TabsItem,
+} from '@rocket.chat/fuselage';
+
+export type SweepCase = { props?: Record<string, unknown>; children?: ReactNode; render?: () => ReactNode; context?: string };
+
+const noop = () => undefined;
+const options = [
+	['a', 'Alpha'],
+	['b', 'Beta'],
+];
+
+// Minimal valid props by component name; a component missing here renders with its name as children
+export const cases: Record<string, SweepCase> = {
+	ButtonGroup: { children: <Button>One</Button> },
+	Field: { children: <FieldLabel>Label</FieldLabel> },
+	ItemContent: { children: <ItemTitle>Title</ItemTitle> },
+	Table: { children: <TableBody><TableRow><TableCell>Cell</TableCell></TableRow></TableBody> },
+	MessageHeader: { children: <MessageName>Name</MessageName> },
+	NavBarSection: { children: <MessageName>Home</MessageName> },
+	AccordionItem: { props: { title: 'Title' } },
+	AudioPlayer: { props: { src: 'https://example.com/a.mp3' }, children: undefined },
+	AutoComplete: { props: { options: [{ value: 'a', label: 'Alpha' }], value: '', onChange: noop }, children: undefined },
+	Avatar: { props: { url: 'https://open.rocket.chat/avatar/rocket.cat', size: 'x36' }, children: undefined },
+	AvatarContainer: { props: { size: 'x36' } },
+	Chevron: { props: { direction: 'down' }, children: undefined },
+	CheckOption: { props: { label: 'Option', onChange: noop }, children: undefined },
+	Dropdown: { context: 'needs a reference element (DOM ref) to position against' },
+	FramedIcon: { props: { icon: 'bell' }, children: undefined },
+	Icon: { props: { name: 'bell', size: 'x24' }, children: undefined },
+	IconButton: { props: { icon: 'bell', onPress: noop }, children: undefined },
+	ItemDragHandle: { context: 'needs a drag-and-drop provider' },
+	ItemDropSlot: { context: 'needs a drag-and-drop provider' },
+	Listbox: { children: <ListboxOption id='one'>One</ListboxOption> },
+	Menu: { props: { options: { a: { label: 'Alpha', action: noop } } }, children: undefined },
+	MenuSubmenuTrigger: { context: 'needs a Menu with a submenu' },
+	ModalHeroImage: { props: { src: 'https://open.rocket.chat/avatar/rocket.cat' }, children: undefined },
+	ModalThumb: { props: { url: 'https://open.rocket.chat/avatar/rocket.cat' }, children: undefined },
+	MessageGenericPreviewImage: { props: { url: 'https://open.rocket.chat/avatar/rocket.cat' }, children: undefined },
+	MessageEmoji: { props: { name: ':smile:' }, children: undefined },
+	MultiSelect: { props: { options, value: [], onChange: noop }, children: undefined },
+	MultiSelectFiltered: { props: { options, value: [], onChange: noop }, children: undefined },
+	NavBarItem: { props: { icon: 'bell', title: 'Bell' }, children: undefined },
+	Options: { context: 'needs an anchor ref and a popover container' },
+	OwnerDocument: { context: 'provider of the document a portal mounts into' },
+	PaginatedMultiSelectFiltered: { props: { options: [], value: [], onChange: noop, endReached: noop }, children: undefined },
+	PaginatedSelectFiltered: { props: { options: [], value: '', onChange: noop, endReached: noop }, children: undefined },
+	Pagination: { props: { count: 100, current: 0, itemsPerPage: 25, onSetCurrent: noop, onSetItemsPerPage: noop }, children: undefined },
+	PositionAnimated: { context: 'needs an anchor ref (DOM element) to position against' },
+	Popover: { context: 'needs a trigger element and a DOM portal' },
+	PopoverSurface: { context: 'needs a Popover host' },
+	ProgressBar: { props: { percentage: 50 }, children: undefined },
+	Select: { props: { options, value: 'a', onChange: noop }, children: undefined },
+	SelectFiltered: { props: { options, value: 'a', onChange: noop }, children: undefined },
+	SelectLegacy: { props: { options, value: 'a', onChange: noop }, children: undefined },
+	SidebarItemStatusBullet: { props: { status: 'online' }, children: undefined },
+	Slider: { props: { value: 20, onChange: noop }, children: undefined },
+	StatusBullet: { props: { status: 'online' }, children: undefined },
+	Tabs: { children: <TabsItem selected>One</TabsItem> },
+	Var: { context: 'not a component: a class that wraps a CSS custom property name' },
+	VideoPlayer: { props: { src: 'https://example.com/v.mp4' }, children: undefined },
+	Accordion: { children: <AccordionItem title='Section'>Body</AccordionItem> },
+};

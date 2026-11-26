@@ -24,6 +24,7 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 	const [codeRequest, setCodeRequest] = useState<CodeRequest>();
 	const [code, setCode] = useState('');
 	const [gallery, setGallery] = useState(process.env.EXPO_PUBLIC_GALLERY === '1');
+	const [sweep, setSweep] = useState(process.env.EXPO_PUBLIC_SWEEP === '1');
 	const answer = useRef<{ resolve: (code: string) => void; reject: (e: Error) => void } | undefined>(undefined);
 
 	const askCode = (request: CodeRequest) =>
@@ -56,6 +57,11 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 			setBusy(false);
 		}
 	};
+
+	if (sweep) {
+		const { Sweep } = require('./Sweep') as typeof import('./Sweep');
+		return <Sweep onBack={() => setSweep(false)} />;
+	}
 
 	if (gallery) {
 		// Loaded on demand: importing Fuselage registers its own Tamagui config
@@ -106,6 +112,7 @@ export function Login({ onSession }: { onSession: (session: Session) => void }) 
 			</Button>
 			{error && <RNText style={{ color: 'crimson' }}>{error}</RNText>}
 			<Button onPress={() => setGallery(true)}>Components</Button>
+			<Button onPress={() => setSweep(true)}>Sweep</Button>
 		</YStack>
 	);
 }
