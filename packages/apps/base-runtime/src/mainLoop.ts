@@ -1,5 +1,6 @@
 import process from 'node:process';
 
+import { _zPING } from '@rocket.chat/apps/protocol/dist/framing/control';
 import { JsonRpcError, isNotificationObject, type SuccessObject } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 import apiHandler from './handlers/api-handler';
@@ -20,10 +21,7 @@ type Handlers = {
 	videoconference: typeof videoConferenceHandler;
 	outboundCommunication: typeof outboundMessageHandler;
 	scheduler: typeof handleScheduler;
-	ping: (request: RequestContext) => Promise<'pong'>;
 };
-
-const COMMAND_PING = '_zPING';
 
 async function requestRouter(message: Messenger.JsonRpcRequest): Promise<void> {
 	const methodHandlers: Handlers = {
@@ -33,7 +31,6 @@ async function requestRouter(message: Messenger.JsonRpcRequest): Promise<void> {
 		videoconference: videoConferenceHandler,
 		outboundCommunication: outboundMessageHandler,
 		scheduler: handleScheduler,
-		ping: (_request) => Promise.resolve('pong'),
 	};
 
 	// We're not handling notifications at the moment
@@ -88,7 +85,7 @@ function handleResponse(response: Messenger.JsonRpcResponse): void {
 async function handleIncomingMessage(message: unknown): Promise<void> {
 	try {
 		// Process PING command first as it is not JSON RPC
-		if (message === COMMAND_PING) {
+		if (message === _zPING) {
 			Messenger.pongResponse();
 			return;
 		}

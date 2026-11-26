@@ -1,6 +1,7 @@
 import EventEmitter from 'node:events';
 
 import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
+import { _zPONG } from '@rocket.chat/apps/protocol/dist/framing/control';
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 import type { RequestContext } from './requestContext';
@@ -30,8 +31,6 @@ export function isErrorResponse(message: unknown): message is jsonrpc.ErrorObjec
 	return jsonrpc.isErrorObject(message);
 }
 
-const COMMAND_PONG = '_zPONG';
-
 export const RPCResponseObserver = new EventEmitter();
 
 /**
@@ -42,7 +41,7 @@ export const RPCResponseObserver = new EventEmitter();
  * every message is sanitized before being handed to Node.
  */
 export const ipcChannel = {
-	send(message: jsonrpc.JsonRpc | typeof COMMAND_PONG): Promise<void> {
+	send(message: jsonrpc.JsonRpc | typeof _zPONG): Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (typeof process.send !== 'function') {
 				reject(new Error('No IPC channel available to communicate with the host process'));
@@ -116,7 +115,7 @@ export async function successResponse({ id, result, meta }: SuccessResponseDescr
 
 // A PONG that fails to send counts as a missed ping on the host
 export function pongResponse(): void {
-	ipcChannel.send(COMMAND_PONG).catch((error) => console.error('Failed to send PONG to the host process', error));
+	ipcChannel.send(_zPONG).catch((error) => console.error('Failed to send PONG to the host process', error));
 }
 
 export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {

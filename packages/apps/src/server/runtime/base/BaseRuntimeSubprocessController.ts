@@ -4,6 +4,7 @@ import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
 import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+import { _zPONG } from '@rocket.chat/apps/protocol/dist/index';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import debugFactory from 'debug';
@@ -20,8 +21,6 @@ import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
-
-const COMMAND_PONG = '_zPONG';
 
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
@@ -525,7 +524,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		try {
 			// Process PONG resonse first as it is not JSON RPC
-			if (message === COMMAND_PONG) {
+			if (message === _zPONG) {
 				this.emit('pong');
 				return;
 			}

@@ -1,10 +1,10 @@
 import type { ChildProcess } from 'node:child_process';
 import { EventEmitter } from 'node:stream';
 
+import { _zPING } from '@rocket.chat/apps/protocol/dist/index';
+
 import type { BaseRuntimeSubprocessController } from './BaseRuntimeSubprocessController';
 import type { ProcessMessenger } from './ProcessMessenger';
-
-export const COMMAND_PING = '_zPING';
 
 const defaultOptions: LivenessManager['options'] = {
 	pingTimeoutInMS: 1000,
@@ -192,7 +192,7 @@ export class LivenessManager {
 			});
 
 		// A ping that fails to send counts as a ping without a response
-		this.messenger.send(COMMAND_PING).catch((error) => this.debug('Failed to send ping: %s', error.message));
+		this.messenger.send(_zPING).catch((error) => this.debug('Failed to send ping: %s', error.message));
 	}
 
 	private handleError(err: Error) {

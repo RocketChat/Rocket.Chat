@@ -1,11 +1,11 @@
 import type { ChildProcess } from 'node:child_process';
 
 import type { JsonRpc } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+import type { _zPING } from '@rocket.chat/apps/protocol/dist/index';
 
-import type { COMMAND_PING } from './LivenessManager';
 import { sanitizeForIpc } from '../../../lib/IpcSanitizer';
 
-type Message = JsonRpc | typeof COMMAND_PING;
+type Message = JsonRpc | typeof _zPING;
 
 export class ProcessMessenger {
 	private process: ChildProcess | undefined;
