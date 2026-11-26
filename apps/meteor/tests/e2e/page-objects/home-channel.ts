@@ -14,6 +14,7 @@ import {
 	AutoTranslateFlexTab,
 	ExportMessagesFlexTab,
 	OngoingCalls,
+	VideoCallMenu,
 	PruneMessagesFlexTab,
 	SearchMessagesFlexTab,
 	RoomInfoFlexTab,
@@ -44,6 +45,8 @@ export class HomeChannel extends RoutedPage {
 	readonly userCard: UserCard;
 
 	readonly ongoingCalls: OngoingCalls;
+
+	readonly videoCallMenu: VideoCallMenu;
 
 	private _tabs: {
 		members: MembersFlexTab;
@@ -83,6 +86,7 @@ export class HomeChannel extends RoutedPage {
 		this.navbar = new Navbar(page);
 		this.userCard = new UserCard(page);
 		this.ongoingCalls = new OngoingCalls(page);
+		this.videoCallMenu = new VideoCallMenu(page, this.content.btnVideoCall);
 		this._tabs = {
 			members: new MembersFlexTab(page),
 			userInfo: new UserInfoFlexTab(page),

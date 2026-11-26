@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
+
 /**
  * The call window: the separate browser window `VideoConf_Conference_Window_Enabled` opens a conference in.
  *
@@ -31,6 +33,24 @@ export class ConferenceWindow {
 		const window = new ConferenceWindow(opened);
 		window.recordDdp();
 		await opened.waitForLoadState('domcontentloaded');
+
+		return window;
+	}
+
+	/**
+	 * The call window as someone reaches it with an address they were given, such as a conference link: `page` is
+	 * taken to that address and handed back once the window shows its first screen.
+	 */
+	static async openAt(page: Page, address: string): Promise<ConferenceWindow> {
+		const window = new ConferenceWindow(page);
+		window.recordDdp();
+		await page.goto(address);
+		await expect(
+			window.page
+				.getByRole('heading', { level: 2 })
+				.or(window.page.getByRole('heading', { level: 3 }))
+				.first(),
+		).toBeVisible();
 
 		return window;
 	}
@@ -275,6 +295,15 @@ export class ConferenceWindow {
 
 	getStateTitle(title: string): Locator {
 		return this.page.getByRole('heading', { name: title, level: 3 });
+	}
+
+	/** What a conference link shows someone who may not start it, until its conference starts. */
+	getTextNotStarted(title: string): Locator {
+		return this.getStateTitle(`${title} has not started yet`);
+	}
+
+	get textNotAuthorized(): Locator {
+		return this.getStateTitle('You are not authorized to view this page.');
 	}
 
 	get btnClose(): Locator {
