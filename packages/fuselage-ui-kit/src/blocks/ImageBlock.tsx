@@ -16,6 +16,16 @@ const fetchImageState = (img: HTMLImageElement) => {
 
 export type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
 
+const maxImageHeight = 360;
+
+const capDimensions = (w: number, h: number) => {
+	if (h <= maxImageHeight || h === 0) {
+		return { width: w, height: h };
+	}
+
+	return { width: Math.round(w * maxImageHeight / h), height: maxImageHeight };
+};
+
 const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 	const surface = useSurfaceType();
 	const alignment = surface === 'banner' || surface === 'message' ? 'flex-start' : 'center';
@@ -46,9 +56,11 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 		};
 	}, [block.imageUrl]);
 
+	const { width, height } = capDimensions(naturalWidth, naturalHeight);
+
 	return (
 		<Box className={className} display='flex' flexDirection='column' flexWrap='nowrap' alignItems={alignment}>
-			<Box overflow='hidden' width='full'>
+			<Box overflow='hidden'>
 				{block.title && (
 					<Box fontScale='c1' color='hint' withTruncatedText marginBlockEnd={4}>
 						{surfaceRenderer.renderTextObject(block.title, 0, UiKit.BlockContext.NONE)}
@@ -59,7 +71,7 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 						<Skeleton variant='rect' width='100%' style={{ aspectRatio: '21 / 9' }} />
 					</Box>
 				) : (
-					<Image imageUrl={block.imageUrl} width={naturalWidth} height={naturalHeight} aria-label={block.altText} />
+					<Image imageUrl={block.imageUrl} width={width} height={height} aria-label={block.altText} />
 				)}
 			</Box>
 		</Box>

@@ -27,7 +27,6 @@ export const Image = styled('div', filterImageProps)`
 	background-image: ${(props) => serializeCssUrl(props.imageUrl)};
 	width: 100%;
 	max-width: ${(props) => String(props.width)}px;
-	max-height: 360px;
 	aspect-ratio: ${(props) => String(props.width)} / ${(props) => String(props.height)};
 	overflow: hidden;
 `;
