@@ -24,18 +24,24 @@ const teamRoom = createFakeSubscription({
 	tunread: undefined,
 });
 
+const navigate = jest.fn();
+
 const appRoot = (featuresPreview: { name: string; value: boolean }[]) =>
 	mockAppRoot()
 		.withSetting('Accounts_AllowFeaturePreview', true)
 		.withUserPreference('featuresPreview', featuresPreview)
 		.withSubscriptions([teamRoom])
+		.withRouter({ navigate })
 		.withTranslations('en', 'core', { __unreadTitle__from__roomTitle__: '{{unreadTitle}} from {{roomTitle}}' })
 		.build();
 
 describe('Teams and Inbox rail items', () => {
-	afterEach(() => teamsPanelStore.setState({ open: false, expandedTeams: [] }));
+	afterEach(() => {
+		teamsPanelStore.setState({ open: false, expandedTeams: [] });
+		navigate.mockClear();
+	});
 
-	it('should say the unread of the team rooms on the Teams item, open the Teams section from it with the team of the open room expanded, and close it from the Inbox item', async () => {
+	it('should say the unread of the team rooms on the Teams item, open the Teams section from it with the team of the open room expanded and go home, and close it from the Inbox item', async () => {
 		render(
 			<>
 				<SidebarRailInbox />
@@ -49,6 +55,7 @@ describe('Teams and Inbox rail items', () => {
 		await userEvent.click(teams);
 		expect(teamsPanelStore.getState().open).toBe(true);
 		expect(teamsPanelStore.getState().expandedTeams).toEqual(['eng']);
+		expect(navigate).toHaveBeenCalledWith('/home');
 
 		await userEvent.click(screen.getByRole('button', { name: /Inbox/ }));
 		expect(teamsPanelStore.getState().open).toBe(false);

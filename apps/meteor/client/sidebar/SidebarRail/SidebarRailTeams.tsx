@@ -1,6 +1,6 @@
 import { Badge, NavBarItem } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +14,7 @@ type SidebarRailTeamsProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const SidebarRailTeams = (props: SidebarRailTeamsProps) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const { sidebar } = useLayout();
 	const { available, open, show } = useTeamsPanel();
 	const expandTeam = teamsPanelStore((state) => state.expandTeam);
@@ -31,6 +32,7 @@ const SidebarRailTeams = (props: SidebarRailTeamsProps) => {
 		}
 
 		show();
+		router.navigate('/home');
 	});
 
 	if (!available) {
