@@ -250,7 +250,7 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 });
 
 describe('Negotiation elements an outbound stream holds (s2s-connectivity R19)', () => {
-	const LIMIT = 32;
+	const LIMIT = 4;
 	const OVERFLOW_WARNING = 'Too many unrequested negotiation elements';
 
 	const ports = new Map<string, number>();
@@ -443,6 +443,34 @@ describe('Negotiation elements an outbound stream holds (s2s-connectivity R19)',
 		} finally {
 			off();
 		}
+	});
+
+	it('ignores negotiation elements once the connection is authenticated', async () => {
+		const lost = new Promise<void>((resolve) => {
+			const off = events.on('connection.lost', ({ domain, direction }) => {
+				if (direction === 'outbound' && domain === 'evil.localhost') {
+					off();
+					resolve();
+				}
+			});
+		});
+		const message = (body: string) => xml('message', { from: 'alice@b.localhost', to: 'mallory@evil.localhost' }, xml('body', {}, body));
+
+		const remote = await outboundToHostile();
+		remote.write(hostileHeader('outbound'));
+		await remote.waitFor(/<db:result[^>]*>[^<]+<\/db:result>/);
+		remote.write(`${unrequested(LIMIT)}<db:result from='evil.localhost' to='b.localhost' type='valid'/>`);
+		await remote.waitFor(/<message[^>]*>[\s\S]*?<\/message>/);
+
+		remote.write(unrequested(LIMIT + 1));
+		await new Promise((resolve) => setTimeout(resolve, 200));
+		await manager.sendStanza(message('after the flood'));
+
+		await remote.waitFor(/after the flood/);
+		await expect(remote.waitFor(/<stream:error/, 200)).rejects.toThrow();
+
+		remote.destroy();
+		await lost;
 	});
 });
 

@@ -106,11 +106,12 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
 - **R18** Stopping the server ends each outbound stream with the closing
   `</stream:stream>` (RFC 6120 §4.4), after everything already written to it, so a stanza
   whose send resolved is not lost to the stop.
-- **R19** An outbound stream holds at most 32 stream, TLS, SASL or dialback elements that no
-  negotiation step has taken yet. One more MUST close the stream with `policy-violation`,
-  which fails the connection or, for a dialback verification, gives the `error` verdict of
-  R5, even when the peer's answer arrived before it. The limit is a Rocket.Chat choice, not a
-  protocol rule.
+- **R19** While it negotiates, an outbound stream holds at most 4 stream, TLS, SASL or
+  dialback elements that no negotiation step has taken yet. One more MUST close the stream
+  with `policy-violation`, which fails the connection or, for a dialback verification, gives
+  the `error` verdict of R5, even when the peer's answer arrived before it. Once the stream
+  is authenticated it holds none: those left are dropped, and later ones are ignored. The
+  limit is a Rocket.Chat choice, not a protocol rule.
 - **R20** At most 64 dialback verifications (R5) run at once across the server. A
   `<db:result/>` that would start one more is answered `type='error'` without connecting to
   the claimed domain. The limit is a Rocket.Chat choice, not a protocol rule.

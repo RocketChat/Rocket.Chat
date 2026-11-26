@@ -15,7 +15,7 @@ import { resolveElement } from '../xml/resolve';
 
 const NEGOTIATION_STEP_TIMEOUT_MS = 30000;
 
-const MAX_PENDING_NEGOTIATION_ELEMENTS = 32;
+const MAX_PENDING_NEGOTIATION_ELEMENTS = 4;
 
 export type OutboundSessionOptions = {
 	config: ResolvedXMPPServerConfig;
@@ -107,8 +107,7 @@ export class OutboundSession {
 		if (config.saslExternalEnabled && config.tls && this.stream?.isSecure && this.offersSaslExternal(features)) {
 			try {
 				await this.authenticateSaslExternal();
-				this.assertOpen();
-				this.authMethod = 'sasl-external';
+				this.markAuthenticated('sasl-external');
 				return;
 			} catch (error) {
 				this.logger.debug({ err: error }, 'SASL EXTERNAL failed, falling back to dialback');
@@ -120,8 +119,14 @@ export class OutboundSession {
 		}
 
 		await this.authenticateDialback();
+		this.markAuthenticated('dialback');
+	}
+
+	/** Negotiation is over: nothing the peer sent unasked can be taken by a step any more. */
+	private markAuthenticated(method: 'dialback' | 'sasl-external'): void {
 		this.assertOpen();
-		this.authMethod = 'dialback';
+		this.pending.length = 0;
+		this.authMethod = method;
 	}
 
 	/**
@@ -307,7 +312,9 @@ export class OutboundSession {
 			return;
 		}
 
-		if (resolved.ns === NS_STREAMS || resolved.ns === NS_TLS || resolved.ns === NS_SASL || resolved.ns === NS_DIALBACK) {
+		const isNegotiationElement =
+			resolved.ns === NS_STREAMS || resolved.ns === NS_TLS || resolved.ns === NS_SASL || resolved.ns === NS_DIALBACK;
+		if (isNegotiationElement && !this.authMethod) {
 			if (this.pending.length >= MAX_PENDING_NEGOTIATION_ELEMENTS) {
 				this.logger.warn({ limit: MAX_PENDING_NEGOTIATION_ELEMENTS }, 'Too many unrequested negotiation elements');
 				void this.stream?.close({ condition: 'policy-violation' });
