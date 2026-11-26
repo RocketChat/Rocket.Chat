@@ -43,6 +43,10 @@ export const useResizeObserver = <T extends Element>({ debounceDelay = 0 }: UseR
 	);
 
 	useEffect(() => {
+		if (typeof ResizeObserver === 'undefined') {
+			return;
+		}
+
 		const observer = new ResizeObserver(([entry]) => {
 			setSizes({
 				contentBoxSize: extractContentBoxSizeFromObserver(entry),
