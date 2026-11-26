@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import SidebarRail from './SidebarRail';
 
 const baseRoot = () =>
-	mockAppRoot().withSubscriptions([]).withTranslations('en', 'core', {
+	mockAppRoot().withTranslations('en', 'core', {
 		Sidebar: 'Sidebar',
 		Inbox_and_home: 'Inbox and home',
 		Navigation: 'Navigation',

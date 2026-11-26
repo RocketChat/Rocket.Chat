@@ -26,7 +26,7 @@ it.each(testCases)('%s should have no a11y violations', async (_storyname, Story
 	expect(results).toHaveNoViolations();
 });
 
-it('shows the unread messages of every room in its badge, leaving out rooms with hidden unread status', () => {
+it('shows the session unread value in its badge', () => {
 	render(<WithUnreads />);
 
 	expect(screen.getByText('5')).toBeInTheDocument();
@@ -42,7 +42,7 @@ it('is not pressed while a page shows its own sidebar over the room list', () =>
 			<SidebarRailInbox />
 			<SidebarPortal>page sidebar</SidebarPortal>
 		</LayoutProvider>,
-		{ wrapper: mockAppRoot().withSubscriptions([]).build() },
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	expect(screen.getByRole('button', { name: 'Inbox_and_home' })).not.toHaveClass('rcx-button--icon-pressed');
