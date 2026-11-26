@@ -6,6 +6,7 @@ import { Linter } from 'eslint';
 import rule from '../rules/render-element-spread.js';
 
 const safeCalls = ['ariaAndDataAttributes', 'pickWebPressHandlers', 'pickWebInteractionHandlers'];
+const frameSafeCalls = ['pickFramePressHandlers'];
 
 const messagesFor = (code) =>
 	new Linter()
@@ -16,7 +17,7 @@ const messagesFor = (code) =>
 					files: ['**/*.js'],
 					languageOptions: { ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
 					plugins: { rc: { rules: { 'render-element-spread': rule } } },
-					rules: { 'rc/render-element-spread': ['error', { safeCalls }] },
+					rules: { 'rc/render-element-spread': ['error', { safeCalls, frameSafeCalls }] },
 				},
 			],
 			'test.js',
@@ -87,4 +88,18 @@ test('leaves spreads on elements that are not frames and not in render alone', (
 	const B = (props) => <Frame onClick={props.onClick} render={<button onClick={props.onClick} />} />;`;
 
 	assert.deepEqual(messagesFor(code), []);
+});
+
+test('allows a frame-safe call on a frame, and nothing else', () => {
+	const code = `${FRAME}const A = (props) => <Frame {...pickFramePressHandlers(props)} render={<button {...pickWebPressHandlers(props)} />} />;
+	const B = (props) => <Frame {...ariaAndDataAttributes(props)} />;
+	const C = (props) => <Frame {...props} />;`;
+
+	assert.equal(messagesFor(code).length, 2);
+});
+
+test('does not take a frame-safe call for a safe call on a render element', () => {
+	const code = `${FRAME}const A = (props) => <Frame render={<button {...pickFramePressHandlers(props)} />} />;`;
+
+	assert.equal(messagesFor(code).length, 1);
 });

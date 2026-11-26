@@ -24,7 +24,7 @@ export default {
 		type: 'problem',
 		docs: {
 			description:
-				'A frame takes no spread, and the element it renders takes a spread only of a safe call: zero-runtime lets the frame className overwrite the spread, the runtime joins both',
+				'A frame takes no spread except of a frame-safe call, and the element it renders takes a spread only of a safe call: zero-runtime lets the frame className overwrite the spread, the runtime joins both',
 		},
 		schema: [
 			{
@@ -32,6 +32,8 @@ export default {
 				properties: {
 					// Calls that return a closed list of attributes without a className, such as ariaAndDataAttributes
 					safeCalls: { type: 'array', items: { type: 'string' } },
+					// Calls whose handlers belong on the frame itself, such as pickFramePressHandlers
+					frameSafeCalls: { type: 'array', items: { type: 'string' } },
 				},
 				additionalProperties: false,
 			},
@@ -45,11 +47,13 @@ export default {
 	create(context) {
 		const { sourceCode } = context;
 		const safeCalls = new Set(context.options[0]?.safeCalls ?? []);
+		const frameSafeCalls = new Set(context.options[0]?.frameSafeCalls ?? []);
 		const frames = new Set();
 		const spreads = [];
 
-		const isSafeSpread = (expression) =>
-			expression?.type === 'CallExpression' && expression.callee.type === 'Identifier' && safeCalls.has(expression.callee.name);
+		const isCallOf = (names, expression) =>
+			expression?.type === 'CallExpression' && expression.callee.type === 'Identifier' && names.has(expression.callee.name);
+		const isSafeSpread = (expression) => isCallOf(safeCalls, expression);
 
 		const bindingOf = (name, node) => {
 			for (let scope = sourceCode.getScope(node); scope; scope = scope.upper) {
@@ -85,7 +89,9 @@ export default {
 			// A frame can be declared below the component that renders it
 			'Program:exit'() {
 				for (const { binding, attribute } of spreads) {
-					if (binding && frames.has(binding)) context.report({ node: attribute, messageId: 'frameSpread' });
+					if (binding && frames.has(binding) && !isCallOf(frameSafeCalls, attribute.argument)) {
+						context.report({ node: attribute, messageId: 'frameSpread' });
+					}
 				}
 			},
 		};
