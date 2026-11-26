@@ -39,18 +39,13 @@ export class ConferenceWindow {
 
 	/**
 	 * The call window as someone reaches it with an address they were given, such as a conference link: `page` is
-	 * taken to that address and handed back once the window shows its first screen.
+	 * taken to that address and handed back once it shows `screen`, the one the caller expects there.
 	 */
-	static async openAt(page: Page, address: string): Promise<ConferenceWindow> {
+	static async openAt(page: Page, address: string, screen: (window: ConferenceWindow) => Locator): Promise<ConferenceWindow> {
 		const window = new ConferenceWindow(page);
 		window.recordDdp();
 		await page.goto(address);
-		await expect(
-			window.page
-				.getByRole('heading', { level: 2 })
-				.or(window.page.getByRole('heading', { level: 3 }))
-				.first(),
-		).toBeVisible();
+		await expect(screen(window)).toBeVisible();
 
 		return window;
 	}

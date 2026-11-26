@@ -54,3 +54,25 @@ export const getVideoConferenceProviderName = async (api: BaseTest['api']): Prom
 	const { providerName } = (await response.json()) as { providerName?: string };
 	return providerName;
 };
+
+/** Starts the conference of the link at `customUrl` as the `api` fixture's user, and answers its call id. */
+export const startConferenceFromLink = async (api: BaseTest['api'], roomId: string, customUrl: string): Promise<string> => {
+	const response = await api.post('/video-conference.start', { roomId, customUrl });
+	expect(response.status()).toBe(200);
+
+	const { data } = (await response.json()) as { data: { callId: string } };
+	return data.callId;
+};
+
+/** Takes the `api` fixture's user through a conference and out again, so that it ends like any conference left empty. */
+export const emptyConference = async (api: BaseTest['api'], callId: string): Promise<void> => {
+	expect((await api.post('/video-conference.join', { callId })).status()).toBe(200);
+	// Joining answers before the roster has the user, and leaving a call one is not on does nothing.
+	await expect
+		.poll(async () => {
+			const { users = [] } = (await (await api.get('/video-conference.info', { callId })).json()) as { users?: unknown[] };
+			return users.length;
+		})
+		.toBeGreaterThan(0);
+	expect((await api.post('/video-conference.leave', { callId })).status()).toBe(200);
+};

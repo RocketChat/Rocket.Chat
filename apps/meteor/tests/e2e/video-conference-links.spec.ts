@@ -10,11 +10,13 @@ import {
 	createConferenceLink,
 	createTargetChannelAndReturnFullRoom,
 	deleteChannel,
+	emptyConference,
 	getVideoConferenceProviderName,
 	leaveCallAs,
 	listConferenceLinks,
 	listJoinableCalls,
 	setSettingValueById,
+	startConferenceFromLink,
 } from './utils';
 import { preserveSettings } from './utils/preserveSettings';
 import type { BaseTest } from './utils/test';
@@ -22,13 +24,22 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-// The server never contacts the SFU on the paths these cases take, so placeholder values are enough to register
-// the native provider.
+// A real LiveKit server, for the case that stays in a call. Without one, a call window that cannot connect leaves
+// the call and closes, so that case is skipped.
+const sfu = {
+	url: process.env.E2E_LIVEKIT_URL,
+	apiKey: process.env.E2E_LIVEKIT_API_KEY,
+	apiSecret: process.env.E2E_LIVEKIT_API_SECRET,
+};
+const hasSfu = Boolean(sfu.url && sfu.apiKey && sfu.apiSecret);
+
+// The server never contacts the SFU on its own, so placeholder values are enough to register the native provider.
+// The browser does: only a case that joins media needs the real ones.
 const nativeProviderSettings = {
 	VideoConf_LiveKit_Enabled: true,
-	VideoConf_LiveKit_Url: 'wss://livekit.invalid',
-	VideoConf_LiveKit_Api_Key: 'api-key',
-	VideoConf_LiveKit_Api_Secret: 'api-secret',
+	VideoConf_LiveKit_Url: sfu.url || 'wss://livekit.invalid',
+	VideoConf_LiveKit_Api_Key: sfu.apiKey || 'api-key',
+	VideoConf_LiveKit_Api_Secret: sfu.apiSecret || 'api-secret',
 	VideoConf_Conference_Window_Enabled: true,
 	VideoConf_Default_Provider: 'livekit',
 } as const;
@@ -60,11 +71,15 @@ const expectInsideViewport = async (locator: Locator, width: number) => {
  * Every other suite runs on the tester app's provider, which runs no call inside Rocket.Chat and so never shows
  * the menu. This one switches the workspace to the native provider for its own cases and puts every setting back
  * afterwards.
+ *
+ * A conference that has to be running while a case looks at it is started through the API by a user who opens no
+ * window: nobody joins it, so nothing ends it until the case empties it on the way out.
  */
 test.describe('video conference links', () => {
 	let poHomeChannel: HomeChannel;
 	let auxPages: Page[] = [];
 	let disposableChannels: string[] = [];
+	let startedConferences: string[] = [];
 
 	test.skip(!IS_EE, 'Enterprise Only');
 
@@ -117,6 +132,10 @@ test.describe('video conference links', () => {
 			}),
 		);
 
+		// A conference nobody ever joined would otherwise stay live for a day.
+		await Promise.all(startedConferences.map((callId) => emptyConference(api, callId)));
+		startedConferences = [];
+
 		await Promise.all(disposableChannels.map((name) => deleteChannel(api, name)));
 		disposableChannels = [];
 
@@ -131,13 +150,20 @@ test.describe('video conference links', () => {
 		return { ...channel, name };
 	};
 
-	test('should create a link, copy it, open it, start it, let a second user join it and show it as ongoing', async ({
+	const startConference = async (api: BaseTest['api'], roomId: string, slug: string): Promise<string> => {
+		const callId = await startConferenceFromLink(api, roomId, slug);
+		startedConferences.push(callId);
+
+		return callId;
+	};
+
+	test('should create a link, copy it, open it, and offer to join it while its conference runs', async ({
 		api,
 		browser,
 		context,
 		page,
 	}) => {
-		// Two users, two call windows and the app behind them: more than the default minute on a loaded runner.
+		// Two users, call windows and the app behind them: more than the default minute on a loaded runner.
 		test.setTimeout(120_000);
 		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 
@@ -182,45 +208,45 @@ test.describe('video conference links', () => {
 			await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(address);
 		});
 
-		const callWindow = await test.step('opening the link shows the start preflight, named after the link', async () => {
+		await test.step('opening the link shows the start preflight, named after the link, at its address', async () => {
 			await menu.openLinkActions(title);
-			const window = await ConferenceWindow.openedBy(page, () => menu.getBtnLinkAction(title, 'Open').click());
+			const callWindow = await ConferenceWindow.openedBy(page, () => menu.getBtnLinkAction(title, 'Open').click());
 
-			await expect(window.getPreflightHeading('Start a new conference')).toBeVisible();
-			await expect(window.inputCallName).toHaveValue(title);
-			await expect(window.inputCallName).not.toBeEditable();
-			await expect(window.page).toHaveURL(address);
-
-			return window;
-		});
-
-		await test.step('starting it puts the starter in the call at the same address, with one call message in the room', async () => {
-			await callWindow.btnStartCall.click();
-
-			await expect(callWindow.getBtnMembers(1)).toBeVisible();
-			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(1);
+			await expect(callWindow.getPreflightHeading('Start a new conference')).toBeVisible();
+			await expect(callWindow.inputCallName).toHaveValue(title);
+			await expect(callWindow.inputCallName).not.toBeEditable();
 			await expect(callWindow.page).toHaveURL(address);
+
+			// Starting from here would join media, which needs a real SFU: the case below does that.
+			await callWindow.page.close();
 		});
 
-		await test.step('a second user opening the same address joins the same call', async () => {
+		const callId = await test.step('a conference started from the link is the only one it runs', async () => {
+			const started = await startConference(api, channel._id, slug);
+
+			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(1);
+			expect(await listConferenceLinks(api, channel._id)).toEqual([expect.objectContaining({ url: slug, ongoingCallId: started })]);
+
+			// A second start answers the conference already running rather than starting another.
+			expect(await startConferenceFromLink(api, channel._id, slug)).toBe(started);
+			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(1);
+
+			return started;
+		});
+
+		await test.step('a second user opening the same address is offered to join that conference', async () => {
 			const { page: user2Page } = await createAuxContext(browser, Users.user2);
 			auxPages.push(user2Page);
 
-			const user2Window = await ConferenceWindow.openAt(user2Page, address);
+			const user2Window = await ConferenceWindow.openAt(user2Page, address, (window) => window.getPreflightHeading('Join the conference'));
 
-			await expect(user2Window.getPreflightHeading('Join the conference')).toBeVisible();
 			await expect(user2Window.btnJoinCall).toBeVisible();
 			await expect(user2Window.page).toHaveURL(address);
-
-			await user2Window.btnJoinCall.click();
-
-			await expect(user2Window.getBtnMembers(2)).toBeVisible();
-			await expect(callWindow.getBtnMembers(2)).toBeVisible();
-			await expect(user2Window.page).toHaveURL(address);
-			await expect(callWindow.page).toHaveURL(address);
 		});
 
-		const callId = await test.step('the menu shows the link as ongoing and offers to join it, and it holds one call', async () => {
+		await test.step('the menu shows the link as ongoing and offers to join it', async () => {
+			// Read afresh: the list in the page was read before the conference started.
+			await poHomeChannel.gotoChannel(channel.name);
 			await menu.open();
 			// Opened only once the row says so: a row that changes under an open sub menu closes it.
 			await expect(menu.getBtnOngoingLink(title)).toBeVisible();
@@ -229,23 +255,69 @@ test.describe('video conference links', () => {
 			await menu.getBtnOngoingLink(title).click();
 			await expect(menu.getBtnLinkAction(title, 'Join call')).toBeVisible();
 			await expect(menu.getBtnLinkAction(title, 'Open')).toHaveCount(0);
+		});
 
+		await test.step('opening the address again reaches the same conference, and starts nothing', async () => {
+			const callWindow = await ConferenceWindow.openAt(await context.newPage(), address, (window) =>
+				window.getPreflightHeading('Join the conference'),
+			);
+
+			await expect(callWindow.page).toHaveURL(address);
 			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(1);
+			expect((await listConferenceLinks(api, channel._id))[0].ongoingCallId).toBe(callId);
+		});
+	});
 
-			const links = await listConferenceLinks(api, channel._id);
-			expect(links).toHaveLength(1);
-			expect(links[0]).toMatchObject({ url: slug, ongoingCallId: expect.any(String) });
+	test('should keep the address of a link while two people are in its conference and one reloads', async ({ api, browser, page }) => {
+		test.skip(
+			!hasSfu,
+			'Joining a conference needs a real LiveKit server: set E2E_LIVEKIT_URL, E2E_LIVEKIT_API_KEY and E2E_LIVEKIT_API_SECRET.',
+		);
+		test.setTimeout(120_000);
 
-			return links[0].ongoingCallId;
+		const channel = await createChannel(api);
+		const title = `Planning ${runToken()}`;
+		const slug = slugOf(title);
+		const address = addressOf(slug);
+		const menu = poHomeChannel.videoCallMenu;
+
+		await createConferenceLink(api, channel._id, title);
+		await poHomeChannel.gotoChannel(channel.name);
+
+		const callWindow = await test.step('starting from the link puts the starter in the call at its address', async () => {
+			await menu.openLinkActions(title);
+			const window = await ConferenceWindow.openedBy(page, () => menu.getBtnLinkAction(title, 'Open').click());
+			await window.btnStartCall.click();
+
+			await expect(window.getBtnMembers(1)).toBeVisible();
+			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(1);
+			await expect(window.page).toHaveURL(address);
+
+			return window;
+		});
+
+		await test.step('a second user joins the same call from the same address', async () => {
+			const { page: user2Page } = await createAuxContext(browser, Users.user2);
+			auxPages.push(user2Page);
+
+			const user2Window = await ConferenceWindow.openAt(user2Page, address, (window) => window.getPreflightHeading('Join the conference'));
+			await user2Window.btnJoinCall.click();
+
+			await expect(user2Window.getBtnMembers(2)).toBeVisible();
+			await expect(callWindow.getBtnMembers(2)).toBeVisible();
+			await expect(user2Window.page).toHaveURL(address);
+			await expect(callWindow.page).toHaveURL(address);
 		});
 
 		await test.step('reloading the starter window lands on the join preflight of the same call', async () => {
+			const [{ ongoingCallId }] = await listConferenceLinks(api, channel._id);
+
 			await callWindow.page.reload();
 
 			await expect(callWindow.getPreflightHeading('Join the conference')).toBeVisible();
 			await expect(callWindow.page).toHaveURL(address);
 			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(1);
-			expect((await listConferenceLinks(api, channel._id))[0].ongoingCallId).toBe(callId);
+			expect((await listConferenceLinks(api, channel._id))[0].ongoingCallId).toBe(ongoingCallId);
 		});
 	});
 
@@ -291,14 +363,20 @@ test.describe('video conference links', () => {
 		});
 
 		await test.step('the new address opens the link under its new name', async () => {
-			const callWindow = await ConferenceWindow.openAt(await context.newPage(), addressOf(slugOf(newTitle)));
+			const callWindow = await ConferenceWindow.openAt(await context.newPage(), addressOf(slugOf(newTitle)), (window) =>
+				window.getPreflightHeading('Start a new conference'),
+			);
 
 			await expect(callWindow.getPreflightHeading('Start a new conference')).toBeVisible();
 			await expect(callWindow.inputCallName).toHaveValue(newTitle);
 		});
 
 		await test.step('and the old address opens nothing', async () => {
-			const callWindow = await ConferenceWindow.openAt(await context.newPage(), addressOf(slugOf(oldTitle)));
+			const callWindow = await ConferenceWindow.openAt(
+				await context.newPage(),
+				addressOf(slugOf(oldTitle)),
+				(window) => window.textNotAuthorized,
+			);
 
 			await expect(callWindow.textNotAuthorized).toBeVisible();
 		});
@@ -335,7 +413,11 @@ test.describe('video conference links', () => {
 		});
 
 		await test.step('its address opens nothing', async () => {
-			const callWindow = await ConferenceWindow.openAt(await context.newPage(), addressOf(slugOf(title)));
+			const callWindow = await ConferenceWindow.openAt(
+				await context.newPage(),
+				addressOf(slugOf(title)),
+				(window) => window.textNotAuthorized,
+			);
 
 			await expect(callWindow.textNotAuthorized).toBeVisible();
 		});
