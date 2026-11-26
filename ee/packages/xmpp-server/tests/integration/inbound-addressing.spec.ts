@@ -445,3 +445,75 @@ describe('Negotiation elements an outbound stream holds (s2s-connectivity R19)',
 		}
 	});
 });
+
+describe('Dialback verifications running at once (s2s-connectivity R20)', () => {
+	const LIMIT = 64;
+
+	const ports = new Map<string, number>();
+	const resolver: XmppDnsResolver = async (domain) => {
+		const port = ports.get(domain);
+		if (!port) {
+			throw new Error(`No test route for domain ${domain}`);
+		}
+		return [{ host: '127.0.0.1', port }];
+	};
+
+	const peers: RawPeer[] = [];
+	/** Connections b.localhost opened to verify a key; the server behind them never answers. */
+	const verifyConnections: net.Socket[] = [];
+	let manager: S2SManager;
+	let silentServer: net.Server;
+
+	const dbResult = `<db:result from='evil.localhost' to='b.localhost'>${'0'.repeat(64)}</db:result>`;
+	const errorVerdicts = (count: number) => new RegExp(`(<db:result[^>]*type=["']error["'][\\s\\S]*){${count}}`);
+
+	beforeAll(async () => {
+		silentServer = net.createServer((socket) => {
+			socket.on('error', () => undefined);
+			verifyConnections.push(socket);
+		});
+		await new Promise<void>((resolve) => silentServer.listen(0, '127.0.0.1', resolve));
+		ports.set('evil.localhost', (silentServer.address() as net.AddressInfo).port);
+
+		manager = new S2SManager({
+			config: resolveConfig({
+				domain: 'b.localhost',
+				port: 0,
+				bindAddress: '127.0.0.1',
+				requireTls: false,
+				dialbackSecret: secretOf('b.localhost'),
+				logger: silentLogger,
+			}),
+			logger: silentLogger,
+			resolver,
+			events: new Emitter<XMPPServerEventMap>(),
+			onStanza: () => undefined,
+		});
+		await manager.startListener();
+		ports.set('b.localhost', manager.listeningPort as number);
+	});
+
+	afterAll(async () => {
+		peers.forEach((peer) => peer.destroy());
+		verifyConnections.forEach((socket) => socket.destroy());
+		await manager.stopAll();
+		silentServer.close();
+	});
+
+	// Known defect: ../../docs/specs/s2s-connectivity.md#d4-a-peer-can-exhaust-memory-by-starting-dialback-verifications-without-limit
+	it.skip('answers a request past the limit with the error verdict without connecting, and starts new ones once a slot frees (D4)', async () => {
+		const { peer } = await RawPeer.open(ports.get('b.localhost') as number, 'evil.localhost', 'b.localhost');
+		peers.push(peer);
+		peer.write(dbResult.repeat(LIMIT + 1));
+
+		await peer.waitFor(errorVerdicts(1));
+		await waitUntil(() => verifyConnections.length === LIMIT);
+		await new Promise((resolve) => setTimeout(resolve, 200));
+		expect(verifyConnections).toHaveLength(LIMIT);
+
+		verifyConnections[0].destroy();
+		await peer.waitFor(errorVerdicts(2));
+		peer.write(dbResult);
+		await waitUntil(() => verifyConnections.length === LIMIT + 1);
+	});
+});
