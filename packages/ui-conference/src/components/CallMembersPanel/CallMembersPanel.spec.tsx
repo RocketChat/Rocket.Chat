@@ -20,6 +20,7 @@ const actions = {
 	raiseHand: jest.fn(),
 	setRole: jest.fn(),
 	dialOut: jest.fn(),
+	refreshRoster: jest.fn(),
 	leave: jest.fn(),
 };
 

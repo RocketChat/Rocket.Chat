@@ -367,6 +367,7 @@ export const useProviderPlugin = ({
 			setRole: (participantUuid, role) => postToPlugin('set-role', { participantUuid, role }),
 			dialOut: (destination) => postToPlugin('dial-out', { ...DIAL_OUT_DEFAULTS, destination }),
 			leave: () => postToPlugin('leave'),
+			refreshRoster: () => postToPlugin('refresh-roster'),
 		}),
 		[postToPlugin],
 	);

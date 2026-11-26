@@ -30,6 +30,7 @@ import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLastHostHandover } from '../hooks/useLastHostHandover';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { useLobbyRefresh } from '../hooks/useLobbyRefresh';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
 import { PEXIP_PROVIDER_NAME } from '../lib/callWindow';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
@@ -141,6 +142,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		onSelectNewHost: () => selectNewHostRef.current?.(),
 	});
 	selectNewHostRef.current = useLastHostHandover(provider);
+	useLobbyRefresh(call.members, provider);
 
 	// A provider that runs the call in here wraps the window from before the join, so joining connects it rather than
 	// mounting anything. Without one registered, a join with no URL has nothing to show.

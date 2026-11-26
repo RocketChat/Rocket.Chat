@@ -25,6 +25,7 @@ export const PLUGIN_FEATURES = [
 	'dial-out',
 	'leave',
 	'screen-share',
+	'refresh-roster',
 ] as const;
 
 export type PluginFeature = (typeof PLUGIN_FEATURES)[number];
@@ -88,6 +89,8 @@ export type ProviderPluginActions = {
 	dialOut: (destination: string) => void;
 	/** Leaves the call as the provider's own Leave button does. Offered only where `leave` is a feature. */
 	leave: () => void;
+	/** Has the plugin ask the provider who is in the call, for a change it is not told about. Needs `refresh-roster`. */
+	refreshRoster: () => void;
 };
 
 /** What the plugin makes of the call: who is in it, where the viewer stands, and what may be asked of either. */

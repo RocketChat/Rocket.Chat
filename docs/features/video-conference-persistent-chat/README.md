@@ -878,6 +878,7 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | window → plugin | `transfer` | `{ participantUuid, alias, role?, pin? }` | Move somebody to another conference. The role is deliberately never sent, so a transfer cannot quietly promote anyone |
 | window → plugin | `dtmf` | `{ participantUuid, digits }` | Keypad tones for whoever joined over a telephone line |
 | window → plugin | `mute-all-guests` | `{ muted }` | Silences the call at once |
+| window → plugin | `refresh-roster` | — | Ask the provider who is in the call and send the `roster` it answers. See [The lobby](#the-lobby) |
 
 `transfer`, `dtmf` and `mute-all-guests` are in the vocabulary and Pexip's plugin answers all three, but this
 window sends none of them — they are not features we support yet. They stay named so a plugin announcing one is
@@ -1002,6 +1003,24 @@ is exactly what drifts from the member's. The tag is the plain user id and is tr
 their join url and holds the pin can appear under another member's row, which was accepted deliberately. Without
 a working event sink no connection is ever recorded, and the panel falls back to names for everyone but the
 viewer.
+
+#### The lobby
+
+Pexip's plugin hears when somebody arrives in the lobby but never when they leave it — turned away, let in by
+another host, or hanging up while they wait — and a guest is not told about the lobby at all, so a participant
+promoted to host has never heard of anybody already waiting. Left alone, a host's panel keeps offering Admit and
+Reject for somebody who is gone, and a new host's shows a waiting member as already in the call.
+
+The event sink hears all of it, as the `waiting` flag on each connection (see
+[When the provider reports presence](#when-the-provider-reports-presence)). `useLobbyRefresh` watches which of
+the members' live connections are waiting, and whenever that set changes — or the viewer becomes someone who can
+let people in — sends `refresh-roster`. The plugin then asks Infinity for the conference's participant list and
+answers with a `roster` built from it, so who is waiting and who is in the call still comes from the provider;
+the server only says when to ask. Only a plugin that announces `refresh-roster` is asked, and only by a viewer
+who controls the conference, since nobody else is shown the lobby.
+
+Somebody without a call tag has no member to hang a connection on, so nothing on the server changes when they
+leave the lobby. Their row is corrected by the next refresh that something else sets off.
 
 ## Settings
 
