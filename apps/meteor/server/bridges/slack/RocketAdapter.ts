@@ -528,22 +528,14 @@ export default class RocketAdapter {
 			slackMsgTxt = slackMsgTxt.replace(/:uk:/g, ':gb:');
 			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^>]*)>/g, '$1');
 
-			const promises = [];
-
-			slackMsgTxt.replace(regex, async (match, userId) => {
-				if (!this.userTags[userId]) {
-					if (!(await this.findUser(userId))) {
-						await this.addUser(userId); // This adds userTags for the userId
-					}
+			const userIds = new Set(Array.from(slackMsgTxt.matchAll(regex), ([, userId]) => userId));
+			for await (const userId of userIds) {
+				if (!this.userTags[userId] && !(await this.findUser(userId))) {
+					await this.addUser(userId);
 				}
-				const userTags = this.userTags[userId];
-				if (userTags) {
-					promises.push(slackMsgTxt.replace(userTags.slack, userTags.rocket));
-				}
-			});
+			}
 
-			const result = await Promise.all(promises);
-			slackMsgTxt = slackMsgTxt.replace(regex, () => result.shift());
+			slackMsgTxt = slackMsgTxt.replace(regex, (match, userId) => this.userTags[userId]?.rocket ?? match);
 		} else {
 			slackMsgTxt = '';
 		}
