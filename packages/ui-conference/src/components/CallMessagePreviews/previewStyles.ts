@@ -1,4 +1,4 @@
-import { css } from '@rocket.chat/css-in-js';
+import { css, keyframes } from '@rocket.chat/css-in-js';
 import { Palette, borderRadius } from '@rocket.chat/fuselage';
 
 /** Stretches the open button over the whole preview, so pressing anywhere on it opens the message. */
@@ -23,8 +23,19 @@ export const openButtonStyles = css`
 	}
 `;
 
-/* A touch screen keeps an element hovered after a tap, which would leave the preview looking pressed. */
+const enter = keyframes`
+	from {
+		opacity: 0;
+		transform: translateY(-0.5rem);
+	}
+`;
+
 export const surfaceStyles = css`
+	@media (prefers-reduced-motion: no-preference) {
+		animation: ${enter} 200ms ease-out;
+	}
+
+	/* A touch screen keeps an element hovered after a tap, which would leave the preview looking pressed. */
 	@media (hover: hover) {
 		&:hover {
 			background-color: ${Palette.surface['surface-hover'].toString()};
