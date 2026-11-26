@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 
 import type { RoomItem } from './src/api';
 import { fuselageUi, mockStart } from './src/chatConfig';
 import { mockRooms } from './src/mockData';
-import { login, useRestoreSession, type Session } from './src/session';
-import { clearSession } from './src/sessionStore';
+import { login, signOut, useRestoreSession, type Session } from './src/session';
 
 export default function App() {
 	const [session, setSession] = useState<Session>();
@@ -22,11 +21,8 @@ export default function App() {
 	}, [restoration.state]);
 
 	const logout = () => {
-		// Best effort: the stored session goes first, so a failing server call cannot leave it behind.
-		clearSession();
 		restoration.skip();
-		session?.sdk.rest.post('/v1/logout').catch(() => undefined);
-		session?.sdk.connection.close();
+		signOut(session).catch((e: unknown) => Alert.alert(e instanceof Error ? e.message : 'Could not clear the saved session'));
 		setRoom(undefined);
 		setSession(undefined);
 	};

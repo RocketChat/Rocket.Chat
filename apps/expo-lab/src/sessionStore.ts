@@ -1,14 +1,18 @@
 import { mock } from './chatConfig';
 
-// The resume credentials the server already issued; never a password, a 2FA code or a typed token.
-export type StoredSession = { serverUrl: string; userId: string; authToken: string };
+// kind says how the token was obtained: only a password login owns a token that Sign out may revoke.
+// A personal access token is a long-lived credential and is stored as typed; 'unknown' is a v1 item, which could hold either.
+export type SessionKind = 'password' | 'token' | 'unknown';
+export type StoredSession = { serverUrl: string; userId: string; authToken: string; kind: SessionKind };
 
 type SecureStoreModule = typeof import('expo-secure-store');
 
 const SESSION_KEY = 'rc-expo-lab.session';
 const SERVER_KEY = 'rc-expo-lab.last-server';
 
-const enabled = !mock && process.env.EXPO_PUBLIC_SESSION_STORE !== 'off';
+const labMode = process.env.EXPO_PUBLIC_SESSION_LAB === '1' || process.env.EXPO_PUBLIC_COMPOSER_LAB === '1';
+// The real session key is never touched in lab modes; the session lab uses its own key.
+const isEnabled = (key: string) => !mock && process.env.EXPO_PUBLIC_SESSION_STORE !== 'off' && (key !== SESSION_KEY || !labMode);
 const dev = __DEV__;
 
 // A dev client built before expo-secure-store has no native module: importing it throws, and the app falls back to memory.
@@ -25,6 +29,12 @@ const options = () => ({ keychainAccessible: native?.WHEN_UNLOCKED_THIS_DEVICE_O
 const memory = new Map<string, string>();
 
 // Every call is guarded: a failing Keychain must never break login.
+export class ClearFailed extends Error {
+	constructor() {
+		super('Could not clear the saved session');
+	}
+}
+
 export const storage = {
 	async get(key: string): Promise<string | null> {
 		try {
@@ -48,12 +58,17 @@ export const storage = {
 			await native?.deleteItemAsync(key, options());
 		} catch {
 			if (dev) console.warn('[session] secure store delete failed');
+			throw new ClearFailed();
 		}
 	},
 };
 
-export const isValidServerUrl = (url: unknown): url is string =>
-	typeof url === 'string' && (/^https:\/\/[^\s/]+/i.test(url) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(url));
+// The host is lowercased first so only the scheme is case-sensitive; no userinfo, query, fragment or backslash.
+export const isValidServerUrl = (url: unknown): url is string => {
+	if (typeof url !== 'string') return false;
+	const u = url.replace(/^https?:\/\/[^/:?#@\\]*/, (s) => s.toLowerCase());
+	return /^https:\/\/[a-z0-9.-]+(:\d+)?(\/[^\s?#@\\]*)?$/.test(u) || /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(\/[^\s?#@\\]*)?$/.test(u);
+};
 
 const isNonEmpty = (v: unknown): v is string => typeof v === 'string' && v.length > 0;
 
@@ -63,9 +78,11 @@ export function parseSession(raw: string | null): StoredSession | undefined {
 	try {
 		const value: unknown = JSON.parse(raw);
 		if (typeof value !== 'object' || value === null) return undefined;
-		const { v, serverUrl, userId, authToken } = value as Record<string, unknown>;
-		if (v !== 1 || !isValidServerUrl(serverUrl) || !isNonEmpty(userId) || !isNonEmpty(authToken)) return undefined;
-		return { serverUrl, userId, authToken };
+		const { v, serverUrl, userId, authToken, kind } = value as Record<string, unknown>;
+		if ((v !== 1 && v !== 2) || !isValidServerUrl(serverUrl) || !isNonEmpty(userId) || !isNonEmpty(authToken)) return undefined;
+		if (v === 1) return { serverUrl, userId, authToken, kind: 'unknown' };
+		if (kind !== 'password' && kind !== 'token' && kind !== 'unknown') return undefined;
+		return { serverUrl, userId, authToken, kind };
 	} catch {
 		return undefined;
 	}
@@ -76,12 +93,12 @@ let lastServerUrl: string | undefined;
 export const getLastServerUrl = () => lastServerUrl;
 
 export async function loadSession(key = SESSION_KEY): Promise<StoredSession | undefined> {
-	if (!enabled) return undefined;
+	if (!isEnabled(key)) return undefined;
 	const raw = await storage.get(key);
 	const session = parseSession(raw);
-	if (raw && !session) await storage.del(key);
-	if (session) lastServerUrl = session.serverUrl;
-	else if (key === SESSION_KEY) {
+	if (raw && !session) await storage.del(key).catch(() => undefined);
+	if (session && key === SESSION_KEY) lastServerUrl = session.serverUrl;
+	else if (!session && key === SESSION_KEY) {
 		const last = await storage.get(SERVER_KEY);
 		if (isValidServerUrl(last)) lastServerUrl = last;
 	}
@@ -89,8 +106,11 @@ export async function loadSession(key = SESSION_KEY): Promise<StoredSession | un
 }
 
 export async function saveSession(session: StoredSession, key = SESSION_KEY): Promise<void> {
-	if (!enabled) return;
-	await storage.set(key, JSON.stringify({ v: 1, serverUrl: session.serverUrl, userId: session.userId, authToken: session.authToken }));
+	if (!isEnabled(key)) return;
+	await storage.set(
+		key,
+		JSON.stringify({ v: 2, serverUrl: session.serverUrl, userId: session.userId, authToken: session.authToken, kind: session.kind }),
+	);
 	if (key === SESSION_KEY) {
 		lastServerUrl = session.serverUrl;
 		await storage.set(SERVER_KEY, session.serverUrl);
@@ -99,7 +119,7 @@ export async function saveSession(session: StoredSession, key = SESSION_KEY): Pr
 }
 
 export async function clearSession(key = SESSION_KEY): Promise<void> {
-	if (!enabled) return;
+	if (!isEnabled(key)) return;
 	await storage.del(key);
 	if (dev) console.log('[session] session cleared');
 }
