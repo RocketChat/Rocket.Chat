@@ -211,3 +211,32 @@ The branch is updated as the native-enabling work lands; `NATIVE-SWEEP.md` has t
 - A1 (`af97c5798c6`): `ChatMessage` carries the web message fields; the mock has real parser output, reactions, an attachment and an edit. The endpoint fields are read from code (see "Message fields"), not observed against a live server.
 - A2: `@rocket.chat/message-parser` bundles under Metro and runs on Hermes as is: no `metro.config.js` change, no polyfill, no package change (its `dist/messageParser.js` was already built; the `exports` entry resolves with `unstable_enablePackageExports`). Gallery cell `message-parser AST` (`EXPO_PUBLIC_GALLERY=1 EXPO_PUBLIC_GALLERY_ONLY=message-parser`) prints the parse of four sample strings, for example `PARAGRAPH > PLAIN_TEXT, BOLD > PLAIN_TEXT, ITALIC, INLINE_CODE`, `UNORDERED_LIST > LIST_ITEM`, `QUOTE`, `EMOJI` (`docs/chat/message-parser-ast.png`, sample strings only). The cell does not descend into `LINK`, whose value is `{ src, label }` rather than a node.
 - Sweep counts: unchanged, no components were added or converted, so `NATIVE-SWEEP.md` has no new row.
+
+## Plan steps A3 and A4: native markup and emoji
+
+`src/markup/` renders the message-parser `Root` with React Native `Text` and `View` only (no gazzodown, no DOM tags, no new dependency): `Markup.tsx` (blocks), `Inline.tsx` (inlines, mention and link handling), `Emoji.tsx`, `theme.ts` (the Fuselage message body values as plain numbers and colors: 14/20, `#2f343d`, link `#095ad2`). `FuselageRoom` renders `message.md` through `Markup` and falls back to `MessageBody` with `msg` when `md` is missing; the plain UI is untouched. Gallery cell `Native markup` (`EXPO_PUBLIC_GALLERY=1 EXPO_PUBLIC_GALLERY_ONLY="Native markup"`) shows the mock ASTs, `parse()` of sample strings and edge cases; `EXPO_PUBLIC_CHAT_MOCK=room` shows the formatted mock messages (`docs/chat/markup-gallery.png`, `markup-room.png`, mock data only).
+
+Props: `Markup` takes `{ md, msg?, mentions?, channels?, searchText?, onMention? }` (the first five are `MessageMarkupProps` of the message list; `searchText` is accepted and unused). `Emoji.tsx` also exports `MessageEmoji` with `MessageEmojiProps` (`emojiHandle`, `className?`, `fillContainer?`; the last two are ignored). `Emoji` resolves custom emoji through one function, `resolveEmoji(shortCode, serverUrl)`: a small built-in name to unicode map (a real emoji pack replaces it), then `${server}/emoji-custom/<name>.png` as an `Image` when `EmojiServerContext` has a server (the room provides `session.serverUrl`, none in mock mode), otherwise, or when the image fails, `:name:` (or the typed ascii form). The big size (36pt text, 40pt image) is used for `BIG_EMOJI`.
+
+| Node | State | How |
+| --- | --- | --- |
+| PARAGRAPH, PLAIN_TEXT | supported | nested `Text`, lines wrap |
+| BOLD, ITALIC, STRIKE | supported | nested `Text` styles, nest freely |
+| INLINE_CODE | supported | monospace on a gray background |
+| CODE (block) | supported | monospace `View` in a horizontal `ScrollView`; no highlighting, language ignored |
+| LINK | supported | `Text` opening with `Linking` (`javascript:`, `data:`, `vbscript:` ignored) |
+| IMAGE | degraded | shown as a link to its source |
+| MENTION_USER, MENTION_CHANNEL | supported | styled `Text`, `onMention({ kind, name })`; with `mentions`/`channels` given only listed names are styled (as on the web); `@all`/`@here` always |
+| QUOTE | supported | left border `View` |
+| UNORDERED_LIST, ORDERED_LIST, TASKS | supported | glyph markers (bullet, `n.`, checkbox glyphs, not interactive), nested lists indented |
+| HEADING | supported | font size by level (28, 24, 20, 16) |
+| SPOILER, SPOILER_BLOCK | supported | tap to reveal |
+| COLOR | supported, unverified | swatch glyph plus `rgba(...)`; the parser did not emit it for the samples tried |
+| EMOJI, BIG_EMOJI | supported | `Emoji.tsx`; unicode as `Text`, custom as above |
+| LINE_BREAK, HORIZONTAL_RULE | supported | spacer, 1px line |
+| TIMESTAMP | degraded | formatted with `Intl.DateTimeFormat`; `R` shows a date and time, not a relative one |
+| KATEX, INLINE_KATEX | degraded | the source in monospace, marker `[katex: not supported yet]` in dev |
+| TABLE | degraded | cells joined with `|` in monospace, marker in dev; cells keep only their text |
+| unknown node | degraded | source slice from `fallback` if present, else its text children, else nothing |
+
+Not done: highlight of `searchText`, `onTaskChecked`, `useRealName` and `ownUserId` looks of mentions, `detectEmoji` and `convertAsciiToEmoji`, and the web's `title` hints.
