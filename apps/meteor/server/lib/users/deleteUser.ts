@@ -15,6 +15,7 @@ import {
 	ModerationReports,
 } from '@rocket.chat/models';
 
+import { deleteUserContacts } from './deleteUserContacts';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
@@ -182,6 +183,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
+
+	await deleteUserContacts(userId);
 
 	return { deletedRooms };
 }

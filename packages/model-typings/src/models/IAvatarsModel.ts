@@ -8,4 +8,5 @@ export interface IAvatarsModel extends IBaseUploadsModel<IAvatar> {
 	findOneByETag(eTag: string, options?: FindOptions<IAvatarsModel>): Promise<IAvatar | null>;
 	findOneContactAvatar(contactId: IContact['_id'], options?: FindOptions<IAvatar>): Promise<IAvatar | null>;
 	findContactAvatars(contactIds: IContact['_id'][], options?: FindOptions<IAvatar>): FindCursor<IAvatar>;
+	findContactAvatarsByUserId(userId: IUser['_id'], options?: FindOptions<IAvatar>): FindCursor<IAvatar>;
 }

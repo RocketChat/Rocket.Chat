@@ -20,10 +20,12 @@ const notifyOnIntegrationChangedByUserId = sinon.stub();
 const notifyOnLivechatDepartmentAgentChanged = sinon.stub();
 const notifyOnUserChange = sinon.stub();
 const getStore = sinon.stub();
+const deleteUserContacts = sinon.stub();
 
 const { deleteUser } = proxyquire.noCallThru().load('./deleteUser', {
 	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserDeleted: 'IPostUserDeleted' } },
 	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
+	'./deleteUserContacts': { deleteUserContacts },
 	'./getUserSingleOwnedRooms': { getUserSingleOwnedRooms },
 	'../../settings': { settings: { get: settingsGet } },
 	'../callbacks': { callbacks: { run: callbacksRun } },
@@ -113,6 +115,7 @@ describe('deleteUser', () => {
 			notifyOnLivechatDepartmentAgentChanged,
 			notifyOnUserChange,
 			getStore,
+			deleteUserContacts,
 		].forEach((stub) => stub.reset());
 		getStore.withArgs('Uploads').returns(uploadsStore);
 		getStore.withArgs('Avatars').returns(avatarsStore);
@@ -320,6 +323,15 @@ describe('deleteUser', () => {
 		await deleteUser('uid');
 
 		expect(notifyOnLivechatDepartmentAgentChanged.called).to.be.false;
+	});
+
+	it('removes the personal contacts once the user is removed, even without a username', async () => {
+		Users.findOneById.resolves({ _id: 'uid', roles: ['user'] });
+
+		await deleteUser('uid');
+
+		expect(deleteUserContacts.calledOnceWith('uid')).to.be.true;
+		expect(deleteUserContacts.calledAfter(Users.removeById)).to.be.true;
 	});
 
 	it('removes a livechat monitor from its units', async () => {
