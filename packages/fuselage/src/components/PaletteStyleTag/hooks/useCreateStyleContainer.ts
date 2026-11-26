@@ -5,6 +5,10 @@ import { useOwnerDocument } from '../../../contexts';
 export const useCreateStyleContainer = (id: string) => {
 	const { document: ownerDocument } = useOwnerDocument();
 	return useMemo(() => {
+		if (!ownerDocument) {
+			return null;
+		}
+
 		const refElement = ownerDocument.getElementById('rcx-styles') || ownerDocument.head.lastChild;
 
 		const el = ownerDocument.getElementById(id);
