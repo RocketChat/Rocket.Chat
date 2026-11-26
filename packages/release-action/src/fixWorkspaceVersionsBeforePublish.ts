@@ -40,6 +40,10 @@ export async function fixWorkspaceVersionsBeforePublish() {
 			const dependencies = packageJson[dependencyType] ?? {};
 			for (const dependency of Object.keys(dependencies)) {
 				const dependencyVersion = dependencies[dependency];
+				// npm cannot resolve a Yarn `patch:` range, so a published package that keeps one does not install.
+				if (!packageJson.private && dependencyType !== 'devDependencies' && dependencyVersion.startsWith('patch:')) {
+					throw new Error(`${packageJson.name} has a patch: range for ${dependency} in ${dependencyType}; npm cannot install it`);
+				}
 				if (dependencyVersion.startsWith('workspace:')) {
 					const realVersion = workspaceVersions.get(dependency);
 					if (!realVersion) {

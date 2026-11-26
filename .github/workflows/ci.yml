@@ -637,6 +637,31 @@ jobs:
       - name: Check that no lockfile entry can be deduplicated
         run: yarn dedupe --check
 
+  packed-packages:
+    name: 🔎 Code Check - Packed Packages
+    needs: [release-versions, packages-build]
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+
+      - uses: ./.github/actions/restore-packages
+
+      # the changelog generator reads pull request data from GitHub
+      - name: Apply the pending changesets, as the release does
+        run: yarn changeset version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Load each public package from its npm pack tarball, and compare it with npm
+        run: node scripts/check-packed-packages.mjs
+
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
   checks:
@@ -1037,7 +1062,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile]
+    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile, packed-packages]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1098,6 +1123,10 @@ jobs:
           fi
 
           if [[ '${{ needs.lockfile.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.packed-packages.result }}' != 'success' ]]; then
             exit 1
           fi
 
