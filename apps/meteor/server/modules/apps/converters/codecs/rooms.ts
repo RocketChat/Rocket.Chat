@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsRoomRaw } from '@rocket.chat/apps';
-import { secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
+import { secureFieldsMapper } from '@rocket.chat/apps/protocol/dist/index';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 import * as z from 'zod';
