@@ -260,6 +260,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			this._license = newLicense;
 
 			this._lockedLicense = encryptedLicense;
+			this._valid = hadValidLicense;
 			await this.validateLicense({ isNewLicense });
 		} catch (e) {
 			if (e instanceof InvalidLicenseError) {
