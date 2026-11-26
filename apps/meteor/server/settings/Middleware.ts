@@ -5,6 +5,7 @@ type Middleware<T extends (...args: any[]) => any> = (context: Parameters<T>, ne
 const pipe =
 	<T extends (...args: any[]) => any>(fn: T) =>
 	(...args: Parameters<T>): ReturnType<T> =>
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: T's return type is any by constraint
 		fn(...args);
 
 export const use = <T extends (...args: any[]) => any>(fn: T, middleware: Middleware<T>): T =>

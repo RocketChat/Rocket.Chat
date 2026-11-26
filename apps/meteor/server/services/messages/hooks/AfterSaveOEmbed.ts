@@ -143,7 +143,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			compress: true,
 			follow: redirectCount,
 			headers: {
-				'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
+				'User-Agent': `${settings.get<string>('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 				'Accept-Language': settings.get('Language') || 'en',
 				...data.headerOverrides,
 			},
@@ -294,7 +294,7 @@ const getUrlMetaWithCache = async function (
 
 	if (cache) {
 		log.debug({ msg: 'Found OEmbed metadata in cache for URL', url });
-		return cache.data;
+		return cache.data as OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined;
 	}
 
 	const data = await getUrlMeta(url, withFragment);

@@ -3,7 +3,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { formatDate, GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessages from './PruneMessages';
@@ -46,17 +46,19 @@ const PruneMessagesWithData = () => {
 	const [counter, setCounter] = useState(0);
 
 	const methods = useForm({ defaultValues: initialValues });
+	const { control } = methods;
 
-	const {
-		newer: { date: newerDate, time: newerTime },
-		older: { date: olderDate, time: olderTime },
-		users,
-		inclusive,
-		pinned,
-		discussion,
-		threads,
-		attached,
-	} = methods.watch();
+	const watched = useWatch({ control });
+	const newerDate = watched.newer?.date ?? '';
+	const newerTime = watched.newer?.time ?? '';
+	const olderDate = watched.older?.date ?? '';
+	const olderTime = watched.older?.time ?? '';
+	const users = useMemo(() => watched.users ?? [], [watched.users]);
+	const inclusive = watched.inclusive ?? false;
+	const pinned = watched.pinned ?? false;
+	const discussion = watched.discussion ?? false;
+	const threads = watched.threads ?? false;
+	const attached = watched.attached ?? false;
 
 	const fromDate = useMemo(() => {
 		return new Date(`${newerDate || '0001-01-01'}T${newerTime || '00:00'}:00${getTimeZoneOffset()}`);

@@ -22,11 +22,12 @@ const uaParser = async (
 	uaString: ISocketConnection['httpHeaders']['user-agent'],
 ): Promise<UAParser.IResult & { app?: { name: string; version: string; bundle: string } }> => {
 	const ua = new UAParser(uaString);
-	return {
+	const result: UAParser.IResult & { app?: { name: string; version: string; bundle: string } } = {
 		...ua.getResult(),
 		...(uaString && UAParserMobile.isMobileApp(uaString) && UAParserMobile.uaObject(uaString)),
 		...(uaString && UAParserDesktop.isDesktopApp(uaString) && UAParserDesktop.uaObject(uaString)),
 	};
+	return result;
 };
 
 export const listenSessionLogin = () => {
@@ -53,7 +54,7 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
-		const dateFormat = settings.get('Message_TimeAndDateFormat');
+		const dateFormat = settings.get<string>('Message_TimeAndDateFormat');
 
 		const {
 			name,
@@ -73,7 +74,7 @@ export const listenSessionLogin = () => {
 			}`,
 			ipInfo: clientAddress,
 			userAgent: '',
-			date: moment().format(String(dateFormat)),
+			date: moment().format(dateFormat),
 		};
 
 		switch (device.type) {

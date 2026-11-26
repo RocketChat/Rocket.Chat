@@ -1,9 +1,8 @@
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IRolesModel, IRoomsModel, IUsersModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { SAMLUtils } from './Utils';
@@ -12,7 +11,7 @@ import type { ISAMLUser } from '../definition/ISAMLUser';
 const NEW_USER_ID = 'new-user-id';
 
 const settingsGet = sinon.stub();
-const insertUserDoc = sinon.stub();
+const insertUser = sinon.stub();
 const addUserToRoom = sinon.stub();
 const createRoom = sinon.stub();
 const saveUserIdentity = sinon.stub();
@@ -36,19 +35,20 @@ const matchesQuery = (user: StoredUser, query: Record<string, any>) =>
 		return user.services?.saml?.[path.replace('services.saml.', '')] === expected;
 	});
 
-const { SAML } = proxyquire.noCallThru().load('./SAML', {
-	'meteor/accounts-base': {
-		Accounts: { insertUserDoc },
-	},
-	'meteor/meteor': { Meteor: {} },
-	'./ServiceProvider': {},
-	'../../../../../lib/i18n': { i18n: { languages: ['en', 'pt-BR'] } },
-	'../../../../../server/lib/rooms/addUserToRoom': { addUserToRoom },
-	'../../../../../server/lib/rooms/createRoom': { createRoom },
-	'../../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion },
-	'../../../../../server/lib/users/saveUserIdentity': { saveUserIdentity },
-	'../../../../../server/lib/utils/getURL': {},
-	'../../../../../server/settings': { settings: { get: settingsGet } },
+let SAML: any;
+
+before(async () => {
+	mock.module('../../../../../server/lib/auth/insertUser', { exports: { insertUser } });
+	mock.module(require.resolve('meteor/meteor'), { exports: { Meteor: {} } });
+	mock.module('./ServiceProvider', { exports: {} });
+	mock.module('../../../../../lib/i18n', { exports: { i18n: { languages: ['en', 'pt-BR'] } } });
+	mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom } });
+	mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom } });
+	mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } });
+	mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity } });
+	mock.module('../../../../../server/lib/utils/getURL', { exports: {} });
+	mock.module('../../../../../server/settings', { exports: { settings: { get: settingsGet } } });
+	({ SAML } = await import('./SAML'));
 });
 
 const buildUserObject = (overrides: Partial<ISAMLUser> = {}): ISAMLUser => ({
@@ -67,8 +67,8 @@ const customIdentifier = (value: string) => ({
 	attributeList: new Map([['employeeId', value]]),
 });
 
-const createdUser = () => insertUserDoc.firstCall.args[1];
-const createOptions = () => insertUserDoc.firstCall.args[0];
+const createdUser = () => insertUser.firstCall.args[1];
+const createOptions = () => insertUser.firstCall.args[0];
 const updatedFields = () => updateOne.firstCall.args[1].$set;
 
 describe('SAML.insertOrUpdateSAMLUser', () => {
@@ -95,7 +95,7 @@ describe('SAML.insertOrUpdateSAMLUser', () => {
 	beforeEach(() => {
 		for (const stub of [
 			settingsGet,
-			insertUserDoc,
+			insertUser,
 			addUserToRoom,
 			createRoom,
 			saveUserIdentity,
@@ -111,7 +111,7 @@ describe('SAML.insertOrUpdateSAMLUser', () => {
 			{ _id: 'user', name: 'user' },
 			{ _id: 'auditor-id', name: 'auditor' },
 		];
-		insertUserDoc.callsFake(async (_options, user) => {
+		insertUser.callsFake(async (_options, user) => {
 			users.push({ ...user, _id: NEW_USER_ID });
 			return NEW_USER_ID;
 		});
@@ -276,13 +276,13 @@ describe('SAML.insertOrUpdateSAMLUser', () => {
 				'We should have at least one existing role',
 			);
 
-			expect(insertUserDoc.called).to.be.false;
+			expect(insertUser.called).to.be.false;
 		});
 
 		it('should refuse the login and create no user when the mapped roles are blank', async () => {
 			await expect(SAML.insertOrUpdateSAMLUser(buildUserObject({ roles: [' '] }))).to.be.rejectedWith('No valid role names');
 
-			expect(insertUserDoc.called).to.be.false;
+			expect(insertUser.called).to.be.false;
 		});
 	});
 

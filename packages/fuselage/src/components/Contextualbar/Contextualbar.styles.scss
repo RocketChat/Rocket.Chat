@@ -14,6 +14,9 @@
 
 	height: lengths.size(full);
 
+	// The surface that pinned descendants, such as a sticky group header, paint to hide what scrolls under them.
+	--rcx-surface: #{colors.surface(room)};
+
 	color: colors.font(default);
 	background-color: colors.surface(room);
 	border-inline-start-color: colors.stroke(extra-light);

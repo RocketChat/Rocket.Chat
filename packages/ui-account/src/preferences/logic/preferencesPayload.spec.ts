@@ -1,4 +1,4 @@
-import { parseHighlights, toPreferencesPayload } from './preferencesPayload';
+import { parseHighlights, toPreferencesPayload } from './preferencesPayload.js';
 
 const dontAskAgainItems = [
 	{ action: 'delete-message', label: 'Delete message' },

@@ -1,5 +1,5 @@
-import type { DeviceSelection } from './DeviceSelectionContext';
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from './deviceLabels';
+import type { DeviceSelection } from './DeviceSelectionContext.js';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from './deviceLabels.js';
 
 export type DeviceRow = { id: string; name: string; systemDefault: boolean };
 

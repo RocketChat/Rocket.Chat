@@ -11,7 +11,8 @@ import { notifyOnSubscriptionChangedByUserIdAndRoomType } from '../notifyListene
 
 const getCustomFieldsMeta = function (customFieldsMeta: string) {
 	try {
-		return JSON.parse(customFieldsMeta);
+		const meta: Record<string, any> = JSON.parse(customFieldsMeta);
+		return meta;
 	} catch (e) {
 		throw new ClientSafeError('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 	}

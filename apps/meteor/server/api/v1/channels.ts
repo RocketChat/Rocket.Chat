@@ -1451,9 +1451,7 @@ API.v1.get(
 		}
 
 		// teams filter - I would love to have a way to apply this filter @ db level :(
-		const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
-			(item: Record<string, any>) => item.rid,
-		);
+		const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		ourQuery.$or = [
 			{

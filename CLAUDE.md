@@ -22,6 +22,10 @@ POC or once the definition settles the expected behavior, but opening a pull req
 it out of draft are a person's decisions: never do either without confirmation. Full rules:
 [docs/change-organization.md](docs/change-organization.md).
 
+Changes never introduce lint warnings. When a warning can't be avoided, disable the rule on
+that line with `// oxlint-disable-next-line <rule> -- <reason>`, where the reason says why the
+code can't comply.
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.

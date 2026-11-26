@@ -228,12 +228,12 @@ it('leaves the cells a short row lacks empty', () => {
 it('keeps a row, and so its state, when the table is sorted', async () => {
 	renderTable();
 
-	const bob = screen.getByRole('rowheader', { name: 'Bob' }).closest('tr');
+	const bob = screen.getByRole('row', { name: /^Bob\b/ });
 
 	await userEvent.click(within(screen.getByRole('columnheader', { name: /Name/ })).getByRole('button'));
 
 	expect(names()).toEqual(['alice', 'Bob', 'Carol']);
-	expect(screen.getByRole('rowheader', { name: 'Bob' }).closest('tr')).toBe(bob);
+	expect(screen.getByRole('row', { name: /^Bob\b/ })).toBe(bob);
 });
 
 it('decides how a column sorts from all of its rows, not only the ones the filter leaves', async () => {

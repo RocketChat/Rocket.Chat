@@ -1,5 +1,4 @@
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
@@ -9,6 +8,7 @@ import { passportOAuthCallback, passportOAuthErrorCallback } from './passportOAu
 import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { oAuthRouter } from '../../configuration/configurePassport';
 import type { ICachedSettings } from '../../settings/CachedSettings';
+import { updateOrCreateUserFromExternalService } from '../auth/updateOrCreateUserFromExternalService';
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
@@ -38,7 +38,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 					let user;
 					try {
-						user = await Accounts.updateOrCreateUserFromExternalService(
+						user = await updateOrCreateUserFromExternalService(
 							config.provider,
 							{
 								accessToken,

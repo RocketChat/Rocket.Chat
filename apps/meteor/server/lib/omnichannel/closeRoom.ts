@@ -183,8 +183,8 @@ async function doCloseRoom(
 	if (!params.forceClose && removedInquiry && removedInquiry.deletedCount !== 1) {
 		throw new Error('Error removing inquiry');
 	}
-	if (removedInquiry.deletedCount) {
-		void notifyOnLivechatInquiryChanged(inquiry!, 'removed');
+	if (removedInquiry.deletedCount && inquiry) {
+		void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 	}
 
 	const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });

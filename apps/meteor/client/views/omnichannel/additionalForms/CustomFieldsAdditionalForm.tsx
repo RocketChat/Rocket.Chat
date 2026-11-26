@@ -3,7 +3,7 @@ import { Field, FieldLabel, FieldRow, FieldError, FieldHint, ToggleSwitch, TextI
 import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useId, useMemo } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { EditCustomFieldsFormData } from '../customFields/EditCustomFields';
@@ -20,14 +20,13 @@ export type CustomFieldsAdditionalFormProps = { className?: ComponentProps<typeo
 
 const CustomFieldsAdditionalForm = ({ className }: CustomFieldsAdditionalFormProps) => {
 	const { t } = useTranslation();
-	const {
-		control,
-		watch,
-		formState: { errors },
-	} = useFormContext<EditCustomFieldsFormData>();
+	const { control } = useFormContext<EditCustomFieldsFormData>();
+	const { errors } = useFormState({ control });
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
-	const { visibility, type } = watch();
+	const watched = useWatch({ control });
+	const visibility = watched.visibility ?? false;
+	const { type } = watched;
 
 	const typeOptions: SelectOption[] = useMemo(
 		() => [

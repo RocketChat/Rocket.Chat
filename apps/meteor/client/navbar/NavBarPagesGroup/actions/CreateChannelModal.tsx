@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useId, useEffect, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useForm, Controller, FormProvider, useWatch, useFormState } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
@@ -82,7 +82,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
-	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
@@ -125,15 +125,13 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 		},
 	});
 
-	const {
-		formState: { errors, isSubmitting },
-		handleSubmit,
-		control,
-		setValue,
-		watch,
-	} = methods;
+	const { handleSubmit, control, setValue } = methods;
+	const { errors, isSubmitting } = useFormState({ control });
 
-	const { isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes } = watch();
+	const [isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes] = useWatch({
+		control,
+		name: ['isPrivate', 'broadcast', 'readOnly', 'federated', 'xmppFederated', 'encrypted', 'isAbacManaged', 'members', 'attributes'],
+	});
 
 	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated || xmppFederated);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });

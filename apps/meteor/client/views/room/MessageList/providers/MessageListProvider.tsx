@@ -106,22 +106,22 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
 			normalizeMessage,
-			useUserHasReacted: username
+			userHasReacted: username
 				? (message: IMessage) =>
 						(reaction: string): boolean =>
 							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
 				: () => (): boolean => false,
-			useShowFollowing: uid
+			showFollowing: uid
 				? ({ message }: { message: IMessage }): boolean =>
 						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
 			autoTranslate,
-			useShowStarred: hasSubscription
+			showStarred: hasSubscription
 				? ({ message }: { message: IMessage }): boolean =>
 						Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
-			useMessageDateFormatter:
+			messageDateFormatter:
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
@@ -138,7 +138,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			jumpToMessageParam: msgParameter,
 			highlights: parsedHighlights,
 
-			useOpenEmojiPicker: uid
+			openEmojiPicker: uid
 				? (message: IMessage) =>
 						(e: MouseEvent | KeyboardEvent): void => {
 							e.nativeEvent.stopImmediatePropagation();

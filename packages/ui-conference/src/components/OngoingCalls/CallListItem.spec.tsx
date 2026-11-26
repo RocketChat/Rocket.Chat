@@ -1,15 +1,15 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 
-import CallListItem from './CallListItem';
-import * as stories from './CallListItem.stories';
-import { OngoingCallsContext } from '../../context/OngoingCallsContext';
-import { buildOngoingCallsContext } from '../../fixtures/storyFixtures';
-import { buildJoinableCall } from '../../fixtures/testFixtures';
+import CallListItem from './CallListItem.js';
+import * as stories from './CallListItem.stories.js';
+import { OngoingCallsContext } from '../../context/OngoingCallsContext.js';
+import { buildOngoingCallsContext } from '../../fixtures/storyFixtures.js';
+import { buildJoinableCall } from '../../fixtures/testFixtures.js';
 
 /**
  * What the row looks like in each state — ringing, silenced, declined, already joined — is the stories' job. What

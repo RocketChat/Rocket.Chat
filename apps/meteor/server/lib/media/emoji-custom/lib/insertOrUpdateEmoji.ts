@@ -119,11 +119,11 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 			const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 				encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
-				rs.contentType,
+				rs.contentType ?? 'application/octet-stream',
 			);
-			ws.on('end', () =>
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
-			);
+			ws.on('end', () => {
+				void RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+			});
 			rs.readStream.pipe(ws);
 		}
 	}

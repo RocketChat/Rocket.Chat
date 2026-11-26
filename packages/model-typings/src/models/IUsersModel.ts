@@ -127,6 +127,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
 	findOneWithoutLDAPByUsernameIgnoringCase<
 		T extends Document = IUser,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -479,6 +485,16 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		emailAddress: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByServiceId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		serviceName: string,
+		serviceId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -500,8 +516,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		userId: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
@@ -575,6 +591,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
 	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
+	setServiceDataById(userId: IUser['_id'], serviceName: string, serviceData: Record<string, unknown>): Promise<UpdateResult>;
 	setUsername(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult>;
 	setEmail(userId: string, email: string, verified?: boolean, options?: UpdateOptions): Promise<UpdateResult>;
 	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;

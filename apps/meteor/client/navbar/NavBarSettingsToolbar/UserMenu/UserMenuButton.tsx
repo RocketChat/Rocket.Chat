@@ -1,4 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
+import { UserStatus as PresenceStatus } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
@@ -11,7 +12,7 @@ import { UserStatus } from '../../../components/UserStatus';
 const anon = {
 	_id: '',
 	username: 'Anonymous',
-	status: 'online',
+	status: PresenceStatus.ONLINE,
 	avatarETag: undefined,
 } as const;
 
@@ -32,17 +33,17 @@ const UserMenuButton = forwardRef(function UserMenuButton(
 	const { t } = useTranslation();
 	const user = useUser();
 
-	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
+	const { status = !user ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE, username, avatarETag } = user || anon;
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
 	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
 
 	const getDisplayedStatus = () => {
 		if (!userStatusEnabled || (adminStatusHidingEnabled && user?.presenceDisabledByAdmin)) {
-			return 'offline';
+			return PresenceStatus.OFFLINE;
 		}
 
-		return presenceDisabled ? 'disabled' : status;
+		return presenceDisabled ? PresenceStatus.DISABLED : status;
 	};
 
 	const displayedStatus = getDisplayedStatus();

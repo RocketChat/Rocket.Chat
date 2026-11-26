@@ -51,10 +51,11 @@ it('collapses and expands with a button that says which content it controls', as
 	render(<MockedServerContext>{messageParser.render([container({ is_collapsible: true })])}</MockedServerContext>);
 
 	const toggle = screen.getByRole('button', { name: 'Collapse' });
-	const content = screen.getByText('Record one').closest('[id]') as HTMLElement;
+	const controls = toggle.getAttribute('aria-controls');
 
 	expect(toggle).toHaveAttribute('aria-expanded', 'true');
-	expect(toggle).toHaveAttribute('aria-controls', content.id);
+	expect(controls).toBeTruthy();
+	expect(screen.getByText((_, element) => element?.id === controls)).toContainElement(screen.getByText('Record one'));
 
 	await userEvent.click(toggle);
 
@@ -187,15 +188,22 @@ it('draws no heading when neither title renders anything', () => {
 });
 
 it.each([
-	[undefined, 'var(--rcx-message-block-width-fixed, 368px)'],
-	['standard', 'var(--rcx-message-block-width-fixed, 368px)'],
+	[undefined, ''],
+	['standard', ''],
 	['narrow', '280px'],
 	['wide', '640px'],
 	['full', ''],
 ] as const)('limits a %s container to %s', (width, maxWidth) => {
 	render(<MockedServerContext>{modalParser.render([container({ width })])}</MockedServerContext>);
 
-	const box = screen.getByRole('heading', { name: 'Bulk update' }).parentElement?.parentElement?.parentElement;
+	const box = screen
+		.getAllByText(
+			(_, element) =>
+				!!element?.textContent?.includes('Bulk update') &&
+				element.textContent.includes('Record one') &&
+				getComputedStyle(element).flexDirection === 'column',
+		)
+		.at(-1);
 
 	expect(box && getComputedStyle(box).maxWidth).toBe(maxWidth);
 });

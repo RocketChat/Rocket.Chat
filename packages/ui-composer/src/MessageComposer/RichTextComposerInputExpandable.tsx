@@ -4,7 +4,7 @@ import { useState, forwardRef } from 'react';
 import type { ComponentProps, InputEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import RichTextComposerInput from './RichTextComposerInput';
+import RichTextComposerInput from './RichTextComposerInput.js';
 
 export type RichTextExpandComposerButtonProps = ComponentProps<typeof RichTextComposerInput> & {
 	dimensions: Readonly<{

@@ -53,12 +53,12 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		super({
 			name: 'subscriptions',
 			eventType: 'notify-user',
-			store: Subscriptions.use,
+			store: Subscriptions.useStore,
 		});
 	}
 
 	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
-		const room = Rooms.use.getState().find((r) => r._id === subscription.rid);
+		const room = Rooms.useStore.getState().find((r) => r._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
@@ -95,7 +95,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			deserialized.lastMessage._updatedAt = new Date(deserialized.lastMessage._updatedAt);
 		}
 
-		return deserialized && Rooms.use.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
+		return deserialized && Rooms.useStore.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
 	}
 }
 

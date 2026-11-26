@@ -1,3 +1,5 @@
+import { mock } from 'node:test';
+
 import type {
 	IGroupVideoConference,
 	IDirectVideoConference,
@@ -7,7 +9,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { mockModel, type ModelName } from '@rocket.chat/models/testing';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 /**
@@ -118,9 +119,9 @@ export const createService = ({
 }: {
 	broadcast?: sinon.SinonStub;
 	models?: Partial<Record<ModelName, object>>;
-	overrides?: Record<string, unknown>;
+	overrides?: Record<string, Record<string, unknown>>;
 } = {}) => {
-	const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+	const stubs: Record<string, Record<string, unknown>> = {
 		...commonServiceStubs,
 		'@rocket.chat/core-services': {
 			api: { broadcast },
@@ -133,7 +134,14 @@ export const createService = ({
 			Room: { addUserToRoom: sinon.stub().resolves() },
 		},
 		...overrides,
-	});
+	};
+	for (const [specifier, exports] of Object.entries(stubs)) {
+		mock.module(specifier, { exports });
+	}
+	delete require.cache[require.resolve('./service')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const { VideoConfService } = require('./service') as typeof import('./service');
+	mock.restoreAll();
 
 	const doubles: Partial<Record<ModelName, object>> = {
 		Users: { findOneById: sinon.stub().resolves(null) },

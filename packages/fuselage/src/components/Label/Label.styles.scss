@@ -20,9 +20,13 @@
 		display: flex;
 		align-items: center;
 		order: 1;
+
+		margin-inline: lengths.margin(4);
 	}
 
 	&__required {
+		margin-inline-start: lengths.margin(4);
+
 		color: colors.font(danger);
 	}
 }

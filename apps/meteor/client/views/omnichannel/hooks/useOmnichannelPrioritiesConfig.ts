@@ -49,13 +49,13 @@ export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, sh
 	const { data: priorities } = useOmnichannelPriorities();
 
 	const name = useMemo(() => {
-		const { _id, dirty, name, i18n } = priorities.find((p) => p.sortItem === level) || {};
+		const priority = priorities.find((p) => p.sortItem === level);
 
-		if (!_id) {
+		if (!priority) {
 			return '';
 		}
 
-		return dirty ? name : t(i18n!);
+		return priority.dirty ? priority.name : t(priority.i18n);
 	}, [level, priorities, t]);
 
 	if (!showUnprioritized && level === LivechatPriorityWeight.NOT_SPECIFIED) {

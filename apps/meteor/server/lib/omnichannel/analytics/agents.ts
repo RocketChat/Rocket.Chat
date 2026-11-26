@@ -10,12 +10,14 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} 
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllAverageServiceTimeByAgents({
 		start,
 		end,
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		agents: await LivechatRooms.findAllAverageServiceTimeByAgents({
 			start,
 			end,
@@ -29,12 +31,14 @@ export const findAllServiceTimeAsync = async ({ start, end, options = {} }: Para
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const total = await LivechatRooms.findAllServiceTimeByAgent({
 		start,
 		end,
 		onlyCount: true,
 	}).toArray();
 	return {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 		agents: await LivechatRooms.findAllServiceTimeByAgent({ start, end, options }).toArray(),
 		total: total.length ? total[0].total : 0,
 	};

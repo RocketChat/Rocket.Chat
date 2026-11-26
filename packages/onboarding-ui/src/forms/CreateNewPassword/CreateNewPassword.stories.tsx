@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import CreateNewPassword from './CreateNewPassword';
+import CreateNewPassword from './CreateNewPassword.js';
 
 export default {
 	title: 'forms/CreateNewPassword',

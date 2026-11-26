@@ -58,7 +58,7 @@ export const useAppsRoomStarActions = () => {
 									rid: room._id,
 									payload: { context: action.context },
 								})
-								.catch(async (reason) => {
+								.catch(async (reason: unknown) => {
 									if (reason instanceof UiKitTriggerTimeoutError) {
 										dispatchToastMessage({
 											type: 'error',

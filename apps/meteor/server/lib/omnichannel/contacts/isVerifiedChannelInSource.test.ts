@@ -1,9 +1,12 @@
-import { describe, it } from 'node:test';
+import { before, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { isVerifiedChannelInSource } = proxyquire.noCallThru().load('./isVerifiedChannelInSource', {});
+let isVerifiedChannelInSource: any;
+
+before(async () => {
+	({ isVerifiedChannelInSource } = await import('./isVerifiedChannelInSource'));
+});
 
 describe('isVerifiedChannelInSource', () => {
 	it('should return false if channel is not verified', () => {

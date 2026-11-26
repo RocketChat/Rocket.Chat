@@ -382,11 +382,17 @@ export const notifyOnUserChange = async ({ clientAction, id, data, diff, unset }
 	}
 
 	if (clientAction === 'inserted') {
-		void api.broadcast('watch.users', { clientAction, id, data: data! });
+		if (!data) {
+			return;
+		}
+		void api.broadcast('watch.users', { clientAction, id, data });
 		return;
 	}
 
-	void api.broadcast('watch.users', { clientAction, diff: diff!, unset: unset || {}, id });
+	if (!diff) {
+		return;
+	}
+	void api.broadcast('watch.users', { clientAction, diff, unset: unset || {}, id });
 };
 
 /**

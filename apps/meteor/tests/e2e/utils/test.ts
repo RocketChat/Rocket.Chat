@@ -82,9 +82,9 @@ export const test = baseTest.extend<BaseTest>({
 				return newContext(Users.admin.data.loginToken, Users.admin.data.username);
 			}
 
-			if (cacheFromCredentials.has(credentials.username + credentials.password)) {
-				const token = cacheFromCredentials.get(credentials.username + credentials.password);
-				return newContext(token!, credentials.username);
+			const cachedToken = cacheFromCredentials.get(credentials.username + credentials.password);
+			if (cachedToken !== undefined) {
+				return newContext(cachedToken, credentials.username);
 			}
 
 			const resp = await request.post(`${BASE_API_URL}/login`, { data: credentials });

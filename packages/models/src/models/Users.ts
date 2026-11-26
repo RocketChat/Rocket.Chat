@@ -635,6 +635,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { username, _id: { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
 	findOneWithoutLDAPByUsernameIgnoringCase<
 		T extends Document = IUser,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -2534,6 +2549,29 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { 'emails.address': String(emailAddress).trim(), '_id': { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
+	findOneByServiceId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		serviceName: string,
+		serviceId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ [`services.${serviceName}.id`]: serviceId }, options);
+	}
+
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -2600,12 +2638,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
-		const query = { roles, type };
+		const query = { roles: role, type };
 
 		return this.findOne<T, O>(query, options);
 	}
@@ -2966,6 +3004,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 
 		return this.updateOne({ _id }, update);
+	}
+
+	setServiceDataById(_id: IUser['_id'], serviceName: string, serviceData: Record<string, unknown>) {
+		const fields = Object.fromEntries(Object.entries(serviceData).map(([key, value]) => [`services.${serviceName}.${key}`, value]));
+
+		return this.updateOne({ _id }, { $set: fields });
 	}
 
 	setUsername(_id: IUser['_id'], username: string, options?: UpdateOptions) {

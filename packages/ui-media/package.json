@@ -1,7 +1,15 @@
 {
 	"name": "@rocket.chat/ui-media",
 	"version": "2.0.0-rc.0",
+	"description": "Media pieces shared by Rocket.Chat's voice calls and video conferences: device lists and menus, the microphone permission prompt, stream playback and call controls",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/no-unsafe-call, typescript/no-unsafe-return -- the legacy markdown parser is untyped; it will be typed in a separate change */
 import { getMarkdownLinkRegexes } from './linkRegexes';
 import { addAsToken, isToken, validateAllowedTokens } from './token';
 

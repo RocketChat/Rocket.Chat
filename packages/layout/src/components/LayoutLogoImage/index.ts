@@ -1,1 +1,1 @@
-export { default, type LayoutLogoImageProps } from './LayoutLogoImage';
+export { default, type LayoutLogoImageProps } from './LayoutLogoImage.js';

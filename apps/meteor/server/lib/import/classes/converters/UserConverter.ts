@@ -2,10 +2,10 @@ import { hashPassword } from '@rocket.chat/account-utils';
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
+import { insertUser } from '../../../auth/insertUser';
 import { callbacks as systemCallbacks } from '../../../callbacks';
 import { notifyOnUserChange } from '../../../notifyListener';
 import { addUserToDefaultChannels } from '../../../rooms/addUserToDefaultChannels';
@@ -254,7 +254,8 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	private buildUserUpdateData(userData: IImportUser): Record<string, any> {
-		return Object.assign(Object.create(null), {
+		const updateData: Record<string, unknown> = Object.create(null);
+		return Object.assign(updateData, {
 			$set: Object.assign(Object.create(null), {
 				...(userData.roles && { roles: userData.roles }),
 				...(userData.type && { type: userData.type }),
@@ -400,10 +401,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	async insertUser(userData: IImportUser): Promise<IUser['_id']> {
 		const user = await this.buildNewUserObject(userData);
 
-		return Accounts.insertUserDoc(
+		return insertUser(
 			{
 				joinDefaultChannels: false,
-				skipEmailValidation: true,
 				skipAdminCheck: true,
 				skipAdminEmail: true,
 				skipOnCreateUserCallback: this._options.skipUserCallbacks,

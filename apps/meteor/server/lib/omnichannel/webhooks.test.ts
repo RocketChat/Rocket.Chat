@@ -1,7 +1,6 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 type FetchResponse = {
@@ -13,8 +12,6 @@ const mkResponse = (status: number, text = ''): FetchResponse => ({
 	status,
 	text: async () => text,
 });
-
-const MODULE_PATH = './webhooks';
 
 function buildSubject(options?: {
 	fetchSequence?: Array<{ status: number; text?: string }>;
@@ -56,12 +53,14 @@ function buildSubject(options?: {
 		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
 	};
 
-	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {
-		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
-		'./logger': { webhooksLogger: logger },
-		'../metrics': { metrics },
-		'../../settings': { settings },
-	});
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: fetchStub } });
+	mock.module('./logger', { exports: { webhooksLogger: logger } });
+	mock.module('../metrics', { exports: { metrics } });
+	mock.module('../../settings', { exports: { settings } });
+	delete require.cache[require.resolve('./webhooks')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const { sendRequest } = require('./webhooks');
+	mock.restoreAll();
 
 	return {
 		sendRequest,
@@ -119,7 +118,7 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 
 		// result is the fetch response
 		expect(result).to.be.ok;
-		expect(result!.status).to.equal(200);
+		expect(result?.status).to.equal(200);
 
 		// debug logging invoked at least once
 		expect(stubs.logger.debug.called).to.be.true;

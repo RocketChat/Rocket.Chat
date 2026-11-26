@@ -1,3 +1,3 @@
-export * from './useVideoConfControllers';
-export * from './useVideoConfContext';
-export * from './useVideoConferenceInfo';
+export * from './useVideoConfControllers.js';
+export * from './useVideoConfContext.js';
+export * from './useVideoConferenceInfo.js';

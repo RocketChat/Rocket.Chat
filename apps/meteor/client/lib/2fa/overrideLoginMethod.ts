@@ -57,7 +57,7 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 	});
 };
 
-export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<any>>(
+export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<unknown>>(
 	login: TLoginFunction,
 	loginWithTOTP: (...args: [...args: Parameters<TLoginFunction>, code: string]) => ReturnType<TLoginFunction>,
 ) => {

@@ -1,3 +1,4 @@
+/* oxlint-disable testing-library/no-node-access -- an overlay's contract is where in the document its nodes land, which no query expresses */
 import { render, screen } from '@testing-library/react';
 
 import { Overlay } from '.';

@@ -249,7 +249,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
 
-		this.log(`syncing from ${this.updatedAt}`);
+		this.log(`syncing from ${this.updatedAt.toString()}`);
 
 		const data = await this.callSync(this.updatedAt);
 		const changes = [];

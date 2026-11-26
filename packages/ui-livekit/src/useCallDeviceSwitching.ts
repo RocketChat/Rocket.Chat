@@ -4,7 +4,7 @@ import { useMediaDevices } from '@rocket.chat/ui-media';
 import type { Room } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useActiveDevice } from './useActiveDevice';
+import { useActiveDevice } from './useActiveDevice.js';
 
 const warn = (what: string) => (err: unknown) => console.warn(`${what} switch failed`, err);
 

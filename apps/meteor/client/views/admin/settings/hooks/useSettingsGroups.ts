@@ -1,43 +1,40 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { useSettings } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const useSettingsGroups = (filter: string): ISetting[] => {
 	const settings = useSettings();
 	const { t } = useTranslation();
 
-	const filterPredicate = useMemo(() => {
-		if (!filter) {
-			return (): boolean => true;
-		}
+	const getMatchableStrings = (setting: ISetting): string[] =>
+		[setting.i18nLabel && t(setting.i18nLabel), t(setting._id), setting._id].filter(Boolean);
 
-		const getMatchableStrings = (setting: ISetting): string[] =>
-			[setting.i18nLabel && t(setting.i18nLabel), t(setting._id), setting._id].filter(Boolean);
+	const getFilterPredicate = (): ((setting: ISetting) => boolean) => {
+		if (!filter) {
+			return () => true;
+		}
 
 		try {
 			const filterRegex = new RegExp(filter, 'i');
-			return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => filterRegex.test(text));
+			return (setting) => getMatchableStrings(setting).some((text) => filterRegex.test(text));
 		} catch (e) {
-			return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
+			return (setting) => getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
 		}
-	}, [filter, t]);
+	};
 
-	return useMemo(() => {
-		const groupIds = Array.from(
-			new Set(
-				settings.filter(filterPredicate).map((setting) => {
-					if (setting.type === 'group') {
-						return setting._id;
-					}
+	const groupIds = Array.from(
+		new Set(
+			settings.filter(getFilterPredicate()).map((setting) => {
+				if (setting.type === 'group') {
+					return setting._id;
+				}
 
-					return setting.group;
-				}),
-			),
-		);
+				return setting.group;
+			}),
+		),
+	);
 
-		return settings
-			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
-			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
-	}, [settings, filterPredicate, t]);
+	return settings
+		.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
+		.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
 };

@@ -93,7 +93,7 @@ const SubscriptionPage = () => {
 		if (subscriptionSuccess) {
 			router.navigate(
 				{
-					name: router.getRouteName()!,
+					name: 'subscription',
 					params: Object.fromEntries(Object.entries(router.getSearchParameters()).filter(([key]) => key !== 'subscriptionSuccess')),
 				},
 				{

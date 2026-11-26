@@ -104,9 +104,7 @@ export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	return { httpHeaders };
 }
 
-export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}): Promise<
-	Record<string, string | number | any>
-> {
+export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}) {
 	const [initSettings, triggers, departments, emojis] = await Promise.all([
 		getInitSettings(),
 		findTriggers(),

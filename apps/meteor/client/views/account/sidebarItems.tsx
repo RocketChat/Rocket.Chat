@@ -47,7 +47,7 @@ export const {
 		i18nLabel: 'Feature_preview',
 		icon: 'flask',
 		badge: () => <FeaturePreviewBadge />,
-		permissionGranted: () => settings.peek('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
+		permissionGranted: () => Boolean(settings.peek<boolean>('Accounts_AllowFeaturePreview')) && defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/account/accessibility-and-appearance',

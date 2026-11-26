@@ -67,6 +67,8 @@ const MessageBox = ({
 	previewUrls,
 	threadExists,
 }: MessageBoxProps) => {
+	'use no memo';
+
 	const chat = useChat();
 	const room = useRoom();
 	const { t } = useTranslation();
@@ -142,6 +144,9 @@ const MessageBox = ({
 	});
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
+
+	const popupOptions = useComposerPopupOptions();
+	const popup = useComposerBoxPopup(popupOptions);
 
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
@@ -274,7 +279,7 @@ const MessageBox = ({
 
 	// canSendMessage directives read from the Subscriptions store, so subscribe to it to re-run on changes
 	// (e.g. user joins/leaves the room). room and federationMatrixEnabled are already React-reactive.
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.useStore.subscribe(onStoreChange), []);
 	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
 		if (!room.t) {
 			return false;
@@ -347,9 +352,6 @@ const MessageBox = ({
 			}
 		}
 	});
-
-	const popupOptions = useComposerPopupOptions();
-	const popup = useComposerBoxPopup(popupOptions);
 
 	const keyDownHandlerCallbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {

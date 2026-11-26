@@ -1,8 +1,8 @@
 import { ToastBar } from '@rocket.chat/fuselage';
 import { useCountdown } from 'react-timing-hooks';
 
-import type { ToastBarPayload } from './ToastBarContext';
-import { useToastBarDismiss } from './ToastBarContext';
+import type { ToastBarPayload } from './ToastBarContext.js';
+import { useToastBarDismiss } from './ToastBarContext.js';
 
 const ToastBarTimed = ({ time, type, id, message, title }: ToastBarPayload) => {
 	const dismissToastMessage = useToastBarDismiss();

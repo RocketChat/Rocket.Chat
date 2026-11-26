@@ -14,11 +14,11 @@ export type MessageListContextValue = {
 		autoTranslateLanguage?: string;
 		autoTranslateEnabled: boolean;
 	};
-	useShowStarred: ({ message }: { message: IMessage }) => boolean;
-	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
-	useMessageDateFormatter: () => (date: Date) => string;
-	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
-	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
+	showStarred: ({ message }: { message: IMessage }) => boolean;
+	showFollowing: ({ message }: { message: IMessage }) => boolean;
+	messageDateFormatter: () => (date: Date) => string;
+	userHasReacted: (message: IMessage) => (reaction: string) => boolean;
+	openEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
 	/** Whether the list's room is a broadcast room the user is subscribed to. */
 	isBroadcast: boolean;
@@ -55,14 +55,14 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 		autoTranslateLanguage: undefined,
 		autoTranslateEnabled: false,
 	},
-	useShowStarred: () => false,
-	useShowFollowing: () => false,
-	useUserHasReacted: () => (): boolean => false,
-	useMessageDateFormatter:
+	showStarred: () => false,
+	showFollowing: () => false,
+	userHasReacted: () => (): boolean => false,
+	messageDateFormatter:
 		() =>
 		(date: Date): string =>
 			date.toString(),
-	useOpenEmojiPicker: () => (): void => undefined,
+	openEmojiPicker: () => (): void => undefined,
 	showRoles: false,
 	isBroadcast: false,
 	showRealName: false,
@@ -83,12 +83,11 @@ export const MessageListContext = createContext<MessageListContextValue>(message
 
 export const useShowTranslated: MessageListContextValue['autoTranslate']['showAutoTranslate'] = (...args) =>
 	useContext(MessageListContext).autoTranslate.showAutoTranslate(...args);
-export const useShowStarred: MessageListContextValue['useShowStarred'] = (...args) =>
-	useContext(MessageListContext).useShowStarred(...args);
-export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (...args) =>
-	useContext(MessageListContext).useShowFollowing(...args);
-export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
-	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useShowStarred: MessageListContextValue['showStarred'] = (...args) => useContext(MessageListContext).showStarred(...args);
+export const useShowFollowing: MessageListContextValue['showFollowing'] = (...args) =>
+	useContext(MessageListContext).showFollowing(...args);
+export const useMessageDateFormatter: MessageListContextValue['messageDateFormatter'] = (...args) =>
+	useContext(MessageListContext).messageDateFormatter(...args);
 export const useMessageListIsBroadcast = (): MessageListContextValue['isBroadcast'] => useContext(MessageListContext).isBroadcast;
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListUserRoles = (uid: string, rid: string) => {
@@ -102,10 +101,10 @@ export const useMessageListHighlights = (): MessageListContextValue['highlights'
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;
 
-export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
-	useContext(MessageListContext).useUserHasReacted(message);
-export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
-	useContext(MessageListContext).useOpenEmojiPicker(...args);
+export const useUserHasReacted: MessageListContextValue['userHasReacted'] = (message: IMessage) =>
+	useContext(MessageListContext).userHasReacted(message);
+export const useOpenEmojiPicker: MessageListContextValue['openEmojiPicker'] = (...args) =>
+	useContext(MessageListContext).openEmojiPicker(...args);
 
 export const useMessageListNormalizer = (): MessageListContextValue['normalizeMessage'] => useContext(MessageListContext).normalizeMessage;
 

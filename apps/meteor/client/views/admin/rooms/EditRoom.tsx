@@ -17,7 +17,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent, ContextualbarFooter, GenericModal, getDirtyFields } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
@@ -72,13 +72,8 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	const setModal = useSetModal();
 	const isAbacManaged = useIsABACManagedRoom(room) || !!room.abacAttributesRedacted;
 
-	const {
-		control,
-		watch,
-		reset,
-		handleSubmit,
-		formState: { isDirty, errors, dirtyFields },
-	} = useForm<EditRoomFormData>({ values: getInitialValues(room) });
+	const { control, reset, handleSubmit } = useForm<EditRoomFormData>({ values: getInitialValues(room) });
+	const { isDirty, errors, dirtyFields } = useFormState({ control });
 
 	const {
 		canViewName,
@@ -91,7 +86,11 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		canViewReactWhenReadOnly,
 	} = useEditAdminRoomPermissions(room);
 
-	const { roomType, readOnly, archived, isDefault } = watch();
+	const watched = useWatch({ control });
+	const roomType = watched.roomType ?? room.t;
+	const readOnly = watched.readOnly ?? false;
+	const archived = watched.archived ?? false;
+	const isDefault = watched.isDefault ?? false;
 
 	const changeArchiving = archived !== !!room.archived;
 

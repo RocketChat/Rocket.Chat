@@ -41,7 +41,12 @@ const boxOnlyClassNames: Record<string, (value: unknown) => string> = {
 
 const boxOnlyClassName = (name: string, value: unknown): string | undefined => {
 	if (!value) return undefined;
-	if (name.startsWith('rcx-')) return value === true ? name : `${name}-${value}`;
+	if (name.startsWith('rcx-')) {
+		if (value === true) {
+			return name;
+		}
+		return typeof value === 'string' || typeof value === 'number' ? `${name}-${value}` : undefined;
+	}
 	return boxOnlyClassNames[name]?.(value);
 };
 
@@ -100,9 +105,10 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 		textClassName: (props: Record<string, unknown>) => string;
 	};
 
-	const { createClassName, escapeName, transpile } = require('@rocket.chat/css-in-js');
-	const { createLogicalPropertiesMiddleware } = require('@rocket.chat/stylis-logical-props-middleware');
-	const { middleware, prefixer, stringify } = require('stylis');
+	const { createClassName, escapeName, transpile } = require('@rocket.chat/css-in-js') as typeof import('@rocket.chat/css-in-js');
+	const { createLogicalPropertiesMiddleware } =
+		require('@rocket.chat/stylis-logical-props-middleware') as typeof import('@rocket.chat/stylis-logical-props-middleware');
+	const { middleware, prefixer, stringify } = require('stylis') as typeof import('stylis');
 
 	const transpileMiddleware = middleware([
 		createLogicalPropertiesMiddleware({

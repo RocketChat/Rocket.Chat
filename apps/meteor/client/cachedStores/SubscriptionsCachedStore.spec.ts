@@ -47,13 +47,13 @@ const buildSubscription = (overrides: Partial<ISubscription> = {}): ISubscriptio
 
 const mapThroughStore = async (subscription: ISubscription) => {
 	await SubscriptionsCachedStore.upsertSubscription(subscription);
-	return Subscriptions.use.getState().get(subscription._id);
+	return Subscriptions.useStore.getState().get(subscription._id);
 };
 
 describe('SubscriptionsCachedStore mapRecord', () => {
 	beforeEach(() => {
-		Rooms.use.getState().replaceAll([]);
-		Subscriptions.use.getState().replaceAll([]);
+		Rooms.useStore.getState().replaceAll([]);
+		Subscriptions.useStore.getState().replaceAll([]);
 	});
 
 	it('fills room-derived fields with defaults when the room is not in the store', async () => {
@@ -148,7 +148,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 			federated: false,
 			xmppFederation: { version: 1, role: 'host', origin: 'example.com' },
 		} as unknown as IRoom;
-		Rooms.use.getState().store(room);
+		Rooms.useStore.getState().store(room);
 		const subscription = buildSubscription();
 
 		const mapped = await mapThroughStore(subscription);
@@ -198,7 +198,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('turns a false broadcast into undefined and keeps a zero usersCount', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c', broadcast: false, usersCount: 0 } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c', broadcast: false, usersCount: 0 } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription());
 
@@ -207,7 +207,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('falls back to the default priority weight and waiting time when the room has falsy values', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'l', priorityWeight: 0, estimatedWaitingTimeQueue: 0 } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'l', priorityWeight: 0, estimatedWaitingTimeQueue: 0 } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription());
 
@@ -216,7 +216,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('uses the subscription ts when the room has none', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c' } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c' } as unknown as IRoom);
 		const subscription = buildSubscription();
 
 		const mapped = await mapThroughStore(subscription);
@@ -240,7 +240,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 
 	it('adds the federation field for native federated rooms', async () => {
 		const federation = { mrid: '!room:example.com', origin: 'example.com' };
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c', federated: true, federation } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c', federated: true, federation } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription());
 
@@ -248,7 +248,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('omits the federation field for federated rooms without federation data', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c', federated: true } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c', federated: true } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription());
 
@@ -256,7 +256,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('sets lm to the last read date when it is later than the last room update', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c', lm: new Date('2026-02-01T00:00:00Z') } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c', lm: new Date('2026-02-01T00:00:00Z') } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription({ lr: new Date('2026-03-01T00:00:00Z') }));
 
@@ -264,7 +264,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('sets lm to the last room update when it is later than the last read date', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c', lm: new Date('2026-02-01T00:00:00Z') } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c', lm: new Date('2026-02-01T00:00:00Z') } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription({ lr: new Date('2026-01-15T00:00:00Z') }));
 
@@ -272,7 +272,7 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 	});
 
 	it('falls back to the room ts for lm when neither the room lm nor the subscription ts exist', async () => {
-		Rooms.use.getState().store({ _id: 'room-id', t: 'c', ts: new Date('2025-06-01T00:00:00Z') } as unknown as IRoom);
+		Rooms.useStore.getState().store({ _id: 'room-id', t: 'c', ts: new Date('2025-06-01T00:00:00Z') } as unknown as IRoom);
 
 		const mapped = await mapThroughStore(buildSubscription({ ts: undefined }));
 
@@ -292,12 +292,12 @@ describe('SubscriptionsCachedStore', () => {
 	it('should restore a direct message from the cache with the members of its room', async () => {
 		const { getItem } = jest.requireMock('localforage');
 		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'dm-id', t: 'd' });
-		Rooms.use.getState().store(createFakeRoom({ _id: 'dm-id', t: 'd', uids: ['me', 'other'] }));
+		Rooms.useStore.getState().store(createFakeRoom({ _id: 'dm-id', t: 'd', uids: ['me', 'other'] }));
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'token');
 		getItem.mockResolvedValue({ version: Number.MAX_SAFE_INTEGER, token: 'token', records: [subscription], updatedAt: new Date() });
 
 		await SubscriptionsCachedStore.init();
 
-		expect(Subscriptions.use.getState().get('subscription-id')).toMatchObject({ uids: ['me', 'other'] });
+		expect(Subscriptions.useStore.getState().get('subscription-id')).toMatchObject({ uids: ['me', 'other'] });
 	});
 });

@@ -23,10 +23,6 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 	const dispatchToast = useToastMessageDispatch();
 	const contactDeleteModalId = useId();
 
-	const handleSubmit = useStableCallback((): void => {
-		removeContactMutation.mutate();
-	});
-
 	const confirmationText = t('Delete').toLowerCase();
 
 	const removeContactMutation = useMutation({
@@ -47,6 +43,10 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			dispatchToast({ type: 'error', message: error });
 			onClose();
 		},
+	});
+
+	const handleSubmit = useStableCallback((): void => {
+		removeContactMutation.mutate();
 	});
 
 	return (

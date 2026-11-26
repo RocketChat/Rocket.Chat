@@ -34,7 +34,7 @@ export const useUserDropdownAppsActionButtons = () => {
 									actionId: action.actionId,
 									payload: { context: action.context },
 								})
-								.catch(async (reason) => {
+								.catch(async (reason: unknown) => {
 									if (reason instanceof UiKitTriggerTimeoutError) {
 										dispatchToastMessage({
 											type: 'error',

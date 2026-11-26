@@ -721,7 +721,7 @@ export class AppManager {
 
 	public async update(
 		appPackage: Buffer,
-		permissionsGranted: Array<IPermission>,
+		permissionsGranted: Array<IPermission> | undefined,
 		updateOptions: { loadApp?: boolean; user?: IUser } = { loadApp: true },
 	): Promise<AppFabricationFulfillment> {
 		const aff = new AppFabricationFulfillment();

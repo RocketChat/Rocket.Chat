@@ -995,6 +995,7 @@
   "Everyone_can_access_this_channel": "Toată lumea poate accesa acest canal",
   "Example_s": "Exemplu: <code>{{value}}</code>",
   "except_pinned": "(cu excepția celor fixate)",
+  "Exchange_Graph_Client_Secret": "Client secret",
   "Exclude_Botnames": "Excludeți Bots",
   "Exclude_Botnames_Description": "Nu propagați mesajele de la roboții al căror nume corespunde expresiei regulate de mai sus. Dacă sunt lăsate goale, toate mesajele de la roboți vor fi propagate.",
   "Exclude_pinned": "Excludeți mesajele fixate",

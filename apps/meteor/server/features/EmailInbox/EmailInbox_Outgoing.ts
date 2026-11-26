@@ -35,7 +35,7 @@ async function buildMailAttachment(file: IUpload): Promise<Mail.Attachment | und
 }
 
 // TODO: change these messages with room notifications
-const sendErrorReplyMessage = async (error: string, options: any) => {
+const sendErrorReplyMessage = async (error: string, options: any): Promise<unknown> => {
 	if (!options?.rid || !options?.msgId) {
 		return;
 	}
@@ -56,7 +56,7 @@ const sendErrorReplyMessage = async (error: string, options: any) => {
 	return sendMessage(user, message, { _id: options.rid });
 };
 
-const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId: string; sender: string }) => {
+const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId: string; sender: string }): Promise<unknown> => {
 	if (!options?.room?._id || !options?.msgId) {
 		return;
 	}

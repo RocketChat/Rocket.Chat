@@ -1,9 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const permissions: Record<string, string[]> = {};
@@ -23,13 +22,13 @@ const usersFindOne = sinon.stub();
 const usersFindOneByUsername = sinon.stub();
 const subscriptionsFindOneByRoomIdAndUserId = sinon.stub();
 
-const { updateIncomingIntegration } = proxyquire.noCallThru().load('./updateIncomingIntegration', {
-	'@rocket.chat/core-services': { ClientSafeError },
-	'../../../lib/authorization/hasPermission': { hasAllPermissionAsync, hasPermissionAsync },
-	'../../../lib/integrations/lib/validateScriptEngine': { isScriptEngineFrozen, validateScriptEngine },
-	'../../../lib/integrations/lib/validateScriptSyntax': { validateScriptSyntax },
-	'../../../lib/notifyListener': { notifyOnIntegrationChanged },
-});
+mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+mock.module('../../../lib/authorization/hasPermission', { exports: { hasAllPermissionAsync, hasPermissionAsync } });
+mock.module('../../../lib/integrations/lib/validateScriptEngine', { exports: { isScriptEngineFrozen, validateScriptEngine } });
+mock.module('../../../lib/integrations/lib/validateScriptSyntax', { exports: { validateScriptSyntax } });
+mock.module('../../../lib/notifyListener', { exports: { notifyOnIntegrationChanged } });
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
+const { updateIncomingIntegration } = require('./updateIncomingIntegration');
 
 const NOW = new Date('2026-01-01T12:00:00.000Z');
 const updatedBy = { _id: 'user-id', username: 'admin' };

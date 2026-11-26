@@ -42,7 +42,11 @@ export function useChatMessagesInstance({
 		}
 	}, [subscription, chatMessages?.readStateManager]);
 
-	chatMessages.emojiPicker = useEmojiPicker();
+	const emojiPicker = useEmojiPicker();
+
+	useEffect(() => {
+		chatMessages.emojiPicker = emojiPicker;
+	}, [chatMessages, emojiPicker]);
 
 	return chatMessages;
 }

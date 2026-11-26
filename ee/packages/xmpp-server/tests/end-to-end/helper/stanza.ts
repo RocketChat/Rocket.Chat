@@ -11,6 +11,7 @@ export const NS = {
 	mucUser: 'http://jabber.org/protocol/muc#user',
 	mucOwner: 'http://jabber.org/protocol/muc#owner',
 	mucAdmin: 'http://jabber.org/protocol/muc#admin',
+	conference: 'jabber:x:conference',
 	dataForms: 'jabber:x:data',
 	stanzas: 'urn:ietf:params:xml:ns:xmpp-stanzas',
 	correction: 'urn:xmpp:message-correct:0',

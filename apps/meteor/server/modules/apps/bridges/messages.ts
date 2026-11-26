@@ -1,6 +1,7 @@
 import type { IAppServerOrchestrator, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
 import type { ITypingDescriptor } from '@rocket.chat/apps/dist/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps/dist/server/bridges/MessageBridge';
+import { TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
 import type { Reaction } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { api } from '@rocket.chat/core-services';
@@ -25,7 +26,7 @@ export class AppMessageBridge extends MessageBridge {
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const definedMessage = convertedMessage as IMessage;
 
-		const sentMessage = await executeSendMessage(definedMessage.u._id, definedMessage);
+		const sentMessage: IMessage = await executeSendMessage(definedMessage.u._id, definedMessage);
 		return sentMessage._id;
 	}
 
@@ -105,7 +106,7 @@ export class AppMessageBridge extends MessageBridge {
 
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
-			case 'room':
+			case TypingScope.Room:
 				if (!username) {
 					throw new Error('Invalid username');
 				}

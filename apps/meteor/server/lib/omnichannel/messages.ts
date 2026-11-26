@@ -145,6 +145,7 @@ export async function sendMessage({
 	agent?: SelectedAgent;
 }) {
 	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
+	// oxlint-disable-next-line typescript/no-unsafe-return -- spreads the any-typed result of the legacy sendMessage that callers rely on
 	return {
 		...(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room)),
 		newRoom,

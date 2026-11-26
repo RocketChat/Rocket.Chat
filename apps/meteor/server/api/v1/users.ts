@@ -1,6 +1,7 @@
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { ClientSafeError, Presence, Team, isClientSafeError } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
 	ajv,
@@ -2128,9 +2129,9 @@ API.v1
 
 			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
 			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
-			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
+			const effectiveStatus = status || user.statusDefault || UserStatus.ONLINE;
 
-			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+			if (effectiveStatus === UserStatus.OFFLINE && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 				throw new ClientSafeError('error-status-not-allowed', 'Invisible status is disabled', {
 					method: 'users.setStatus',
 				});

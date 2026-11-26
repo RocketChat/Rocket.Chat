@@ -1,1 +1,1 @@
-export { default, type CreateNewPasswordPageProps } from './CreateNewPasswordPage';
+export { default, type CreateNewPasswordPageProps } from './CreateNewPasswordPage.js';

@@ -1,0 +1,150 @@
+import { composeStories } from '@storybook/react';
+import { act, fireEvent, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import * as stories from './VideoPlayer.stories';
+import { render } from '../../testing';
+
+const { Default } = composeStories(stories);
+
+// oxlint-disable-next-line testing-library/no-node-access -- a video element has no role, label or text of its own
+const getVideo = (container: HTMLElement) => container.querySelector('video') as HTMLVideoElement;
+
+// jsdom never matches `:focus-visible`; keyboard focus always would.
+const stubFocusVisible = () => {
+	const { matches } = Element.prototype;
+	jest.spyOn(Element.prototype, 'matches').mockImplementation(function (this: Element, selector: string) {
+		// oxlint-disable-next-line testing-library/no-node-access -- the stub compares against the focused element, as `:focus-visible` does
+		return selector === ':focus-visible' ? this === this.ownerDocument.activeElement : matches.call(this, selector);
+	});
+};
+
+describe('[VideoPlayer Component]', () => {
+	beforeEach(() => {
+		jest.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+		jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => undefined);
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+		jest.restoreAllMocks();
+	});
+
+	it('shows only the play button before the video starts', () => {
+		render(<Default />);
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+	});
+
+	it('shows the controls once the video plays', () => {
+		const { container } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
+		expect(screen.getByRole('slider', { name: 'Video Playback Range' })).toBeInTheDocument();
+		expect(screen.getByText('0:00 / 0:00')).toBeInTheDocument();
+	});
+
+	it('replaces the controls with an error and reloads on retry', async () => {
+		const { container } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('slider')).toBeInTheDocument();
+		fireEvent.error(getVideo(container));
+		expect(screen.getByRole('alert')).toHaveTextContent("This video can't be played here");
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+		expect(HTMLMediaElement.prototype.load).toHaveBeenCalled();
+		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+	});
+
+	it('stops showing the loading state once a retried video has its metadata', async () => {
+		const { container } = render(<Default />);
+		fireEvent.error(getVideo(container));
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+		expect(screen.getByLabelText('Loading')).toBeInTheDocument();
+		fireEvent.loadedMetadata(getVideo(container));
+		expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+	});
+
+	it('reloads when the source changes', () => {
+		const { container, rerender } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		expect(HTMLMediaElement.prototype.load).not.toHaveBeenCalled();
+		rerender(<Default src='https://example.com/other.mp4' />);
+		expect(HTMLMediaElement.prototype.load).toHaveBeenCalledTimes(1);
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+	});
+
+	it('keeps the controls reachable from the keyboard while the video plays', async () => {
+		stubFocusVisible();
+		jest.useFakeTimers();
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		const { container } = render(<Default />);
+		const video = getVideo(container);
+		fireEvent.play(video);
+		fireEvent.playing(video);
+		act(() => jest.advanceTimersByTime(3000));
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+
+		await user.tab();
+		expect(video).toHaveFocus();
+		await user.tab();
+		const range = screen.getByRole('slider', { name: 'Video Playback Range' });
+		expect(range).toHaveFocus();
+		act(() => jest.advanceTimersByTime(3000));
+		expect(screen.getByRole('button', { name: 'Pause' })).toBeVisible();
+	});
+
+	it('moves focus to the controls when the video is started from the keyboard', async () => {
+		stubFocusVisible();
+		const user = userEvent.setup();
+		const { container } = render(<Default />);
+		await user.tab();
+		expect(screen.getByRole('button', { name: 'Play' })).toHaveFocus();
+		await user.keyboard('{Enter}');
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Pause' })).toHaveFocus();
+	});
+
+	it('leaves focus alone when a keyboard start fails and playback starts later another way', async () => {
+		stubFocusVisible();
+		jest.mocked(HTMLMediaElement.prototype.play).mockRejectedValueOnce(new Error('NotAllowedError'));
+		const user = userEvent.setup();
+		const { container } = render(<Default />);
+		await user.tab();
+		await user.keyboard('{Enter}');
+		await act(async () => undefined);
+		fireEvent.play(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Pause' })).not.toHaveFocus();
+	});
+
+	it('hides the controls again once the focused Retry button is gone', async () => {
+		stubFocusVisible();
+		jest.useFakeTimers();
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		const { container } = render(<Default />);
+		const video = getVideo(container);
+		fireEvent.play(video);
+		fireEvent.error(video);
+		await user.tab();
+		expect(screen.getByRole('button', { name: 'Retry' })).toHaveFocus();
+		await user.keyboard('{Enter}');
+		fireEvent.loadedMetadata(video);
+		fireEvent.play(video);
+		fireEvent.playing(video);
+		act(() => jest.advanceTimersByTime(3000));
+		expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+	});
+
+	it('offers Play again after retrying a video that failed while playing', async () => {
+		const { container } = render(<Default />);
+		fireEvent.play(getVideo(container));
+		fireEvent.error(getVideo(container));
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+		fireEvent.loadedMetadata(getVideo(container));
+		expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
+	});
+});

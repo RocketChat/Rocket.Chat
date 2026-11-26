@@ -49,7 +49,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			datesArray[i] = addDays(start, i).toISOString();
 		}
 
-		const valuesArray = new Array(24);
+		const valuesArray = new Array<{ id: string; data: { x: string; y: number }[] }>(24);
 		for (let hour = 0; hour < 24; hour++) {
 			valuesArray[hour] = {
 				id: hour.toString(),
@@ -98,7 +98,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
+					attachmentName={data ? `UsersByTimeOfTheDaySection_start_${data.start.toISOString()}_end_${data.end.toISOString()}` : ''}
 					headers={['Date', 'Users']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined =>
