@@ -180,6 +180,7 @@
 		"@sapphi-red/web-noise-suppressor": "^0.4.0",
 		"@slack/bolt": "^3.22.0",
 		"@slack/rtm-api": "~7.0.4",
+		"@slack/web-api": "^6.13.0",
 		"@tanstack/react-query": "~5.65.1",
 		"@types/meteor": "^2.9.11",
 		"@xmldom/xmldom": "~0.8.15",

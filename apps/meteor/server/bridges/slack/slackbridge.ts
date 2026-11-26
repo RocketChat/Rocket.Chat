@@ -1,8 +1,4 @@
-// This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
-// TODO: Remove the following lint/ts instructions when the file gets properly converted
-
-/* oxlint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+import type { IUser } from '@rocket.chat/core-typings';
 import { debounce } from 'lodash';
 
 import RocketAdapter from './RocketAdapter';
@@ -14,24 +10,36 @@ import { settings } from '../../settings';
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
  */
 class SlackBridgeClass {
+	isEnabled = false;
+
+	isLegacyRTM = true;
+
+	slackAdapters: SlackAdapter[] = [];
+
+	rocket: RocketAdapter;
+
+	reactionsMap = new Map<string, IUser>(); // Sync object between rocket and slack
+
+	connected = false;
+
+	// Settings that we cache versus looking up at runtime
+	apiTokens = '';
+
+	botTokens = '';
+
+	appTokens = '';
+
+	signingSecrets = '';
+
+	aliasFormat = '';
+
+	excludeBotnames = '';
+
+	isReactionsEnabled = true;
+
 	constructor() {
-		this.isEnabled = false;
-		this.isLegacyRTM = true;
-		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);
-		this.reactionsMap = new Map(); // Sync object between rocket and slack
-
-		this.connected = false;
 		this.rocket.clearSlackAdapters();
-
-		// Settings that we cache versus looking up at runtime
-		this.apiTokens = false;
-		this.botTokens = false;
-		this.appTokens = false;
-		this.signingSecrets = false;
-		this.aliasFormat = '';
-		this.excludeBotnames = '';
-		this.isReactionsEnabled = true;
 
 		this.processSettings();
 	}
@@ -46,7 +54,6 @@ class SlackBridgeClass {
 
 				tokenList.forEach((apiToken) => {
 					const slack = new SlackAdapter(this);
-					slack.setRocket(this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
@@ -71,7 +78,6 @@ class SlackBridgeClass {
 
 				appCredentials.forEach((appCredential) => {
 					const slack = new SlackAdapter(this);
-					slack.setRocket(this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
@@ -100,14 +106,14 @@ class SlackBridgeClass {
 
 	debouncedReconnectIfEnabled = debounce(() => {
 		if (this.isEnabled) {
-			this.reconnect();
+			void this.reconnect();
 		}
 	}, 500);
 
 	async disconnect() {
 		try {
 			if (this.connected === true) {
-				await this.rocket.disconnect();
+				this.rocket.disconnect();
 				await Promise.all(this.slackAdapters.map((slack) => slack.disconnect()));
 				this.slackAdapters = [];
 				this.connected = false;
@@ -120,7 +126,7 @@ class SlackBridgeClass {
 
 	processSettings() {
 		// Check if legacy realtime api is enabled
-		settings.watch('SlackBridge_UseLegacy', (value) => {
+		settings.watch<boolean>('SlackBridge_UseLegacy', (value) => {
 			if (value !== this.isLegacyRTM) {
 				this.isLegacyRTM = value;
 				this.debouncedReconnectIfEnabled();
@@ -129,7 +135,7 @@ class SlackBridgeClass {
 		});
 
 		// Slack installtion Bot token
-		settings.watch('SlackBridge_BotToken', (value) => {
+		settings.watch<string>('SlackBridge_BotToken', (value) => {
 			if (value !== this.botTokens) {
 				this.botTokens = value;
 				this.debouncedReconnectIfEnabled();
@@ -137,7 +143,7 @@ class SlackBridgeClass {
 			classLogger.debug({ msg: 'Setting: SlackBridge_BotToken', value });
 		});
 		// Slack installtion App token
-		settings.watch('SlackBridge_AppToken', (value) => {
+		settings.watch<string>('SlackBridge_AppToken', (value) => {
 			if (value !== this.appTokens) {
 				this.appTokens = value;
 				this.debouncedReconnectIfEnabled();
@@ -145,7 +151,7 @@ class SlackBridgeClass {
 			classLogger.debug({ msg: 'Setting: SlackBridge_AppToken', value });
 		});
 		// Slack installtion Signing token
-		settings.watch('SlackBridge_SigningSecret', (value) => {
+		settings.watch<string>('SlackBridge_SigningSecret', (value) => {
 			if (value !== this.signingSecrets) {
 				this.signingSecrets = value;
 				this.debouncedReconnectIfEnabled();
@@ -154,7 +160,7 @@ class SlackBridgeClass {
 		});
 
 		// Slack installation API token
-		settings.watch('SlackBridge_APIToken', (value) => {
+		settings.watch<string>('SlackBridge_APIToken', (value) => {
 			if (value !== this.apiTokens) {
 				this.apiTokens = value;
 				this.debouncedReconnectIfEnabled();
@@ -164,36 +170,38 @@ class SlackBridgeClass {
 		});
 
 		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
-		settings.watch('SlackBridge_AliasFormat', (value) => {
+		settings.watch<string>('SlackBridge_AliasFormat', (value) => {
 			this.aliasFormat = value;
 			classLogger.debug({ msg: 'Setting: SlackBridge_AliasFormat', value });
 		});
 
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
-		settings.watch('SlackBridge_ExcludeBotnames', (value) => {
+		settings.watch<string>('SlackBridge_ExcludeBotnames', (value) => {
 			this.excludeBotnames = value;
 			classLogger.debug({ msg: 'Setting: SlackBridge_ExcludeBotnames', value });
 		});
 
 		// Reactions
-		settings.watch('SlackBridge_Reactions_Enabled', (value) => {
+		settings.watch<boolean>('SlackBridge_Reactions_Enabled', (value) => {
 			this.isReactionsEnabled = value;
 			classLogger.debug({ msg: 'Setting: SlackBridge_Reactions_Enabled', value });
 		});
 
 		// Is this entire SlackBridge enabled
-		settings.watch('SlackBridge_Enabled', (value) => {
+		settings.watch<boolean>('SlackBridge_Enabled', (value) => {
 			if (this.isEnabled !== value) {
 				this.isEnabled = value;
 				if (this.isEnabled) {
 					this.debouncedReconnectIfEnabled();
 				} else {
-					this.disconnect();
+					void this.disconnect();
 				}
 			}
 			classLogger.debug({ msg: 'Setting: SlackBridge_Enabled', value });
 		});
 	}
 }
+
+export type { SlackBridgeClass };
 
 export const SlackBridge = new SlackBridgeClass();

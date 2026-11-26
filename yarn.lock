@@ -10076,6 +10076,7 @@ __metadata:
     "@sapphi-red/web-noise-suppressor": "npm:^0.4.0"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
+    "@slack/web-api": "npm:^6.13.0"
     "@storybook/react": "npm:~10.6.5"
     "@storybook/react-webpack5": "npm:~10.6.5"
     "@tamagui/static": "npm:3.0.18"
