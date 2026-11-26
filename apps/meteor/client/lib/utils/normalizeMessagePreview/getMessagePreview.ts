@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isE2EEMessage, isMultipleDirectMessageRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { escapeHTML } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
@@ -10,7 +9,7 @@ import { getSubscriptionDraft } from '../getSubscriptionDraft';
 export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	const draft = getSubscriptionDraft(room);
 	if (draft) {
-		return `${t('Draft')}: ${escapeHTML(draft)}`;
+		return `${t('Draft')}: ${draft}`;
 	}
 
 	if (!lastMessage) {
@@ -37,5 +36,5 @@ export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMess
 	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room)) {
 		return normalizedMessage;
 	}
-	return `${escapeHTML(lastMessage.u.name || lastMessage.u.username)}: ${normalizedMessage}`;
+	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizedMessage}`;
 };
