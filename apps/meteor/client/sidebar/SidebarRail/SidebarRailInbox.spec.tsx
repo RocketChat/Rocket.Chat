@@ -8,7 +8,7 @@ import * as stories from './SidebarRailInbox.stories';
 import SidebarPortal from '../../portals/SidebarPortal';
 import LayoutProvider from '../../providers/LayoutProvider';
 
-const { WithUnreads } = composeStories(stories);
+const { WithMentions } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -26,10 +26,10 @@ it.each(testCases)('%s should have no a11y violations', async (_storyname, Story
 	expect(results).toHaveNoViolations();
 });
 
-it('shows the session unread value in its badge', () => {
-	render(<WithUnreads />);
+it('shows the sum of the room list group badges in the color of the most important one', () => {
+	render(<WithMentions />);
 
-	expect(screen.getByText('5')).toBeInTheDocument();
+	expect(screen.getByText('5')).toHaveClass('rcx-badge--danger');
 });
 
 it('is not pressed while a page shows its own sidebar over the room list', () => {
@@ -42,7 +42,7 @@ it('is not pressed while a page shows its own sidebar over the room list', () =>
 			<SidebarRailInbox />
 			<SidebarPortal>page sidebar</SidebarPortal>
 		</LayoutProvider>,
-		{ wrapper: mockAppRoot().build() },
+		{ wrapper: mockAppRoot().withSubscriptions([]).build() },
 	);
 
 	expect(screen.getByRole('button', { name: 'Inbox_and_home' })).not.toHaveClass('rcx-button--icon-pressed');

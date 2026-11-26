@@ -1,22 +1,28 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { SessionContextValue } from '@rocket.chat/ui-contexts';
-import { SessionContext } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import SidebarRailInbox from './SidebarRailInbox';
+import { createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 
-const baseRoot = () => mockAppRoot().withTranslations('en', 'core', { Inbox_and_home: 'Inbox and home' });
+const room = (subscription: Parameters<typeof createFakeSubscription>[0]) =>
+	({
+		...createFakeRoom({ t: 'c' }),
+		...createFakeSubscription({
+			t: 'c',
+			open: true,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+			tunread: [],
+			tunreadUser: [],
+			alert: false,
+			...subscription,
+		}),
+	}) as unknown as SubscriptionWithRoom;
 
-const withUnread = (unread: number | '999+' | '•') => {
-	const session: SessionContextValue = {
-		query: () => [() => () => undefined, () => unread],
-		dispatch: () => undefined,
-	};
-
-	return baseRoot()
-		.wrap((children) => <SessionContext.Provider value={session}>{children}</SessionContext.Provider>)
-		.buildStoryDecorator();
-};
+const inboxRoot = (subscriptions: SubscriptionWithRoom[]) =>
+	mockAppRoot().withTranslations('en', 'core', { Inbox_and_home: 'Inbox and home' }).withSubscriptions(subscriptions).buildStoryDecorator();
 
 export default {
 	title: 'Sidebar/SidebarRail/SidebarRailInbox',
@@ -29,17 +35,36 @@ export default {
 type Story = StoryObj<typeof SidebarRailInbox>;
 
 export const Default: Story = {
-	decorators: [baseRoot().buildStoryDecorator()],
+	decorators: [inboxRoot([])],
 };
 
 export const WithUnreads: Story = {
-	decorators: [withUnread(5)],
-};
-
-export const WithManyUnreads: Story = {
-	decorators: [withUnread('999+')],
+	decorators: [inboxRoot([room({ unread: 3 }), room({ unread: 2 })])],
 };
 
 export const WithAlertOnly: Story = {
-	decorators: [withUnread('•')],
+	decorators: [inboxRoot([room({ alert: true })])],
+};
+
+export const WithThreads: Story = {
+	decorators: [inboxRoot([room({ unread: 2 }), room({ alert: true, tunread: ['t1'] })])],
+};
+
+export const WithGroupMentions: Story = {
+	decorators: [inboxRoot([room({ unread: 2 }), room({ unread: 1, groupMentions: 1 })])],
+};
+
+export const WithMentions: Story = {
+	decorators: [
+		inboxRoot([
+			room({ alert: true }),
+			room({ unread: 1, tunread: ['t1'] }),
+			room({ unread: 2, userMentions: 2 }),
+			room({ unread: 4, archived: true }),
+		]),
+	],
+};
+
+export const WithManyUnreads: Story = {
+	decorators: [inboxRoot([room({ unread: 1200, userMentions: 1 })])],
 };

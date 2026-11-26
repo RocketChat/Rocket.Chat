@@ -5,15 +5,17 @@ import type { Meta, StoryObj } from '@storybook/react';
 import SidebarRail from './SidebarRail';
 
 const baseRoot = () =>
-	mockAppRoot().withTranslations('en', 'core', {
-		Sidebar: 'Sidebar',
-		Inbox_and_home: 'Inbox and home',
-		Navigation: 'Navigation',
-		Sidebar_preferences: 'Sidebar preferences',
-		Voice_Call: 'Voice Call',
-		Pages_and_actions: 'Pages and actions',
-		Workspace_and_user_preferences: 'Workspace and user preferences',
-	});
+	mockAppRoot()
+		.withTranslations('en', 'core', {
+			Sidebar: 'Sidebar',
+			Inbox_and_home: 'Inbox and home',
+			Navigation: 'Navigation',
+			Sidebar_preferences: 'Sidebar preferences',
+			Voice_Call: 'Voice Call',
+			Pages_and_actions: 'Pages and actions',
+			Workspace_and_user_preferences: 'Workspace and user preferences',
+		})
+		.withSubscriptions([]);
 
 export default {
 	title: 'Sidebar/SidebarRail',
