@@ -226,6 +226,7 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Types | `packages/core-typings/src/IUser.ts` (`ISidebarCategory`, `SIDEBAR_SYSTEM_GROUP_KEYS`) |
 | Category list + ordering | `apps/meteor/client/sidebar/hooks/useCategoryList.ts` |
 | Room list | `apps/meteor/client/sidebar/hooks/useRoomList.ts` |
+| Sticky Unread room | `apps/meteor/client/sidebar/hooks/useStickyUnreadRoom.ts` |
 | Persist mutation | `apps/meteor/client/sidebar/categories/hooks/usePersistCategoriesMutation.ts` |
 | Create category | `apps/meteor/client/sidebar/categories/hooks/useCreateCustomCategory.ts` |
 | Move room | `apps/meteor/client/sidebar/categories/hooks/useMoveRoomCategory.ts` |

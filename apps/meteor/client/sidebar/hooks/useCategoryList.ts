@@ -122,7 +122,7 @@ export const getRoomCategory = (
 		return 'Incoming_Calls';
 	}
 
-	if ((isUnreadRoom(room) || room.rid === stickyUnreadRid) && groups.has('Unread')) {
+	if ((isUnreadRoom(room) || (room.rid === stickyUnreadRid && !room.hideUnreadStatus)) && groups.has('Unread')) {
 		return 'Unread';
 	}
 

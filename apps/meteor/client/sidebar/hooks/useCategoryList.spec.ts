@@ -83,6 +83,14 @@ describe('getRoomCategory', () => {
 		);
 	});
 
+	it('lists the sticky room in its own group once its unread status is hidden', () => {
+		const hidden = { ...readFavorite, hideUnreadStatus: true } as SubscriptionWithRoom;
+
+		expect(getRoomCategory(hidden, { groups: groupsOf('Unread', 'Favorites'), hasIncomingCalls: noCalls, stickyUnreadRid: 'a' })).toBe(
+			'Favorites',
+		);
+	});
+
 	it('lists a read room that is not sticky in its own group', () => {
 		expect(
 			getRoomCategory(readFavorite, { groups: groupsOf('Unread', 'Favorites'), hasIncomingCalls: noCalls, stickyUnreadRid: 'b' }),
