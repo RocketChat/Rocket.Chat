@@ -493,7 +493,7 @@ export default class RocketAdapter {
 
 			if (slackMessage.pinned_to && slackMessage.pinned_to.indexOf(slackMessage.channel) !== -1) {
 				rocketMsgObj.pinned = true;
-				rocketMsgObj.pinnedAt = Date.now;
+				rocketMsgObj.pinnedAt = new Date();
 				rocketMsgObj.pinnedBy = _.pick(rocketUser, '_id', 'username');
 			}
 			if (slackMessage.subtype === 'bot_message') {
