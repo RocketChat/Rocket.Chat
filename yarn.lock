@@ -13712,10 +13712,10 @@ __metadata:
 
 "@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch":
   version: 3.0.18
-  resolution: "@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch::version=3.0.18&hash=748c11"
+  resolution: "@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch::version=3.0.18&hash=b6b5c5"
   peerDependencies:
     react: ">=19"
-  checksum: 10/b7a0ed1cbf00237202f2a9dc39ff6707ed689c46aa5d40a159726ce161a558d7f2a00f4072f3f8d8569e4f995fce779ea5ed14e35c2c208015f4dd3fe75831b0
+  checksum: 10/534e143ba08e45196a0be7827c74a3f9d8f13a5ac53ac275168ee7e169a1a4e64d63072a99e2e5c3b5d7e7fcda3bdfd3158d1e77d5842574f79c28c953646d49
   languageName: node
   linkType: hard
 
