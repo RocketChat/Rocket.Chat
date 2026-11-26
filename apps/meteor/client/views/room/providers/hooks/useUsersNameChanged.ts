@@ -7,7 +7,7 @@ import { Messages, Subscriptions } from '../../../../stores';
 
 export const useUsersNameChanged = () => {
 	const notify = useStream('notify-logged');
-	const updateMessages = Messages.use((state) => state.update);
+	const updateMessages = Messages.useStore((state) => state.update);
 	useEffect(() => {
 		return notify('Users:NameChanged', ({ _id, name, username }) => {
 			updateMessages(

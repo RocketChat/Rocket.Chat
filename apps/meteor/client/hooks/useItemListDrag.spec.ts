@@ -1,4 +1,5 @@
-import { renderHook, act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { renderHook, act, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { useItemListDrag } from './useItemListDrag';
 import { useItemListNavigation } from './useItemListNavigation';
@@ -57,14 +58,14 @@ describe('useItemListDrag', () => {
 		attachNavigation(navigation.current, list);
 
 		rows[0].focus();
-		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
+		await userEvent.keyboard('{Meta>}{Shift>}{ArrowDown}{/Shift}{/Meta}');
 
 		expect(onMove).toHaveBeenCalledWith({ key: 'Projects', kind: 'group', group: 'Projects' }, 'down');
 		await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Projects moved to position 2 of 2'));
 		expect(rows[0]).toHaveFocus();
 	});
 
-	it('advertises the shortcut only on the rows the keyboard can move', () => {
+	it('advertises the shortcut only on the rows the keyboard can move', async () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();
 
@@ -78,7 +79,7 @@ describe('useItemListDrag', () => {
 		expect(rows[0]).toHaveAttribute('aria-keyshortcuts', expect.stringContaining('Meta+Shift+ArrowDown'));
 		expect(rows[1]).not.toHaveAttribute('aria-keyshortcuts');
 
-		fireEvent.keyDown(rows[1], { key: 'ArrowDown', ctrlKey: true, shiftKey: true });
+		await userEvent.keyboard('{Control>}{Shift>}{ArrowDown}{/Shift}{/Control}');
 		expect(onMove).not.toHaveBeenCalled();
 	});
 
@@ -90,7 +91,7 @@ describe('useItemListDrag', () => {
 		attachDrag(result.current.ref, list);
 
 		rows[0].focus();
-		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
+		await userEvent.keyboard('{Meta>}{Shift>}{ArrowDown}{/Shift}{/Meta}');
 
 		await waitFor(() => expect(onMove).toHaveBeenCalled());
 		await act(async () => undefined);
@@ -112,17 +113,17 @@ describe('useItemListDrag', () => {
 		attachDrag(result.current.ref, list);
 
 		rows[0].focus();
-		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
-		fireEvent.keyDown(rows[0], { key: 'ArrowUp', metaKey: true, shiftKey: true });
+		await userEvent.keyboard('{Meta>}{Shift>}{ArrowDown}{/Shift}{/Meta}');
+		await userEvent.keyboard('{Meta>}{Shift>}{ArrowUp}{/Shift}{/Meta}');
 		expect(onMove).toHaveBeenCalledTimes(1);
 
 		await act(async () => save());
-		fireEvent.keyDown(rows[0], { key: 'ArrowUp', metaKey: true, shiftKey: true });
+		await userEvent.keyboard('{Meta>}{Shift>}{ArrowUp}{/Shift}{/Meta}');
 		expect(onMove).toHaveBeenCalledTimes(2);
 		expect(onMove).toHaveBeenLastCalledWith({ key: 'Projects', kind: 'group', group: 'Projects' }, 'up');
 	});
 
-	it('leaves the shortcut to text fields inside a row', () => {
+	it('leaves the shortcut to text fields inside a row', async () => {
 		const { list, groups } = createList();
 		const input = document.createElement('input');
 		groups[0].appendChild(input);
@@ -132,7 +133,7 @@ describe('useItemListDrag', () => {
 		attachDrag(result.current.ref, list);
 
 		input.focus();
-		fireEvent.keyDown(input, { key: 'ArrowDown', metaKey: true, shiftKey: true });
+		await userEvent.keyboard('{Meta>}{Shift>}{ArrowDown}{/Shift}{/Meta}');
 
 		expect(onMove).not.toHaveBeenCalled();
 	});

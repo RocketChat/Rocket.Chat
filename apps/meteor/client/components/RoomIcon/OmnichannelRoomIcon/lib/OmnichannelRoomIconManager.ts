@@ -22,7 +22,7 @@ const OmnichannelRoomIconManager = new (class extends Emitter {
 
 		sdk.rest
 			.send(`/apps/public/${appId}/get-sidebar-icon?icon=${icon}`, 'GET')
-			.then((response: any) => {
+			.then((response) => {
 				response.text().then((text: string) => {
 					this.icons.set(
 						`${appId}-${icon}`,

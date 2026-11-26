@@ -36,7 +36,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
 import AdminUserEmailField from './AdminUserEmailField';
@@ -135,13 +135,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const isSmtpEnabled = !!data?.isSMTPConfigured;
 	const isNewUserPage = context === 'new';
 
-	const {
-		control,
-		watch,
-		handleSubmit,
-		formState: { errors, isDirty, dirtyFields },
-		setValue,
-	} = useForm({
+	const { control, handleSubmit, setValue } = useForm({
 		values: getInitialValue({
 			data: userData,
 			defaultUserRoles,
@@ -150,10 +144,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
 	});
+	const { errors, isDirty, dirtyFields } = useFormState({ control });
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
+	const [avatar, username, setRandomPassword, password, userFullName, presenceDisabledByAdmin] = useWatch({
+		control,
+		name: ['avatar', 'username', 'setRandomPassword', 'password', 'name', 'presenceDisabledByAdmin'],
+	});
 	const showUserStatusSection = userStatusEnabled && canManageUserStatus;
 	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 

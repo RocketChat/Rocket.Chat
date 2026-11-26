@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/no-unsafe-return -- the upload response is untyped; it will be typed in a separate change */
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';

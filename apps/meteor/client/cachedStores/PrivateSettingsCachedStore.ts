@@ -9,7 +9,7 @@ class PrivateSettingsCachedStore extends PrivateCachedStore<ISetting> {
 		super({
 			name: 'private-settings',
 			eventType: 'notify-logged',
-			store: PrivateSettings.use,
+			store: PrivateSettings.useStore,
 		});
 	}
 

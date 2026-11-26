@@ -34,7 +34,7 @@ const playerValue = (track: PersistentAudioTrack): ContextType<typeof MediaPlaye
 	cyclePlaybackRate: noop,
 	retry: noop,
 	close: noop,
-	isActive: () => true,
+	activeTrackId: track.id,
 });
 
 export default {

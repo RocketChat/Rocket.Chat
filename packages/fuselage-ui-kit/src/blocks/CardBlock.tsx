@@ -7,10 +7,8 @@ import type { BlockProps } from '../utils/BlockProps';
 
 export type CardBlockProps = BlockProps<UiKit.CardBlock>;
 
-const maxWidth = 360;
-
 const CardBlock = ({ className, block, surfaceRenderer }: CardBlockProps) => (
-	<Box className={className} display='flex' maxWidth={maxWidth}>
+	<Box className={className} display='flex'>
 		<CardView block={block} surfaceRenderer={surfaceRenderer} />
 	</Box>
 );

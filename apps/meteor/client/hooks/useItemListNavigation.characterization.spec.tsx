@@ -90,8 +90,11 @@ describe('a list of Item rows', () => {
 		render(<List />);
 
 		const list = screen.getByRole('list', { name: 'Rooms' });
+		// oxlint-disable-next-line testing-library/no-node-access -- the test pins the class names the hook queries, which only a selector can check
 		expect(list.querySelectorAll('.rcx-item')).toHaveLength(rooms.length);
+		// oxlint-disable-next-line testing-library/no-node-access -- the test pins the class names the hook queries, which only a selector can check
 		expect(list.querySelectorAll('.rcx-item__link')).toHaveLength(rooms.length);
+		// oxlint-disable-next-line testing-library/no-node-access -- the test pins the class names the hook queries, which only a selector can check
 		expect(list.querySelectorAll('.rcx-item__actions--reveal-hover button')).toHaveLength(rooms.length);
 	});
 });

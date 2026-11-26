@@ -43,6 +43,128 @@ async function showDeletedFilesInDiscussionQuotes(
 	quoteIds.forEach((id) => void notifyOnMessageChange({ id }));
 }
 
+type PruneScope = {
+	rid: IRoom['_id'];
+	excludePinned: boolean;
+	ignoreDiscussion: boolean;
+	ts: Record<string, Date>;
+	fromUsers: string[];
+};
+
+async function deleteDiscussionRooms({
+	rid,
+	excludePinned,
+	ts,
+	fromUsers,
+	limit,
+}: Omit<PruneScope, 'ignoreDiscussion'> & { limit: number }): Promise<void> {
+	const discussionsCursor = Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+		projection: { drid: 1 },
+		...(limit && { limit }),
+	});
+
+	for await (const { drid } of discussionsCursor) {
+		if (!drid) {
+			continue;
+		}
+		await deleteRoom(drid);
+	}
+}
+
+async function clearUnreadThreads({ rid, excludePinned, ignoreDiscussion, ts, fromUsers }: PruneScope): Promise<void> {
+	const threads: string[] = [];
+
+	await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
+		{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
+		{ projection: { _id: 1 } },
+	).forEach(({ _id }) => {
+		threads.push(_id);
+	});
+
+	for (let i = 0; i < threads.length; i += FILE_CLEANUP_BATCH_SIZE) {
+		const batch = threads.slice(i, i + FILE_CLEANUP_BATCH_SIZE);
+		const subscriptionIds: string[] = (await Subscriptions.findUnreadThreadsByRoomId(rid, batch, { projection: { _id: 1 } }).toArray()).map(
+			({ _id }) => _id,
+		);
+
+		const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, batch);
+		if (modifiedCount) {
+			subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
+		}
+	}
+}
+
+async function removeMessagesInBatches({
+	rid,
+	excludePinned,
+	ignoreDiscussion,
+	ts,
+	fromUsers,
+	limit,
+	ignoreThreads,
+	discussionOriginIds,
+}: PruneScope & { limit: number; ignoreThreads: boolean; discussionOriginIds: string[] }): Promise<number> {
+	let remaining = limit || Infinity;
+	let count = 0;
+
+	try {
+		while (remaining > 0) {
+			const batch = await Messages.findByIdPinnedTimestampLimitAndUsers(
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				Math.min(FILE_CLEANUP_BATCH_SIZE, remaining),
+				fromUsers,
+				ignoreThreads,
+				discussionOriginIds,
+			);
+			if (!batch.length) {
+				break;
+			}
+
+			const { count: batchCount, deletedIds } = await Messages.removeByIdPinnedTimestampLimitAndUsers(
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				batch.length,
+				fromUsers,
+				ignoreThreads,
+				batch,
+			);
+			count += batchCount;
+			void api.broadcast('notify.deleteMessageBulk', rid, {
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				users: fromUsers,
+				ids: deletedIds,
+			});
+			await ReadReceipts.removeByMessageIds(deletedIds);
+			await ReadReceiptsArchive.removeByMessageIds(deletedIds);
+
+			remaining -= batch.length;
+			if (batch.length < FILE_CLEANUP_BATCH_SIZE) {
+				break;
+			}
+		}
+	} finally {
+		if (count) {
+			const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
+
+			await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
+			await refreshDiscussionMetadataOnParentRoom(rid);
+
+			void notifyOnRoomChangedById(rid);
+		}
+	}
+
+	return count;
+}
+
 export async function cleanRoomHistory({
 	rid = '',
 	latest = new Date(),
@@ -153,99 +275,21 @@ export async function cleanRoomHistory({
 	}
 
 	if (!ignoreDiscussion) {
-		const discussionsCursor = Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
-			projection: { drid: 1 },
-			...(limit && { limit }),
-		});
-
-		for await (const { drid } of discussionsCursor) {
-			if (!drid) {
-				continue;
-			}
-			await deleteRoom(drid);
-		}
+		await deleteDiscussionRooms({ rid, excludePinned, ts, fromUsers, limit });
 	}
 
 	if (!ignoreThreads) {
-		const threads: string[] = [];
-
-		await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
-			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
-			{ projection: { _id: 1 } },
-		).forEach(({ _id }) => {
-			threads.push(_id);
-		});
-
-		for (let i = 0; i < threads.length; i += FILE_CLEANUP_BATCH_SIZE) {
-			const batch = threads.slice(i, i + FILE_CLEANUP_BATCH_SIZE);
-			const subscriptionIds: string[] = (
-				await Subscriptions.findUnreadThreadsByRoomId(rid, batch, { projection: { _id: 1 } }).toArray()
-			).map(({ _id }) => _id);
-
-			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, batch);
-			if (modifiedCount) {
-				subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
-			}
-		}
+		await clearUnreadThreads({ rid, excludePinned, ignoreDiscussion, ts, fromUsers });
 	}
 
-	let remaining = limit || Infinity;
-	let count = 0;
-
-	try {
-		while (remaining > 0) {
-			const batch = await Messages.findByIdPinnedTimestampLimitAndUsers(
-				rid,
-				excludePinned,
-				ignoreDiscussion,
-				ts,
-				Math.min(FILE_CLEANUP_BATCH_SIZE, remaining),
-				fromUsers,
-				ignoreThreads,
-				discussionOriginIds,
-			);
-			if (!batch.length) {
-				break;
-			}
-
-			const { count: batchCount, deletedIds } = await Messages.removeByIdPinnedTimestampLimitAndUsers(
-				rid,
-				excludePinned,
-				ignoreDiscussion,
-				ts,
-				batch.length,
-				fromUsers,
-				ignoreThreads,
-				batch,
-			);
-			count += batchCount;
-			void api.broadcast('notify.deleteMessageBulk', rid, {
-				rid,
-				excludePinned,
-				ignoreDiscussion,
-				ts,
-				users: fromUsers,
-				ids: deletedIds,
-			});
-			await ReadReceipts.removeByMessageIds(deletedIds);
-			await ReadReceiptsArchive.removeByMessageIds(deletedIds);
-
-			remaining -= batch.length;
-			if (batch.length < FILE_CLEANUP_BATCH_SIZE) {
-				break;
-			}
-		}
-	} finally {
-		if (count) {
-			const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
-
-			await Rooms.resetLastMessageById(rid, lastMessage, -count);
-
-			await refreshDiscussionMetadataOnParentRoom(rid);
-
-			void notifyOnRoomChangedById(rid);
-		}
-	}
-
-	return count;
+	return removeMessagesInBatches({
+		rid,
+		excludePinned,
+		ignoreDiscussion,
+		ts,
+		fromUsers,
+		limit,
+		ignoreThreads,
+		discussionOriginIds,
+	});
 }

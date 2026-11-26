@@ -11,7 +11,7 @@ export default {
 		(Story) => {
 			const AppRoot = mockAppRoot()
 				.withSetting('DirectMesssage_maxUsers', 8)
-				.withEndpoint('GET', '/v1/users.autocomplete', () => ({ items: [], count: 0, offset: 0, total: 0, success: true }) as any)
+				.withEndpoint('GET', '/v1/users.autocomplete', () => ({ items: [], count: 0, offset: 0, total: 0, success: true }))
 				.build();
 			return (
 				<AppRoot>

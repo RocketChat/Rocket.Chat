@@ -151,7 +151,7 @@ export class LDAPManager {
 			return;
 		}
 
-		const hash = SHA256(avatar.toString());
+		const hash = SHA256(String(avatar));
 		if (user.avatarETag === hash) {
 			return;
 		}
@@ -424,9 +424,10 @@ export class LDAPManager {
 
 		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
 		if (key) {
+			const rawValue: unknown = ldapUser._raw[key];
 			return {
 				attribute: key,
-				value: ldapUser._raw[key].toString('hex'),
+				value: Buffer.isBuffer(rawValue) ? rawValue.toString('hex') : String(rawValue),
 			};
 		}
 
@@ -462,11 +463,12 @@ export class LDAPManager {
 			}
 		}
 
-		if (settings.get('LDAP_Default_Domain') !== '' && username) {
-			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
+		const defaultDomain = settings.get<string>('LDAP_Default_Domain');
+		if (defaultDomain !== '' && username) {
+			return [`${username}@${defaultDomain}`];
 		}
 
-		if (ldapUser.mail?.includes('@')) {
+		if (typeof ldapUser.mail === 'string' && ldapUser.mail.includes('@')) {
 			return [ldapUser.mail];
 		}
 

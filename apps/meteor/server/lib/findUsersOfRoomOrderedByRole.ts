@@ -137,7 +137,7 @@ export async function findUsersOfRoomOrderedByRole({
 	const [members, totalCount] = await Promise.all([membersResult.toArray(), Users.countDocuments(matchUserFilter)]);
 
 	return {
-		members: members.map((member: any) => {
+		members: members.map((member: UserWithRoleAndSubscriptionData & { rolePriority?: number }) => {
 			delete member.rolePriority;
 			return member;
 		}),

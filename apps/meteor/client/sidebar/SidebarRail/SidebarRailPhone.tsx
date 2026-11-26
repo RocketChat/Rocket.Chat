@@ -1,7 +1,6 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +8,6 @@ type SidebarRailPhoneProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const SidebarRailPhone = (props: SidebarRailPhoneProps) => {
 	const { t } = useTranslation();
-	const callAction = useMediaCallAction();
 	const router = useRouter();
 	const currentRoute = useCurrentRoutePath();
 
@@ -18,10 +16,6 @@ const SidebarRailPhone = (props: SidebarRailPhoneProps) => {
 	const handleClick = useStableCallback(() => {
 		router.navigate('/call-history');
 	});
-
-	if (!callAction) {
-		return null;
-	}
 
 	return (
 		<NavBarItem

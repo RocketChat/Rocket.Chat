@@ -168,7 +168,7 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 	}
 
 	if (request.status === 200) {
-		const response = await request.json();
+		const response: App[] = await request.json();
 		fetchMarketplaceAppsSchema.parse(response);
 		return response;
 	}

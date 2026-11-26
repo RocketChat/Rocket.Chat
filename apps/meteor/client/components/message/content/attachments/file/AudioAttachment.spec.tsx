@@ -15,7 +15,7 @@ jest.mock('../../../../../providers/MediaPlayerProvider', () => ({
 		toggle: jest.fn(),
 		seek: mockSeek,
 		cyclePlaybackRate: jest.fn(),
-		isActive: () => false,
+		activeTrackId: null,
 		playing: false,
 		currentTime: 5,
 		duration: 60,

@@ -30,8 +30,8 @@ export class AppRealStorage extends AppMetadataStorage {
 		return nonEmptyItem;
 	}
 
-	public async retrieveOne(id: string): Promise<IAppStorageItem> {
-		return this.db.findOne({ $or: [{ _id: id }, { id }] });
+	public async retrieveOne(id: string): Promise<IAppStorageItem | null> {
+		return this.db.findOne<IAppStorageItem>({ $or: [{ _id: id }, { id }] });
 	}
 
 	public async retrieveAll(): Promise<Map<string, IAppStorageItem>> {

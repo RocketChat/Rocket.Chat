@@ -49,8 +49,8 @@ export type MediaPlayerContextValue = {
 	cyclePlaybackRate: () => void;
 	/** Stops playback and clears the active track. */
 	close: () => void;
-	/** Whether the given track id is the one currently owned by the shared element. */
-	isActive: (id: string) => boolean;
+	/** The id of the track currently owned by the shared element, or null. */
+	activeTrackId: string | null;
 };
 
 const noop = () => undefined;
@@ -69,7 +69,7 @@ export const MediaPlayerContext = createContext<MediaPlayerContextValue>({
 	seek: noop,
 	cyclePlaybackRate: noop,
 	close: noop,
-	isActive: () => false,
+	activeTrackId: null,
 });
 
 export const useMediaPlayer = (): MediaPlayerContextValue => useContext(MediaPlayerContext);

@@ -5,7 +5,7 @@ import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
 import { settings } from '../../lib/settings';
 import { dispatchToastMessage } from '../../lib/toast';
-import { userIdStore } from '../../lib/user';
+import { useUserIdStore } from '../../lib/user';
 import { useUserDataSyncReady } from '../../lib/userData';
 
 // Meteor's accounts-password package registers `verifyEmail` server-side; declare
@@ -18,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 const whenMainReady = (): Promise<void> => {
 	const isMainReady = (): boolean => {
-		const uid = userIdStore.getState();
+		const uid = useUserIdStore.getState();
 		if (!uid) return true;
 
 		const subscriptionsReady = SubscriptionsCachedStore.useReady.getState();
@@ -40,7 +40,7 @@ const whenMainReady = (): Promise<void> => {
 			resolve();
 		};
 
-		const unsubscribeUserId = userIdStore.subscribe(checkAndResolve);
+		const unsubscribeUserId = useUserIdStore.subscribe(checkAndResolve);
 		const unsubscribeSubscriptions = SubscriptionsCachedStore.useReady.subscribe(checkAndResolve);
 		const unsubscribeSettings = PublicSettingsCachedStore.useReady.subscribe(checkAndResolve);
 		const unsubscribeUserData = useUserDataSyncReady.subscribe(checkAndResolve);

@@ -84,7 +84,7 @@ it('shows the initial option of an external_select', async () => {
 		jest.fn().mockResolvedValue({}),
 	);
 
-	await waitFor(() => expect(screen.getByText('Beta')).toBeInTheDocument());
+	expect(await screen.findByText('Beta')).toBeInTheDocument();
 });
 
 it('shows the initial options of a multi_external_select', async () => {
@@ -100,6 +100,6 @@ it('shows the initial options of a multi_external_select', async () => {
 		jest.fn().mockResolvedValue({}),
 	);
 
-	await waitFor(() => expect(screen.getByText('Beta')).toBeInTheDocument());
+	expect(await screen.findByText('Beta')).toBeInTheDocument();
 	expect(screen.getByText('Gamma')).toBeInTheDocument();
 });

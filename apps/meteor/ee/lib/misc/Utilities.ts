@@ -88,7 +88,7 @@ export class Utilities {
 
 			cmd.push(newLine);
 			cmd.push('--data-binary');
-			cmd.push(`'${content}'`);
+			cmd.push(`'${String(content)}'`);
 		}
 
 		return cmd.join(' ');

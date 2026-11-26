@@ -13,11 +13,11 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	}
 
 	const token = await getWorkspaceAccessToken();
-	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
+	const workspaceId = await Settings.getValueById<string>('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `v1/workspaces/${workspaceIdSetting}/apps`;
+	const fullUrl = `v1/workspaces/${workspaceId}/apps`;
 
 	let data = [];
 

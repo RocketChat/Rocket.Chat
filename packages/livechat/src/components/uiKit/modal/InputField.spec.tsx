@@ -15,7 +15,6 @@ afterEach(() => {
 });
 
 const draw = (errors: Record<string, string>) =>
-	// oxlint-disable-next-line testing-library/no-unnecessary-act
 	act(() => {
 		render(
 			<ErrorsContext.Provider value={errors}>

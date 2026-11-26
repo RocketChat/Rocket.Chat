@@ -50,7 +50,7 @@ export const useAnalytics = (): void => {
 			f.parentNode?.insertBefore(j, f);
 
 			// injecting the dataLayer into the windows global object
-			const w: Window & { dataLayer?: any } = window;
+			const w: Window & { dataLayer?: unknown[] } = window;
 			const dataLayer = w.dataLayer || [];
 			const gtag = (key: string, value: any) => {
 				dataLayer.push(key, value);
@@ -64,7 +64,7 @@ export const useAnalytics = (): void => {
 				i[r] =
 					i[r] ||
 					function (...args) {
-						((i[r] as any).q = (i[r] as any).q || []).push(args);
+						((i[r] as qa).q = (i[r] as qa).q || []).push(args);
 					};
 				(i[r] as any).l = new Date().getTime();
 
@@ -72,6 +72,7 @@ export const useAnalytics = (): void => {
 				m = s.getElementsByTagName(o)[0];
 				a.async = 1;
 				a.src = g;
+				// oxlint-disable-next-line typescript/no-unsafe-call -- verbatim Google Analytics loader snippet
 				m.parentNode.insertBefore(a, m);
 			})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 

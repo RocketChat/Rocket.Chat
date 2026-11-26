@@ -40,7 +40,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	}
 
 	await beforeAddUserToRoom(
-		users.map((u) => u.username!),
+		users.map((u) => u.username),
 		room,
 	);
 

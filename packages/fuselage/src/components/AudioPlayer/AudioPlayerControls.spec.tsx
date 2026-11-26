@@ -76,6 +76,7 @@ describe('[AudioPlayerControls Component]', () => {
 		const range = screen.getByRole('slider', { name: 'Audio Playback Range' });
 		expect(range).toHaveValue('9');
 		expect(range).toHaveAttribute('aria-valuetext', '0:09');
+		// oxlint-disable-next-line testing-library/prefer-user-event -- user-event cannot move a range input
 		fireEvent.change(range, { target: { value: '18' } });
 		expect(onSeek).toHaveBeenCalledWith(18);
 	});

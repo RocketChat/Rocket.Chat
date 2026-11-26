@@ -71,8 +71,12 @@ const withoutFuselageGlobalStylesheet = (): Plugin => ({
 
 // Why a zero stylesheet cannot ship: a token the Tamagui config lacks, or a theme key no theme class declares. The check
 // lives with Fuselage's verify scripts, reached by path as the Tamagui config is.
-const zeroStylesheetErrors = async (css: string): Promise<string[]> =>
-	(await import(pathToFileURL(join(fuselageRoot, 'scripts/verify/zero-stylesheet.mjs')).href)).zeroStylesheetErrors(css);
+const zeroStylesheetErrors = async (css: string): Promise<string[]> => {
+	const verify: { zeroStylesheetErrors: (css: string) => Promise<string[]> } = await import(
+		pathToFileURL(join(fuselageRoot, 'scripts/verify/zero-stylesheet.mjs')).href
+	);
+	return verify.zeroStylesheetErrors(css);
+};
 
 // Moves Tamagui's zero-runtime stylesheet next to the widget's other files under a content hash, linked from
 // `index.html` the way its scripts are.

@@ -123,7 +123,7 @@ export class UserPresence {
 		this.connected = connected;
 		this.goOnline = useMethod('UserPresence:online');
 		this.goAway = useMethod('UserPresence:away');
-		this.storeUser = Users.use((state) => state.store);
+		this.storeUser = Users.useStore((state) => state.store);
 
 		useEffect(() => {
 			if (!RocketChatDesktop) return;

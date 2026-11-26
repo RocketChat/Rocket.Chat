@@ -363,7 +363,7 @@ describe('LIVECHAT - visitors', () => {
 						expect(res.body.contact).to.have.property('customFields');
 						expect(res.body.contact.customFields).to.have.property(cf1, 'test');
 					});
-				await closeOmnichannelRoom(room!._id);
+				await closeOmnichannelRoom(room._id);
 			});
 			it('should update multiple custom fields on a contact after it already has custom fields added', async () => {
 				const visitor = await createVisitor();
@@ -402,7 +402,7 @@ describe('LIVECHAT - visitors', () => {
 						expect(res.body.contact.customFields).to.have.property(cf2, 'test');
 						expect(res.body.contact.customFields).to.have.property(cf3, 'test');
 					});
-				await closeOmnichannelRoom(room!._id);
+				await closeOmnichannelRoom(room._id);
 			});
 			it('should overwrite a custom field value when the flag is true', async () => {
 				const visitor = await createVisitor();
@@ -440,7 +440,7 @@ describe('LIVECHAT - visitors', () => {
 						expect(res.body.contact.customFields).to.have.property(cf1, 'new test');
 						expect(res.body.contact.customFields).to.have.property(cf3, 'test');
 					});
-				await closeOmnichannelRoom(room!._id);
+				await closeOmnichannelRoom(room._id);
 			});
 			it('should properly conflict a custom field when existing and overwrite is false', async () => {
 				visitor = await createVisitor();

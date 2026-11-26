@@ -30,7 +30,7 @@ export class Nps implements IUiKitCoreApp {
 			triggerId,
 			score: String(score),
 			user,
-		});
+		}) as UiKit.ServerInteraction;
 	}
 
 	async viewSubmit(payload: UiKitCoreAppViewSubmitPayload): Promise<undefined> {

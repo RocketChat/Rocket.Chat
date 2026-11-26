@@ -5,11 +5,11 @@ import { HeaderToolbarAction, useDropdownVisibility } from '@rocket.chat/ui-clie
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { QuickActionsActionOptions } from '../../../lib/quickActions';
+import type { QuickActionsActionOptions, QuickActionsEnum } from '../../../lib/quickActions';
 
 export type QuickActionOptionsProps = {
 	options: QuickActionsActionOptions;
-	action: (id: string) => void;
+	action: (id: QuickActionsEnum) => void;
 	room: IOmnichannelRoom;
 	icon: IconName;
 };
@@ -18,7 +18,7 @@ const QuickActionOptions = ({ options, room, action, icon, ...props }: QuickActi
 	const { t } = useTranslation();
 	const { isVisible, toggle, reference, target } = useDropdownVisibility<HTMLButtonElement>();
 
-	const handleClick = (id: string) => (): void => {
+	const handleClick = (id: QuickActionsEnum) => (): void => {
 		toggle();
 		action(id);
 	};

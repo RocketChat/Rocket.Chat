@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { EditRolePageFormData } from './EditRolePage';
@@ -16,11 +16,8 @@ export type RoleFormProps = {
 const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps) => {
 	const { t } = useTranslation();
 	const scopeField = useId();
-	const {
-		register,
-		control,
-		formState: { errors },
-	} = useFormContext<EditRolePageFormData>();
+	const { register, control } = useFormContext<EditRolePageFormData>();
+	const { errors } = useFormState({ control });
 
 	const options: SelectOption[] = useMemo(
 		() => [

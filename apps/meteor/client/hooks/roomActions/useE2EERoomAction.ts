@@ -46,6 +46,26 @@ export const useE2EERoomAction = () => {
 
 	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
+	const handleToogleE2E = async () => {
+		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
+		if (!success) {
+			return;
+		}
+
+		imperativeModal.close();
+
+		dispatchToastMessage({
+			type: 'success',
+			message: room.encrypted
+				? t('E2E_Encryption_disabled_for_room', { roomName: room.name })
+				: t('E2E_Encryption_enabled_for_room', { roomName: room.name }),
+		});
+
+		if (subscription?.autoTranslate) {
+			dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
+		}
+	};
+
 	const action = useStableCallback(() => {
 		if (enabledOnRoom) {
 			imperativeModal.open({
@@ -73,26 +93,6 @@ export const useE2EERoomAction = () => {
 			});
 		}
 	});
-
-	const handleToogleE2E = async () => {
-		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
-		if (!success) {
-			return;
-		}
-
-		imperativeModal.close();
-
-		dispatchToastMessage({
-			type: 'success',
-			message: room.encrypted
-				? t('E2E_Encryption_disabled_for_room', { roomName: room.name })
-				: t('E2E_Encryption_enabled_for_room', { roomName: room.name }),
-		});
-
-		if (subscription?.autoTranslate) {
-			dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
-		}
-	};
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !permitted) {

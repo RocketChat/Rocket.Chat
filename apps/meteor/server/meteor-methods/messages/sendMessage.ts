@@ -106,6 +106,7 @@ export async function executeSendMessage(
 		metrics.messagesSent.inc();
 		metrics.messagesSentTotal.inc();
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- lib sendMessage is untyped (any parameters, any result)
 		return result;
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });

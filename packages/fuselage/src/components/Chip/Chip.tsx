@@ -1,13 +1,12 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
 import { prependClassName } from '../../helpers/prependClassName';
 import { Avatar } from '../Avatar';
 import { Box } from '../Box';
-import { withBoxStyling } from '../Box/withBoxStyling';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 
 export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
+	ref?: Ref<HTMLButtonElement>;
 	thumbUrl?: string;
 	renderThumb?: (props: { url: string }) => ReactNode;
 	renderDismissSymbol?: () => ReactNode;
@@ -47,13 +46,11 @@ const Chip = ({
 			onMouseDown={onMouseDown}
 			{...rest}
 		>
-			<Margins all='x4'>
-				{thumbUrl && renderThumb?.({ url: thumbUrl })}
-				{children && <span className='rcx-box rcx-chip__text'>{children}</span>}
-				{dismissable && renderDismissSymbol?.()}
-			</Margins>
+			{thumbUrl && renderThumb?.({ url: thumbUrl })}
+			{children && <span className='rcx-box rcx-chip__text'>{children}</span>}
+			{dismissable && renderDismissSymbol?.()}
 		</button>
 	);
 };
 
-export default withBoxStyling(Chip);
+export default Chip;

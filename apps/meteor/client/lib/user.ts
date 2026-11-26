@@ -6,9 +6,9 @@ import { Users } from '../stores';
 /**
  * @private do not consume this store directly -- consume it via UserContext
  */
-export const userIdStore = create<IUser['_id'] | undefined>(() => undefined);
+export const useUserIdStore = create<IUser['_id'] | undefined>(() => undefined);
 
-export const getUserId = () => userIdStore.getState();
+export const getUserId = () => useUserIdStore.getState();
 
 export const getUser = () => {
 	const userId = getUserId();

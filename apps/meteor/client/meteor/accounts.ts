@@ -5,7 +5,7 @@ import { callMethod } from './connection';
 import { isLoginTokenRefused } from '../lib/isLoginTokenRefused';
 import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem, setStoredItem } from '../lib/sdk/storage';
-import { userIdStore } from '../lib/user';
+import { useUserIdStore } from '../lib/user';
 
 type LoginResult = { id: string; token: string; tokenExpires?: Date | { $date: number } };
 
@@ -70,7 +70,7 @@ const makeClientLoggedIn = (result: LoginResult): void => {
 	resumeRetryDelay = MIN_RESUME_RETRY_DELAY;
 
 	// The app's user is set first so onLogin listeners already read it.
-	userIdStore.setState(result.id);
+	useUserIdStore.setState(result.id);
 	adoptAccountFromMeteorLoginResult(result);
 };
 
@@ -83,7 +83,7 @@ const makeClientLoggedOut = (): void => {
 
 	const sdk = getDdpSdk();
 	sdk.account.clearCredentials();
-	userIdStore.setState(undefined);
+	useUserIdStore.setState(undefined);
 
 	// Clearing the user tears the authenticated socket down; the logged-out UI still needs one.
 	if (sdk.connection.status !== 'connected' && sdk.connection.status !== 'connecting') {
@@ -177,7 +177,7 @@ export const setConnectionUserId = (userId: string | null): void => {
 	if (!userId) {
 		getDdpSdk().account.clearCredentials();
 	}
-	userIdStore.setState(userId ?? undefined);
+	useUserIdStore.setState(userId ?? undefined);
 };
 
 export const subscribeLoggingIn = (cb: () => void): (() => void) => loggingIn.subscribe(cb);
@@ -251,5 +251,5 @@ queueMicrotask(() => {
 		(error) => settlePageLoadLogin({ type: 'resume', allowed: false, error, methodName: 'login', methodArguments }),
 	);
 	// The stored user stays until the server refuses the token, as accounts-base did, so a failed resume does not look like a logout.
-	userIdStore.setState(getStoredItem(STORAGE_KEYS.USER_ID) ?? undefined);
+	useUserIdStore.setState(getStoredItem(STORAGE_KEYS.USER_ID) ?? undefined);
 });

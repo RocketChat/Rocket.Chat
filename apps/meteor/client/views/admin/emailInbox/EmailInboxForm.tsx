@@ -22,7 +22,7 @@ import { validateEmail } from '@rocket.chat/tools';
 import { GenericModal, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import ContentColumn from '../../../components/ContentColumn';
@@ -113,14 +113,11 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 	const deleteInboxAction = useEndpoint('DELETE', '/v1/email-inbox/:_id', { _id: inboxData?._id ?? '' });
 	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/email-inbox.search');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors, isDirty },
-	} = useForm<EmailInboxFormData>({
+	const { control, handleSubmit } = useForm<EmailInboxFormData>({
 		values: inboxData ? getEmailInboxFormValues(inboxData) : emptyFormValues,
 		mode: 'all',
 	});
+	const { errors, isDirty } = useFormState({ control });
 
 	const handleDelete = useStableCallback(() => {
 		const deleteInbox = async (): Promise<void> => {

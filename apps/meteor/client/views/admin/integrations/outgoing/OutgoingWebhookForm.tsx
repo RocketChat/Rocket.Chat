@@ -19,7 +19,7 @@ import {
 } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../lib/integrations/outgoingEvents';
@@ -55,12 +55,13 @@ type EditOutgoingWebhookPayload = Pick<
 const OutgoingWebhookForm = () => {
 	const { t } = useTranslation();
 
-	const {
-		control,
-		watch,
-		formState: { errors },
-	} = useFormContext<EditOutgoingWebhookPayload>();
-	const { event, alias, emoji, avatar } = watch();
+	const { control } = useFormContext<EditOutgoingWebhookPayload>();
+	const { errors } = useFormState({ control });
+	const watched = useWatch({ control });
+	const event = watched.event ?? 'sendMessage';
+	const alias = watched.alias ?? '';
+	const emoji = watched.emoji ?? '';
+	const avatar = watched.avatar ?? '';
 
 	const retryDelayOptions: SelectOption[] = useMemo(
 		() => [

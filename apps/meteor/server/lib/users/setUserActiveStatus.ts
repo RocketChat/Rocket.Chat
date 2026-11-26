@@ -83,7 +83,7 @@ export async function setUserActiveStatus(
 		const livechatSubscribedRooms = subscribedRooms.filter(({ t }) => t === 'l');
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
-			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms as []);
+			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms);
 			throw new ClientSafeError('user-last-owner', '', rooms);
 		}
 

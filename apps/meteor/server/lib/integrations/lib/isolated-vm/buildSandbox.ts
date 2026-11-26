@@ -17,6 +17,7 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 
 			if (typeof value === 'function') {
 				return new ivm.Reference(async (...args: any[]) => {
+					// oxlint-disable-next-line typescript/no-unsafe-call -- proxies calls to arbitrary host functions
 					const result = obj[key](...args);
 
 					if (result && result instanceof Promise) {
@@ -34,6 +35,7 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 
 const copyObject = (obj: Record<string, any> | any[]): Record<string, any> | any[] => {
 	if (Array.isArray(obj)) {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- the elements of the object being copied are untyped by design
 		return obj.map((data) => copyData(data));
 	}
 
@@ -61,6 +63,7 @@ const copyObject = (obj: Record<string, any> | any[]): Record<string, any> | any
 				const data = obj[key];
 
 				if (typeof data === 'function') {
+					// oxlint-disable-next-line typescript/no-unsafe-return, typescript/no-unsafe-call -- proxies calls to arbitrary host functions whose results are untyped
 					return [key, new ivm.Callback((...args: any[]) => obj[key](...args))];
 				}
 
@@ -99,7 +102,8 @@ const isTransferable = (data: any): data is ivm.Transferable => {
 // Semi-transferable data can be copied with an ivm.ExternalCopy without needing any manipulation.
 const isSemiTransferable = (data: any) => data instanceof ArrayBuffer;
 
-const copyData = <T extends ivm.Transferable | Record<string, any> | any[]>(data: T) => (isTransferable(data) ? data : copyObject(data));
+const copyData = <T extends ivm.Transferable | Record<string, any> | any[]>(data: T): T | Record<string, any> | any[] =>
+	isTransferable(data) ? data : copyObject(data);
 const makeTransferable = (data: any) => (isTransferable(data) ? data : new ivm.ExternalCopy(copyObject(data)).copyInto());
 
 export const buildSandbox = (context: Context) => {

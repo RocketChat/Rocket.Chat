@@ -1,6 +1,6 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { modalParser } from '../surfaces';
 import { extractInitialStateFromLayout } from '../utils/extractInitialStateFromLayout';
@@ -13,9 +13,9 @@ const options: UiKit.Option[] = [
 const ids = { appId: 'app', blockId: 'block', actionId: 'action' } as const;
 
 const cases = [
-	['checkboxes', 'checkbox', { options, initialOptions: [options[1]] }],
-	['radio_buttons', 'radio_button', { options, initialOption: options[1] }],
-	['timepicker', 'time_picker', { initialTime: '10:30' }],
+	['checkboxes', 'checkbox', { options, initialOptions: [options[1]] }, () => screen.getAllByRole('checkbox')],
+	['radio_buttons', 'radio_button', { options, initialOption: options[1] }, () => screen.getAllByRole('radio')],
+	['timepicker', 'time_picker', { initialTime: '10:30' }, () => screen.getAllByDisplayValue('10:30')],
 ] as const;
 
 const layout = (type: string, rest: object) =>
@@ -24,14 +24,17 @@ const layout = (type: string, rest: object) =>
 const renderLayout = (blocks: UiKit.LayoutBlock[]) =>
 	render(<MockedServerContext>{modalParser.render(blocks as unknown as Parameters<typeof modalParser.render>[0])}</MockedServerContext>);
 
-describe.each(cases)('%s', (alias, canonical, rest) => {
+describe.each(cases)('%s', (alias, canonical, rest, getControls) => {
 	it(`renders like ${canonical}`, () => {
-		const aliased = renderLayout(layout(alias, rest));
-		const canonicalRender = renderLayout(layout(canonical, rest));
+		const view = renderLayout(layout(alias, rest));
+		const aliasedControls = getControls().length;
+		const aliasedText = view.asFragment().textContent;
+		view.unmount();
 
-		expect(aliased.container.querySelector('input, button, [role]')).not.toBeNull();
-		expect(aliased.container.textContent).toBe(canonicalRender.container.textContent);
-		expect(aliased.container.querySelectorAll('*').length).toBe(canonicalRender.container.querySelectorAll('*').length);
+		const { asFragment } = renderLayout(layout(canonical, rest));
+
+		expect(getControls()).toHaveLength(aliasedControls);
+		expect(asFragment().textContent).toBe(aliasedText);
 	});
 
 	it(`keeps the initial value of ${canonical}`, () => {

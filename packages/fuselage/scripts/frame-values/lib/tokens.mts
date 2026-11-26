@@ -10,8 +10,10 @@ const config = new Set([
 ]);
 
 /** The references in a generated section that the Tamagui config has no token or theme key for. */
-export const unresolvedReferences = (body: string): string[] =>
-	unresolvedTokens(body).filter((reference: string) => !config.has(reference));
+export const unresolvedReferences = (body: string): string[] => {
+	const references: string[] = unresolvedTokens(body);
+	return references.filter((reference) => !config.has(reference));
+};
 
 /** A color of the theme, as the key a frame reads it by. */
 export const themed = (name: Unprefixed<keyof typeof themes.light>) => `$rcx-${name}`;

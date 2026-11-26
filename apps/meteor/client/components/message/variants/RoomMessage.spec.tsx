@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import RoomMessage from './RoomMessage';
@@ -202,18 +202,20 @@ describe('selecting messages', () => {
 			expect(selectedMessageStore.isSelected(message._id)).toBe(true);
 		});
 
-		it.each(['Space', 'Enter'])('should select the message with the %s key', (code) => {
+		it.each(['Space', 'Enter'])('should select the message with the %s key', async (code) => {
 			renderMessage();
 
-			fireEvent.keyDown(screen.getByRole('listitem'), { code });
+			act(() => screen.getByRole('listitem').focus());
+			await userEvent.keyboard(`[${code}]`);
 
 			expect(selectedMessageStore.isSelected(message._id)).toBe(true);
 		});
 
-		it('should ignore other keys', () => {
+		it('should ignore other keys', async () => {
 			renderMessage();
 
-			fireEvent.keyDown(screen.getByRole('listitem'), { code: 'KeyA' });
+			act(() => screen.getByRole('listitem').focus());
+			await userEvent.keyboard('[KeyA]');
 
 			expect(selectedMessageStore.isSelected(message._id)).toBe(false);
 		});
@@ -229,7 +231,7 @@ describe('selecting messages', () => {
 		renderMessage();
 
 		await userEvent.click(screen.getByRole('listitem'));
-		fireEvent.keyDown(screen.getByRole('listitem'), { code: 'Enter' });
+		await userEvent.keyboard('[Enter]');
 
 		expect(selectedMessageStore.isSelected(message._id)).toBe(false);
 		expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();

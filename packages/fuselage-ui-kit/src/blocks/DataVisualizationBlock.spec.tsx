@@ -18,6 +18,11 @@ jest.mock('./DataVisualizationChart', () => ({
 	},
 }));
 
+jest.mock('@rocket.chat/fuselage', () => ({
+	...jest.requireActual('@rocket.chat/fuselage'),
+	Skeleton: () => <span data-testid='skeleton' />,
+}));
+
 afterEach(() => {
 	mockChartThrows = false;
 });
@@ -55,11 +60,11 @@ const pieChart = {
 const renderBlock = (block: never) => render(<>{messageParser.render([block])}</>);
 
 it('shows the skeleton until the chart code has loaded, then the chart', async () => {
-	const { container } = renderBlock(seriesChart('bar'));
+	renderBlock(seriesChart('bar'));
 
-	expect(container.querySelector('.rcx-skeleton')).toBeInTheDocument();
+	expect(screen.getByTestId('skeleton')).toBeInTheDocument();
 	expect(await screen.findByTestId('chart')).toBeInTheDocument();
-	expect(container.querySelector('.rcx-skeleton')).not.toBeInTheDocument();
+	expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
 });
 
 it('names the chart image after the title and keeps the table outside of it', async () => {
@@ -69,7 +74,7 @@ it('names the chart image after the title and keeps the table outside of it', as
 
 	expect(within(image).queryByRole('table')).not.toBeInTheDocument();
 	expect(screen.getByRole('table', { name: 'Sales', hidden: true })).toBeInTheDocument();
-	await screen.findByTestId('chart');
+	expect(await screen.findByTestId('chart')).toBeInTheDocument();
 });
 
 it('lists series values by category, in category order, whatever the order of the points', async () => {
@@ -78,14 +83,18 @@ it('lists series values by category, in category order, whatever the order of th
 	const table = screen.getByRole('table', { hidden: true });
 	const rows = within(table)
 		.getAllByRole('row', { hidden: true })
-		.map((row) => Array.from(row.children, (cell) => cell.textContent));
+		.map((row) =>
+			(['columnheader', 'rowheader', 'cell'] as const)
+				.flatMap((role) => within(row).queryAllByRole(role, { hidden: true }))
+				.map((cell) => cell.textContent),
+		);
 
 	expect(rows).toEqual([
 		['Category', 'Web', 'Store'],
 		['Mon', '1', '3'],
 		['Tue', '-2', '4'],
 	]);
-	await screen.findByTestId('chart');
+	expect(await screen.findByTestId('chart')).toBeInTheDocument();
 });
 
 it('passes the series, categories and axis titles to the chart', async () => {
@@ -109,9 +118,12 @@ it('lists the segments of a pie with their values', async () => {
 
 	const table = screen.getByRole('table', { name: 'Candy', hidden: true });
 
-	expect(within(table).getByRole('rowheader', { name: 'Twix', hidden: true }).nextSibling).toHaveTextContent('28');
+	const twix = within(table).getByRole('row', { name: /^Twix\b/, hidden: true });
+
+	expect(within(twix).getByRole('rowheader', { hidden: true })).toHaveTextContent('Twix');
+	expect(within(twix).getByRole('cell', { hidden: true })).toHaveTextContent('28');
 	expect(screen.getByRole('img', { name: 'Candy' })).toBeInTheDocument();
-	await screen.findByTestId('chart');
+	expect(await screen.findByTestId('chart')).toBeInTheDocument();
 });
 
 it('renders nothing for a chart that has nothing to draw', () => {
@@ -168,9 +180,9 @@ it('keeps the loaded chart for the next block when one chart fails to draw', asy
 	await waitFor(() => expect(screen.queryByTestId('chart')).not.toBeInTheDocument());
 	unmount();
 	mockChartThrows = false;
-	const { container } = renderBlock(seriesChart('bar'));
+	renderBlock(seriesChart('bar'));
 
 	expect(screen.getByTestId('chart')).toBeInTheDocument();
-	expect(container.querySelector('.rcx-skeleton')).not.toBeInTheDocument();
+	expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
 	jest.restoreAllMocks();
 });

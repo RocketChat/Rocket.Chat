@@ -4,7 +4,7 @@ import { getAvatarURL } from './getAvatarURL';
 import { settings } from './settings';
 
 export const getRoomAvatarURL = ({ roomId, cache = '' }: { roomId: IRoom['_id']; cache: IRoom['avatarETag'] }) => {
-	const externalSource = (settings.peek('Accounts_RoomAvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
+	const externalSource = (settings.peek<string>('Accounts_RoomAvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 	if (externalSource && typeof externalSource === 'string') {
 		return externalSource.replace('{roomId}', roomId);
 	}

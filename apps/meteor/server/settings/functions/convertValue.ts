@@ -21,7 +21,7 @@ export const convertValue = (value: 'true' | 'false' | string, type: ISetting['t
 		return parseIntegerValue(value);
 	}
 	if (type === 'multiSelect' || type === 'multiLookup') {
-		return JSON.parse(value);
+		return JSON.parse(value) as string[];
 	}
 	return value;
 };

@@ -1,3 +1,5 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
 import { EmojiCustom } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
@@ -6,9 +8,11 @@ import { settings } from '../../../../settings';
 import { SystemLogger } from '../../../logger/system';
 import { RocketChatFile } from '../../file';
 
-export let RocketChatFileEmojiCustomInstance;
+type RocketChatFileStore = InstanceType<(typeof RocketChatFile)['GridFS' | 'FileSystem']>;
 
-const writeSvgFallback = (res, req) => {
+export let RocketChatFileEmojiCustomInstance: RocketChatFileStore;
+
+const writeSvgFallback = (res: ServerResponse, req: IncomingMessage) => {
 	res.setHeader('Content-Type', 'image/svg+xml');
 	res.setHeader('Cache-Control', 'public, max-age=0');
 	res.setHeader('Expires', '-1');
@@ -38,10 +42,10 @@ const writeSvgFallback = (res, req) => {
 };
 
 const initializeEmojiCustomStorage = () => {
-	let storeType = 'GridFS';
+	let storeType: 'GridFS' | 'FileSystem' = 'GridFS';
 
 	if (settings.get('EmojiUpload_Storage_Type')) {
-		storeType = settings.get('EmojiUpload_Storage_Type');
+		storeType = settings.get<'GridFS' | 'FileSystem'>('EmojiUpload_Storage_Type');
 	}
 
 	const RocketChatStore = RocketChatFile[storeType];
@@ -56,10 +60,9 @@ const initializeEmojiCustomStorage = () => {
 	});
 
 	let path = '~/uploads';
-	if (settings.get('EmojiUpload_FileSystemPath') != null) {
-		if (settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
-			path = settings.get('EmojiUpload_FileSystemPath');
-		}
+	const customPath = settings.get<string | undefined>('EmojiUpload_FileSystemPath');
+	if (customPath != null && customPath.trim() !== '') {
+		path = customPath;
 	}
 
 	RocketChatFileEmojiCustomInstance = new RocketChatStore({
@@ -68,8 +71,8 @@ const initializeEmojiCustomStorage = () => {
 	});
 };
 
-WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
-	const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
+WebApp.connectHandlers.use('/emoji-custom/', async (req: IncomingMessage, res: ServerResponse /* , next*/) => {
+	const params = { emoji: decodeURIComponent((req.url ?? '').replace(/^\//, '').replace(/\?.*$/, '')) };
 
 	if (_.isEmpty(params.emoji)) {
 		res.writeHead(403);
@@ -93,7 +96,7 @@ WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		return writeSvgFallback(res, req);
 	}
 
-	const fileUploadDate = file.uploadDate != null ? file.uploadDate.toUTCString() : undefined;
+	const fileUploadDate = 'uploadDate' in file && file.uploadDate != null ? file.uploadDate.toUTCString() : undefined;
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (reqModifiedHeader != null && reqModifiedHeader === fileUploadDate) {
@@ -107,9 +110,9 @@ WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 	res.setHeader('Last-Modified', fileUploadDate || new Date().toUTCString());
 	res.setHeader('Content-Length', file.length);
 
-	if (/^svg$/i.test(params.emoji.split('.').pop())) {
+	if (/^svg$/i.test(params.emoji.split('.').pop() ?? '')) {
 		res.setHeader('Content-Type', 'image/svg+xml');
-	} else if (/^png$/i.test(params.emoji.split('.').pop())) {
+	} else if (/^png$/i.test(params.emoji.split('.').pop() ?? '')) {
 		res.setHeader('Content-Type', 'image/png');
 	} else {
 		res.setHeader('Content-Type', 'image/jpeg');
