@@ -102,7 +102,7 @@ const SidebarItemTemplateWithData = ({
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const message = viewMode === 'extended' && getMessagePreview(room, lastMessage, t);
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const subtitle = message ? <span className='message-body--unstyled'>{message}</span> : null;
 
 	return (
 		<RoomListItem

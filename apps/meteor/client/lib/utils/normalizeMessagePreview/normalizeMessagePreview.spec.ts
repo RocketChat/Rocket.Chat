@@ -30,11 +30,11 @@ describe('normalizeMessagePreview', () => {
 			expect(result).toBe('bold text');
 		});
 
-		it('should escape HTML in message', () => {
+		it('should not escape HTML in message since React handles escaping', () => {
 			const message = createFakeMessage({ msg: '<script>alert("xss")</script>' });
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
+			expect(result).toBe('<script>alert("xss")</script>');
 		});
 
 		it('should convert emoji shortnames to unicode', () => {
@@ -171,7 +171,7 @@ describe('normalizeMessagePreview', () => {
 			expect(result).toBe('Second attachment description');
 		});
 
-		it('should escape HTML in attachment description', () => {
+		it('should not escape HTML in attachment description since React handles escaping', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -182,10 +182,10 @@ describe('normalizeMessagePreview', () => {
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
+			expect(result).toBe('<script>alert("xss")</script>');
 		});
 
-		it('should escape HTML in attachment title', () => {
+		it('should not escape HTML in attachment title since React handles escaping', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -196,7 +196,7 @@ describe('normalizeMessagePreview', () => {
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('&lt;img src=&quot;x&quot; onerror=&quot;alert(1)&quot;&gt;');
+			expect(result).toBe('<img src="x" onerror="alert(1)">');
 		});
 	});
 
