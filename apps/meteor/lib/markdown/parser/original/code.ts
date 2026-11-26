@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/no-unsafe-call -- the legacy markdown parser is untyped; it will be typed in a separate change */
 /*
  * code() is a named function that will parse `inline code` and ```codeblock``` syntaxes
  * @param {Object} message - The message object
