@@ -226,7 +226,7 @@ export const syncContactFolder = async (
 			modified: imported.modifiedCount,
 			deleted: deleted?.deletedCount ?? 0,
 			pruned: pruned?.deletedCount ?? 0,
-			failed: false,
+			failed: throttled !== undefined,
 			fatal: false,
 			error: throttled,
 		};
