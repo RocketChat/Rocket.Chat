@@ -1,18 +1,20 @@
 import type { ReactNode } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text as RNText, View } from 'react-native';
 import {
+	Avatar,
 	Button,
 	Message,
 	MessageBody,
 	MessageContainer,
 	MessageHeader,
+	MessageLeftContainer,
 	MessageName,
 	MessageTimestamp,
 	MessageUsername,
 	TextInput,
 } from '@rocket.chat/fuselage';
 
-import type { RoomItem } from '../api';
+import { userAvatarUrl, type RoomItem } from '../api';
 import type { Session } from '../session';
 import { useRoom } from '../useRoom';
 
@@ -45,6 +47,9 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 					keyExtractor={(m) => m._id}
 					renderItem={({ item }) => (
 						<Message>
+							<MessageLeftContainer>
+								<Avatar size='x36' url={userAvatarUrl(session, item.u.username ?? item.u._id)} />
+							</MessageLeftContainer>
 							<MessageContainer>
 								<MessageHeader>
 									<MessageName>{item.u.name || item.u.username}</MessageName>
