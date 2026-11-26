@@ -118,3 +118,23 @@ App-side workarounds removed (checked on the simulator): the `ResizeObserver` st
 ## Press handlers (2026-11-26)
 
 `feat/fuselage-press-handlers` (`pickFramePressHandlers`, web and native, the `frameSafeCalls` lint option) is cherry-picked onto `8c278bad295`, below the expo-lab commits, and the `press-codemod` is run on `packages/fuselage/src` as its own commit: 79 `pickWebPressHandlers` sites in 55 files, all rewritten, none left for manual work. The `Message.tsx` site named in the plan does not exist on this tree: `Message` passes `{...props}` to `Item` by name, so `onPress` and `onClick` already reach `Item`, whose own rewritten sites attach them. The two `.oxlintrc.json` and `docs/frontend/fuselage-tamagui-components.md` lines conflicted with the longer `safeCalls` list and the `{ ...props }` wording on this tree; both were resolved by keeping this tree's text and adding the `frameSafeCalls` option and the `pickFramePressHandlers` exception.
+
+## Update 2: input props, toggle twin, tag (2026-11-26)
+
+Backup of the previous tip: local branch `backup/expo-lab-all-c269bea`. The line was rebuilt on `origin/develop` 90c03928166 (three commits past b25d0367e86: #43922, #43531, #43834; none touched the same hunks). The eight PR heads did not change: #43668 c742a5cc822, #43674 124495c54ad, #43653 f3f90ceb41b, #43658 c8135345c65, #43671 b55ca11c534, #43679 e0de00fb102, #43693 38076448cd0, #43706 093e20041ac.
+
+New commits, read-only from the other session's branches (cherry-picked, branches untouched):
+
+- after the guards, below the PRs: `feat/fuselage-native-input-props` without its first commit (`pickFramePressHandlers`, see below): 1d1b5573f5e (input type and state to `TextInput` props), 665edce2878 (PasswordInput eye test), 97a8f38074d (Box takes press through a Pressable host), 50ebc8007cc (password turns autocorrect and autocapitalize off); `l1/native-toggle-switch` 5f4b90ac752 (ToggleSwitch twin; `react-native.d.ts` merged without conflict).
+- `l1/tag`: it is the #43653 head plus one commit, `d6732fadbda` (Tag as a Tamagui frame), so only that commit is taken, placed right after the L1 commits it builds on; the L1 changeset gets the `l1/tag` wording (`chore: add Tag to the L1 actions changeset`), and the CSS-hack baseline is lowered (`chore(fuselage): lower the CSS-hack baseline for Tag`).
+
+Conflicts:
+
+| Where | Resolution |
+| --- | --- |
+| `scripts/frame-values/lib/tokens.mts` (L3 media-keys commit vs develop's `no-unsafe-return` typing) | kept develop's typed `references` and added the `unknownConditions` list |
+| `types/WebAttributes.ts` (L6 `WebElementProps` vs the Tag types) | kept `WebSpanOrLinkProps` from Tag; dropped Tag's `WebSpanProps`, L6's `WebSpanProps` (a superset: press alias and interaction handlers) stays |
+
+Skipped, still in progress on the other session: `l1/tag-press` (4892767940d, Tag press through PressTarget), `feat/fuselage-press-target` (65d2f739c2a), `l2/banner-v2` (3d8020fbd4e), `l2/avatar-v2` (c146bf5113f). The two `l2/*-v2` branches look finished (last commits are the baselines and changeset, minutes old) but were not asked for.
+
+PROVISIONAL: the spread-based press helper (`pickFramePressHandlers` and the codemod commit `refactor(fuselage): attach press handlers to the frame on React Native`) stays in this branch only. The zero-runtime compiler rejects `{...pickFramePressHandlers(props)}` (`local/unsafe-style-spread`, `local/unsupported-target`), so it cannot be delivered; `PressTarget` replaces it. `Tag` (new on this tree) still uses `pickWebPressHandlers` and was not given the spread, and its contract has no `onPress` here (that is `l1/tag-press`).

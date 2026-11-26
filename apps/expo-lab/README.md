@@ -170,7 +170,7 @@ The chat screens have two versions, picked when Metro starts: `EXPO_PUBLIC_CHAT_
 
 Dev only: `EXPO_PUBLIC_CHAT_MOCK=1` feeds invented rooms and messages (`src/mockData.ts`) to the same components, and a login with any text succeeds without a network call; `EXPO_PUBLIC_CHAT_MOCK=rooms` or `=room` also starts past the login, because there is no touch tool. Screenshots in `docs/chat/` use this data only: `login-`, `rooms-` and `room-plain-vs-fuselage.png` (plain left, Fuselage right). The login shot has a fake password typed in to show the masking.
 
-What renders in the Fuselage version: `SidebarItem` rows with `SidebarItemIcon`, `SidebarItemContent`/`Title` and `SidebarItemBadge` for the rooms; `Message`, `MessageContainer`, `MessageHeader`, `MessageName`, `MessageUsername`, `MessageTimestamp` and `MessageBody` for each message (no `Avatar`: it still throws); `Button`, `Field`, `FieldLabel`, `FieldRow`, `UrlInput`, `TextInput` and `ToggleSwitch` on the login and the composer.
+What renders in the Fuselage version: `SidebarItem` rows with `SidebarItemIcon`, `SidebarItemContent`/`Title` and `SidebarItemBadge` for the rooms; `Message`, `MessageContainer`, `MessageHeader`, `MessageName`, `MessageUsername`, `MessageTimestamp` and `MessageBody` for each message (no `Avatar`: it still throws); `Button`, `Field`, `FieldLabel`, `FieldRow`, `UrlInput`, `TextInput`, `PasswordInput` and `ToggleSwitch` on the login and the composer; `Tag` marks private rooms in the room list.
 
 Looks different from the plain version, or wrong:
 
@@ -179,16 +179,20 @@ Looks different from the plain version, or wrong:
 - A read room is gray, an unread one black: the `highlighted` look, absent in the plain list. Rows have no divider and are visibly denser than the plain ones.
 - Messages show the display name, `@username` and `HH:MM` (the plain rows show `HH:MM:SS`); the body wraps at the web's line height, and the content is inset further from the edge than the plain rows.
 - A `Button` takes the whole width of a row on native (it is not given `width: fit-content`), so each one in a row is wrapped in a fixed 96 px box (`Fit`); in a column it is full width, which looks like a primary action and is fine for Sign in.
-- `UrlInput`, `TextInput` and the composer draw no border or background on native, only text; each is wrapped in a bordered `View` in the app. That is a workaround for a missing look, not Fuselage styling.
-- `ToggleSwitch` draws an empty outline with no thumb or fill, so its state cannot be seen; its `onChange` was not exercised. The plain version uses the iOS `Switch`.
+- `UrlInput`, `TextInput`, `PasswordInput` and the composer still draw no border or background on native (checked at step 2: the input chrome has not landed, `InputBox` is still a Box with SCSS); each is wrapped in a bordered `View` in the app. That is a workaround for a missing look, not Fuselage styling.
+- `ToggleSwitch` draws a track and a thumb since step 2 (the native twin: blue when checked, light when disabled; gallery cell `ToggleSwitch`); its `onChange` was not exercised (no touch tool), and the twin is not verified by its author either.
 - The placeholder of the composer input is gray and shows; typing, caret and keyboard were not exercised (no keyboard tool).
 
 What stays plain, and why:
 
-- The password and token field is a React Native `TextInput` with `secureTextEntry`. `PasswordInput` mounts, but on native it shows the text in the clear: `type='password'` is not mapped to `secureTextEntry` (`docs/chat` run, a fake password rendered as text), and its eye icon is an `onClick` on an `Icon`, not a press. Do not ship `PasswordInput` on native until the host map covers it.
+- The password and token field is a React Native `TextInput` with `secureTextEntry` again. At step 2 `PasswordInput` does mask (`type='password'` is `secureTextEntry`; `EXPO_PUBLIC_CHAT_PASSWORD=fuselage` shows it in the login), but the input does not take focus: it is a bare `TextInput` in an unstyled wrapper and collapses to the caret width, so a tap misses it; its eye is an `onClick` on an `Icon`, not a press (probe: `Icon[onClick]` only), and the addon is laid out before the input. Do not ship it on native until the input chrome and the addon layout land.
 - The screen titles and the live indicator are `Text` of React Native: Fuselage has no title component without the web's `h1`/`h2` tags.
 - The gallery and the sweep, reachable from the plain login only.
 
 `onChange` of the Fuselage inputs receives the string on native, the event on the web; the screens take `String(value)`.
 
 Press: `src/GalleryContent.tsx` has a dev probe (cell "Press attach probe", `EXPO_PUBLIC_GALLERY=1 EXPO_PUBLIC_GALLERY_ONLY=Press`) that walks the fibers under `Button`, `Chip`, `Item`, `SidebarItem` and `Message` and lists those carrying a press prop. On the simulator each one shows `onPress` on the Fuselage component, on the Tamagui `View` and `onClick`, `onResponderRelease`, `onStartShouldSetResponder` on the host `RCTView`; the control `View` with no handler shows none (`docs/chat/press-probe.png`). A real touch was not made.
+
+## Evolution
+
+The branch is updated as the native-enabling work lands; `NATIVE-SWEEP.md` has the table of sweep counts per step and `MERGE-NOTES.md` what each update took. Step 2 added the input props (password is `secureTextEntry`), the `ToggleSwitch` twin and `Tag` as a frame; the app changes of that step are four commits: `use the Fuselage PasswordInput in the login`, `keep the React Native password field by default` (the Fuselage one cannot be focused), `show Tag, ToggleSwitch and the password eye in the gallery`, `tag private rooms in the room list`. New screenshots with mock data: `docs/chat/rooms-plain-vs-fuselage-v2.png` and `room-plain-vs-fuselage-v2.png`. There is no login shot for this step: the simulator's login form holds stored real values, which are not committed; the login evidence is the gallery probe and the notes above.
