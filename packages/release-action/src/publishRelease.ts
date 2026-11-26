@@ -7,7 +7,7 @@ import * as github from '@actions/github';
 import semver from 'semver';
 
 import { createNpmFile } from './createNpmFile.js';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { assertPublicPackagesInstallable, fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils.js';
 import { setupOctokit } from './setupOctokit.js';
 import {
@@ -45,6 +45,8 @@ export async function publishRelease({
 	if (baseRef) {
 		await checkoutBranch(baseRef);
 	}
+
+	await assertPublicPackagesInstallable();
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 

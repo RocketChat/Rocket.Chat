@@ -17,13 +17,35 @@ import { readPackageJson } from './utils.js';
 
 const DEPENDENCY_TYPES = ['dependencies', 'devDependencies', 'peerDependencies'] as const;
 
-export async function fixWorkspaceVersionsBeforePublish() {
+async function listWorkspaces() {
 	const rawWorkspaces = await getExecOutput('yarn workspaces list --json');
-	const workspaces = rawWorkspaces.stdout
+	return rawWorkspaces.stdout
 		.trim()
 		.split('\n')
 		.map((line) => JSON.parse(line) as { name: string; location: string })
 		.filter((workspace) => workspace.location !== '.');
+}
+
+// Stops the release before it commits anything when a published package would not install from npm.
+export async function assertPublicPackagesInstallable() {
+	for (const workspace of await listWorkspaces()) {
+		const packageJson = await readPackageJson(workspace.location);
+		if (packageJson.private) {
+			continue;
+		}
+		for (const dependencyType of ['dependencies', 'peerDependencies'] as const) {
+			for (const [dependency, range] of Object.entries<string>(packageJson[dependencyType] ?? {})) {
+				// npm cannot resolve a Yarn `patch:` range.
+				if (range.startsWith('patch:')) {
+					throw new Error(`${packageJson.name} has a patch: range for ${dependency} in ${dependencyType}; npm cannot install it`);
+				}
+			}
+		}
+	}
+}
+
+export async function fixWorkspaceVersionsBeforePublish() {
+	const workspaces = await listWorkspaces();
 
 	// Get the version of each workspace package.
 	const workspaceVersions = new Map<string, string>();
@@ -40,10 +62,6 @@ export async function fixWorkspaceVersionsBeforePublish() {
 			const dependencies = packageJson[dependencyType] ?? {};
 			for (const dependency of Object.keys(dependencies)) {
 				const dependencyVersion = dependencies[dependency];
-				// npm cannot resolve a Yarn `patch:` range, so a published package that keeps one does not install.
-				if (!packageJson.private && dependencyType !== 'devDependencies' && dependencyVersion.startsWith('patch:')) {
-					throw new Error(`${packageJson.name} has a patch: range for ${dependency} in ${dependencyType}; npm cannot install it`);
-				}
 				if (dependencyVersion.startsWith('workspace:')) {
 					const realVersion = workspaceVersions.get(dependency);
 					if (!realVersion) {

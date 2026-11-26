@@ -6,7 +6,7 @@ import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 
 import { createNpmFile } from './createNpmFile.js';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { assertPublicPackagesInstallable, fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
 import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils.js';
 import { setupOctokit } from './setupOctokit.js';
 import {
@@ -35,6 +35,8 @@ export async function bumpNextVersion({
 
 	// TODO need to check if there is any change to 'main package', if not, there is no need to enter rc
 	// and instead a normal release of the other packages should be done
+
+	await assertPublicPackagesInstallable();
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 
