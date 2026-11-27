@@ -126,6 +126,17 @@ describe('import graph guard', () => {
 		['lib/RestApiClient', 'client/lib/RestApiClient'],
 		['apps/meteor/lib/i18n.ts, outside client/', 'lib/i18n'],
 		['lib/ChatMessages', 'client/lib/ChatMessages'],
+		['lib/emoji/lib, whose only import is the emitter', 'client/lib/emoji/lib'],
+		['lib/emoji index', 'client/lib/emoji'],
+		['lib/banners', 'client/lib/banners'],
+		['lib/notificationManager', 'client/lib/notificationManager'],
+		['lib/openNotifications', 'client/lib/openNotifications'],
+		['lib/userStatuses', 'client/lib/userStatuses'],
+		['lib/messageBox', 'client/lib/messageBox'],
+		['lib/MessageAction', 'client/lib/MessageAction'],
+		['lib/meteorRuntimeConfig', 'client/lib/meteorRuntimeConfig'],
+		['lib/utils/getConfig', 'client/lib/utils/getConfig'],
+		['lib/omnichannel/businessHours/businessHourManager', 'client/lib/omnichannel/businessHours/businessHourManager'],
 	])('flags a value import of %s', (_name, target) => {
 		const entry = write('entry.ts', `import { x } from '${toApp(target)}';\nexport const y = x;\n`);
 
