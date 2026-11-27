@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import { composerTokens } from './tokens.ts';
 import type { NativeComposer } from './useNativeComposer.ts';
 
 // Web's composer bounds, the starting point for touch (R3). Heights are styles only: onContentSizeChange goes stale once the
 // field is clamped (TEXTINPUT-FINDINGS, row 5), so no measured content size is ever read.
-export const composerHeight = { min: 52, max: 155 } as const;
+export const composerHeight = { min: composerTokens().size.x52, max: 155 } as const;
 
-const border = 1;
-
-// Fuselage palette, copied by hand as the rest of the app does
-const colors = { text: '#2f343d', placeholder: '#6c727a', stroke: '#9ea2a8', primary: '#1d74f5', disabled: '#e4e7ea', disabledText: '#9ea2a8' };
+// The app is light only for now (FuselageProvider's defaultTheme)
+const t = composerTokens('light');
 
 type Props = {
 	composer: NativeComposer;
@@ -43,13 +42,13 @@ export function ComposerField({ composer, onSubmit, placeholder = 'Message', sho
 	};
 
 	return (
-		<View style={{ gap: 4 }}>
+		<View style={{ gap: t.space.x4 }}>
 			{showHeight && (
-				<Text style={{ fontSize: 11, color: colors.placeholder }}>
+				<Text style={{ ...t.fontScale.c1, color: t.font.annotation }}>
 					field height {height ?? '?'} px (min {composerHeight.min}, max {composerHeight.max})
 				</Text>
 			)}
-			<View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+			<View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: t.space.x8 }}>
 				<View style={{ flex: 1 }}>
 					<TextInput
 						ref={inputRef}
@@ -60,20 +59,18 @@ export function ComposerField({ composer, onSubmit, placeholder = 'Message', sho
 						onSelectionChange={onSelectionChange}
 						onLayout={(e) => setHeight(Math.round(e.nativeEvent.layout.height))}
 						placeholder={placeholder}
-						placeholderTextColor={colors.placeholder}
+						placeholderTextColor={t.font.annotation}
 						accessibilityLabel='Message'
 						style={{
 							minHeight: composerHeight.min + (nudge % 2) * 0.01,
 							maxHeight: composerHeight.max,
-							borderWidth: border,
-							borderColor: colors.stroke,
-							borderRadius: 4,
-							paddingHorizontal: 12,
-							paddingTop: 14,
-							paddingBottom: 14,
-							fontSize: 14,
-							lineHeight: 20,
-							color: colors.text,
+							borderWidth: t.borderWidth,
+							borderColor: t.stroke.light,
+							borderRadius: t.radius.medium,
+							paddingHorizontal: t.space.x12,
+							paddingVertical: t.space.x16 - t.borderWidth,
+							...t.fontScale.p2,
+							color: t.font.default,
 						}}
 					/>
 				</View>
@@ -88,11 +85,11 @@ export function ComposerField({ composer, onSubmit, placeholder = 'Message', sho
 						minWidth: 64,
 						alignItems: 'center',
 						justifyContent: 'center',
-						borderRadius: 4,
-						backgroundColor: canSend ? colors.primary : colors.disabled,
+						borderRadius: t.radius.medium,
+						backgroundColor: canSend ? t.button.primary : t.button.primaryDisabled,
 					}}
 				>
-					<Text style={{ fontWeight: '600', color: canSend ? '#ffffff' : colors.disabledText }}>Send</Text>
+					<Text style={{ ...t.fontScale.p2b, color: canSend ? t.button.onPrimary : t.button.onPrimaryDisabled }}>Send</Text>
 				</Pressable>
 			</View>
 		</View>
