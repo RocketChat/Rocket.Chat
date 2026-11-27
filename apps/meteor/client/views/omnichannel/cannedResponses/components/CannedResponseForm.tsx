@@ -1,14 +1,25 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint, Option } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	TextInput,
+	FieldGroup,
+	RadioButton,
+	FieldHint,
+	LinkButton,
+	Option,
+} from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useId, useState } from 'react';
 import { useFormContext, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import CannedResponsesComposer from './CannedResponsesComposer/CannedResponsesComposer';
-import CannedResponsesComposerPreview from './CannedResponsesComposer/CannedResponsesComposerPreview';
 import AutoCompleteDepartment from '../../components/AutoCompleteDepartment';
 import Tags from '../../components/Tags';
+import CannedResponsesComposerPreview from '../layout/CannedResponsesComposerPreview';
+import WrappingOptionLabel from '../layout/WrappingOptionLabel';
 import type { CannedResponseEditFormData } from '../modals/CannedResponseEdit';
 
 // TODO: refactor Tags field to get proper validation
@@ -19,10 +30,6 @@ const CannedResponseForm = () => {
 
 	const { control } = useFormContext<CannedResponseEditFormData>();
 	const { errors } = useFormState({ control });
-
-	const clickable = css`
-		cursor: pointer;
-	`;
 
 	const watched = useWatch({ control });
 	const text = watched.text ?? '';
@@ -64,11 +71,7 @@ const CannedResponseForm = () => {
 			<Field>
 				<FieldRow>
 					<FieldLabel htmlFor={messageField}>{t('Message')}</FieldLabel>
-					{text !== '' && (
-						<Box className={clickable} color='info' onClick={() => setPreview(!preview)}>
-							{preview ? t('Editor') : t('Preview')}
-						</Box>
-					)}
+					{text !== '' && <LinkButton onClick={() => setPreview(!preview)}>{preview ? t('Editor') : t('Preview')}</LinkButton>}
 				</FieldRow>
 				{preview ? (
 					<CannedResponsesComposerPreview text={text} />
@@ -178,9 +181,7 @@ const CannedResponseForm = () => {
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departmentId)}
 											withTitle={false}
-											renderItem={({ label, ...props }) => (
-												<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
-											)}
+											renderItem={({ label, ...props }) => <Option {...props} label={<WrappingOptionLabel>{label}</WrappingOptionLabel>} />}
 										/>
 									)}
 								/>

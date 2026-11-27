@@ -1,6 +1,7 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import CannedResponsesComposer from './CannedResponsesComposer';
 import { emoji } from '../../../../../lib/emoji';
@@ -18,6 +19,7 @@ jest.mock('@rocket.chat/ui-emoji-picker', () => ({
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
 		t: (key: string) => key,
+		i18n: { exists: () => false },
 	}),
 }));
 
@@ -90,5 +92,34 @@ describe('CannedResponsesComposer emoji insertion', () => {
 		emojiButton.click();
 
 		expect(onChange).toHaveBeenLastCalledWith(':my_custom_emoji: ');
+	});
+});
+
+describe('CannedResponsesComposer placeholders', () => {
+	beforeEach(() => {
+		mockedUseUserPreference.mockReturnValue(true);
+		mockedUseEmojiPicker.mockReturnValue({ open: jest.fn(), isOpen: false, close: jest.fn() });
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('inserts the chosen placeholder at the caret, from the keyboard', async () => {
+		const onChange = jest.fn();
+		render(<CannedResponsesComposer onChange={onChange} />);
+
+		const textArea = screen.getByRole('textbox');
+		await userEvent.type(textArea, 'Hi !');
+		(textArea as HTMLTextAreaElement).setSelectionRange(3, 3);
+
+		screen.getByRole('button', { name: 'Insert_Placeholder' }).focus();
+		await userEvent.keyboard('{Enter}');
+
+		const [contactName] = await screen.findAllByRole('menuitem', { name: 'Name' });
+		expect(contactName).toHaveFocus();
+		await userEvent.keyboard('{Enter}');
+
+		expect(onChange).toHaveBeenLastCalledWith('Hi {{contact.name}}!');
 	});
 });
