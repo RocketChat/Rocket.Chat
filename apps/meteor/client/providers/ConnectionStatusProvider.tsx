@@ -1,6 +1,6 @@
 import type { ConnectionStatusContextValue } from '@rocket.chat/ui-contexts';
 import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
-import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { type ConnectionStatus, getConnectionSessionId, getConnectionStatus } from '../meteor/connection';
@@ -72,6 +72,21 @@ export type ConnectionStatusProviderProps = { children?: ReactNode };
 
 const ConnectionStatusProvider = ({ children }: ConnectionStatusProviderProps) => {
 	const { connected, status, retryCount, retryTime, sessionId } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
+
+	useEffect(() => {
+		const checkAndReload = () => {
+			if (retryCount && retryCount >= 30 && navigator.onLine) {
+				window.location.reload();
+			}
+		};
+
+		checkAndReload();
+
+		window.addEventListener('online', checkAndReload);
+		return () => {
+			window.removeEventListener('online', checkAndReload);
+		};
+	}, [retryCount]);
 
 	const value = useMemo(
 		(): ConnectionStatusContextValue => ({
