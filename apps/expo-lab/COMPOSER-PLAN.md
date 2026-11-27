@@ -775,7 +775,7 @@ Live-read audit (all at call time, in the old order). `getCommand` is `slashComm
 
 Quirks preserved and pinned by the differential: `/constructor` resolves `Object.prototype.constructor` and posts `commands.run` with `command: undefined`; `//` is the unrecognized command `/`; a result handler that throws on success is routed to the `catch` and called again with the error; a result handler that throws inside the `catch` rejects the flow and skips `notifyIdle`; a rejecting `pushEphemeralMessage` rejects the flow; a missing `msg` rejects.
 
-Not pinned: a rejecting telemetry post is an unhandled rejection in old and new alike (jest aborts the process on one), so it is not in the table.
+Pinned only with an already-handled rejection: a rejecting telemetry post is an unhandled rejection in old and new alike, which Jest reports as a failure of whichever test is running when it fires (it does not abort the process, per the independent review), so a plain rejecting post is not in the table. The table has a case whose rejection is handled and whose `.then` calls are recorded: neither version observes the promise.
 
 ### 1b.6 processTooLongMessage
 
@@ -823,7 +823,7 @@ Mutations (each restored; the step's golden and differential ran together):
 | slash | `notifyBusy` after `composer.clear` | 6 |
 | slash | `clientOnly && chat.uid` to `clientOnly` | 2 |
 | slash | one extra `await Promise.resolve()` after the parse | 35 |
-| slash | `await` dropped on the unrecognized warning | the run aborts on an unhandled rejection (also a detection) |
+| slash | `await` dropped on the unrecognized warning | the run fails on an unhandled rejection (also a detection) |
 | too long | `await offerAttachment` to `void` | 29 |
 | too long | `getMID()` after the flags | 6 |
 | too long | swap the two flag reads | 35 |
@@ -849,7 +849,7 @@ Mutations (each restored; the step's golden and differential ran together):
 - `chat.flows.*` wiring in `ChatMessages.ts` is covered only by the goldens' own chat and Playwright.
 - The too-long modal rendering (`GenericModal`, focus, keys) and real `Blob` and `File` bytes in a browser (jsdom is used).
 - `settings.peek` keeps its `this` in the adapters (called as a method inside an arrow), but the golden fake is a plain object, so a lost `this` would show only in the browser.
-- A rejected telemetry request is an unhandled rejection, unchanged and untested.
+- A rejected telemetry request is an unhandled rejection, unchanged. The differential pins only the already-handled variant (neither version calls `.then` on it); a real unhandled rejection is reported by Jest as a failure of the running test, not an abort of the process.
 
 ### Deviations
 
@@ -899,3 +899,162 @@ Implemented over `{ text, selection }`: `text`, `selection`, `setText` (web sema
 ### What was not verified
 
 Real typing, caret placement after an edit (the highlight of a non-empty selection was seen; a collapsed caret was seen only at the end of the text), IME, keyboard avoidance with a soft keyboard, the `userEdit` caret estimate and the size-lag workaround under real typing, Android, and a send in a real session (the send path is the same function as before, now through `sendText`, but only mock mode ran). The plain UI (`EXPO_PUBLIC_CHAT_UI=plain`) was checked in mock mode and renders as before.
+
+## Phase 1b steps 1b.7 and 1b.8 results (2026-11-27)
+
+Commits on `feat/expo-lab-all` (nothing pushed), on top of `d1f3727a495`: Task A `5f7521fbeb9` (more table cases in the slash and too-long differential specs) and `5d5fc42ca40` (the oracle references now state intent only); 1b.7 `7853c46152e`; 1b.8 `904308b81da`. No allow-list change: the guard still allows only `@rocket.chat/core-typings` and `@rocket.chat/emitter`. `git diff --name-status d1f3727a495 HEAD -- apps/meteor packages` shows `A` for every new file and `M` only for the two adapters (`flows/processSetReaction.ts`, `flows/sendMessage.ts`), the four oracle headers and the two differential specs written in 1b.5 and 1b.6; no existing spec, golden or golden helper changed. `ChatMessages.ts` is not edited.
+
+### Review nits applied (Task A)
+
+- The sentences that said Jest aborts the process on an unhandled rejection are corrected above (1b.5 "Not pinned", "Behavior no spec pins", and the mutation table). Observation of this job, kept for the record: in two mutation runs below (`void` on a rejecting request) the Jest process did exit with the uncaught exception instead of failing one test, so the effect of an unhandled rejection depends on timing; either way such a case cannot sit in a table, and both counted as detections.
+- The header of each `legacy*Reference.ts` states its intent only (oracle for the differential spec, never imported from product code). The TODO that was copied into `legacyTooLongReference.ts` is gone (comments only; the adapter keeps the original).
+- New cases pinned. Slash: unrecognized setting `null`, `0`, `''`, `NaN`, `{}`; `tmid` 0; truthy non-boolean `clientOnly`; `uid` `''`; a telemetry post that rejects with an already-handled rejection and records its `.then` calls (neither version observes it). Too long: limit `NaN`, `null`, `''`, `Infinity`, `-1` (each with an empty and a non-empty text); `FileUpload_Enabled` and `Message_AllowConvertLongMessagesToAttachment` set to `null`, `0`, `''`, `'0'`. All identical in the legacy copy, the adapter and the core.
+
+### 1b.7 processSetReaction
+
+Files (new): `chats/core/processSetReaction.ts`, `chats/core/processSetReaction.differential.spec.ts`, `chats/legacySetReactionReference.ts`. Edited: `chats/flows/processSetReaction.ts` (adapter, same path, export and signature; no `async`: it returns the core's promise).
+
+```ts
+type SetReactionChat = Pick<ChatAPI, 'composer' | 'data'>;
+type SetReactionDeps = {
+  getUserId(): string | undefined;
+  getUser(): { username?: string } | undefined | null;
+  getMessage(id): IMessage | undefined;
+  getRoom(rid): IRoom | undefined;
+  hasSubscription(rid): boolean;
+  emojiExists(shortcode: string): boolean;
+  isReadOnly(room: IRoom, user: { username?: string }): boolean;
+  updateMessage(predicate: (r: IMessage) => boolean, modifier: (r: IMessage) => IMessage): void;
+  postReaction(params: { emoji: string; messageId: string }): Promise<unknown>;
+  notifyError(error: unknown): void;
+};
+processSetReactionCore(deps, chat, { msg }): Promise<boolean>
+```
+
+Deviation from the plan's `SetReactionDeps`: `rest` became `postReaction` (the endpoint string stays in the adapter), `toast` became `notifyError`, `Session` became `getUserId` and `getUser`, `MessageStore` became `getMessage` and `updateMessage`, and `hasSubscription` takes the room id (the adapter runs the old `find` predicate).
+
+Live-read audit (all at call time, in the old order). Pre-check: `msg.trim()` and the `/^\+(:.*?:)$/m` regex (literal inside the function, multiline kept); `emoji.list[reaction]` (through `emojiExists`, first check); `chat.data.findLastMessage()` awaited; `chat.composer?.clear()`; then the optimistic step reads `getUserId()`, `getUser()`, `Messages.state.get(id)`, `Rooms.state.get(rid)`, `message.private`, `emoji.list[reaction]` again (second check), `roomCoordinator.readOnly(room, user)`, `Subscriptions.state.find(...)`, and only then `Messages.state.update`; then the `await` on the POST; on failure the toast, then the rethrow. `Messages.state`, `Rooms.state` and `Subscriptions.state` are getters over the store, read inside each arrow.
+
+Quirks preserved and pinned: `+:emoji:` matches on any line of a multi-line text (`/m`); the emoji is checked twice; the newest non-hidden message of the room or thread is the target; no rollback when the POST fails, the toast fires and the error is rethrown; a toast that throws replaces the error; every skip of the optimistic step (no user id, no user, no username, no room, private message, read only, not subscribed) still POSTs.
+
+### 1b.8 sendMessage
+
+Files (new): `chats/core/sendMessage.ts`, `chats/core/sendMessage.differential.spec.ts`, `chats/legacySendMessageReference.ts` (its three extracted sub-flows are the legacy references of 1b.5 to 1b.7, so the oracle contains no extracted code). Edited: `chats/flows/sendMessage.ts` (adapter, no `async`, no destructuring of the params: the object goes to the core untouched). `ChatMessages.ts:173-181` still does `sendMessage.bind(this, this)`; `chat.flows.sendMessage` is the adapter, and `chat.flows.processMessageEditing` and `requestMessageDeletion` are still the functions bound by the chat, which the core reads through `chat.flows`.
+
+```ts
+type SendMessageChat = Pick<ChatAPI, 'composer' | 'data' | 'readStateManager' | 'currentEditingMessage'> & {
+  readonly flows: Pick<ChatAPI['flows'], 'processMessageEditing' | 'requestMessageDeletion'>;
+};
+type SendMessageParams = { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; tmid?: IMessage['tmid'] };
+type StoredMessage = IMessage & { temp?: boolean };
+type SendMessageDeps<TChat extends SendMessageChat = SendMessageChat> = {
+  getUserId(): string | undefined;
+  getUser(): Pick<IUser, 'username' | 'name'> | undefined | null;
+  trim(text: string | undefined): string;
+  getMessage(id): StoredMessage | undefined;
+  storeMessage(message: IMessage): void;
+  updateMessage(predicate: (r: StoredMessage) => boolean, modifier: (r: StoredMessage) => StoredMessage): void;
+  getRoom(rid): Pick<IRoom, 'federated'> | undefined;
+  isReadReceiptEnabled(): boolean | undefined;
+  onClientMessageReceived(message: IMessage): Promise<IMessage>;
+  onClientBeforeSendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'> & { isEditing?: boolean }): Promise<same type>;
+  upsertThreadMessage(message: IMessage, rid, tmid): void;
+  postMessage(params: { message: IMessage; previewUrls: string[] | undefined }): Promise<unknown>;
+  afterSendMessage(message: IMessage, rid): Promise<unknown>;
+  notifyError(error: unknown): void;
+  notifyAlreadySent(): void;
+  notifyMessageNotFound(): void;
+  flows: {
+    processSetReaction(chat: TChat, message: IMessage): Promise<boolean>;
+    processTooLongMessage(chat: TChat, message: IMessage): Promise<boolean>;
+    processSlashCommand(chat: TChat, message: IMessage): Promise<boolean>;
+    processMessageUploads(chat: TChat, message: IMessage): Promise<boolean>;
+    processMessageEditing(chat: TChat, message: IMessage, previewUrls?: string[]): Promise<boolean>;
+  };
+};
+sendMessageCore<TChat extends SendMessageChat>(deps: SendMessageDeps<TChat>, chat: TChat, params: SendMessageParams): Promise<boolean>
+```
+
+Deviations from the plan's `SendMessageDeps`: the core is generic over the chat type, because the five sub-flows take the whole `ChatAPI` and the same `chat` object has to reach them (a spec asserts identity); the web adapter instantiates `ChatAPI`. `Session`, `MessageStore` and `Settings` were split into single calls; `t` and `toast` became three notifiers (`notifyError`, `notifyAlreadySent`, `notifyMessageNotFound`; the adapter evaluates `t(...)` at the same position as before); `rest` became `postMessage`; `trim` is injected because `stringUtils` pulls `dompurify`; `closeUnclosedCodeBlock` is imported by the core (no imports of its own, so the guard allows it). The five sub-flows are called by imported function, as in the old `process`, and `chat.flows.processMessageEditing` and `requestMessageDeletion` through the chat in the empty-text branch, as before. No `deps.ts` file was created (each core exports its types).
+
+Live-read audit, in the old order. `sendMessageCore`: `chat.data.isSubscribedToRoom()`, then `joinRoom()` in a try (error toast, `false`); `chat.readStateManager.clearUnreadMark()`; `chat.composer?.uploads` read once; `text.trim()` and `closeUnclosedCodeBlock`; `chat.currentEditingMessage.getMID()`; `uploadsStore.get().length`; then compose (`chat.composer?.quotedMessages.get()` and, only when editing, `chat.data.findMessageByID(mid)`, then a second `findMessageByID(mid)` for the encrypted-attachment branch); `dismissAllQuotedMessages()` (not awaited) inside the try; `process`; `afterSendMessage(message, message.rid)` with the OUTER composed message; the empty-text edit branch reads `findMessageByID`, then `chat.flows.processMessageEditing({ ...original, msg: '' }, previewUrls)`, `currentEditingMessage.stop()` (not awaited) or `reset()` then `requestMessageDeletion`. `process`: `getMID()` first, then the sub-flows in the order set reaction, too long, slash (only when `isSlashCommandAllowed`), uploads (then `composer.clear()`), `onClientBeforeSendMessage({ ...message, isEditing: !!mid })`, `delete message.e2e` and `isEditing` on the returned object, `processMessageEditing(chat, message, previewUrls)`, `composer.clear()`, the optimistic step, the POST, and the final `update` that clears `temp` only if the record is still the optimistic one. Optimistic step: `getUserId()`, `trim(message.msg)` only when there is a user id, `getMessage(id)` only when the id is truthy (duplicate id: toast, no insert), `getUser()`, `getRoom(rid)` (federated skips), `Date`, `isReadReceiptEnabled()`, then `await onClientMessageReceived`, `storeMessage`, and `upsertThreadMessage` when the processed message has a `tmid`. Every singleton arrow reads at call time; `settings.peek` is called as a method inside an arrow.
+
+Quirks preserved and pinned (by the goldens and the differential): no rollback and a left-over `temp: true` record when `chat.sendMessage` fails; `afterSendMessageCallback` receives the outer message and also runs when a sub-flow (slash, reaction, too long) ended the send, but not when the transform or the request failed; the duplicate-id toast does not stop the POST; a missing user id, user, username or a federated room skips the optimistic insert but still POSTs; the empty-text edit branch lets a failing `findMessageByID` reject out of the function (outside the try); the `Message_not_found` branch is only reachable when the data API resolves `null` or `undefined`; a transform that returns `undefined` or `null` ends in the catch (the `delete` throws) and still returns `true`; a rejecting upload inside the too-long modal leaves the send pending; `+:emoji:` ends the send with `true` even when the reaction request failed (toasted twice).
+
+### Runtime package imports per core
+
+| Core | Runtime packages |
+| --- | --- |
+| `processSetReaction.ts` | none (type-only `@rocket.chat/core-typings` and `ChatAPI`) |
+| `sendMessage.ts` | none (type-only), plus the relative `apps/meteor/lib/utils/closeUnclosedCodeBlock.ts`, which has no imports |
+
+The guard walked both cores (every non-spec file of `chats/core/` is an entry) and found no violation; no fixture was needed.
+
+### Differential specs and mutation checks
+
+Method as in 1b.3 to 1b.6: each case runs the frozen legacy copy, the adapter and the core with recording fakes (`goldenFakes.ts`, `goldenChat.ts`, the real `Messages`, `Rooms` and `Subscriptions` stores, the real data API and, for the send flow, the real `processMessageUploads` and `processMessageEditing`), and compares the outcome (value, error text, or pending), whether the call threw synchronously or returned a promise, the ordered call log, the store (with `JSON.stringify` for key order) and the microtask ticks to settle. Modal cases drive `onConfirm` and `onClose` and record a handler that rejects.
+
+- Set reaction: 71 tests: every golden case plus non-reactions, whitespace and tabs, multi-line and carriage-return texts, lazy emoji matches, unicode and astral names, falsy and truthy emoji entries, a missing, undefined or rejecting last-message lookup, a message missing from the store, threads and hidden messages, toggles and key order, every optimistic skip (including empty user id and username, subscribed only to another room), a request that fails with an error, a string, `undefined` or synchronously, a toast that throws, a composer that throws, a `readOnly` check that throws, and `msg` undefined, null or a number. The emoji list is wrapped in a recording proxy, so the two checks are in the log.
+- Send: 126 tests: 120 cases (plain text, fences, trim, unicode, mentions; empty and whitespace texts; no composer; join, join failing, subscription lookup rejecting; quotes with a permalink failure; threads with `tshow`; every optimistic skip; duplicate id; the stream replacing or deleting the record in flight; the receive and before-send transforms rejecting, throwing, returning `undefined` or `null`, encrypting, renaming, blanking `msg`, mutating their input; the request failing with an error, a string or synchronously; the after-send callback rejecting; composer, unread mark, editing id, compose and uploads probes throwing; slash routes (not allowed, unrecognized, allowed, server, client only, denied, failing); `+:emoji:` routes (known, later line, unknown, nothing to react to, failing, while editing); too-long routes (attachments off, uploads off, editing, offer pending, declined, accepted, accepted in a thread, accepted with a failing upload); files with and without text, with a failing confirmation, while editing; edit mode with text, previewUrls, `tshow`, quotes, a failing update, a foreign thread and room, encrypted originals with, without and with undefined attachments and with the encryption transform, a system-message original; edit with no text (delete, keep attachments, keep content, system message, not found, undefined, lookup failing, deletion, reset or editing flow rejecting, update failing, no composer)) plus a legacy-quirk check, an outcome-class check (true, false, rejected and pending all present), four tick comparisons and a chat-identity check.
+
+Mutations (each restored; the step's golden specs and differential ran together; "detected" means at least one test fails):
+
+| Core | Mutation | Failing tests |
+| --- | --- | --- |
+| set reaction | `composer.clear()` after the optimistic update | 48 |
+| set reaction | `usernames.length > 0` to `>= 0` (keep an empty reaction) | 4 |
+| set reaction | `await` on the POST dropped | the process aborts on the unhandled rejection (detected) |
+| set reaction | second emoji check removed | 32 |
+| send | callback receives the inner message instead of the outer | 28 |
+| send | `composer.clear()` after the optimistic insert | 61 |
+| send | `dismissAllQuotedMessages()` after `process` | 104 |
+| send | `await` on the POST dropped | the process aborts on the unhandled rejection (detected) |
+| send | `temp` cleared without the `temp === true` check | 4 |
+| send | optimistic insert needs a user, not a username | 3 |
+| send | slash flow before the too-long flow | 8 |
+| send | blank check without `trim` | 2 |
+
+### Test numbers
+
+| | before the job (`d1f3727a495`) | after Task A | after 1b.7 | after 1b.8 |
+| --- | --- | --- | --- | --- |
+| existing composer set (25 suites, 306 tests, goldens excluded) | passing | passing | passing | passing |
+| goldens (9 suites, 240 tests) | passing | passing | passing | passing |
+| 1b.3/1b.4 specs (3 suites, 167 tests; `importGuard` is now 66 with the two new entries) | passing | passing | passing | passing |
+| slash differential | 56 | 66 | 66 | 66 |
+| too-long differential | 46 | 64 | 64 | 64 |
+| set-reaction differential | | | 71 | 71 |
+| send differential | | | | 126 |
+| whole composer command incl. `client/lib/UserAction` | 39 suites, 817 tests | | 40 suites, 917 tests | 41 suites, 1044 tests |
+| `packages/ui-client` | 45, 231 | 45, 231 | 45, 231 | 45, 231 |
+
+`tsc --noEmit --skipLibCheck` in `apps/meteor`, re-run after the last edit of each step, specs included: the 2 baseline `TS2307` errors (`@rocket.chat/ui-contacts`). `oxlint` and `prettier --check` clean on every touched file.
+
+### Behavior no spec pins
+
+- `chat.flows.*` wiring in `ChatMessages.ts` (binding of `sendMessage`, `processSetReaction`, `processMessageEditing`, `requestMessageDeletion`): the goldens build their own `chat`, so only Playwright covers it. It was not edited.
+- `settings.peek` keeping its `this` in the adapters: the golden fake is a plain object.
+- The real `onClientBeforeSendMessage` chain (including the e2ee transform with real `crypto`), the real `afterSendMessageCallback` (`clientCallbacks`), the real `emoji.list` and `roomCoordinator.readOnly` rules: all are recording fakes.
+- A React view reacting to the `Messages` store between the optimistic insert and the POST (the real store runs, no view is mounted).
+- The legacy oracle of the send flow runs the unchanged modules `processMessageUploads`, `processMessageEditing` and `afterSendMessageCallback`, so a change inside them is not seen by this differential.
+- `sendMessage(chat, undefined)`: legacy, adapter and core agree under the jest transform (a synchronous throw); a browser build may reject instead; no web caller passes `undefined`.
+
+### Deviations
+
+The deps shapes above differ from the plan text as listed; no `deps.ts` was created; the core file names are `processSetReaction.ts` and `sendMessage.ts` (no `Core` suffix), matching 1b.5 and 1b.6; the legacy send oracle composes the legacy references of the extracted sub-flows instead of their adapters; `trim` and the three notifiers are injected instead of `t` and `toast`.
+
+### Playwright to run next (local Meteor)
+
+Start the server with `TEST_MODE=true yarn dev` in `apps/meteor`, then from `apps/meteor`:
+
+`yarn test:e2e tests/e2e/message-composer.spec.ts tests/e2e/message-composer-history.spec.ts tests/e2e/quote-messages.spec.ts tests/e2e/quote-attachment.spec.ts tests/e2e/message-mentions.spec.ts tests/e2e/message-actions.spec.ts tests/e2e/threads.spec.ts tests/e2e/file-upload.spec.ts tests/e2e/image-upload.spec.ts tests/e2e/emojis.spec.ts tests/e2e/e2e-encryption`
+
+What each step touches, so a person can run it by hand if a spec is flaky:
+
+- 1b.3 payload (`composeMessage`, `updateMessage` params): sending any message (id, `tmid`, `tshow`, quoted-message permalink lines in order); editing a message in a normal and an encrypted room (the two `chat.update` shapes). Specs: `message-composer.spec.ts`, `quote-messages.spec.ts`, `quote-attachment.spec.ts`, `threads.spec.ts` (reply and "also send to channel"), `message-actions.spec.ts` (edit), `e2e-encryption/`.
+- 1b.4 composer state: the formatting toolbar and the Katex-dependent buttons appearing and updating, quoted messages, the uploads preview. Specs: `message-composer.spec.ts`, `message-composer-history.spec.ts`, `file-upload.spec.ts`.
+- 1b.5 slash command: typing `/command args` (a server command and a client-only command such as `/shrug`), an unrecognized `/nope` (rocket.cat warning, text not sent), a permission-denied command. Manual: no dedicated spec was found.
+- 1b.6 too-long message: a message longer than `Message_MaxAllowedSize` with and without attachment conversion: error toast and restored text, or the "send as attachment" modal, confirm and cancel; a long message while editing. Manual: no spec found.
+- 1b.7 set reaction: `+:emoji:` in the composer (known and unknown emoji, in a room and in a thread, toggling off, a read-only room, a room the user is not subscribed to). Manual: no spec found; `emojis.spec.ts` covers the picker only.
+- 1b.8 send flow: everything above plus plain send with Enter and with the send button, send while not subscribed (join first), the duplicate-send toast, a failed send (the message stays as a temporary message with an error toast), quotes cleared after sending, replies in threads, edit and "edit to empty = delete", files with a caption, encrypted rooms (text and file), mentions and channels. Specs: the list above.
+- Manual extras (no spec): a long message to attachment; a failed upload and then a send; two sessions seeing the typing indicator (typing is untouched until 1b.10).
