@@ -168,12 +168,23 @@ or leaving. Send a message **from each side** after every step and verify propag
 2. Remove rocketbot from the Slack channel, then send from Slack and from Rocket.Chat — nothing
    propagates in either direction, and no errors are logged.
 
+## Files from Slack
+
+Requires `SlackBridge_FileUpload_Enabled`, and in app mode the `files:read` bot scope. Without
+that scope Slack answers downloads with its sign-in page, so every file falls back to its link.
+
+| #   | Action on Slack                                    | Expected result in Rocket.Chat                                                |
+| --- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1   | Upload an image with no text                       | The image is shown as an upload, with a thumbnail.                            |
+| 2   | Upload an image with some text                     | Same as 1, with the text as the message.                                      |
+| 3   | Upload several files in one message                | Every file is attached to the one message.                                    |
+| 4   | Upload a file larger than `FileUpload_MaxFileSize` | The message carries the file's Slack link instead, and the failure is logged. |
+
 ## Coverage gaps
 
 The matrices above are the historical manual suite and deliberately mirror it. They do **not**
 cover, and it is worth checking manually when relevant:
 
-- File uploads (`SlackBridge_FileUpload_Enabled`).
 - Slack history import (`/slackbridge-import`, `slackbridge_import.server.ts`).
 - Threads (`thread_ts` mapping in `postMessage`).
 - Private channels and DMs.
