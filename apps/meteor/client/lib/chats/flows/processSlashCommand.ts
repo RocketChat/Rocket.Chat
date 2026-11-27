@@ -1,4 +1,4 @@
-import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { escapeHTML } from '@rocket.chat/tools';
 
@@ -8,110 +8,20 @@ import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings';
 import { slashCommands } from '../../slashCommand';
 import type { ChatAPI } from '../ChatAPI';
+import { processSlashCommandCore } from '../core/processSlashCommand';
 
-const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
-	const match = msg.match(/^\/([^\s]+)(.*)/);
-
-	if (!match) {
-		return undefined;
-	}
-
-	const [, cmd, params] = match;
-	const command = slashCommands.commands[cmd];
-
-	if (!command) {
-		return { command: cmd, params };
-	}
-
-	return { command, params };
-};
-
-const warnUnrecognizedSlashCommand = async (chat: ChatAPI, message: string): Promise<void> => {
-	console.error(message);
-
-	await chat.data.pushEphemeralMessage({
-		_id: Random.id(),
-		ts: new Date(),
-		msg: message,
-		u: {
-			_id: 'rocket.cat',
-			username: 'rocket.cat',
-			name: 'Rocket.Cat',
+export const processSlashCommand = (chat: ChatAPI, message: IMessage): Promise<boolean> =>
+	processSlashCommandCore(
+		{
+			getCommand: (name) => slashCommands.commands[name],
+			isUnrecognizedAllowed: () => settings.peek('Message_AllowUnrecognizedSlashCommand'),
+			hasAtLeastOnePermission: (permission, rid) => hasAtLeastOnePermission(permission, rid),
+			postTelemetry: (event) => sdk.rest.post('/v1/statistics.telemetry', { params: [event] }),
+			runCommand: (params) => sdk.rest.post('/v1/commands.run', params),
+			t: (key, options) => t(key, options),
+			escapeHTML: (text) => escapeHTML(text),
+			randomId: () => Random.id(),
 		},
-		private: true,
-		_updatedAt: new Date(),
-	});
-};
-
-export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
-	const match = parse(message.msg);
-
-	if (!match) {
-		return false;
-	}
-
-	const { command, params } = match;
-
-	if (typeof command === 'string') {
-		if (!settings.peek('Message_AllowUnrecognizedSlashCommand')) {
-			chat.composer?.clear();
-			await warnUnrecognizedSlashCommand(chat, t('No_such_command', { command: escapeHTML(command) }));
-			return true;
-		}
-
-		return false;
-	}
-
-	const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
-
-	if (permission && !hasAtLeastOnePermission(permission, message.rid)) {
-		chat.composer?.clear();
-		await warnUnrecognizedSlashCommand(chat, t('You_do_not_have_permission_to_execute_this_command', { command: escapeHTML(commandName) }));
-		return true;
-	}
-
-	if (clientOnly && chat.uid) {
-		chat.composer?.clear();
-		handleOnClient?.({ command: commandName, message, params, userId: chat.uid });
-		return true;
-	}
-
-	void sdk.rest.post('/v1/statistics.telemetry', {
-		params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
-	});
-
-	const triggerId = chat.ActionManager.generateTriggerId(appId);
-
-	const data = {
-		cmd: commandName,
-		params,
-		msg: message,
-		userId: chat.uid,
-	} as const;
-
-	try {
-		if (appId) {
-			chat.ActionManager.notifyBusy();
-		}
-
-		chat.composer?.clear();
-		const { result } = await sdk.rest.post('/v1/commands.run', {
-			command: commandName,
-			params,
-			roomId: message.rid,
-			...(message.tmid && { tmid: message.tmid }),
-			...(triggerId && { triggerId }),
-		});
-
-		handleResult?.(undefined, result, data);
-	} catch (error: unknown) {
-		await warnUnrecognizedSlashCommand(chat, t('Something_went_wrong_while_executing_command', { command: commandName }));
-		handleResult?.(error, undefined, data);
-	}
-
-	if (appId) {
-		chat.ActionManager.notifyIdle();
-	}
-
-	return true;
-};
+		chat,
+		message,
+	);
