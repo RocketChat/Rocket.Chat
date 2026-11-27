@@ -706,11 +706,11 @@ Adapter reads, all at call time: `createUploadsAPI` (arrow, so the spec's `jest.
 | --- | --- | --- | --- |
 | existing composer set (`views/room/composer`, `lib/chats`, `createComposerAPICore`, `createRichTextComposerAPI`, `composerHistory`, `composerStateCore`) | 25 suites, 306 tests | 25, 306 | 25, 306 |
 | goldens | 9, 240 | 9, 240 | 9, 240 |
-| new: `messagePayload.differential` + `importGuard` | | 2, 34 | 2, 34 |
-| new: `createComposerState.differential` | | | 1, 11 |
+| new: `messagePayload.differential` (25 tests) + `importGuard` (10 tests) | | 2, 35 | 2, 35 |
+| new: `createComposerState.differential` | | | 1, 10 |
 | `packages/ui-client` | 45, 231 | 45, 231 | 45, 231 |
 
-Whole command incl. `client/lib/UserAction`: 36 suites 580 tests after 1b.3; 37 suites 591 tests after 1b.4. `tsc --noEmit --skipLibCheck` in `apps/meteor`: the 2 baseline `TS2307` after the last edit, specs included. `oxlint` and `prettier --check` clean on the touched files.
+Whole command incl. `client/lib/UserAction`: 36 suites 581 tests after 1b.3; 37 suites 591 tests after 1b.4. `tsc --noEmit --skipLibCheck` in `apps/meteor`: the 2 baseline `TS2307` after the last edit, specs included. `oxlint` and `prettier --check` clean on the touched files.
 
 ### Third-party imports per core (static, from the guard walk)
 
@@ -720,3 +720,28 @@ Whole command incl. `client/lib/UserAction`: 36 suites 580 tests after 1b.3; 37 
 | `createComposerState.ts` | `@rocket.chat/emitter` | Not listed in 2.1; small and dependency free, to be proven in 1b.9 |
 
 The walk found no relative import beyond the files themselves (1 file each), no dynamic import and no forbidden module. Neither core touches `dompurify`, `escapeHTML` or `trim`; those arrive with later cores.
+
+## Review of Phase 1b steps 1b.3 and 1b.4 (2026-11-27)
+
+An independent review ran the pre-refactor code (`04c7ae4cfae`) against the new code on 204 `composeMessage` cases, 11 `updateMessage` cases and 4x4 composer-state cases (4 failure modes x 4 scripts, 16 cases): identical results, call logs, order and live reads. No web behavior change. Findings and how each was fixed (all in separate commits, no history rewritten, no existing or golden spec edited):
+
+| Finding | What | Fix | Commit |
+| --- | --- | --- | --- |
+| M1 (medium) | The guard's deny-lists matched nothing for three entries (`sdk`, `lib/i18n`, `lib/chats/ChatMessage`: real paths are `client/lib/sdk`, `apps/meteor/lib/i18n.ts` outside `client/`, `client/lib/ChatMessages.ts`) and let real singletons through with 0 violations (`lib/baseURI`, `lib/sdk/storage`, `apps/meteor/lib/i18n.ts`, `lib/sdk/ddpSdk` only indirectly). The package list was a deny-list and `report.packages` was never asserted | `FORBIDDEN_PATHS` is now matched from the `apps/meteor` root and gained `client/lib/sdk`, `baseURI`, `RestApiClient`, `getURL`, `slashCommand`, `onClientBeforeSendMessage`, `onClientMessageReceived`; a spec fails with the entry name when any entry does not exist on disk; the package deny-list is replaced by an allow-list (`ALLOWED_PACKAGES`: `@rocket.chat/core-typings`, `@rocket.chat/emitter`) checked by the walk and asserted on `report.packages`; bad-fixture tests for `baseURI`, `sdk/storage`, `ddpSdk`, `RestApiClient`, `lib/i18n.ts`, `ChatMessages`, a `.ts` extension and six packages outside the list | `test(meteor): make the core import guard exact and allow-list based` |
+| L1 (low) | The comment stripper could hide real imports: `'image/*'` in a string followed by a forbidden `export ... from` and a later `/** */` gave 0 edges; `const a = 'a//b'; import ...` on one line gave 0 edges | `stripComments` is now a small tokenizer that tracks strings, template literals (with `${}` nesting) and regex literals (with classes), removes comments only, and keeps strings so specifiers stay readable. Its comment now says what it guarantees: it can over-report (an import written in a string counts), never hide. Fixture tests for both failing cases, a regex-class case and a template case | same commit |
+| L2 (low) | `ComposeMessageOptions.originalMessage?: IMessage` was narrower than `DataAPI.composeMessage` (`IMessage \| null`, and every non-edit web send passes `null`) | The core accepts `IMessage \| null`; runtime unchanged; two null cases in the differential table | `refactor(meteor): accept a null original message in the payload core` |
+| L3 (low) | The differential specs compared the adapter with a mirror of itself | `chats/legacyPayloadReference.ts` and `chats/legacyComposerStateReference.ts`: frozen copies of the old logic (outside `core/`, so not guarded; imported only by specs) used as the oracle. 204 `composeMessage` cases (3 contexts x 4 texts x 17 option sets), 11 `updateMessage` cases (real e2e v1 and v2 content, `e2eMentions`, `previewUrls`), a composer-state matrix (failure modes none, uploads factory throws, `observe` throws, `condition()` throws at creation, `condition()` throws on a later recompute, each x 4 scripts), plus fresh instances, `settings.observe` called as a method (`this === settings`), uploads created last, key order. Each case compares the legacy copy with the adapter and the core: returned value (and `JSON.stringify` for key order), the ordered call log, live reads. A mutation check (`??` to `\|\|` on the message id) fails the legacy table | `test(meteor): compare the injectable cores with a frozen copy of the old logic` |
+| L4 (low) | The comment on the coarse-grained subscription (only `condition()` is `Katex_Enabled`, cheap zustand read) sat inside a core that no longer knows settings or zustand | Moved to the `observeSettings` arrow in `lib/composerStateCore.ts` | `refactor(meteor): keep the settings comment next to the settings code` |
+| Tick (info) | `composeMessage` in `chats/data.ts` was an `async` wrapper around the core: one extra microtask tick over the old function | `async` removed; the adapter returns the core's promise; types unchanged. Test: ticks to settle compared with the legacy function (5 vs 6 before, equal after) | `refactor(meteor): return the payload promise directly from the data adapter` |
+| Info | `coreEntries()` in `importGuard.spec.ts` did not recurse into subfolders; the 1b.3/1b.4 results table had the wrong counts | `coreEntries()` recurses; the table above is corrected (`messagePayload.differential` 25 tests + `importGuard` 10 = 2 suites, 35; `createComposerState.differential` 1 suite, 10; 45 in total) | the guard commit and this one |
+
+Final guard lists. Allow-list for cores: `@rocket.chat/core-typings` (type and predicate use) and `@rocket.chat/emitter`; adding anything is a person's decision. Forbidden paths (from `apps/meteor`): `client/lib/{SDKClient,sdk,baseURI,RestApiClient,settings,user,toast,authorization,e2ee,rooms/roomCoordinator,utils/threadMessageUtils,queryClient,getPermaLink,getURL,UserAction,slashCommand,onClientBeforeSendMessage,onClientMessageReceived,chats/uploads,chats/data,chats/flows,ChatMessages,messageBoxFormatting,createComposerAPICore,composerStateCore}`, `client/{stores,meteor,views,providers,components,hooks}` and `lib/i18n`.
+
+Two benign differences between old and new, both known and accepted:
+
+- One extra microtask tick before the payload promise settled. Fixed by dropping `async` on the wrapper.
+- With `options` undefined, the old async function rejected and the extracted core throws synchronously under the jest transform (the destructuring runs before the generator starts); in native async code both reject. No web caller can reach it: every caller passes an options object.
+
+Test numbers after the review: `chats/core` specs 3 suites, 167 tests (`importGuard` 62, `messagePayload.differential` 53, `createComposerState.differential` 52); existing composer set and goldens unchanged (25 suites 306 tests; 9 suites 240 tests); `packages/ui-client` 45 suites 231 tests; `tsc --noEmit --skipLibCheck` in `apps/meteor` at the 2 baseline `TS2307`; `oxlint` and `prettier --check` clean.
+
+For the later pull request split (`docs/change-organization.md`): commit `1b3703f772e` mixes the message payload extraction with the import guard tooling (`importGraph.ts`, `importGuard.spec.ts`). It was not rewritten. The guard belongs in its own commit or pull request, with the payload extraction after it.
