@@ -9,13 +9,16 @@ import type { AiAgentDetails, AiAgentRoomOption, AiAgentSummary, AiEngineSeatCou
 import { recordAiAgentAuditEvent } from './audit';
 import { buildAgentRecord110, parseStoredRecord110 } from './recordContract';
 import {
+	areToolsWithinObservedSeatCeiling,
 	deriveAgentReadiness,
+	getObservedSeatToolCeiling,
 	doesObservationDisagreeWithSeat,
 	isClaimedSeatObservationAcceptable,
 	isEngineReportFresh,
 	isOrdinaryPublicChannel,
 	isReservedAgentBotValid,
 	isSeatClaimableByObservation,
+	toObservedToolOptions,
 	VERSION_MAX_AHEAD_MS,
 } from './seatValidation';
 import {
@@ -23,7 +26,6 @@ import {
 	CHAT_ID_PATTERN,
 	COMMIT_SHA_PATTERN,
 	formatModelRoute,
-	isSeatAllowedPublicTool,
 	MAX_CHAT_ROOMS,
 	MAX_ROUTES,
 	MAX_SKILLS,
@@ -83,12 +85,13 @@ export async function registerSeatForEngine(
 		allowedRouteIds: string[];
 	},
 	actor: { userId: string; auditActor: IAuditServerActor },
+	now: Date = new Date(),
 ): Promise<AiSeatSummary> {
 	if (!SEAT_ID_PATTERN.test(params.seatId)) {
 		throw new AiAgentActionError('error-ai-seat-id-invalid', 'Seat id is invalid');
 	}
 
-	const engine = await AiEngines.findOneById(params.engineId, { projection: { _id: 1 } });
+	const engine = await AiEngines.findOneById(params.engineId, { projection: { _id: 1, observed: 1, lastReportAt: 1 } });
 	if (!engine) {
 		throw new AiAgentActionError('error-ai-engine-not-found', 'Engine not found', 404);
 	}
@@ -111,9 +114,6 @@ export async function registerSeatForEngine(
 			invalidCode: 'tool-list-invalid',
 			duplicateCode: 'duplicate-tool',
 		});
-		if (!allowedToolIds.every(isSeatAllowedPublicTool)) {
-			throw new AiAgentValidationError('tool-not-allowed');
-		}
 		if (!Array.isArray(params.allowedRouteIds) || params.allowedRouteIds.length < 1 || params.allowedRouteIds.length > MAX_ROUTES) {
 			throw new AiAgentValidationError('route-invalid');
 		}
@@ -129,6 +129,16 @@ export async function registerSeatForEngine(
 	} catch (error) {
 		const code = error instanceof AiAgentValidationError ? error.code : 'seat-invalid';
 		throw new AiAgentActionError(`error-ai-${code}`, `Invalid seat configuration (${code})`);
+	}
+
+	// A seat's tools are what the engine last published for this seat; there is no built-in list to fall back to.
+	if (allowedToolIds.length > 0) {
+		if (!isEngineReportFresh(engine.lastReportAt, now.getTime()) || !engine.observed) {
+			throw new AiAgentActionError('error-ai-engine-report-stale', 'Engine has not reported within the last 120 seconds');
+		}
+		if (!areToolsWithinObservedSeatCeiling(allowedToolIds, engine.observed, params.seatId)) {
+			throw new AiAgentActionError('error-ai-tool-not-allowed', 'Invalid seat configuration (tool-not-allowed)');
+		}
 	}
 
 	const bot = await Users.findOneById(params.botUserId, {
@@ -163,7 +173,6 @@ export async function registerSeatForEngine(
 		}
 	}
 
-	const now = new Date();
 	try {
 		const { insertedId } = await AiSeats.registerSeat({
 			engineId: params.engineId,
@@ -274,9 +283,6 @@ function validateAgentConfigInput(params: {
 			invalidCode: 'tool-list-invalid',
 			duplicateCode: 'duplicate-tool',
 		});
-		if (!tools.every(isSeatAllowedPublicTool)) {
-			throw new AiAgentValidationError('tool-not-allowed');
-		}
 		const modelRoute = validateModelRouteId(params.modelRoute);
 		const skills = validateUniqueIds(params.skills ?? [], {
 			min: 0,
@@ -460,6 +466,10 @@ export async function createAiAgent(
 	if (!isEngineReportFresh(engine.lastReportAt, now.getTime()) || !engine.observed) {
 		throw new AiAgentActionError('error-ai-engine-report-stale', 'Engine has not reported within the last 120 seconds');
 	}
+	const publishedTools = engine.observed.catalogue.tools;
+	if (!validated.tools.every((toolId) => publishedTools.includes(toolId))) {
+		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Requested tool is not published by this engine');
+	}
 
 	await verifyActorRooms(validated.rooms, actor.user);
 
@@ -474,6 +484,9 @@ export async function createAiAgent(
 			continue;
 		}
 		if (!validated.tools.every((toolId) => seat.allowedToolIds.includes(toolId))) {
+			continue;
+		}
+		if (!areToolsWithinObservedSeatCeiling(validated.tools, engine.observed, seat.seatId)) {
 			continue;
 		}
 		if (!seat.allowedRouteIds.includes(validated.modelRoute)) {
@@ -592,6 +605,9 @@ export async function retryAiAgent(
 	}
 	if (!validated.tools.every((toolId) => seat.allowedToolIds.includes(toolId))) {
 		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Requested tool is outside this seat allowlist');
+	}
+	if (!areToolsWithinObservedSeatCeiling(validated.tools, engine.observed, seat.seatId)) {
+		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Requested tool is not published by the engine for this seat');
 	}
 	if (!seat.allowedRouteIds.includes(validated.modelRoute)) {
 		throw new AiAgentActionError('error-ai-route-not-allowed', 'Requested model route is outside this seat allowlist');
@@ -868,7 +884,9 @@ export async function listAiAgentsForActor(
 					available += 1;
 				}
 				allowedRoomPool.push(...seat.allowedRoomIds);
-				seat.allowedToolIds.forEach((tool) => allowedToolPool.add(tool));
+				getObservedSeatToolCeiling(engine.observed, seat.seatId)
+					.filter((tool) => seat.allowedToolIds.includes(tool))
+					.forEach((tool) => allowedToolPool.add(tool));
 				seat.allowedRouteIds.forEach((route) => allowedRoutePool.add(route));
 			} else if (seat.state === 'claimed') {
 				claimed += 1;
@@ -880,6 +898,8 @@ export async function listAiAgentsForActor(
 		// Filter room picker strictly by actor visibility and invite permission so no private room metadata leaks.
 		const eligibleRooms = await resolveEligibleRoomsForActor(allowedRoomPool, actorUser);
 
+		const allowedTools = [...allowedToolPool].sort();
+
 		engineCounts.push({
 			engineId: engine._id,
 			engineName: engine.name,
@@ -890,7 +910,8 @@ export async function listAiAgentsForActor(
 			disagreed,
 			...(engine.lastReportAt && { lastReportAt: engine.lastReportAt.toISOString() }),
 			reportStale,
-			allowedTools: [...allowedToolPool].sort(),
+			allowedTools,
+			toolOptions: toObservedToolOptions(allowedTools, engine.observed),
 			allowedRoutes: [...allowedRoutePool].sort(),
 			...(engine.observed?.catalogue.skillsCommit && { skillsCommit: engine.observed.catalogue.skillsCommit }),
 			skills: [...(engine.observed?.catalogue.skills ?? [])].sort(),

@@ -3,12 +3,13 @@ import type {
 	AiSeatState,
 	IAiAgent,
 	IAiEngine,
+	IAiEngineObservedReport,
 	IAiEngineObservedSeat,
 	IAiSeat,
 	IRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
-import type { AiAgentReadinessState } from '@rocket.chat/rest-typings';
+import type { AiAgentReadinessState, AiAgentToolOption } from '@rocket.chat/rest-typings';
 
 export const ENGINE_REPORT_FRESHNESS_MS = 120_000;
 export const VERSION_MAX_AHEAD_MS = 24 * 60 * 60 * 1000;
@@ -97,6 +98,37 @@ export function isEngineReportFresh(lastReportAt: Date | undefined, nowMs: numbe
 	}
 	const ageMs = nowMs - lastReportAt.getTime();
 	return ageMs >= -60_000 && ageMs <= ENGINE_REPORT_FRESHNESS_MS;
+}
+
+/**
+ * The tools the engine last published for one seat. The engine owns which tools exist and which a seat may use;
+ * this workspace keeps no list of its own. Report 1.2.0 names each seat's tools; report 1.1.0 only lists the
+ * catalogue, which is then the ceiling for every seat. Returns an empty list when there is no report or the
+ * 1.2.0 report does not name the seat, so nothing outside the engine's word is ever allowed.
+ */
+export function getObservedSeatToolCeiling(observed: IAiEngineObservedReport | undefined, seatId: string): readonly string[] {
+	if (!observed) {
+		return [];
+	}
+	if (observed.contractVersion === '1.1.0') {
+		return observed.catalogue.tools;
+	}
+	return observed.seatTools?.find((entry) => entry.seatId === seatId)?.allowedTools ?? [];
+}
+
+export function areToolsWithinObservedSeatCeiling(
+	toolIds: readonly string[],
+	observed: IAiEngineObservedReport | undefined,
+	seatId: string,
+): boolean {
+	const ceiling = getObservedSeatToolCeiling(observed, seatId);
+	return toolIds.every((toolId) => ceiling.includes(toolId));
+}
+
+/** Tool picker options: the engine's name for each tool when the report gives one (1.2.0), the id otherwise. */
+export function toObservedToolOptions(toolIds: readonly string[], observed: IAiEngineObservedReport | undefined): AiAgentToolOption[] {
+	const names = new Map((observed?.catalogue.toolEntries ?? []).map((entry) => [entry.id, entry.name]));
+	return toolIds.map((id) => ({ id, name: names.get(id) ?? id }));
 }
 
 const REGISTRY_TO_EXPECTED_OBSERVED_STATE: Record<AiSeatState, AiEngineReportedSeatState> = {

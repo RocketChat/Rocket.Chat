@@ -16,7 +16,7 @@ import {
 	MAX_ENGINE_REPORT_BODY_BYTES,
 	readBoundedBodyBuffer,
 } from './aiAgentsGuards';
-import { buildSeatEnvelope110, revisionBytesToUtf8, validateEngineReport110 } from '../../lib/ai-agents/recordContract';
+import { buildSeatEnvelope110, revisionBytesToUtf8, validateEngineReport } from '../../lib/ai-agents/recordContract';
 import { SEAT_ID_PATTERN, UUID_PATTERN } from '../../lib/ai-agents/textValidation';
 
 const logger = new Logger('AiAgentsEngineRoutes');
@@ -208,7 +208,7 @@ export function createAiAgentsEngineHonoApp(rateLimiter = aiEngineRateLimiter, l
 				return c.json({ success: false, error: 'report-malformed' }, 400, NO_STORE);
 			}
 
-			const validated = validateEngineReport110(parsed, engineId);
+			const validated = validateEngineReport(parsed, engineId);
 			if (!validated.ok) {
 				const status = validated.error === 'engine-id-mismatch' ? 403 : 400;
 				return c.json({ success: false, error: validated.error }, status, NO_STORE);

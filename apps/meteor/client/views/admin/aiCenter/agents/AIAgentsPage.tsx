@@ -290,10 +290,10 @@ const AIAgentsPage = (): ReactElement => {
 							<Field>
 								<FieldLabel>{t('AI_Agents_tools_label')}</FieldLabel>
 								<Box display='flex' flexDirection='column' gap={8}>
-									{(activeEngine?.allowedTools ?? []).map((tool) => (
-										<Box key={tool} display='flex' alignItems='center' gap={8}>
-											<CheckBox checked={selectedTools.includes(tool)} onChange={() => toggleTool(tool)} />
-											<span>{tool}</span>
+									{(activeEngine?.toolOptions ?? []).map((tool) => (
+										<Box key={tool.id} display='flex' alignItems='center' gap={8}>
+											<CheckBox checked={selectedTools.includes(tool.id)} onChange={() => toggleTool(tool.id)} />
+											<span>{tool.name}</span>
 										</Box>
 									))}
 								</Box>

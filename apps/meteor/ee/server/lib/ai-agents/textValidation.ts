@@ -14,11 +14,6 @@ export const COMMIT_SHA_PATTERN = /^[0-9a-f]{40}$/;
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const CHAT_ID_PATTERN = /^[A-Za-z0-9._-]{1,128}$/;
 
-/** Public lookup tools permitted under the operator-owned seat template ceiling. */
-export const SEAT_TEMPLATE_PUBLIC_TOOLS = ['docs_search', 'docs_read'] as const;
-
-const SEAT_FORBIDDEN_TOOL_PREFIXES = ['thread_', 'file_', 'zoho_', 'jira_', 'github_', 'reproduce'] as const;
-
 const PRIVATE_KEY_HEADER_RE = /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----/;
 const KEY_PREFIX_RE =
 	/\b(?:sk-(?:proj-|live-|test-|ant-|or-v1-)?[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{16,}|AIza[0-9A-Za-z_-]{20,}|glpat-[A-Za-z0-9_-]{16,})\b/;
@@ -37,7 +32,7 @@ export class AiAgentValidationError extends Error {
 	}
 }
 
-function hasControlChar(input: string): boolean {
+export function hasControlChar(input: string): boolean {
 	for (let i = 0; i < input.length; i += 1) {
 		const code = input.charCodeAt(i);
 		if (code <= 0x1f || (code >= 0x7f && code <= 0x9f)) {
@@ -123,16 +118,6 @@ export function validateAgentInstructions(raw: string): string {
 		throw new AiAgentValidationError('text-secret-shape');
 	}
 	return nfc;
-}
-
-export function isSeatAllowedPublicTool(toolId: string): boolean {
-	if (!TOOL_ID_PATTERN.test(toolId)) {
-		return false;
-	}
-	if (SEAT_FORBIDDEN_TOOL_PREFIXES.some((prefix) => toolId === prefix || toolId.startsWith(prefix))) {
-		return false;
-	}
-	return (SEAT_TEMPLATE_PUBLIC_TOOLS as readonly string[]).includes(toolId);
 }
 
 export function validateUniqueIds(

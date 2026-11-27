@@ -110,6 +110,12 @@ export type AiAgentRoomOption = {
 	fname?: string;
 };
 
+/** A tool the page may offer: the engine's id and the name the engine gives it (the id when it gives none) */
+export type AiAgentToolOption = {
+	id: string;
+	name: string;
+};
+
 export type AiEngineSeatCounts = {
 	engineId: string;
 	engineName: string;
@@ -121,6 +127,7 @@ export type AiEngineSeatCounts = {
 	lastReportAt?: string;
 	reportStale: boolean;
 	allowedTools: string[];
+	toolOptions: AiAgentToolOption[];
 	allowedRoutes: string[];
 	skillsCommit?: string;
 	skills: string[];

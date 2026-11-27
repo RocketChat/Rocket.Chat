@@ -171,6 +171,18 @@ const engineSeatCountsSchema = {
 		lastReportAt: { type: 'string' },
 		reportStale: { type: 'boolean' },
 		allowedTools: { type: 'array', items: { type: 'string' } },
+		toolOptions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					id: { type: 'string' },
+					name: { type: 'string' },
+				},
+				required: ['id', 'name'],
+				additionalProperties: false,
+			},
+		},
 		allowedRoutes: { type: 'array', items: { type: 'string' } },
 		skillsCommit: { type: 'string' },
 		skills: { type: 'array', items: { type: 'string' } },
@@ -198,6 +210,7 @@ const engineSeatCountsSchema = {
 		'disagreed',
 		'reportStale',
 		'allowedTools',
+		'toolOptions',
 		'allowedRoutes',
 		'skills',
 		'eligibleRooms',

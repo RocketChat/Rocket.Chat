@@ -2,11 +2,15 @@ import { createHash } from 'node:crypto';
 
 import type {
 	AiAgentRevisionStatus,
+	AiEngineReportContractVersion,
 	AiEngineReportedSeatState,
 	AiEngineSeatAvailability,
+	AiEngineToolEffect,
 	AiSeatState,
 	IAiEngineObservedReport,
 	IAiEngineObservedSeat,
+	IAiEngineObservedSeatTools,
+	IAiEngineObservedToolEntry,
 } from '@rocket.chat/core-typings';
 import { Binary } from 'mongodb';
 
@@ -14,6 +18,7 @@ import {
 	AiAgentValidationError,
 	CHAT_ID_PATTERN,
 	COMMIT_SHA_PATTERN,
+	hasControlChar,
 	MAX_CHAT_ROOMS,
 	MAX_RECORD_BYTES,
 	MAX_ROUTES,
@@ -29,6 +34,9 @@ import {
 } from './textValidation';
 
 export const SEAT_RECORD_CONTRACT_VERSION = '1.1.0' as const;
+
+/** Engine report versions this workspace accepts. 1.2.0 adds per-seat tool ceilings and tool names. */
+export const ENGINE_REPORT_CONTRACT_VERSIONS: readonly AiEngineReportContractVersion[] = ['1.1.0', '1.2.0'];
 
 export const DEFAULT_SEAT_MEMORY = {
 	retentionDays: 7,
@@ -316,20 +324,66 @@ const VALID_REPORTED_STATES = new Set<AiEngineReportedSeatState>(['unprovisioned
 const VALID_AVAILABILITIES = new Set<AiEngineSeatAvailability>(['available', 'unavailable']);
 const REASON_CODE_PATTERN = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const MAX_REPORT_SEATS = 256;
+const MAX_TOOL_NAME_CHARS = 64;
+const VALID_TOOL_EFFECTS = new Set<AiEngineToolEffect>(['read', 'change']);
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
 	return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function validateToolIdList(raw: unknown): string[] | undefined {
+	if (!Array.isArray(raw) || raw.length > MAX_TOOLS || !raw.every((t) => typeof t === 'string' && TOOL_ID_PATTERN.test(t))) {
+		return undefined;
+	}
+	return [...new Set(raw as string[])];
+}
+
+/** 1.2.0 `catalogue.toolEntries`: exactly one `{id, name, effect}` per id in `catalogue.tools`. */
+function validateReportToolEntries(raw: unknown, tools: readonly string[]): IAiEngineObservedToolEntry[] | undefined {
+	if (!Array.isArray(raw) || raw.length !== tools.length) {
+		return undefined;
+	}
+	const known = new Set(tools);
+	const seen = new Set<string>();
+	const entries: IAiEngineObservedToolEntry[] = [];
+	for (const entry of raw) {
+		if (!isPlainObject(entry)) {
+			return undefined;
+		}
+		const { id, name, effect } = entry;
+		if (typeof id !== 'string' || !known.has(id) || seen.has(id)) {
+			return undefined;
+		}
+		if (typeof name !== 'string' || name.trim().length === 0 || Array.from(name).length > MAX_TOOL_NAME_CHARS || hasControlChar(name)) {
+			return undefined;
+		}
+		if (typeof effect !== 'string' || !VALID_TOOL_EFFECTS.has(effect as AiEngineToolEffect)) {
+			return undefined;
+		}
+		seen.add(id);
+		entries.push({ id, name, effect: effect as AiEngineToolEffect });
+	}
+	return entries;
+}
+
 function validateReportCatalogue(
 	rawCatalogue: unknown,
+	contractVersion: AiEngineReportContractVersion,
 ): { ok: true; catalogue: IAiEngineObservedReport['catalogue'] } | { ok: false; error: string } {
 	if (!isPlainObject(rawCatalogue)) {
 		return { ok: false, error: 'catalogue-invalid' };
 	}
-	const { tools, skillsCommit, skills, modelRoutes } = rawCatalogue;
-	if (!Array.isArray(tools) || tools.length > MAX_TOOLS || !tools.every((t) => typeof t === 'string' && TOOL_ID_PATTERN.test(t))) {
+	const { skillsCommit, skills, modelRoutes } = rawCatalogue;
+	const tools = validateToolIdList(rawCatalogue.tools);
+	if (!tools) {
 		return { ok: false, error: 'catalogue-tools-invalid' };
+	}
+	let toolEntries: IAiEngineObservedToolEntry[] | undefined;
+	if (contractVersion === '1.2.0') {
+		toolEntries = validateReportToolEntries(rawCatalogue.toolEntries, tools);
+		if (!toolEntries) {
+			return { ok: false, error: 'catalogue-tool-entries-invalid' };
+		}
 	}
 	if (typeof skillsCommit !== 'string' || !COMMIT_SHA_PATTERN.test(skillsCommit)) {
 		return { ok: false, error: 'catalogue-skills-commit-invalid' };
@@ -351,7 +405,8 @@ function validateReportCatalogue(
 	return {
 		ok: true,
 		catalogue: {
-			tools: [...new Set(tools)],
+			tools,
+			...(toolEntries && { toolEntries }),
 			skillsCommit,
 			skills: [...new Set(skills)],
 			modelRoutes: [...new Set(validatedRoutes)],
@@ -362,7 +417,9 @@ function validateReportCatalogue(
 function validateReportSeatEntry(
 	entry: unknown,
 	seenSeatIds: Set<string>,
-): { ok: true; seat: IAiEngineObservedSeat } | { ok: false; error: string } {
+	contractVersion: AiEngineReportContractVersion,
+	catalogueTools: readonly string[],
+): { ok: true; seat: IAiEngineObservedSeat; allowedTools?: string[] } | { ok: false; error: string } {
 	if (!isPlainObject(entry)) {
 		return { ok: false, error: 'seat-entry-invalid' };
 	}
@@ -400,8 +457,18 @@ function validateReportSeatEntry(
 		return { ok: false, error: 'seat-proof-flags-invalid' };
 	}
 
+	let allowedTools: string[] | undefined;
+	if (contractVersion === '1.2.0') {
+		allowedTools = validateToolIdList(entry.allowedTools);
+		if (!allowedTools || !allowedTools.every((toolId) => catalogueTools.includes(toolId))) {
+			return { ok: false, error: 'seat-tools-invalid' };
+		}
+		allowedTools.sort();
+	}
+
 	return {
 		ok: true,
+		...(allowedTools && { allowedTools }),
 		seat: {
 			seatId: entry.seatId,
 			botId: entry.botId,
@@ -418,17 +485,20 @@ function validateReportSeatEntry(
 }
 
 /**
- * Validates an incoming 1.1.0 `POST ai-agents.engine.report` body strictly against the Step 3 wire schema.
- * Rejects mismatched `engineId`, non-1.1.0 contract versions, invalid reason codes, or malformed arrays.
+ * Validates an incoming `POST ai-agents.engine.report` body (contract 1.1.0 or 1.2.0) strictly against the wire schema.
+ * Rejects mismatched `engineId`, other contract versions, invalid reason codes, or malformed arrays.
+ * On 1.2.0 it also requires `seats[].allowedTools` (each inside `catalogue.tools`) and `catalogue.toolEntries`,
+ * and returns every reported seat's tool ceiling in `seatTools`.
  */
-export function validateEngineReport110(
+export function validateEngineReport(
 	raw: unknown,
 	authenticatedEngineId: string,
 ): { ok: true; report: IAiEngineObservedReport } | { ok: false; error: string } {
 	if (!isPlainObject(raw)) {
 		return { ok: false, error: 'report-malformed' };
 	}
-	if (raw.contractVersion !== SEAT_RECORD_CONTRACT_VERSION) {
+	const contractVersion = ENGINE_REPORT_CONTRACT_VERSIONS.find((version) => version === raw.contractVersion);
+	if (!contractVersion) {
 		return { ok: false, error: 'contract-version-unsupported' };
 	}
 	if (raw.engineId !== authenticatedEngineId) {
@@ -445,7 +515,7 @@ export function validateEngineReport110(
 		return { ok: false, error: 'reported-at-invalid' };
 	}
 
-	const catalogueResult = validateReportCatalogue(raw.catalogue);
+	const catalogueResult = validateReportCatalogue(raw.catalogue, contractVersion);
 	if (!catalogueResult.ok) {
 		return catalogueResult;
 	}
@@ -455,23 +525,28 @@ export function validateEngineReport110(
 	}
 
 	const seats: IAiEngineObservedSeat[] = [];
+	const seatTools: IAiEngineObservedSeatTools[] = [];
 	const seenSeatIds = new Set<string>();
 	for (const entry of raw.seats) {
-		const seatResult = validateReportSeatEntry(entry, seenSeatIds);
+		const seatResult = validateReportSeatEntry(entry, seenSeatIds, contractVersion, catalogueResult.catalogue.tools);
 		if (!seatResult.ok) {
 			return seatResult;
 		}
 		seats.push(seatResult.seat);
+		if (seatResult.allowedTools) {
+			seatTools.push({ seatId: seatResult.seat.seatId, allowedTools: seatResult.allowedTools });
+		}
 	}
 
 	return {
 		ok: true,
 		report: {
-			contractVersion: SEAT_RECORD_CONTRACT_VERSION,
+			contractVersion,
 			workspaceId: raw.workspaceId,
 			reportedAt,
 			catalogue: catalogueResult.catalogue,
 			seats,
+			...(contractVersion === '1.2.0' && { seatTools }),
 		},
 	};
 }

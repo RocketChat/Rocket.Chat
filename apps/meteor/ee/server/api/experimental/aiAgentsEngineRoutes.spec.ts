@@ -254,6 +254,58 @@ describe('Engine bearer routes & R08 guards (head, version, report, rate limits,
 		expect(storedObserved.seats.map((s: { seatId: string }) => s.seatId)).toEqual(['seat-1']);
 	});
 
+	it('stores 1.2.0 seat tool ceilings for every reported seat but keeps only registered seats in the observation', async () => {
+		const app = createAiAgentsEngineHonoApp(createAiEngineRateLimiter(), licensed);
+		aiSeats.findByEngineId.mockReturnValue({
+			toArray: async () => [{ engineId: 'eng-1', seatId: 'seat-1', state: 'registered' }],
+		});
+		aiAgents.findByEngineId.mockReturnValue({ toArray: async () => [] });
+
+		const seatEntry = {
+			botId: 'bot-1',
+			state: 'provisioned',
+			availability: 'unavailable',
+			reason: 'seat-provisioned',
+			allowedRooms: ['room-1'],
+			acceptedVersion: 0,
+			poisonFloor: 0,
+			identity120Seen: false,
+			admittedQuestionSeen: false,
+		};
+		const res = await app.request('/ai-agents.engine.report', {
+			method: 'POST',
+			headers: { 'authorization': `Bearer ${token}`, 'content-type': 'application/json' },
+			body: JSON.stringify({
+				contractVersion: '1.2.0',
+				engineId: 'eng-1',
+				workspaceId: 'ws-1',
+				reportedAt: '2026-11-25T00:00:00.000Z',
+				catalogue: {
+					tools: ['docs_search', 'web_fetch'],
+					toolEntries: [
+						{ id: 'docs_search', name: 'Search the docs', effect: 'read' },
+						{ id: 'web_fetch', name: 'Fetch a public page', effect: 'read' },
+					],
+					skillsCommit: '438544159fd6359527759d2a97dd227ae9f6c58c',
+					skills: ['public-docs'],
+					modelRoutes: ['openrouter/openai/gpt-4o-mini'],
+				},
+				seats: [
+					{ seatId: 'seat-1', ...seatEntry, allowedTools: ['docs_search'] },
+					{ seatId: 'seat-2', ...seatEntry, botId: 'bot-2', allowedTools: ['web_fetch'] },
+				],
+			}),
+		});
+
+		expect(res.status).toBe(200);
+		const [, storedObserved] = aiEngines.updateObservedReport.mock.calls[0];
+		expect(storedObserved.seats.map((s: { seatId: string }) => s.seatId)).toEqual(['seat-1']);
+		expect(storedObserved.seatTools).toEqual([
+			{ seatId: 'seat-1', allowedTools: ['docs_search'] },
+			{ seatId: 'seat-2', allowedTools: ['web_fetch'] },
+		]);
+	});
+
 	it('refuses oversized engine.report bodies (> 256 KiB) with 413 BOTH with and without Content-Length before JSON.parse (R08)', async () => {
 		const app = createAiAgentsEngineHonoApp(createAiEngineRateLimiter(), licensed);
 		const parseSpy = jest.spyOn(JSON, 'parse');

@@ -41,6 +41,10 @@ describe('AICenterRoute & AIAgentsPage (R07)', () => {
 					lastReportAt: '2026-11-25T00:00:00.000Z',
 					reportStale: false,
 					allowedTools: ['docs_search', 'docs_read'],
+					toolOptions: [
+						{ id: 'docs_read', name: 'Read a docs page' },
+						{ id: 'docs_search', name: 'Search the docs' },
+					],
 					allowedRoutes: ['openrouter/openai/gpt-4o-mini'],
 					skillsCommit: '438544159fd6359527759d2a97dd227ae9f6c58c',
 					skills: ['public-docs'],

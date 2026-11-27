@@ -3,13 +3,12 @@ import {
 	buildSeatEnvelope110,
 	parseStoredRecord110,
 	revisionBytesToUtf8,
-	validateEngineReport110,
+	validateEngineReport,
 } from './recordContract';
 import {
 	AiAgentValidationError,
 	containsSecretShape,
 	formatModelRoute,
-	isSeatAllowedPublicTool,
 	parseModelRoute,
 	validateAgentInstructions,
 	validateAgentName,
@@ -137,20 +136,9 @@ describe('R02 text boundary, NFC normalization, and secret-shape refusal (no ech
 		expect(() => validateAgentInstructions('bad\u0000body')).toThrow('instructions-nul-char');
 		expect(() => validateAgentInstructions('x'.repeat(16 * 1024 + 1))).toThrow('instructions-too-large');
 	});
-
-	it('enforces the seat public-docs tool ceiling and refuses thread/file/credentialed prefixes', () => {
-		expect(isSeatAllowedPublicTool('docs_search')).toBe(true);
-		expect(isSeatAllowedPublicTool('docs_read')).toBe(true);
-		expect(isSeatAllowedPublicTool('thread_read')).toBe(false);
-		expect(isSeatAllowedPublicTool('file_read')).toBe(false);
-		expect(isSeatAllowedPublicTool('zoho_ticket')).toBe(false);
-		expect(isSeatAllowedPublicTool('jira_issue')).toBe(false);
-		expect(isSeatAllowedPublicTool('github_read_file')).toBe(false);
-		expect(isSeatAllowedPublicTool('reproduce')).toBe(false);
-	});
 });
 
-describe('1.1.0 engine report validation', () => {
+describe('engine report validation (1.1.0 and 1.2.0)', () => {
 	const validReport = {
 		contractVersion: '1.1.0',
 		engineId: 'eng-1',
@@ -179,16 +167,52 @@ describe('1.1.0 engine report validation', () => {
 	};
 
 	it('accepts a valid 1.1.0 report matching authenticated engineId', () => {
-		const res = validateEngineReport110(validReport, 'eng-1');
+		const res = validateEngineReport(validReport, 'eng-1');
 		expect(res.ok).toBe(true);
+		expect(res.ok && res.report).not.toHaveProperty('seatTools');
 	});
 
-	it('rejects mismatched engineId and non-1.1.0 contractVersion', () => {
-		expect(validateEngineReport110(validReport, 'eng-other')).toEqual({ ok: false, error: 'engine-id-mismatch' });
-		expect(validateEngineReport110({ ...validReport, contractVersion: '1.0.0' }, 'eng-1')).toEqual({
+	it('rejects mismatched engineId and unsupported contractVersion', () => {
+		expect(validateEngineReport(validReport, 'eng-other')).toEqual({ ok: false, error: 'engine-id-mismatch' });
+		expect(validateEngineReport({ ...validReport, contractVersion: '1.0.0' }, 'eng-1')).toEqual({
 			ok: false,
 			error: 'contract-version-unsupported',
 		});
+	});
+
+	const report120 = {
+		...validReport,
+		contractVersion: '1.2.0',
+		catalogue: {
+			...validReport.catalogue,
+			tools: ['docs_read', 'docs_search', 'web_fetch'],
+			toolEntries: [
+				{ id: 'docs_read', name: 'Read a docs page', effect: 'read' },
+				{ id: 'docs_search', name: 'Search the docs', effect: 'read' },
+				{ id: 'web_fetch', name: 'Fetch a public page', effect: 'read' },
+			],
+		},
+		seats: [{ ...validReport.seats[0], allowedTools: ['web_fetch', 'docs_search'] }],
+	};
+
+	it('accepts a 1.2.0 report and keeps each seat tool ceiling and the tool names', () => {
+		const res = validateEngineReport(report120, 'eng-1');
+		expect(res).toMatchObject({
+			ok: true,
+			report: {
+				contractVersion: '1.2.0',
+				seatTools: [{ seatId: 'seat-1', allowedTools: ['docs_search', 'web_fetch'] }],
+				catalogue: { toolEntries: report120.catalogue.toolEntries },
+			},
+		});
+	});
+
+	it.each([
+		['a seat tool outside catalogue.tools', { seats: [{ ...report120.seats[0], allowedTools: ['thread_read'] }] }, 'seat-tools-invalid'],
+		['a seat without allowedTools', { seats: [validReport.seats[0]] }, 'seat-tools-invalid'],
+		['missing toolEntries', { catalogue: { ...report120.catalogue, toolEntries: undefined } }, 'catalogue-tool-entries-invalid'],
+	])('rejects a 1.2.0 report with %s', (_label, override, error) => {
+		expect(validateEngineReport({ ...report120, ...override }, 'eng-1')).toEqual({ ok: false, error });
 	});
 });
 
