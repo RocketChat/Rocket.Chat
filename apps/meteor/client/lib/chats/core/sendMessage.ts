@@ -3,7 +3,16 @@ import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings'
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import type { ChatAPI } from '../ChatAPI';
 
-export type SendMessageChat = Pick<ChatAPI, 'composer' | 'data' | 'readStateManager' | 'currentEditingMessage'> & {
+type ChatComposer = NonNullable<ChatAPI['composer']>;
+
+export type SendMessageChat = {
+	readonly composer?: Pick<ChatComposer, 'clear' | 'dismissAllQuotedMessages'> & {
+		readonly uploads: Pick<ChatComposer['uploads'], 'get'>;
+		readonly quotedMessages: Pick<ChatComposer['quotedMessages'], 'get'>;
+	};
+	readonly data: Pick<ChatAPI['data'], 'composeMessage' | 'findMessageByID' | 'isSubscribedToRoom' | 'joinRoom'>;
+	readonly readStateManager: Pick<ChatAPI['readStateManager'], 'clearUnreadMark'>;
+	readonly currentEditingMessage: Pick<ChatAPI['currentEditingMessage'], 'getMID' | 'reset' | 'stop'>;
 	readonly flows: Pick<ChatAPI['flows'], 'processMessageEditing' | 'requestMessageDeletion'>;
 };
 
