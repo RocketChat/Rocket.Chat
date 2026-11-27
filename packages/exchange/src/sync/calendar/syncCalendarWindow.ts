@@ -73,6 +73,7 @@ const collectPages = async (
 	const upserts = new Map<string, ExchangeEventUpsert>();
 	const removals = new Set<string>();
 	const resyncedSeries = new Set<string>();
+	const unresolvedSeries = new Set<string>();
 	let keepExternalIds: string[] | undefined;
 	let cursor = startCursor;
 	let pages = 0;
@@ -109,6 +110,7 @@ const collectPages = async (
 		}
 
 		page.resyncedSeries?.forEach((id) => resyncedSeries.add(id));
+		page.unresolvedSeries?.forEach((id) => unresolvedSeries.add(id));
 
 		partial = partial || page.coverage === 'partial';
 		cursor = page.cursor;
@@ -120,7 +122,7 @@ const collectPages = async (
 				upserts,
 				removals,
 				keepExternalIds: keepExternalIds ?? (readEverything ? [...upserts.keys()] : undefined),
-				resyncedSeries: [...resyncedSeries],
+				resyncedSeries: [...resyncedSeries].filter((id) => !unresolvedSeries.has(id)),
 				cursor,
 			};
 		}
