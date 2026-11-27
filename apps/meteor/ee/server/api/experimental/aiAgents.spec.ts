@@ -614,10 +614,21 @@ describe('seat tools come from the engine report (management API)', () => {
 	});
 
 	describe('ai-agents.create', () => {
-		const withSeat = (seatTools: { seatId: string; allowedTools: string[] }[]) => {
+		const withSeat = (seatTools: { seatId: string; allowedTools: string[] }[], registry?: string[]) => {
 			models.AiEngines.findOneById.mockResolvedValue(engine120(seatTools, [observedSeat('seat-1')]));
-			models.AiSeats.findByEngineId.mockReturnValue({ toArray: async () => [seatDoc('seat-1')] });
+			models.AiSeats.findByEngineId.mockReturnValue({
+				toArray: async () => [seatDoc('seat-1', registry ? { allowedToolIds: registry } : {})],
+			});
 		};
+
+		it('refuses a tool the engine offers the seat but its registry entry does not list', async () => {
+			withSeat([{ seatId: 'seat-1', allowedTools: ['docs_search', 'docs_read'] }], ['docs_search', 'weather_get']);
+
+			const response = await callRoute('ai-agents.create', { engineId: 'eng-1', ...agentBody(['docs_read']) });
+
+			expect(response).toMatchObject({ statusCode: 400, body: { errorType: 'error-ai-no-seat-offers-all-tools' } });
+			expect(models.AiSeats.claimSeat).not.toHaveBeenCalled();
+		});
 
 		it('publishes an agent with a tool only the engine knows about (parent: weather_get refused)', async () => {
 			withSeat([{ seatId: 'seat-1', allowedTools: ['docs_search', 'weather_get'] }]);
@@ -685,7 +696,18 @@ describe('seat tools come from the engine report (management API)', () => {
 	});
 
 	describe('ai-agents.list tool options', () => {
-		it('offers only tools of seats this person can claim, by engine name, and marks an agent tool the engine withdrew', async () => {
+		const activeBots = () =>
+			models.Users.findOneById.mockImplementation(async (uid: string) => ({
+				_id: uid,
+				username: uid,
+				type: 'bot',
+				roles: ['bot'],
+				active: true,
+				aiAgents: { engineId: 'eng-1', activatedAt: new Date() },
+			}));
+
+		it('offers only tools of seats this person can claim, cut to each seat registry, by engine name', async () => {
+			// Each excluded tool belongs to exactly one rule, so dropping any rule changes the expected pool.
 			const published = buildAgentRecord110({
 				id: 'seat-3',
 				version: 100,
@@ -702,10 +724,12 @@ describe('seat tools come from the engine report (management API)', () => {
 				toArray: async () => [
 					engine120(
 						[
-							{ seatId: 'seat-1', allowedTools: ['docs_search', 'weather_get'] },
+							{ seatId: 'seat-1', allowedTools: ['docs_search', 'weather_get', 'web_fetch'] },
 							{ seatId: 'seat-2', allowedTools: ['docs_read'] },
-							{ seatId: 'seat-3', allowedTools: ['docs_search'] },
+							{ seatId: 'seat-3', allowedTools: ['calendar_get', 'docs_search'] },
+							{ seatId: 'seat-5', allowedTools: ['news_get'] },
 						],
+						// seat-5 is registered here but the engine has not confirmed it (absent from `seats`).
 						[
 							observedSeat('seat-1'),
 							observedSeat('seat-2', { allowedRooms: ['room-hidden'] }),
@@ -716,10 +740,14 @@ describe('seat tools come from the engine report (management API)', () => {
 			});
 			models.AiSeats.findAllSortedBySeatId.mockReturnValue({
 				toArray: async () => [
-					seatDoc('seat-1'),
-					// A channel this person cannot use: its tools are not offered.
-					seatDoc('seat-2', { allowedRoomIds: ['room-hidden'] }),
-					seatDoc('seat-3', { state: 'claimed', agentId: 'agent-3' }),
+					// Free and usable; its registry leaves out web_fetch, which the engine offers.
+					seatDoc('seat-1', { allowedToolIds: ['docs_search', 'weather_get'] }),
+					// Free, but only on a channel this person cannot use.
+					seatDoc('seat-2', { allowedRoomIds: ['room-hidden'], allowedToolIds: ['docs_read'] }),
+					// Claimed by agent-3.
+					seatDoc('seat-3', { state: 'claimed', agentId: 'agent-3', allowedToolIds: ['calendar_get', 'docs_search'] }),
+					// Registered and usable, but not confirmed by the engine.
+					seatDoc('seat-5', { allowedToolIds: ['news_get'] }),
 				],
 			});
 			models.AiAgents.findAllSortedByCreatedAt.mockReturnValue({
@@ -737,14 +765,7 @@ describe('seat tools come from the engine report (management API)', () => {
 				],
 			});
 			models.AiAgentRevisions.findOneByAgentIdAndVersion.mockResolvedValue({ bytes: published.binary, digest: published.digest });
-			models.Users.findOneById.mockImplementation(async (uid: string) => ({
-				_id: uid,
-				username: uid,
-				type: 'bot',
-				roles: ['bot'],
-				active: true,
-				aiAgents: { engineId: 'eng-1', activatedAt: new Date() },
-			}));
+			activeBots();
 
 			const response = await callRoute('ai-agents.list');
 
@@ -753,10 +774,49 @@ describe('seat tools come from the engine report (management API)', () => {
 				{ id: 'docs_search', name: 'Docs search' },
 				{ id: 'weather_get', name: 'Weather' },
 			]);
+			// agent-3's own seat is on a channel this person can use: its seat tools, plus its tool the engine withdrew.
 			expect(response.body.agents[0].toolOptions).toEqual([
+				{ id: 'calendar_get', name: 'calendar_get' },
 				{ id: 'docs_search', name: 'Docs search' },
 				{ id: 'weather_get', name: 'Weather', withdrawn: true },
 			]);
+		});
+
+		it('does not reveal the tools of an agent seat whose channels this person cannot use', async () => {
+			models.AiEngines.findAllSortedByName.mockReturnValue({
+				toArray: async () => [
+					engine120(
+						[{ seatId: 'seat-4', allowedTools: ['weather_get'] }],
+						[observedSeat('seat-4', { state: 'claimed', allowedRooms: ['room-hidden'] })],
+					),
+				],
+			});
+			models.AiSeats.findAllSortedBySeatId.mockReturnValue({
+				toArray: async () => [
+					seatDoc('seat-4', { state: 'claimed', agentId: 'agent-4', allowedRoomIds: ['room-hidden'], allowedToolIds: ['weather_get'] }),
+				],
+			});
+			// An incomplete agent: claimed seat, nothing published yet.
+			models.AiAgents.findAllSortedByCreatedAt.mockReturnValue({
+				toArray: async () => [
+					{
+						_id: 'agent-4',
+						engineId: 'eng-1',
+						seatId: 'seat-4',
+						claim: '11111111-2222-4333-8444-555555555555',
+						lastVersion: 0,
+						createdAt: new Date(),
+					},
+				],
+			});
+			activeBots();
+
+			const response = await callRoute('ai-agents.list');
+
+			expect(response.statusCode).toBe(200);
+			expect(response.body.agents[0]).toMatchObject({ _id: 'agent-4', tools: [], toolOptions: [] });
+			expect(response.body.engines[0].toolOptions).toEqual([]);
+			expect(JSON.stringify(response.body)).not.toContain('weather_get');
 		});
 	});
 });

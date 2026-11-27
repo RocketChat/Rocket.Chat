@@ -4,7 +4,14 @@ import { Authorization } from '@rocket.chat/core-services';
 import type { IAiAgent, IAiEngine, IAiSeat, IAuditServerActor, IRoom, IUser } from '@rocket.chat/core-typings';
 import { AiAgentRevisions, AiAgents, AiEngines, AiSeats, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { AiAgentDetails, AiAgentRoomOption, AiAgentSummary, AiEngineSeatCounts, AiSeatSummary } from '@rocket.chat/rest-typings';
+import type {
+	AiAgentDetails,
+	AiAgentRoomOption,
+	AiAgentSummary,
+	AiAgentToolOption,
+	AiEngineSeatCounts,
+	AiSeatSummary,
+} from '@rocket.chat/rest-typings';
 
 import { recordAiAgentAuditEvent } from './audit';
 import { buildAgentRecord110, parseStoredRecord110 } from './recordContract';
@@ -872,6 +879,27 @@ async function buildEngineSeatCounts(
 	};
 }
 
+/**
+ * An agent's tool options. Its own tools are always listed (the caller already sees them), marked withdrawn when its
+ * seat no longer offers them. Further tools its seat offers are listed only when the caller can use one of the seat's
+ * channels: the same room rule as the Create pool, so the list never reveals the tools of a seat the caller could not use.
+ */
+function toAgentToolOptions(
+	seat: IAiSeat | undefined,
+	observed: IAiEngine['observed'],
+	tools: string[],
+	usableRoomIds: ReadonlySet<string>,
+): AiAgentToolOption[] {
+	const seatTools = seat ? getEffectiveSeatTools(seat, observed) : [];
+	const callerCanUseSeat = Boolean(seat?.allowedRoomIds.some((roomId) => usableRoomIds.has(roomId)));
+	const offered = callerCanUseSeat ? seatTools : seatTools.filter((toolId) => tools.includes(toolId));
+	return toObservedToolOptions(
+		offered,
+		observed,
+		tools.filter((toolId) => !seatTools.includes(toolId)),
+	);
+}
+
 export async function listAiAgentsForActor(
 	actorUser: IUser,
 	now: Date = new Date(),
@@ -886,6 +914,10 @@ export async function listAiAgentsForActor(
 	const seatBySeatId = new Map(seats.map((seat) => [seat.seatId, seat]));
 	const agentBySeatId = new Map(agents.map((agent) => [agent.seatId, agent]));
 	const nowMs = now.getTime();
+
+	// Channels of agents' seats this person can access and invite into, so tool options follow the caller's room access.
+	const agentSeatRoomIds = agents.flatMap((agent) => seatBySeatId.get(agent.seatId)?.allowedRoomIds ?? []);
+	const usableRoomIds = new Set((await resolveEligibleRoomsForActor(agentSeatRoomIds, actorUser)).map((room) => room._id));
 
 	// List NEVER returns `instructions` — only metadata and readiness state.
 	const agentSummaries: AiAgentSummary[] = [];
@@ -910,8 +942,6 @@ export async function listAiAgentsForActor(
 
 		const integrity = await evaluateAgentBotAndRoomsIntegrity(agent, seat, rooms);
 		const readinessInfo = deriveAgentReadiness(agent, seat, engine, nowMs, integrity);
-		// The agent's own seat decides what it may keep or add; a tool it has that the seat no longer offers is marked withdrawn.
-		const seatTools = seat ? getEffectiveSeatTools(seat, engine?.observed) : [];
 		agentSummaries.push({
 			_id: agent._id,
 			engineId: agent.engineId,
@@ -922,11 +952,7 @@ export async function listAiAgentsForActor(
 			...(name !== undefined && { name }),
 			rooms,
 			tools,
-			toolOptions: toObservedToolOptions(
-				seatTools,
-				engine?.observed,
-				tools.filter((toolId) => !seatTools.includes(toolId)),
-			),
+			toolOptions: toAgentToolOptions(seat, engine?.observed, tools, usableRoomIds),
 			...(modelRoute !== undefined && { modelRoute }),
 			readiness: readinessInfo.readiness,
 			...(readinessInfo.readinessReason && { readinessReason: readinessInfo.readinessReason }),
