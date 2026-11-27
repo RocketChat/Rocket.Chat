@@ -1,6 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import {
-	Box,
 	Button,
 	Item as FuselageItem,
 	ItemActions,
@@ -9,13 +8,13 @@ import {
 	ItemLink,
 	ItemRow,
 	ItemTitle,
-	Tag,
 } from '@rocket.chat/fuselage';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
+import CannedResponseTagList from '../../layout/CannedResponseTagList';
 
 export type ItemProps = {
 	data: IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] };
@@ -40,11 +39,9 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 				<ItemDescription>{scope}</ItemDescription>
 				<ItemDescription>&quot;{data.text}&quot;</ItemDescription>
 				{data.tags && data.tags.length > 0 && (
-					<Box is={ItemRow} flexWrap='wrap'>
-						{data.tags.map((tag: string, idx: number) => (
-							<Tag key={idx}>{tag}</Tag>
-						))}
-					</Box>
+					<ItemRow>
+						<CannedResponseTagList tags={data.tags} />
+					</ItemRow>
 				)}
 			</ItemContent>
 			{allowUse && (

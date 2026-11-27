@@ -1,6 +1,5 @@
-import { Box, Pagination, type TableColumnWidth, Text } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -23,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 
 import CannedResponseFilter from './CannedResponseFilter';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
+import CannedResponseCreator from '../layout/CannedResponseCreator';
 
 type Scope = 'global' | 'department' | 'user';
 
@@ -169,16 +169,7 @@ const CannedResponsesTable = () => {
 									<GenericTableCell truncate>{shortcut}</GenericTableCell>
 									<GenericTableCell truncate>{defaultOptions[scope as Scope]}</GenericTableCell>
 									<GenericTableCell truncate>
-										<Box display='flex' alignItems='center'>
-											<UserAvatar size='x24' username={createdBy.username} />
-											<Box display='flex' withTruncatedText marginInline={8}>
-												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-													<Text fontScale='p2m' truncate color='default'>
-														{createdBy.username}
-													</Text>
-												</Box>
-											</Box>
-										</Box>
+										<CannedResponseCreator username={createdBy.username} />
 									</GenericTableCell>
 									<GenericTableCell truncate>{getTime(_createdAt)}</GenericTableCell>
 									<GenericTableCell truncate>{tags.join(', ')}</GenericTableCell>

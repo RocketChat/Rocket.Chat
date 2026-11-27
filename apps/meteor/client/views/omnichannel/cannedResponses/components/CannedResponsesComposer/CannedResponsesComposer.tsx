@@ -1,4 +1,3 @@
-import { Box, Button, PopoverSurface, PositionAnimated } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -10,11 +9,10 @@ import {
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import type { ComponentProps, ChangeEvent } from 'react';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
-import { Backdrop } from '../../../../../components/Backdrop';
+import InsertPlaceholderMenu from './InsertPlaceholderMenu';
 import { emoji } from '../../../../../lib/emoji';
 
 export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
@@ -60,10 +58,6 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-	const ref = useRef<HTMLButtonElement>(null);
-
-	const [visible, setVisible] = useState(false);
-
 	const { open: openEmojiPicker } = useEmojiPicker();
 
 	const handleBold = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '*', onChange), [onChange]);
@@ -99,11 +93,6 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 		openEmojiPicker(textAreaRef.current, (emojiName: string) => onClickEmoji(emojiName));
 	};
 
-	const openPlaceholderSelect = (): void => {
-		textAreaRef?.current?.focus();
-		setVisible(!visible);
-	};
-
 	return (
 		<MessageComposer>
 			<MessageComposerInput
@@ -121,26 +110,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					<MessageComposerAction icon='strike' onClick={handleStrike} title={t('Strikethrough')} />
 					<MessageComposerAction icon='link' onClick={handleLink} title={t('Link')} />
 					<MessageComposerActionsDivider />
-					<Button ref={ref} size='small' onClick={openPlaceholderSelect}>
-						{t('Insert_Placeholder')}
-					</Button>
-					{visible && (
-						<Backdrop
-							onClick={(): void => {
-								textAreaRef?.current?.focus();
-								setVisible(false);
-							}}
-						/>
-					)}
-					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Box width='224px'>
-							<PopoverSurface elevation='1' flush>
-								<Box padding={16}>
-									<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
-								</Box>
-							</PopoverSurface>
-						</Box>
-					</PositionAnimated>
+					<InsertPlaceholderMenu textAreaRef={textAreaRef} onChange={onChange} />
 				</MessageComposerToolbarActions>
 			</MessageComposerToolbar>
 		</MessageComposer>

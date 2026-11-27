@@ -1,19 +1,24 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Tag, Text } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarAction,
-	ContextualbarContent,
+	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
 	ContextualbarClose,
+	InfoPanel,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelText,
 } from '@rocket.chat/ui-client';
 import type { MouseEventHandler } from 'react';
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
+import CannedResponseTagList from '../../layout/CannedResponseTagList';
 
 export type CannedResponseProps = {
 	allowEdit: boolean;
@@ -42,6 +47,7 @@ const CannedResponse = ({
 }: CannedResponseProps) => {
 	const { t } = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
+	const tagsLabelId = useId();
 
 	return (
 		<ContextualbarDialog>
@@ -50,52 +56,28 @@ const CannedResponse = ({
 				<ContextualbarTitle>!{shortcut}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent>
-				<Box paddingBlock='24px'>
-					<Box marginBlockEnd='16px'>
-						<Box fontScale='p2m' marginBlockEnd='8px'>
-							{t('Shortcut')}:
-						</Box>
-						<Text fontScale='c1' color='hint'>
-							!{shortcut}
-						</Text>
-					</Box>
-					<Box marginBlockEnd='16px'>
-						<Box fontScale='p2m' marginBlockEnd='8px'>
-							{t('Content')}:
-						</Box>
-						<Text fontScale='c1' color='hint'>
-							&quot;{text}&quot;
-						</Text>
-					</Box>
-					<Box marginBlockEnd='16px'>
-						<Box fontScale='p2m' marginBlockEnd='8px'>
-							{t('Sharing')}:
-						</Box>
-						<Text fontScale='c1' color='hint'>
-							{scope}
-						</Text>
-					</Box>
-					<Box marginBlockEnd='16px'>
-						<Box fontScale='p2m' marginBlockEnd='8px'>
-							{t('Tags')}:
-						</Box>
-						<Box display='flex' flexDirection='row'>
-							{tags && tags.length > 0 ? (
-								<Box display='flex' width='full' flexDirection='row' marginBlockStart='8px' flexWrap='wrap'>
-									{tags.map((tag: string, idx: number) => (
-										<Box key={idx} marginInlineEnd='4px' marginBlockEnd='4px'>
-											<Tag>{tag}</Tag>
-										</Box>
-									))}
-								</Box>
-							) : (
-								'-'
-							)}
-						</Box>
-					</Box>
-				</Box>
-			</ContextualbarContent>
+			<ContextualbarScrollableContent>
+				<InfoPanel>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Shortcut')}</InfoPanelLabel>
+						<InfoPanelText>!{shortcut}</InfoPanelText>
+					</InfoPanelField>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Content')}</InfoPanelLabel>
+						<InfoPanelText>&quot;{text}&quot;</InfoPanelText>
+					</InfoPanelField>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Sharing')}</InfoPanelLabel>
+						<InfoPanelText>{scope}</InfoPanelText>
+					</InfoPanelField>
+					<InfoPanelField>
+						<InfoPanelLabel id={tagsLabelId}>{t('Tags')}</InfoPanelLabel>
+						<InfoPanelText>
+							{tags && tags.length > 0 ? <CannedResponseTagList tags={tags} aria-labelledby={tagsLabelId} /> : '-'}
+						</InfoPanelText>
+					</InfoPanelField>
+				</InfoPanel>
+			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{allowEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
