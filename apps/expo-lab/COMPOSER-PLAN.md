@@ -1122,3 +1122,48 @@ Swap plan: when x1 lands, `ComposerContainer.tsx`, `ComposerInput.tsx` and `Comp
 ### What was not verified
 
 A side-by-side with the web composer at the same width (no cheap web reference was produced; only the token values were compared, by name). A real tap on the button, VoiceOver, dark theme on screen, focus and keyboard behavior after the restructure (the field and its props are unchanged, but typing was not exercised), Android. The growth screenshot was taken before the accessibility wrapper was added; the empty one after.
+
+## Fuselage swap results
+
+### Merge
+
+`feat/fuselage-native-input-chrome` (`d9259a88401`, which contains `feat/fuselage-native-box-style-props` and the native-input-props merge) was merged into `feat/expo-lab-all` with a merge commit; neither `aec9a57c087` (host-map) nor native-input-props were ancestors of HEAD before. Three conflicts, all resolved by taking this branch's side: `.oxlintrc.json` (the `render-element-spread` `safeCalls` list here is a superset), `docs/frontend/fuselage-tamagui-components.md` (one table row, this side also names conditions) and `packages/fuselage/src/react-native.d.ts` (this side types `Image` as a `ForwardRefExoticComponent`). `yarn install --immutable` passes. The `react-native.d.ts` resolution was not re-checked against the input-chrome specs (`InputBox.native.spec.tsx` was not run).
+
+### What was swapped (one commit each)
+
+| Step | Part | Now | Result |
+|---|---|---|---|
+| a | field chrome | `Box rcx-input-box__wrapper` with the InputBox chrome tokens (`borderWidth default`, `borderColor light`, `borderRadius medium`, `backgroundColor light`) and `Box is='textarea'` | works: grows 52 to 155, selection, wrap, mention, clear |
+| b | container and input | `MessageComposer` and `MessageComposerInput` from `packages/ui-composer/dist` | works, same behaviour |
+| c | toolbar | `MessageComposerToolbar`, `MessageComposerToolbarSubmit`, `MessageComposerAction` (inside the a11y wrapper) | works |
+
+Not swapped: `MessageComposerToolbarActions`. It uses `@react-aria/toolbar`, and rendering it throws "undefined is not a function" (stack in `@react-aria/i18n` `useDefaultLocale`) on Hermes; the slot stays a plain row `View`. Cause not investigated further.
+
+The InputBox / TextAreaInput twin itself was not used for the field: the web composer does not use it either (its wrapper is the stylesheet class and its textarea is a bare `Box`), `inputBoxChrome` would double the border and padding inside the wrapper, and `TextAreaInput`'s types reject the overrides (`borderWidth`, `minHeight`, ...). `InputBoxWrapper` is not exported from the package and importing its source drags `packages/fuselage/src` into `tsc` (TS6263 on the token JSON files).
+
+### What is still not the web component, or differs
+
+- The ui-composer parts are imported by relative path to `packages/ui-composer/dist/...` (no dependency added, no lockfile change), not by package name.
+- `MessageComposer` carries the chrome as props from `ComposerContainer`: the web gets border, radius and background from the `rcx-input-box__wrapper` stylesheet, which has no native counterpart.
+- The Box native host does not treat `display='flex'` as a row: `MessageComposerToolbar` rendered a column (send icon at the left) until `flexDirection='row' alignItems='center'` was passed.
+- `rows={1}` (the web default in `MessageComposerInput`) pins the native field to one line; it is overridden with `rows={undefined}`.
+- Native-only props are passed through a spread object because the Box types do not have them: `multiline`, `selection`, `onChangeText`, `onSelectionChange`, `onLayout`, `accessibilityLabel`, `placeholderTextColor`. The field ref is typed as the `{ focus, blur }` handle (`FieldHandle`) through a callback ref, since the Box ref type is `HTMLTextAreaElement`.
+- Kept hand-made: the size-lag `nudge` workaround, the a11y wrapper around the icon button, the plain `ComposerToolbarActions` row, the controlled selection, `ComposerField`.
+- `className` with the `css-in-js` class (placeholder colour and `resize: none` on web) is ignored natively; the placeholder colour comes from `placeholderTextColor`.
+- Untranslated Box props (border shorthand strings, `overflowX/Y`, `overflow: auto`, `justifyItems/Self`, `order`, `wordBreak`, `verticalAlign`, `vw/vh`, `fontFamily`, `elevation`) are not used by these parts; `overflow: hidden` is. Dark colours are the light fallbacks (not exercised, the app is light only).
+
+### Blockers
+
+`@react-aria/toolbar` on Hermes (above). Box types lack the native input props (above).
+
+### Bundle delta
+
+Default `CI=1 expo export --platform ios`: 2583 modules after the merge (2573 before it), 2588 after the swap. Probe mode: 6788 after the merge (6773 before), unchanged by the swap. `NodeRandomGenerator`, `react-dom/server`, `ui-client/dist`: 0 in both bundles, after the merge and after the swap. Default bundle size after the swap: 6,482,199 bytes (no earlier figure recorded here).
+
+### Evidence
+
+Metro 8086, mock room, with and without `EXPO_PUBLIC_COMPOSER_DEMO=1`, iPhone 17 Pro simulator: `docs/composer/composer-fuselage-a-empty.png`, `-a-demo-clamp.png`, `-a-demo-wrap.png`, `-a-demo-clear.png`, `-b-demo-clamp.png`, `-b-demo-short.png`, `-b-demo-selection.png`, `-c-empty.png`, `-c-demo-clamp.png`, `-c-demo-mention.png`. Against `composer-tokens-*.png` the field looks the same (border, radius, white surface, grey toolbar, 52 px empty, 155 px clamp, placeholder grey, send icon); compared by eye, not by pixels. `tsc --noEmit` exit 0, expo-lab tests 36 pass, 0 fail.
+
+### What was not verified
+
+Pixel diff against the earlier screenshots; side by side with the web composer; the focus ring and error state of the field (the composer's wrapper has none); a real tap on send; VoiceOver; the `a-empty` shot predates the `multiline` fix (identical empty state); the merged `InputBox` specs and the fuselage jest/lint gates; Android.
