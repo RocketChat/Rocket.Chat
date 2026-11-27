@@ -20,6 +20,20 @@ const renderAfterOAuth = (oauthError: string, { showFormLogin = true } = {}) => 
 	return { navigate, container };
 };
 
+it('uses the translated password placeholder when no custom placeholder is configured', () => {
+	render(<LoginForm setLoginRoute={jest.fn()} />, { wrapper: mockAppRoot().build() });
+
+	expect(screen.getByPlaceholderText('registration.component.form.password')).toBeInTheDocument();
+});
+
+it('keeps the workspace password placeholder when one is configured', () => {
+	render(<LoginForm setLoginRoute={jest.fn()} />, {
+		wrapper: mockAppRoot().withSetting('Accounts_PasswordPlaceholder', 'Workspace password').build(),
+	});
+
+	expect(screen.getByPlaceholderText('Workspace password')).toBeInTheDocument();
+});
+
 it('should show why an OAuth sign-in was refused and take the reason out of the address', () => {
 	const { navigate } = renderAfterOAuth('error-invalid-username');
 
