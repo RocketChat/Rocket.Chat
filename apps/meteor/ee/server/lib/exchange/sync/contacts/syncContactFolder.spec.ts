@@ -357,6 +357,7 @@ describe('syncContactFolder', () => {
 				await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
 
 				expect(deleteContactAvatars.mock.calls).toEqual([[['c1']]]);
+				expect(saveCursor.mock.calls[0][5]).toBeUndefined();
 			});
 		});
 
