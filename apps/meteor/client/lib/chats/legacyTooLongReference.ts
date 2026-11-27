@@ -1,4 +1,4 @@
-// A frozen copy of the pre-extraction processTooLongMessage (214712e3ead) used as the oracle by the differential spec; never import it from product code.
+// Oracle for the differential spec: the logic as it was before the extraction; never import it from product code.
 import type { IMessage } from '@rocket.chat/core-typings';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 
@@ -27,7 +27,7 @@ export const legacyProcessTooLongMessage = async (chat: ChatAPI, { msg }: Pick<I
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date().toString()}.txt`; // TODO: proper naming and formatting
+			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date().toString()}.txt`;
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),
