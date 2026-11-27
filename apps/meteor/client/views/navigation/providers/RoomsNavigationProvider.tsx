@@ -8,6 +8,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import { RoomManager } from '../../../lib/RoomManager';
+import { getSubscriptionDraft } from '../../../lib/utils/getSubscriptionDraft';
 import { Rooms } from '../../../stores';
 import { useOmnichannelEnabled } from '../../omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../omnichannel/hooks/useQueuedInquiries';
@@ -99,6 +100,10 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
+				}
+
+				if (getSubscriptionDraft(room)) {
+					setGroupRoom('drafts', room);
 				}
 
 				if (isOmnichannelRoom(room) && showOmnichannel) {
