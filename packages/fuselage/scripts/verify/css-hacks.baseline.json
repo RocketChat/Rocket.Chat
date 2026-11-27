@@ -450,9 +450,9 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 46,
-		"nested": 45,
-		"combinators": 2,
+		"rules": 48,
+		"nested": 47,
+		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 1,
@@ -576,8 +576,8 @@
 		"displayContents": 0
 	},
 	"Tag/Tag.styles.scss": {
-		"rules": 17,
-		"nested": 15,
+		"rules": 18,
+		"nested": 16,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
