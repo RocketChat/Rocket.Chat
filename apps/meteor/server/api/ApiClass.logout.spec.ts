@@ -83,7 +83,7 @@ describe('APIClass /v1/logout', () => {
 		jest.mocked(Sessions.logoutBySessionIdAndUserId).mockResolvedValue(undefined);
 	});
 
-	it('returns a 200 JSON confirmation body on POST /api/v1/logout and GET /api/v1/logout', async () => {
+	it('returns a 200 JSON confirmation body on POST /api/v1/logout and invalidates token & session', async () => {
 		const postRes = await request(server).post('/api/v1/logout').set('x-user-id', userId).set('x-auth-token', rawToken);
 
 		expect(postRes.status).toBe(200);
@@ -95,11 +95,17 @@ describe('APIClass /v1/logout', () => {
 			},
 			success: true,
 		});
+		expect(Users.updateOne).toHaveBeenCalledWith(
+			{ _id: userId },
+			{ $pull: { 'services.resume.loginTokens': { hashedToken: hashLoginToken(rawToken) } } },
+		);
 		expect(Sessions.logoutBySessionIdAndUserId).toHaveBeenCalledWith({
 			loginToken: hashLoginToken(rawToken),
 			userId,
 		});
+	});
 
+	it('returns a 200 JSON confirmation body on GET /api/v1/logout and invalidates token & session', async () => {
 		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 		try {
 			const getRes = await request(server).get('/api/v1/logout').set('x-user-id', userId).set('x-auth-token', rawToken);
@@ -112,6 +118,14 @@ describe('APIClass /v1/logout', () => {
 					message: "You've been logged out!",
 				},
 				success: true,
+			});
+			expect(Users.updateOne).toHaveBeenCalledWith(
+				{ _id: userId },
+				{ $pull: { 'services.resume.loginTokens': { hashedToken: hashLoginToken(rawToken) } } },
+			);
+			expect(Sessions.logoutBySessionIdAndUserId).toHaveBeenCalledWith({
+				loginToken: hashLoginToken(rawToken),
+				userId,
 			});
 		} finally {
 			warnSpy.mockRestore();

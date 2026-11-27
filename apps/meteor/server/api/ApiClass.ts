@@ -1058,7 +1058,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				authRequired: true;
 				response: any;
 			}>,
-		): Promise<SuccessResult<{ status: string; data: { message: string } }>> => {
+		): Promise<SuccessResult<{ status: 'success'; data: { message: string } }>> => {
 			// Remove the given auth token from the user's account
 			const hashedToken = context.token;
 			const tokenLocation = 'services.resume.loginTokens.hashedToken';
@@ -1089,7 +1089,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			});
 
 			const response = {
-				status: 'success',
+				status: 'success' as const,
 				data: {
 					message: "You've been logged out!",
 				},
