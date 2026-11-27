@@ -477,6 +477,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName, lng: language }),
 			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', { lng: language }) }),
 			mentionIds: [],
+			userMentionIds: [],
 		});
 	}
 };

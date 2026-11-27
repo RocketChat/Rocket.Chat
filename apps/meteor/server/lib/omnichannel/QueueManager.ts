@@ -527,6 +527,7 @@ export class QueueManager {
 				notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName, lng: language }),
 				room: { ...room, name: i18n.t('New_chat_in_queue', { lng: language }) },
 				mentionIds: [],
+				userMentionIds: [],
 			});
 		}
 	};

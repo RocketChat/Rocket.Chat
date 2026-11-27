@@ -53,6 +53,7 @@ export const sendNotification = async ({
 	notificationMessage,
 	room,
 	mentionIds,
+	userMentionIds,
 	disableAllMessageNotifications,
 }: {
 	subscription: SubscriptionAggregation;
@@ -65,6 +66,7 @@ export const sendNotification = async ({
 	notificationMessage: string;
 	room: IRoom;
 	mentionIds: string[];
+	userMentionIds: string[];
 	disableAllMessageNotifications: boolean;
 }) => {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
@@ -218,7 +220,7 @@ export const sendNotification = async ({
 						subscription,
 						room,
 						emailAddress: email.address,
-						hasMentionToUser,
+						isMentioned: userMentionIds.includes(subscription.u._id),
 					}),
 				});
 
@@ -370,6 +372,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 				notificationMessage,
 				room,
 				mentionIds,
+				userMentionIds: mentionIdsWithoutGroups,
 				disableAllMessageNotifications,
 				hasReplyToThread: usersInThread?.includes(subscription.u._id),
 			}),

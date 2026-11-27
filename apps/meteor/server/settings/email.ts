@@ -137,11 +137,32 @@ export const createEmailSettings = () =>
 				i18nLabel: 'Offline_Mention_Email',
 				i18nDescription: 'Offline_Email_Subject_Description',
 			});
-			await this.add('Offline_Mention_All_Email', '[User] has posted a message in #[Room]', {
+			await this.add('Offline_Mention_All_Email', '[[Site_Name]] [User] has posted a message in #[Room]', {
 				type: 'code',
 				code: 'text',
 				multiline: true,
 				i18nLabel: 'Offline_Mention_All_Email',
+				i18nDescription: 'Offline_Email_Subject_Description',
+			});
+			await this.add('Offline_DM_Thread_Email', '[[Site_Name]] You have been direct messaged by [User] in a thread', {
+				type: 'code',
+				code: 'text',
+				multiline: true,
+				i18nLabel: 'Offline_DM_Thread_Email',
+				i18nDescription: 'Offline_Email_Subject_Description',
+			});
+			await this.add('Offline_Mention_Thread_Email', '[[Site_Name]] You have been mentioned by [User] in a thread in #[Room]', {
+				type: 'code',
+				code: 'text',
+				multiline: true,
+				i18nLabel: 'Offline_Mention_Thread_Email',
+				i18nDescription: 'Offline_Email_Subject_Description',
+			});
+			await this.add('Offline_Thread_Email', '[[Site_Name]] [User] has posted a message in a thread in #[Room]', {
+				type: 'code',
+				code: 'text',
+				multiline: true,
+				i18nLabel: 'Offline_Thread_Email',
 				i18nDescription: 'Offline_Email_Subject_Description',
 			});
 		});

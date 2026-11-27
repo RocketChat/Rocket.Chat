@@ -21,6 +21,29 @@ Meteor.startup(() => {
 	});
 });
 
+const headerKeys = {
+	text: {
+		channel: { root: 'User_sent_a_message_on_channel', thread: 'User_sent_a_message_in_thread_on_channel' },
+		direct: { root: 'User_sent_a_message_to_you', thread: 'User_sent_a_message_in_thread_to_you' },
+	},
+	file: {
+		channel: { root: 'User_uploaded_a_file_on_channel', thread: 'User_uploaded_a_file_in_thread_on_channel' },
+		direct: { root: 'User_uploaded_a_file_to_you', thread: 'User_uploaded_a_file_in_thread_to_you' },
+	},
+	files: {
+		channel: { root: 'User_uploaded_files_on_channel', thread: 'User_uploaded_files_in_thread_on_channel' },
+		direct: { root: 'User_uploaded_files_to_you', thread: 'User_uploaded_files_in_thread_to_you' },
+	},
+};
+
+function getHeaderKey({ isFileOnly, isMultipleFiles, isGroupChat, isThread }) {
+	let content = 'text';
+	if (isFileOnly) {
+		content = isMultipleFiles ? 'files' : 'file';
+	}
+	return headerKeys[content][isGroupChat ? 'channel' : 'direct'][isThread ? 'thread' : 'root'];
+}
+
 export async function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
@@ -33,26 +56,10 @@ export async function getEmailContent({ message, user, room }) {
 	const hasFiles = files.length > 0;
 	const hasText = typeof message.msg === 'string' && message.msg.trim() !== '';
 	const isGroupChat = roomDirectives.isGroupChat(room);
+	const isThread = Boolean(message.tmid);
 
-	let header;
-	if (hasFiles && !hasText) {
-		// file-only message
-		const isMultipleFiles = files.length > 1;
-		let headerKey;
-		if (isGroupChat) {
-			headerKey = isMultipleFiles ? 'User_uploaded_files_on_channel' : 'User_uploaded_a_file_on_channel';
-		} else {
-			headerKey = isMultipleFiles ? 'User_uploaded_files_to_you' : 'User_uploaded_a_file_to_you';
-		}
-		header = i18n.t(headerKey, { username: userName, channel: roomName, count: files.length, lng });
-	} else {
-		// text message (with or without files)
-		header = i18n.t(!isGroupChat ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
-			username: userName,
-			channel: roomName,
-			lng,
-		});
-	}
+	const headerKey = getHeaderKey({ isFileOnly: hasFiles && !hasText, isMultipleFiles: files.length > 1, isGroupChat, isThread });
+	const header = i18n.t(headerKey, { username: userName, channel: roomName, count: files.length, lng });
 
 	if (message.t === 'e2e') {
 		return settings.get('Email_notification_show_message') ? i18n.t('Encrypted_message_preview_unavailable', { lng }) : header;
@@ -133,15 +140,29 @@ function generateNameEmail(name, email) {
 	return `${String(name).replace(/@/g, '%40').replace(/[<>,]/g, '')} <${email}>`;
 }
 
-export async function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
-	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
-	let subjectKey = 'Offline_Mention_All_Email';
+const subjectKeys = {
+	direct: { root: 'Offline_DM_Email', thread: 'Offline_DM_Thread_Email' },
+	mention: { root: 'Offline_Mention_Email', thread: 'Offline_Mention_Thread_Email' },
+	message: { root: 'Offline_Mention_All_Email', thread: 'Offline_Thread_Email' },
+};
 
-	if (!roomCoordinator.getRoomDirectives(room.t).isGroupChat(room)) {
-		subjectKey = 'Offline_DM_Email';
-	} else if (hasMentionToUser) {
-		subjectKey = 'Offline_Mention_Email';
+function getSubjectKey({ isGroupChat, isMentioned, isThread }) {
+	let reason = 'message';
+	if (!isGroupChat) {
+		reason = 'direct';
+	} else if (isMentioned) {
+		reason = 'mention';
 	}
+	return subjectKeys[reason][isThread ? 'thread' : 'root'];
+}
+
+export async function getEmailData({ message, receiver, sender, subscription, room, emailAddress, isMentioned }) {
+	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
+	const subjectKey = getSubjectKey({
+		isGroupChat: roomCoordinator.getRoomDirectives(room.t).isGroupChat(room),
+		isMentioned,
+		isThread: Boolean(message.tmid),
+	});
 
 	const emailSubject = Mailer.replace(settings.get(subjectKey), {
 		user: username,

@@ -92,4 +92,57 @@ describe('getEmailContent', () => {
 		});
 		expect(result).to.be.equal('User_sent_a_message_on_channel');
 	});
+
+	describe('thread replies', () => {
+		const loadWithSettings = (showMessage: boolean, isGroupChat = true) =>
+			proxyquire.noCallThru().load('../../../../../../server/lib/notifications/message/email.js', {
+				...mocks,
+				'../../rooms/roomCoordinator': {
+					roomCoordinator: {
+						getRoomDirectives: () => ({
+							isGroupChat: () => isGroupChat,
+						}),
+						getRoomName: () => '',
+					},
+				},
+				'../../../settings': {
+					settings: {
+						get: () => showMessage,
+						watch: () => {},
+					},
+				},
+			});
+
+		it('should say the message was sent in a thread on the channel', async () => {
+			const { getEmailContent } = loadWithSettings(false);
+
+			const result = await getEmailContent({ message: { ...message, msg: 'hi', tmid: 'thread-id' }, user: undefined, room });
+			expect(result).to.be.equal('User_sent_a_message_in_thread_on_channel');
+		});
+
+		it('should say the message was sent to you in a thread for a direct message', async () => {
+			const { getEmailContent } = loadWithSettings(false, false);
+
+			const result = await getEmailContent({ message: { ...message, msg: 'hi', tmid: 'thread-id' }, user: undefined, room });
+			expect(result).to.be.equal('User_sent_a_message_in_thread_to_you');
+		});
+
+		it('should say files were uploaded in a thread on the channel', async () => {
+			const { getEmailContent } = loadWithSettings(false);
+
+			const result = await getEmailContent({
+				message: { ...message, tmid: 'thread-id', files: [{ name: 'a.png' }, { name: 'b.png' }] },
+				user: undefined,
+				room,
+			});
+			expect(result).to.be.equal('User_uploaded_files_in_thread_on_channel');
+		});
+
+		it('should keep the channel wording for messages outside a thread', async () => {
+			const { getEmailContent } = loadWithSettings(false);
+
+			const result = await getEmailContent({ message: { ...message, msg: 'hi' }, user: undefined, room });
+			expect(result).to.be.equal('User_sent_a_message_on_channel');
+		});
+	});
 });
