@@ -1,0 +1,62 @@
+// Oracle for the differential spec: the logic as it was before the extraction; never import it from product code.
+import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+
+import { t } from '../../../lib/i18n';
+import { settings } from '../settings';
+import { dispatchToastMessage } from '../toast';
+import { getUser } from '../user';
+import type { ChatAPI } from './ChatAPI';
+
+export const legacyProcessTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
+	const maxAllowedSize = settings.peek('Message_MaxAllowedSize');
+
+	if (msg.length <= maxAllowedSize) {
+		return false;
+	}
+	const fileUploadsEnabled = settings.peek('FileUpload_Enabled');
+	const convertLongMessagesToAttachment = settings.peek('Message_AllowConvertLongMessagesToAttachment');
+
+	if (chat.currentEditingMessage.getMID() || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
+		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) });
+		chat.composer?.setText(msg);
+		return true;
+	}
+
+	await new Promise<void>((resolve) => {
+		const onConfirm = async (): Promise<void> => {
+			const contentType = 'text/plain';
+			const messageBlob = new Blob([msg], { type: contentType });
+			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date().toString()}.txt`;
+			const file = new File([messageBlob], fileName, {
+				type: contentType,
+				lastModified: Date.now(),
+			});
+
+			chat.composer?.clear();
+			imperativeModal.close();
+			await chat.flows.uploadFiles({ files: [file] });
+
+			resolve();
+		};
+
+		const onClose = (): void => {
+			imperativeModal.close();
+			resolve();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Message_too_long'),
+				children: t('Send_it_as_attachment_instead_question'),
+				onConfirm,
+				onClose,
+				onCancel: onClose,
+				variant: 'warning',
+			},
+		});
+	});
+
+	return true;
+};

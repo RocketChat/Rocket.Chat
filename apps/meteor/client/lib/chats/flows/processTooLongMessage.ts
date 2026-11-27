@@ -6,23 +6,11 @@ import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import { getUser } from '../../user';
 import type { ChatAPI } from '../ChatAPI';
+import { processTooLongMessageCore } from '../core/processTooLongMessage';
+import type { TooLongChat } from '../core/processTooLongMessage';
 
-export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
-	const maxAllowedSize = settings.peek('Message_MaxAllowedSize');
-
-	if (msg.length <= maxAllowedSize) {
-		return false;
-	}
-	const fileUploadsEnabled = settings.peek('FileUpload_Enabled');
-	const convertLongMessagesToAttachment = settings.peek('Message_AllowConvertLongMessagesToAttachment');
-
-	if (chat.currentEditingMessage.getMID() || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
-		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) });
-		chat.composer?.setText(msg);
-		return true;
-	}
-
-	await new Promise<void>((resolve) => {
+const offerAttachment = (msg: string, chat: TooLongChat): Promise<void> =>
+	new Promise<void>((resolve) => {
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
@@ -57,5 +45,15 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		});
 	});
 
-	return true;
-};
+export const processTooLongMessage = (chat: ChatAPI, message: Pick<IMessage, 'msg'>): Promise<boolean> =>
+	processTooLongMessageCore(
+		{
+			getMaxAllowedSize: () => settings.peek('Message_MaxAllowedSize'),
+			isFileUploadEnabled: () => settings.peek('FileUpload_Enabled'),
+			isConvertToAttachmentAllowed: () => settings.peek('Message_AllowConvertLongMessagesToAttachment'),
+			notifyTooLong: () => dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) }),
+			offerAttachment,
+		},
+		chat,
+		message,
+	);
