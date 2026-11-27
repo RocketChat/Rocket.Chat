@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 
+import { wrapSelectionText } from './wrapSelectionText';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { createComposerAPICore, triggerEvent, type SetText } from '../../../../lib/createComposerAPICore';
 import { limitQuoteChain } from '../../../../lib/limitQuoteChain';
@@ -67,48 +68,27 @@ export const createComposerAPI = (
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-		const initText = input.value.slice(0, selectionStart);
 		const selectedText = input.value.slice(selectionStart, selectionEnd);
-		const finalText = input.value.slice(selectionEnd, input.value.length);
+		const { text, selection, toggledOff, replacement } = wrapSelectionText(
+			input.value,
+			{ start: selectionStart, end: selectionEnd },
+			pattern,
+		);
 
 		focus();
 
-		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
-
-		if (startPatternFound) {
-			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
-
-			if (endPatternFound) {
-				insertText(selectedText);
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = selectionEnd + endPattern.length;
-
-				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
-				}
-
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = input.selectionStart + selectedText.length;
-				triggerEvent(input, 'input');
-				triggerEvent(input, 'change');
-
-				focus();
-				return {
-					selectionStart: input.selectionStart,
-					selectionEnd: input.selectionEnd,
-					value: input.value,
-				};
-			}
+		if (toggledOff) {
+			insertText(selectedText);
+			input.selectionStart = replacement.start;
+			input.selectionEnd = replacement.end;
 		}
 
-		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		if (!document.execCommand?.('insertText', false, replacement.text)) {
+			input.value = text;
 		}
 
-		input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-		input.selectionEnd = input.selectionStart + selectedText.length;
+		input.selectionStart = selection.start;
+		input.selectionEnd = selection.end;
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 
