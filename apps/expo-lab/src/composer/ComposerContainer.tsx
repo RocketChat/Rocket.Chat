@@ -1,23 +1,11 @@
-import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-// Web counterpart: packages/ui-composer/src/MessageComposer/MessageComposer.tsx. The input-box wrapper's chrome, drawn from the
-// same tokens the InputBox native twin uses (borderWidth, borderColor, borderRadius, backgroundColor), plus the composer's overrides
+import MessageComposer from '../../../../packages/ui-composer/dist/MessageComposer/MessageComposer.js';
+
+// The web wrapper's border, radius and background come from the rcx-input-box__wrapper stylesheet, which has no native counterpart:
+// the same tokens are passed as Box props, which MessageComposer spreads on its Box
+const chrome = { borderWidth: 'default', borderColor: 'light', borderRadius: 'medium', backgroundColor: 'light' };
+
 export function ComposerContainer({ children }: { children: ReactNode }) {
-	return (
-		<Box
-			rcx-input-box__wrapper
-			marginBlockStart={2}
-			display='flex'
-			flexDirection='column'
-			overflow='hidden'
-			padding={0}
-			borderWidth='default'
-			borderColor='light'
-			borderRadius='medium'
-			backgroundColor='light'
-		>
-			{children}
-		</Box>
-	);
+	return <MessageComposer {...chrome}>{children}</MessageComposer>;
 }
