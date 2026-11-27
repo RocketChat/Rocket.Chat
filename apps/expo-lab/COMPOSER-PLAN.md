@@ -902,7 +902,7 @@ Real typing, caret placement after an edit (the highlight of a non-empty selecti
 
 ## Phase 1b steps 1b.7 and 1b.8 results (2026-11-27)
 
-Commits on `feat/expo-lab-all` (nothing pushed), on top of `d1f3727a495`: Task A `5f7521fbeb9` (more table cases in the slash and too-long differential specs) and `5d5fc42ca40` (the oracle references now state intent only); 1b.7 `7853c46152e`; 1b.8 `904308b81da`. No allow-list change: the guard still allows only `@rocket.chat/core-typings` and `@rocket.chat/emitter`. `git diff --name-status d1f3727a495 HEAD -- apps/meteor packages` shows `A` for every new file and `M` only for the two adapters (`flows/processSetReaction.ts`, `flows/sendMessage.ts`), the four oracle headers and the two differential specs written in 1b.5 and 1b.6; no existing spec, golden or golden helper changed. `ChatMessages.ts` is not edited.
+Commits on `feat/expo-lab-all` (nothing pushed), on top of `d1f3727a495`: Task A `5f7521fbeb9` (more table cases in the slash and too-long differential specs) and `5d5fc42ca40` (the oracle references now state intent only); 1b.7 `7853c46152e`; 1b.8 `904308b81da`. No allow-list change: the guard still allows only `@rocket.chat/core-typings` and `@rocket.chat/emitter`. `git diff --name-status d1f3727a495 0e2a3cb5fca -- apps/meteor packages` (true at the 1b.8 tip `0e2a3cb5fca`; later commits also touch `packages/fuselage`) shows `A` for every new file and `M` only for the two adapters (`flows/processSetReaction.ts`, `flows/sendMessage.ts`), the four oracle headers and the two differential specs written in 1b.5 and 1b.6; no existing spec, golden or golden helper changed. `ChatMessages.ts` is not edited.
 
 ### Review nits applied (Task A)
 
@@ -1167,3 +1167,9 @@ Metro 8086, mock room, with and without `EXPO_PUBLIC_COMPOSER_DEMO=1`, iPhone 17
 ### What was not verified
 
 Pixel diff against the earlier screenshots; side by side with the web composer; the focus ring and error state of the field (the composer's wrapper has none); a real tap on send; VoiceOver; the `a-empty` shot predates the `multiline` fix (identical empty state); the merged `InputBox` specs and the fuselage jest/lint gates; Android.
+
+## Review fixes for 1b.7 and 1b.8 (2026-11-27)
+
+- Import guard: `FORBIDDEN_PATHS` now also forbids `client/lib/emoji` (a direct import of `emoji/lib` passed before), `banners`, `notificationManager`, `openNotifications`, `userStatuses`, `messageBox`, `MessageAction`, `meteorRuntimeConfig`, `utils/getConfig` and `omnichannel/businessHours/businessHourManager`: modules whose own imports are all allowed but that hold module state or read page globals. Guard cases added for each; mutation-checked with a forbidden import in a core.
+- `SendMessageChat` and `SetReactionChat` list only the members the cores call, so a native chat satisfies them without the web `ChatAPI`; `core/nativeChat.types.spec.ts` builds such objects with `satisfies`.
+- Not done: sharing the adapter dependency builder with the differential specs (the specs must stay unedited).
