@@ -1,8 +1,10 @@
-import { type ReactNode, type AllHTMLAttributes, type CSSProperties, useId } from 'react';
+import { type ReactNode, type AllHTMLAttributes, useId } from 'react';
 
-import { Box } from '../Box';
-import { IconButton } from '../Button';
-import { Icon } from '../Icon';
+import ToastBarClose from './ToastBarClose';
+import ToastBarIcon from './ToastBarIcon';
+import ToastBarMessage from './ToastBarMessage';
+import ToastBarProgress from './ToastBarProgress';
+import ToastBarSurface from './ToastBarSurface';
 
 export type ToastBarProps = {
 	variant?: 'info' | 'success' | 'error';
@@ -18,42 +20,17 @@ export type ToastBarProps = {
 /**
  * Shows alerts in a toast component.
  */
-function ToastBar({
-	children,
-	className = '',
-	variant = 'info',
-	time = 5,
-	isPaused,
-	id,
-	onClose,
-	buttonLabel = 'Dismiss alert',
-	...props
-}: ToastBarProps) {
-	const iconName = (variant === 'success' && 'circle-check') || (variant === 'error' && 'ban') || 'info';
-
+function ToastBar({ children, variant = 'info', time = 5, isPaused, id, onClose, buttonLabel = 'Dismiss alert', ...props }: ToastBarProps) {
 	const uniqueId = useId();
 	const toastId = id || uniqueId;
 
-	const role = variant === 'error' ? 'alert' : 'status';
-
 	return (
-		<Box className={`rcx-toastbar rcx-toastbar--${variant} ${className}`} id={id} {...props}>
-			<div className='rcx-toastbar_inner'>
-				<Icon className={`rcx-toastbar_icon--${variant}`} size='x20' name={iconName} />
-				<div role={role} className='rcx-toastbar_content'>
-					{children}
-				</div>
-				{onClose && (
-					<div className='rcx-toastbar-close'>
-						<IconButton size='tiny' aria-label={buttonLabel} onClick={() => onClose(toastId)} icon='cross' />
-					</div>
-				)}
-			</div>
-			<Box
-				className={`rcx-toastbar_progressbar${isPaused ? ' rcx-toastbar_progressbar--paused' : ''}`}
-				style={{ '--toast-time': `${time}s` } as CSSProperties}
-			/>
-		</Box>
+		<ToastBarSurface {...props} variant={variant} id={id}>
+			<ToastBarIcon />
+			<ToastBarMessage>{children}</ToastBarMessage>
+			{onClose && <ToastBarClose label={buttonLabel} onClose={() => onClose(toastId)} />}
+			<ToastBarProgress time={time} paused={isPaused} />
+		</ToastBarSurface>
 	);
 }
 
