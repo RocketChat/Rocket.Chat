@@ -489,12 +489,14 @@ type PickedFile = { name: string; type: string; size?: number };   // web: TFile
 Every step is its own commit, revertable alone. Rule for each: `git diff --stat` shows no existing `*.spec.*` file edited and no `.snap` edited after 1b.1/1b.2; the existing web specs of the touched folders pass unedited with the pass counts of Baseline 0.4 (18 suites, 166 tests for `views/room/composer`, `lib/chats`, `createComposerAPICore`, `createRichTextComposerAPI`, `composerHistory`, `composerStateCore`; `packages/ui-client` 44/226 plus 5 of 1.4); `tsc --noEmit --skipLibCheck` in `apps/meteor` stays at the 2 baseline errors, re-run after the last edit, specs included; `oxlint` and `prettier --check` on touched files. Order: cheapest first; `1b.1` and `1b.2` carry no web change at all.
 
 #### 1b.1 Characterization of the send path (test only, M)
+- Done as `c08d51862d3`; see Phase 1b golden results below. Deviations: inline expectations instead of `__snapshots__/*.snap` (the repo has no Jest snapshot tests since develop #42977), files named `*.golden.spec.ts`, and the real `Messages`/`Rooms`/`Subscriptions` stores plus the real data API (`createDataAPI`), recorded through the ordered log.
 - Commit: `test(meteor): pin the send flow behavior before making it injectable`. Files (new): `lib/chats/flows/sendMessage.characterization.spec.ts`, `processSlashCommand.characterization.spec.ts`, `processSetReaction.characterization.spec.ts`, `processTooLongMessage.characterization.spec.ts`, `lib/chats/data.characterization.spec.ts` (composeMessage, updateMessage), `__snapshots__/*.snap`.
 - Does: drives the REAL adapters and the REAL sub-flows against the real `Messages`, `Rooms`, `Subscriptions` stores (pure zustand, V: `stores/Messages.ts`) with `jest.mock` on `SDKClient`, `toast`, `user`, `settings`, `authorization`, `slashCommand`, `emoji`, `roomCoordinator`, `threadMessageUtils`, `afterSendMessageCallback`, and one ordered call log (`{ fn, args }`, shared by every fake incl. `composer.clear`, `dismissAllQuotedMessages`). A table of about 60 inputs: subscribed or not, join failing, text empty/spaces/unclosed fence, editing with and without text, quotes, files present, `+:emoji:` known and unknown, over-limit with and without attachment conversion, slash command unknown/permission denied/clientOnly/ok/rest failing, federated room, duplicate `_id`, `onClientBeforeSendMessage` rejecting, REST rejecting. Each case snapshots the log, the final store contents and the returned boolean.
 - Reqs: R10, R11, R13, R14, R16, R27 (the oracle for 2.5, 2.11). Neutral: nothing outside the new files changes. Risk: none for web; a golden that encodes a bug. Rollback: delete the files.
 - Mechanical differential: the goldens ARE the old path. After each later step the same specs run unedited; any difference in a call, argument, order or store state is a failing snapshot (the technique that caught F1). For a wider net, each step may also run an uncommitted fuzz (a frozen copy of the old module beside the adapter, 10,000 generated cases, as the Phase 1 reviewer did); its count goes in the results section.
 
 #### 1b.2 Characterization of uploads, typing and composer state (test only, M)
+- Done as `075220d81c0`; see Phase 1b golden results below. Same deviations as 1b.1. Composer state is already covered by `composerStateCore.spec.ts`, not repeated. The uploads goldens pin behavior for the native twin of 2.14, not for a Phase 1b refactor (see decisions).
 - Commit: `test(meteor): pin uploads, typing and composer state behavior`. Files (new): `lib/chats/uploads.characterization.spec.ts`, `flows/uploadFiles.characterization.spec.ts`, `flows/processMessageUploads.characterization.spec.ts`, `lib/UserAction.characterization.spec.ts` (fake timers, a recording `sdk.publish`/`stream`), snapshots.
 - Pins, among others (V): `processMessageUploads` returns a promise that never settles when the user dismisses the failed-uploads modal (`onCancel`, `onClose` and the all-failed `onConfirm` only close it, `processMessageUploads.ts:196,209,213`), so `sendMessage` hangs there today; `uploadFiles` redefines `file.name` as writable before the e2ee lookup (`uploadFiles.ts:35`); the 500 ms debounce, 5 s renew and 15 s timeout of `UserAction`.
 - Reqs: R35 to R38, R48, R49 (oracle for 2.9, 2.14). Neutral and rollback: as 1b.1.
@@ -540,19 +542,23 @@ Every step is its own commit, revertable alone. Rule for each: `git diff --stat`
 - Reqs: R48, R49 (2.9 stops being a twin). State is per factory call: the adapter makes exactly ONE instance at module load, so the maps (timeouts, renews, intervals, performing users) stay process-wide as today. Order (V): `start` arms the renew timer before registering the activity, then emits through the 500 ms `debounce` (lodash, stays a shared import, V: `UserAction.ts:3`); `stop` clears the three timers then emits. `Users.state.get(uid)` in the stream handler equals `getUser()` (V: `user.ts`), so one `getUser` dep serves both. P2 (client publish on `notify-room`) still gates acceptance on a server. Risk: medium (timers). `uploads.ts` and `ChatMessages.ts` keep importing the same `UserAction`.
 
 #### 1b.11 Uploads store, generic over the file type (L)
+- MOVED (decision 2026-11-27): out of Phase 1b, into the native step 2.14 as a native twin.
 - Commit: `refactor(meteor): make the uploads store injectable and generic over the file`. Files: `chats/core/createUploadsStore.ts` (the `UploadsStore` class over `UploadsStoreDeps<TFile>`), `chats/uploads.ts` (adapter, `TFile = File`, `createUploadsAPI` unchanged), `chats/Upload.ts` (`Upload` becomes `UploadOf<File>`; same exported names and shapes), spec.
 - This is where 1.5 stopped: widening `File` broke 11 sites because web code reads `File` members. Generic instead of widened: web instantiates `TFile = File`, so web types and call sites are byte-identical and no web narrowing is needed; `tsc` must still report 2 errors. `sdk.rest.upload` becomes `deps.upload` returning an XHR-like object (`readyState`, `DONE`, `status`, `responseText`, `onload`, `abort`); native starts an `XMLHttpRequest` with a `FormData` file descriptor, which React Native supports ((I): proven only in 2.14's S step). `new File([file], name, file)` (V: `uploads.ts:94`) becomes `deps.renameFile`.
 - Order (V): every state change goes through `set` (emits `update`); `send` appends the upload before validation; zero size, max size and content type reject inside the promise, then `updateUpload` records the error; `once('cancelling-id')` registered after the XHR starts. Risk: high within this phase (largest file, 219 lines, used by the real upload UI). Fallback below.
 
 #### 1b.12 `uploadFiles` core (M)
+- MOVED (decision 2026-11-27): out of Phase 1b, into 2.14.
 - Commit: `refactor(meteor): make uploadFiles injectable`. Files: `chats/core/uploadFilesCore.ts` (generic `TFile`), `flows/uploadFiles.ts` (adapter), spec.
 - Deps beyond those above: `encrypt?(room, file) => Promise<EncryptedPayload | undefined>` and `prepareFile?(file)`. Web-only and staying (state it): the `e2e.getInstanceByRoomId` + `encryptFile` + `encryptMessageContent` branch (needs global `crypto`, V: `uploadFiles.ts:3` is the 2.1 blocker) and `Object.defineProperty(file, 'name', ...)`, both in the adapter, called at the same points. The shared part is the count limit (R36, `MAX_MULTIPLE_UPLOADED_FILES`, from `lib/constants.ts`, no imports), the encrypted-room toast (R38, same predicate as web) and `performContinuously('uploading')`/`composer.focus()` in the `finally`. `ChatAPI.flows.uploadFiles` keeps `readonly File[]`; native calls the core directly with its own file type. Risk: medium.
 
 #### 1b.13 `processMessageUploads` core (M)
+- MOVED (decision 2026-11-27): out of Phase 1b, into 2.14.
 - Commit: `refactor(meteor): make processMessageUploads injectable`. Files: `chats/core/processMessageUploadsCore.ts`, `flows/processMessageUploads.ts` (adapter), spec.
 - Deps: `rest`, `toast`, `t`, `getE2ERoom(rid)` (web: `e2e.getInstanceByRoomId`; native: returns `undefined`), `getImageSize(file)` (web: `Image` + `URL.createObjectURL`, V: `:33-46,64`; native: `Image.getSize` on the `uri`), `confirmFailedUploads(info) => Promise<'sendAnyway' | 'dismiss'>`. The web `confirmFailedUploads` reproduces the never-settling promise on dismiss and on the all-failed notice (V, above) so behavior is identical; a fix is a separate `fix:` commit a person orders below the feature. Legitimately shared: `getFileExtension` (pure), `isEncryptedUpload`. The `e2e` import at `:7` (loads `getUserAvatarURL` -> `getURL` -> `rocketchat.info`, V: 2.1) leaves the core. Risk: medium; the e2ee content path is not exercised natively and is covered on web by Playwright.
 
 #### 1b.14 Hermes probe for typing and uploads (S, expo-lab)
+- Re-scoped (decision 2026-11-27): typing only (`createUserAction`); the `createUploadsStore`, `uploadFilesCore` and `processMessageUploadsCore` rows and the fake-XHR smoke run go away with 1b.11 to 1b.13.
 - Commit: `chore(expo-lab): probe the injectable typing and uploads cores`. Files: `src/sharedModulesProbe.ts` rows for `createUserAction`, `createUploadsStore`, `uploadFilesCore`, `processMessageUploadsCore`; smoke run of `createUploadsStore` with a fake XHR.
 
 #### 1b.15 Results
@@ -601,3 +607,60 @@ If a step is not web-neutral (a golden differs and the difference is not a bug i
 3. Run the Playwright set above on a local Meteor after 1b.8 and 1b.13; nothing here starts a server.
 4. Whether the pre-existing dismissed-modal hang gets its own `fix:`.
 5. Which of these commits become pull requests, and when (`docs/change-organization.md`); this plan opens none.
+
+## Phase 1b decisions (2026-11-27)
+
+Approved by the user on 2026-11-27.
+
+1. Uploads are OUT of Phase 1b. Steps 1b.11, 1b.12 and 1b.13 and the generic uploads store move into the native step 2.14 as a native twin (a store over `{ uri, name, type, size? }`, no web refactor). 1b.14 loses its uploads rows (typing only). The 1b.2 uploads goldens are still written: they are test only, add no web risk, and pin the behavior the 2.14 twin must match. The "uploads are the first to give up" line of the Fallback is now the plan; Needs-a-person item 1 is answered.
+2. Native too-long behavior in v1: an error toast (`Message_too_long`), no attachment conversion (`TooLongDeps.offerAttachment` is omitted), and the native app fills the shared `settings` store (`Message_MaxAllowedSize` and the other settings the shared modules read) before the composer mounts. Needs-a-person item 2 is answered.
+3. Playwright runs on a local Meteor after 1b.8 (send group). The user will run it or say how to start the server; nothing in this job starts one.
+4. The dismissed-modal hang in `processMessageUploads` (the promise never settles after `onCancel`, `onClose`, or the all-failed `onConfirm`: `processMessageUploads.ts:196,209,213`) gets its OWN `fix:` commit, ordered by a person AFTER the goldens exist. The goldens pin the hang today (tests that expect the promise to stay pending); that fix commit flips exactly those tests. Needs-a-person item 4 is answered.
+5. No commit becomes a pull request until the POC settles (`docs/change-organization.md`).
+
+## Phase 1b golden results (2026-11-27)
+
+Commits (on `feat/expo-lab-all`, nothing pushed): 1b.1 `c08d51862d3`, 1b.2 `075220d81c0`. Both add new files only: `git diff --name-status 1575621bc05 HEAD` shows only `A`; no existing spec and no non-test source file changed.
+
+Method. Every spec runs the REAL module under test against the real zustand stores (`Messages`, `Rooms`, `Subscriptions`, `Users`) and, for the send flows, the real data API (`createDataAPI`) and the real sub-flows. The modules those import by path (`SDKClient`, `toast`, `user`, `settings`, `authorization`, `slashCommand`, `emoji`, `rooms/roomCoordinator`, `utils/threadMessageUtils`, `lib/i18n`, `@rocket.chat/random`, `@rocket.chat/ui-client`, `onClientBeforeSendMessage`, `onClientMessageReceived`, `afterSendMessageCallback`, `getPermaLink`, `e2ee`, `UserAction`) are `jest.mock`ed by those same paths with recording fakes from `client/lib/chats/goldenFakes.ts`; `goldenChat.ts` builds the `ChatAPI` (recording `composer`, `readStateManager`, `currentEditingMessage`, `action`, `ActionManager`, `flows`, and a recording wrapper over the real data API) and logs each change to the `Messages` store. One ordered log of `[name, ...args]` is asserted with inline `toEqual` arrays. Where a log is long, later cases assert a slice or a `toContainEqual`; the full order is in the case that owns it. Dates are fixed with fake timers. Deviation from the plan: no `toMatchSnapshot` and no `.snap` files (`git grep -l toMatchSnapshot apps/meteor packages` finds none; develop #42977 removed them).
+
+| Module | Spec | Cases |
+| --- | --- | --- |
+| `sendMessage` (with the real `processSetReaction`, `processTooLongMessage`, `processSlashCommand`, `processMessageUploads`, `processMessageEditing`) | `flows/sendMessage.golden.spec.ts` | 47 |
+| `processSlashCommand` | `flows/processSlashCommand.golden.spec.ts` | 23 |
+| `processSetReaction` | `flows/processSetReaction.golden.spec.ts` | 27 |
+| `processTooLongMessage` | `flows/processTooLongMessage.golden.spec.ts` | 16 |
+| `composeMessage` and `updateMessage` params (`chats/data.ts`) | `chats/data.golden.spec.ts` | 29 |
+| uploads store (`chats/uploads.ts`) | `chats/uploads.golden.spec.ts` | 33 |
+| `uploadFiles` | `flows/uploadFiles.golden.spec.ts` | 17 |
+| `processMessageUploads` | `flows/processMessageUploads.golden.spec.ts` | 23 |
+| `UserAction` (fake timers) | `lib/UserAction.golden.spec.ts` | 25 |
+
+Total 240 new cases in 9 suites. The existing composer command (`client/views/room/composer client/lib/chats client/lib/createComposerAPICore client/lib/createRichTextComposerAPI client/lib/composerHistory client/lib/composerStateCore`) gives 25 suites and 306 tests before and after (compared programmatically from `--json` output with the golden files excluded). `packages/ui-client`: 45 suites, 231 tests, unchanged. `tsc --noEmit --skipLibCheck` in `apps/meteor`: the 2 baseline `TS2307` errors. `oxlint` clean on the new files. A throwaway mutation (dropping `tshow` in `composeMessage` and `delete message.e2e` in `sendMessage`) made 5 goldens fail; the source was restored.
+
+Quirks pinned (each is a test that asserts the current behavior; none is fixed):
+
+- `processMessageUploads` returns a promise that never settles after `onCancel` or `onClose` of the "some failed" modal, and after `onConfirm` or `onClose` of the "all failed" modal (only `imperativeModal.close` is called). So `sendMessage` hangs there.
+- `processTooLongMessage`: if `uploadFiles` rejects inside the modal `onConfirm`, `resolve` is never called: the confirm handler rejects and the flow stays pending.
+- `sendMessage` runs `afterSendMessageCallback` with the OUTER composed message, not what `onClientBeforeSendMessage` returned, and also when a sub-flow (slash command, reaction, too-long toast) ended the send. It does not run when the transform or the request failed.
+- A failed `chat.sendMessage` request leaves the optimistic record with `temp: true` in the store; the temp flag is only cleared if the record is still the optimistic one.
+- Duplicate id: the toast fires and the POST still follows. A missing user id, a user without username, and a federated room skip the optimistic insert but still POST.
+- In the empty-text edit branch, a failing `findMessageByID` rejects out of `sendMessage` (it is outside the `try`); the `Message_not_found` toast is only reachable if the data API resolves `null`, which the real API never does (it throws), so that case uses an overridden data method.
+- `processSetReaction` matches `+:emoji:` on ANY line of a multi-line text (`/m` flag), takes the newest non-hidden message of the room or thread, rolls nothing back when the POST fails, and rethrows.
+- `processSlashCommand`: `/constructor` resolves `Object.prototype.constructor` as a command and POSTs `commands.run` with `command: undefined`; `//` is the unrecognized command named `/`; leading-space text is not a command; the unrecognized-command warning is `console.error` plus an ephemeral message.
+- Uploads store: `send` resolves only on the `load` event, whatever the status; a 400, 403 or 500 response records an error but does not reject; `cancel` removes the upload, stops the typing activity when it was the last one, then rejects and flags an upload that is already gone (a second, no-op `update`).
+- `processMessageUploads`: an encrypted image whose dimensions cannot be loaded rejects the whole flow before any request (outside the `try`); an upload with no url is skipped and the flow still returns `true`; a failed `mediaConfirm` keeps the unconfirmed files and still returns `true`; the extension in the e2e attachment is upper case (`TXT`).
+- `uploadFiles`: all files do their e2e instance lookup before any `send` (concurrent `map`); one failing file does not stop the rest (`allSettled`); the composer is focused in a `finally`.
+- `UserAction`: ONE debounce is shared by every room, so a start in another room inside 500 ms replaces the pending publication (the first room is never published). The auto-stop timer calls `stop(trid, ...)` with the thread id as the room id, so a thread activity's auto-stop publishes on `<tmid>/user-activity`, while an explicit stop publishes on `<rid>/user-activity`. The stream handler empties the activity array it receives. The self filter compares the announced name with the real name or the username depending on the setting.
+
+Not characterized, and why:
+
+- Real modals: `imperativeModal` and `GenericModal` are fakes that record `open` and hand the props to the test; the rendered modal, focus and keyboard are not covered. A real `Blob` and `File` (jsdom) are used, but the content of the too-long attachment is not read back (name, type, size and `lastModified` are asserted).
+- `XMLHttpRequest`: the XHR is a fake object driven by the test (`readyState`, `status`, `responseText`, `onload`, the three events); real progress, abort and network errors are not covered.
+- Real timers: typing uses fake timers (lodash `debounce` was verified to follow them); the too-long and failed-uploads "stays pending" checks use microtask flushes, plus a 20 ms real wait for the uploads modal.
+- `Image` and `URL.createObjectURL` are fakes (jsdom has no working ones), so the image-dimension path is characterized for its shape, not for a real decode.
+- `editUploadFileName`'s failure branch is reached by making the `File` constructor throw; the real trigger is unknown.
+- The rest of `createDataAPI` (finders, permission checks, drafts) is out of scope; `pushEphemeralMessage` is covered through the slash flow.
+- `afterSendMessageCallback`, `onClientBeforeSendMessage`, `onClientMessageReceived` and the e2ee room are recording fakes, so their real transforms are not part of the contract.
+
+What the later cores still need that the goldens do not pin: the real e2ee content encryption; the Playwright runs; the `ChatMessages.ts` binding of `chat.flows.*` and `chat.action.*` (the goldens build their own `ChatAPI`, so a wiring mistake in an adapter is caught only by the adapters' own specs and Playwright); and anything that depends on `settings.peek` keeping its `this` (the fake is a plain object).
