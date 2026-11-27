@@ -68,9 +68,9 @@ CDN. Nothing else changes.
 `index.html`, `bundle/` and a copy of `public/`. To serve it yourself, in front of a Rocket.Chat server:
 
 1. Serve `vite/dist` as static files. Answer page navigations (`GET` requests that accept `text/html`) with
-   `index.html`, since the client routes on the browser side, except under the server's own pages: `/api`, `/oauth`,
-   `/_oauth`, `/_saml`, `/_cas`, `/file-upload`, `/file-decrypt`, `/data-export` and `/livechat`. Of those, only
-   `/oauth/authorize` and `/oauth/error` are client pages.
+   `index.html`, since the client routes on the browser side, except under the server's own pages: `/api`,
+   `/api-docs`, `/oauth`, `/_oauth`, `/_saml`, `/_cas`, `/file-upload`, `/file-decrypt`, `/data-export` and
+   `/livechat`. Of those, only `/oauth/authorize` and `/oauth/error` are client pages.
 2. Proxy every other path to the Rocket.Chat server, and the `/websocket` and `/sockjs` WebSockets. Rewrite the cookie
    domain to your host, so `rc_token` reaches avatars and downloads.
 3. Define `window.__meteor_runtime_config__` before the entry runs, with at least `ROOT_URL` (your host) and
