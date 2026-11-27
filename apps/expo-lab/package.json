@@ -8,6 +8,7 @@
 		"start": "expo start --dev-client",
 		"ios": "expo run:ios",
 		"android": "expo run:android",
+		"sweep": "node scripts/sweep.mjs",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
