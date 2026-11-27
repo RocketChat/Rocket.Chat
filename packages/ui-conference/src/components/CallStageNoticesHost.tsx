@@ -23,7 +23,7 @@ export type CallStageNoticesHostProps = {
 
 /** Where `CallStageNoticesPortal` draws over the call. What does not fit is clipped rather than drawn over the call's controls. */
 const CallStageNoticesHost = ({ ref }: CallStageNoticesHostProps) => (
-	<Box ref={ref} className={hostStyles} position='absolute' insetBlock={12} zIndex={zIndex.sticky} overflowY='clip' />
+	<Box ref={ref} className={hostStyles} position='absolute' insetBlock={0} paddingBlock='x12' zIndex={zIndex.sticky} overflowY='clip' />
 );
 
 export default CallStageNoticesHost;
