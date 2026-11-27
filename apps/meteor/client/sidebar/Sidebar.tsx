@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 import Inbox from './Inbox';
 import SidebarRoomList from './RoomList';
+import TeamsPanel from './TeamsPanel';
+import { useTeamsPanel } from './TeamsPanel/hooks/useTeamsPanel';
 import SidebarFooter from './footer';
 import BannerSection from './sections/BannerSection';
 import NowPlayingSection from './sections/NowPlayingSection';
@@ -18,6 +20,7 @@ const Sidebar = () => {
 		isEmbedded,
 		sidebar: { shouldToggle },
 	} = useLayout();
+	const { open: teamsPanelOpen } = useTeamsPanel();
 
 	return (
 		<FuselageSidebar
@@ -33,9 +36,7 @@ const Sidebar = () => {
 		>
 			<BannerSection />
 			<FeaturePreview feature='sidebarRail' disabled={shouldToggle || isEmbedded}>
-				<FeaturePreviewOn>
-					<Inbox />
-				</FeaturePreviewOn>
+				<FeaturePreviewOn>{teamsPanelOpen ? <TeamsPanel /> : <Inbox />}</FeaturePreviewOn>
 				<FeaturePreviewOff>
 					<SidebarRoomList />
 				</FeaturePreviewOff>
