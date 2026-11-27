@@ -5,14 +5,17 @@ import type { Meta, StoryObj } from '@storybook/react';
 import SidebarRail from './SidebarRail';
 
 const baseRoot = () =>
-	mockAppRoot().withSetting('Layout_Show_Home_Button', true).withTranslations('en', 'core', {
-		Sidebar: 'Sidebar',
-		Home: 'Home',
-		Create_new: 'Create new',
-		Voice_Call: 'Voice Call',
-		Pages_and_actions: 'Pages and actions',
-		Workspace_and_user_preferences: 'Workspace and user preferences',
-	});
+	mockAppRoot()
+		.withTranslations('en', 'core', {
+			Sidebar: 'Sidebar',
+			Inbox_and_home: 'Inbox and home',
+			Navigation: 'Navigation',
+			Sidebar_preferences: 'Sidebar preferences',
+			Voice_Call: 'Voice Call',
+			Pages_and_actions: 'Pages and actions',
+			Workspace_and_user_preferences: 'Workspace and user preferences',
+		})
+		.withSubscriptions([]);
 
 export default {
 	title: 'Sidebar/SidebarRail',
@@ -38,10 +41,4 @@ export const Anonymous: Story = {
 
 export const LoggedIn: Story = {
 	decorators: [baseRoot().withJohnDoe().buildStoryDecorator()],
-};
-
-export const WithCreatePermissions: Story = {
-	decorators: [
-		baseRoot().withJohnDoe().withPermission('create-c').withPermission('create-p').withPermission('create-d').buildStoryDecorator(),
-	],
 };

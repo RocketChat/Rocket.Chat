@@ -4,14 +4,13 @@ import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import SidebarRailCreateNew from './SidebarRailCreateNew';
 import SidebarRailDivider from './SidebarRailDivider';
+import SidebarRailInbox from './SidebarRailInbox';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
-import SidebarRailSort from './SidebarRailSort';
+import SidebarRailPreferences from './SidebarRailPreferences';
 import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
-import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -45,10 +44,11 @@ const SidebarRail = () => {
 			zIndex={10}
 		>
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
+				<NavBarGroup vertical aria-label={t('Navigation')}>
+					<SidebarRailInbox />
+				</NavBarGroup>
+				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
-					<NavBarItemHomePage title={t('Home')} />
-					<SidebarRailSort />
-					<SidebarRailCreateNew />
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 				</NavBarGroup>
@@ -69,6 +69,7 @@ const SidebarRail = () => {
 			</Box>
 			<Box padding={8}>
 				<NavBarGroup vertical aria-label={t('Workspace_and_user_preferences')}>
+					<SidebarRailPreferences />
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <SidebarRailLoginPage />}
 				</NavBarGroup>

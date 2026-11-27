@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event';
 
 import Inbox from './Inbox';
 
+jest.mock('../navbar/NavBarPagesGroup/hooks/useCreateNewMenu', () => ({
+	useCreateNewMenu: () => [{ title: 'Create_new', items: [{ id: 'channel', content: 'Channel', icon: 'hashtag' }] }],
+}));
+
 jest.mock('./RoomList', () => ({
 	__esModule: true,
 	default: ({ filterText }: { filterText: string }) => <div data-testid='room-list'>{filterText}</div>,
@@ -36,4 +40,12 @@ it.each([
 	await userEvent.click(screen.getByRole('button', { name: 'Search_rooms' }));
 
 	expect(screen.getByRole('textbox', { name: 'Search_rooms' }).classList.contains('rcx-input-box--small')).toBe(small);
+});
+
+it('offers Create new in the Inbox header', async () => {
+	render(<Inbox />, { wrapper: appRoot });
+
+	await userEvent.click(screen.getByRole('button', { name: 'Create_new' }));
+
+	expect(await screen.findByRole('menuitem', { name: 'Channel' })).toBeInTheDocument();
 });

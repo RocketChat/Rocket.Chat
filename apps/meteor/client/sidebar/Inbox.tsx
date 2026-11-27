@@ -1,10 +1,12 @@
 import { IconButton, SidepanelHeader, SidepanelHeaderActions, SidepanelHeaderTitle, SidepanelSearch } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SidebarRoomList from './RoomList';
+import { useCreateNewMenu } from '../navbar/NavBarPagesGroup/hooks/useCreateNewMenu';
 
 const Inbox = () => {
 	const { t } = useTranslation();
@@ -13,6 +15,7 @@ const Inbox = () => {
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [filterText, setFilterText] = useState('');
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
+	const createNewSections = useCreateNewMenu();
 
 	const closeSearch = () => {
 		setSearchOpen(false);
@@ -38,6 +41,16 @@ const Inbox = () => {
 						pressed={searchOpen}
 						onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
 					/>
+					{createNewSections.length > 0 && (
+						<GenericMenu
+							icon='pencil-box'
+							title={t('Create_new')}
+							sections={createNewSections}
+							is={IconButton}
+							size='small'
+							placement='bottom-end'
+						/>
+					)}
 				</SidepanelHeaderActions>
 			</SidepanelHeader>
 			{searchOpen && (

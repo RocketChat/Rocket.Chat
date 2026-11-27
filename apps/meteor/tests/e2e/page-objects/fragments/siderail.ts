@@ -8,6 +8,14 @@ export class SidebarRail {
 		this.root = page.getByRole('navigation', { name: 'Sidebar rail' });
 	}
 
+	private get navigationGroup() {
+		return this.root.getByRole('group', { name: 'Navigation' });
+	}
+
+	get btnInbox() {
+		return this.navigationGroup.getByRole('button', { name: 'Inbox and home' });
+	}
+
 	private get voiceCallGroup() {
 		return this.root.getByRole('group', { name: 'Voice call' });
 	}
