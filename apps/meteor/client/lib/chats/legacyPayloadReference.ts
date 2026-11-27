@@ -1,4 +1,4 @@
-// A frozen copy of the pre-extraction behavior (04c7ae4cfae) used as the oracle by the differential specs; never import it from product code.
+// Oracle for the differential spec: the logic as it was before the extraction; never import it from product code.
 import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
