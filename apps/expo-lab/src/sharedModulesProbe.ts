@@ -22,6 +22,13 @@ const loaders: [string, () => unknown][] = [
 	['UserAction', () => require('../../meteor/client/lib/UserAction')],
 	['useDraftStorage (src)', () => require('../../../packages/ui-client/src/hooks/useDraftStorage')],
 	['@rocket.chat/ui-client', () => require('@rocket.chat/ui-client')],
+
+	['core/messagePayload', () => require('../../meteor/client/lib/chats/core/messagePayload')],
+	['core/createComposerState', () => require('../../meteor/client/lib/chats/core/createComposerState')],
+	['core/processSlashCommand', () => require('../../meteor/client/lib/chats/core/processSlashCommand')],
+	['core/processTooLongMessage', () => require('../../meteor/client/lib/chats/core/processTooLongMessage')],
+	['core/processSetReaction', () => require('../../meteor/client/lib/chats/core/processSetReaction')],
+	['core/sendMessage', () => require('../../meteor/client/lib/chats/core/sendMessage')],
 ];
 
 export const runSharedModulesProbe = (): ProbeRow[] =>
