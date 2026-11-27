@@ -32,7 +32,7 @@ const CallMessagePreview = ({
 	return (
 		<Box is='li' ref={ref} display='block'>
 			<Tile elevation='2' flush className={surfaceClassName}>
-				<Box display='flex' alignItems='flex-start' gap={12} padding={12} position='relative'>
+				<Box display='flex' alignItems='flex-start' gap='x12' padding='x12' position='relative'>
 					{avatar}
 					<Box
 						is='button'

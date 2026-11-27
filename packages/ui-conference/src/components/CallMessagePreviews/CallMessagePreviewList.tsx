@@ -12,7 +12,7 @@ export type CallMessagePreviewListProps = {
 
 /** The chat messages previewed over the call, newest last. */
 const CallMessagePreviewList = ({ children, ...props }: CallMessagePreviewListProps) => (
-	<Box is='ul' display='flex' flexDirection='column' gap={8} margin={0} padding={0} {...props}>
+	<Box is='ul' display='flex' flexDirection='column' gap='x8' margin={0} padding={0} {...props}>
 		{children}
 	</Box>
 );
