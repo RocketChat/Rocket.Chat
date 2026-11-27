@@ -381,6 +381,56 @@ const cases: Case[] = [
 			behavior.post = async () => undefined;
 		},
 	},
+	...([null, 0, '', Number.NaN, {}] as const).map((value): Case => ({
+		name: `unrecognized setting is ${typeof value === 'object' && value ? 'an object' : String(value) || "''"}`,
+		msg: '/nope',
+		setup: () => {
+			behavior.settings.Message_AllowUnrecognizedSlashCommand = value;
+		},
+	})),
+	{
+		name: 'server command with a tmid of 0',
+		msg: '/giphy',
+		extra: { tmid: 0 },
+		setup: () => {
+			behavior.commands = { giphy: server() };
+		},
+	},
+	{
+		name: 'client only with a truthy non-boolean flag',
+		msg: '/clear',
+		setup: () => {
+			behavior.commands = { clear: clientOnly({ clientOnly: 'yes' }) };
+		},
+	},
+	{
+		name: 'client only with an empty user id falls through to the server',
+		msg: '/clear',
+		chat: { uid: '' },
+		setup: () => {
+			behavior.commands = { clear: clientOnly({ result: (...args: unknown[]) => record('command.result', ...args) }) };
+		},
+	},
+	{
+		name: 'telemetry rejects with an already-handled rejection: nobody observes it',
+		msg: '/giphy',
+		setup: () => {
+			behavior.commands = { giphy: server() };
+			behavior.post = (endpoint) => {
+				if (endpoint !== '/v1/statistics.telemetry') {
+					return Promise.resolve({ result: 'r' });
+				}
+				const rejected = Promise.reject(new Error('telemetry boom'));
+				rejected.catch(() => undefined);
+				const originalThen = rejected.then.bind(rejected);
+				rejected.then = ((...args: Parameters<typeof originalThen>) => {
+					record('telemetry.then');
+					return originalThen(...args);
+				}) as typeof rejected.then;
+				return rejected;
+			};
+		},
+	},
 	{ name: 'message without msg', msg: undefined as unknown as string },
 ];
 
@@ -467,6 +517,18 @@ describe('processSlashCommand differential: frozen legacy copy vs adapter vs cor
 
 		const doubleSlash = await run('legacy', { name: 'd', msg: '//' });
 		expect(doubleSlash.log[2]).toEqual(['console.error', 'No_such_command {"command":"/"}']);
+	});
+
+	it('never observes the telemetry promise, in the old code or the new', async () => {
+		const testCase = cases.find((c) => c.name.startsWith('telemetry rejects'));
+		expect(testCase).toBeDefined();
+		if (!testCase) {
+			return;
+		}
+		for (const kind of ['legacy', 'adapter', 'core'] as const) {
+			const { log } = await run(kind, testCase);
+			expect(log.some(([fn]) => fn === 'telemetry.then')).toBe(false);
+		}
 	});
 
 	it.each([
