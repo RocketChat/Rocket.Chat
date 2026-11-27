@@ -82,6 +82,10 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
+	IAiAgentRevisionsModel,
+	IAiAgentsModel,
+	IAiEnginesModel,
+	IAiSeatsModel,
 	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
 } from '@rocket.chat/model-typings';
@@ -174,5 +178,9 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+export const AiAgentRevisions = proxify<IAiAgentRevisionsModel>('IAiAgentRevisionsModel');
+export const AiAgents = proxify<IAiAgentsModel>('IAiAgentsModel');
+export const AiEngines = proxify<IAiEnginesModel>('IAiEnginesModel');
+export const AiSeats = proxify<IAiSeatsModel>('IAiSeatsModel');
 export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');

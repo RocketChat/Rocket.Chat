@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 
 import AICenterOverview from './AICenterOverview';
 import AISettingsSection from './AISettingsSection';
+import AIAgentsPage from './agents/AIAgentsPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AICenterRoute = (): ReactElement => {
@@ -11,6 +12,10 @@ const AICenterRoute = (): ReactElement => {
 
 	if (!hasPermission) {
 		return <NotAuthorizedPage />;
+	}
+
+	if (section === 'agents') {
+		return <AIAgentsPage />;
 	}
 
 	if (section === 'search') {

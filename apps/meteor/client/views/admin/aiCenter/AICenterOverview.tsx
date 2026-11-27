@@ -13,6 +13,8 @@ const AICenterOverview = (): ReactElement => {
 	const { data: hasAILicense, isPending } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const mcpEnabled = useSetting('MCP_Enabled', false);
+	const agentsEnabled = useSetting('AI_Agents_Enabled', false);
+	const agentsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'agents' } });
 	const searchSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'search' } });
 	const llmSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'llm-providers' } });
 	const mcpSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'mcp' } });
@@ -22,14 +24,17 @@ const AICenterOverview = (): ReactElement => {
 		return <PageSkeleton />;
 	}
 
+	let agentsStatus: ReactNode;
 	let aiSearchStatus: ReactNode;
 	let llmProviderStatus: ReactNode;
 	let mcpStatus: ReactNode;
 	if (hasAILicense === false) {
+		agentsStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 		aiSearchStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 		llmProviderStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 		mcpStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 	} else if (hasAILicense) {
+		agentsStatus = agentsEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 		aiSearchStatus = intelligentSearchEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 		llmProviderStatus = <Tag>{t('Available')}</Tag>;
 		mcpStatus = mcpEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
@@ -55,6 +60,14 @@ const AICenterOverview = (): ReactElement => {
 							{t('Capabilities')}
 						</Box>
 						<CardGrid breakpoints={{ xs: 4, sm: 4, md: 6, lg: 6, xl: 6 }}>
+							<AICenterCapabilityCard
+								icon='balloon'
+								title={t('AI_Agents')}
+								description={t('AI_Center_Agents_card_description')}
+								status={agentsStatus}
+								actionLabel={t('Manage')}
+								href={agentsHref}
+							/>
 							<AICenterCapabilityCard
 								icon='stars'
 								title={t('Intelligent_Search')}

@@ -117,6 +117,10 @@ export * from './IContact';
 export type * from './IExchangeCalendarSyncState';
 export type * from './IExchangeContactSyncState';
 export type * from './IExchangeSyncLease';
+export type * from './IAiEngine';
+export type * from './IAiAgent';
+export type * from './IAiAgentRevision';
+export type * from './IAiSeat';
 
 export type * from './search';
 export * from './omnichannel';
