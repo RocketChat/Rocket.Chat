@@ -472,7 +472,7 @@ describe('MicrosoftGraphProvider', () => {
 				return { photos, error };
 			}
 
-			return { photos, error: undefined };
+			return { photos };
 		};
 
 		it('asks for a chunk of photos in one batch instead of a request per contact', async () => {
