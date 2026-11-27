@@ -90,6 +90,66 @@ describe('MCP tool dispatch', () => {
 		);
 	});
 
+	describe('marks messages as sent with AI', () => {
+		const postMessageTool = {
+			name: 'post_chat_postMessage_by_roomId',
+			description: 'Post a message',
+			inputSchema: { type: 'object' },
+			path: '/api/v1/chat.postMessage',
+			method: 'post' as const,
+		};
+		const sendMessageTool = {
+			name: 'post_chat_sendMessage',
+			description: 'Send a message',
+			inputSchema: { type: 'object' },
+			path: '/api/v1/chat.sendMessage',
+			method: 'post' as const,
+		};
+
+		const sentBody = async (tool: typeof postMessageTool, args: Record<string, unknown>) => {
+			const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }));
+			await dispatchTool(tool, args, auth);
+			const [, init] = fetchMock.mock.calls[0];
+			return JSON.parse(String(init?.body));
+		};
+
+		it.each([
+			['omits the flag', {}],
+			['passes sentWithAI: false', { sentWithAI: false }],
+			['passes sentWithAI: true', { sentWithAI: true }],
+		])('sends sentWithAI: true to chat.postMessage when the agent %s', async (_, flag) => {
+			await expect(sentBody(postMessageTool, { roomId: 'room-id', text: 'Hello', ...flag })).resolves.toEqual({
+				roomId: 'room-id',
+				text: 'Hello',
+				sentWithAI: true,
+			});
+		});
+
+		it.each([
+			['omits the flag', {}],
+			['passes sentWithAI: false', { sentWithAI: false }],
+			['passes sentWithAI: true', { sentWithAI: true }],
+		])('sends message.sentWithAI: true to chat.sendMessage when the agent %s', async (_, flag) => {
+			await expect(sentBody(sendMessageTool, { message: { rid: 'room-id', msg: 'Hello', ...flag }, previewUrls: [] })).resolves.toEqual({
+				message: { rid: 'room-id', msg: 'Hello', sentWithAI: true },
+				previewUrls: [],
+			});
+		});
+
+		it('leaves a chat.sendMessage call without a message object for the REST validator to reject', async () => {
+			await expect(sentBody(sendMessageTool, { message: 'Hello' })).resolves.toEqual({ message: 'Hello' });
+		});
+
+		it('does not add the flag to other tools', async () => {
+			await expect(
+				sentBody(
+					{ ...postMessageTool, name: 'post_chat_update', path: '/api/v1/chat.update' },
+					{ roomId: 'room-id', msgId: 'id', text: 'Hi' },
+				),
+			).resolves.toEqual({ roomId: 'room-id', msgId: 'id', text: 'Hi' });
+		});
+	});
+
 	it('preserves non-JSON error responses', async () => {
 		jest.spyOn(global, 'fetch').mockResolvedValue(new Response('Service unavailable', { status: 503 }));
 
