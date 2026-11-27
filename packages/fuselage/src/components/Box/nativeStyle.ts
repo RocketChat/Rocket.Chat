@@ -203,3 +203,5 @@ export const extractNativeStyle = <TProps extends Record<string, unknown>>(
 
 	return [rest as TProps, style, hostProps];
 };
+
+export { color as nativeColor, length as nativeLength };
