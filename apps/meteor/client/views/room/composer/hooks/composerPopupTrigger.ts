@@ -29,12 +29,17 @@ export const getPopupFilter = (option: PopupTrigger, textBeforeCaret: string): s
 
 /**
  * The span of text before the caret, trigger included, that choosing an item replaces.
+ * The caret is the composer's own selection offset: it can differ from the length of the text before it.
  */
-export const getPopupReplaceRange = (option: PopupTrigger, textBeforeCaret: string): { start: number; end: number } | undefined => {
+export const getPopupReplaceRange = (
+	option: PopupTrigger,
+	textBeforeCaret: string,
+	caret: number,
+): { start: number; end: number } | undefined => {
 	const result = textBeforeCaret.match(getPopupTriggerSelector(option));
 	if (!result) {
 		return undefined;
 	}
 
-	return { start: textBeforeCaret.lastIndexOf(result[1] + result[2]), end: textBeforeCaret.length };
+	return { start: textBeforeCaret.lastIndexOf(result[1] + result[2]), end: caret };
 };

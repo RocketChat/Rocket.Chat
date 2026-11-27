@@ -65,17 +65,21 @@ describe('getPopupFilter', () => {
 
 describe('getPopupReplaceRange', () => {
 	it('should span the trigger and the typed text up to the caret', () => {
-		expect(getPopupReplaceRange(user, 'hello @jo')).toEqual({ start: 6, end: 9 });
-		expect(getPopupReplaceRange(room, '#gen')).toEqual({ start: 0, end: 4 });
-		expect(getPopupReplaceRange(command, '/inv')).toEqual({ start: 0, end: 4 });
+		expect(getPopupReplaceRange(user, 'hello @jo', 9)).toEqual({ start: 6, end: 9 });
+		expect(getPopupReplaceRange(room, '#gen', 4)).toEqual({ start: 0, end: 4 });
+		expect(getPopupReplaceRange(command, '/inv', 4)).toEqual({ start: 0, end: 4 });
 	});
 
 	it('should span only the trigger when nothing was typed after it', () => {
-		expect(getPopupReplaceRange(user, 'hi @')).toEqual({ start: 3, end: 4 });
+		expect(getPopupReplaceRange(user, 'hi @', 4)).toEqual({ start: 3, end: 4 });
+	});
+
+	it('should end at the caret even when it is past the length of the text before it', () => {
+		expect(getPopupReplaceRange(room, '#gen', 5)).toEqual({ start: 0, end: 5 });
 	});
 
 	it('should return nothing when the text does not match', () => {
-		expect(getPopupReplaceRange(user, 'plain text')).toBeUndefined();
+		expect(getPopupReplaceRange(user, 'plain text', 10)).toBeUndefined();
 	});
 });
 
@@ -133,7 +137,7 @@ describe('the selectors the popup hook built inline before the extraction', () =
 		for (const option of options) {
 			const legacy = legacySelect(option, text);
 			expect(getPopupFilter(option, text)).toBe(legacy?.filter ?? '');
-			expect(getPopupReplaceRange(option, text)).toEqual(legacy && { start: legacy.start, end: text.length });
+			expect(getPopupReplaceRange(option, text, text.length)).toEqual(legacy && { start: legacy.start, end: text.length });
 		}
 	});
 });

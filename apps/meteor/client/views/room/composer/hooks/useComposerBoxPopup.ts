@@ -101,8 +101,9 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		if (commandsRef.current?.select) {
 			commandsRef.current.select(item);
 		} else {
-			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-			const range = value ? getPopupReplaceRange(option, value) : undefined;
+			const caret = chat?.composer?.selection.start;
+			const value = chat?.composer?.substring(0, caret);
+			const range = value && caret !== undefined ? getPopupReplaceRange(option, value, caret) : undefined;
 			if (!range) {
 				return;
 			}
