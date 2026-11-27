@@ -357,3 +357,71 @@ Spec counts. The original command gives 21 suites and 233 passed; with `client/l
 - **F6.** The 1.3 sentence about `createRichTextComposerAPI` coverage and the Baseline command are corrected above.
 - **F7.** `createComposerAPI.wrapSelection.spec.ts` runs only the jsdom fallback branch (no `document.execCommand`); the `execCommand` path of the DOM `wrapSelection` has no spec.
 - **F8.** Naming, recorded and not changed now: `composerPopupTrigger.ts` is not a hook but lives in `composer/hooks/`, and `wrapSelectionText.ts` sits next to the DOM `wrapSelection.ts`.
+
+## Step 2.1 results (2026-11-27)
+
+Tree at `97fd96a7565` plus the three commits of this step. Bundled with `CI=1 node node_modules/expo/bin/cli export --platform ios` (probe mode: `EXPO_PUBLIC_SHARED_PROBE=1`) and run on the iPhone 17 Pro simulator (dev client, Hermes, own Metro on 8086). Screenshot: `docs/composer/shared-modules-probe.png`. The probe is `src/sharedModulesProbe.ts` (one string-literal `require` per module, each run in its own `try`), shown by `src/SharedProbeScreen.tsx`.
+
+Shape of the graph: every module that imports `SDKClient`, `stores` or `settings` pulls the web client into the bundle. Modules reachable from each entry (Metro edges): `sendMessage`, `chats/data` and `uploadFiles` reach 6011 (1562 under `apps/meteor/client`, including `views/room/Room.tsx`); `composerStateCore`, `createComposerAPICore`, `processSlashCommand`, `uploads` and `UserAction` about 2570 (30 to 50 under `apps/meteor/client`); the pure files 1 to 86. The app without the probe still bundles 2573 modules, the same count as before this step.
+
+### Module table
+
+| Module (under `apps/meteor/client`) | Loads under Metro | Runs on Hermes | Blocker (first error, chain, file:line) | Fix or gap | Step |
+| --- | --- | --- | --- | --- | --- |
+| `views/room/composer/lib/composerState.ts` | yes | yes | none (no imports) | none | 2.2, 2.8 |
+| `lib/messageBoxFormatting.ts` | yes | yes | imports the `@rocket.chat/ui-client` barrel (922 package modules), `settings`, `react-dom`, `AddLinkComposerActionModal` (`messageBoxFormatting.ts:1-10`); all evaluate. Needed the `@rocket.chat/random` rule and the Babel flag | fixed | 2.2, 2.12, 2.13 |
+| `views/room/composer/messageBox/messageBoxHelpers.ts` | yes | yes | `@rocket.chat/gazzodown-alt` barrel imports `react-dom/server` (`gazzodown-alt/dist/renderComposerMarkup.js:2`) | fixed (alias from gazzodown-alt only) | 2.12, 2.13 |
+| `lib/toggleLinePrefix.ts` | yes | yes | none | none | 2.12 |
+| `views/room/composer/messageBox/wrapSelectionText.ts` | yes | yes | none | none | 2.12 |
+| `views/room/composer/hooks/composerPopupTrigger.ts` | yes | yes | none | none | 2.10, 2.11 |
+| `lib/composerStateCore.ts` | with stubs | no: `Property 'document' doesn't exist` | `composerStateCore.ts:5` imports `chats/uploads`, whose `uploads.ts:10` imports `SDKClient`; `SDKClient.ts:6` -> `sdk/ddpSdk.ts:19` (`document.baseURI`), `:183` (`window`), `meteor/accounts.ts:188` (`window.location`), `meteor/connection.ts:112`; `RestApiClient` -> `lib/baseURI.ts:2` | gap | 2.2 |
+| `lib/createComposerAPICore.ts` | with stubs | no, same | imports `composerStateCore` (`createComposerAPICore.ts:5`) | gap | 2.2 |
+| `lib/chats/flows/sendMessage.ts` | with stubs | no, same | see the send-flow verdict | gap | 2.4, 2.5 |
+| `lib/chats/flows/processSlashCommand.ts` | with stubs | no, same | `SDKClient` (`:6`), `authorization` (`:7`), `settings` (`:8`), `slashCommand` (`:9`) | gap | 2.11, 2.13 |
+| `lib/chats/flows/processMessageEditing.ts` | yes | yes | imports only `message-types`, `toast` and a type | none | 2.6 |
+| `lib/chats/flows/processTooLongMessage.ts` | yes | yes (import) | `ui-client` barrel, `settings`, `toast`, `user` evaluate; it calls `imperativeModal`, a web modal host | none for loading | 2.5 |
+| `lib/chats/data.ts` (`composeMessage`) | with stubs | no, same | `data.ts:7` `stores`, `:8` `SDKClient`, `:9` `authorization` | gap | 2.5 |
+| `lib/chats/uploads.ts` | with stubs | no, same | `uploads.ts:10` `SDKClient`, `:11` `UserAction` | gap (not modified here) | 2.14 |
+| `lib/chats/flows/uploadFiles.ts` | with stubs | no: `Property 'crypto' doesn't exist` | `uploadFiles.ts:3` `e2ee` (global `crypto`) | gap | 2.14 |
+| `lib/UserAction.ts` | with stubs | no, same as `composerStateCore` | `UserAction.ts:5` `SDKClient`, `:8` `stores` | gap; the spec already plans a native twin | 2.9 |
+| `packages/ui-client/src/hooks/useDraftStorage.ts` | yes | yes (import); calling it uses `localStorage`, hence the `.native.ts` twin of 2.7 | none at import | none | 2.7 |
+| `@rocket.chat/ui-client` barrel | yes | yes (import) | 922 package modules | none | n/a |
+
+"With stubs": Metro only produced a bundle because probe mode replaces dependencies it cannot resolve with `stubs/unresolved.js`, which throws when evaluated. Without it the bundle fails. Resolution errors found, all in the graph of `sendMessage`/`data`/`uploadFiles` unless noted:
+
+- `node:crypto` from `packages/random/dist/NodeRandomGenerator.js` (`No resolver is registered for the 'node:' URI scheme`), chain `processSlashCommand.ts` -> `@rocket.chat/random` -> `main.server.js`. Fixed.
+- `react-dom/server` -> `crypto`, `async_hooks` (`react-dom-server.node.production.js`): from `gazzodown-alt/dist/renderComposerMarkup.js:2` (fixed for that importer) and from `packages/layout` `BackgroundLayer.js` (only in the web UI graph, not fixed).
+- `@rocket.chat/ui-voip` (`dist/index.js` missing, the package is not built in this tree) from 9 UI files (`views/room/Room.tsx`, `SidebarRail.tsx`, `NavBarControls.tsx`, `useMediaCallRoomAction.ts` ...). Chain: `sendMessage.ts` -> `processSetReaction.ts:6` -> `rooms/roomCoordinator.tsx` -> `views/room/RoomRoute.tsx` -> `RoomOpener.tsx` -> `Room.tsx`; also `...RoomProvider.tsx` -> `ui.ts` -> `useMediaCallRoomAction.ts`. Gap: inside the web UI.
+- `../../rocketchat.info` from `lib/getURL.ts` (JSON file without an extension). Chain: `sendMessage.ts` -> `processMessageUploads.ts:7` -> `e2ee/rocketchat.e2e.ts` -> `getUserAvatarURL.ts` -> `getAvatarURL.ts` -> `getURL.ts`. Gap.
+- No `meteor/meteor`, `meteor/tracker` or `meteor/reactive-var` resolution error: this graph no longer imports them.
+- Babel: `declare public readonly` class fields (`lib/errors/NotSubscribedToRoomError.ts:8`) fail with Babel 7's TypeScript plugin. Fixed in `babel.config.js`.
+
+### Send-flow verdict
+
+`chat.flows.sendMessage` cannot be imported and called with an injected fake. Importing it evaluates the web singletons first, and the first Hermes error is `Property 'document' doesn't exist`: `sendMessage.ts:5` `stores`, `:16` `SDKClient` (`SDKClient.ts:6` -> `ddpSdk.ts:19` and `:183`, `meteor/accounts.ts:188`, `meteor/connection.ts:112`), `:18` `settings`, `:19` `user`. A fake `chat` does not help: the singletons load by import, before any call.
+
+What the flow needs at call time, so a native caller (or an injectable web version) must provide it: `getUserId()`/`getUser()` (`sendMessage.ts:24`, `:32`); `Messages.state.get/store/update` (`:27`, `:55`, `:101`); `Rooms.state.get` (`:37`); `settings.peek` (`:51`); `onClientMessageReceived` (`:17`) and `onClientBeforeSendMessage` (`:6`, called in `process`); `sdk.rest.post('/v1/chat.sendMessage')` (`:95`); `dispatchToastMessage` (`:7`); `upsertThreadMessageInCache` (`:20`, React Query client). Through `process`: `processSetReaction` (imports `roomCoordinator`, `processSetReaction.ts:6`, which alone drags the whole room UI: the largest blocker), `processTooLongMessage`, `processSlashCommand` (`hasAtLeastOnePermission`, `slashCommands`, `sdk.rest.post('/v1/commands.run')`), `processMessageUploads` (`e2e` at `:7`, global `crypto`, `ui-client` modals), `processMessageEditing`. On `chat`: `data.isSubscribedToRoom/joinRoom/composeMessage/findMessageByID`, `readStateManager.clearUnreadMark`, `currentEditingMessage`, `composer`, `flows`. `composeMessage` is in `chats/data.ts` with the same singleton imports.
+
+Modules that block it, minimal list: `SDKClient.ts` (plus `sdk/ddpSdk.ts`, `meteor/accounts.ts`, `meteor/connection.ts`), `stores/index.ts`, `processSetReaction.ts:6` (`roomCoordinator`), `processMessageUploads.ts:7` (`e2ee`), `chats/data.ts:7-9`. The session and e2ee ones are not shimmed under the rules of this step.
+
+### Aliases and shims added (all in `apps/expo-lab`)
+
+| Where | What | Why it is safe | Needed by |
+| --- | --- | --- | --- |
+| `metro.config.js` | native: `@rocket.chat/random` resolves to `packages/random/dist/main.client.js` | The package maps `browser` to this file; Metro's native conditions chose the Node one (`node:crypto`), which cannot bundle on native, so nothing could use it before. Hermes has no `window.crypto`, so it uses the Alea generator (not cryptographically strong; used for message ids, not secrets) | `messageBoxFormatting` and `processSlashCommand` load (2.2, 2.11, 2.12) |
+| `metro.config.js` | native: `react-dom/server` imported from `packages/gazzodown-alt/` resolves to `stubs/empty.js` | Its only use is `renderComposerMarkup` (`renderToStaticMarkup`); the composer needs `sanitizeUrl` from the same barrel and never calls the renderer (it would fail on an undefined import) | `messageBoxHelpers` (2.12, 2.13) |
+| `metro.config.js` + `stubs/unresolved.js` | probe mode only: a dependency Metro cannot resolve resolves to a module that throws when evaluated. Outside probe mode the probe screen module resolves to `stubs/empty.js` | Nothing is silently satisfied. Outside probe mode the web client does not enter the app bundle (2573 modules, as before) | the probe |
+| `babel.config.js` | `@babel/plugin-transform-typescript` with `allowDeclareFields` for files under `apps/meteor/client/` only | Changes only how `declare` and uninitialized class fields are emitted, for web client files no screen imported before. Not applied to `packages/*`, where uninitialized fields would change | any web client import (2.2 on) |
+
+No shim module was written: every candidate sat on the session, network or storage path, or in the web UI graph.
+
+### Recommendation for the decision gate
+
+By the plan's rule, 2.1 fails for the send flow: native twins. Not decided here, for the person:
+
+- 2.2 state: twin the state half over `{ text, selection }`. `composerStateCore` is blocked only by its `uploads` import (`composerStateCore.ts:5`); passing the uploads factory in as a parameter (a web-side extraction in `apps/meteor`) would let it load on Hermes.
+- 2.4/2.5 send: a native function taking `{ sdk, store, user, settings }`, reusing what loads (`processMessageEditing`, the pure logic of `processTooLongMessage` and `composeMessage` if split from the modal and from `data.ts`). Making the web flow injectable is the alternative, also in `apps/meteor`.
+- 2.9 typing: `UserAction` twin over the raw DDP SDK, as the spec says.
+- Use as they are: `composerState`, `messageBoxFormatting`, `messageBoxHelpers`, `toggleLinePrefix`, `wrapSelectionText`, `composerPopupTrigger`, `processMessageEditing`.
+
+Not verified: Android; calling the loaded functions on Hermes (only the import was run); anything behind the first error of each failing module (for example `crypto` after `document`).
